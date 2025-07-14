@@ -1,0 +1,982 @@
+/* Styles personnalisés pour VintApp */
+
+/* Variables CSS */
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+/* Styles généraux */
+body {
+    font-family: 'Figtree', sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Styles pour le dashboard */
+.dashboard-card {
+    transition: transform 0.2s ease-in-out;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les cartes de statistiques */
+.stat-card {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-card .opacity-50 {
+    opacity: 0.5;
+}
+
+/* Styles pour les listes */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+/* Styles pour les badges */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Styles pour la navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Styles pour les icônes */
+.fas {
+    font-size: 1rem;
+}
+
+.fa-2x {
+    font-size: 2rem;
+}
+
+/* Styles pour les graphiques */
+.chart-container {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styles pour les messages d'état vides */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Styles pour les animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Styles pour les tableaux */
+.table-responsive {
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+/* Styles pour les formulaires */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour les boutons */
+.btn {
+    border-radius: 0.375rem;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+/* Styles pour les alertes */
+.alert {
+    border-radius: 0.375rem;
+    border: none;
+}
+
+/* Styles pour les modales */
+.modal-content {
+    border-radius: 0.5rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les tooltips */
+.tooltip {
+    font-size: 0.875rem;
+}
+
+/* Styles pour les popovers */
+.popover {
+    border-radius: 0.375rem;
+    border: none;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les paginations */
+.pagination {
+    margin-bottom: 0;
+}
+
+.page-link {
+    border-radius: 0.25rem;
+    margin: 0 0.125rem;
+}
+
+/* Styles pour les breadcrumbs */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+/* Styles pour les progress bars */
+.progress {
+    border-radius: 0.375rem;
+    height: 0.5rem;
+}
+
+/* Styles pour les spinners */
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Styles pour les badges de statut */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Styles pour les cartes de produit */
+.product-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les avatars */
+.avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-sm {
+    width: 2rem;
+    height: 2rem;
+}
+
+.avatar-lg {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Styles pour les notifications */
+.notification-item {
+    transition: background-color 0.2s ease;
+}
+
+.notification-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Styles pour les messages */
+.message-item {
+    transition: background-color 0.2s ease;
+}
+
+.message-item:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Styles pour les commandes */
+.order-item {
+    transition: background-color 0.2s ease;
+}
+
+.order-item:hover {
+    background-color: rgba(40, 167, 69, 0.05);
+}
+
+/* Styles pour les articles */
+.item-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Styles pour les prix */
+.price {
+    font-weight: 600;
+    color: var(--success-color);
+}
+
+.price-old {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Styles pour les évaluations */
+.rating {
+    color: #ffc107;
+}
+
+.rating-empty {
+    color: #e9ecef;
+}
+
+/* Styles pour les catégories */
+.category-badge {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* Styles pour les marques */
+.brand-logo {
+    max-width: 2rem;
+    max-height: 2rem;
+    object-fit: contain;
+}
+
+/* Styles pour les conditions */
+.condition-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}
+
+.condition-new {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.condition-like-new {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.condition-good {
+    background-color: var(--warning-color);
+    color: #212529;
+}
+
+.condition-fair {
+    background-color: #fd7e14;
+    color: white;
+}
+
+.condition-poor {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* Styles pour les statuts */
+.status-pending {
+    background-color: var(--warning-color);
+    color: #212529;
+}
+
+.status-confirmed {
+    background-color: var(--info-color);
+    color: white;
+}
+
+.status-shipped {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.status-delivered {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.status-cancelled {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.status-completed {
+    background-color: var(--success-color);
+    color: white;
+}
+
+/* Styles pour les méthodes de paiement */
+.payment-method {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: var(--light-color);
+    border: 1px solid #dee2e6;
+}
+
+/* Styles pour les graphiques */
+.chart-bar {
+    background-color: var(--primary-color);
+    border-radius: 0.25rem;
+    margin: 0.125rem;
+    transition: all 0.3s ease;
+}
+
+.chart-bar:hover {
+    background-color: #0056b3;
+    transform: scaleY(1.1);
+}
+
+/* Styles pour les filtres */
+.filter-section {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Styles pour la recherche */
+.search-box {
+    position: relative;
+}
+
+.search-box .form-control {
+    padding-left: 2.5rem;
+}
+
+.search-box .search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Styles pour les filtres avancés */
+.advanced-filters {
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Styles pour les résultats de recherche */
+.search-results {
+    min-height: 200px;
+}
+
+/* Styles pour les favoris */
+.favorite-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+.favorite-btn:hover {
+    color: #dc3545;
+}
+
+.favorite-btn.active {
+    color: #dc3545;
+}
+
+/* Styles pour les partages */
+.share-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    transition: color 0.2s ease;
+}
+
+.share-btn:hover {
+    color: var(--primary-color);
+}
+
+/* Styles pour les commentaires */
+.comment-section {
+    background-color: white;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.comment-item {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 0;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+/* Styles pour les réponses */
+.reply-item {
+    margin-left: 2rem;
+    padding-left: 1rem;
+    border-left: 2px solid #dee2e6;
+}
+
+/* Styles pour les notifications push */
+.push-notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1050;
+    max-width: 300px;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Styles pour les modales de confirmation */
+.confirmation-modal .modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.confirmation-modal .modal-footer {
+    border-top: none;
+    padding-top: 0;
+}
+
+/* Styles pour les loaders */
+.loader {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Styles pour les tooltips personnalisés */
+.custom-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.custom-tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Styles pour les responsive */
+@media (max-width: 1200px) {
+    .container-fluid {
+        padding: 0 1rem;
+    }
+    
+    .navbar .container {
+        padding: 0 1rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar-nav {
+        margin-top: 1rem;
+    }
+    
+    .navbar-collapse {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .hero-banner {
+        background-attachment: scroll !important;
+    }
+    
+    .banner-overlay {
+        min-height: 40vh;
+    }
+    
+    .display-4 {
+        font-size: 2.5rem;
+    }
+    
+    .lead {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-card {
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card .card-body {
+        padding: 1rem;
+    }
+    
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    /* Navigation mobile */
+    .navbar-brand {
+        font-size: 1.1rem;
+    }
+    
+    .navbar-toggler {
+        border: none;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Hero section mobile */
+    .hero-banner .row {
+        text-align: center;
+    }
+    
+    .hero-banner .col-lg-6:first-child {
+        order: 2;
+        margin-top: 2rem;
+    }
+    
+    .hero-banner .col-lg-6:last-child {
+        order: 1;
+    }
+    
+    /* Cards mobile */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .category-card {
+        padding: 1.5rem;
+    }
+    
+    .article-card {
+        margin-bottom: 1rem;
+    }
+    
+    .article-image {
+        height: 150px;
+    }
+    
+    /* Forms mobile */
+    .form-control {
+        font-size: 16px; /* Évite le zoom sur iOS */
+    }
+    
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Tables mobile */
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    /* Modals mobile */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    .modal-content {
+        border-radius: 0.5rem;
+    }
+    
+    /* Dropdowns mobile */
+    .dropdown-menu {
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Stats mobile */
+    .stat-item {
+        padding: 1rem 0.5rem;
+        text-align: center;
+    }
+    
+    .stat-item h3 {
+        font-size: 1.5rem;
+    }
+    
+    /* Personalization cards mobile */
+    .personalization-card {
+        margin-bottom: 1rem;
+    }
+    
+    .item-thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .personalization-form .btn {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .card-body {
+        padding: 0.75rem;
+    }
+    
+    .list-group-item {
+        padding: 0.75rem;
+    }
+    
+    /* Hero section très mobile */
+    .hero-banner {
+        min-height: 60vh;
+    }
+    
+    .banner-overlay {
+        min-height: 60vh;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .lead {
+        font-size: 1rem;
+    }
+    
+    /* Buttons très mobile */
+    .btn-lg {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    
+    .d-flex.gap-3 .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Cards très mobile */
+    .category-card {
+        padding: 1rem;
+    }
+    
+    .article-card {
+        margin-bottom: 1rem;
+    }
+    
+    .article-content {
+        padding: 0.75rem;
+    }
+    
+    .article-title {
+        font-size: 0.9rem;
+    }
+    
+    .article-description {
+        font-size: 0.8rem;
+    }
+    
+    /* Forms très mobile */
+    .form-label {
+        font-size: 0.9rem;
+    }
+    
+    .form-select, .form-control {
+        font-size: 16px;
+        padding: 0.5rem 0.75rem;
+    }
+    
+    /* Navigation très mobile */
+    .navbar-nav .nav-link {
+        padding: 0.5rem 0;
+        font-size: 0.9rem;
+    }
+    
+    /* Footer très mobile */
+    footer .row {
+        text-align: center;
+    }
+    
+    footer .col-md-6:last-child {
+        margin-top: 1rem;
+    }
+    
+    /* Personalization très mobile */
+    .personalization-card .card-header {
+        padding: 0.75rem;
+    }
+    
+    .personalization-card .card-body {
+        padding: 0.75rem;
+    }
+    
+    .personalization-form .mb-3 {
+        margin-bottom: 0.75rem !important;
+    }
+    
+    .personalization-form .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small devices */
+    .container-fluid {
+        padding: 0.25rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .hero-banner {
+        min-height: 50vh;
+    }
+    
+    .display-4 {
+        font-size: 1.75rem;
+    }
+    
+    .lead {
+        font-size: 0.9rem;
+    }
+    
+    .btn {
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+    }
+    
+    .card-body {
+        padding: 0.5rem;
+    }
+    
+    .form-control, .form-select {
+        font-size: 16px;
+        padding: 0.375rem 0.5rem;
+    }
+    
+    /* Tables extra small */
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    .table td, .table th {
+        padding: 0.25rem 0.5rem;
+    }
+    
+    /* Modals extra small */
+    .modal-dialog {
+        margin: 0.25rem;
+    }
+    
+    .modal-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .modal-header {
+        padding: 0.75rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem;
+    }
+}
+
+/* Styles pour les écrans tactiles */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px; /* Taille minimale pour les écrans tactiles */
+    }
+    
+    .form-control, .form-select {
+        min-height: 44px;
+    }
+    
+    .nav-link {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .dropdown-item {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+}
+
+/* Styles pour les écrans haute densité */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .card {
+        border-width: 0.5px;
+    }
+    
+    .btn {
+        border-width: 0.5px;
+    }
+}
+
+/* Styles pour les écrans en mode paysage sur mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-banner {
+        min-height: 40vh;
+    }
+    
+    .banner-overlay {
+        min-height: 40vh;
+    }
+    
+    .navbar {
+        padding: 0.25rem 0;
+    }
+    
+    .navbar-brand {
+        font-size: 0.9rem;
+    }
+}
+
+.theme-toast {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    background: #222;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+.theme-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Transition douce pour le body lors du changement de thème */
+body, html {
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Mode sombre personnalisé */
+html.dark body {
+    background-color: #181a1b !important;
+    color: #e0e0e0 !important;
+}
+
+html.light body {
+    background-color: #f5f5f5 !important;
+    color: #222 !important;
+}
