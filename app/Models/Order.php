@@ -12,17 +12,19 @@ class Order extends Model
 
     protected $fillable = [
         'order_number',
-        'user_id',
+        'buyer_id',
+        'seller_id',
         'item_id',
         'quantity',
         'unit_price',
-        'total_price',
+        'total_amount',
         'currency',
         'status',
         'shipping_address',
         'shipping_city',
         'shipping_phone',
         'notes',
+        'tracking_number',
         'paid_at',
         'shipped_at',
         'delivered_at',
@@ -30,7 +32,7 @@ class Order extends Model
 
     protected $casts = [
         'unit_price' => 'decimal:2',
-        'total_price' => 'decimal:2',
+        'total_amount' => 'decimal:2',
         'paid_at' => 'datetime',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
@@ -47,9 +49,14 @@ class Order extends Model
         });
     }
 
-    public function user()
+    public function buyer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'buyer_id');
+    }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
     }
 
     public function item()
@@ -57,18 +64,13 @@ class Order extends Model
         return $this->belongsTo(Item::class);
     }
 
-    public function seller()
-    {
-        return $this->hasOneThrough(User::class, Item::class, 'id', 'id', 'item_id', 'user_id');
-    }
-
     /**
-     * Get the formatted total price with currency
+     * Get the formatted total amount with currency
      */
-    public function getFormattedTotalPriceAttribute()
+    public function getFormattedTotalAmountAttribute()
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
-        return $symbol . ' ' . number_format($this->total_price, 2);
+        return $symbol . ' ' . number_format((float)$this->total_amount, 2);
     }
 
     /**
@@ -77,7 +79,7 @@ class Order extends Model
     public function getFormattedUnitPriceAttribute()
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
-        return $symbol . ' ' . number_format($this->unit_price, 2);
+        return $symbol . ' ' . number_format((float)$this->unit_price, 2);
     }
 
     /**

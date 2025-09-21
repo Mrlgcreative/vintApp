@@ -58,7 +58,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="fw-bold">{{ $order->user->name ?? 'Utilisateur inconnu' }}</div>
+                                                <div class="fw-bold">{{ $order->buyer->name ?? 'Utilisateur inconnu' }}</div>
                                                 <small class="text-muted">{{ $order->shipping_city ?? 'Ville non spécifiée' }}</small>
                                             </td>
                                             <td>

@@ -42,7 +42,6 @@ class BrandController extends Controller
             'description' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
-            'is_active' => 'boolean',
             'country' => 'nullable|string|max:100',
             'type' => 'nullable|string|max:50',
         ]);
@@ -53,12 +52,19 @@ class BrandController extends Controller
             $slug .= '-' . ($count + 1);
         }
         $validated['slug'] = $slug;
+
         if ($request->hasFile('logo')) {
             $validated['logo'] = $request->file('logo')->store('brands', 'public');
         }
+
         $validated['is_active'] = $request->has('is_active');
-        Brand::create($validated);
-        return redirect()->route('brands.index')->with('success', 'Marque ajoutée avec succès !');
+
+        try {
+            $brand = Brand::create($validated);
+            return redirect()->route('brands.index')->with('success', 'Marque ajoutée avec succès !');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Erreur lors de l\'enregistrement : ' . $e->getMessage());
+        }
     }
 
     /**
@@ -74,7 +80,13 @@ class BrandController extends Controller
      */
     public function edit(Brand $brand)
     {
-        return view('brands.edit', compact('brand'));
+        $countries = [
+            'France', 'Italie', 'Espagne', 'Allemagne', 'États-Unis', 'Royaume-Uni', 'Chine', 'Japon', 'Maroc', 'Tunisie', 'Turquie', 'Autre'
+        ];
+        $types = [
+            'Luxe', 'Grand public', 'Sport', 'Autre'
+        ];
+        return view('brands.edit', compact('brand', 'countries', 'types'));
     }
 
     /**
@@ -87,7 +99,6 @@ class BrandController extends Controller
             'description' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
             'logo' => 'nullable|image|max:2048',
-            'is_active' => 'boolean',
             'country' => 'nullable|string|max:100',
             'type' => 'nullable|string|max:50',
         ]);

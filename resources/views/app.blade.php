@@ -4,8 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="description" content="@yield('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité')">
+        <meta name="keywords" content="@yield('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique')">
 
-        <title>{{ config('app.name', 'VintApp') }}</title>
+        <title>@yield('title', 'Vintapp')</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,6 +24,10 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script>
+        window.userTheme = "{{ addslashes(Auth::user()?->theme_preference ?? '') }}";
+        window.isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+        </script>
     </head>
     <body class="font-sans antialiased">
         <!-- Navigation principale -->
@@ -56,6 +62,14 @@
                         </li>
                         
                         <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" 
+                               href="{{ route('categories.index') }}">
+                                <i class="fas fa-layer-group me-1"></i>
+                                Catégories
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('brands.*') ? 'active' : '' }}" 
                                href="{{ route('brands.index') }}">
                                 <i class="fas fa-tags me-1"></i>
@@ -83,6 +97,13 @@
                                    href="{{ route('orders.my-sales') }}">
                                     <i class="fas fa-store me-1"></i>
                                     Mes Ventes
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->routeIs('wallet.*') ? 'active' : '' }}" 
+                                   href="{{ route('wallet.index') }}">
+                                    <i class="fas fa-wallet me-1"></i>
+                                    Wallet
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -174,6 +195,20 @@
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
+                                    <li class="px-3 py-2 text-muted small">Navigation</li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('categories.index') }}">
+                                            <i class="fas fa-layer-group me-2"></i>
+                                            Catégories
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('brands.index') }}">
+                                            <i class="fas fa-tags me-2"></i>
+                                            Marques
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li class="px-3 py-2 text-muted small">Ventes & Achats</li>
                                     <li>
                                         <a class="dropdown-item" href="{{ route('items.create') }}">
@@ -197,6 +232,12 @@
                                         <a class="dropdown-item" href="{{ route('orders.my-sales') }}">
                                             <i class="fas fa-store me-2"></i>
                                             Mes ventes
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('wallet.index') }}">
+                                            <i class="fas fa-wallet me-2"></i>
+                                            Wallet
                                         </a>
                                     </li>
                                     <li>
@@ -244,6 +285,28 @@
                         </li>
                         @if(request()->routeIs('dashboard'))
                             <li class="breadcrumb-item active">Dashboard</li>
+                        @elseif(request()->routeIs('categories.*'))
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('categories.index') }}" class="text-decoration-none">Catégories</a>
+                            </li>
+                            @if(request()->routeIs('categories.show'))
+                                <li class="breadcrumb-item active">{{ $category->name ?? 'Détails' }}</li>
+                            @elseif(request()->routeIs('categories.create'))
+                                <li class="breadcrumb-item active">Créer une catégorie</li>
+                            @elseif(request()->routeIs('categories.edit'))
+                                <li class="breadcrumb-item active">Modifier une catégorie</li>
+                            @endif
+                        @elseif(request()->routeIs('brands.*'))
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('brands.index') }}" class="text-decoration-none">Marques</a>
+                            </li>
+                            @if(request()->routeIs('brands.show'))
+                                <li class="breadcrumb-item active">{{ $brand->name ?? 'Détails' }}</li>
+                            @elseif(request()->routeIs('brands.create'))
+                                <li class="breadcrumb-item active">Créer une marque</li>
+                            @elseif(request()->routeIs('brands.edit'))
+                                <li class="breadcrumb-item active">Modifier une marque</li>
+                            @endif
                         @elseif(request()->routeIs('items.*'))
                             <li class="breadcrumb-item">
                                 <a href="{{ route('items.index') }}" class="text-decoration-none">Articles</a>
@@ -290,6 +353,8 @@
                         <h6>Navigation</h6>
                         <ul class="list-unstyled">
                             <li><a href="{{ route('items.index') }}" class="text-muted text-decoration-none">Articles</a></li>
+                            <li><a href="{{ route('categories.index') }}" class="text-muted text-decoration-none">Catégories</a></li>
+                            <li><a href="{{ route('brands.index') }}" class="text-muted text-decoration-none">Marques</a></li>
                             <li><a href="{{ route('items.search') }}" class="text-muted text-decoration-none">Recherche</a></li>
                             @auth
                                 <li><a href="{{ route('items.my-items') }}" class="text-muted text-decoration-none">Mes articles</a></li>
@@ -490,6 +555,141 @@
                 }
             });
             @endauth
+
+            // Gestion spéciale des catégories
+            initializeCategoryFeatures();
+        });
+
+        // Fonctions spécifiques aux catégories
+        function initializeCategoryFeatures() {
+            // Animation des cartes de catégories
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-4px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // Recherche live dans les catégories
+            const categorySearch = document.getElementById('category-search');
+            if (categorySearch) {
+                categorySearch.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const categoryItems = document.querySelectorAll('.category-list-item');
+                    
+                    categoryItems.forEach(item => {
+                        const categoryName = item.querySelector('.category-name')?.textContent.toLowerCase() || '';
+                        const categoryDescription = item.querySelector('.category-description')?.textContent.toLowerCase() || '';
+                        
+                        if (categoryName.includes(searchTerm) || categoryDescription.includes(searchTerm)) {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Gestion des sous-catégories expandables
+            const expandableCategories = document.querySelectorAll('.expandable-category');
+            expandableCategories.forEach(category => {
+                const toggle = category.querySelector('.category-toggle');
+                const subcategories = category.querySelector('.subcategories');
+                
+                if (toggle && subcategories) {
+                    toggle.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        const isExpanded = subcategories.style.display === 'block';
+                        subcategories.style.display = isExpanded ? 'none' : 'block';
+                        
+                        const icon = toggle.querySelector('i');
+                        if (icon) {
+                            icon.className = isExpanded ? 'fas fa-chevron-right' : 'fas fa-chevron-down';
+                        }
+                    });
+                }
+            });
+
+            // Préchargement des catégories populaires
+            if (window.location.pathname === '/categories') {
+                preloadPopularCategories();
+            }
+        }
+
+        function preloadPopularCategories() {
+            // Précharger les images des catégories les plus populaires
+            fetch('/api/categories/popular')
+                .then(response => response.json())
+                .then(categories => {
+                    categories.forEach(category => {
+                        if (category.image) {
+                            const img = new Image();
+                            img.src = category.image;
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.log('Préchargement des catégories non disponible');
+                });
+        }
+        </script>
+
+      
+        <script>
+        function applyTheme(theme) {
+            if (theme === 'auto') {
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                document.documentElement.setAttribute('data-theme', systemTheme);
+            } else {
+                document.documentElement.setAttribute('data-theme', theme);
+            }
+            document.body.classList.remove('theme-light', 'theme-dark', 'theme-auto');
+            document.body.classList.add('theme-' + theme);
+            const label = document.getElementById('theme-label');
+            if (label) {
+                label.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
+            }
+        }
+        function getPreferredTheme() {
+            const localTheme = localStorage.getItem('theme');
+            if (localTheme) return localTheme;
+            if (window.userTheme && window.userTheme !== '') return window.userTheme;
+            return 'auto';
+        }
+        function handleSystemThemeChange(e) {
+            const current = getPreferredTheme();
+            if (current === 'auto') {
+                applyTheme('auto');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme(getPreferredTheme());
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleSystemThemeChange);
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    let current = getPreferredTheme();
+                    let next = current === 'auto' ? 'light' : current === 'light' ? 'dark' : 'auto';
+                    applyTheme(next);
+                    localStorage.setItem('theme', next);
+                    if (window.isAuthenticated) {
+                        fetch('/profile/theme', {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({ theme_preference: next })
+                        });
+                    }
+                });
+            }
         });
         </script>
 
@@ -962,6 +1162,103 @@
                 transition: none;
             }
         }
+
+        /* Styles spécifiques pour les catégories */
+        .category-card {
+            transition: all 0.3s ease;
+            border: 1px solid var(--bs-border-color);
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            border-color: var(--vinted-primary);
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--vinted-primary), var(--vinted-secondary));
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-stats {
+            font-size: 0.875rem;
+            color: var(--bs-text-muted);
+        }
+
+        .category-list-item {
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-list-item:hover {
+            background-color: var(--bs-light);
+            transform: translateX(4px);
+        }
+
+        .subcategory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .subcategory-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .category-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.25rem;
+            }
+        }
         </style>
+        <div id="bot-widget" style="position:fixed;bottom:24px;right:24px;z-index:9999;">
+  <button id="open-bot" class="btn btn-primary rounded-circle" style="width:56px;height:56px;">
+    <i class="fas fa-robot"></i>
+  </button>
+  <div id="bot-chat" style="display:none;width:320px;height:420px;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.15);padding:16px;">
+    <div id="bot-messages" style="height:320px;overflow-y:auto;margin-bottom:12px;"></div>
+    <form id="bot-form">
+      <input type="text" id="bot-input" class="form-control mb-2" placeholder="Pose ta question..." autocomplete="off" required>
+      <button class="btn btn-primary w-100" type="submit">Envoyer</button>
+    </form>
+  </div>
+</div>
+<script>
+document.getElementById('open-bot').onclick = function() {
+  const chat = document.getElementById('bot-chat');
+  chat.style.display = chat.style.display === 'none' ? 'block' : 'none';
+};
+document.getElementById('bot-form').onsubmit = function(e) {
+  e.preventDefault();
+  const input = document.getElementById('bot-input');
+  const msg = input.value;
+  if (!msg) return;
+  const messages = document.getElementById('bot-messages');
+  messages.innerHTML += `<div class='mb-2'><b>Vous :</b> ${msg}</div>`;
+  input.value = '';
+  fetch('/api/bot', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
+    body: JSON.stringify({question: msg})
+  })
+  .then(res => res.json())
+  .then(data => {
+    messages.innerHTML += `<div class='mb-2'><b>Bot :</b> ${data.answer}</div>`;
+    messages.scrollTop = messages.scrollHeight;
+  });
+};
+</script>
     </body>
 </html>

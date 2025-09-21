@@ -63,7 +63,7 @@
                                 </div>
                                 <div class="col-6">
                                     <small class="text-muted">Acheteur</small>
-                                    <div class="fw-bold">{{ $order->user->name }}</div>
+                                    <div class="fw-bold">{{ $order->buyer->name }}</div>
                                 </div>
                             </div>
                         </div>
@@ -181,7 +181,7 @@
                         </a>
                         
                         <div>
-                            @if($order->user_id === Auth::id() && $order->status === 'pending')
+                            @if($order->buyer_id === Auth::id() && $order->status === 'pending')
                                 <form method="POST" action="{{ route('orders.confirm-payment', $order) }}" style="display: inline;">
                                     @csrf
                                     <button type="submit" 
@@ -203,7 +203,7 @@
                                 </a>
                             @endif
                             
-                            @if($order->user_id === Auth::id() && $order->status === 'pending')
+                            @if($order->buyer_id === Auth::id() && $order->status === 'pending')
                                 <form method="POST" action="{{ route('orders.destroy', $order) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
                                     @csrf
                                     @method('DELETE')

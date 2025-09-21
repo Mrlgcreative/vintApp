@@ -64,7 +64,7 @@
     </div>
 </div>
 <script>
-const buyerId = @json(Auth::id());
+const buyerId = {{ Auth::id() !== null ? Auth::id() : 'null' }};
 document.getElementById('payment-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const provider = document.getElementById('provider').value;

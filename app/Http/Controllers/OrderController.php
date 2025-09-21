@@ -17,8 +17,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['item', 'user'])
-            ->where('user_id', Auth::id())
+        $orders = Order::with(['item', 'buyer'])
+            ->where('buyer_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -78,11 +78,12 @@ class OrderController extends Controller
 
             // Créer la commande
             $order = new Order();
-            $order->user_id = Auth::id();
+            $order->buyer_id = Auth::id();
+            $order->seller_id = $item->user_id;
             $order->item_id = $item->id;
             $order->quantity = $request->quantity;
             $order->unit_price = $item->price;
-            $order->total_price = $item->price * $request->quantity;
+            $order->total_amount = $item->price * $request->quantity;
             $order->currency = $item->currency;
             $order->status = 'pending';
             $order->shipping_address = $request->shipping_address;
@@ -117,11 +118,11 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         // Vérifier que l'utilisateur peut voir cette commande
-        if ($order->user_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
+        if ($order->buyer_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
             abort(403, 'Vous n\'êtes pas autorisé à voir cette commande.');
         }
 
-        $order->load(['item', 'user']);
+        $order->load(['item', 'buyer']);
 
         return view('orders.show', compact('order'));
     }
@@ -179,7 +180,7 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         // Seul l'acheteur peut annuler sa commande si elle est en attente
-        if ($order->user_id !== Auth::id()) {
+        if ($order->buyer_id !== Auth::id()) {
             if (request()->expectsJson()) {
                 return response()->json(['success' => false, 'error' => 'Vous n\'êtes pas autorisé à supprimer cette commande.'], 403);
             }
@@ -233,7 +234,7 @@ class OrderController extends Controller
      */
     public function mySales()
     {
-        $orders = Order::with(['item.category', 'item.brand', 'user'])
+        $orders = Order::with(['item.category', 'item.brand', 'buyer'])
             ->whereHas('item', function($query) {
                 $query->where('user_id', Auth::id());
             })
@@ -248,7 +249,7 @@ class OrderController extends Controller
      */
     public function confirmPayment(Order $order)
     {
-        if ($order->user_id !== Auth::id()) {
+        if ($order->buyer_id !== Auth::id()) {
             if (request()->expectsJson()) {
                 return response()->json(['success' => false, 'error' => 'Vous n\'êtes pas autorisé à confirmer le paiement de cette commande.'], 403);
             }

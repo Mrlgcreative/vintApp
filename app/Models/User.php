@@ -143,6 +143,62 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation avec les wallets de l'utilisateur
+     */
+    public function wallets()
+    {
+        return $this->hasMany(Wallet::class);
+    }
+
+    /**
+     * Obtient le wallet USD de l'utilisateur
+     */
+    public function usdWallet()
+    {
+        return $this->wallets()->where('currency', 'USD')->first();
+    }
+
+    /**
+     * Obtient le wallet CDF de l'utilisateur
+     */
+    public function cdfWallet()
+    {
+        return $this->wallets()->where('currency', 'CDF')->first();
+    }
+
+    /**
+     * Obtient ou crée le wallet USD
+     */
+    public function getOrCreateUsdWallet()
+    {
+        $wallet = $this->usdWallet();
+        if (!$wallet) {
+            $wallet = $this->wallets()->create([
+                'currency' => 'USD',
+                'balance' => 0.00,
+                'is_active' => true,
+            ]);
+        }
+        return $wallet;
+    }
+
+    /**
+     * Obtient ou crée le wallet CDF
+     */
+    public function getOrCreateCdfWallet()
+    {
+        $wallet = $this->cdfWallet();
+        if (!$wallet) {
+            $wallet = $this->wallets()->create([
+                'currency' => 'CDF',
+                'balance' => 0.00,
+                'is_active' => true,
+            ]);
+        }
+        return $wallet;
+    }
+
+    /**
      * Obtenir l'URL de l'avatar
      */
     public function getAvatarUrlAttribute()
@@ -194,6 +250,8 @@ class User extends Authenticatable
             'favorites_count' => $this->favorites()->count(),
             'reviews_count' => $this->reviewsReceived()->count(),
             'average_rating' => $this->reviewsReceived()->avg('rating') ?? 0,
+            'usd_balance' => $this->usdWallet() ? $this->usdWallet()->balance : 0.00,
+            'cdf_balance' => $this->cdfWallet() ? $this->cdfWallet()->balance : 0.00,
         ];
     }
 

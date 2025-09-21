@@ -100,7 +100,12 @@ Route::middleware(['auth'])->group(function () {
 
 // Routes pour les catégories
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create')->middleware('auth');
+Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store')->middleware('auth');
 Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit')->middleware('auth');
+Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update')->middleware('auth');
+Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware('auth');
 
 // Routes pour les marques
 Route::resource('brands', App\Http\Controllers\BrandController::class);
@@ -127,6 +132,17 @@ Route::prefix('cart')->group(function () {
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/pay', [CartController::class, 'pay'])->name('cart.pay');
     Route::get('/buy/{id}', [App\Http\Controllers\ItemController::class, 'buy'])->name('cart.buy');
+});
+
+// Routes pour le wallet
+Route::middleware(['auth'])->prefix('wallet')->name('wallet.')->group(function () {
+    Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
+    Route::get('/{wallet}/transactions', [App\Http\Controllers\WalletController::class, 'transactions'])->name('transactions');
+    Route::get('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'addFunds'])->name('add-funds');
+    Route::post('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'storeAddFunds'])->name('store-add-funds');
+    Route::get('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'withdrawFunds'])->name('withdraw-funds');
+    Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
+    Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
 });
 
 require __DIR__.'/auth.php';

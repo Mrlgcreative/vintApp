@@ -89,9 +89,9 @@ class ProfileController extends Controller
     }
 
     /**
-     * Mettre à jour les préférences de thème
+     * Mettre à jour les préférences de thème (supporte AJAX/JSON)
      */
-    public function updateTheme(Request $request): RedirectResponse
+    public function updateTheme(Request $request)
     {
         $request->validate([
             'theme_preference' => ['required', Rule::in(['auto', 'light', 'dark'])],
@@ -101,7 +101,11 @@ class ProfileController extends Controller
         $user->theme_preference = $request->theme_preference;
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'theme-updated');
+        if ($request->expectsJson() || $request->wantsJson()) {
+            return response()->json(['status' => 'ok', 'theme' => $user->theme_preference]);
+        }
+
+        return redirect()->route('profile.edit')->with('status', 'theme-updated');
     }
 
     /**

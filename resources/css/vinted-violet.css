@@ -130,6 +130,71 @@ footer a:hover {
     border-radius: 8px;
 }
 
+/* --- Thème sombre --- */
+html[data-theme="dark"] {
+    --vinted-bg: #181a1b;
+    --vinted-primary: #a78bfa;
+    --vinted-primary-light: #c4b5fd;
+    --vinted-accent: #23272f;
+    --vinted-gray: #e5e7eb;
+    --vinted-text: #e0e0e0;
+    --vinted-border: #33374a;
+    --vinted-white: #23272f;
+}
+html[data-theme="dark"] body {
+    background: var(--vinted-bg) !important;
+    color: var(--vinted-text) !important;
+}
+html[data-theme="dark"] .card, html[data-theme="dark"] .item-card {
+    background: #23272f !important;
+    color: var(--vinted-text) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+}
+html[data-theme="dark"] .navbar, html[data-theme="dark"] footer {
+    background: #23272f !important;
+    color: var(--vinted-primary-light) !important;
+}
+html[data-theme="dark"] .navbar-brand, html[data-theme="dark"] .nav-link {
+    color: var(--vinted-primary-light) !important;
+}
+html[data-theme="dark"] .nav-link.active, html[data-theme="dark"] .nav-link:hover {
+    background: var(--vinted-primary) !important;
+    color: #fff !important;
+}
+html[data-theme="dark"] .form-control, html[data-theme="dark"] input, html[data-theme="dark"] select, html[data-theme="dark"] textarea {
+    background: #23272f !important;
+    color: var(--vinted-text) !important;
+    border-color: var(--vinted-border) !important;
+}
+html[data-theme="dark"] .form-label, html[data-theme="dark"] label {
+    color: var(--vinted-primary-light) !important;
+}
+html[data-theme="dark"] .badge {
+    background: var(--vinted-primary) !important;
+    color: #fff !important;
+}
+html[data-theme="dark"] .dropdown-menu {
+    background: #23272f !important;
+    color: var(--vinted-text) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
+}
+
+/* --- Thème clair explicite --- */
+html[data-theme="light"] {
+    --vinted-bg: #f8f9fa;
+    --vinted-primary: #4f00ce;
+    --vinted-primary-light: #8f5cff;
+    --vinted-accent: #f5f5ff;
+    --vinted-gray: #6c757d;
+    --vinted-text: #222;
+    --vinted-border: #e0e0e0;
+    --vinted-white: #fff;
+}
+html[data-theme="light"] body {
+    background: var(--vinted-bg) !important;
+    color: var(--vinted-text) !important;
+}
+
 /* Responsive */
 @media (max-width: 992px) {
     .navbar-brand { font-size: 1.2rem; }
