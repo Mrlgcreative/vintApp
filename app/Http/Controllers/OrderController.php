@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\Item;
+use App\models\Wallet;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -126,6 +127,59 @@ class OrderController extends Controller
 
         return view('orders.show', compact('order'));
     }
+
+
+    public function acheterProduit(Request $request, Wallet $wallet, $produitId)
+{
+    $user = Auth::user();
+
+    // Vérifier que le wallet appartient bien à l'utilisateur
+    if ($wallet->user_id !== $user->id) {
+        abort(403, 'Accès non autorisé');
+    }
+
+    $produit = Item::findOrFail($produitId); // récupère le produit
+
+    // Vérifier solde suffisant
+    if ($wallet->balance < $produit->prix) {
+        return redirect()->back()
+            ->with('error', 'Solde insuffisant pour effectuer cet achat.');
+    }
+
+    try {
+        DB::transaction(function () use ($wallet, $produit, $user) {
+
+            // Débiter le wallet
+            $wallet->decrement('balance', $produit->prix);
+
+            // Ajouter transaction
+            $wallet->transactions()->create([
+                'type' => 'debit',
+                'amount' => $produit->prix,
+                'balance_after' => $wallet->fresh()->balance,
+                'description' => 'Achat du produit: ' . $produit->nom,
+                'reference' => 'BUY-' . time() . '-' . rand(1000, 9999),
+            ]);
+
+            // Créer la commande
+            Order::create([
+                'user_id' => $user->id,
+                'produit_id' => $produit->id,
+                'wallet_id' => $wallet->id,
+                'prix' => $produit->prix,
+                'status' => 'pending', // ou confirmé selon ton flow
+            ]);
+        });
+
+        return redirect()->route('wallet.index')
+            ->with('success', 'Achat effectué avec succès !');
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->with('error', 'Erreur lors de l\'achat : ' . $e->getMessage());
+    }
+}
+
 
     /**
      * Show the form for editing the specified resource.

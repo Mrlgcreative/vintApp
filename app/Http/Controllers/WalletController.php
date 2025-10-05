@@ -7,9 +7,16 @@ use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Services\PaymentService;
 
 class WalletController extends Controller
 {
+    private $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
     /**
      * Affiche les wallets de l'utilisateur.
      */
@@ -187,5 +194,71 @@ class WalletController extends Controller
             'formatted_balance' => $wallet->formatted_balance,
             'currency' => $wallet->currency,
         ]);
+    }
+
+    /**
+     * Initie un paiement mobile pour recharger le wallet
+     */
+    public function rechargeWithMobilePayment(Request $request, Wallet $wallet)
+    {
+        if ($wallet->user_id !== Auth::id()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:1',
+            'payment_method' => 'required|string|in:illicocash,orange_money,airtel_money,mpesa,africell',
+        ]);
+
+        try {
+            $paymentData = [
+                'buyer_id' => Auth::id(),
+                'amount' => $validated['amount'],
+                'purpose' => 'Recharge de wallet ' . $wallet->currency,
+            ];
+
+            // Rediriger vers la méthode de paiement appropriée dans PaymentController
+            switch ($validated['payment_method']) {
+                case 'illicocash':
+                    $response = $this->paymentService->payWithIllicocash($paymentData);
+                    break;
+                case 'orange_money':
+                    $response = $this->paymentService->payWithOrangeMoney($paymentData);
+                    break;
+                case 'airtel_money':
+                    $response = $this->paymentService->payWithAirtelMoney($paymentData);
+                    break;
+                case 'mpesa':
+                    $response = $this->paymentService->payWithMpesa($paymentData);
+                    break;
+                case 'africell':
+                    $response = $this->paymentService->payWithAfricell($paymentData);
+                    break;
+                default:
+                    throw new \Exception('Méthode de paiement non supportée');
+            }
+
+            // Si le paiement est initié avec succès, créer une transaction en attente
+            if ($response['status'] === 'pending') {
+                DB::transaction(function () use ($wallet, $validated, $response) {
+                    $wallet->transactions()->create([
+                        'type' => 'credit_pending',
+                        'amount' => $validated['amount'],
+                        'balance_after' => $wallet->balance,
+                        'description' => 'Recharge via ' . ucfirst($validated['payment_method']),
+                        'reference' => $response['provider'] . '-' . time() . '-' . rand(1000, 9999),
+                        'status' => 'pending',
+                        'provider' => $validated['payment_method']
+                    ]);
+                });
+            }
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors de l\'initiation du paiement : ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -1,3 +1,55 @@
+@push('styles')
+<style>
+@media (max-width: 768px) {
+    .row.g-4 > [class^="col-"],
+    .row.g-4 > [class*=" col-"] {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 10px;
+    }
+    .item-card {
+        margin-bottom: 1.2rem;
+        min-width: 0;
+        max-width: 100%;
+        height: 170px;
+        padding: 0.5rem 0.5rem 0.2rem 0.5rem;
+    }
+    .card-img-top, .item-card img {
+        height: 90px !important;
+    }
+    .card-title {
+        font-size: 13px;
+    }
+    .card-text {
+        font-size: 11px;
+    }
+}
+</style>
+@endpush
+<!-- Toast notification Bootstrap -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11000">
+    <div id="mainToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="mainToastBody">
+                Notification
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<script>
+function showNotification(message, type = 'primary') {
+        var toastEl = document.getElementById('mainToast');
+        var toastBody = document.getElementById('mainToastBody');
+        if (!toastEl || !toastBody) return;
+        toastBody.textContent = message;
+        toastEl.className = 'toast align-items-center text-bg-' + type + ' border-0';
+        var toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+        toast.show();
+}
+</script>
 @extends('app')
 
 @section('content')

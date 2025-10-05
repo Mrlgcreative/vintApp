@@ -1,54 +1,76 @@
 :root {
+    /* Couleurs principales */
     --vinted-primary: #4f00ce;
     --vinted-primary-light: #8f5cff;
+    --vinted-secondary: #6f3eff;
     --vinted-accent: #f5f5ff;
     --vinted-bg: #f8f9fa;
     --vinted-gray: #6c757d;
+    --vinted-text: #222;
     --vinted-success: #27ae60;
     --vinted-danger: #e74c3c;
     --vinted-warning: #f39c12;
     --vinted-info: #00bcd4;
     --vinted-border: #e0e0e0;
+    --vinted-white: #fff;
+
+    /* Typographie */
+    --vinted-font: 'Figtree', 'Inter', Arial, sans-serif;
+
+    /* Border radius & shadows */
     --vinted-radius: 16px;
     --vinted-shadow: 0 4px 24px rgba(79,0,206,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
     --vinted-shadow-hover: 0 8px 32px rgba(79,0,206,0.16), 0 2px 8px rgba(0,0,0,0.08);
-    --vinted-font: 'Figtree', 'Inter', Arial, sans-serif;
 }
 
+/* --- Global --- */
 body {
     background: var(--vinted-bg);
     font-family: var(--vinted-font);
-    color: #222;
+    color: var(--vinted-text);
+    line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--vinted-font);
     font-weight: 700;
     color: var(--vinted-primary);
+    line-height: 1.3;
 }
 
+/* --- Buttons --- */
 .btn-primary, .btn-primary:focus {
+    cursor: pointer;
     background: linear-gradient(90deg, var(--vinted-primary) 60%, var(--vinted-primary-light) 100%);
     border: none;
     font-weight: 600;
     letter-spacing: 0.02em;
     border-radius: var(--vinted-radius);
     box-shadow: var(--vinted-shadow);
-    transition: background 0.2s, box-shadow 0.2s;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 .btn-primary:hover {
     background: linear-gradient(90deg, var(--vinted-primary-light) 0%, var(--vinted-primary) 100%);
     box-shadow: var(--vinted-shadow-hover);
-}
-.btn-outline-secondary {
-    border-radius: var(--vinted-radius);
+    transform: translateY(-2px);
 }
 
+.btn-outline-secondary {
+    border-radius: var(--vinted-radius);
+    cursor: pointer;
+}
+
+/* --- Cards --- */
 .card, .item-card {
     border-radius: var(--vinted-radius);
     box-shadow: var(--vinted-shadow);
     border: none;
-    background: #fff;
+    background: var(--vinted-white);
+    transition: box-shadow 0.3s, transform 0.3s;
+}
+.card:hover, .item-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--vinted-shadow-hover);
 }
 .card-header {
     border-radius: var(--vinted-radius) var(--vinted-radius) 0 0;
@@ -57,6 +79,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
+/* --- Badges --- */
 .badge.bg-primary {
     background: var(--vinted-primary) !important;
 }
@@ -71,28 +94,34 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 1px 4px rgba(79,0,206,0.08);
 }
 
+/* --- Forms --- */
 input, select, textarea {
     border-radius: var(--vinted-radius) !important;
     border: 1.5px solid var(--vinted-border) !important;
     font-size: 1rem;
-    transition: border 0.2s, box-shadow 0.2s;
+    transition: border 0.2s, box-shadow 0.2s, background 0.2s;
 }
 input:focus, select:focus, textarea:focus {
     border-color: var(--vinted-primary-light) !important;
     box-shadow: 0 0 0 2px var(--vinted-primary-light)22;
+}
+input::placeholder, textarea::placeholder {
+    color: var(--vinted-gray);
+    opacity: 0.7;
 }
 .form-label, label {
     font-weight: 500;
     color: var(--vinted-primary);
 }
 
+/* --- Navbar --- */
 .navbar {
     border-radius: 0 0 var(--vinted-radius) var(--vinted-radius);
     box-shadow: var(--vinted-shadow);
     font-family: var(--vinted-font);
 }
 .navbar-brand {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 3vw, 1.5rem);
     font-weight: 700;
     color: var(--vinted-primary-light) !important;
 }
@@ -107,6 +136,7 @@ input:focus, select:focus, textarea:focus {
     color: #fff !important;
 }
 
+/* --- Footer --- */
 footer {
     background: var(--vinted-primary);
     color: #fff;
@@ -121,6 +151,7 @@ footer a:hover {
     color: var(--vinted-primary-light);
 }
 
+/* --- Scrollbar --- */
 ::-webkit-scrollbar {
     width: 8px;
     background: var(--vinted-accent);
@@ -128,6 +159,10 @@ footer a:hover {
 ::-webkit-scrollbar-thumb {
     background: var(--vinted-primary-light);
     border-radius: 8px;
+    transition: background 0.3s;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--vinted-primary);
 }
 
 /* --- Thème sombre --- */
@@ -148,7 +183,7 @@ html[data-theme="dark"] body {
 html[data-theme="dark"] .card, html[data-theme="dark"] .item-card {
     background: #23272f !important;
     color: var(--vinted-text) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.25) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
 }
 html[data-theme="dark"] .navbar, html[data-theme="dark"] footer {
     background: #23272f !important;
@@ -179,25 +214,9 @@ html[data-theme="dark"] .dropdown-menu {
     box-shadow: 0 8px 24px rgba(0,0,0,0.35) !important;
 }
 
-/* --- Thème clair explicite --- */
-html[data-theme="light"] {
-    --vinted-bg: #f8f9fa;
-    --vinted-primary: #4f00ce;
-    --vinted-primary-light: #8f5cff;
-    --vinted-accent: #f5f5ff;
-    --vinted-gray: #6c757d;
-    --vinted-text: #222;
-    --vinted-border: #e0e0e0;
-    --vinted-white: #fff;
-}
-html[data-theme="light"] body {
-    background: var(--vinted-bg) !important;
-    color: var(--vinted-text) !important;
-}
-
-/* Responsive */
+/* --- Responsive --- */
 @media (max-width: 992px) {
-    .navbar-brand { font-size: 1.2rem; }
+    .navbar-brand { font-size: clamp(1rem, 2.5vw, 1.2rem); }
     .card, .item-card { margin-bottom: 1.5rem; }
 }
 @media (max-width: 768px) {
@@ -206,6 +225,6 @@ html[data-theme="light"] body {
     .card-header { font-size: 1.1rem; }
 }
 @media (max-width: 576px) {
-    h1, h2, h3 { font-size: 1.2rem; }
-    .navbar-brand { font-size: 1rem; }
-} 
+    h1, h2, h3 { font-size: clamp(1rem, 4vw, 1.2rem); }
+    .navbar-brand { font-size: clamp(0.9rem, 3vw, 1rem); }
+}

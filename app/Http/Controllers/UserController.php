@@ -90,39 +90,45 @@ class UserController extends Controller
     /**
      * Upload user avatar
      */
-    public function uploadAvatar(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur de validation',
-                'errors' => $validator->errors()
-            ], 422);
-        }
+public function uploadAvatar(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        $user = $request->user();
-
-        // Supprimer l'ancien avatar s'il existe
-        if ($user->profile_image) {
-            Storage::disk('public')->delete($user->profile_image);
-        }
-
-        // Upload du nouvel avatar
-        $path = $request->file('avatar')->store('avatars', 'public');
-        
-        $user->update(['profile_image' => $path]);
-
+    if ($validator->fails()) {
         return response()->json([
-            'success' => true,
-            'message' => 'Avatar mis à jour avec succès',
-            'avatar_url' => asset('storage/' . $path)
-        ]);
+            'success' => false,
+            'message' => 'Erreur de validation',
+            'errors' => $validator->errors()
+        ], 422);
     }
 
+    $user = $request->user();
+
+    // Supprimer l'ancien avatar s'il existe
+    if ($user->profile_image && Storage::disk('public')->exists($user->profile_image)) {
+        Storage::disk('public')->delete($user->profile_image);
+    }
+
+    // Upload du nouvel avatar
+    $path = $request->file('avatar')->store('avatars', 'public');
+    if (!$path) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de l\'upload du fichier.'
+        ], 500);
+    }
+
+    $user->update(['profile_image' => $path]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Avatar mis à jour avec succès',
+        'avatar_url' => Storage::url($path)
+    ]);
+}
     /**
      * Get user profile for API
      */

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class ItemController extends Controller
 {
@@ -124,9 +125,17 @@ class ItemController extends Controller
         // Gestion des images
         if ($request->hasFile('images')) {
             $images = [];
+            // S'assurer que le dossier existe
+            if (!Storage::disk('public')->exists('items')) {
+                Storage::disk('public')->makeDirectory('items');
+            }
             foreach ($request->file('images') as $image) {
                 $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 $path = $image->storeAs('items', $filename, 'public');
+                // Vérifier que le fichier a bien été créé
+                if (!Storage::disk('public')->exists($path)) {
+                    throw new \Exception('Erreur lors de l\'upload de l\'image.');
+                }
                 $images[] = $path;
             }
             $item->images = $images;
@@ -234,9 +243,16 @@ class ItemController extends Controller
         // Gestion des nouvelles images
         if ($request->hasFile('images')) {
             $currentImages = $item->images ?? [];
+            // S'assurer que le dossier existe
+            if (!Storage::disk('public')->exists('items')) {
+                Storage::disk('public')->makeDirectory('items');
+            }
             foreach ($request->file('images') as $image) {
                 $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
                 $path = $image->storeAs('items', $filename, 'public');
+                if (!Storage::disk('public')->exists($path)) {
+                    throw new \Exception('Erreur lors de l\'upload de l\'image.');
+                }
                 $currentImages[] = $path;
             }
             $item->images = $currentImages;

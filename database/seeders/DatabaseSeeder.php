@@ -20,11 +20,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        // Ajouter les catégories et marques
+        // Ajouter les catégories, marques et l'admin
         $this->call([
             CategorySeeder::class,
             BrandSeeder::class,
             NotificationSeeder::class,
+            AdminUserSeeder::class,
         ]);
     }
 }

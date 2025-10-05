@@ -10,6 +10,9 @@ use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\PendingWalletController;
+use App\Http\Controllers\ExchangeRateController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
@@ -89,6 +92,11 @@ Route::middleware(['auth'])->group(function () {
     // Routes pour les notifications en temps réel
     Route::get('/notifications', [App\Http\Controllers\MessageController::class, 'getNotifications'])->name('notifications.get');
     Route::post('/notifications/{id}/read', [App\Http\Controllers\MessageController::class, 'markNotificationAsRead'])->name('notifications.read');
+    
+    // Routes pour les réductions
+    Route::post('/discounts/apply', [App\Http\Controllers\MessageController::class, 'applyDiscount'])->name('discounts.apply');
+    Route::get('/discounts/rates', [App\Http\Controllers\MessageController::class, 'getPredefinedDiscountRates'])->name('discounts.rates');
+    Route::get('/discounts/requests', [App\Http\Controllers\MessageController::class, 'getDiscountRequests'])->name('discounts.requests');
 });
 
 // Routes pour le thème
@@ -110,6 +118,116 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])-
 // Routes pour les marques
 Route::resource('brands', App\Http\Controllers\BrandController::class);
 Route::resource('reviews', App\Http\Controllers\ReviewController::class);
+
+// Routes d'administration
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    // Dashboard
+    Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Gestion des utilisateurs (CRUD complet)
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'users'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'userCreate'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'userStore'])->name('store');
+        Route::get('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'userShow'])->name('show');
+        Route::get('/{user}/edit', [App\Http\Controllers\Admin\AdminController::class, 'userEdit'])->name('edit');
+        Route::put('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'userUpdate'])->name('update');
+        Route::delete('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'userDestroy'])->name('destroy');
+        Route::patch('/{user}/status', [App\Http\Controllers\Admin\AdminController::class, 'userUpdateStatus'])->name('update-status');
+        
+        // Routes d'actions spécifiques pour les utilisateurs
+        Route::post('/{user}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'userToggleStatus'])->name('toggle-status');
+        Route::post('/{user}/send-password-reset', [App\Http\Controllers\Admin\AdminController::class, 'userSendPasswordReset'])->name('send-password-reset');
+        Route::post('/{user}/send-welcome', [App\Http\Controllers\Admin\AdminController::class, 'userSendWelcome'])->name('send-welcome');
+        Route::post('/{user}/send-message', [App\Http\Controllers\Admin\AdminController::class, 'userSendMessage'])->name('send-message');
+        Route::get('/{user}/export', [App\Http\Controllers\Admin\AdminController::class, 'userExport'])->name('export');
+    });
+
+    // Gestion des wallets
+    Route::prefix('wallets')->name('wallets.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'wallets'])->name('index');
+        Route::get('/pending', [App\Http\Controllers\Admin\AdminController::class, 'pendingWallets'])->name('pending');
+        Route::get('/{wallet}', [App\Http\Controllers\Admin\AdminController::class, 'walletShow'])->name('show');
+        Route::post('/{wallet}/approve', [App\Http\Controllers\Admin\AdminController::class, 'approveWallet'])->name('approve');
+        Route::post('/{wallet}/reject', [App\Http\Controllers\Admin\AdminController::class, 'rejectWallet'])->name('reject');
+        Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminController::class, 'bulkApproveWallets'])->name('bulk-approve');
+        Route::post('/bulk-reject', [App\Http\Controllers\Admin\AdminController::class, 'bulkRejectWallets'])->name('bulk-reject');
+    });
+
+    // Gestion des transactions
+    Route::prefix('transactions')->name('transactions.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'transactions'])->name('index');
+        Route::get('/{transaction}', [App\Http\Controllers\Admin\AdminController::class, 'transactionShow'])->name('show');
+    });
+
+    // Gestion des commandes
+    Route::prefix('orders')->name('orders.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'orders'])->name('index');
+        Route::get('/{order}', [App\Http\Controllers\Admin\AdminController::class, 'orderShow'])->name('show');
+        Route::patch('/{order}/status', [App\Http\Controllers\Admin\AdminController::class, 'orderUpdateStatus'])->name('update-status');
+    });
+
+    // Gestion des marques (CRUD complet)
+    Route::prefix('brands')->name('brands.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'brands'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'brandCreate'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'brandStore'])->name('store');
+        Route::get('/{brand}', [App\Http\Controllers\Admin\AdminController::class, 'brandShow'])->name('show');
+        Route::get('/{brand}/edit', [App\Http\Controllers\Admin\AdminController::class, 'brandEdit'])->name('edit');
+        Route::put('/{brand}', [App\Http\Controllers\Admin\AdminController::class, 'brandUpdate'])->name('update');
+        Route::delete('/{brand}', [App\Http\Controllers\Admin\AdminController::class, 'brandDestroy'])->name('destroy');
+        Route::patch('/{brand}/status', [App\Http\Controllers\Admin\AdminController::class, 'brandUpdateStatus'])->name('update-status');
+    });
+
+    // Gestion des catégories (CRUD complet)
+    Route::prefix('categories')->name('categories.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'categories'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'categoryCreate'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'categoryStore'])->name('store');
+        Route::get('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryShow'])->name('show');
+        Route::get('/{category}/edit', [App\Http\Controllers\Admin\AdminController::class, 'categoryEdit'])->name('edit');
+        Route::put('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdate'])->name('update');
+        Route::delete('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryDestroy'])->name('destroy');
+        Route::patch('/{category}/status', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdateStatus'])->name('update-status');
+    });
+
+    // Gestion des articles/items (CRUD complet)
+    Route::prefix('items')->name('items.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'items'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'itemCreate'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'itemStore'])->name('store');
+        Route::get('/{item}', [App\Http\Controllers\Admin\AdminController::class, 'itemShow'])->name('show');
+        Route::get('/{item}/edit', [App\Http\Controllers\Admin\AdminController::class, 'itemEdit'])->name('edit');
+        Route::put('/{item}', [App\Http\Controllers\Admin\AdminController::class, 'itemUpdate'])->name('update');
+        Route::delete('/{item}', [App\Http\Controllers\Admin\AdminController::class, 'itemDestroy'])->name('destroy');
+        Route::patch('/{item}/status', [App\Http\Controllers\Admin\AdminController::class, 'itemUpdateStatus'])->name('update-status');
+        Route::patch('/{item}/approve', [App\Http\Controllers\Admin\AdminController::class, 'itemApprove'])->name('approve');
+        Route::patch('/{item}/reject', [App\Http\Controllers\Admin\AdminController::class, 'itemReject'])->name('reject');
+        Route::post('/bulk-action', [App\Http\Controllers\Admin\AdminController::class, 'itemsBulkAction'])->name('bulk-action');
+    });
+
+    // Rapports et statistiques
+    Route::get('/reports', [App\Http\Controllers\Admin\AdminController::class, 'reports'])->name('reports');
+    
+    // Logs système
+    Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
+
+    // Paramètres système
+    Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('index');
+        Route::get('/test', function() { return view('admin.settings.test'); })->name('test');
+        Route::post('/update', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('update');
+        Route::post('/clear-cache', [App\Http\Controllers\Admin\AdminController::class, 'clearSettingsCache'])->name('clear-cache');
+        
+        // Routes pour le mode maintenance
+        Route::post('/maintenance/enable', [App\Http\Controllers\Admin\SettingsController::class, 'enableMaintenance'])->name('maintenance.enable');
+        Route::post('/maintenance/disable', [App\Http\Controllers\Admin\SettingsController::class, 'disableMaintenance'])->name('maintenance.disable');
+        Route::get('/maintenance/status', [App\Http\Controllers\Admin\SettingsController::class, 'maintenanceStatus'])->name('maintenance.status');
+    });
+
+    // API pour notifications
+    Route::get('/notifications', [App\Http\Controllers\Admin\AdminController::class, 'notifications'])->name('notifications');
+});
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
@@ -134,15 +252,60 @@ Route::prefix('cart')->group(function () {
     Route::get('/buy/{id}', [App\Http\Controllers\ItemController::class, 'buy'])->name('cart.buy');
 });
 
-// Routes pour le wallet
-Route::middleware(['auth'])->prefix('wallet')->name('wallet.')->group(function () {
-    Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
-    Route::get('/{wallet}/transactions', [App\Http\Controllers\WalletController::class, 'transactions'])->name('transactions');
-    Route::get('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'addFunds'])->name('add-funds');
-    Route::post('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'storeAddFunds'])->name('store-add-funds');
-    Route::get('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'withdrawFunds'])->name('withdraw-funds');
-    Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
-    Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
+// Routes pour le wallet et les transactions
+Route::middleware(['auth'])->group(function () {
+    // Routes Wallet
+    Route::prefix('wallet')->name('wallet.')->group(function () {
+        Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
+        Route::get('/{wallet}/transactions', [App\Http\Controllers\WalletController::class, 'transactions'])->name('transactions');
+        Route::get('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'addFunds'])->name('add-funds');
+        Route::post('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'storeAddFunds'])->name('store-add-funds');
+        Route::get('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'withdrawFunds'])->name('withdraw-funds');
+        Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
+        Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
+        Route::post('/{wallet}/recharge/mobile', [App\Http\Controllers\WalletController::class, 'rechargeWithMobilePayment'])->name('recharge-mobile');
+    });
+
+    // Routes Transactions
+    Route::prefix('admin/transactions')->name('admin.transactions.')->middleware(['auth', 'admin'])->group(function () {
+        Route::get('/', [TransactionController::class, 'index'])->name('index');
+        Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show');
+        Route::patch('/{transaction}/status', [TransactionController::class, 'updateStatus'])->name('update-status');
+        Route::get('/statistics', [TransactionController::class, 'statistics'])->name('statistics');
+    });
+
+    // Routes Pending Wallet
+    Route::prefix('admin/pending-wallets')->name('admin.pending-wallets.')->middleware(['auth', 'admin'])->group(function () {
+        Route::get('/', [PendingWalletController::class, 'index'])->name('index');
+        Route::get('/{wallet}', [PendingWalletController::class, 'show'])->name('show');
+        Route::post('/{wallet}/confirm-transfer', [PendingWalletController::class, 'confirmTransfer'])->name('confirm-transfer');
+        Route::post('/{wallet}/cancel-transaction', [PendingWalletController::class, 'cancelTransaction'])->name('cancel-transaction');
+    });
+
+    // Routes Taux de change
+    Route::prefix('exchange')->name('exchange.')->group(function () {
+        Route::get('/rate', [ExchangeRateController::class, 'getRate'])->name('rate');
+        Route::post('/convert', [ExchangeRateController::class, 'convert'])->name('convert');
+        Route::get('/history', [ExchangeRateController::class, 'history'])->name('history');
+    });
+
+    // Routes Contact et Réductions
+    Route::prefix('contact')->name('contact.')->group(function () {
+        Route::post('/seller/{item}', [App\Http\Controllers\ContactController::class, 'contactSeller'])->name('seller');
+    });
+
+    Route::prefix('discounts')->name('discounts.')->group(function () {
+        Route::get('/{discount}', [App\Http\Controllers\ContactController::class, 'show'])->name('show');
+        Route::post('/{discount}/approve', [App\Http\Controllers\ContactController::class, 'proposeDiscount'])->name('approve');
+        Route::post('/{discount}/reject', [App\Http\Controllers\ContactController::class, 'rejectDiscount'])->name('reject');
+        Route::post('/{discount}/apply', [App\Http\Controllers\ContactController::class, 'applyDiscount'])->name('apply');
+        Route::get('/item/{item}/available', [App\Http\Controllers\ContactController::class, 'getAvailableDiscounts'])->name('available');
+    });
 });
 
 require __DIR__.'/auth.php';
+
+// Routes temporaires pour tester le mode maintenance (à supprimer en production)
+if (app()->environment(['local', 'testing'])) {
+    require __DIR__.'/test-maintenance.php';
+}

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -103,6 +104,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation avec les réductions demandées (en tant qu'acheteur)
+     */
+    public function requestedDiscounts()
+    {
+        return $this->hasMany(Discount::class, 'user_id');
+    }
+
+    /**
+     * Relation avec les réductions proposées (en tant que vendeur)
+     */
+    public function offeredDiscounts()
+    {
+        return $this->hasMany(Discount::class, 'seller_id');
+    }
+
+    /**
      * Relation avec les avis donnés
      */
     public function reviewsGiven()
@@ -134,6 +151,9 @@ class User extends Authenticatable
         return $this->hasMany(Payment::class, 'seller_id');
     }
 
+     
+
+
     /**
      * Relation avec les articles favoris
      */
@@ -164,6 +184,68 @@ class User extends Authenticatable
     public function cdfWallet()
     {
         return $this->wallets()->where('currency', 'CDF')->first();
+    }
+
+    /**
+     * Relation avec le wallet principal
+     */
+    public function mainWallet()
+    {
+        return $this->hasOne(Wallet::class)->where('type', 'main');
+    }
+
+    /**
+     * Relation avec le wallet en attente
+     */
+    public function pendingWallet()
+    {
+        return $this->hasOne(Wallet::class)->where('type', 'pending');
+    }
+
+    /**
+     * Relations avec les transactions
+     */
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Récupère le solde total de l'utilisateur
+     */
+    public function getTotalBalance($currency = 'USD')
+    {
+        return $this->wallets()
+            ->where('currency', $currency)
+            ->sum('balance');
+    }
+
+    /**
+     * Récupère le solde disponible (main wallet)
+     */
+    public function getAvailableBalance($currency = 'USD')
+    {
+        return $this->mainWallet()
+            ->where('currency', $currency)
+            ->value('balance') ?? 0;
+    }
+
+    /**
+     * Récupère le solde en attente (pending wallet)
+     */
+    public function getPendingBalance($currency = 'USD')
+    {
+        return $this->pendingWallet()
+            ->where('currency', $currency)
+            ->value('balance') ?? 0;
+    }
+
+    /**
+     * Vérifie si l'utilisateur a assez de fonds disponibles
+     */
+    public function hasAvailableFunds($amount, $currency = 'USD')
+    {
+        return $this->getAvailableBalance($currency) >= $amount;
     }
 
     /**
@@ -261,5 +343,53 @@ class User extends Authenticatable
     public function isOnline(): bool
     {
         return $this->last_seen && $this->last_seen->gt(now()->subMinutes(2));
+    }
+
+    /**
+     * Les rôles de l'utilisateur.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    /**
+     * Vérifie si l'utilisateur a un rôle spécifique.
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->roles()->where('slug', $role)->exists();
+    }
+
+    /**
+     * Vérifie si l'utilisateur a l'un des rôles donnés.
+     */
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->roles()->whereIn('slug', $roles)->exists();
+    }
+
+    /**
+     * Vérifie si l'utilisateur a tous les rôles donnés.
+     */
+    public function hasAllRoles(array $roles): bool
+    {
+        return $this->roles()->whereIn('slug', $roles)->count() === count($roles);
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un admin.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un utilisateur standard.
+     */
+    public function isUser(): bool
+    {
+        return $this->hasRole('user');
     }
 }

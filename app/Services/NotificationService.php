@@ -89,6 +89,37 @@ class NotificationService
     }
 
     /**
+     * Créer une notification pour une réduction appliquée
+     */
+    public function createDiscountNotification($sellerId, $buyerId, $itemName, $discountPercentage, $finalPriceWithCurrency)
+    {
+        try {
+            $seller = User::find($sellerId);
+            
+            Notification::create([
+                'user_id' => $buyerId,
+                'type' => 'discount_applied',
+                'title' => 'Réduction accordée !',
+                'message' => $seller->name . ' vous accorde une réduction de ' . $discountPercentage . '% sur "' . $itemName . '" - Nouveau prix: ' . $finalPriceWithCurrency,
+                'data' => [
+                    'seller_id' => $sellerId,
+                    'seller_name' => $seller->name,
+                    'item_name' => $itemName,
+                    'discount_percentage' => $discountPercentage,
+                    'final_price' => $finalPriceWithCurrency,
+                    'url' => '/messages/' . $sellerId,
+                ],
+                'url' => '/messages/' . $sellerId,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création de la notification de réduction: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Marquer une notification comme lue
      */
     public function markAsRead($notificationId, $userId)

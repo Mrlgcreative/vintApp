@@ -77,9 +77,7 @@
                             </button>
                         </div>
                     </form>
-                    <a href="{{ route('cart.buy', $item->id) }}" class="btn btn-primary btn-lg ms-2">
-                        <i class="fas fa-bolt me-1"></i> Acheter maintenant
-                    </a>
+                   
                 </div>
                 <div class="mb-4">
                     <h5>Description</h5>
@@ -110,10 +108,38 @@
                         </div>
                     </div>
                 </div>
+                <!-- Réductions disponibles -->
+                @auth
+                    @if(Auth::id() !== $item->user_id)
+                        <div id="discountSection" class="mb-3" style="display: none;">
+                            <div class="alert alert-success">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-tag me-2"></i>
+                                    Réduction disponible !
+                                </h6>
+                                <div id="discountInfo"></div>
+                                <button class="btn btn-sm btn-success mt-2" onclick="applyDiscount()">
+                                    Appliquer la réduction
+                                </button>
+                            </div>
+                        </div>
+                    @endif
+                @endauth
+
                 <div class="d-grid gap-2">
                     @auth
                         @if(Auth::id() !== $item->user_id)
-                            <button class="btn btn-outline-primary btn-lg" onclick="contactSeller()">
+                            <!-- Bouton de contact avec demande de réduction -->
+                            <form id="contactForm" method="POST" action="{{ route('contact.seller', $item) }}">
+                                @csrf
+                                <button type="button" class="btn btn-outline-primary btn-lg mb-2" data-bs-toggle="modal" data-bs-target="#contactModal">
+                                    <i class="fas fa-percentage me-2"></i>
+                                    Demander une réduction
+                                </button>
+                            </form>
+                            
+                            <!-- Bouton contact simple -->
+                            <button class="btn btn-outline-secondary" onclick="contactSeller()">
                                 <i class="fas fa-envelope me-2"></i>
                                 Contacter le vendeur
                             </button>
@@ -178,6 +204,86 @@
     @endif
 </div>
 
+<!-- Modal de demande de réduction -->
+@auth
+    @if(Auth::id() !== $item->user_id)
+        <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="contactModalLabel">
+                            <i class="fas fa-percentage me-2"></i>
+                            Demander une réduction
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Aperçu du produit -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                @if($item->images && count($item->images) > 0)
+                                    <img src="{{ Storage::url($item->images[0]) }}" 
+                                         class="img-fluid rounded" 
+                                         alt="{{ $item->name }}"
+                                         style="height: 150px; object-fit: cover; width: 100%;">
+                                @endif
+                            </div>
+                            <div class="col-md-8">
+                                <h6 class="fw-bold">{{ $item->name }}</h6>
+                                <p class="text-muted small">{{ Str::limit($item->description, 100) }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary fw-bold fs-5">{{ $item->formatted_price }}</span>
+                                    <span class="badge bg-info">{{ $item->category->name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message personnalisé -->
+                        <div class="mb-3">
+                            <label for="customMessage" class="form-label">
+                                <i class="fas fa-edit me-2"></i>
+                                Message personnalisé (optionnel)
+                            </label>
+                            <textarea name="custom_message" 
+                                      id="customMessage" 
+                                      class="form-control" 
+                                      rows="4" 
+                                      placeholder="Bonjour, je suis intéressé(e) par votre produit. Serait-il possible d'obtenir une réduction ?"></textarea>
+                            <small class="text-muted">
+                                Un message automatique sera envoyé si vous laissez ce champ vide.
+                            </small>
+                        </div>
+
+                        <!-- Informations sur le processus -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Comment ça marche ?
+                            </h6>
+                            <ul class="mb-0 small">
+                                <li>Votre demande sera envoyée automatiquement au vendeur</li>
+                                <li>Le vendeur pourra vous proposer une réduction</li>
+                                <li>Si acceptée, la réduction sera automatiquement appliquée</li>
+                                <li>Vous recevrez une notification de la réponse</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>
+                            Annuler
+                        </button>
+                        <button type="button" class="btn btn-primary" id="submitDiscountBtn" onclick="submitDiscountRequest()">
+                            <i class="fas fa-paper-plane me-2"></i>
+                            Envoyer maintenant
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+@endauth
+
 
 @push('styles')
 <style>
@@ -188,6 +294,29 @@
     --soft-bg: #f9f9fb;
     --radius: 18px;
     --transition: all 0.3s ease;
+}
+
+/* Animations pour les notifications */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
 }
 
 body {
@@ -339,8 +468,120 @@ if (thumbs.length > 0) {
     });
 }
 function contactSeller() {
-    window.location.href = `/messages?user={{ $item->user_id }}&item={{ $item->id }}`;
+    window.location.href = `/messages/conversation/{{ $item->user_id }}?item={{ $item->id }}`;
 }
+
+// Envoyer une demande de réduction
+function submitDiscountRequest() {
+    const form = document.getElementById('contactForm');
+    const customMessage = document.getElementById('customMessage').value;
+    
+    // Ajouter le message personnalisé au formulaire
+    if (customMessage.trim()) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'custom_message';
+        input.value = customMessage;
+        form.appendChild(input);
+    }
+    
+    // Désactiver le bouton pour éviter les doublons
+    const submitBtn = document.querySelector('#contactModal .btn-primary');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+    
+    // Soumettre le formulaire
+    form.submit();
+}
+
+// Vérifier les réductions disponibles au chargement
+@auth
+    @if(Auth::id() !== $item->user_id)
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAvailableDiscounts();
+        });
+        
+        function checkAvailableDiscounts() {
+            fetch(`/discounts/item/{{ $item->id }}/available`)
+                .then(response => response.json())
+                .then(discounts => {
+                    if (discounts.length > 0) {
+                        const discount = discounts[0]; // Prendre la première réduction disponible
+                        showDiscountSection(discount);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la vérification des réductions:', error);
+                });
+        }
+        
+        function showDiscountSection(discount) {
+            const section = document.getElementById('discountSection');
+            const info = document.getElementById('discountInfo');
+            
+            const savings = discount.original_price - discount.final_price;
+            const formattedSavings = new Intl.NumberFormat('fr-FR').format(savings);
+            const formattedFinalPrice = new Intl.NumberFormat('fr-FR').format(discount.final_price);
+            
+            info.innerHTML = `
+                <strong>Réduction de ${discount.discount_percentage}% disponible !</strong><br>
+                <small class="text-muted">
+                    Prix original: ${new Intl.NumberFormat('fr-FR').format(discount.original_price)} FCFA<br>
+                    Nouveau prix: <span class="text-success fw-bold">${formattedFinalPrice} FCFA</span><br>
+                    Économie: <span class="text-success">${formattedSavings} FCFA</span><br>
+                    Valable jusqu'au ${new Date(discount.expires_at).toLocaleDateString('fr-FR')}
+                </small>
+            `;
+            
+            section.style.display = 'block';
+            
+            // Stocker l'ID de la réduction pour l'application
+            section.dataset.discountId = discount.id;
+        }
+        
+        function applyDiscount() {
+            const section = document.getElementById('discountSection');
+            const discountId = section.dataset.discountId;
+            
+            if (!discountId) return;
+            
+            fetch(`/discounts/${discountId}/apply`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mettre à jour l'affichage du prix
+                    const priceElement = document.querySelector('.alibaba-price');
+                    if (priceElement) {
+                        priceElement.innerHTML = `
+                            <span class="text-decoration-line-through text-muted me-2">{{ $item->formatted_price }}</span>
+                            <span class="text-success">${new Intl.NumberFormat('fr-FR').format(data.final_price)} FCFA</span>
+                        `;
+                    }
+                    
+                    // Masquer la section de réduction
+                    section.style.display = 'none';
+                    
+                    // Afficher un message de succès
+                    showNotification(data.message, 'success');
+                } else {
+                    showNotification(data.error || 'Erreur lors de l\'application de la réduction', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showNotification('Une erreur est survenue', 'danger');
+            });
+        }
+    @endif
+@endauth
 function deleteItem() {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
         fetch(`/items/{{ $item->id }}`, {
@@ -396,6 +637,88 @@ if (favoriteBtn) {
             showNotification('Une erreur est survenue', 'danger');
         });
     });
+}
+
+// Fonction pour afficher les notifications
+function showNotification(message, type = 'info') {
+    // Créer l'élément de notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} alert-dismissible position-fixed`;
+    notification.style.cssText = `
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 300px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        animation: slideInRight 0.3s ease-out;
+    `;
+    
+    notification.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            <span>${message}</span>
+            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-suppression après 5 secondes
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.style.animation = 'slideOutRight 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 5000);
+}
+
+// Fonction pour soumettre la demande de réduction
+function submitDiscountRequest() {
+    const button = document.getElementById('submitDiscountBtn');
+    const originalText = button.innerHTML;
+    
+    // Désactiver le bouton et afficher le chargement
+    button.disabled = true;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+    
+    const customMessage = document.getElementById('customMessage').value;
+    
+    // Créer un formulaire caché pour l'envoi
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{{ route("contact.seller", $item) }}';
+    
+    // Ajouter le token CSRF
+    const csrfToken = document.createElement('input');
+    csrfToken.type = 'hidden';
+    csrfToken.name = '_token';
+    csrfToken.value = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    form.appendChild(csrfToken);
+    
+    // Ajouter le message personnalisé
+    const messageInput = document.createElement('input');
+    messageInput.type = 'hidden';
+    messageInput.name = 'custom_message';
+    messageInput.value = customMessage;
+    form.appendChild(messageInput);
+    
+    // Ajouter le formulaire au DOM et le soumettre
+    document.body.appendChild(form);
+    
+    // Afficher une notification avant la redirection
+    showNotification('Envoi de votre demande en cours...', 'info');
+    
+    // Petit délai pour que l'utilisateur voie le changement
+    setTimeout(() => {
+        form.submit();
+    }, 500);
+}
+
+// Fonction pour contacter directement le vendeur
+function contactSeller() {
+    const sellerId = {{ $item->user_id }};
+    window.location.href = `/messages/${sellerId}?item_id={{ $item->id }}`;
 }
 </script>
 @endsection 

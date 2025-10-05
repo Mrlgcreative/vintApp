@@ -93,6 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Payments routes
     Route::prefix('payments')->group(function () {
+        Route::post('/process', [PaymentController::class, 'processPayment']);
         Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash']);
         Route::post('/orange-money', [PaymentController::class, 'payWithOrangeMoney']);
         Route::post('/airtel-money', [PaymentController::class, 'payWithAirtelMoney']);

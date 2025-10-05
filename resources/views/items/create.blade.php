@@ -47,22 +47,7 @@
                             <!-- Prix -->
                             <div class="col-md-4">
                                 <div class="form-floating mb-3">
-                                    <input type="number" 
-                                           class="form-control @error('price') is-invalid @enderror" 
-                                           id="price" 
-                                           name="price" 
-                                           value="{{ old('price') }}" 
-                                           placeholder="Prix" 
-                                           step="0.01" 
-                                           min="0" 
-                                           required>
-                                    <label for="price">
-                                        <i class="fas fa-euro-sign me-2"></i>
-                                        Prix (€) *
-                                    </label>
-                                    @error('price')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
+                                   
                                 </div>
                             </div>
                         </div>
@@ -112,7 +97,7 @@
                                         <i class="fas fa-folder me-2"></i>
                                         Catégorie *
                                     </label>
-                                    @error('category_id')
+                                    @error('categorie_id')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

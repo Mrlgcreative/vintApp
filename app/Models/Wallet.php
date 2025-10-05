@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Wallet extends Model
 {
@@ -14,6 +15,7 @@ class Wallet extends Model
         'currency',
         'balance',
         'is_active',
+        'type',
     ];
 
     protected $casts = [
@@ -84,5 +86,78 @@ class Wallet extends Model
     public function isCDF()
     {
         return $this->currency === self::CURRENCY_CDF;
+    }
+
+    /**
+     * Vérifie si c'est un wallet principal
+     */
+    public function isMain()
+    {
+        return $this->type === 'main';
+    }
+
+    /**
+     * Vérifie si c'est un wallet en attente
+     */
+    public function isPending()
+    {
+        return $this->type === 'pending';
+    }
+
+    /**
+     * Scope pour les wallets principaux
+     */
+    public function scopeMain($query)
+    {
+        return $query->where('type', 'main');
+    }
+
+    /**
+     * Scope pour les wallets en attente
+     */
+    public function scopePending($query)
+    {
+        return $query->where('type', 'pending');
+    }
+
+    /**
+     * Crédite le wallet du montant spécifié
+     */
+    public function credit($amount)
+    {
+        $newBalance = $this->balance + $amount;
+        $this->update(['balance' => $newBalance]);
+        return $this;
+    }
+
+    /**
+     * Débite le wallet du montant spécifié
+     */
+    public function debit($amount)
+    {
+        if ($this->balance < $amount) {
+            throw new \Exception('Solde insuffisant');
+        }
+        
+        $newBalance = $this->balance - $amount;
+        $this->update(['balance' => $newBalance]);
+        return $this;
+    }
+
+    /**
+     * Transfert un montant vers un autre wallet
+     */
+    public function transferTo(Wallet $destination, $amount)
+    {
+        if ($this->balance < $amount) {
+            throw new \Exception('Solde insuffisant pour le transfert');
+        }
+
+        DB::transaction(function () use ($destination, $amount) {
+            $this->debit($amount);
+            $destination->credit($amount);
+        });
+
+        return true;
     }
 }

@@ -57,6 +57,9 @@ class Message extends Model
     public function getTypeTextAttribute(): string
     {
         return match($this->type) {
+            'text' => 'Texte',
+            'image' => 'Image',
+            'file' => 'Fichier',
             'general' => 'Général',
             'item_inquiry' => 'Demande d\'article',
             'order_related' => 'Commande',
@@ -102,6 +105,14 @@ class Message extends Model
     public function scopeSentBy($query, $userId)
     {
         return $query->where('sender_id', $userId);
+    }
+
+    /**
+     * Relation avec les réductions
+     */
+    public function discount()
+    {
+        return $this->hasOne(Discount::class);
     }
 
     /**

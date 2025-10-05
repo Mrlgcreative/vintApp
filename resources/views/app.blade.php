@@ -7,7 +7,8 @@
         <meta name="description" content="@yield('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité')">
         <meta name="keywords" content="@yield('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique')">
 
-        <title>@yield('title', 'Vintapp')</title>
+        <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,6 +23,9 @@
         <!-- Vinted Violet CSS -->
         <link href="{{ asset('css/vinted-violet.css') }}" rel="stylesheet">
 
+        <!-- Custom Styles -->
+        @stack('styles')
+
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script>
@@ -30,12 +34,53 @@
         </script>
     </head>
     <body class="font-sans antialiased">
+        <!-- Bande violette mobile avec nom de l'app -->
+        <div id="mobile-top-bar" class="d-md-none d-lg-none d-xl-none">
+            <div class="mobile-top-bar-content justify-content-between">
+                <span class="mobile-app-name">{{ $appName ?? 'Vintapp' }}</span>
+                <span class="mobile-notification-link d-flex align-items-center" id="mobile-notification-btn" style="cursor:pointer;">
+                    <i class="fas fa-bell fa-lg text-white"></i>
+                </span>
+            </div>
+            <!-- Dropdown notifications mobile, caché par défaut -->
+            <div id="mobile-notification-dropdown" style="display:none; position:fixed; top:56px; right:12px; left:auto; z-index:2000; min-width:300px; max-width:90vw;">
+                <ul class="dropdown-menu show dropdown-menu-end" style="min-width: 300px; position:static; float:none;">
+                    <li><h6 class="dropdown-header">Notifications</h6></li>
+                    <li><div class="dropdown-item text-center text-muted">Aucune notification</div></li>
+                </ul>
+            </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Affichage du dropdown notifications sur mobile
+    const notifBtn = document.getElementById('mobile-notification-btn');
+    const notifDropdown = document.getElementById('mobile-notification-dropdown');
+    if (notifBtn && notifDropdown) {
+        notifBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(e) {
+            if (!notifDropdown.contains(e.target) && e.target !== notifBtn) {
+                notifDropdown.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
+        </div>
         <!-- Navigation principale -->
-        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:rgb(79, 0, 206);">
+        <nav class="navbar navbar-expand-lg navbar-dark top-navbar" style="background-color:rgb(79, 0, 206);">
             <div class="container">
                 <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-                    <i class="fas fa-store me-2"></i>
-                    Vintapp
+                    <x-app-brand 
+                        :show-logo="true"
+                        :show-name="true"
+                        logo-height="32px"
+                        logo-width="100px"
+                        name-size="1.5rem"
+                        name-class="text-white"
+                        class="d-flex align-items-center"
+                    />
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -82,21 +127,21 @@
                                 <a class="nav-link {{ request()->routeIs('items.my-items') ? 'active' : '' }}" 
                                    href="{{ route('items.my-items') }}">
                                     <i class="fas fa-list me-1"></i>
-                                    Mes articles
+                                    Articles
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" 
                                    href="{{ route('orders.index') }}">
                                     <i class="fas fa-shopping-cart me-1"></i>
-                                    Mes Commandes
+                                    Commandes
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link {{ request()->routeIs('orders.my-sales') ? 'active' : '' }}" 
                                    href="{{ route('orders.my-sales') }}">
                                     <i class="fas fa-store me-1"></i>
-                                    Mes Ventes
+                                    Ventes
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -339,17 +384,23 @@
         @if(!request()->routeIs('messages.*'))
         <footer class="bg-dark text-light py-4 mt-5">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-4">
+                <div class="row footer-row-custom">
+                    <div class="col-md-4 col-6 mb-4">
                         <h5>
-                            <i class="fas fa-store me-2"></i>
-                            Vintapp
+                            <x-app-brand 
+                                :show-logo="true"
+                                :show-name="true"
+                                logo-height="24px"
+                                logo-width="80px"
+                                name-size="1.25rem"
+                                name-class="text-white"
+                            />
                         </h5>
                         <p class="text-muted">
-                            La marketplace de confiance pour acheter et vendre des articles d'occasion.
+                            {{ $appDescription ?? 'La marketplace de confiance pour acheter et vendre des articles d\'occasion.' }}
                         </p>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 col-6 mb-4">
                         <h6>Navigation</h6>
                         <ul class="list-unstyled">
                             <li><a href="{{ route('items.index') }}" class="text-muted text-decoration-none">Articles</a></li>
@@ -361,7 +412,7 @@
                             @endauth
                         </ul>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 col-6 mb-4">
                         <h6>Support</h6>
                         <ul class="list-unstyled">
                             <li><a href="#" class="text-muted text-decoration-none">Aide</a></li>
@@ -369,7 +420,7 @@
                             <li><a href="#" class="text-muted text-decoration-none">FAQ</a></li>
                         </ul>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 col-6 mb-4">
                         <h6>Légal</h6>
                         <ul class="list-unstyled">
                             <li><a href="#" class="text-muted text-decoration-none">CGU</a></li>
@@ -377,7 +428,7 @@
                             <li><a href="#" class="text-muted text-decoration-none">Cookies</a></li>
                         </ul>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-2 col-6 mb-4">
                         <h6>Suivez-nous</h6>
                         <div class="d-flex gap-2">
                             <a href="#" class="text-muted text-decoration-none">
@@ -392,11 +443,22 @@
                         </div>
                     </div>
                 </div>
+        <style>
+        /* Footer responsive : 2 colonnes sur mobile */
+        @media (max-width: 767.98px) {
+            .footer-row-custom > [class^="col-"],
+            .footer-row-custom > [class*=" col-"] {
+                flex: 0 0 50%;
+                max-width: 50%;
+                margin-bottom: 1.5rem;
+            }
+        }
+        </style>
                 <hr class="my-4">
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <small class="text-muted">
-                            © {{ date('Y') }} {{ config('app.name', 'VintApp') }}. Tous droits réservés.
+                            © {{ date('Y') }} {{ $appName ?? config('app.name', 'VintApp') }}. Tous droits réservés.
                         </small>
                     </div>
                 </div>
@@ -404,8 +466,59 @@
         </footer>
         @endif
 
+        <!-- Barre de navigation mobile (bottom nav) -->
+        <nav id="mobile-bottom-nav" class="d-md-none d-lg-none d-xl-none">
+            <ul class="bottom-nav-list">
+                <li>
+                    <a href="{{ url('/') }}" class="bottom-nav-link {{ request()->is('/') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i>
+                        <span>Accueil</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('items.create') }}" class="bottom-nav-link {{ request()->routeIs('items.create') ? 'active' : '' }}">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Vente</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('items.index') }}" class="bottom-nav-link {{ request()->routeIs('items.*') ? 'active' : '' }}">
+                        <i class="fas fa-box"></i>
+                        <span>Articles</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('wallet.index') }}" class="bottom-nav-link {{ request()->routeIs('wallet.*') ? 'active' : '' }}">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                    </a>
+                </li>
+                <li class="position-relative">
+                    <a href="#" class="bottom-nav-link" id="bottom-nav-settings-btn">
+                        <i class="fas fa-cog"></i>
+                        <span>Paramètres</span>
+                    </a>
+                    <div id="bottom-nav-settings-menu" class="bottom-nav-settings-menu">
+                        <div class="px-3 py-2 text-muted small">Profil & Paramètres</div>
+                        <a href="{{ route('profile.edit') }}"><i class="fas fa-user-cog me-2"></i>Mon profil</a>
+                        <a href="{{ route('items.personalization') }}"><i class="fas fa-cogs me-2"></i>Personnalisation</a>
+                        <a href="#" id="theme-toggle-mobile"><i class="fas fa-adjust me-2"></i>Thème</a>
+                        <hr class="my-1">
+                        <div class="px-3 py-2 text-muted small">Navigation</div>
+                        <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+                        <a href="{{ route('orders.index') }}"><i class="fas fa-shopping-cart me-2"></i>Commandes</a>
+                        <a href="{{ route('brands.index') }}"><i class="fas fa-tags me-2"></i>Marques</a>
+                        <a href="{{ route('messages.index') }}"><i class="fas fa-comments me-2"></i>Messages</a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Custom Scripts -->
+        @stack('scripts')
 
         <!-- Scripts personnalisés -->
         <script>
@@ -484,8 +597,9 @@
                 } else {
                     notifications.forEach(notification => {
                         const item = document.createElement('li');
+                        const notificationUrl = notification.url || '/messages';
                         item.innerHTML = `
-                            <a class="dropdown-item notification-item" href="#" data-notification-id="${notification.id}">
+                            <a class="dropdown-item notification-item" href="${notificationUrl}" data-notification-id="${notification.id}">
                                 <div class="d-flex align-items-start">
                                     <div class="flex-shrink-0">
                                         <i class="fas fa-bell text-primary"></i>
@@ -534,9 +648,20 @@
             // Gestionnaire de clic sur les notifications
             document.addEventListener('click', function(e) {
                 if (e.target.closest('.notification-item')) {
-                    e.preventDefault();
-                    const notificationId = e.target.closest('.notification-item').getAttribute('data-notification-id');
+                    const notificationItem = e.target.closest('.notification-item');
+                    const notificationId = notificationItem.getAttribute('data-notification-id');
+                    const notificationUrl = notificationItem.getAttribute('href');
+                    
+                    // Marquer comme lue et rediriger
                     markNotificationAsRead(notificationId);
+                    
+                    // Permettre la redirection naturelle si l'URL n'est pas "#"
+                    if (notificationUrl && notificationUrl !== '#') {
+                        // La redirection naturelle du lien se fera
+                        return true;
+                    } else {
+                        e.preventDefault();
+                    }
                 }
             });
 
@@ -694,7 +819,165 @@
         </script>
 
         <style>
-        /* Styles Vinted Violet personnalisés */
+        /* Bande violette mobile en haut */
+        #mobile-top-bar {
+            display: flex;
+            align-items: center;
+            background: rgb(79, 0, 206);
+            height: 48px;
+            width: 100vw;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1100;
+            box-shadow: 0 2px 8px rgba(79,0,206,0.07);
+        }
+        .mobile-top-bar-content {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 18px;
+            padding-right: 12px;
+        }
+        .mobile-profile-link {
+            text-decoration: none;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .mobile-profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #eee;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        /* .mobile-profile-name { display: none; } */
+        .mobile-app-name {
+            color: #fff;
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        @media (min-width: 768px) {
+            #mobile-top-bar {
+                display: none !important;
+            }
+        }
+        /* Décale le contenu principal vers le bas sur mobile pour ne pas être caché par la top bar */
+        @media (max-width: 767.98px) {
+            main.min-vh-100 {
+                padding-top: 56px;
+            }
+        }
+        /* Masquer la navbar du haut sur mobile */
+        @media (max-width: 767.98px) {
+            .top-navbar {
+                display: none !important;
+            }
+        }
+
+        /* Barre de navigation mobile (bottom nav) */
+        #mobile-bottom-nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1050;
+            background: #fff;
+            border-top: 1px solid #e5e5e5;
+            box-shadow: 0 -2px 16px rgba(79,0,206,0.07);
+            padding: 0;
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        .bottom-nav-list {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            height: 100%;
+        }
+        .bottom-nav-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            height: 100%;
+            width: 64px;
+            transition: color 0.2s;
+            position: relative;
+        }
+        .bottom-nav-link i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+        .mobile-profile-initials {
+            color: #fff;
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-left: 2px;
+            letter-spacing: 0.5px;
+        }
+        .bottom-nav-link.active,
+        .bottom-nav-link:active,
+        .bottom-nav-link:focus {
+            color: rgb(79, 0, 206);
+        }
+        .bottom-nav-link.active i {
+            color: rgb(79, 0, 206);
+        }
+        .bottom-nav-link span {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        .bottom-nav-settings-menu {
+            display: none;
+            position: absolute;
+            bottom: 56px;
+            right: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(79,0,206,0.10);
+            min-width: 180px;
+            padding: 0.5rem 0;
+            border: 1px solid #eee;
+        }
+        .bottom-nav-settings-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            transition: background 0.15s;
+        }
+        .bottom-nav-settings-menu a:hover {
+            background: #f3f0fa;
+            color: rgb(79, 0, 206);
+        }
+        @media (min-width: 768px) {
+            #mobile-bottom-nav {
+                display: none !important;
+            }
+        }
+
+         /* Styles Vinted Violet personnalisés */
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: 700;
@@ -1223,42 +1506,26 @@
             }
         }
         </style>
-        <div id="bot-widget" style="position:fixed;bottom:24px;right:24px;z-index:9999;">
-  <button id="open-bot" class="btn btn-primary rounded-circle" style="width:56px;height:56px;">
-    <i class="fas fa-robot"></i>
-  </button>
-  <div id="bot-chat" style="display:none;width:320px;height:420px;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(0,0,0,0.15);padding:16px;">
-    <div id="bot-messages" style="height:320px;overflow-y:auto;margin-bottom:12px;"></div>
-    <form id="bot-form">
-      <input type="text" id="bot-input" class="form-control mb-2" placeholder="Pose ta question..." autocomplete="off" required>
-      <button class="btn btn-primary w-100" type="submit">Envoyer</button>
-    </form>
-  </div>
-</div>
-<script>
-document.getElementById('open-bot').onclick = function() {
-  const chat = document.getElementById('bot-chat');
-  chat.style.display = chat.style.display === 'none' ? 'block' : 'none';
-};
-document.getElementById('bot-form').onsubmit = function(e) {
-  e.preventDefault();
-  const input = document.getElementById('bot-input');
-  const msg = input.value;
-  if (!msg) return;
-  const messages = document.getElementById('bot-messages');
-  messages.innerHTML += `<div class='mb-2'><b>Vous :</b> ${msg}</div>`;
-  input.value = '';
-  fetch('/api/bot', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json','X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')},
-    body: JSON.stringify({question: msg})
-  })
-  .then(res => res.json())
-  .then(data => {
-    messages.innerHTML += `<div class='mb-2'><b>Bot :</b> ${data.answer}</div>`;
-    messages.scrollTop = messages.scrollHeight;
-  });
-};
-</script>
+
+        <script>
+        // Gestion du menu Paramètres dans la bottom nav
+        document.addEventListener('DOMContentLoaded', function() {
+            const settingsBtn = document.getElementById('bottom-nav-settings-btn');
+            const settingsMenu = document.getElementById('bottom-nav-settings-menu');
+            if(settingsBtn && settingsMenu) {
+                settingsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
+                });
+                document.addEventListener('click', function(e) {
+                    if (!settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
+                        settingsMenu.style.display = 'none';
+                    }
+                });
+            }
+        });
+        </script>
+       
+        </style>
     </body>
 </html>

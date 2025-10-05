@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use App\Models\User;
+use App\Models\Discount;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -19,49 +21,69 @@ class MessageController extends Controller
     }
 
     /**
-     * Afficher la page principale de messagerie
+     * Afficher la page principale de messagerie avec les vendeurs contactés
      */
     public function index()
     {
         $user = Auth::user();
         
-        // Récupérer toutes les conversations de l'utilisateur
-        $conversations = $this->getConversations($user);
+        // Récupérer les vendeurs contactés et les conversations reçues
+        $vendorContacts = $this->getVendorContacts($user);
+        $receivedConversations = $this->getReceivedConversations($user);
         
-        // Récupérer tous les utilisateurs pour le modal de nouveau message
-        $users = User::where('id', '!=', $user->id)->get();
+        // Fusionner les deux collections en évitant les doublons
+        $allContacts = $vendorContacts->merge($receivedConversations)->unique(function($contact) {
+            return $contact->vendor_id . '-' . ($contact->item_id ?? 'general');
+        })->sortByDesc('last_message.created_at');
         
-        return view('messages.index', compact('conversations', 'users'));
+        return view('messages.index', [
+            'vendorContacts' => $allContacts
+        ]);
     }
 
     /**
      * Afficher une conversation spécifique
      */
-    public function show($conversationId): JsonResponse
+    public function show(Request $request, $user)
     {
-        $user = Auth::user();
+        $currentUser = Auth::user();
+        
+        // Le paramètre peut être soit l'ID d'un utilisateur, soit directement l'instance User
+        $conversationId = is_object($user) ? $user->id : $user;
         
         // Vérifier que l'utilisateur fait partie de la conversation
-        $messages = Message::where(function($query) use ($user, $conversationId) {
-            $query->where('sender_id', $user->id)
+        $messages = Message::where(function($query) use ($currentUser, $conversationId) {
+            $query->where('sender_id', $currentUser->id)
                   ->where('receiver_id', $conversationId);
-        })->orWhere(function($query) use ($user, $conversationId) {
+        })->orWhere(function($query) use ($currentUser, $conversationId) {
             $query->where('sender_id', $conversationId)
-                  ->where('receiver_id', $user->id);
+                  ->where('receiver_id', $currentUser->id);
         })->orderBy('created_at', 'asc')->get();
         
         // Marquer les messages comme lus
-        $messages->where('receiver_id', $user->id)->each(function($message) {
+        $messages->where('receiver_id', $currentUser->id)->each(function($message) {
             $message->update(['read_at' => now(), 'is_read' => true]);
         });
         
         // Récupérer les informations de l'autre utilisateur
-        $otherUser = User::find($conversationId);
+        $otherUser = is_object($user) ? $user : User::find($conversationId);
         
-        return response()->json([
-            'messages' => $messages,
-            'user' => $otherUser
-        ]);
+        // Si c'est une requête AJAX/JSON, retourner JSON
+        if ($request->expectsJson()) {
+            return response()->json([
+                'messages' => $messages,
+                'user' => $otherUser
+            ]);
+        }
+        
+        // Sinon, retourner la vue de conversation
+        $itemId = $request->get('item_id'); // Pour récupérer l'ID du produit si fourni
+        $item = null;
+        if ($itemId) {
+            $item = \App\Models\Item::find($itemId);
+        }
+        
+        return view('messages.show', compact('messages', 'otherUser', 'item'));
     }
 
     /**
@@ -169,6 +191,279 @@ class MessageController extends Controller
     {
         $this->notificationService->markAsRead($id, Auth::id());
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * Appliquer une réduction prédéfinie sur un produit
+     */
+    public function applyDiscount(Request $request)
+    {
+        try {
+            Log::info('applyDiscount called', $request->all());
+            
+            $request->validate([
+                'item_id' => 'required|exists:items,id',
+                'buyer_id' => 'required|exists:users,id',
+                'discount_percentage' => 'required|numeric|min:1|max:50',
+                'message_id' => 'nullable|exists:messages,id',
+                'expires_hours' => 'nullable|integer|min:1|max:168' // Max 7 jours
+            ]);
+
+            $seller = Auth::user();
+            $item = \App\Models\Item::findOrFail($request->item_id);
+
+        // Vérifier que le vendeur est bien le propriétaire de l'article
+        if ($item->user_id !== $seller->id) {
+            return response()->json(['success' => false, 'error' => 'Vous n\'êtes pas le propriétaire de cet article.'], 403);
+        }
+
+        // Vérifier s'il n'y a pas déjà une réduction active pour ce client sur cet article
+        $existingDiscount = \App\Models\Discount::where('item_id', $request->item_id)
+                                               ->where('user_id', $request->buyer_id)
+                                               ->where('status', 'approved')
+                                               ->where('expires_at', '>', now())
+                                               ->first();
+
+        if ($existingDiscount) {
+            return response()->json(['success' => false, 'error' => 'Une réduction est déjà active pour ce client sur cet article.'], 409);
+        }
+
+        // Calculer les montants
+        $originalPrice = $item->price;
+        $discountAmount = ($originalPrice * $request->discount_percentage) / 100;
+        $finalPrice = $originalPrice - $discountAmount;
+
+        // Créer la réduction
+        $discount = \App\Models\Discount::create([
+            'item_id' => $request->item_id,
+            'user_id' => $request->buyer_id,
+            'seller_id' => $seller->id,
+            'message_id' => $request->message_id,
+            'original_price' => $originalPrice,
+            'discount_percentage' => $request->discount_percentage,
+            'discount_amount' => $discountAmount,
+            'final_price' => $finalPrice,
+            'status' => 'approved',
+            'expires_at' => now()->addHours($request->expires_hours ?? 24),
+            'reason' => 'Réduction appliquée par le vendeur'
+        ]);
+
+        // Envoyer un message automatique au client
+        $currencySymbol = $item->currency_symbol;
+        $discountMessage = "🎉 Bonne nouvelle ! Le vendeur vous propose une réduction de {$request->discount_percentage}% sur l'article \"{$item->name}\".\n\n";
+        $discountMessage .= "Prix original: {$currencySymbol} {$originalPrice}\n";
+        $discountMessage .= "Prix avec réduction: {$currencySymbol} {$finalPrice}\n";
+        $discountMessage .= "Cette offre expire le " . $discount->expires_at->format('d/m/Y à H:i') . ".\n\n";
+        $discountMessage .= "Commandez vite pour profiter de cette offre !";
+
+        Message::create([
+            'sender_id' => $seller->id,
+            'receiver_id' => $request->buyer_id,
+            'content' => $discountMessage,
+            'subject' => 'Réduction appliquée',
+            'item_id' => $request->item_id
+        ]);
+
+        // Créer une notification pour l'acheteur
+        $this->notificationService->createDiscountNotification(
+            $seller->id,
+            $request->buyer_id,
+            $item->name,
+            $request->discount_percentage,
+            $item->currency_symbol . ' ' . $finalPrice
+        );
+
+        return response()->json([
+            'success' => true,
+            'discount' => $discount,
+            'message' => 'Réduction appliquée avec succès !'
+        ]);
+        
+        } catch (\Exception $e) {
+            Log::error('Erreur dans applyDiscount: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'error' => 'Une erreur est survenue: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Récupérer les taux de réduction prédéfinis
+     */
+    public function getPredefinedDiscountRates(): JsonResponse
+    {
+        $rates = [
+            ['value' => 5, 'label' => '5%', 'description' => 'Petite réduction'],
+            ['value' => 10, 'label' => '10%', 'description' => 'Réduction standard'],
+            ['value' => 15, 'label' => '15%', 'description' => 'Bonne réduction'],
+            ['value' => 20, 'label' => '20%', 'description' => 'Réduction attractive'],
+            ['value' => 25, 'label' => '25%', 'description' => 'Réduction importante'],
+            ['value' => 30, 'label' => '30%', 'description' => 'Grande réduction'],
+        ];
+
+        return response()->json(['rates' => $rates]);
+    }
+
+    /**
+     * Récupérer les demandes de réduction pour un vendeur
+     */
+    public function getDiscountRequests(): JsonResponse
+    {
+        $seller = Auth::user();
+        
+        // Récupérer les messages avec subject "Demande de réduction" reçus par le vendeur
+        $discountRequests = Message::where('receiver_id', $seller->id)
+                                  ->where('subject', 'like', '%réduction%')
+                                  ->whereNotNull('item_id')
+                                  ->with(['sender', 'item'])
+                                  ->orderBy('created_at', 'desc')
+                                  ->get();
+
+        // Ajouter les informations de réduction existante si applicable
+        foreach ($discountRequests as $request) {
+            $existingDiscount = \App\Models\Discount::where('item_id', $request->item_id)
+                                                   ->where('user_id', $request->sender_id)
+                                                   ->where('seller_id', $seller->id)
+                                                   ->latest()
+                                                   ->first();
+            
+            $request->existing_discount = $existingDiscount;
+            $request->has_active_discount = $existingDiscount && $existingDiscount->isValid();
+        }
+
+        return response()->json([
+            'requests' => $discountRequests,
+            'predefined_rates' => $this->getPredefinedDiscountRates()->getData()->rates
+        ]);
+    }
+
+    /**
+     * Récupérer les vendeurs contactés par l'utilisateur avec contexte produit
+     */
+    private function getVendorContacts($user)
+    {
+        // Récupérer les messages envoyés par l'utilisateur avec un subject (demandes de réduction)
+        $contactMessages = Message::where('sender_id', $user->id)
+            ->whereNotNull('subject')
+            ->whereNotNull('item_id')
+            ->with(['receiver', 'item'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $vendorContacts = collect();
+
+        foreach ($contactMessages as $message) {
+            // Éviter les doublons de vendeur-produit
+            $existingContact = $vendorContacts->first(function($contact) use ($message) {
+                return $contact->vendor_id === $message->receiver_id && 
+                       $contact->item_id === $message->item_id;
+            });
+
+            if (!$existingContact) {
+                // Récupérer le dernier message de la conversation avec ce vendeur
+                $lastMessage = Message::where(function($query) use ($user, $message) {
+                    $query->where('sender_id', $user->id)
+                          ->where('receiver_id', $message->receiver_id);
+                })->orWhere(function($query) use ($user, $message) {
+                    $query->where('sender_id', $message->receiver_id)
+                          ->where('receiver_id', $user->id);
+                })->orderBy('created_at', 'desc')->first();
+
+                // Compter les messages non lus de ce vendeur
+                $unreadCount = Message::where('sender_id', $message->receiver_id)
+                                     ->where('receiver_id', $user->id)
+                                     ->where('is_read', false)
+                                     ->count();
+
+                // Vérifier s'il y a une réduction active pour ce produit
+                $hasDiscount = \App\Models\Discount::forUser($user->id)
+                                                  ->where('item_id', $message->item_id)
+                                                  ->valid()
+                                                  ->exists();
+
+                $vendorContacts->push((object) [
+                    'vendor_id' => $message->receiver_id,
+                    'vendor' => $message->receiver,
+                    'item_id' => $message->item_id,
+                    'item' => $message->item,
+                    'initial_message' => $message,
+                    'last_message' => $lastMessage,
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : null,
+                    'unread_count' => $unreadCount,
+                    'has_discount' => $hasDiscount,
+                    'contact_date' => $message->created_at
+                ]);
+            }
+        }
+
+        return $vendorContacts->sortByDesc('last_message.created_at');
+    }
+
+    /**
+     * Récupérer les conversations reçues par l'utilisateur (quand il est vendeur)
+     */
+    private function getReceivedConversations($user)
+    {
+        // Récupérer les messages reçus par l'utilisateur avec un subject et item_id
+        $receivedMessages = Message::where('receiver_id', $user->id)
+            ->whereNotNull('subject')
+            ->whereNotNull('item_id')
+            ->with(['sender', 'item'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $receivedContacts = collect();
+
+        foreach ($receivedMessages as $message) {
+            // Éviter les doublons de client-produit
+            $existingContact = $receivedContacts->first(function($contact) use ($message) {
+                return $contact->vendor_id === $message->sender_id && 
+                       $contact->item_id === $message->item_id;
+            });
+
+            if (!$existingContact) {
+                // Récupérer le dernier message de la conversation avec ce client
+                $lastMessage = Message::where(function($query) use ($user, $message) {
+                    $query->where('sender_id', $user->id)
+                          ->where('receiver_id', $message->sender_id);
+                })->orWhere(function($query) use ($user, $message) {
+                    $query->where('sender_id', $message->sender_id)
+                          ->where('receiver_id', $user->id);
+                })->orderBy('created_at', 'desc')->first();
+
+                // Compter les messages non lus de ce client
+                $unreadCount = Message::where('sender_id', $message->sender_id)
+                                     ->where('receiver_id', $user->id)
+                                     ->where('is_read', false)
+                                     ->count();
+
+                // Vérifier s'il y a une réduction active pour ce produit
+                $hasDiscount = \App\Models\Discount::forUser($message->sender_id)
+                                                  ->where('item_id', $message->item_id)
+                                                  ->valid()
+                                                  ->exists();
+
+                $receivedContacts->push((object) [
+                    'vendor_id' => $message->sender_id, // Dans ce cas, c'est le client qui nous a contacté
+                    'vendor' => $message->sender, // Le client qui nous a contacté
+                    'item_id' => $message->item_id,
+                    'item' => $message->item,
+                    'initial_message' => $message,
+                    'last_message' => $lastMessage,
+                    'last_message_time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : null,
+                    'unread_count' => $unreadCount,
+                    'has_discount' => $hasDiscount,
+                    'contact_date' => $message->created_at
+                ]);
+            }
+        }
+
+        return $receivedContacts->sortByDesc('last_message.created_at');
     }
 
     /**

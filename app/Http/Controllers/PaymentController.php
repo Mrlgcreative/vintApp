@@ -7,9 +7,75 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
 use App\Models\Distribution;
 use App\Services\PaymentService;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
+    /**
+     * Process payment request
+     */
+    public function processPayment(Request $request)
+    {
+        $request->validate([
+            'provider' => 'required|string|in:orange_money,mpesa,airtel_money,africell,illicocash',
+            'amount' => 'required|numeric|min:1',
+            'phone' => 'required|string|min:9|max:9',
+            'purpose' => 'required|string',
+            'buyer_id' => 'required|exists:users,id'
+        ]);
+
+        try {
+            $paymentData = $request->only(['amount', 'phone', 'purpose', 'buyer_id']);
+            
+            // Sélectionner la méthode de paiement appropriée
+            $methodName = 'payWith' . str_replace('_', '', ucfirst($request->provider));
+            if (!method_exists($this->paymentService, $methodName)) {
+                throw new \Exception('Méthode de paiement non supportée');
+            }
+
+            // Créer la transaction initiale
+            $transaction = Transaction::create([
+                'user_id' => $request->buyer_id,
+                'amount' => $request->amount,
+                'provider' => $request->provider,
+                'status' => 'pending',
+                'purpose' => $request->purpose,
+                'phone_number' => $request->phone
+            ]);
+
+            // Appeler le service de paiement
+            $result = $this->paymentService->{$methodName}($paymentData);
+
+            if ($result['status'] === 'pending') {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => $result['message'],
+                    'transaction_id' => $transaction->id
+                ]);
+            }
+
+            // En cas d'erreur
+            $transaction->update(['status' => 'failed']);
+            return response()->json([
+                'status' => 'error',
+                'message' => $result['message'] ?? 'Une erreur est survenue lors du traitement du paiement'
+            ], 400);
+
+        } catch (\Exception $e) {
+            Log::error('Payment error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Une erreur est survenue lors du traitement du paiement'
+            ], 500);
+        }
+    }
     // Paiement Illicocash
     public function payWithIllicocash(Request $request)
     {

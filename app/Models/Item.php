@@ -37,7 +37,7 @@ class Item extends Model
     public function getFormattedPriceAttribute()
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
-        return $symbol . ' ' . number_format($this->price, 2);
+        return $symbol . ' ' . number_format((float) $this->price, 2);
     }
 
     /**
@@ -74,6 +74,22 @@ class Item extends Model
     }
 
     /**
+     * Relation avec les utilisateurs qui ont mis l'article en favori
+     */
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites', 'item_id', 'user_id');
+    }
+
+    /**
+     * Alias pour la relation favoritedBy (pour compatibilité)
+     */
+    public function favorites()
+    {
+        return $this->favoritedBy();
+    }
+
+    /**
      * Accesseur pour s'assurer que specifications est toujours un tableau
      */
     public function getSpecificationsAttribute($value)
@@ -93,5 +109,21 @@ class Item extends Model
             return json_decode($value, true) ?: [];
         }
         return is_array($value) ? $value : [];
+    }
+
+    /**
+     * Relation avec les réductions
+     */
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
+    }
+
+    /**
+     * Relation avec les messages liés à cet item
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
     }
 }

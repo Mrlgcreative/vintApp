@@ -1,3 +1,26 @@
+</style>
+<!-- Toast notification Bootstrap -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11000">
+    <div id="mainToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="mainToastBody">
+                Notification
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+<script>
+function showNotification(message, type = 'primary') {
+        var toastEl = document.getElementById('mainToast');
+        var toastBody = document.getElementById('mainToastBody');
+        if (!toastEl || !toastBody) return;
+        toastBody.textContent = message;
+        toastEl.className = 'toast align-items-center text-bg-' + type + ' border-0';
+        var toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+        toast.show();
+}
+</script>
 @extends('app')
 
 @section('content')
@@ -19,16 +42,16 @@
                         </p>
                         <div class="d-flex gap-3">
                             @auth
-                                <a href="{{ route('items.create') }}" class="btn btn-light btn-lg">
-                                    <i class="fas fa-plus me-2"></i>Vendre un article
+                                <a href="{{ route('items.create') }}" class="btn btn-light btn-sm banner-action-btn">
+                                    <i class="fas fa-plus me-1"></i>Vendre
                                 </a>
                             @else
-                                <a href="{{ route('register') }}" class="btn btn-light btn-lg">
-                                    <i class="fas fa-user-plus me-2"></i>Commencer
+                                <a href="{{ route('register') }}" class="btn btn-light btn-sm banner-action-btn">
+                                    <i class="fas fa-user-plus me-1"></i>Commencer
                                 </a>
                             @endauth
-                            <a href="{{ route('items.index') }}" class="btn btn-outline-light btn-lg">
-                                <i class="fas fa-search me-2"></i>Parcourir
+                            <a href="{{ route('items.index') }}" class="btn btn-outline-light btn-sm banner-action-btn">
+                                <i class="fas fa-search me-1"></i>Parcourir
                             </a>
                         </div>
                     </div>
@@ -80,8 +103,11 @@
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <div class="article-card">
                         <div class="article-image">
-                            @if($item->images && count($item->images) > 0)
-                                <img src="{{ Storage::url($item->images[0]) }}" alt="{{ $item->name }}" class="img-fluid">
+                            @php
+                                $imgPath = ($item->images && count($item->images) > 0) ? $item->images[0] : null;
+                            @endphp
+                            @if($imgPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($imgPath))
+                                <img src="{{ Storage::url($imgPath) }}" alt="{{ $item->name }}" class="img-fluid">
                             @else
                                 <div class="no-image">
                                     <i class="fas fa-image fa-2x text-muted"></i>
@@ -127,6 +153,51 @@
 </div>
 
 <style>
+.banner-action-btn {
+    font-size: 0.98rem;
+    padding: 0.45rem 1.1rem 0.4rem 1.1rem;
+    border-radius: 22px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.banner-action-btn.btn-light {
+    background: #fff;
+    color: #4f00ce;
+    border: 1.5px solid #e5e5e5;
+}
+.banner-action-btn.btn-light:hover, .banner-action-btn.btn-light:focus {
+    background: #f3f0fa;
+    color: #4f00ce;
+    border-color: #bba6f7;
+}
+.banner-action-btn.btn-outline-light {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid #fff;
+}
+.banner-action-btn.btn-outline-light:hover, .banner-action-btn.btn-outline-light:focus {
+    background: #4f00ce;
+    color: #fff;
+    border-color: #4f00ce;
+}
+.banner-action-btn i {
+    font-size: 1rem;
+    margin-right: 0.3em !important;
+}
+.banner-action-btn:active, .banner-action-btn:focus {
+    box-shadow: 0 4px 16px rgba(79,0,206,0.10);
+}
+@media (max-width: 768px) {
+    .banner-action-btn {
+        font-size: 0.89rem;
+        padding: 0.35rem 0.8rem 0.32rem 0.8rem;
+        border-radius: 18px;
+    }
+    .d-flex.gap-3 {
+        gap: 0.7rem !important;
+    }
+}
 .home-container {
     min-height: 100vh;
 }
@@ -154,6 +225,7 @@
 .category-card {
     background: white;
     border-radius: 12px;
+    
     padding: 2rem;
     text-align: center;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -167,8 +239,16 @@
     box-shadow: 0 8px 25px rgba(124, 58, 237, 0.15);
 }
 
-.category-icon {
-    margin-bottom: 1rem;
+.fas fa {
+    align-items:center;
+    margin-bottom:1.2rem;
+    
+}
+
+
+.row .g-4{
+    width:70px;
+      height:50px;
 }
 
 .category-title {
@@ -275,17 +355,71 @@
     .hero-banner {
         background-attachment: scroll;
     }
-    
     .banner-overlay {
         min-height: 40vh;
     }
-    
     .category-card {
-        padding: 1.5rem;
+        padding: 0.7rem 0.5rem;
+        width: 100%;
+        min-width: 0;
+        max-width: 120px;
+        height: 90px;
+        margin: 0 auto;
     }
-    
+    .category-icon i {
+        font-size: 1.3rem !important;
+    }
+    .category-title {
+        font-size: 11px;
+        margin-bottom: 0.2rem;
+    }
+    .category-count {
+        font-size: 10px;
+    }
+    .col-md-3.col-sm-6 {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 10px;
+    }
+    .articles-section .col-lg-3,
+    .articles-section .col-md-4,
+    .articles-section .col-sm-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 4px;
+        padding-right: 4px;
+        margin-bottom: 10px;
+    }
+    .article-card {
+        border-radius: 10px;
+        min-width: 0;
+        max-width: 100%;
+        height: 170px;
+        padding: 0.5rem 0.5rem 0.2rem 0.5rem;
+    }
     .article-image {
-        height: 150px;
+        height: 70px;
+    }
+    .article-title {
+        font-size: 12px;
+        margin-bottom: 0.2rem;
+    }
+    .article-description {
+        font-size: 10px;
+        margin-bottom: 0.3rem;
+    }
+    .price-tag {
+        font-size: 11px;
+        padding: 0.15rem 0.5rem;
+    }
+    .article-meta {
+        font-size: 10px;
+    }
+    .badge.bg-violet-light {
+        font-size: 9px;
+        padding: 0.15em 0.5em;
     }
 }
 </style>
