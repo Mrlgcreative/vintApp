@@ -28,22 +28,21 @@ function showNotification(message, type = 'primary') {
   
 
     <!-- Banner d'image -->
-    <div class="hero-banner">
+    <div class="hero-banner" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ $heroSettings['image'] }}'); background-size: cover; background-position: center; background-attachment: fixed;">
         <div class="banner-overlay">
             <div class="container">
                 <div class="row align-items-center min-vh-50">
                     <div class="col-lg-6">
                         <h1 class="display-4 fw-bold text-white mb-4">
-                            Découvrez des articles uniques
+                            {{ $heroSettings['title'] }}
                         </h1>
                         <p class="lead text-white mb-4">
-                            La marketplace moderne pour acheter et vendre en toute sécurité. 
-                            Rejoignez notre communauté et trouvez des produits exceptionnels.
+                            {{ $heroSettings['subtitle'] }}
                         </p>
                         <div class="d-flex gap-3">
                             @auth
                                 <a href="{{ route('items.create') }}" class="btn btn-light btn-sm banner-action-btn">
-                                    <i class="fas fa-plus me-1"></i>Vendre
+                                    <i class="fas fa-plus me-1"></i>{{ $heroSettings['button_primary'] }}
                                 </a>
                             @else
                                 <a href="{{ route('register') }}" class="btn btn-light btn-sm banner-action-btn">
@@ -51,7 +50,7 @@ function showNotification(message, type = 'primary') {
                                 </a>
                             @endauth
                             <a href="{{ route('items.index') }}" class="btn btn-outline-light btn-sm banner-action-btn">
-                                <i class="fas fa-search me-1"></i>Parcourir
+                                <i class="fas fa-search me-1"></i>{{ $heroSettings['button_secondary'] }}
                             </a>
                         </div>
                     </div>
@@ -203,11 +202,6 @@ function showNotification(message, type = 'primary') {
 }
 
 .hero-banner {
-    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
-                url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
     position: relative;
 }
 
@@ -353,7 +347,7 @@ function showNotification(message, type = 'primary') {
 /* Responsive */
 @media (max-width: 768px) {
     .hero-banner {
-        background-attachment: scroll;
+        background-attachment: scroll !important;
     }
     .banner-overlay {
         min-height: 40vh;

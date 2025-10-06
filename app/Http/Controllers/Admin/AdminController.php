@@ -11,7 +11,9 @@ use App\Models\Item;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Setting;
+use App\Models\SupportChat;
 use App\Services\SettingService;
+use App\Http\Middleware\MaintenanceMode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -46,6 +48,13 @@ class AdminController extends Controller
             
             'total_items' => Item::count(),
             'active_items' => Item::where('status', 'active')->count(),
+            
+            // Statistiques de support
+            'total_support_chats' => SupportChat::count(),
+            'open_support_chats' => SupportChat::where('status', 'open')->count(),
+            'pending_support_chats' => SupportChat::whereIn('status', ['open', 'in_progress'])->count(),
+            'unassigned_support_chats' => SupportChat::whereNull('admin_id')
+                ->whereIn('status', ['open', 'in_progress'])->count(),
         ];
 
         // Graphiques des derniers 30 jours
@@ -554,7 +563,18 @@ class AdminController extends Controller
      */
     public function settings()
     {
-        return view('admin.settings.index');
+        try {
+            $maintenanceStatus = MaintenanceMode::isEnabled();
+            $settingService = app(\App\Services\SettingService::class);
+            $settings = $settingService->getAllForAdmin()->groupBy('category');
+            $categories = $settingService->getCategories();
+            
+            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories'));
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du chargement des paramètres: ' . $e->getMessage());
+            $maintenanceStatus = false;
+            return view('admin.settings.index', compact('maintenanceStatus'));
+        }
     }
 
     /**
@@ -1443,6 +1463,90 @@ class AdminController extends Controller
             return redirect()->route('admin.users.show', $user)
                 ->with('error', 'Erreur lors de l\'export des données.');
         }
+    }
+
+    // =============================================
+    // MÉTHODES DE GESTION DU MODE MAINTENANCE
+    // =============================================
+
+    /**
+     * Activer le mode maintenance
+     */
+    public function enableMaintenance(Request $request)
+    {
+        try {
+            $request->validate([
+                'message' => 'nullable|string|max:500',
+                'estimated_time' => 'nullable|string|max:100'
+            ]);
+            
+            $message = $request->input('message', 'Nous effectuons actuellement des travaux de maintenance sur le site.');
+            $estimatedTime = $request->input('estimated_time');
+            
+            MaintenanceMode::enable($message, $estimatedTime);
+            
+            Log::info('Mode maintenance activé par l\'admin', [
+                'user_id' => Auth::id(),
+                'message' => $message,
+                'estimated_time' => $estimatedTime
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Mode maintenance activé avec succès'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'activation du mode maintenance', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'activation du mode maintenance'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Désactiver le mode maintenance
+     */
+    public function disableMaintenance()
+    {
+        try {
+            MaintenanceMode::disable();
+            
+            Log::info('Mode maintenance désactivé par l\'admin', [
+                'user_id' => Auth::id()
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Mode maintenance désactivé avec succès'
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la désactivation du mode maintenance', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la désactivation du mode maintenance'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Vérifier le statut du mode maintenance
+     */
+    public function maintenanceStatus()
+    {
+        return response()->json([
+            'enabled' => MaintenanceMode::isEnabled()
+        ]);
     }
 
     // =============================================

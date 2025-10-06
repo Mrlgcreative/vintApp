@@ -186,6 +186,21 @@
                         <span>Catégories</span>
                     </a>
 
+                    <a href="{{ route('admin.support.index') }}" 
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                        <span class="flex-1">Support Client</span>
+                        @php
+                            $unassignedSupport = \App\Models\SupportChat::whereNull('admin_id')
+                                ->whereIn('status', ['open', 'in_progress'])->count();
+                        @endphp
+                        @if($unassignedSupport > 0)
+                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
+                                {{ $unassignedSupport }}
+                            </span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('admin.reports') }}" 
                        class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                         <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>

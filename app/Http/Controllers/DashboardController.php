@@ -34,6 +34,20 @@ class DashboardController extends Controller
         $notifications = $this->getUnreadNotifications($user);
         $salesChart = $this->getSalesChart($user);
         $popularItems = $this->getPopularItems($user);
+        
+        // Ajouter les statistiques de support si les modèles existent
+        if (class_exists(\App\Models\SupportChat::class)) {
+            $supportStats = $this->getSupportStats($user);
+            $stats = array_merge($stats, $supportStats);
+        } else {
+            // Valeurs par défaut si les modèles de support n'existent pas
+            $stats = array_merge($stats, [
+                'total_support_chats' => 0,
+                'open_support_chats' => 0,
+                'pending_support_chats' => 0,
+                'unassigned_support_chats' => 0
+            ]);
+        }
 
         return view('dashboard.index', compact(
             'stats',
@@ -181,6 +195,34 @@ class DashboardController extends Controller
             ->orderBy('views', 'desc')
             ->limit(5)
             ->get();
+    }
+
+    /**
+     * Get support statistics for the user
+     */
+    private function getSupportStats($user)
+    {
+        $supportStats = [
+            'total_support_chats' => 0,
+            'open_support_chats' => 0,
+            'pending_support_chats' => 0,
+            'unassigned_support_chats' => 0
+        ];
+
+        if (class_exists(\App\Models\SupportChat::class)) {
+            $supportModel = \App\Models\SupportChat::class;
+            
+            $supportStats['total_support_chats'] = $supportModel::where('user_id', $user->id)->count();
+            $supportStats['open_support_chats'] = $supportModel::where('user_id', $user->id)
+                ->where('status', 'open')->count();
+            $supportStats['pending_support_chats'] = $supportModel::where('user_id', $user->id)
+                ->whereIn('status', ['in_progress', 'waiting_user'])->count();
+            
+            // Pour un utilisateur normal, "unassigned" n'a pas de sens, on met 0
+            $supportStats['unassigned_support_chats'] = 0;
+        }
+
+        return $supportStats;
     }
 
     /**

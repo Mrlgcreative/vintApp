@@ -68,12 +68,12 @@
                     </div>
                 </div>
                 <div class="mb-4">
-                    <form method="POST" action="{{ route('cart.add', $item->id) }}" class="d-inline-block me-2">
+                    <form method="POST" action="{{ route('cart.add', $item->id) }}" class="d-inline-block me-2" id="addToCartForm">
                         @csrf
-                        <div class="input-group" style="max-width: 140px;">
+                        <div class="input-group" style="max-width: 200px;">
                             <input type="number" name="quantity" value="1" min="1" class="form-control" style="width: 60px;">
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-cart-plus me-1"></i> Ajouter
+                            <button type="submit" class="btn btn-success" id="addToCartBtn">
+                                <i class="fas fa-cart-plus me-1"></i> Ajouter au panier
                             </button>
                         </div>
                     </form>
@@ -523,13 +523,14 @@ function submitDiscountRequest() {
             const savings = discount.original_price - discount.final_price;
             const formattedSavings = new Intl.NumberFormat('fr-FR').format(savings);
             const formattedFinalPrice = new Intl.NumberFormat('fr-FR').format(discount.final_price);
+            const currencySymbol = '{{ $item->currency_symbol }}';
             
             info.innerHTML = `
                 <strong>Réduction de ${discount.discount_percentage}% disponible !</strong><br>
                 <small class="text-muted">
-                    Prix original: ${new Intl.NumberFormat('fr-FR').format(discount.original_price)} FCFA<br>
-                    Nouveau prix: <span class="text-success fw-bold">${formattedFinalPrice} FCFA</span><br>
-                    Économie: <span class="text-success">${formattedSavings} FCFA</span><br>
+                    Prix original: ${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(discount.original_price)}<br>
+                    Nouveau prix: <span class="text-success fw-bold">${currencySymbol} ${formattedFinalPrice}</span><br>
+                    Économie: <span class="text-success">${currencySymbol} ${formattedSavings}</span><br>
                     Valable jusqu'au ${new Date(discount.expires_at).toLocaleDateString('fr-FR')}
                 </small>
             `;
@@ -538,6 +539,9 @@ function submitDiscountRequest() {
             
             // Stocker l'ID de la réduction pour l'application
             section.dataset.discountId = discount.id;
+            
+            // Mettre à jour le bouton d'ajout au panier pour indiquer la réduction
+            updateAddToCartButton(true);
         }
         
         function applyDiscount() {
@@ -560,14 +564,18 @@ function submitDiscountRequest() {
                     // Mettre à jour l'affichage du prix
                     const priceElement = document.querySelector('.alibaba-price');
                     if (priceElement) {
+                        const currencySymbol = '{{ $item->currency_symbol }}';
                         priceElement.innerHTML = `
                             <span class="text-decoration-line-through text-muted me-2">{{ $item->formatted_price }}</span>
-                            <span class="text-success">${new Intl.NumberFormat('fr-FR').format(data.final_price)} FCFA</span>
+                            <span class="text-success">${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(data.final_price)}</span>
                         `;
                     }
                     
                     // Masquer la section de réduction
                     section.style.display = 'none';
+                    
+                    // Mettre à jour le bouton d'ajout au panier
+                    updateAddToCartButton(true);
                     
                     // Afficher un message de succès
                     showNotification(data.message, 'success');
@@ -719,6 +727,16 @@ function submitDiscountRequest() {
 function contactSeller() {
     const sellerId = {{ $item->user_id }};
     window.location.href = `/messages/${sellerId}?item_id={{ $item->id }}`;
+}
+
+// Fonction pour mettre à jour le bouton d'ajout au panier
+function updateAddToCartButton(hasDiscount) {
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    if (addToCartBtn && hasDiscount) {
+        addToCartBtn.innerHTML = '<i class="fas fa-cart-plus me-1"></i> Ajouter avec réduction';
+        addToCartBtn.classList.add('btn-success');
+        addToCartBtn.classList.remove('btn-outline-success');
+    }
 }
 </script>
 @endsection 

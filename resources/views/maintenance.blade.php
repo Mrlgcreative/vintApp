@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ config('app.name', 'Laravel') }} - Maintenance</title>
     
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
     <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+        }
+        
         .maintenance-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .maintenance-card {
@@ -22,10 +33,13 @@
             -webkit-backdrop-filter: blur(16px) saturate(180%);
             background-color: rgba(255, 255, 255, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.125);
+            border-radius: 1rem;
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
         }
         
         .maintenance-icon {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            color: #667eea;
         }
         
         @keyframes pulse {
@@ -36,61 +50,69 @@
                 opacity: .5;
             }
         }
+        
+        .time-badge {
+            background-color: #dbeafe;
+            border: 1px solid #bfdbfe;
+        }
+        
+        .contact-btn {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .contact-btn:hover {
+            background-color: #5568d3;
+            border-color: #5568d3;
+        }
     </style>
 </head>
-<body class="antialiased">
-    <div class="maintenance-bg min-h-screen flex items-center justify-center px-4">
-        <div class="maintenance-card rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center">
-            <div class="maintenance-icon mb-6">
-                <svg class="mx-auto h-20 w-20 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
+<body>
+    <div class="maintenance-bg px-3">
+        <div class="maintenance-card p-4 p-md-5 text-center" style="max-width: 600px; width: 100%;">
+            <div class="maintenance-icon mb-4">
+                <i class="fas fa-cog fa-4x"></i>
             </div>
             
-            <h1 class="text-3xl font-bold text-gray-800 mb-4">
+            <h1 class="h2 fw-bold text-dark mb-4">
                 Site en Maintenance
             </h1>
             
-            <div class="text-gray-600 mb-6 space-y-3">
-                <p class="text-lg">
+            <div class="text-muted mb-4">
+                <p class="fs-5 mb-3">
                     {{ $message ?? 'Nous effectuons actuellement des travaux de maintenance sur le site.' }}
                 </p>
                 
                 @if(isset($estimated_time) && $estimated_time)
-                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <p class="text-blue-800 font-medium">
-                            <svg class="inline-block w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
+                    <div class="time-badge rounded p-3 mb-3">
+                        <p class="text-primary fw-medium mb-0">
+                            <i class="far fa-clock me-2"></i>
                             Temps estimé : {{ $estimated_time }}
                         </p>
                     </div>
                 @endif
                 
-                <p class="text-sm">
+                <p class="small">
                     Nous nous excusons pour la gêne occasionnée et travaillons à rétablir le service dans les plus brefs délais.
                 </p>
             </div>
             
-            <div class="border-t border-gray-200 pt-6">
-                <p class="text-sm text-gray-500 mb-3">
+            <div class="border-top pt-4">
+                <p class="small text-secondary mb-3">
                     Besoin d'aide ? Contactez-nous :
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
                     <a href="mailto:{{ $contact_email ?? 'support@vintapp.com' }}" 
-                       class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
+                       class="btn contact-btn text-white d-inline-flex align-items-center justify-content-center">
+                        <i class="far fa-envelope me-2"></i>
                         Nous contacter
                     </a>
                 </div>
             </div>
             
-            <div class="mt-6 pt-4 border-t border-gray-200">
-                <p class="text-xs text-gray-400">
+            <div class="mt-4 pt-4 border-top">
+                <p class="small text-muted mb-0">
                     © {{ date('Y') }} {{ config('app.name', 'VintApp') }}. Tous droits réservés.
                 </p>
             </div>
@@ -103,5 +125,8 @@
             window.location.reload();
         }, 30000);
     </script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\Discount;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
@@ -19,21 +21,61 @@ class CartController extends Controller
     {
         $item = Item::findOrFail($itemId);
         $quantity = max(1, (int) $request->input('quantity', 1));
+        
+        // Vérifier s'il y a une réduction active pour cet utilisateur et cet article
+        $activeDiscount = null;
+        $finalPrice = $item->price;
+        
+        if (Auth::check()) {
+            $activeDiscount = Discount::where('item_id', $itemId)
+                ->where('user_id', Auth::id())
+                ->where('status', 'approved')
+                ->where('expires_at', '>', now())
+                ->first();
+            
+            if ($activeDiscount) {
+                $finalPrice = $activeDiscount->final_price;
+            }
+        }
+        
         $cart = session('cart', []);
         if (isset($cart[$itemId])) {
             $cart[$itemId]['quantity'] += $quantity;
+            // Mettre à jour le prix si une réduction est active
+            if ($activeDiscount) {
+                $cart[$itemId]['price'] = $finalPrice;
+                $cart[$itemId]['original_price'] = $item->price;
+                $cart[$itemId]['discount_id'] = $activeDiscount->id;
+                $cart[$itemId]['discount_percentage'] = $activeDiscount->discount_percentage;
+            }
         } else {
-            $cart[$itemId] = [
+            $cartItem = [
                 'id' => $item->id,
                 'name' => $item->name,
-                'price' => $item->price,
+                'price' => $finalPrice,
                 'currency' => $item->currency,
                 'quantity' => $quantity,
                 'image' => $item->images[0] ?? null,
             ];
+            
+            // Ajouter les informations de réduction si applicable
+            if ($activeDiscount) {
+                $cartItem['original_price'] = $item->price;
+                $cartItem['discount_id'] = $activeDiscount->id;
+                $cartItem['discount_percentage'] = $activeDiscount->discount_percentage;
+                $cartItem['has_discount'] = true;
+            }
+            
+            $cart[$itemId] = $cartItem;
         }
+        
         session(['cart' => $cart]);
-        return redirect()->route('cart.index')->with('success', 'Article ajouté au panier.');
+        
+        $message = $activeDiscount 
+            ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
+            : 'Article ajouté au panier.';
+            
+        return redirect()->route('cart.index')->with('success', $message);
     }
 
     // Modifier la quantité d'un article

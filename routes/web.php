@@ -18,7 +18,7 @@ Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
-// Route de test temporaire
+// Routes de test supprimées
 Route::get('/test-create', function() {
     return 'Route de test accessible';
 });
@@ -214,19 +214,44 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Paramètres système
     Route::prefix('settings')->name('settings.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('index');
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('index');
         Route::get('/test', function() { return view('admin.settings.test'); })->name('test');
         Route::post('/update', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('update');
         Route::post('/clear-cache', [App\Http\Controllers\Admin\AdminController::class, 'clearSettingsCache'])->name('clear-cache');
         
         // Routes pour le mode maintenance
-        Route::post('/maintenance/enable', [App\Http\Controllers\Admin\SettingsController::class, 'enableMaintenance'])->name('maintenance.enable');
-        Route::post('/maintenance/disable', [App\Http\Controllers\Admin\SettingsController::class, 'disableMaintenance'])->name('maintenance.disable');
-        Route::get('/maintenance/status', [App\Http\Controllers\Admin\SettingsController::class, 'maintenanceStatus'])->name('maintenance.status');
+        Route::post('/maintenance/enable', [App\Http\Controllers\Admin\AdminController::class, 'enableMaintenance'])->name('maintenance.enable');
+        Route::post('/maintenance/disable', [App\Http\Controllers\Admin\AdminController::class, 'disableMaintenance'])->name('maintenance.disable');
+        Route::get('/maintenance/status', [App\Http\Controllers\Admin\AdminController::class, 'maintenanceStatus'])->name('maintenance.status');
     });
 
     // API pour notifications
     Route::get('/notifications', [App\Http\Controllers\Admin\AdminController::class, 'notifications'])->name('notifications');
+    
+    // Routes pour le support client
+    Route::prefix('support')->name('support.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('index');
+        Route::get('/stats', [App\Http\Controllers\Admin\SupportController::class, 'stats'])->name('stats');
+        Route::get('/{supportChat}', [App\Http\Controllers\Admin\SupportController::class, 'show'])->name('show');
+        Route::post('/{supportChat}/reply', [App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('reply');
+        Route::post('/{supportChat}/assign', [App\Http\Controllers\Admin\SupportController::class, 'assign'])->name('assign');
+        Route::post('/{supportChat}/status', [App\Http\Controllers\Admin\SupportController::class, 'updateStatus'])->name('status');
+        Route::post('/{supportChat}/priority', [App\Http\Controllers\Admin\SupportController::class, 'updatePriority'])->name('priority');
+        Route::post('/{supportChat}/close', [App\Http\Controllers\Admin\SupportController::class, 'close'])->name('close');
+        Route::post('/{supportChat}/reopen', [App\Http\Controllers\Admin\SupportController::class, 'reopen'])->name('reopen');
+    });
+});
+
+// Routes pour le support client (côté utilisateur)
+Route::middleware('auth')->prefix('support')->name('support.')->group(function () {
+    Route::get('/', [App\Http\Controllers\SupportController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\SupportController::class, 'create'])->name('create');
+    Route::post('/store', [App\Http\Controllers\SupportController::class, 'store'])->name('store');
+    Route::get('/{supportChat}', [App\Http\Controllers\SupportController::class, 'show'])->name('show');
+    Route::post('/{supportChat}/reply', [App\Http\Controllers\SupportController::class, 'reply'])->name('reply');
+    Route::post('/{supportChat}/close', [App\Http\Controllers\SupportController::class, 'close'])->name('close');
+    Route::get('/widget/content', [App\Http\Controllers\SupportController::class, 'widget'])->name('widget');
+    Route::post('/quick-chat', [App\Http\Controllers\SupportController::class, 'quickChat'])->name('quick-chat');
 });
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
@@ -299,7 +324,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{discount}/approve', [App\Http\Controllers\ContactController::class, 'proposeDiscount'])->name('approve');
         Route::post('/{discount}/reject', [App\Http\Controllers\ContactController::class, 'rejectDiscount'])->name('reject');
         Route::post('/{discount}/apply', [App\Http\Controllers\ContactController::class, 'applyDiscount'])->name('apply');
-        Route::get('/item/{item}/available', [App\Http\Controllers\ContactController::class, 'getAvailableDiscounts'])->name('available');
+        Route::get('/item/{item}/available', [App\Http\Controllers\MessageController::class, 'getAvailableDiscounts'])->name('available');
     });
 });
 

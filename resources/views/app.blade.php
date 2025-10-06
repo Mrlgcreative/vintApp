@@ -877,7 +877,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         /* Masquer la navbar du haut sur mobile */
         @media (max-width: 767.98px) {
-            .top-navbar {
+            nav.top-navbar {
                 display: none !important;
             }
         }
@@ -1525,7 +1525,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         </script>
-       
-        </style>
+
+        <!-- Widget d'assistance -->
+        @include('support.widget')
     </body>
 </html>

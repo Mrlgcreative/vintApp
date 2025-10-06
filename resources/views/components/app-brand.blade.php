@@ -1,6 +1,6 @@
 {{-- Composant logo/nom de l'application --}}
 <div class="app-brand d-flex align-items-center {{ $class ?? '' }}">
-    @if($showLogo ?? true)
+    @if(($showLogo ?? true) && file_exists(public_path($appLogo ?? '')))
         <img src="{{ asset($appLogo) }}" 
              alt="{{ $appName }}" 
              class="app-logo me-2" 
@@ -10,7 +10,7 @@
     @if($showName ?? true)
         <span class="app-name fw-bold {{ $nameClass ?? 'text-dark' }}" 
               style="font-size: {{ $nameSize ?? '1.5rem' }};">
-            {{ $appName }}
+            {{ $appName ?? 'VintApp' }}
         </span>
     @endif
 </div>

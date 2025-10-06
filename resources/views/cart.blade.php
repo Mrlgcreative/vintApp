@@ -36,9 +36,31 @@
                             @if($item['image'])
                                 <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" width="50" class="me-2 rounded">
                             @endif
-                            {{ $item['name'] }}
+                            <div>
+                                {{ $item['name'] }}
+                                @if(isset($item['has_discount']) && $item['has_discount'])
+                                    <br><small class="badge bg-success">
+                                        <i class="fas fa-tag me-1"></i>
+                                        Réduction {{ $item['discount_percentage'] }}%
+                                    </small>
+                                @endif
+                            </div>
                         </td>
-                        <td>{{ $item['price'] }} {{ $item['currency'] }}</td>
+                        <td>
+                            @if(isset($item['has_discount']) && $item['has_discount'])
+                                <div>
+                                    <span class="text-decoration-line-through text-muted small">
+                                        {{ $item['original_price'] }} {{ $item['currency'] }}
+                                    </span>
+                                    <br>
+                                    <span class="text-success fw-bold">
+                                        {{ $item['price'] }} {{ $item['currency'] }}
+                                    </span>
+                                </div>
+                            @else
+                                {{ $item['price'] }} {{ $item['currency'] }}
+                            @endif
+                        </td>
                         <td>
                             <form method="POST" action="{{ route('cart.update', $item['id']) }}" class="d-inline">
                                 @csrf

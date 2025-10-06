@@ -392,4 +392,28 @@ class User extends Authenticatable
     {
         return $this->hasRole('user');
     }
+
+    /**
+     * Chats de support créés par l'utilisateur
+     */
+    public function supportChats()
+    {
+        return $this->hasMany(SupportChat::class);
+    }
+
+    /**
+     * Chats de support assignés à l'admin
+     */
+    public function assignedSupportChats()
+    {
+        return $this->hasMany(SupportChat::class, 'admin_id');
+    }
+
+    /**
+     * Messages de support envoyés par l'utilisateur
+     */
+    public function supportMessages()
+    {
+        return $this->hasMany(SupportMessage::class);
+    }
 }

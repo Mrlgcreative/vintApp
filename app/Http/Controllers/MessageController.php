@@ -244,7 +244,7 @@ class MessageController extends Controller
             'discount_amount' => $discountAmount,
             'final_price' => $finalPrice,
             'status' => 'approved',
-            'expires_at' => now()->addHours($request->expires_hours ?? 24),
+            'expires_at' => now()->addHours((int)($request->expires_hours ?? 24)),
             'reason' => 'Réduction appliquée par le vendeur'
         ]);
 
@@ -279,7 +279,7 @@ class MessageController extends Controller
             'message' => 'Réduction appliquée avec succès !'
         ]);
         
-        } catch (\Exception $e) {
+    } catch (\Exception $e) {
             Log::error('Erreur dans applyDiscount: ' . $e->getMessage(), [
                 'request' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -307,6 +307,24 @@ class MessageController extends Controller
         ];
 
         return response()->json(['rates' => $rates]);
+    }
+
+    /**
+     * Récupérer les réductions disponibles pour un article et l'utilisateur connecté
+     */
+    public function getAvailableDiscounts($itemId): JsonResponse
+    {
+        if (!Auth::check()) {
+            return response()->json([]);
+        }
+
+        $discounts = Discount::where('item_id', $itemId)
+            ->where('user_id', Auth::id())
+            ->where('status', 'approved')
+            ->where('expires_at', '>', now())
+            ->get();
+
+        return response()->json($discounts);
     }
 
     /**
