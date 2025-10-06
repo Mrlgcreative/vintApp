@@ -115,12 +115,22 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             @apply bg-white bg-opacity-30;
         }
+
+        /* Sidebar responsive */
+        @media (max-width: 1023px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.active {
+                transform: translateX(0);
+            }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-sm leading-relaxed text-gray-900">
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-dark-800 to-dark-900 shadow-2xl transition-all duration-300 ease-in-out transform -translate-x-72 lg:translate-x-0" id="sidebar">
+        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-dark-800 to-dark-900 shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
             <div class="flex h-full flex-col">
                 <!-- Brand -->
                 <div class="relative border-b border-white/10 bg-white/5 p-6">
@@ -243,20 +253,20 @@
         </nav>
 
         <!-- Overlay pour mobile -->
-        <div class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden" id="sidebar-overlay" style="display: none;"></div>
-
-        <!-- Mobile menu toggle -->
-        <button class="fixed top-4 left-4 z-60 rounded-lg bg-primary-500 p-3 text-white shadow-lg transition-all duration-300 hover:bg-primary-600 hover:scale-105 lg:hidden" 
-                id="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
-        </button>
+        <div class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity duration-300 lg:hidden" id="sidebar-overlay" style="display: none; opacity: 0;"></div>
 
         <!-- Contenu principal -->
-        <main class="flex-1 lg:ml-72">
+        <main class="flex-1 transition-all duration-300" id="main-content">
             <!-- Header -->
-            <header class="sticky top-0 z-30 border-b border-gray-200 bg-white/95 p-4 shadow-sm backdrop-blur-lg lg:pl-16">
+            <header class="sticky top-0 z-30 border-b border-gray-200 bg-white/95 p-4 shadow-sm backdrop-blur-lg">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center">
+                    <div class="flex items-center space-x-4">
+                        <!-- Toggle Button -->
+                        <button class="rounded-lg p-2 text-gray-600 transition-all duration-300 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                id="sidebar-toggle"
+                                aria-label="Toggle sidebar">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
                         <h1 class="text-xl font-bold text-gray-900 lg:text-2xl">@yield('page-title')</h1>
                     </div>
                     
@@ -404,27 +414,114 @@
                 allowInput: true
             });
 
-            // Mobile menu toggle
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            // Sidebar Toggle - Gestion responsive améliorée
+            const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const mainContent = document.getElementById('main-content');
+            
+            // État initial basé sur la taille de l'écran
+            function initSidebar() {
+                if (window.innerWidth >= 1024) {
+                    // Desktop: sidebar visible, margin sur le contenu
+                    sidebar.classList.remove('active');
+                    sidebar.style.transform = 'translateX(0)';
+                    mainContent.style.marginLeft = '288px'; // 18rem = 288px
+                    if (sidebarOverlay) {
+                        sidebarOverlay.style.display = 'none';
+                        sidebarOverlay.style.opacity = '0';
+                    }
+                } else {
+                    // Mobile: sidebar cachée
+                    sidebar.classList.remove('active');
+                    sidebar.style.transform = 'translateX(-100%)';
+                    mainContent.style.marginLeft = '0';
+                    if (sidebarOverlay) {
+                        sidebarOverlay.style.display = 'none';
+                        sidebarOverlay.style.opacity = '0';
+                    }
+                }
+            }
 
-            if (mobileMenuToggle) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('translate-x-0');
-                    sidebar.classList.toggle('-translate-x-72');
-                    sidebarOverlay.style.display = sidebarOverlay.style.display === 'none' ? 'block' : 'none';
+            // Initialiser au chargement
+            initSidebar();
+
+            // Réinitialiser lors du redimensionnement
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    if (!sidebar.classList.contains('active')) {
+                        initSidebar();
+                    }
+                }, 250);
+            });
+
+            // Toggle du sidebar
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    const isActive = sidebar.classList.toggle('active');
+                    
+                    if (window.innerWidth >= 1024) {
+                        // Desktop: toggle avec animation
+                        if (isActive) {
+                            sidebar.style.transform = 'translateX(-100%)';
+                            mainContent.style.marginLeft = '0';
+                        } else {
+                            sidebar.style.transform = 'translateX(0)';
+                            mainContent.style.marginLeft = '288px';
+                        }
+                    } else {
+                        // Mobile: toggle avec overlay
+                        if (isActive) {
+                            sidebar.style.transform = 'translateX(0)';
+                            if (sidebarOverlay) {
+                                sidebarOverlay.style.display = 'block';
+                                setTimeout(() => {
+                                    sidebarOverlay.style.opacity = '1';
+                                }, 10);
+                            }
+                        } else {
+                            sidebar.style.transform = 'translateX(-100%)';
+                            if (sidebarOverlay) {
+                                sidebarOverlay.style.opacity = '0';
+                                setTimeout(() => {
+                                    sidebarOverlay.style.display = 'none';
+                                }, 300);
+                            }
+                        }
+                    }
                 });
             }
 
-            // Fermer le sidebar sur clic overlay
+            // Fermer le sidebar sur clic overlay (mobile uniquement)
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function() {
-                    sidebar.classList.add('-translate-x-72');
-                    sidebar.classList.remove('translate-x-0');
-                    sidebarOverlay.style.display = 'none';
+                    sidebar.classList.remove('active');
+                    sidebar.style.transform = 'translateX(-100%)';
+                    sidebarOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        sidebarOverlay.style.display = 'none';
+                    }, 300);
                 });
             }
+
+            // Fermer le sidebar en cliquant sur un lien (mobile uniquement)
+            const sidebarLinks = sidebar.querySelectorAll('a');
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.remove('active');
+                        sidebar.style.transform = 'translateX(-100%)';
+                        if (sidebarOverlay) {
+                            sidebarOverlay.style.opacity = '0';
+                            setTimeout(() => {
+                                sidebarOverlay.style.display = 'none';
+                            }, 300);
+                        }
+                    }
+                });
+            });
 
             // Dropdowns
             const notificationsDropdown = document.getElementById('notificationsDropdown');

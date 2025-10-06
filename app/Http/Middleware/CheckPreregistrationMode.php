@@ -12,14 +12,42 @@ class CheckPreregistrationMode
     /**
      * Handle an incoming request.
      *
-     * Si la pré-inscription est activée, redirige tous les utilisateurs non-admins
-     * vers la page de pré-inscription (sauf s'ils sont déjà sur cette page).
+     * Logique de pré-inscription :
+     * 1. Les admins et les routes admin sont TOUJOURS autorisés (même si la pré-inscription est active)
+     * 2. Si la pré-inscription est activée, les autres utilisateurs sont redirigés vers /preregistration
+     * 3. Certaines routes publiques restent accessibles (login, password setup, etc.)
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Vérifier si la pré-inscription est activée
+        // PRIORITÉ 1 : Si la route commence par 'admin/', laisser passer TOUJOURS
+        // (permet login admin et accès interface admin)
+        if (str_starts_with($request->path(), 'admin')) {
+            return $next($request);
+        }
+        
+        // PRIORITÉ 2 : Si l'utilisateur est admin authentifié, laisser passer
+        // (permet la redirection après login vers n'importe quelle page)
+        if (auth()->check()) {
+            $user = auth()->user();
+            // Rafraîchir les relations pour être sûr
+            $user->load('roles');
+            
+            if ($user->isAdmin()) {
+                return $next($request);
+            }
+        }
+        
+        // PRIORITÉ 3 : Routes système toujours autorisées
+        $systemRoutes = ['login', 'logout', 'register', 'password.request', 'password.reset'];
+        $currentRoute = $request->route() ? $request->route()->getName() : '';
+        
+        if (in_array($currentRoute, $systemRoutes)) {
+            return $next($request);
+        }
+        
+        // PRIORITÉ 4 : Vérifier si la pré-inscription est activée
         $preregistrationEnabled = Setting::get('preregistration_enabled', false);
         
         if ($preregistrationEnabled) {
@@ -28,7 +56,7 @@ class CheckPreregistrationMode
                 'preregistration.*',  // Toutes les routes de pré-inscription
                 'password.setup',     // Page de définition de mot de passe
                 'password.setup.store', // Traitement du mot de passe
-                'login',              // Connexion admin
+                'login',              // Connexion
                 'logout',             // Déconnexion
             ];
             
@@ -41,11 +69,6 @@ class CheckPreregistrationMode
                     $isAllowedRoute = true;
                     break;
                 }
-            }
-            
-            // Si l'utilisateur est admin, il peut accéder à tout
-            if (auth()->check() && auth()->user()->isAdmin()) {
-                return $next($request);
             }
             
             // Si ce n'est pas une route autorisée, rediriger vers la pré-inscription

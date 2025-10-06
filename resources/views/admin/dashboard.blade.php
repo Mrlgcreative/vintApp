@@ -24,13 +24,13 @@
         <div class="h-1 bg-gradient-to-r from-primary-500 to-primary-600"></div>
     </div>
 
-    <!-- Carte Revenus -->
+    <!-- Carte Revenus USD -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Revenus totaux</div>
-                    <div class="text-2xl font-bold text-gray-900">{{ number_format($stats['total_transaction_amount'], 2) }} USD</div>
+                    <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Revenus USD</div>
+                    <div class="text-2xl font-bold text-gray-900">${{ number_format($stats['total_revenue_usd'], 2) }}</div>
                     <div class="text-xs text-gray-500 mt-1">{{ $stats['transactions_today'] }} transactions aujourd'hui</div>
                 </div>
                 <div class="flex-shrink-0">
@@ -41,6 +41,25 @@
             </div>
         </div>
         <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
+    </div>
+
+    <!-- Carte Revenus CDF -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">Revenus CDF</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ number_format($stats['total_revenue_cdf'], 0, ',', ' ') }} FC</div>
+                    <div class="text-xs text-gray-500 mt-1">Franc Congolais</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-coins text-2xl text-emerald-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
     </div>
 
     <!-- Carte Wallets en attente -->

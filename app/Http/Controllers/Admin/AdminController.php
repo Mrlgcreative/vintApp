@@ -39,6 +39,14 @@ class AdminController extends Controller
             'transactions_today' => Transaction::whereDate('created_at', today())->count(),
             'total_transaction_amount' => Transaction::where('status', 'completed')->sum('amount'),
             
+            // Revenus par devise
+            'total_revenue_usd' => Transaction::where('status', 'completed')
+                ->where('currency', 'USD')
+                ->sum('amount'),
+            'total_revenue_cdf' => Transaction::where('status', 'completed')
+                ->where('currency', 'CDF')
+                ->sum('amount'),
+            
             'pending_wallets' => Wallet::where('status', 'pending')->count(),
             'total_wallet_balance' => Wallet::where('is_active', true)->sum('balance'),
             
