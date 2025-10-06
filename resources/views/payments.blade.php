@@ -341,7 +341,7 @@ document.getElementById('payment-form').addEventListener('submit', async functio
         distDiv.style.display = 'none';
 
         // Appel API
-        const response = await fetch('/api/payments/process', {
+        const response = await fetch('{{ route("payments.process") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

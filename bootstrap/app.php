@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\DynamicConfigMiddleware::class,
             \App\Http\Middleware\ShareAppSettings::class,
             \App\Http\Middleware\MaintenanceMode::class,
+            \App\Http\Middleware\CheckPreregistrationMode::class,
         ]);
 
         // API Middleware Group
@@ -50,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'dynamic.config' => \App\Http\Middleware\DynamicConfigMiddleware::class,
             'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
+            'preregistration' => \App\Http\Middleware\CheckPreregistrationMode::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

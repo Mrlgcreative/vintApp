@@ -91,18 +91,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/conversations', [MessageController::class, 'conversations']);
     });
 
-    // Payments routes
-    Route::prefix('payments')->group(function () {
-        Route::post('/process', [PaymentController::class, 'processPayment']);
-        Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash']);
-        Route::post('/orange-money', [PaymentController::class, 'payWithOrangeMoney']);
-        Route::post('/airtel-money', [PaymentController::class, 'payWithAirtelMoney']);
-        Route::post('/mpesa', [PaymentController::class, 'payWithMpesa']);
-        Route::post('/africell', [PaymentController::class, 'payWithAfricell']);
-        Route::post('/simulate', [PaymentController::class, 'simulatePayment']);
-        Route::post('/callback', [PaymentController::class, 'handleCallback']);
-    });
-
     // Reviews routes
     Route::prefix('reviews')->group(function () {
         Route::get('/', [ReviewController::class, 'index']);

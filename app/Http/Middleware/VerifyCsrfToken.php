@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'payments/callback',  // Webhook des opérateurs mobile money (Orange, Airtel, M-Pesa, Africell, Illicocash)
+        'wallet/withdrawals/webhook/*',  // Webhooks de décaissement mobile money
     ];
 }

@@ -87,9 +87,15 @@
                                                            onchange="previewLogo(this)">
                                                     <input type="hidden" 
                                                            name="settings[{{ $setting->key }}]"
-                                                           value="{{ $setting->value }}">
+                                                           value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
                                                     <p class="text-xs text-gray-500 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
-                                                            @elseif($setting->type === 'boolean')
+                                                            @elseif($setting->type === 'json' || $setting->type === 'array')
+                                                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
+                                                              name="settings[{{ $setting->key }}]"
+                                                              rows="5"
+                                                              data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
+                                                    <p class="text-xs text-gray-500 mt-1">Format JSON</p>
+                                                @elseif($setting->type === 'boolean')
                                                     <div class="flex items-center space-x-3">
                                                         <!-- Hidden input pour s'assurer que la valeur false est envoyée -->
                                                         <input type="hidden" name="settings[{{ $setting->key }}]" value="0">
@@ -201,6 +207,141 @@
                                         <i class="fas fa-info-circle text-red-600 mr-2"></i>
                                         <p class="text-red-800 text-sm">
                                             <strong>Attention :</strong> Seuls les administrateurs peuvent accéder au site en mode maintenance.
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section Pré-inscription -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-user-plus mr-3 text-purple-600"></i>
+                                Mode Pré-inscription
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                <strong>⚠️ ATTENTION :</strong> Quand activé, toute l'application devient inaccessible aux visiteurs (comme le mode maintenance) et redirige vers la page de pré-inscription. Seuls les admins connectés peuvent accéder à l'application.
+                            </p>
+                        </div>
+                        
+                        @php
+                            $preregEnabled = \App\Models\Setting::get('preregistration_enabled', true);
+                            $preregCount = \App\Models\UserWaiting::count();
+                            $preregLimit = \App\Models\Setting::get('preregistration_limit', 0);
+                        @endphp
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100' : 'bg-red-100' }}">
+                                        <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600' }} text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">
+                                            Statut : {{ $preregEnabled ? 'MODE PRÉ-INSCRIPTION ACTIF' : 'MODE NORMAL' }}
+                                        </p>
+                                        <p class="text-sm text-gray-500">
+                                            {{ $preregEnabled ? '🔒 Application verrouillée - Seule la pré-inscription est accessible' : '✅ Application accessible normalement' }}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" 
+                                        onclick="{{ $preregEnabled ? 'disablePreregistration()' : 'enablePreregistration()' }}"
+                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas {{ $preregEnabled ? 'fa-lock-open' : 'fa-lock' }} mr-2"></i>
+                                    {{ $preregEnabled ? 'Désactiver' : 'Activer' }}
+                                </button>
+                            </div>
+                            
+                            <!-- Statistiques -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-gray-600">Total inscriptions</p>
+                                            <p class="text-2xl font-bold text-gray-900">{{ $preregCount }}</p>
+                                        </div>
+                                        <div class="p-3 bg-blue-100 rounded-lg">
+                                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-gray-600">Limite configurée</p>
+                                            <p class="text-2xl font-bold text-gray-900">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
+                                        </div>
+                                        <div class="p-3 bg-yellow-100 rounded-lg">
+                                            <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm text-gray-600">Places restantes</p>
+                                            <p class="text-2xl font-bold text-gray-900">
+                                                @if($preregLimit > 0)
+                                                    {{ max(0, $preregLimit - $preregCount) }}
+                                                @else
+                                                    ∞
+                                                @endif
+                                            </p>
+                                        </div>
+                                        <div class="p-3 bg-green-100 rounded-lg">
+                                            <i class="fas fa-ticket-alt text-green-600 text-xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Actions rapides -->
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ route('admin.settings.preregistration') }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas fa-cog mr-2"></i>
+                                    Configurer
+                                </a>
+                                
+                                <a href="{{ route('admin.waiting-users.index') }}" 
+                                   class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas fa-list mr-2"></i>
+                                    Gérer les inscriptions
+                                </a>
+                                
+                                <a href="{{ route('preregistration.index') }}" 
+                                   target="_blank"
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas fa-external-link-alt mr-2"></i>
+                                    Voir la page publique
+                                </a>
+                            </div>
+                            
+                            @if($preregLimit > 0 && $preregCount >= $preregLimit)
+                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                                        <p class="text-red-800 text-sm">
+                                            <strong>Limite atteinte :</strong> Le nombre maximum de pré-inscriptions ({{ $preregLimit }}) a été atteint.
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            @if(!$preregEnabled)
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-info-circle text-orange-600 mr-2"></i>
+                                        <p class="text-orange-800 text-sm">
+                                            Les visiteurs verront le message de fermeture configuré dans les paramètres.
                                         </p>
                                     </div>
                                 </div>
@@ -670,6 +811,86 @@ async function disableMaintenance() {
         
         if (result.success) {
             showNotification(result.message, 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(result.message || 'Erreur lors de la désactivation', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de communication avec le serveur', 'error');
+    }
+}
+
+// ========================================
+// Fonctions pour la pré-inscription
+// ========================================
+
+async function enablePreregistration() {
+    if (!confirm('⚠️ ATTENTION : ACTIVER LE MODE PRÉ-INSCRIPTION ?\n\n' +
+                 '• Toute l\'application sera VERROUILLÉE\n' +
+                 '• Les visiteurs seront redirigés vers la page de pré-inscription\n' +
+                 '• Seuls les ADMINS connectés pourront accéder à l\'application\n\n' +
+                 'Ce mode est similaire au mode maintenance.\n\n' +
+                 'Voulez-vous vraiment continuer ?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('{{ route("admin.settings.preregistration.toggle") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled: true
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message || 'Pré-inscriptions ouvertes avec succès !', 'success');
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
+        } else {
+            showNotification(result.message || 'Erreur lors de l\'activation', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de communication avec le serveur', 'error');
+    }
+}
+
+async function disablePreregistration() {
+    if (!confirm('Êtes-vous sûr de vouloir DÉSACTIVER le mode pré-inscription ?\n\n' +
+                 '• L\'application redeviendra accessible à tous\n' +
+                 '• Le fonctionnement normal sera rétabli\n\n' +
+                 'Continuer ?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('{{ route("admin.settings.preregistration.toggle") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled: false
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message || 'Pré-inscriptions fermées avec succès !', 'success');
             setTimeout(() => {
                 window.location.reload();
             }, 1500);

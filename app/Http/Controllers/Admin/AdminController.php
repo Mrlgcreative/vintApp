@@ -565,16 +565,139 @@ class AdminController extends Controller
     {
         try {
             $maintenanceStatus = MaintenanceMode::isEnabled();
-            $settingService = app(\App\Services\SettingService::class);
-            $settings = $settingService->getAllForAdmin()->groupBy('category');
-            $categories = $settingService->getCategories();
+            $settings = Setting::orderBy('category')->orderBy('key')->get()->groupBy('category');
+            $categories = $settings->keys()->toArray();
             
             return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories'));
         } catch (\Exception $e) {
             Log::error('Erreur lors du chargement des paramètres: ' . $e->getMessage());
             $maintenanceStatus = false;
-            return view('admin.settings.index', compact('maintenanceStatus'));
+            $settings = collect();
+            $categories = [];
+            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories'));
         }
+    }
+
+    /**
+     * Met à jour les paramètres système
+     */
+    public function settingsUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'settings' => 'required|array',
+            'settings.*' => 'nullable',
+        ]);
+
+        foreach ($validated['settings'] as $key => $value) {
+            $setting = Setting::where('key', $key)->first();
+            
+            if ($setting) {
+                // Convertir les valeurs selon le type
+                $value = $this->convertSettingValue($value, $setting->type);
+                $setting->update(['value' => $value]);
+            }
+        }
+
+        return redirect()
+            ->route('admin.settings.index')
+            ->with('success', 'Paramètres mis à jour avec succès');
+    }
+
+    /**
+     * Affiche les paramètres de pré-inscription
+     */
+    public function preregistrationSettings()
+    {
+        $settings = Setting::where('category', 'preregistration')->get();
+        
+        return view('admin.settings.preregistration', compact('settings'));
+    }
+
+    /**
+     * Met à jour les paramètres de pré-inscription
+     */
+    public function updatePreregistrationSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'preregistration_enabled' => 'nullable|boolean',
+            'preregistration_title' => 'nullable|string|max:255',
+            'preregistration_subtitle' => 'nullable|string|max:500',
+            'preregistration_message' => 'nullable|string',
+            'preregistration_benefits' => 'nullable|array',
+            'preregistration_benefits.*' => 'string|max:255',
+            'preregistration_limit' => 'nullable|integer|min:0',
+            'preregistration_require_phone' => 'nullable|boolean',
+            'preregistration_require_confirmation' => 'nullable|boolean',
+            'preregistration_notification_email' => 'nullable|email',
+            'preregistration_closed_message' => 'nullable|string',
+        ]);
+
+        // Mettre à jour chaque paramètre
+        foreach ($validated as $key => $value) {
+            $setting = Setting::where('key', $key)->first();
+            
+            if ($setting) {
+                // Cas spécial pour les benefits (array -> json)
+                if ($key === 'preregistration_benefits') {
+                    $value = json_encode(array_values(array_filter($value)));
+                }
+                
+                // Cas spécial pour les checkboxes
+                if ($setting->type === 'boolean') {
+                    $value = $value ? '1' : '0';
+                }
+                
+                $setting->update(['value' => $value]);
+            }
+        }
+
+        // Si preregistration_enabled n'est pas dans la requête (checkbox non cochée)
+        if (!isset($validated['preregistration_enabled'])) {
+            Setting::where('key', 'preregistration_enabled')->update(['value' => '0']);
+        }
+
+        if (!isset($validated['preregistration_require_phone'])) {
+            Setting::where('key', 'preregistration_require_phone')->update(['value' => '0']);
+        }
+
+        if (!isset($validated['preregistration_require_confirmation'])) {
+            Setting::where('key', 'preregistration_require_confirmation')->update(['value' => '0']);
+        }
+
+        return redirect()
+            ->route('admin.settings.preregistration')
+            ->with('success', 'Paramètres de pré-inscription mis à jour avec succès');
+    }
+
+    /**
+     * Toggle (activer/désactiver) la pré-inscription
+     */
+    public function togglePreregistration(Request $request)
+    {
+        $validated = $request->validate([
+            'enabled' => 'required|boolean',
+        ]);
+
+        $setting = Setting::where('key', 'preregistration_enabled')->first();
+        
+        if ($setting) {
+            $setting->update(['value' => $validated['enabled'] ? '1' : '0']);
+            
+            $message = $validated['enabled'] 
+                ? '🔒 Mode pré-inscription ACTIVÉ ! L\'application est maintenant verrouillée. Seuls les admins peuvent y accéder.' 
+                : '✅ Mode pré-inscription DÉSACTIVÉ. L\'application est de nouveau accessible à tous.';
+            
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'enabled' => $validated['enabled']
+            ]);
+        }
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Paramètre de pré-inscription introuvable'
+        ], 404);
     }
 
     /**
@@ -1854,5 +1977,104 @@ class AdminController extends Controller
                 'message' => 'Erreur lors de l\'exécution de l\'action.'
             ], 500);
         }
+    }
+
+    /**
+     * Afficher le formulaire de définition de mot de passe (pour l'utilisateur)
+     */
+    public function showSetPasswordForm(Request $request)
+    {
+        $token = $request->query('token');
+        $email = $request->query('email');
+
+        if (!$token || !$email) {
+            return redirect()->route('login')->with('error', 'Lien invalide ou expiré.');
+        }
+
+        // Chercher l'utilisateur en attente avec ce token
+        $userWaiting = \App\Models\UserWaiting::where('email', $email)
+            ->where('password_setup_token', hash('sha256', $token))
+            ->first();
+
+        if (!$userWaiting) {
+            return redirect()->route('login')->with('error', 'Lien invalide ou expiré.');
+        }
+
+        // Vérifier si le token n'a pas expiré
+        if ($userWaiting->password_setup_token_expires_at && 
+            now()->isAfter($userWaiting->password_setup_token_expires_at)) {
+            return redirect()->route('login')->with('error', 'Ce lien a expiré. Contactez l\'administrateur.');
+        }
+
+        // Vérifier si l'utilisateur existe déjà
+        $user = \App\Models\User::where('email', $email)->first();
+        
+        if (!$user) {
+            return redirect()->route('login')->with('error', 'Compte utilisateur introuvable.');
+        }
+
+        return view('auth.set-password', [
+            'token' => $token,
+            'email' => $email,
+            'name' => $user->name,
+        ]);
+    }
+
+    /**
+     * Définir le mot de passe de l'utilisateur
+     */
+    public function setPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
+            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
+        ]);
+
+        $token = $request->token;
+        $email = $request->email;
+
+        // Chercher l'utilisateur en attente
+        $userWaiting = \App\Models\UserWaiting::where('email', $email)
+            ->where('password_setup_token', hash('sha256', $token))
+            ->first();
+
+        if (!$userWaiting) {
+            return back()->with('error', 'Lien invalide ou expiré.');
+        }
+
+        // Vérifier l'expiration
+        if ($userWaiting->password_setup_token_expires_at && 
+            now()->isAfter($userWaiting->password_setup_token_expires_at)) {
+            return back()->with('error', 'Ce lien a expiré. Contactez l\'administrateur.');
+        }
+
+        // Trouver l'utilisateur
+        $user = \App\Models\User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()->with('error', 'Compte utilisateur introuvable.');
+        }
+
+        // Mettre à jour le mot de passe
+        $user->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        // Supprimer le token (usage unique)
+        $userWaiting->update([
+            'password_setup_token' => null,
+            'password_setup_token_expires_at' => null,
+        ]);
+
+        Log::info("Mot de passe défini pour l'utilisateur: {$email}");
+
+        // Connecter automatiquement l'utilisateur
+        auth()->login($user);
+
+        return redirect()->route('dashboard')->with('success', '🎉 Bienvenue sur VintApp ! Votre compte est maintenant actif.');
     }
 }

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
-    protected $notificationService;
+    private $notificationService;
 
     public function __construct(NotificationService $notificationService)
     {

@@ -215,8 +215,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Paramètres système
     Route::prefix('settings')->name('settings.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('index');
+        Route::put('/update', [App\Http\Controllers\Admin\AdminController::class, 'settingsUpdate'])->name('update');
+        
+        // Paramètres de pré-inscription
+        Route::get('/preregistration', [App\Http\Controllers\Admin\AdminController::class, 'preregistrationSettings'])->name('preregistration');
+        Route::put('/preregistration', [App\Http\Controllers\Admin\AdminController::class, 'updatePreregistrationSettings'])->name('preregistration.update');
+        Route::post('/preregistration/toggle', [App\Http\Controllers\Admin\AdminController::class, 'togglePreregistration'])->name('preregistration.toggle');
+        
+        // Anciennes routes (à garder pour compatibilité)
         Route::get('/test', function() { return view('admin.settings.test'); })->name('test');
-        Route::post('/update', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('update');
+        Route::post('/update', [App\Http\Controllers\Admin\AdminController::class, 'updateSettings'])->name('update.old');
         Route::post('/clear-cache', [App\Http\Controllers\Admin\AdminController::class, 'clearSettingsCache'])->name('clear-cache');
         
         // Routes pour le mode maintenance
@@ -256,6 +264,7 @@ Route::middleware('auth')->prefix('support')->name('support.')->group(function (
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
+    Route::post('/process', [PaymentController::class, 'processPayment'])->name('payments.process');
     Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash'])->name('payments.illicocash');
     Route::post('/orange-money', [PaymentController::class, 'payWithOrangeMoney'])->name('payments.orange_money');
     Route::post('/airtel-money', [PaymentController::class, 'payWithAirtelMoney'])->name('payments.airtel_money');
@@ -289,6 +298,19 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
         Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
         Route::post('/{wallet}/recharge/mobile', [App\Http\Controllers\WalletController::class, 'rechargeWithMobilePayment'])->name('recharge-mobile');
+        Route::post('/convert', [App\Http\Controllers\WalletController::class, 'convertCurrency'])->name('convert');
+        
+        // Routes pour les retraits (admin uniquement)
+        Route::post('/withdrawals/{withdrawalRequest}/retry', [App\Http\Controllers\WalletController::class, 'retryFailedWithdrawal'])
+            ->name('withdrawals.retry')
+            ->middleware('admin');
+    });
+
+    // Routes Webhook pour les décaissements (PUBLIC - pas d'auth)
+    Route::prefix('wallet/withdrawals/webhook')->name('withdrawals.webhook.')->group(function () {
+        Route::post('/{provider}', [App\Http\Controllers\WalletController::class, 'handleWithdrawalWebhook'])
+            ->name('provider')
+            ->withoutMiddleware(['auth']);
     });
 
     // Routes Transactions
@@ -327,6 +349,38 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/item/{item}/available', [App\Http\Controllers\MessageController::class, 'getAvailableDiscounts'])->name('available');
     });
 });
+
+// ========================================
+// Routes de pré-inscription (PUBLIC)
+// ========================================
+Route::prefix('preregistration')->name('preregistration.')->group(function () {
+    Route::get('/', [App\Http\Controllers\PreRegistrationController::class, 'index'])->name('index');
+    Route::post('/', [App\Http\Controllers\PreRegistrationController::class, 'store'])->name('store');
+    Route::get('/success', [App\Http\Controllers\PreRegistrationController::class, 'success'])->name('success');
+    Route::get('/confirm/{token}', [App\Http\Controllers\PreRegistrationController::class, 'confirm'])->name('confirm');
+    Route::get('/already-confirmed', [App\Http\Controllers\PreRegistrationController::class, 'alreadyConfirmed'])->name('already-confirmed');
+    Route::get('/stats', [App\Http\Controllers\PreRegistrationController::class, 'stats'])->name('stats');
+});
+
+// ========================================
+// Routes admin pour gérer les pré-inscriptions
+// ========================================
+Route::middleware(['auth', 'admin'])->prefix('admin/waiting-users')->name('admin.waiting-users.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\WaitingUsersController::class, 'index'])->name('index');
+    Route::get('/{waitingUser}', [App\Http\Controllers\Admin\WaitingUsersController::class, 'show'])->name('show');
+    Route::post('/{waitingUser}/approve', [App\Http\Controllers\Admin\WaitingUsersController::class, 'approve'])->name('approve');
+    Route::post('/{waitingUser}/reject', [App\Http\Controllers\Admin\WaitingUsersController::class, 'reject'])->name('reject');
+    Route::post('/bulk-action', [App\Http\Controllers\Admin\WaitingUsersController::class, 'bulkAction'])->name('bulk-action');
+    Route::post('/{waitingUser}/resend-confirmation', [App\Http\Controllers\Admin\WaitingUsersController::class, 'resendConfirmation'])->name('resend-confirmation');
+    Route::delete('/{waitingUser}', [App\Http\Controllers\Admin\WaitingUsersController::class, 'destroy'])->name('destroy');
+    Route::get('/export/csv', [App\Http\Controllers\Admin\WaitingUsersController::class, 'export'])->name('export');
+});
+
+// ========================================
+// Routes publiques pour définir le mot de passe après approbation
+// ========================================
+Route::get('/set-password', [App\Http\Controllers\Admin\AdminController::class, 'showSetPasswordForm'])->name('password.setup');
+Route::post('/set-password', [App\Http\Controllers\Admin\AdminController::class, 'setPassword'])->name('password.setup.store');
 
 require __DIR__.'/auth.php';
 
