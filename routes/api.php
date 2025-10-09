@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BotController;
+use App\Http\Controllers\WalletController;
 
 /*
 |--------------------------------------------------------------------------
@@ -134,6 +135,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{brand}', [BrandController::class, 'update']);
         Route::delete('/{brand}', [BrandController::class, 'destroy']);
     });
+});
+
+// Routes Admin protégées
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    // Routes API admin ici si nécessaire
 });
 
 // Route pour obtenir l'utilisateur authentifié

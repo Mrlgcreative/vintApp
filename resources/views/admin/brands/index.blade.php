@@ -193,142 +193,143 @@
 </div>
 
 <!-- Liste des marques -->
-<div class="card shadow-sm">
-    <div class="card-header bg-white border-bottom">
-        <div class="d-flex justify-content-between align-items-center">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="p-4 md:p-6 border-b border-gray-200">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
-                <h5 class="card-title mb-0">Liste des marques</h5>
+                <h5 class="text-lg md:text-xl font-bold text-gray-900 mb-1">Liste des marques</h5>
                 @if(isset($brands))
-                    <small class="text-muted">{{ $brands->total() }} marque(s) trouvée(s)</small>
+                    <p class="text-xs md:text-sm text-gray-500">{{ $brands->total() }} marque(s) trouvée(s)</p>
                 @endif
             </div>
-            <div class="d-flex gap-2">
+            <div class="flex gap-2 items-center">
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" id="showInactive" onchange="toggleInactive()">
-                    <label class="form-check-label small" for="showInactive">
+                    <label class="form-check-label text-xs md:text-sm" for="showInactive">
                         Voir inactives
                     </label>
                 </div>
             </div>
         </div>
     </div>
-    <div class="card-body p-0">
+    <div class="p-0">
         @if(isset($brands) && $brands->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
+            <!-- Version Desktop - Table -->
+            <div class="hidden lg:block overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th class="border-0">
+                            <th class="px-6 py-4 text-left">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleSelectAll()">
                                 </div>
                             </th>
-                            <th class="border-0">Marque</th>
-                            <th class="border-0">Statut</th>
-                            <th class="border-0">Pays</th>
-                            <th class="border-0">Articles</th>
-                            <th class="border-0">Créée le</th>
-                            <th class="border-0 text-end">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Marque</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pays</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Articles</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Créée le</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-200">
                         @foreach($brands as $brand)
-                        <tr data-brand-id="{{ $brand->id }}" class="{{ !$brand->is_active ? 'table-secondary' : '' }}">
-                            <td>
+                        <tr data-brand-id="{{ $brand->id }}" class="hover:bg-gray-50 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
+                            <td class="px-6 py-4">
                                 <div class="form-check">
                                     <input class="form-check-input brand-checkbox" type="checkbox" value="{{ $brand->id }}">
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
                                     @if($brand->logo)
                                         <img src="{{ $brand->logo_url }}" 
-                                             class="rounded me-3 border" width="45" height="45" style="object-fit: cover;"
+                                             class="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
                                              alt="Logo {{ $brand->name }}">
                                     @else
-                                        <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center me-3 border" 
-                                             style="width: 45px; height: 45px;">
-                                            <span class="fw-bold">{{ strtoupper(substr($brand->name, 0, 2)) }}</span>
+                                        <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
+                                            <span class="font-bold text-sm">{{ strtoupper(substr($brand->name, 0, 2)) }}</span>
                                         </div>
                                     @endif
                                     <div>
-                                        <div class="fw-semibold">{{ $brand->name }}</div>
+                                        <div class="font-semibold text-gray-900">{{ $brand->name }}</div>
                                         @if($brand->slug)
-                                            <small class="text-muted">{{ $brand->slug }}</small>
+                                            <div class="text-xs text-gray-500">{{ $brand->slug }}</div>
                                         @endif
                                         @if($brand->description)
-                                            <small class="text-muted d-block">{{ Str::limit($brand->description, 40) }}</small>
+                                            <div class="text-xs text-gray-400 mt-0.5">{{ Str::limit($brand->description, 40) }}</div>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex flex-column gap-1">
-                                    <span class="badge bg-{{ $brand->is_active ? 'success' : 'secondary' }} bg-opacity-15 text-{{ $brand->is_active ? 'success' : 'secondary' }} border border-{{ $brand->is_active ? 'success' : 'secondary' }}">
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1.5">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full {{ $brand->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1.5"></span>
                                         {{ $brand->is_active ? 'Active' : 'Inactive' }}
                                     </span>
                                     @if($brand->is_featured)
-                                        <span class="badge bg-warning bg-opacity-15 text-warning border border-warning">
-                                            <i class="fas fa-star me-1"></i>Vedette
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                            <i class="fas fa-star text-yellow-500 mr-1"></i>Vedette
                                         </span>
                                     @endif
                                 </div>
                             </td>
-                            <td>
+                            <td class="px-6 py-4">
                                 @if($brand->country)
-                                    <div class="d-flex align-items-center">
-                                        <span class="fi fi-{{ strtolower($brand->country) }} me-2"></span>
-                                        <span>{{ $brand->country }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span class="fi fi-{{ strtolower($brand->country) }}"></span>
+                                        <span class="text-sm text-gray-700">{{ $brand->country }}</span>
                                     </div>
                                 @else
-                                    <span class="text-muted">Non spécifié</span>
+                                    <span class="text-sm text-gray-400">Non spécifié</span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <strong class="text-primary">{{ $brand->items_count ?? 0 }}</strong>
-                                    <small class="text-muted ms-1">articles</small>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <strong class="text-primary-600 text-lg">{{ $brand->items_count ?? 0 }}</strong>
+                                    <span class="text-xs text-gray-500 ml-1">articles</span>
                                 </div>
                                 @if($brand->items_count > 0)
-                                    <small class="text-muted">
+                                    <div class="text-xs text-gray-400 mt-1">
                                         Dernier: {{ $brand->latest_item_date ? $brand->latest_item_date->format('d/m/Y') : 'N/A' }}
-                                    </small>
+                                    </div>
                                 @endif
                             </td>
-                            <td>
-                                <div>{{ $brand->created_at->format('d/m/Y') }}</div>
-                                <small class="text-muted">{{ $brand->created_at->format('H:i') }}</small>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900">{{ $brand->created_at->format('d/m/Y') }}</div>
+                                <div class="text-xs text-gray-500">{{ $brand->created_at->format('H:i') }}</div>
                             </td>
-                            <td>
-                                <div class="d-flex gap-1 justify-content-end">
+                            <td class="px-6 py-4">
+                                <div class="flex gap-1 justify-end items-center">
                                     <a href="{{ route('admin.brands.show', $brand) }}" 
-                                       class="btn btn-sm btn-outline-info" 
+                                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors" 
                                        data-bs-toggle="tooltip" 
                                        title="Voir les détails">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     <a href="{{ route('admin.brands.edit', $brand) }}" 
-                                       class="btn btn-sm btn-outline-primary"
+                                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
                                        data-bs-toggle="tooltip" 
                                        title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors" 
                                                 type="button" 
                                                 data-bs-toggle="dropdown">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                        <ul class="dropdown-menu">
+                                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
                                             <li>
                                                 <button class="dropdown-item" onclick="toggleBrandStatus({{ $brand->id }})">
-                                                    <i class="fas fa-{{ $brand->is_active ? 'pause' : 'play' }} me-2"></i>
+                                                    <i class="fas fa-{{ $brand->is_active ? 'pause' : 'play' }} me-2 text-{{ $brand->is_active ? 'warning' : 'success' }}"></i>
                                                     {{ $brand->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
                                             </li>
                                             <li>
                                                 <button class="dropdown-item" onclick="toggleBrandFeatured({{ $brand->id }})">
-                                                    <i class="fas fa-star me-2"></i>
+                                                    <i class="fas fa-star me-2 text-yellow-500"></i>
                                                     {{ $brand->is_featured ? 'Retirer de la vedette' : 'Mettre en vedette' }}
                                                 </button>
                                             </li>
@@ -348,21 +349,134 @@
                 </table>
             </div>
             
-            <!-- Actions en lot -->
-            <div class="card-footer bg-light border-top" id="bulkActions" style="display: none;">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="fw-semibold" id="selectedCount">0</span> marque(s) sélectionnée(s)
+            <!-- Version Mobile/Tablet - Cartes -->
+            <div class="lg:hidden">
+                @foreach($brands as $brand)
+                <div data-brand-id="{{ $brand->id }}" class="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
+                    <div class="flex gap-3">
+                        <!-- Checkbox et Logo -->
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="form-check">
+                                <input class="form-check-input brand-checkbox" type="checkbox" value="{{ $brand->id }}">
+                            </div>
+                            @if($brand->logo)
+                                <img src="{{ $brand->logo_url }}" 
+                                     class="w-16 h-16 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                     alt="Logo {{ $brand->name }}">
+                            @else
+                                <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
+                                    <span class="font-bold">{{ strtoupper(substr($brand->name, 0, 2)) }}</span>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <!-- Contenu principal -->
+                        <div class="flex-1 min-w-0">
+                            <!-- En-tête avec nom et actions -->
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-1 min-w-0">
+                                    <h6 class="font-semibold text-gray-900 truncate">{{ $brand->name }}</h6>
+                                    @if($brand->slug)
+                                        <p class="text-xs text-gray-500 truncate">{{ $brand->slug }}</p>
+                                    @endif
+                                </div>
+                                
+                                <!-- Menu dropdown actions mobile -->
+                                <div class="relative">
+                                    <button class="text-gray-400 hover:text-gray-600 p-1" onclick="toggleMobileDropdown({{ $brand->id }})">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+                                         id="mobile-dropdown-{{ $brand->id }}">
+                                        <div class="py-1">
+                                            <a href="{{ route('admin.brands.show', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-eye w-4"></i> Voir
+                                            </a>
+                                            <a href="{{ route('admin.brands.edit', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                <i class="fas fa-edit w-4"></i> Modifier
+                                            </a>
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleBrandStatus({{ $brand->id }})">
+                                                <i class="fas {{ $brand->is_active ? 'fa-pause' : 'fa-play' }} w-4"></i>
+                                                {{ $brand->is_active ? 'Désactiver' : 'Activer' }}
+                                            </button>
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleBrandFeatured({{ $brand->id }})">
+                                                <i class="fas fa-star w-4"></i>
+                                                {{ $brand->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
+                                            </button>
+                                            <hr class="my-1">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50" onclick="deleteBrand({{ $brand->id }}, '{{ $brand->name }}')">
+                                                <i class="fas fa-trash w-4"></i> Supprimer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            @if($brand->description)
+                                <p class="text-xs text-gray-400 mb-2 line-clamp-2">{{ $brand->description }}</p>
+                            @endif
+                            
+                            <!-- Badges et infos -->
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $brand->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1"></span>
+                                    {{ $brand->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                                
+                                @if($brand->is_featured)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                        <i class="fas fa-star text-yellow-500 mr-1"></i>Vedette
+                                    </span>
+                                @endif
+                                
+                                @if($brand->country)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                        <span class="fi fi-{{ strtolower($brand->country) }} mr-1"></span>
+                                        {{ $brand->country }}
+                                    </span>
+                                @endif
+                            </div>
+                            
+                            <!-- Statistiques -->
+                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                                <span>
+                                    <i class="fas fa-box text-gray-400"></i>
+                                    {{ $brand->items_count ?? 0 }} articles
+                                </span>
+                                <span>
+                                    <i class="fas fa-calendar text-gray-400"></i>
+                                    {{ $brand->created_at->format('d/m/Y') }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-success" onclick="bulkAction('activate')">
-                            <i class="fas fa-check me-1"></i>Activer
+                </div>
+                @endforeach
+            </div>
+            
+            <!-- Actions en lot -->
+            <div class="p-4 bg-gray-50 border-t border-gray-200" id="bulkActions" style="display: none;">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+                    <div class="text-xs sm:text-sm">
+                        <span class="font-semibold text-gray-900" id="selectedCount">0</span>
+                        <span class="text-gray-600"> marque(s) sélectionnée(s)</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2 justify-center sm:justify-end">
+                        <button class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 transition-colors" onclick="bulkAction('activate')">
+                            <i class="fas fa-check me-1"></i>
+                            <span class="hidden sm:inline">Activer</span>
+                            <span class="sm:hidden"><i class="fas fa-check"></i></span>
                         </button>
-                        <button class="btn btn-sm btn-warning" onclick="bulkAction('deactivate')">
-                            <i class="fas fa-pause me-1"></i>Désactiver
+                        <button class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-medium text-yellow-700 bg-yellow-100 rounded-lg hover:bg-yellow-200 transition-colors" onclick="bulkAction('deactivate')">
+                            <i class="fas fa-pause me-1"></i>
+                            <span class="hidden sm:inline">Désactiver</span>
+                            <span class="sm:hidden"><i class="fas fa-pause"></i></span>
                         </button>
-                        <button class="btn btn-sm btn-danger" onclick="bulkAction('delete')">
-                            <i class="fas fa-trash me-1"></i>Supprimer
+                        <button class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors" onclick="bulkAction('delete')">
+                            <i class="fas fa-trash me-1"></i>
+                            <span class="hidden sm:inline">Supprimer</span>
+                            <span class="sm:hidden"><i class="fas fa-trash"></i></span>
                         </button>
                     </div>
                 </div>
@@ -370,32 +484,36 @@
             
             <!-- Pagination -->
             @if($brands->hasPages())
-                <div class="card-footer bg-white border-top">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="text-muted small">
-                            Affichage de {{ $brands->firstItem() }} à {{ $brands->lastItem() }} 
-                            sur {{ $brands->total() }} résultats
+                <div class="p-4 bg-white border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
+                            Affichage de <span class="font-medium text-gray-900">{{ $brands->firstItem() }}</span> à <span class="font-medium text-gray-900">{{ $brands->lastItem() }}</span> 
+                            sur <span class="font-medium text-gray-900">{{ $brands->total() }}</span> résultats
                         </div>
-                        <div>
+                        <div class="w-full sm:w-auto overflow-x-auto">
                             {{ $brands->appends(request()->query())->links() }}
                         </div>
                     </div>
                 </div>
             @endif
         @else
-            <div class="text-center py-5">
+            <div class="text-center py-12">
                 @if(request()->has('search') || request()->has('status') || request()->has('country'))
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h5>Aucune marque trouvée</h5>
-                    <p class="text-muted">Aucune marque ne correspond à vos critères de recherche.</p>
-                    <a href="{{ route('admin.brands.index') }}" class="btn btn-outline-primary">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                        <i class="fas fa-search text-3xl text-gray-400"></i>
+                    </div>
+                    <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune marque trouvée</h5>
+                    <p class="text-gray-500 mb-4">Aucune marque ne correspond à vos critères de recherche.</p>
+                    <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                         <i class="fas fa-times me-2"></i>Effacer les filtres
                     </a>
                 @else
-                    <i class="fas fa-tags fa-3x text-muted mb-3"></i>
-                    <h5>Aucune marque enregistrée</h5>
-                    <p class="text-muted">Commencez par ajouter des marques pour organiser vos articles.</p>
-                    <a href="{{ route('admin.brands.create') }}" class="btn btn-primary">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
+                        <i class="fas fa-tags text-3xl text-primary-600"></i>
+                    </div>
+                    <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune marque enregistrée</h5>
+                    <p class="text-gray-500 mb-4">Commencez par ajouter des marques pour organiser vos articles.</p>
+                    <a href="{{ route('admin.brands.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                         <i class="fas fa-plus me-2"></i>Ajouter une marque
                     </a>
                 @endif
@@ -405,26 +523,66 @@
 </div>
 
 <!-- Modal de confirmation de suppression -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer la marque <strong id="brandNameToDelete"></strong> ?</p>
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Cette action est irréversible et supprimera toutes les données associées.
+<div id="deleteModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Overlay -->
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeDeleteModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Center trick -->
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        
+        <!-- Modal Panel -->
+        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <!-- Header -->
+            <div class="bg-red-50 px-6 py-4 border-b border-red-100">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-red-800 flex items-center" id="modal-title">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Confirmer la suppression
+                    </h3>
+                    <button type="button" onclick="closeDeleteModal()" class="text-red-400 hover:text-red-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <form id="deleteForm" method="POST" class="d-inline">
+            
+            <!-- Body -->
+            <div class="bg-white px-6 py-4">
+                <p class="text-gray-700 mb-4">
+                    Êtes-vous sûr de vouloir supprimer la marque 
+                    <strong class="text-gray-900" id="brandNameToDelete"></strong> ?
+                </p>
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700 font-medium">
+                                Cette action est <strong>irréversible</strong> et supprimera :
+                            </p>
+                            <ul class="mt-2 text-sm text-yellow-700 list-disc list-inside space-y-1">
+                                <li>Toutes les informations de la marque</li>
+                                <li>Les associations avec les articles</li>
+                                <li>L'historique et les statistiques</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors w-full sm:w-auto">
+                    <i class="fas fa-times mr-2"></i>Annuler
+                </button>
+                <form id="deleteForm" method="POST" class="w-full sm:w-auto">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
+                    <button type="submit" class="inline-flex justify-center items-center w-full px-4 py-2 bg-red-600 border border-transparent rounded-lg text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Supprimer définitivement
+                    </button>
                 </form>
             </div>
         </div>
@@ -434,6 +592,30 @@
 
 @push('scripts')
 <script>
+// Gestion des dropdowns
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+    
+    // Fermer tous les autres dropdowns
+    allDropdowns.forEach(d => {
+        if (d.id !== dropdownId) {
+            d.classList.add('hidden');
+        }
+    });
+    
+    // Toggle le dropdown actuel
+    dropdown.classList.toggle('hidden');
+}
+
+// Fermer les dropdowns en cliquant en dehors
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('button[onclick*="toggleDropdown"]')) {
+        const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+        allDropdowns.forEach(d => d.classList.add('hidden'));
+    }
+});
+
 // Initialiser les tooltips
 document.addEventListener('DOMContentLoaded', function() {
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -509,9 +691,25 @@ function deleteBrand(brandId, brandName) {
     document.getElementById('brandNameToDelete').textContent = brandName;
     document.getElementById('deleteForm').action = `/admin/brands/${brandId}`;
     
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    deleteModal.show();
+    // Ouvrir le modal
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Empêcher le scroll
 }
+
+// Fermer le modal de suppression
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = ''; // Réactiver le scroll
+}
+
+// Fermer le modal avec la touche Escape
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeDeleteModal();
+    }
+});
 
 // Actions en lot
 function bulkAction(action) {
@@ -559,5 +757,37 @@ function exportBrands(format) {
     
     window.location.href = `{{ route('admin.brands.index') }}?${params.toString()}`;
 }
+
+// Gestion des dropdowns mobile
+function toggleMobileDropdown(brandId) {
+    const dropdown = document.getElementById(`mobile-dropdown-${brandId}`);
+    const allDropdowns = document.querySelectorAll('[id^="mobile-dropdown-"]');
+    
+    // Fermer tous les autres dropdowns
+    allDropdowns.forEach(d => {
+        if (d.id !== `mobile-dropdown-${brandId}`) {
+            d.classList.add('hidden');
+        }
+    });
+    
+    // Toggle le dropdown actuel
+    dropdown.classList.toggle('hidden');
+}
+
+// Fermer les dropdowns en cliquant en dehors
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('[onclick^="toggleMobileDropdown"]') && !event.target.closest('[id^="mobile-dropdown-"]')) {
+        const allDropdowns = document.querySelectorAll('[id^="mobile-dropdown-"]');
+        allDropdowns.forEach(d => d.classList.add('hidden'));
+    }
+});
+
+// Améliorer la gestion des checkboxes sur mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.brand-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateBulkActions);
+    });
+});
 </script>
 @endpush

@@ -3,219 +3,329 @@
 @section('title', 'Logs système')
 
 @section('content')
-<div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-bold text-gray-900">Logs système</h1>
-    <div class="flex gap-3">
+<!-- Header -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+    <div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Logs système</h1>
+        <p class="text-gray-600 mt-1">Consultez et gérez les logs de l'application</p>
+    </div>
+    <div class="flex flex-wrap gap-3">
         <button onclick="clearLogs()" 
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors">
-            <i class="fas fa-broom mr-2"></i>Vider les logs
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors shadow-sm">
+            <i class="fas fa-broom mr-2"></i>
+            <span>Vider les logs</span>
         </button>
         <button onclick="downloadLogs()" 
-                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors">
-            <i class="fas fa-download mr-2"></i>Télécharger
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-lg text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors shadow-sm">
+            <i class="fas fa-download mr-2"></i>
+            <span>Télécharger</span>
         </button>
+    </div>
+</div>
+
+<!-- Statistiques -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Erreurs aujourd'hui</p>
+                <p class="text-3xl font-bold text-red-600 mt-2">{{ $stats['error'] ?? 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-times-circle text-red-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Avertissements</p>
+                <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $stats['warning'] ?? 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Informations</p>
+                <p class="text-3xl font-bold text-blue-600 mt-2">{{ $stats['info'] ?? 0 }}</p>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-info-circle text-blue-600 text-xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-gray-600">Taille du fichier</p>
+                <p class="text-3xl font-bold text-purple-600 mt-2">{{ number_format(($fileSize ?? 0) / 1024, 0) }} KB</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+            </div>
+        </div>
     </div>
 </div>
 
 <!-- Filtres -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
     <div class="p-6">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtres</h2>
+        <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Niveau -->
             <div>
-                <label for="level" class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="level" name="level">
+                <label for="level" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-layer-group text-gray-400 mr-1"></i>
+                    Niveau
+                </label>
+                <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white" 
+                        id="level" 
+                        name="level">
                     <option value="">Tous les niveaux</option>
-                    <option value="emergency" {{ request('level') === 'emergency' ? 'selected' : '' }}>Emergency</option>
-                    <option value="alert" {{ request('level') === 'alert' ? 'selected' : '' }}>Alert</option>
-                    <option value="critical" {{ request('level') === 'critical' ? 'selected' : '' }}>Critical</option>
-                    <option value="error" {{ request('level') === 'error' ? 'selected' : '' }}>Error</option>
-                    <option value="warning" {{ request('level') === 'warning' ? 'selected' : '' }}>Warning</option>
-                    <option value="notice" {{ request('level') === 'notice' ? 'selected' : '' }}>Notice</option>
-                    <option value="info" {{ request('level') === 'info' ? 'selected' : '' }}>Info</option>
-                    <option value="debug" {{ request('level') === 'debug' ? 'selected' : '' }}>Debug</option>
+                    <option value="emergency" {{ request('level') === 'emergency' ? 'selected' : '' }}>🚨 Emergency</option>
+                    <option value="alert" {{ request('level') === 'alert' ? 'selected' : '' }}>🔴 Alert</option>
+                    <option value="critical" {{ request('level') === 'critical' ? 'selected' : '' }}>❌ Critical</option>
+                    <option value="error" {{ request('level') === 'error' ? 'selected' : '' }}>❗ Error</option>
+                    <option value="warning" {{ request('level') === 'warning' ? 'selected' : '' }}>⚠️ Warning</option>
+                    <option value="notice" {{ request('level') === 'notice' ? 'selected' : '' }}>📢 Notice</option>
+                    <option value="info" {{ request('level') === 'info' ? 'selected' : '' }}>ℹ️ Info</option>
+                    <option value="debug" {{ request('level') === 'debug' ? 'selected' : '' }}>🐛 Debug</option>
                 </select>
             </div>
             
-            <div class="col-md-3">
-                <label for="date" class="form-label">Date</label>
-                <input type="date" class="form-control" id="date" name="date" value="{{ request('date') }}">
+            <!-- Date -->
+            <div>
+                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-calendar text-gray-400 mr-1"></i>
+                    Date
+                </label>
+                <input type="date" 
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
+                       id="date" 
+                       name="date" 
+                       value="{{ request('date') }}">
             </div>
             
-            <div class="col-md-4">
-                <label for="search" class="form-label">Recherche</label>
-                <input type="text" class="form-control" id="search" name="search" 
-                       placeholder="Rechercher dans les logs..." value="{{ request('search') }}">
+            <!-- Recherche -->
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-search text-gray-400 mr-1"></i>
+                    Recherche
+                </label>
+                <input type="text" 
+                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
+                       id="search" 
+                       name="search" 
+                       placeholder="Rechercher..." 
+                       value="{{ request('search') }}">
             </div>
             
-            <div class="col-md-2">
-                <label class="form-label">&nbsp;</label>
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Filtrer
-                    </button>
-                </div>
+            <!-- Bouton -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">&nbsp;</label>
+                <button type="submit" 
+                        class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+                    <i class="fas fa-filter mr-2"></i>
+                    Filtrer
+                </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Logs -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">Entrées des logs</h5>
+<!-- Logs - Vue Desktop -->
+<div class="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <h2 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-list mr-2 text-gray-600"></i>
+            Entrées des logs
+        </h2>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Niveau</th>
-                        <th>Message</th>
-                        <th>Contexte</th>
-                        <th>Date/Heure</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Exemple de logs statiques pour la démonstration -->
-                    <tr>
-                        <td>
-                            <span class="badge bg-danger">ERROR</span>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Niveau
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Message
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Contexte
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date/Heure
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($logs as $log)
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            @php
+                                $levelLower = strtolower($log['level']);
+                                $badgeClasses = match($levelLower) {
+                                    'emergency', 'alert', 'critical', 'error' => 'bg-red-100 text-red-800',
+                                    'warning' => 'bg-yellow-100 text-yellow-800',
+                                    'notice', 'info' => 'bg-blue-100 text-blue-800',
+                                    'debug' => 'bg-gray-100 text-gray-800',
+                                    default => 'bg-gray-100 text-gray-800',
+                                };
+                                $icon = match($levelLower) {
+                                    'emergency', 'alert', 'critical', 'error' => 'fa-times-circle',
+                                    'warning' => 'fa-exclamation-triangle',
+                                    'notice', 'info' => 'fa-info-circle',
+                                    'debug' => 'fa-bug',
+                                    default => 'fa-circle',
+                                };
+                            @endphp
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $badgeClasses }}">
+                                <i class="fas {{ $icon }} mr-1"></i>
+                                {{ strtoupper($log['level']) }}
+                            </span>
                         </td>
-                        <td>
-                            <div class="text-wrap" style="max-width: 400px;">
-                                SQLSTATE[42S22]: Column not found: 1054 Unknown column 'status' in 'where clause'
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900 max-w-md">
+                                {{ \Illuminate\Support\Str::limit($log['message'], 100) }}
                             </div>
                         </td>
-                        <td>
-                            <small class="text-muted">
-                                <div><strong>File:</strong> AdminController.php:45</div>
-                                <div><strong>User:</strong> admin@vintapp.com</div>
-                            </small>
-                        </td>
-                        <td>
-                            <div>{{ now()->format('d/m/Y H:i:s') }}</div>
-                            <small class="text-muted">{{ now()->diffForHumans() }}</small>
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge bg-warning">WARNING</span>
-                        </td>
-                        <td>
-                            <div class="text-wrap" style="max-width: 400px;">
-                                Attempting to access admin panel without proper authentication
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-600 space-y-1">
+                                <div><span class="font-medium">Env:</span> {{ $log['env'] }}</div>
+                                @if(!empty(trim($log['context'])))
+                                    <div class="text-xs max-w-xs overflow-hidden">
+                                        <span class="font-medium">Context:</span>
+                                        {{ \Illuminate\Support\Str::limit($log['context'], 50) }}
+                                    </div>
+                                @endif
                             </div>
                         </td>
-                        <td>
-                            <small class="text-muted">
-                                <div><strong>IP:</strong> 127.0.0.1</div>
-                                <div><strong>Route:</strong> admin.dashboard</div>
-                            </small>
-                        </td>
-                        <td>
-                            <div>{{ now()->subMinutes(15)->format('d/m/Y H:i:s') }}</div>
-                            <small class="text-muted">{{ now()->subMinutes(15)->diffForHumans() }}</small>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</div>
+                            <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</div>
                         </td>
                     </tr>
-                    
+                @empty
                     <tr>
-                        <td>
-                            <span class="badge bg-success">INFO</span>
-                        </td>
-                        <td>
-                            <div class="text-wrap" style="max-width: 400px;">
-                                User authenticated successfully
+                        <td colspan="4" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-400">
+                                <i class="fas fa-inbox text-4xl mb-3"></i>
+                                <p class="text-lg font-medium">Aucun log trouvé</p>
+                                <p class="text-sm">Les logs s'afficheront ici lorsqu'ils seront générés</p>
                             </div>
                         </td>
-                        <td>
-                            <small class="text-muted">
-                                <div><strong>User:</strong> admin@vintapp.com</div>
-                                <div><strong>Action:</strong> login</div>
-                            </small>
-                        </td>
-                        <td>
-                            <div>{{ now()->subMinutes(30)->format('d/m/Y H:i:s') }}</div>
-                            <small class="text-muted">{{ now()->subMinutes(30)->diffForHumans() }}</small>
-                        </td>
                     </tr>
-                    
-                    <tr>
-                        <td>
-                            <span class="badge bg-info">DEBUG</span>
-                        </td>
-                        <td>
-                            <div class="text-wrap" style="max-width: 400px;">
-                                Query executed: SELECT * FROM users WHERE email = ?
-                            </div>
-                        </td>
-                        <td>
-                            <small class="text-muted">
-                                <div><strong>Duration:</strong> 2.45ms</div>
-                                <div><strong>Bindings:</strong> ["admin@vintapp.com"]</div>
-                            </small>
-                        </td>
-                        <td>
-                            <div>{{ now()->subHour()->format('d/m/Y H:i:s') }}</div>
-                            <small class="text-muted">{{ now()->subHour()->diffForHumans() }}</small>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Informations sur les fichiers de logs -->
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Fichiers de logs</h5>
+<!-- Logs - Vue Mobile (Cards) -->
+<div class="lg:hidden space-y-4">
+    @forelse($logs as $log)
+        @php
+            $levelLower = strtolower($log['level']);
+            $bgClass = match($levelLower) {
+                'emergency', 'alert', 'critical', 'error' => 'bg-red-50 border-red-100',
+                'warning' => 'bg-yellow-50 border-yellow-100',
+                'notice', 'info' => 'bg-blue-50 border-blue-100',
+                'debug' => 'bg-gray-50 border-gray-100',
+                default => 'bg-gray-50 border-gray-100',
+            };
+            $badgeClass = match($levelLower) {
+                'emergency', 'alert', 'critical', 'error' => 'bg-red-100 text-red-800',
+                'warning' => 'bg-yellow-100 text-yellow-800',
+                'notice', 'info' => 'bg-blue-100 text-blue-800',
+                'debug' => 'bg-gray-100 text-gray-800',
+                default => 'bg-gray-100 text-gray-800',
+            };
+            $icon = match($levelLower) {
+                'emergency', 'alert', 'critical', 'error' => 'fa-times-circle',
+                'warning' => 'fa-exclamation-triangle',
+                'notice', 'info' => 'fa-info-circle',
+                'debug' => 'fa-bug',
+                default => 'fa-circle',
+            };
+        @endphp
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="{{ $bgClass }} px-4 py-3 border-b">
+                <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $badgeClass }}">
+                        <i class="fas {{ $icon }} mr-1"></i>
+                        {{ strtoupper($log['level']) }}
+                    </span>
+                    <span class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</span>
+                </div>
             </div>
-            <div class="card-body">
-                <ul class="list-group">
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        laravel.log
-                        <span class="badge bg-primary rounded-pill">{{ number_format(filesize(storage_path('logs/laravel.log')) / 1024, 2) }} KB</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Statistiques</h5>
-            </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6">
-                        <h4 class="text-danger">12</h4>
-                        <small class="text-muted">Erreurs aujourd'hui</small>
+            <div class="p-4 space-y-3">
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-1">Message:</p>
+                    <p class="text-sm text-gray-900">{{ $log['message'] }}</p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-700 mb-1">Contexte:</p>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <div><span class="font-medium">Env:</span> {{ $log['env'] }}</div>
+                        @if(!empty(trim($log['context'])))
+                            <div class="text-xs bg-gray-50 p-2 rounded max-h-24 overflow-auto">
+                                <pre class="whitespace-pre-wrap text-xs">{{ \Illuminate\Support\Str::limit($log['context'], 200) }}</pre>
+                            </div>
+                        @endif
                     </div>
-                    <div class="col-6">
-                        <h4 class="text-warning">8</h4>
-                        <small class="text-muted">Avertissements</small>
-                    </div>
+                </div>
+                <div class="pt-2 border-t border-gray-100">
+                    <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</p>
                 </div>
             </div>
         </div>
-    </div>
+    @empty
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+            <div class="flex flex-col items-center justify-center text-gray-400">
+                <i class="fas fa-inbox text-5xl mb-4"></i>
+                <p class="text-lg font-medium text-center">Aucun log trouvé</p>
+                <p class="text-sm text-center mt-2">Les logs s'afficheront ici lorsqu'ils seront générés</p>
+            </div>
+        </div>
+    @endforelse
 </div>
 
+@push('scripts')
 <script>
 function clearLogs() {
     if (confirm('Êtes-vous sûr de vouloir vider tous les logs ? Cette action est irréversible.')) {
         // AJAX call to clear logs
-        alert('Logs vidés avec succès !');
+        fetch('/admin/logs/clear', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert('Logs vidés avec succès !');
+            location.reload();
+        })
+        .catch(error => {
+            alert('Erreur lors de la suppression des logs');
+            console.error(error);
+        });
     }
 }
 
 function downloadLogs() {
-    // Télécharger le fichier de logs
     window.location.href = '/admin/logs/download';
 }
 </script>
+@endpush
 @endsection

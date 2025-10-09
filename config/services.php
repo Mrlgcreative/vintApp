@@ -35,4 +35,28 @@ return [
         ],
     ],
 
+    'forex' => [
+        'provider' => env('FOREX_API_PROVIDER', 'exchangerate-api'),
+        'exchangerate_api_key' => env('EXCHANGERATE_API_KEY'),
+        'base_currency' => env('FOREX_BASE_CURRENCY', 'USD'),
+        'cache_duration' => env('FOREX_CACHE_DURATION', 3600),
+        
+        // URLs des différents providers
+        'providers' => [
+            'exchangerate-api' => [
+                'url' => 'https://v6.exchangerate-api.com/v6',
+                'free' => true,
+            ],
+            'fixer' => [
+                'url' => 'https://api.fixer.io',
+                'free' => false,
+            ],
+            'currencyapi' => [
+                'url' => 'https://api.currencyapi.com/v3',
+                'free' => true,
+            ],
+        ],
+    ],
+
 ];
+

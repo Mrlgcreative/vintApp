@@ -57,6 +57,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
     Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
     
+    // Settings page
+    Route::get('/settings', function() {
+        return view('settings.index');
+    })->name('settings.index');
+    
     // Dashboard routes
     Route::get('/dashboard/analytics', [App\Http\Controllers\DashboardController::class, 'analytics'])->name('dashboard.analytics');
     Route::get('/dashboard/notifications', [App\Http\Controllers\DashboardController::class, 'notifications'])->name('dashboard.notifications');
@@ -151,6 +156,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{wallet}/approve', [App\Http\Controllers\Admin\AdminController::class, 'approveWallet'])->name('approve');
         Route::post('/{wallet}/reject', [App\Http\Controllers\Admin\AdminController::class, 'rejectWallet'])->name('reject');
         Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminController::class, 'bulkApproveWallets'])->name('bulk-approve');
+        
+        // 🆕 Transfert de commission vers WalletEntreprise
+        Route::post('/transfer-commission', [App\Http\Controllers\WalletController::class, 'transferCommission'])
+            ->name('transfer-commission');
         Route::post('/bulk-reject', [App\Http\Controllers\Admin\AdminController::class, 'bulkRejectWallets'])->name('bulk-reject');
     });
 
@@ -248,7 +257,30 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/{supportChat}/close', [App\Http\Controllers\Admin\SupportController::class, 'close'])->name('close');
         Route::post('/{supportChat}/reopen', [App\Http\Controllers\Admin\SupportController::class, 'reopen'])->name('reopen');
     });
+
+    // Routes pour la gestion des zones géographiques autorisées
+    Route::prefix('settings/locations')->name('locations.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\LocationAccessController::class, 'index'])->name('index');
+        Route::post('/seed', [App\Http\Controllers\Admin\LocationAccessController::class, 'seedDefaultCities'])->name('seed');
+        
+        // Routes pour les villes
+        Route::post('/cities', [App\Http\Controllers\Admin\LocationAccessController::class, 'storeCity'])->name('cities.store');
+        Route::put('/cities/{city}', [App\Http\Controllers\Admin\LocationAccessController::class, 'updateCity'])->name('cities.update');
+        Route::delete('/cities/{city}', [App\Http\Controllers\Admin\LocationAccessController::class, 'destroyCity'])->name('cities.destroy');
+        Route::post('/cities/{city}/toggle-status', [App\Http\Controllers\Admin\LocationAccessController::class, 'toggleCityStatus'])->name('cities.toggle');
+        
+        // Routes pour les régions
+        Route::post('/regions', [App\Http\Controllers\Admin\LocationAccessController::class, 'storeRegion'])->name('regions.store');
+        Route::put('/regions/{region}', [App\Http\Controllers\Admin\LocationAccessController::class, 'updateRegion'])->name('regions.update');
+        Route::delete('/regions/{region}', [App\Http\Controllers\Admin\LocationAccessController::class, 'destroyRegion'])->name('regions.destroy');
+        Route::post('/regions/{region}/toggle-status', [App\Http\Controllers\Admin\LocationAccessController::class, 'toggleRegionStatus'])->name('regions.toggle');
+    });
 });
+
+// Route publique pour la page de restriction géographique
+Route::get('/city-restricted', function() {
+    return view('errors.city_restricted');
+})->name('city.restricted');
 
 // Routes pour le support client (côté utilisateur)
 Route::middleware('auth')->prefix('support')->name('support.')->group(function () {
@@ -284,6 +316,22 @@ Route::prefix('cart')->group(function () {
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/pay', [CartController::class, 'pay'])->name('cart.pay');
     Route::get('/buy/{id}', [App\Http\Controllers\ItemController::class, 'buy'])->name('cart.buy');
+});
+
+// Routes Taux de change (PUBLIC - pas d'auth nécessaire pour consulter le taux)
+Route::prefix('exchange')->name('exchange.')->group(function () {
+    Route::get('/rate', [ExchangeRateController::class, 'getRate'])->name('rate');
+    Route::get('/history', [ExchangeRateController::class, 'history'])->name('history');
+    
+    // Routes nécessitant une authentification
+    Route::middleware('auth')->group(function () {
+        Route::post('/convert', [ExchangeRateController::class, 'convert'])->name('convert');
+    });
+    
+    // Route admin uniquement
+    Route::post('/refresh-rate', [ExchangeRateController::class, 'refreshRate'])
+        ->name('refresh-rate')
+        ->middleware(['auth', 'admin']);
 });
 
 // Routes pour le wallet et les transactions
@@ -327,13 +375,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{wallet}', [PendingWalletController::class, 'show'])->name('show');
         Route::post('/{wallet}/confirm-transfer', [PendingWalletController::class, 'confirmTransfer'])->name('confirm-transfer');
         Route::post('/{wallet}/cancel-transaction', [PendingWalletController::class, 'cancelTransaction'])->name('cancel-transaction');
-    });
-
-    // Routes Taux de change
-    Route::prefix('exchange')->name('exchange.')->group(function () {
-        Route::get('/rate', [ExchangeRateController::class, 'getRate'])->name('rate');
-        Route::post('/convert', [ExchangeRateController::class, 'convert'])->name('convert');
-        Route::get('/history', [ExchangeRateController::class, 'history'])->name('history');
     });
 
     // Routes Contact et Réductions
@@ -387,4 +428,6 @@ require __DIR__.'/auth.php';
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
 if (app()->environment(['local', 'testing'])) {
     require __DIR__.'/test-maintenance.php';
+    require __DIR__.'/test-location.php'; // Test géolocalisation
+    require __DIR__.'/test-location-simulate.php'; // Simulation IPs
 }

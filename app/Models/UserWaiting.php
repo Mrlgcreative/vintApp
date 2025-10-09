@@ -20,6 +20,7 @@ class UserWaiting extends Model
         'phone',
         'country',
         'message',
+        'reasons',
         'confirmation_token',
         'password_setup_token',
         'password_setup_token_expires_at',
@@ -36,6 +37,7 @@ class UserWaiting extends Model
     ];
 
     protected $casts = [
+        'reasons' => 'array',
         'email_confirmed_at' => 'datetime',
         'notified_at' => 'datetime',
         'approved_at' => 'datetime',

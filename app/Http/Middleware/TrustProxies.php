@@ -12,7 +12,7 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    protected $proxies;
+    protected $proxies = '*'; // Faire confiance à tous les proxies (ngrok, Cloudflare, etc.)
 
     /**
      * The headers that should be used to detect proxies.

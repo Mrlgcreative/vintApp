@@ -101,6 +101,44 @@
         </div>
         <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
     </div>
+
+    <!-- Carte Commissions USD (WalletEntreprise) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Commissions USD</div>
+                    <div class="text-2xl font-bold text-gray-900">${{ number_format($stats['enterprise_wallet_usd'], 2) }}</div>
+                    <div class="text-xs text-gray-500 mt-1">Taux: {{ number_format($stats['enterprise_commission_rate'], 1) }}%</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-percentage text-2xl text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+    </div>
+
+    <!-- Carte Commissions CDF (WalletEntreprise) -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-2">Commissions CDF</div>
+                    <div class="text-2xl font-bold text-gray-900">{{ number_format($stats['enterprise_wallet_cdf'], 0, ',', ' ') }} FC</div>
+                    <div class="text-xs text-gray-500 mt-1">Franc Congolais</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-hand-holding-usd text-2xl text-indigo-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
+    </div>
 </div>
 
 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">

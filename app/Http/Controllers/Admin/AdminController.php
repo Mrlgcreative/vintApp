@@ -50,6 +50,16 @@ class AdminController extends Controller
             'pending_wallets' => Wallet::where('status', 'pending')->count(),
             'total_wallet_balance' => Wallet::where('is_active', true)->sum('balance'),
             
+            // Wallets Entreprise (Commissions)
+            'enterprise_wallet_usd' => Wallet::where('type', 'enterprise')
+                ->where('currency', 'USD')
+                ->value('balance') ?? 0,
+            'enterprise_wallet_cdf' => Wallet::where('type', 'enterprise')
+                ->where('currency', 'CDF')
+                ->value('balance') ?? 0,
+            'enterprise_commission_rate' => Wallet::where('type', 'enterprise')
+                ->value('commission_rate') ?? 5.00,
+            
             'total_orders' => Order::count(),
             'orders_today' => Order::whereDate('created_at', today())->count(),
             'pending_orders' => Order::where('status', 'pending')->count(),
@@ -558,12 +568,95 @@ class AdminController extends Controller
     /**
      * Logs système
      */
-    public function logs()
+    public function logs(Request $request)
     {
-        // Ici on pourrait implémenter la lecture des logs Laravel
-        // Pour l'instant, on retourne une vue basique
-        
-        return view('admin.logs.index');
+        $logFile = storage_path('logs/laravel.log');
+        $logs = [];
+        $stats = [
+            'error' => 0,
+            'warning' => 0,
+            'info' => 0,
+            'debug' => 0,
+        ];
+
+        if (file_exists($logFile)) {
+            try {
+                // Lire le fichier de logs
+                $content = file_get_contents($logFile);
+                $lines = explode("\n", $content);
+                
+                // Parser les logs
+                $currentLog = null;
+                foreach (array_reverse($lines) as $line) {
+                    if (empty(trim($line))) continue;
+                    
+                    // Détecter le début d'une nouvelle entrée de log
+                    if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.+)/', $line, $matches)) {
+                        // Sauvegarder le log précédent si existe
+                        if ($currentLog !== null) {
+                            // Filtres
+                            $shouldAdd = true;
+                            
+                            if ($request->filled('level') && strtolower($currentLog['level']) !== strtolower($request->level)) {
+                                $shouldAdd = false;
+                            }
+                            
+                            if ($request->filled('date') && !str_contains($currentLog['datetime'], $request->date)) {
+                                $shouldAdd = false;
+                            }
+                            
+                            if ($request->filled('search')) {
+                                $searchTerm = strtolower($request->search);
+                                if (!str_contains(strtolower($currentLog['message']), $searchTerm) &&
+                                    !str_contains(strtolower($currentLog['context']), $searchTerm)) {
+                                    $shouldAdd = false;
+                                }
+                            }
+                            
+                            if ($shouldAdd) {
+                                $logs[] = $currentLog;
+                                
+                                // Compter par niveau
+                                $level = strtolower($currentLog['level']);
+                                if (isset($stats[$level])) {
+                                    $stats[$level]++;
+                                }
+                            }
+                        }
+                        
+                        // Créer une nouvelle entrée
+                        $currentLog = [
+                            'datetime' => $matches[1],
+                            'env' => $matches[2],
+                            'level' => strtoupper($matches[3]),
+                            'message' => $matches[4],
+                            'context' => '',
+                        ];
+                    } else if ($currentLog !== null) {
+                        // Ajouter au contexte du log actuel
+                        $currentLog['context'] .= $line . "\n";
+                    }
+                    
+                    // Limiter à 100 logs pour performance
+                    if (count($logs) >= 100) {
+                        break;
+                    }
+                }
+                
+                // Ajouter le dernier log
+                if ($currentLog !== null && count($logs) < 100) {
+                    $logs[] = $currentLog;
+                }
+                
+            } catch (\Exception $e) {
+                Log::error('Erreur lors de la lecture des logs: ' . $e->getMessage());
+            }
+        }
+
+        // Taille du fichier
+        $fileSize = file_exists($logFile) ? filesize($logFile) : 0;
+
+        return view('admin.logs.index', compact('logs', 'stats', 'fileSize'));
     }
 
     /**
@@ -576,13 +669,26 @@ class AdminController extends Controller
             $settings = Setting::orderBy('category')->orderBy('key')->get()->groupBy('category');
             $categories = $settings->keys()->toArray();
             
-            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories'));
+            // Statistiques du wallet entreprise
+            $enterpriseWallets = [
+                'usd' => Wallet::where('type', 'enterprise')
+                    ->where('currency', 'USD')
+                    ->first(),
+                'cdf' => Wallet::where('type', 'enterprise')
+                    ->where('currency', 'CDF')
+                    ->first(),
+                'commission_rate' => Wallet::where('type', 'enterprise')
+                    ->value('commission_rate') ?? 5.00,
+            ];
+            
+            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories', 'enterpriseWallets'));
         } catch (\Exception $e) {
             Log::error('Erreur lors du chargement des paramètres: ' . $e->getMessage());
             $maintenanceStatus = false;
             $settings = collect();
             $categories = [];
-            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories'));
+            $enterpriseWallets = ['usd' => null, 'cdf' => null, 'commission_rate' => 5.00];
+            return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories', 'enterpriseWallets'));
         }
     }
 

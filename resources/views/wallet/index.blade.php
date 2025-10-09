@@ -208,27 +208,38 @@
                         <!-- Taux de change -->
                         <div class="row mt-3">
                             <div class="col-12">
-                                <div class="alert alert-info mb-0">
+                                <div class="alert alert-info mb-0" id="rateAlert">
                                     <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div>
+                                        <div class="flex-grow-1">
                                             <i class="fas fa-info-circle me-2"></i>
-                                            <span>Taux actuel: <strong id="exchangeRate">1 USD = 2,500 CDF</strong></span>
+                                            <span>Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
+                                            <span id="rateSource" class="badge bg-success ms-2" style="display: none;">
+                                                <i class="fas fa-check-circle"></i> Taux réel
+                                            </span>
+                                            <span id="rateFallback" class="badge bg-warning ms-2" style="display: none;">
+                                                <i class="fas fa-exclamation-triangle"></i> Taux de secours
+                                            </span>
                                         </div>
-                                        <div class="d-flex gap-3 mt-2 mt-md-0">
-                                            <small class="text-muted">
-                                                <i class="fas fa-arrow-right me-1"></i>
-                                                <strong>USD → CDF:</strong> × {{ number_format(2500, 0, ',', ' ') }}
-                                            </small>
-                                            <small class="text-muted">
-                                                <i class="fas fa-arrow-left me-1"></i>
-                                                <strong>CDF → USD:</strong> ÷ {{ number_format(2500, 0, ',', ' ') }}
+                                        <div class="d-flex gap-2 align-items-center mt-2 mt-md-0">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" id="refreshRateBtn" onclick="refreshExchangeRate()">
+                                                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                                            </button>
+                                            <small class="text-muted d-none d-md-block">
+                                                <i class="fas fa-clock me-1"></i>
+                                                <span id="lastUpdate">Chargement...</span>
                                             </small>
                                         </div>
                                     </div>
-                                    <small class="text-muted d-block mt-2">
-                                        <i class="fas fa-clock me-1"></i>
-                                        Mis à jour il y a quelques instants
-                                    </small>
+                                    <div class="d-flex gap-3 mt-2 flex-wrap">
+                                        <small class="text-muted">
+                                            <i class="fas fa-arrow-right me-1"></i>
+                                            <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-arrow-left me-1"></i>
+                                            <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -395,29 +406,137 @@
 @push('scripts')
 <script>
 // Taux de change global
-let currentRate = 2500;
+let currentRate = 2650;
+let rateLastUpdate = null;
+let isFallbackRate = false;
 
-// Récupérer le taux de change actuel
+// Récupérer le taux de change actuel depuis l'API
 async function fetchExchangeRate() {
     try {
         const response = await fetch('{{ route("exchange.rate") }}');
         const data = await response.json();
+        
         if (data.status === 'success') {
             currentRate = data.rate;
+            rateLastUpdate = new Date(data.updated_at);
+            isFallbackRate = data.fallback || false;
+            
             updateRateDisplay();
             updateExamples();
+            updateRateIndicators();
+            
+            console.log(`Taux récupéré: ${currentRate} (${isFallbackRate ? 'secours' : 'réel'})`);
         }
     } catch (error) {
         console.error('Erreur lors de la récupération du taux:', error);
+        showRateError();
     }
+}
+
+// Rafraîchir le taux de change manuellement
+async function refreshExchangeRate() {
+    const refreshBtn = document.getElementById('refreshRateBtn');
+    const refreshIcon = document.getElementById('refreshIcon');
+    
+    // Animation de rotation
+    refreshIcon.classList.add('fa-spin');
+    refreshBtn.disabled = true;
+    
+    try {
+        // Vider le cache et récupérer un nouveau taux
+        const response = await fetch('{{ route("exchange.rate") }}', {
+            method: 'GET',
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            currentRate = data.rate;
+            rateLastUpdate = new Date();
+            isFallbackRate = data.fallback || false;
+            
+            updateRateDisplay();
+            updateExamples();
+            updateRateIndicators();
+            
+            // Notification de succès
+            showNotification('success', `Taux de change mis à jour: 1 USD = ${currentRate.toLocaleString('fr-FR')} CDF`);
+        }
+    } catch (error) {
+        console.error('Erreur lors du rafraîchissement:', error);
+        showNotification('error', 'Impossible de rafraîchir le taux de change');
+    } finally {
+        refreshIcon.classList.remove('fa-spin');
+        refreshBtn.disabled = false;
+    }
+}
+
+// Mettre à jour les indicateurs visuels du taux
+function updateRateIndicators() {
+    const rateSource = document.getElementById('rateSource');
+    const rateFallback = document.getElementById('rateFallback');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const rateAlert = document.getElementById('rateAlert');
+    const rateFwd = document.getElementById('rateFwd');
+    const rateBwd = document.getElementById('rateBwd');
+    
+    // Afficher le type de taux
+    if (isFallbackRate) {
+        rateSource.style.display = 'none';
+        rateFallback.style.display = 'inline-block';
+        rateAlert.classList.remove('alert-info');
+        rateAlert.classList.add('alert-warning');
+    } else {
+        rateSource.style.display = 'inline-block';
+        rateFallback.style.display = 'none';
+        rateAlert.classList.remove('alert-warning');
+        rateAlert.classList.add('alert-info');
+    }
+    
+    // Mettre à jour le temps écoulé
+    if (rateLastUpdate) {
+        const now = new Date();
+        const diff = Math.floor((now - rateLastUpdate) / 1000); // secondes
+        
+        if (diff < 60) {
+            lastUpdate.textContent = `Il y a ${diff}s`;
+        } else if (diff < 3600) {
+            lastUpdate.textContent = `Il y a ${Math.floor(diff / 60)}min`;
+        } else {
+            lastUpdate.textContent = `Il y a ${Math.floor(diff / 3600)}h`;
+        }
+    } else {
+        lastUpdate.textContent = 'À l\'instant';
+    }
+    
+    // Mettre à jour les flèches de conversion
+    rateFwd.textContent = currentRate.toLocaleString('fr-FR');
+    rateBwd.textContent = currentRate.toLocaleString('fr-FR');
+}
+
+// Afficher une erreur de chargement du taux
+function showRateError() {
+    const rateAlert = document.getElementById('rateAlert');
+    rateAlert.classList.remove('alert-info');
+    rateAlert.classList.add('alert-danger');
+    document.getElementById('exchangeRate').textContent = 'Erreur de chargement';
 }
 
 // Mettre à jour les exemples de conversion
 function updateExamples() {
-    document.getElementById('example1').textContent = (1 * currentRate).toLocaleString('fr-FR') + ' FC';
-    document.getElementById('example2').textContent = (10 * currentRate).toLocaleString('fr-FR') + ' FC';
-    document.getElementById('example3').textContent = '$' + (10000 / currentRate).toFixed(2);
-    document.getElementById('example4').textContent = '$' + (50000 / currentRate).toFixed(2);
+    const example1 = document.getElementById('example1');
+    const example2 = document.getElementById('example2');
+    const example3 = document.getElementById('example3');
+    const example4 = document.getElementById('example4');
+    
+    if (example1) example1.textContent = (1 * currentRate).toLocaleString('fr-FR') + ' FC';
+    if (example2) example2.textContent = (10 * currentRate).toLocaleString('fr-FR') + ' FC';
+    if (example3) example3.textContent = '$' + (10000 / currentRate).toFixed(2);
+    if (example4) example4.textContent = '$' + (50000 / currentRate).toFixed(2);
 }
 
 // Mettre à jour l'affichage du taux
@@ -435,6 +554,26 @@ function updateRateDisplay() {
     }
     
     document.getElementById('exchangeRate').textContent = rateText;
+}
+
+// Afficher une notification
+function showNotification(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const icon = type === 'success' ? 'check-circle' : 'exclamation-triangle';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+    notification.style.zIndex = '9999';
+    notification.innerHTML = `
+        <i class="fas fa-${icon} me-2"></i>${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
 }
 
 // Calculer la conversion

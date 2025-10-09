@@ -227,9 +227,15 @@
                     </a>
 
                     <a href="{{ route('admin.settings.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                         <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                         <span>Paramètres</span>
+                    </a>
+
+                    <a href="{{ route('admin.locations.index') }}" 
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                        <span>Zones autorisées</span>
                     </a>
                 </nav>
 

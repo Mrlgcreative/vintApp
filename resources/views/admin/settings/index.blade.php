@@ -350,6 +350,151 @@
                     </div>
                 </div>
                 
+                <!-- Section Wallet Entreprise (Commissions) -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-building text-purple-600 mr-3"></i>
+                                Wallet Entreprise - Commissions de la Plateforme
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Gestion des commissions collectées sur chaque vente ({{ $enterpriseWallets['commission_rate'] }}% par défaut)
+                            </p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Wallet USD -->
+                            <div class="bg-white rounded-lg border border-purple-200 p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-dollar-sign text-2xl text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-gray-700 uppercase">Wallet USD</h4>
+                                            <p class="text-xs text-gray-500">Commissions en dollars</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if($enterpriseWallets['usd'])
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-600">Solde actuel</span>
+                                            <span class="text-2xl font-bold text-purple-600">
+                                                ${{ number_format($enterpriseWallets['usd']->balance, 2) }}
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                                            <span class="text-xs text-gray-500">ID Wallet</span>
+                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['usd']->id }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs text-gray-500">Statut</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ $enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">Wallet USD non créé</p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- Wallet CDF -->
+                            <div class="bg-white rounded-lg border border-indigo-200 p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center">
+                                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-coins text-2xl text-indigo-600"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-gray-700 uppercase">Wallet CDF</h4>
+                                            <p class="text-xs text-gray-500">Commissions en francs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                @if($enterpriseWallets['cdf'])
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-sm text-gray-600">Solde actuel</span>
+                                            <span class="text-2xl font-bold text-indigo-600">
+                                                {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                                            <span class="text-xs text-gray-500">ID Wallet</span>
+                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['cdf']->id }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs text-gray-500">Statut</span>
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                {{ $enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="text-center py-4">
+                                        <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
+                                        <p class="text-sm text-gray-600">Wallet CDF non créé</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                        
+                        <!-- Informations sur les commissions -->
+                        <div class="mt-6 bg-white rounded-lg border border-purple-200 p-4">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-purple-600 text-xl"></i>
+                                </div>
+                                <div class="ml-3 flex-1">
+                                    <h5 class="text-sm font-semibold text-gray-900 mb-2">
+                                        Comment fonctionnent les commissions ?
+                                    </h5>
+                                    <ul class="text-xs text-gray-600 space-y-1">
+                                        <li class="flex items-start">
+                                            <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
+                                            <span>Sur chaque vente confirmée, {{ $enterpriseWallets['commission_rate'] }}% est prélevé automatiquement</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
+                                            <span>Les fonds sont transférés du wallet pending vers le wallet entreprise et le wallet du vendeur</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
+                                            <span>Le vendeur reçoit 95% du montant, la plateforme conserve 5% de commission</span>
+                                        </li>
+                                        <li class="flex items-start">
+                                            <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
+                                            <span>Toutes les transactions sont enregistrées et traçables dans l'historique</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Boutons d'action -->
+                        <div class="mt-6 flex flex-wrap gap-3">
+                            <a href="{{ route('admin.wallets.index') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                <i class="fas fa-wallet mr-2"></i>
+                                Voir tous les wallets
+                            </a>
+                            <a href="{{ route('admin.transactions.index') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                                <i class="fas fa-exchange-alt mr-2"></i>
+                                Historique des transactions
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-gray-200">
                     <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                         <i class="fas fa-save mr-2"></i>

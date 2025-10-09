@@ -28,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ShareAppSettings::class,
             \App\Http\Middleware\MaintenanceMode::class,
             \App\Http\Middleware\CheckPreregistrationMode::class,
+            \App\Http\Middleware\CheckCityAccess::class,
         ]);
 
         // API Middleware Group

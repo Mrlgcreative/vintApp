@@ -650,4 +650,185 @@ class WalletController extends Controller
                 ->with('error', 'Erreur lors de la réessai : ' . $e->getMessage());
         }
     }
+
+    /**
+     * Transfère la commission de la plateforme depuis le wallet pending vers le wallet entreprise
+     * et crédite le montant net au wallet principal du vendeur.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function transferCommission(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required|exists:orders,id',
+            'amount' => 'required|numeric|min:0.01',
+            'seller_id' => 'required|exists:users,id',
+            'currency' => 'required|in:USD,CDF',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $orderId = $request->order_id;
+            $amount = $request->amount;
+            $sellerId = $request->seller_id;
+            $currency = $request->currency;
+
+            // Récupérer le wallet entreprise pour cette devise
+            $enterpriseWallet = Wallet::where('type', 'enterprise')
+                ->where('currency', $currency)
+                ->whereNull('user_id')
+                ->first();
+
+            if (!$enterpriseWallet) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Wallet entreprise {$currency} introuvable",
+                ], 404);
+            }
+
+            // Récupérer le wallet pending du vendeur
+            $pendingWallet = Wallet::where('user_id', $sellerId)
+                ->where('type', 'pending')
+                ->where('currency', $currency)
+                ->first();
+
+            if (!$pendingWallet) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Wallet pending du vendeur introuvable',
+                ], 404);
+            }
+
+            // Récupérer le wallet principal du vendeur
+            $sellerWallet = Wallet::where('user_id', $sellerId)
+                ->where('type', 'main')
+                ->where('currency', $currency)
+                ->first();
+
+            if (!$sellerWallet) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Wallet principal du vendeur introuvable',
+                ], 404);
+            }
+
+            // Vérifier que le pending wallet a suffisamment de fonds
+            if ($pendingWallet->balance < $amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solde insuffisant dans le wallet pending',
+                    'available_balance' => $pendingWallet->balance,
+                    'required_amount' => $amount,
+                ], 400);
+            }
+
+            // Calculer la commission (récupérer le taux du wallet entreprise)
+            $commissionRate = $enterpriseWallet->commission_rate;
+            $commissionAmount = round(($amount * $commissionRate) / 100, 2);
+            $sellerAmount = round($amount - $commissionAmount, 2);
+
+            // 1. Débiter le pending wallet
+            DB::statement(
+                'UPDATE wallets SET balance = balance - ? WHERE id = ?',
+                [$amount, $pendingWallet->id]
+            );
+
+            // 2. Créditer le wallet entreprise (commission)
+            DB::statement(
+                'UPDATE wallets SET balance = balance + ? WHERE id = ?',
+                [$commissionAmount, $enterpriseWallet->id]
+            );
+
+            // 3. Créditer le wallet du vendeur (montant net)
+            DB::statement(
+                'UPDATE wallets SET balance = balance + ? WHERE id = ?',
+                [$sellerAmount, $sellerWallet->id]
+            );
+
+            // Logger les transactions
+            // Transaction 1: Débit du pending
+            WalletTransaction::create([
+                'wallet_id' => $pendingWallet->id,
+                'type' => 'debit',
+                'amount' => $amount,
+                'currency' => $currency,
+                'status' => 'completed',
+                'description' => "Transfert commission vente #{$orderId}",
+                'reference' => "SALE_CONFIRMED_{$orderId}",
+            ]);
+
+            // Transaction 2: Crédit entreprise (commission)
+            WalletTransaction::create([
+                'wallet_id' => $enterpriseWallet->id,
+                'type' => 'credit',
+                'amount' => $commissionAmount,
+                'currency' => $currency,
+                'status' => 'completed',
+                'description' => "Commission {$commissionRate}% sur vente #{$orderId}",
+                'reference' => "COMMISSION_{$orderId}",
+            ]);
+
+            // Transaction 3: Crédit vendeur (net)
+            WalletTransaction::create([
+                'wallet_id' => $sellerWallet->id,
+                'type' => 'credit',
+                'amount' => $sellerAmount,
+                'currency' => $currency,
+                'status' => 'completed',
+                'description' => "Paiement vente #{$orderId} (net après commission)",
+                'reference' => "PAYMENT_{$orderId}",
+            ]);
+
+            DB::commit();
+
+            // Rafraîchir les wallets pour obtenir les nouveaux soldes
+            $enterpriseWallet->refresh();
+            $sellerWallet->refresh();
+            $pendingWallet->refresh();
+
+            Log::info('Commission transférée avec succès', [
+                'order_id' => $orderId,
+                'amount_total' => $amount,
+                'commission' => $commissionAmount,
+                'seller_net' => $sellerAmount,
+                'currency' => $currency,
+                'commission_rate' => $commissionRate,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Commission transférée avec succès',
+                'data' => [
+                    'order_id' => $orderId,
+                    'montant_total' => $amount,
+                    'montant_commission' => $commissionAmount,
+                    'taux_commission' => $commissionRate,
+                    'montant_vendeur_net' => $sellerAmount,
+                    'currency' => $currency,
+                    'wallets' => [
+                        'entreprise_balance' => $enterpriseWallet->balance,
+                        'vendeur_balance' => $sellerWallet->balance,
+                        'pending_balance' => $pendingWallet->balance,
+                    ],
+                ],
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Erreur lors du transfert de commission', [
+                'order_id' => $request->order_id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du transfert de commission',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

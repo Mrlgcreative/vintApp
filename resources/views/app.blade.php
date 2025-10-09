@@ -494,22 +494,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     </a>
                 </li>
                 <li class="position-relative">
-                    <a href="#" class="bottom-nav-link" id="bottom-nav-settings-btn">
+                    <a href="{{ route('settings.index') }}" class="bottom-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                         <i class="fas fa-cog"></i>
                         <span>Paramètres</span>
                     </a>
-                    <div id="bottom-nav-settings-menu" class="bottom-nav-settings-menu">
-                        <div class="px-3 py-2 text-muted small">Profil & Paramètres</div>
-                        <a href="{{ route('profile.edit') }}"><i class="fas fa-user-cog me-2"></i>Mon profil</a>
-                        <a href="{{ route('items.personalization') }}"><i class="fas fa-cogs me-2"></i>Personnalisation</a>
-                        <a href="#" id="theme-toggle-mobile"><i class="fas fa-adjust me-2"></i>Thème</a>
-                        <hr class="my-1">
-                        <div class="px-3 py-2 text-muted small">Navigation</div>
-                        <a href="{{ route('dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
-                        <a href="{{ route('orders.index') }}"><i class="fas fa-shopping-cart me-2"></i>Commandes</a>
-                        <a href="{{ route('brands.index') }}"><i class="fas fa-tags me-2"></i>Marques</a>
-                        <a href="{{ route('messages.index') }}"><i class="fas fa-comments me-2"></i>Messages</a>
-                    </div>
                 </li>
             </ul>
         </nav>
@@ -943,33 +931,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .bottom-nav-link span {
             font-size: 11px;
             margin-top: 2px;
-        }
-        .bottom-nav-settings-menu {
-            display: none;
-            position: absolute;
-            bottom: 56px;
-            right: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(79,0,206,0.10);
-            min-width: 180px;
-            padding: 0.5rem 0;
-            border: 1px solid #eee;
-        }
-        .bottom-nav-settings-menu a {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.25rem;
-            color: #333;
-            text-decoration: none;
-            font-size: 15px;
-            transition: background 0.15s;
-        }
-        .bottom-nav-settings-menu a:hover {
-            background: #f3f0fa;
-            color: rgb(79, 0, 206);
         }
         @media (min-width: 768px) {
             #mobile-bottom-nav {
@@ -1506,25 +1467,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         </style>
-
-        <script>
-        // Gestion du menu Paramètres dans la bottom nav
-        document.addEventListener('DOMContentLoaded', function() {
-            const settingsBtn = document.getElementById('bottom-nav-settings-btn');
-            const settingsMenu = document.getElementById('bottom-nav-settings-menu');
-            if(settingsBtn && settingsMenu) {
-                settingsBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    settingsMenu.style.display = settingsMenu.style.display === 'block' ? 'none' : 'block';
-                });
-                document.addEventListener('click', function(e) {
-                    if (!settingsBtn.contains(e.target) && !settingsMenu.contains(e.target)) {
-                        settingsMenu.style.display = 'none';
-                    }
-                });
-            }
-        });
-        </script>
 
         <!-- Widget d'assistance -->
         @include('support.widget')

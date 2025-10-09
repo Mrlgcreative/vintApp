@@ -16,17 +16,29 @@ class Wallet extends Model
         'balance',
         'is_active',
         'type',
+        'commission_rate',
+        'status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'balance' => 'decimal:2',
         'is_active' => 'boolean',
+        'commission_rate' => 'decimal:2',
+        'verified_at' => 'datetime',
     ];
 
     // Devises supportées
     public const CURRENCIES = ['USD', 'CDF'];
     public const CURRENCY_USD = 'USD';
     public const CURRENCY_CDF = 'CDF';
+
+    // Types de wallets
+    public const TYPE_MAIN = 'main';
+    public const TYPE_PENDING = 'pending';
+    public const TYPE_ENTERPRISE = 'enterprise';
 
     /**
      * Relation avec l'utilisateur propriétaire du wallet.
@@ -118,6 +130,44 @@ class Wallet extends Model
     public function scopePending($query)
     {
         return $query->where('type', 'pending');
+    }
+
+    /**
+     * Vérifie si c'est un wallet entreprise
+     */
+    public function isEnterprise()
+    {
+        return $this->type === self::TYPE_ENTERPRISE;
+    }
+
+    /**
+     * Scope pour les wallets entreprise
+     */
+    public function scopeEnterprise($query)
+    {
+        return $query->where('type', 'enterprise')->whereNull('user_id');
+    }
+
+    /**
+     * Obtenir le wallet entreprise pour une devise donnée
+     */
+    public static function getEnterpriseWallet(string $currency = 'USD')
+    {
+        return static::enterprise()
+            ->where('currency', $currency)
+            ->first();
+    }
+
+    /**
+     * Calculer le montant de commission basé sur le taux
+     */
+    public function calculateCommission(float $amount): float
+    {
+        if (!$this->isEnterprise()) {
+            return 0.00;
+        }
+        
+        return round(($amount * $this->commission_rate) / 100, 2);
     }
 
     /**

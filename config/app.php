@@ -43,6 +43,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Geographic Restriction
+    |--------------------------------------------------------------------------
+    |
+    | This option allows you to disable geographic restriction middleware
+    | for testing purposes. Set DISABLE_GEO_RESTRICTION=true in .env
+    |
+    */
+
+    'disable_geo_restriction' => (bool) env('DISABLE_GEO_RESTRICTION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |

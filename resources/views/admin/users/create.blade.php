@@ -4,22 +4,19 @@
 @section('page-title', 'Nouvel utilisateur')
 
 @section('page-actions')
-<a href="{{ route('admin.users.index') }}" class="btn btn-secondary">
-    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+<a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+    <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
 </a>
 @endsection
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="card">
-            <div class="card-body">
-                <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data" id="userForm">
-                    @csrf
-                    
-                    <div class="row">
-                        <!-- Informations personnelles -->
-                        <div class="col-lg-8">
+<div class="max-w-7xl mx-auto">
+    <form action="{{ route('admin.users.store') }}" method="POST" enctype="multipart/form-data" id="userForm">
+        @csrf
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6">
+            <!-- Colonne principale (2/3) -->
+            <div class="lg:col-span-2 space-y-4 lg:space-y-6">
                             <div class="card">
                                 <div class="card-header">
                                     <h6 class="mb-0">Informations personnelles</h6>
