@@ -360,8 +360,8 @@ document.getElementById('payment-form').addEventListener('submit', async functio
         const data = await response.json();
 
         if (response.ok && data.status === 'success') {
-            // Rediriger vers la page de succès
-            window.location.href = '/payments/success?transaction_id=' + data.transaction_id;
+            // Rediriger vers la page de suivi du paiement
+            window.location.href = '/payments/status/' + data.transaction_id;
         } else {
             // Rediriger vers la page d'erreur
             window.location.href = '/payments/error?error=' + encodeURIComponent(data.message || 'Une erreur est survenue');

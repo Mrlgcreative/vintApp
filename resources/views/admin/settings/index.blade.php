@@ -215,6 +215,60 @@
                     </div>
                 </div>
                 
+                <!-- Section Restrictions Géographiques -->
+                <div class="border-t border-gray-200 pt-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-map-marked-alt mr-3 text-blue-600"></i>
+                                Restrictions Géographiques
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Contrôlez si les vendeurs doivent respecter les zones géographiques autorisées pour publier leurs articles.
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2 rounded-full" id="location-status-icon">
+                                        <i class="fas fa-map-marker-alt text-blue-600 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900" id="location-status-text">
+                                            Chargement...
+                                        </p>
+                                        <p class="text-sm text-gray-500" id="location-status-description">
+                                            Récupération du statut en cours...
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <button type="button" 
+                                        onclick="toggleLocationRestrictions()"
+                                        id="location-toggle-btn"
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas fa-sync-alt mr-2 animate-spin"></i>
+                                    Chargement...
+                                </button>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <div class="space-y-2 text-sm text-blue-800">
+                                    <p class="flex items-start">
+                                        <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                                        <span><strong>Activé :</strong> Les vendeurs ne peuvent publier des articles que dans les villes autorisées par l'admin.</span>
+                                    </p>
+                                    <p class="flex items-start">
+                                        <i class="fas fa-times-circle mr-2 mt-0.5"></i>
+                                        <span><strong>Désactivé :</strong> Les vendeurs peuvent publier des articles dans n'importe quelle ville du monde.</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Section Pré-inscription -->
                 <div class="border-t border-gray-200 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">
@@ -1045,6 +1099,115 @@ async function disablePreregistration() {
     } catch (error) {
         console.error('Erreur:', error);
         showNotification('Erreur de communication avec le serveur', 'error');
+    }
+}
+
+// ========================================
+// Fonctions pour les restrictions géographiques
+// ========================================
+
+// Charger le statut au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    loadLocationRestrictionsStatus();
+});
+
+async function loadLocationRestrictionsStatus() {
+    try {
+        const response = await fetch('{{ route("admin.settings.location-restrictions.status") }}', {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            updateLocationRestrictionsUI(result.enabled);
+        } else {
+            showNotification('Erreur lors du chargement du statut', 'error');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de communication avec le serveur', 'error');
+    }
+}
+
+async function toggleLocationRestrictions() {
+    const currentBtn = document.getElementById('location-toggle-btn');
+    const currentEnabled = currentBtn.dataset.enabled === 'true';
+    const newEnabled = !currentEnabled;
+    
+    const confirmMessage = newEnabled 
+        ? '⚠️ Activer les restrictions géographiques ?\n\n• Les vendeurs ne pourront publier des articles QUE dans les villes autorisées\n• Utile pour contrôler les zones de vente'
+        : '⚠️ Désactiver les restrictions géographiques ?\n\n• Les vendeurs pourront publier des articles dans N\'IMPORTE QUELLE ville du monde\n• Plus de liberté mais moins de contrôle';
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Afficher le loader
+    currentBtn.innerHTML = '<i class="fas fa-sync-alt mr-2 animate-spin"></i>Traitement...';
+    currentBtn.disabled = true;
+    
+    try {
+        const response = await fetch('{{ route("admin.settings.location-restrictions.toggle") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': CSRF_TOKEN,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled: newEnabled
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            updateLocationRestrictionsUI(result.enabled);
+        } else {
+            showNotification(result.message || 'Erreur lors de la modification', 'error');
+            currentBtn.disabled = false;
+            updateLocationRestrictionsUI(currentEnabled); // Restaurer l'état précédent
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        showNotification('Erreur de communication avec le serveur', 'error');
+        currentBtn.disabled = false;
+        updateLocationRestrictionsUI(currentEnabled); // Restaurer l'état précédent
+    }
+}
+
+function updateLocationRestrictionsUI(enabled) {
+    const statusIcon = document.getElementById('location-status-icon');
+    const statusText = document.getElementById('location-status-text');
+    const statusDescription = document.getElementById('location-status-description');
+    const toggleBtn = document.getElementById('location-toggle-btn');
+    
+    // Stocker l'état actuel
+    toggleBtn.dataset.enabled = enabled;
+    toggleBtn.disabled = false;
+    
+    if (enabled) {
+        // État ACTIVÉ
+        statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-600 text-lg"></i>';
+        statusIcon.className = 'p-2 rounded-full bg-green-100';
+        statusText.textContent = 'Restrictions ACTIVÉES';
+        statusDescription.textContent = 'Les vendeurs ne peuvent publier que dans les villes autorisées';
+        toggleBtn.innerHTML = '<i class="fas fa-times mr-2"></i>Désactiver';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
+    } else {
+        // État DÉSACTIVÉ
+        statusIcon.innerHTML = '<i class="fas fa-globe text-blue-600 text-lg"></i>';
+        statusIcon.className = 'p-2 rounded-full bg-blue-100';
+        statusText.textContent = 'Restrictions DÉSACTIVÉES';
+        statusDescription.textContent = 'Les vendeurs peuvent publier dans n\'importe quelle ville du monde';
+        toggleBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Activer';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
     }
 }
 </script>

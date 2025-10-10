@@ -59,8 +59,68 @@
         </div>
     @endif
 
+    <!-- 🗺️ SECTION: Carte GPS Interactive OpenStreetMap -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-globe-africa text-green-600 mr-2"></i>
+                    Carte des Villes Autorisées (OpenStreetMap)
+                </h2>
+                <p class="text-sm text-gray-600 mt-1">
+                    Visualisation GPS des <span id="map-city-count" class="font-semibold text-primary-600">{{ $stats['total_cities'] }}</span> villes dans <span id="map-country-count" class="font-semibold text-purple-600">{{ $stats['countries_count'] }}</span> pays
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="centerMapOnCountry('COD')" 
+                        class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                    <span class="country-flag">🇨🇩</span> RDC
+                </button>
+                <button onclick="fitAllMarkers()" 
+                        class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                    <i class="fas fa-compress-arrows-alt"></i> Tout
+                </button>
+                <button onclick="refreshMapData()" 
+                        class="px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+            </div>
+        </div>
+        
+        <!-- Carte OpenStreetMap (Leaflet) -->
+        <div style="position: relative;">
+            <div id="map"></div>
+            <div id="map-loading" class="map-loading hidden">
+                <div class="text-center">
+                    <i class="fas fa-spinner fa-spin text-4xl text-primary-600 mb-2"></i>
+                    <p class="text-gray-700 font-medium">Chargement de la carte...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Légende -->
+        <div class="mt-4 flex flex-wrap gap-4 text-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow"></div>
+                <span class="text-gray-700">Ville active</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow"></div>
+                <span class="text-gray-700">Ville inactive</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fas fa-map-marker-alt text-gray-400 text-lg"></i>
+                <span class="text-gray-700">Sans coordonnées GPS</span>
+            </div>
+            <div class="flex items-center gap-2 ml-auto">
+                <i class="fas fa-map text-gray-500"></i>
+                <span class="text-xs text-gray-500">Propulsé par OpenStreetMap</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Statistiques -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
             <div class="flex items-center justify-between">
                 <div>
@@ -105,6 +165,18 @@
                 </div>
                 <div class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center">
                     <i class="fas fa-check-double text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-orange-600">Pays</p>
+                    <p class="text-3xl font-bold text-orange-900 mt-1">{{ $stats['countries_count'] }}</p>
+                </div>
+                <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-flag text-white text-xl"></i>
                 </div>
             </div>
         </div>
@@ -387,75 +459,155 @@
     </div>
 </div>
 
-<!-- Modal: Ajouter une ville -->
+<!-- Modal: Ajouter une ville (🌍 Version Mondiale) -->
 <div id="addCityModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeModal('addCityModal')"></div>
         
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
         
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
             <div class="mb-4">
                 <h3 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-city text-primary-600 mr-2"></i>
-                    Ajouter une nouvelle ville
+                    <i class="fas fa-globe text-primary-600 mr-2"></i>
+                    Ajouter une ville (monde entier)
                 </h3>
+                <p class="text-sm text-gray-600 mt-1">Recherchez n'importe quelle ville dans le monde</p>
             </div>
             
-            <form action="{{ route('admin.locations.cities.store') }}" method="POST" class="space-y-4">
+            <form action="{{ route('admin.locations.cities.store') }}" method="POST" id="cityForm" class="space-y-4">
                 @csrf
                 
+                <!-- Sélection du pays -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-flag mr-1"></i>
+                        Pays <span class="text-red-500">*</span>
+                    </label>
+                    <select id="worldCountrySelect" name="country_code" required 
+                            onchange="onCountryChange()"
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="">-- Sélectionnez un pays --</option>
+                        <option value="CD" selected>🇨🇩 Congo (RDC)</option>
+                        <option value="CG">🇨🇬 Congo-Brazzaville</option>
+                        <option value="FR">🇫🇷 France</option>
+                        <option value="BE">🇧🇪 Belgique</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="US">🇺🇸 États-Unis</option>
+                        <!-- Les autres pays seront chargés dynamiquement -->
+                    </select>
+                    <input type="hidden" name="country" id="countryName" value="">
+                </div>
+
+                <!-- Recherche de ville avec autocomplete -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <i class="fas fa-search mr-1"></i>
+                        Rechercher une ville <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="text" 
+                               id="citySearchInput" 
+                               autocomplete="off"
+                               placeholder="Tapez au moins 3 caractères..."
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <div id="citySearchResults" class="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-60 overflow-y-auto hidden"></div>
+                        <div id="citySearchLoading" class="hidden absolute right-3 top-3">
+                            <i class="fas fa-spinner fa-spin text-primary-600"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Exemples: Paris, Tokyo, New York, Kinshasa...</p>
+                </div>
+
+                <!-- Nom de la ville (rempli auto) -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la ville <span class="text-red-500">*</span></label>
-                    <input type="text" name="name" required 
+                    <input type="text" name="name" id="cityNameInput" required readonly
+                           class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-not-allowed"
+                           placeholder="Sélectionnez une ville ci-dessus">
+                </div>
+
+                <!-- Région/Province (rempli auto) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Région/Province/État</label>
+                    <input type="text" name="region" id="cityRegionInput"
                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="Ex: Kinshasa">
+                           placeholder="Auto-rempli ou modifiable">
+                </div>
+
+                <!-- Coordonnées GPS (rempli auto) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-map-pin mr-1"></i>
+                            Latitude <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" name="latitude" id="cityLatitudeInput" step="0.000001" required readonly
+                               class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-not-allowed"
+                               placeholder="Auto">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            <i class="fas fa-map-pin mr-1"></i>
+                            Longitude <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" name="longitude" id="cityLongitudeInput" step="0.000001" required readonly
+                               class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg cursor-not-allowed"
+                               placeholder="Auto">
+                    </div>
+                </div>
+
+                <!-- Aperçu sur la carte (mini) -->
+                <div id="cityPreview" class="hidden p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white text-2xl flex-shrink-0">
+                            <span id="cityPreviewFlag">🏙️</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900" id="cityPreviewName">-</h4>
+                            <p class="text-sm text-gray-600" id="cityPreviewLocation">-</p>
+                            <p class="text-xs text-gray-500 mt-1" id="cityPreviewCoords">-</p>
+                        </div>
+                    </div>
                 </div>
                 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Région/Province</label>
-                    <input type="text" name="region" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="Ex: Kinshasa">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Pays <span class="text-red-500">*</span></label>
-                    <select name="country" required 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                        <option value="Congo (RDC)" selected>Congo (RDC)</option>
-                        <option value="Congo (Brazzaville)">Congo (Brazzaville)</option>
-                        <option value="Autre">Autre</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Code unique</label>
-                    <input type="text" name="city_code" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                           placeholder="Ex: KIN-01">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <textarea name="description" rows="3" 
-                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                              placeholder="Informations complémentaires..."></textarea>
-                </div>
+                <!-- Options avancées (collapsible) -->
+                <details class="border border-gray-200 rounded-lg">
+                    <summary class="px-4 py-2 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors font-medium text-sm text-gray-700">
+                        <i class="fas fa-cog mr-2"></i>
+                        Options avancées (optionnel)
+                    </summary>
+                    <div class="p-4 space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Code unique</label>
+                            <input type="text" name="city_code" 
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                   placeholder="Ex: PAR-01, TOK-01">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea name="description" rows="2" 
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                      placeholder="Informations complémentaires..."></textarea>
+                        </div>
+                    </div>
+                </details>
                 
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" value="1" checked 
                            class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                    <label class="ml-2 text-sm text-gray-700">Activer immédiatement</label>
+                    <label class="ml-2 text-sm text-gray-700">Activer immédiatement cette ville</label>
                 </div>
                 
-                <div class="flex gap-3 pt-4">
+                <div class="flex gap-3 pt-4 border-t border-gray-200">
                     <button type="button" onclick="closeModal('addCityModal')" 
                             class="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-times mr-2"></i>
                         Annuler
                     </button>
-                    <button type="submit" 
-                            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    <button type="submit" id="submitCityBtn" disabled
+                            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed">
                         <i class="fas fa-check mr-2"></i>
                         Ajouter
                     </button>
@@ -665,7 +817,650 @@ function editCity(cityId) {
 function editRegion(regionId) {
     alert('Fonctionnalité d\'édition à implémenter');
 }
+
+// ========================================
+// 🗺️ LEAFLET MAP INITIALIZATION
+// ========================================
+
+let map;
+let markers;
+let allCitiesData = [];
+
+// Initialiser la carte Leaflet
+function initMap() {
+    // Créer la carte centrée sur l'Afrique centrale
+    map = L.map('map').setView([-1.95, 24.77], 5);
+    
+    // Ajouter le layer OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(map);
+    
+    // Créer le groupe de clusters
+    markers = L.markerClusterGroup({
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        zoomToBoundsOnClick: true,
+        maxClusterRadius: 50
+    });
+    
+    map.addLayer(markers);
+    
+    // Charger les villes
+    loadCitiesOnMap();
+}
+
+// Charger toutes les villes avec coordonnées GPS
+function loadCitiesOnMap() {
+    showMapLoading(true);
+    
+    fetch('/admin/settings/locations/api/cities/map')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                allCitiesData = data.cities;
+                displayCitiesOnMap(allCitiesData);
+                
+                // Mettre à jour le compteur
+                document.getElementById('map-city-count').textContent = data.total;
+            }
+            showMapLoading(false);
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement des villes:', error);
+            showMapLoading(false);
+        });
+}
+
+// Afficher les villes sur la carte
+function displayCitiesOnMap(cities) {
+    // Vider les markers existants
+    markers.clearLayers();
+    
+    cities.forEach(city => {
+        if (city.latitude && city.longitude) {
+            // Couleur selon le statut
+            const iconColor = city.is_active ? '#10b981' : '#ef4444'; // green-500 : red-500
+            
+            // Créer un marqueur personnalisé
+            const customIcon = L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="
+                    background-color: ${iconColor};
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    border: 2px solid white;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+                "></div>`,
+                iconSize: [16, 16],
+                iconAnchor: [8, 8]
+            });
+            
+            const marker = L.marker([city.latitude, city.longitude], { icon: customIcon });
+            
+            // Contenu du popup
+            const popupContent = `
+                <div class="marker-popup" style="min-width: 220px;">
+                    <h4>
+                        <span style="font-size: 1.3rem; margin-right: 6px;">${getCountryFlag(city.country_code)}</span>
+                        ${city.name}
+                    </h4>
+                    <p><strong>Pays:</strong> ${city.country}</p>
+                    ${city.population ? `<p><strong>Population:</strong> ${formatNumber(city.population)}</p>` : ''}
+                    <p>
+                        <strong>Statut:</strong> 
+                        <span class="status-badge ${city.is_active ? 'status-active' : 'status-inactive'}">
+                            ${city.is_active ? '✓ Active' : '✗ Inactive'}
+                        </span>
+                    </p>
+                    <p style="font-size: 11px; color: #6b7280; margin-top: 8px; border-top: 1px solid #e5e7eb; padding-top: 8px;">
+                        📍 ${city.latitude.toFixed(4)}°, ${city.longitude.toFixed(4)}°
+                    </p>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+            markers.addLayer(marker);
+        }
+    });
+    
+    // Ajuster la vue pour afficher tous les markers
+    if (cities.length > 0 && markers.getLayers().length > 0) {
+        map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+    }
+}
+
+// Centrer la carte sur un pays
+function centerMapOnCountry(countryCode) {
+    const countryCenters = {
+        'COD': { lat: -4.0383, lng: 21.7587, zoom: 6 },  // RDC
+        'COG': { lat: -0.228, lng: 15.8277, zoom: 6 },    // Congo
+        'RWA': { lat: -1.9403, lng: 29.8739, zoom: 8 },   // Rwanda
+        'BDI': { lat: -3.3731, lng: 29.9189, zoom: 8 },   // Burundi
+        'UGA': { lat: 1.3733, lng: 32.2903, zoom: 7 },    // Ouganda
+        'TZA': { lat: -6.3690, lng: 34.8888, zoom: 6 },   // Tanzanie
+        'KEN': { lat: -0.0236, lng: 37.9062, zoom: 6 },   // Kenya
+        'ZMB': { lat: -13.1339, lng: 27.8493, zoom: 6 },  // Zambie
+        'AGO': { lat: -11.2027, lng: 17.8739, zoom: 6 },  // Angola
+        'ZAF': { lat: -30.5595, lng: 22.9375, zoom: 6 },  // Afrique du Sud
+        'CMR': { lat: 7.3697, lng: 12.3547, zoom: 6 },    // Cameroun
+        'GAB': { lat: -0.8037, lng: 11.6094, zoom: 7 },   // Gabon
+        'CAF': { lat: 6.6111, lng: 20.9394, zoom: 6 }     // RCA
+    };
+    
+    if (countryCenters[countryCode]) {
+        const center = countryCenters[countryCode];
+        map.setView([center.lat, center.lng], center.zoom);
+        
+        // Filtrer les villes de ce pays
+        const countryCities = allCitiesData.filter(city => city.country_code === countryCode);
+        if (countryCities.length > 0) {
+            displayCitiesOnMap(countryCities);
+        }
+    }
+}
+
+// Ajuster la vue pour afficher tous les markers
+function fitAllMarkers() {
+    if (allCitiesData.length > 0) {
+        displayCitiesOnMap(allCitiesData);
+    }
+}
+
+// Actualiser les données de la carte
+function refreshMapData() {
+    const btn = event.target.closest('button');
+    const icon = btn.querySelector('i');
+    icon.classList.add('fa-spin');
+    
+    loadCitiesOnMap();
+    
+    setTimeout(() => {
+        icon.classList.remove('fa-spin');
+    }, 1000);
+}
+
+// Afficher/masquer le loading
+function showMapLoading(show) {
+    const loadingEl = document.getElementById('map-loading');
+    if (loadingEl) {
+        if (show) {
+            loadingEl.classList.remove('hidden');
+        } else {
+            loadingEl.classList.add('hidden');
+        }
+    }
+}
+
+// Obtenir le drapeau emoji d'un pays
+function getCountryFlag(countryCode) {
+    const flags = {
+        'COD': '🇨🇩', 'COG': '🇨🇬', 'RWA': '🇷🇼', 'BDI': '🇧🇮',
+        'UGA': '🇺🇬', 'TZA': '🇹🇿', 'KEN': '🇰🇪', 'ZMB': '🇿🇲',
+        'AGO': '🇦🇴', 'ZAF': '🇿🇦', 'CMR': '🇨🇲', 'GAB': '🇬🇦',
+        'CAF': '🇨🇫'
+    };
+    return flags[countryCode] || '🌍';
+}
+
+// Formater un nombre avec des séparateurs
+function formatNumber(num) {
+    return new Intl.NumberFormat('fr-FR').format(num);
+}
+
+// ========================================
+// 🌍 GESTION DU FORMULAIRE MULTI-PAYS
+// ========================================
+
+// Charger les villes majeures d'un pays
+function loadMajorCities(countryCode) {
+    if (!countryCode) {
+        const container = document.getElementById('majorCitiesContainer');
+        if (container) container.classList.add('hidden');
+        return;
+    }
+    
+    // Mettre à jour le nom du pays
+    const select = document.getElementById('countrySelect');
+    const nameInput = document.getElementById('countryName');
+    if (select && nameInput) {
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption.dataset.name) {
+            nameInput.value = selectedOption.dataset.name;
+        }
+    }
+    
+    // Charger les villes majeures
+    fetch(`/admin/settings/locations/api/countries/${countryCode}/major-cities`)
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('majorCitiesContainer');
+            if (data.success && data.cities.length > 0 && container) {
+                displayMajorCities(data.cities);
+                container.classList.remove('hidden');
+            } else if (container) {
+                container.classList.add('hidden');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            const container = document.getElementById('majorCitiesContainer');
+            if (container) container.classList.add('hidden');
+        });
+}
+
+// Afficher les villes majeures
+function displayMajorCities(cities) {
+    const container = document.getElementById('majorCitiesList');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    cities.slice(0, 6).forEach(city => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'px-3 py-2 text-sm bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg transition-colors text-left';
+        button.innerHTML = `
+            <div class="font-medium text-gray-900">${city.name}</div>
+            <div class="text-xs text-gray-500">${city.population ? formatNumber(city.population) + ' hab.' : ''}</div>
+        `;
+        button.onclick = () => fillCityData(city);
+        container.appendChild(button);
+    });
+}
+
+// Remplir les données de la ville
+function fillCityData(city) {
+    const fields = {
+        'cityName': city.name,
+        'cityLatitude': city.latitude,
+        'cityLongitude': city.longitude,
+        'cityPopulation': city.population,
+        'cityTimezone': city.timezone
+    };
+    
+    Object.keys(fields).forEach(id => {
+        const element = document.getElementById(id);
+        if (element && fields[id]) {
+            element.value = fields[id];
+        }
+    });
+    
+    // Valider les coordonnées
+    if (city.latitude && city.longitude) {
+        validateCoordinates(city.latitude, city.longitude);
+    }
+}
+
+// Valider les coordonnées GPS
+function validateCoordinates(lat, lng) {
+    const countrySelect = document.getElementById('countrySelect');
+    const validationDiv = document.getElementById('gpsValidation');
+    
+    if (!countrySelect || !validationDiv || !lat || !lng) return;
+    
+    const countryCode = countrySelect.value;
+    if (!countryCode) return;
+    
+    fetch('/admin/settings/locations/api/validate-coordinates', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            country_code: countryCode,
+            latitude: parseFloat(lat),
+            longitude: parseFloat(lng)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        validationDiv.classList.remove('hidden');
+        
+        if (data.is_valid) {
+            validationDiv.innerHTML = `
+                <div class="flex items-center gap-2 text-green-700">
+                    <i class="fas fa-check-circle"></i>
+                    <span>${data.message} (${data.distance_km} km du centre)</span>
+                </div>
+            `;
+        } else {
+            validationDiv.innerHTML = `
+                <div class="flex items-center gap-2 text-orange-600">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${data.message} (${data.distance_km} km du centre)</span>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Erreur validation:', error);
+    });
+}
+
+// Ouvrir le picker GPS (carte modale)
+function openGPSPicker() {
+    alert('Fonctionnalité GPS Picker à venir!\n\nVous pourrez cliquer sur la carte pour sélectionner les coordonnées.');
+    // TODO: Implémenter une modale avec carte Leaflet interactive
+}
+
+// ========================================
+// 🌍 GESTION MODAL VILLE MONDIALE
+// ========================================
+
+let worldCountries = [];
+let selectedCityData = null;
+let searchTimeout = null;
+
+// Charger tous les pays du monde au chargement
+function loadWorldCountries() {
+    fetch('/admin/settings/locations/api/world/countries')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                worldCountries = data.countries;
+                populateCountrySelect();
+            }
+        })
+        .catch(error => console.error('Erreur chargement pays:', error));
+}
+
+// Remplir le select des pays
+function populateCountrySelect() {
+    const select = document.getElementById('worldCountrySelect');
+    if (!select) return;
+    
+    // Garder les options par défaut et ajouter tous les pays
+    const defaultOptions = select.innerHTML;
+    
+    let optionsHTML = '<option value="">-- Sélectionnez un pays (195 disponibles) --</option>';
+    
+    worldCountries.forEach(country => {
+        optionsHTML += `<option value="${country.code}" data-name="${country.name}" data-flag="${country.flag}">
+            ${country.flag} ${country.name}
+        </option>`;
+    });
+    
+    select.innerHTML = optionsHTML;
+}
+
+// Quand le pays change
+function onCountryChange() {
+    const select = document.getElementById('worldCountrySelect');
+    const selectedOption = select.options[select.selectedIndex];
+    const countryName = selectedOption.dataset.name || selectedOption.text.replace(/[^\w\s\(\)]/g, '').trim();
+    
+    document.getElementById('countryName').value = countryName;
+    
+    // Réinitialiser la recherche de ville
+    document.getElementById('citySearchInput').value = '';
+    document.getElementById('citySearchResults').classList.add('hidden');
+    resetCityForm();
+}
+
+// Recherche de ville avec autocomplete (debounced)
+function setupCitySearch() {
+    const searchInput = document.getElementById('citySearchInput');
+    if (!searchInput) return;
+    
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        const countryCode = document.getElementById('worldCountrySelect').value;
+        
+        if (query.length < 3) {
+            document.getElementById('citySearchResults').classList.add('hidden');
+            return;
+        }
+        
+        if (!countryCode) {
+            alert('Sélectionnez d\'abord un pays');
+            return;
+        }
+        
+        // Debounce
+        clearTimeout(searchTimeout);
+        document.getElementById('citySearchLoading').classList.remove('hidden');
+        
+        searchTimeout = setTimeout(() => {
+            searchCities(query, countryCode);
+        }, 500);
+    });
+}
+
+// Appel API pour chercher les villes
+function searchCities(query, countryCode) {
+    fetch(`/admin/settings/locations/api/world/cities/search?query=${encodeURIComponent(query)}&country_code=${countryCode}&limit=10`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('citySearchLoading').classList.add('hidden');
+            
+            if (data.success && data.cities.length > 0) {
+                displayCityResults(data.cities);
+            } else {
+                displayNoResults();
+            }
+        })
+        .catch(error => {
+            console.error('Erreur recherche:', error);
+            document.getElementById('citySearchLoading').classList.add('hidden');
+            displayNoResults();
+        });
+}
+
+// Afficher les résultats de recherche
+function displayCityResults(cities) {
+    const resultsDiv = document.getElementById('citySearchResults');
+    
+    let html = '';
+    cities.forEach(city => {
+        html += `
+            <div class="px-4 py-3 hover:bg-primary-50 cursor-pointer border-b border-gray-100 last:border-0" 
+                 onclick='selectCity(${JSON.stringify(city)})'>
+                <div class="font-semibold text-gray-900">${city.city || city.name}</div>
+                <div class="text-sm text-gray-600">${city.state ? city.state + ', ' : ''}${city.country}</div>
+                <div class="text-xs text-gray-500 mt-1">
+                    <i class="fas fa-map-pin mr-1"></i>
+                    ${city.latitude.toFixed(4)}°, ${city.longitude.toFixed(4)}°
+                </div>
+            </div>
+        `;
+    });
+    
+    resultsDiv.innerHTML = html;
+    resultsDiv.classList.remove('hidden');
+}
+
+// Aucun résultat
+function displayNoResults() {
+    const resultsDiv = document.getElementById('citySearchResults');
+    resultsDiv.innerHTML = `
+        <div class="px-4 py-3 text-center text-gray-500">
+            <i class="fas fa-search text-2xl mb-2"></i>
+            <p>Aucune ville trouvée</p>
+            <p class="text-xs mt-1">Essayez une autre recherche</p>
+        </div>
+    `;
+    resultsDiv.classList.remove('hidden');
+}
+
+// Sélectionner une ville
+function selectCity(cityData) {
+    selectedCityData = cityData;
+    
+    // Remplir le formulaire
+    document.getElementById('cityNameInput').value = cityData.city || cityData.name;
+    document.getElementById('cityRegionInput').value = cityData.state || '';
+    document.getElementById('cityLatitudeInput').value = cityData.latitude;
+    document.getElementById('cityLongitudeInput').value = cityData.longitude;
+    
+    // Mettre à jour l'aperçu
+    const countryCode = document.getElementById('worldCountrySelect').value;
+    const country = worldCountries.find(c => c.code === countryCode);
+    
+    document.getElementById('cityPreviewFlag').textContent = country?.flag || '🏙️';
+    document.getElementById('cityPreviewName').textContent = cityData.city || cityData.name;
+    document.getElementById('cityPreviewLocation').textContent = `${cityData.state ? cityData.state + ', ' : ''}${cityData.country}`;
+    document.getElementById('cityPreviewCoords').textContent = `📍 ${cityData.latitude.toFixed(4)}°, ${cityData.longitude.toFixed(4)}°`;
+    document.getElementById('cityPreview').classList.remove('hidden');
+    
+    // Cacher les résultats
+    document.getElementById('citySearchResults').classList.add('hidden');
+    document.getElementById('citySearchInput').value = cityData.city || cityData.name;
+    
+    // Activer le bouton submit
+    document.getElementById('submitCityBtn').disabled = false;
+}
+
+// Réinitialiser le formulaire
+function resetCityForm() {
+    selectedCityData = null;
+    document.getElementById('cityNameInput').value = '';
+    document.getElementById('cityRegionInput').value = '';
+    document.getElementById('cityLatitudeInput').value = '';
+    document.getElementById('cityLongitudeInput').value = '';
+    document.getElementById('cityPreview').classList.add('hidden');
+    document.getElementById('submitCityBtn').disabled = true;
+}
+
+// Fermer les résultats si clic dehors
+document.addEventListener('click', function(e) {
+    const searchInput = document.getElementById('citySearchInput');
+    const resultsDiv = document.getElementById('citySearchResults');
+    
+    if (searchInput && resultsDiv && !searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+        resultsDiv.classList.add('hidden');
+    }
+});
+
+// Initialiser la carte au chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialiser la carte Leaflet
+    initMap();
+    
+    // 🌍 Charger les pays du monde
+    loadWorldCountries();
+    
+    // 🌍 Setup autocomplete ville
+    setupCitySearch();
+    
+    // Surveiller les changements de coordonnées
+    const latInput = document.getElementById('cityLatitude');
+    const lngInput = document.getElementById('cityLongitude');
+    
+    if (latInput && lngInput) {
+        latInput.addEventListener('change', function() {
+            const lat = this.value;
+            const lng = lngInput.value;
+            if (lat && lng) {
+                validateCoordinates(lat, lng);
+            }
+        });
+        
+        lngInput.addEventListener('change', function() {
+            const lat = latInput.value;
+            const lng = this.value;
+            if (lat && lng) {
+                validateCoordinates(lat, lng);
+            }
+        });
+    }
+    
+    // Charger les villes majeures au chargement si pays sélectionné
+    const countrySelect = document.getElementById('countrySelect');
+    if (countrySelect && countrySelect.value) {
+        loadMajorCities(countrySelect.value);
+    }
+});
 </script>
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+@endpush
+
+@push('styles')
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+<style>
+    #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 12px;
+        position: relative;
+    }
+    .country-flag {
+        font-size: 1.5rem;
+        line-height: 1;
+    }
+    /* Style pour les popups Leaflet */
+    .leaflet-popup-content {
+        margin: 12px;
+        line-height: 1.5;
+    }
+    .leaflet-popup-content h4 {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+    .leaflet-popup-content p {
+        margin: 4px 0;
+        font-size: 13px;
+        color: #4b5563;
+    }
+    .marker-popup .status-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    .marker-popup .status-active {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    .marker-popup .status-inactive {
+        background-color: #fee2e2;
+        color: #991b1b;
+    }
+    
+    /* Loading overlay */
+    .map-loading {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        z-index: 1000;
+    }
+    
+    /* Style pour les marqueurs Leaflet personnalisés */
+    .custom-marker {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .marker-active {
+        background-color: #10b981;
+    }
+    .marker-inactive {
+        background-color: #ef4444;
+    }
+</style>
 @endpush
 
 @endsection

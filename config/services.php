@@ -58,5 +58,31 @@ return [
         ],
     ],
 
+    'google_maps' => [
+        'api_key' => env('GOOGLE_MAPS_API_KEY'),
+        'enabled' => env('GOOGLE_MAPS_ENABLED', true),
+        'default_zoom' => env('GOOGLE_MAPS_DEFAULT_ZOOM', 6),
+        'default_center' => [
+            'lat' => env('GOOGLE_MAPS_DEFAULT_LAT', -4.0383),
+            'lng' => env('GOOGLE_MAPS_DEFAULT_LNG', 21.7587),
+        ],
+        'apis' => [
+            'maps' => true,        // Maps JavaScript API
+            'places' => true,      // Places API (autocomplete)
+            'geocoding' => true,   // Geocoding API
+            'directions' => false, // Directions API (désactivé)
+            'distance_matrix' => false, // Distance Matrix API (désactivé)
+        ],
+        'language' => 'fr',
+        'region' => 'CD', // Code pays par défaut (RDC)
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL') . '/auth/google/callback'),
+    ],
+
 ];
+
 

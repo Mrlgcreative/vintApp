@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Callback Payment - VintApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 50px 0;
+        }
+        .test-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .response-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .success { border-left-color: #28a745; }
+        .error { border-left-color: #dc3545; }
+        .btn-send { background: #667eea; color: white; }
+        .btn-send:hover { background: #5568d3; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="test-card p-4 mb-4">
+                    <h2 class="text-center mb-4">
+                        <i class="fas fa-flask text-primary me-2"></i>
+                        Test des Callbacks de Paiement
+                    </h2>
+                    <p class="text-center text-muted mb-4">
+                        Simulez l'envoi de callbacks des différents opérateurs Mobile Money
+                    </p>
+
+                    <!-- Sélection du provider -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Opérateur</label>
+                            <select id="provider" class="form-select">
+                                <option value="mpesa">Vodacom M-Pesa</option>
+                                <option value="orange_money">Orange Money</option>
+                                <option value="airtel_money">Airtel Money</option>
+                                <option value="africell">Africell Money</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Statut</label>
+                            <select id="status" class="form-select">
+                                <option value="success">Success</option>
+                                <option value="failed">Failed</option>
+                                <option value="pending">Pending</option>
+                                <option value="cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Données communes -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Montant</label>
+                            <input type="number" id="amount" class="form-control" value="10.00" step="0.01">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Téléphone</label>
+                            <input type="text" id="phone" class="form-control" value="243812345678">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Transaction ID</label>
+                            <input type="text" id="transaction_id" class="form-control" value="TEST123">
+                        </div>
+                    </div>
+
+                    <!-- URL -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">URL du Callback</label>
+                        <div class="input-group">
+                            <input type="text" id="callback_url" class="form-control" value="http://localhost:8000/api/payment-callbacks/mpesa" readonly>
+                            <button class="btn btn-outline-secondary" onclick="copyUrl()">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Payload -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Payload JSON</label>
+                        <textarea id="payload" class="form-control font-monospace" rows="10"></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-4">
+                        <button class="btn btn-send btn-lg px-5" onclick="sendCallback()">
+                            <i class="fas fa-paper-plane me-2"></i>Envoyer le Callback
+                        </button>
+                        <button class="btn btn-outline-secondary btn-lg" onclick="generatePayload()">
+                            <i class="fas fa-sync-alt me-2"></i>Régénérer
+                        </button>
+                    </div>
+
+                    <!-- Réponse -->
+                    <div id="response-container" style="display: none;">
+                        <h5><i class="fas fa-terminal me-2"></i>Réponse</h5>
+                        <div id="response" class="response-box"></div>
+                    </div>
+                </div>
+
+                <!-- Guide rapide -->
+                <div class="test-card p-4">
+                    <h5 class="mb-3"><i class="fas fa-info-circle text-info me-2"></i>Guide Rapide</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Étapes de Test</h6>
+                            <ol class="small">
+                                <li>Sélectionnez un opérateur</li>
+                                <li>Choisissez un statut (success/failed)</li>
+                                <li>Ajustez les valeurs si nécessaire</li>
+                                <li>Cliquez sur "Envoyer le Callback"</li>
+                                <li>Vérifiez la réponse</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Codes de Statut</h6>
+                            <ul class="small">
+                                <li><strong>Success:</strong> Transaction réussie</li>
+                                <li><strong>Failed:</strong> Transaction échouée</li>
+                                <li><strong>Pending:</strong> En attente</li>
+                                <li><strong>Cancelled:</strong> Annulée</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mise à jour de l'URL quand on change de provider
+        document.getElementById('provider').addEventListener('change', function() {
+            updateUrl();
+            generatePayload();
+        });
+
+        document.getElementById('status').addEventListener('change', generatePayload);
+        document.getElementById('amount').addEventListener('change', generatePayload);
+        document.getElementById('phone').addEventListener('change', generatePayload);
+        document.getElementById('transaction_id').addEventListener('change', generatePayload);
+
+        function updateUrl() {
+            const provider = document.getElementById('provider').value;
+            const baseUrl = window.location.origin;
+            document.getElementById('callback_url').value = `${baseUrl}/api/payment-callbacks/${provider}`;
+        }
+
+        function generatePayload() {
+            const provider = document.getElementById('provider').value;
+            const status = document.getElementById('status').value;
+            const amount = document.getElementById('amount').value;
+            const phone = document.getElementById('phone').value;
+            const transactionId = document.getElementById('transaction_id').value;
+
+            let payload = {};
+
+            switch(provider) {
+                case 'mpesa':
+                    payload = {
+                        TransID: transactionId,
+                        ResultCode: status === 'success' ? '0' : status === 'pending' ? 'PENDING' : '1',
+                        TransAmount: amount,
+                        MSISDN: phone,
+                        BillRefNumber: 'ORDER-001',
+                        ResultDesc: status === 'success' ? 'Transaction successful' : 'Transaction failed'
+                    };
+                    break;
+
+                case 'orange_money':
+                    payload = {
+                        txnid: transactionId,
+                        status: status.toUpperCase(),
+                        amount: amount,
+                        currency: 'USD',
+                        msisdn: phone,
+                        order_id: 'ORDER-001',
+                        message: status === 'success' ? 'Payment successful' : 'Payment failed'
+                    };
+                    break;
+
+                case 'airtel_money':
+                    payload = {
+                        transaction_id: transactionId,
+                        transaction_status: status === 'success' ? 'TS' : status === 'pending' ? 'TIP' : 'TF',
+                        transaction_amount: amount,
+                        currency: 'USD',
+                        msisdn: phone,
+                        reference: 'ORDER-001',
+                        status_message: status === 'success' ? 'Transaction successful' : 'Transaction failed'
+                    };
+                    break;
+
+                case 'africell':
+                    payload = {
+                        trans_id: transactionId,
+                        status: status.toUpperCase(),
+                        amount: amount,
+                        phone: phone,
+                        ref: 'ORDER-001',
+                        msg: status === 'success' ? 'Payment successful' : 'Payment failed',
+                        secret: 'test_secret'
+                    };
+                    break;
+            }
+
+            document.getElementById('payload').value = JSON.stringify(payload, null, 2);
+        }
+
+        async function sendCallback() {
+            const provider = document.getElementById('provider').value;
+            const url = document.getElementById('callback_url').value;
+            const payload = JSON.parse(document.getElementById('payload').value);
+
+            const responseContainer = document.getElementById('response-container');
+            const responseBox = document.getElementById('response');
+            
+            responseBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+            responseBox.className = 'response-box';
+            responseContainer.style.display = 'block';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        // Headers spécifiques selon le provider (pour les tests)
+                        'X-Signature': 'test_signature',
+                        'X-Api-Key': 'test_api_key',
+                        'Authorization': 'Bearer test_token'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                const statusClass = response.ok ? 'success' : 'error';
+                const statusIcon = response.ok ? 'fa-check-circle text-success' : 'fa-times-circle text-danger';
+                
+                responseBox.className = `response-box ${statusClass}`;
+                responseBox.innerHTML = `
+                    <div class="mb-2">
+                        <i class="fas ${statusIcon} me-2"></i>
+                        <strong>Status:</strong> ${response.status} ${response.statusText}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Réponse:</strong>
+                    </div>
+                    <pre class="mb-0">${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                responseBox.className = 'response-box error';
+                responseBox.innerHTML = `
+                    <div class="mb-2">
+                        <i class="fas fa-times-circle text-danger me-2"></i>
+                        <strong>Erreur:</strong>
+                    </div>
+                    <div class="text-danger">${error.message}</div>
+                `;
+            }
+        }
+
+        function copyUrl() {
+            const urlInput = document.getElementById('callback_url');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            // Feedback visuel
+            const btn = event.target.closest('button');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+            }, 1000);
+        }
+
+        // Initialisation
+        updateUrl();
+        generatePayload();
+    </script>
+</body>
+</html>

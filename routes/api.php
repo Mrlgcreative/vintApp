@@ -7,6 +7,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DashboardController;
@@ -33,6 +34,18 @@ Route::get('/health', function () {
         'message' => 'VintApp API is running',
         'version' => '1.0.0'
     ]);
+});
+
+// Routes de callback pour les paiements (publiques car appelées par les opérateurs)
+Route::prefix('payment-callbacks')->group(function () {
+    // Callback universel pour chaque opérateur
+    Route::post('/{provider}', [PaymentCallbackController::class, 'handleCallback'])
+        ->name('payment.callback')
+        ->where('provider', 'mpesa|orange_money|airtel_money|africell|illicocash');
+    
+    // Endpoint pour vérifier le statut (polling)
+    Route::get('/status', [PaymentCallbackController::class, 'checkStatus'])
+        ->name('payment.status');
 });
 
 // Routes d'authentification (si vous utilisez Sanctum)

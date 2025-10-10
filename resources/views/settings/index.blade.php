@@ -250,6 +250,28 @@
         </div>
     </div>
 
+    <!-- Section : Zone dangereuse -->
+    <div class="settings-section mb-4">
+        <h6 class="text-muted text-uppercase small fw-bold mb-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>Zone dangereuse
+        </h6>
+        
+        <div class="card shadow-sm border-0 border-warning">
+            <div class="list-group list-group-flush">
+                <button type="button" class="list-group-item list-group-item-action d-flex align-items-center py-3 text-danger border-0 bg-transparent" onclick="showDeleteAccountModal()">
+                    <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
+                        <i class="fas fa-user-slash"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">Supprimer mon compte</div>
+                        <small class="text-muted">Suppression définitive et irréversible</small>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Section : Déconnexion -->
     <div class="settings-section mb-5">
         <div class="card shadow-sm border-0 border-danger">
@@ -325,6 +347,77 @@
                         <i class="fas fa-check text-success d-none theme-check"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de suppression du compte -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+            <div class="modal-header bg-danger bg-opacity-10 border-danger">
+                <h5 class="modal-title text-danger" id="deleteAccountModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Supprimer définitivement mon compte
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-skull-crossbones me-2"></i>
+                    <strong>ATTENTION !</strong> Cette action est <strong>IRRÉVERSIBLE</strong>
+                </div>
+                
+                <p class="mb-3">En supprimant votre compte, vous perdrez :</p>
+                <ul class="text-danger mb-4">
+                    <li><strong>Tous vos articles</strong> en vente</li>
+                    <li><strong>Votre historique</strong> de commandes</li>
+                    <li><strong>Vos messages</strong> et conversations</li>
+                    <li><strong>Votre portefeuille</strong> et son solde</li>
+                    <li><strong>Toutes vos données</strong> personnelles</li>
+                </ul>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Si vous avez des <strong>commandes en cours</strong> ou un <strong>solde dans votre portefeuille</strong>, veuillez les finaliser avant de supprimer votre compte.
+                </div>
+
+                <form id="deleteAccountForm" method="POST" action="{{ route('profile.destroy') }}">
+                    @csrf
+                    @method('DELETE')
+                    
+                    <div class="mb-3">
+                        <label for="delete_password" class="form-label fw-semibold">
+                            Pour confirmer, entrez votre mot de passe :
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="delete_password" 
+                               name="password" 
+                               placeholder="Votre mot de passe"
+                               required
+                               autocomplete="current-password">
+                        <small class="text-muted">Requis pour des raisons de sécurité</small>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" 
+                               class="form-check-input" 
+                               id="confirmDelete" 
+                               required>
+                        <label class="form-check-label" for="confirmDelete">
+                            Je comprends que cette action est définitive et irréversible
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-danger">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteAccount(event)">
+                    <i class="fas fa-trash-alt me-2"></i>Supprimer définitivement
+                </button>
             </div>
         </div>
     </div>
@@ -494,6 +587,63 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialiser le label au chargement
     updateThemeLabel(getPreferredTheme());
 });
+
+// ========================================
+// Fonctions de suppression de compte
+// ========================================
+
+let deleteAccountModal;
+
+function showDeleteAccountModal() {
+    if (!deleteAccountModal) {
+        deleteAccountModal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
+    }
+    deleteAccountModal.show();
+}
+
+function confirmDeleteAccount(event) {
+    const form = document.getElementById('deleteAccountForm');
+    const password = document.getElementById('delete_password').value;
+    const confirmCheckbox = document.getElementById('confirmDelete');
+    
+    // Validations
+    if (!password) {
+        alert('❌ Veuillez entrer votre mot de passe pour confirmer.');
+        document.getElementById('delete_password').focus();
+        return;
+    }
+    
+    if (!confirmCheckbox.checked) {
+        alert('❌ Veuillez cocher la case de confirmation.');
+        confirmCheckbox.focus();
+        return;
+    }
+    
+    // Confirmation finale
+    const finalConfirm = confirm(
+        '⚠️ DERNIÈRE CONFIRMATION\n\n' +
+        'Êtes-vous ABSOLUMENT SÛR de vouloir supprimer votre compte ?\n\n' +
+        '• Cette action est IRRÉVERSIBLE\n' +
+        '• Toutes vos données seront DÉFINITIVEMENT supprimées\n' +
+        '• Vous ne pourrez PAS récupérer votre compte\n\n' +
+        'Cliquez sur OK pour confirmer la suppression définitive.'
+    );
+    
+    if (finalConfirm) {
+        // Désactiver le bouton pour éviter les doubles clics
+        const deleteBtn = event.target;
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Suppression en cours...';
+        
+        // Log pour debug
+        console.log('Soumission du formulaire de suppression...');
+        console.log('Form action:', form.action);
+        console.log('Form method:', form.method);
+        
+        // Soumettre le formulaire
+        form.submit();
+    }
+}
 </script>
 @endpush
 @endsection

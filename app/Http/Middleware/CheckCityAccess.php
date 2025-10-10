@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\AllowedCity;
 use App\Models\AllowedRegion;
+use App\Models\Setting;
 use Stevebauman\Location\Facades\Location;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
@@ -32,6 +33,15 @@ class CheckCityAccess
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // 🆕 VÉRIFIER D'ABORD SI LES RESTRICTIONS SONT ACTIVÉES
+        $locationRestrictionsEnabled = Setting::get('enable_location_restrictions', true);
+        
+        if (!$locationRestrictionsEnabled) {
+            // Restrictions désactivées : laisser passer tout le monde
+            Log::info("Restrictions géographiques désactivées - Accès autorisé pour IP: {$request->ip()}");
+            return $next($request);
+        }
+        
         // Désactiver le middleware si la variable d'environnement est définie (pour les tests)
         if (config('app.disable_geo_restriction', false)) {
             return $next($request);

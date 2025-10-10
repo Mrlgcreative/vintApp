@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -23,6 +24,13 @@ Route::middleware('guest')->group(function () {
         ->name('login');
 
     Route::post('login', [LoginController::class, 'login']);
+
+    // Routes Google OAuth
+    Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])
+        ->name('auth.google');
+
+    Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
+        ->name('auth.google.callback');
 
     // Routes de réinitialisation de mot de passe
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])

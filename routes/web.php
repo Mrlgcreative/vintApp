@@ -29,21 +29,22 @@ Route::get('/items/search', [ItemController::class, 'search'])->name('items.sear
 
 Route::middleware('auth')->group(function () {
     // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
-    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
-    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
-    Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
-    Route::get('/items/personalization', [ItemController::class, 'personalization'])->name('items.personalization');
+    // 🔒 Nécessite email vérifié pour créer/vendre des items
+    Route::middleware('verified')->group(function () {
+        Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
+        Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+        Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
+        Route::get('/items/personalization', [ItemController::class, 'personalization'])->name('items.personalization');
+        Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
+        Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+        Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
+        Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
+        Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
+    });
     
-    // Routes avec paramètres
+    // Routes accessibles sans vérification email
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
-    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
-    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
-    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
-    
-    // Routes spéciales pour les items
     Route::post('/items/{item}/favorite', [ItemController::class, 'toggleFavorite'])->name('items.favorite');
-    Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
-    Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
 
     // Routes du profil
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
@@ -70,7 +71,8 @@ Route::middleware('auth')->group(function () {
 });
 
 // Routes pour les commandes
-Route::middleware(['auth'])->group(function () {
+// 🔒 Nécessite email vérifié pour passer commande
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -83,7 +85,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Messagerie (type WhatsApp)
-Route::middleware(['auth'])->group(function () {
+// 🔒 Nécessite email vérifié pour envoyer des messages
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/create', [App\Http\Controllers\MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
@@ -240,6 +243,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/maintenance/enable', [App\Http\Controllers\Admin\AdminController::class, 'enableMaintenance'])->name('maintenance.enable');
         Route::post('/maintenance/disable', [App\Http\Controllers\Admin\AdminController::class, 'disableMaintenance'])->name('maintenance.disable');
         Route::get('/maintenance/status', [App\Http\Controllers\Admin\AdminController::class, 'maintenanceStatus'])->name('maintenance.status');
+        
+        // Routes pour les restrictions géographiques
+        Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
+        Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
     });
 
     // API pour notifications
@@ -274,6 +281,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::put('/regions/{region}', [App\Http\Controllers\Admin\LocationAccessController::class, 'updateRegion'])->name('regions.update');
         Route::delete('/regions/{region}', [App\Http\Controllers\Admin\LocationAccessController::class, 'destroyRegion'])->name('regions.destroy');
         Route::post('/regions/{region}/toggle-status', [App\Http\Controllers\Admin\LocationAccessController::class, 'toggleRegionStatus'])->name('regions.toggle');
+        
+        // 🆕 API Routes pour GPS et pays
+        Route::get('/api/countries', [App\Http\Controllers\Admin\LocationAccessController::class, 'getCountries'])->name('api.countries');
+        Route::get('/api/countries/{countryCode}/major-cities', [App\Http\Controllers\Admin\LocationAccessController::class, 'getMajorCitiesByCountry'])->name('api.major-cities');
+        Route::get('/api/countries/{countryCode}/cities', [App\Http\Controllers\Admin\LocationAccessController::class, 'getCitiesByCountry'])->name('api.cities-by-country');
+        Route::get('/api/cities/map', [App\Http\Controllers\Admin\LocationAccessController::class, 'getCitiesForMap'])->name('api.cities-map');
+        Route::post('/api/cities/nearby', [App\Http\Controllers\Admin\LocationAccessController::class, 'searchCitiesNearby'])->name('api.cities-nearby');
+        Route::post('/api/validate-coordinates', [App\Http\Controllers\Admin\LocationAccessController::class, 'validateCoordinatesForCountry'])->name('api.validate-coordinates');
+        
+        // 🌍 Nouvelles routes mondiales
+        Route::get('/api/world/countries', [App\Http\Controllers\Admin\LocationAccessController::class, 'getAllCountries'])->name('api.world-countries');
+        Route::get('/api/world/cities/search', [App\Http\Controllers\Admin\LocationAccessController::class, 'searchWorldCities'])->name('api.search-world-cities');
+        Route::post('/api/world/cities/geocode', [App\Http\Controllers\Admin\LocationAccessController::class, 'geocodeCity'])->name('api.geocode-city');
     });
 });
 
@@ -304,6 +324,12 @@ Route::prefix('payments')->group(function () {
     Route::post('/africell', [PaymentController::class, 'payWithAfricell'])->name('payments.africell');
     Route::post('/simulate', [PaymentController::class, 'simulatePayment'])->name('payments.simulate');
     Route::post('/callback', [PaymentController::class, 'handleCallback'])->name('payments.callback');
+    
+    // Page de suivi du paiement en temps réel
+    Route::get('/status/{transaction}', function ($transactionId) {
+        $transaction = \App\Models\Transaction::findOrFail($transactionId);
+        return view('payment-status', compact('transaction'));
+    })->name('payments.status');
 });
 
 // Routes pour le panier

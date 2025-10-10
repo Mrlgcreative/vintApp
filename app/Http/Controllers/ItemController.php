@@ -7,6 +7,8 @@ use App\Models\Item;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\User;
+use App\Models\Setting;
+use App\Models\AllowedCity;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -72,7 +74,15 @@ class ItemController extends Controller
         $categories = Category::where('is_active', true)->get();
         $brands = Brand::where('is_active', true)->get();
         
-        return view('items.create', compact('categories', 'brands'));
+        // Vérifier si les restrictions géographiques sont activées
+        $locationRestrictionsEnabled = Setting::get('enable_location_restrictions', true);
+        
+        // Récupérer les villes autorisées si les restrictions sont activées
+        $allowedCities = $locationRestrictionsEnabled 
+            ? AllowedCity::active()->orderBy('country')->orderBy('name')->get()
+            : collect(); // Collection vide si désactivé
+        
+        return view('items.create', compact('categories', 'brands', 'locationRestrictionsEnabled', 'allowedCities'));
     }
 
     /**

@@ -619,6 +619,11 @@
     <!-- Admin Utils JavaScript -->
     <script src="{{ asset('js/admin-utils.js') }}"></script>
 
+    <!-- Performance Monitor (Development only) -->
+    @if(config('app.env') === 'local' || config('app.debug'))
+    <script src="{{ asset('js/performance-monitor.js') }}"></script>
+    @endif
+
     @stack('scripts')
 </body>
 </html>
