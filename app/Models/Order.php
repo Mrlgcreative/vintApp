@@ -28,6 +28,8 @@ class Order extends Model
         'paid_at',
         'shipped_at',
         'delivered_at',
+        'confirmed_by_buyer_at',
+        'buyer_confirmation_note',
     ];
 
     protected $casts = [
@@ -36,6 +38,7 @@ class Order extends Model
         'paid_at' => 'datetime',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'confirmed_by_buyer_at' => 'datetime',
     ];
 
     protected static function boot()

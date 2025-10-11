@@ -67,15 +67,17 @@
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <div class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">Wallets en attente</div>
+                    <div class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">Wallets Pending</div>
                     <div class="text-2xl font-bold text-gray-900">{{ $stats['pending_wallets'] }}</div>
-                    <div class="text-xs mt-1">
-                        <a href="{{ route('admin.wallets.pending') }}" class="text-yellow-600 hover:text-yellow-700 font-medium">Voir tous</a>
+                    <div class="text-xs mt-1 space-y-1">
+                        <div class="text-gray-600">${{ number_format($stats['pending_wallets_usd'], 2) }} USD</div>
+                        <div class="text-gray-600">{{ number_format($stats['pending_wallets_cdf'], 0, ',', ' ') }} CDF</div>
+                        <a href="{{ route('admin.wallets.pending') }}" class="text-yellow-600 hover:text-yellow-700 font-medium inline-block mt-1">Voir détails</a>
                     </div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-clock text-2xl text-yellow-600"></i>
+                        <i class="fas fa-wallet text-2xl text-yellow-600"></i>
                     </div>
                 </div>
             </div>
@@ -188,8 +190,8 @@
                     </a>
                     <a href="{{ route('admin.wallets.pending') }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors duration-200">
-                        <i class="fas fa-clock mr-2"></i>
-                        Wallets en attente
+                        <i class="fas fa-wallet mr-2"></i>
+                        Wallets pending (en attente confirmation)
                     </a>
                     <a href="{{ route('admin.transactions.index') }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">

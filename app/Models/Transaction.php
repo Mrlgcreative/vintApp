@@ -18,6 +18,7 @@ class Transaction extends Model
      */
     protected $fillable = [
         'user_id',
+        'buyer_id', // Pour compatibilité avec l'ancienne structure
         'wallet_id',
         'amount',
         'currency',
@@ -26,6 +27,10 @@ class Transaction extends Model
         'payment_method',
         'transaction_ref',
         'description',
+        'transaction_id',
+        'provider',
+        'phone',
+        'purpose',
     ];
 
     /**

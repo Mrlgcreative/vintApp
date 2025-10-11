@@ -29,22 +29,22 @@
             </div>
             
             <div>
-                <label for="date_to" class="form-label">Date fin</label>
-                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ request('date_to') }}">
+                <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">Date fin</label>
+                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="date_to" name="date_to" value="{{ request('date_to') }}">
             </div>
             
-            <div class="col-md-3">
-                <label for="search" class="form-label">Recherche</label>
-                <input type="text" class="form-control" id="search" name="search" 
+            <div>
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="search" name="search" 
                        placeholder="ID commande, utilisateur..." value="{{ request('search') }}">
             </div>
             
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Filtrer
+            <div class="md:col-span-2 flex items-end gap-3">
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:ring-4 focus:ring-primary-300 transition-all duration-200 font-medium">
+                    <i class="fas fa-search mr-2"></i> Filtrer
                 </button>
-                <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-times"></i> Réinitialiser
+                <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 transition-all duration-200 font-medium">
+                    <i class="fas fa-times mr-2"></i> Réinitialiser
                 </a>
             </div>
         </form>
@@ -52,106 +52,105 @@
 </div>
 
 <!-- Liste des commandes -->
-<div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
+<div class="bg-white rounded-xl shadow-sm border border-gray-200">
+    <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
+        <h3 class="text-lg font-semibold text-gray-900">
+            <i class="fas fa-shopping-cart text-primary-600 mr-2"></i>
             Liste des commandes 
             @if(isset($orders))
-                <span class="badge bg-secondary">{{ $orders->total() ?? 0 }} total</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 ml-2">
+                    {{ $orders->total() ?? 0 }} total
+                </span>
             @endif
-        </h5>
+        </h3>
     </div>
-    <div class="card-body p-0">
+    <div class="p-0">
         @if(isset($orders) && $orders->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th>ID</th>
-                            <th>Acheteur</th>
-                            <th>Vendeur</th>
-                            <th>Article</th>
-                            <th>Montant</th>
-                            <th>Statut</th>
-                            <th>Date</th>
-                            <th>Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acheteur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendeur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="bg-white divide-y divide-gray-200">
                         @foreach($orders as $order)
-                        <tr>
-                            <td>
-                                <strong>#{{ $order->id }}</strong>
+                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-bold text-gray-900">#{{ $order->id }}</span>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @if($order->buyer)
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            @if($order->buyer->avatar)
-                                                <img src="{{ $order->buyer->avatar_url }}" class="rounded-circle" width="32" height="32">
-                                            @else
-                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                    {{ $order->buyer->initial }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold">{{ $order->buyer->name }}</div>
-                                            <small class="text-muted">{{ $order->buyer->email }}</small>
-                                        </div>
-                                    </div>
-                                @else
-                                    <span class="text-muted">Utilisateur supprimé</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($order->seller)
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2">
-                                            @if($order->seller->avatar)
-                                                <img src="{{ $order->seller->avatar_url }}" class="rounded-circle" width="32" height="32">
-                                            @else
-                                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                                    {{ $order->seller->initial }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold">{{ $order->seller->name }}</div>
-                                            <small class="text-muted">{{ $order->seller->email }}</small>
-                                        </div>
-                                    </div>
-                                @else
-                                    <span class="text-muted">Utilisateur supprimé</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($order->item)
-                                    <div class="d-flex align-items-center">
-                                        @if($order->item->images && count($order->item->images) > 0)
-                                            <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
-                                                 class="rounded me-2" width="40" height="40" style="object-fit: cover;">
+                                    <div class="flex items-center">
+                                        @if($order->buyer->avatar)
+                                            <img src="{{ $order->buyer->avatar_url }}" class="w-8 h-8 rounded-full mr-3" alt="Avatar">
+                                        @else
+                                            <div class="w-8 h-8 bg-primary-500 text-white rounded-full flex items-center justify-center font-semibold text-xs mr-3">
+                                                {{ $order->buyer->initial }}
+                                            </div>
                                         @endif
                                         <div>
-                                            <div class="fw-semibold">{{ Str::limit($order->item->title, 30) }}</div>
-                                            <small class="text-muted">{{ $order->item->brand->name ?? 'Sans marque' }}</small>
+                                            <div class="text-sm font-medium text-gray-900">{{ $order->buyer->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $order->buyer->email }}</div>
                                         </div>
                                     </div>
                                 @else
-                                    <span class="text-muted">Article supprimé</span>
+                                    <span class="text-sm text-gray-400">Utilisateur supprimé</span>
                                 @endif
                             </td>
-                            <td>
-                                <strong>{{ number_format($order->total_amount ?? 0, 2) }} {{ $order->currency ?? 'USD' }}</strong>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($order->seller)
+                                    <div class="flex items-center">
+                                        @if($order->seller->avatar)
+                                            <img src="{{ $order->seller->avatar_url }}" class="w-8 h-8 rounded-full mr-3" alt="Avatar">
+                                        @else
+                                            <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-semibold text-xs mr-3">
+                                                {{ $order->seller->initial }}
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $order->seller->name }}</div>
+                                            <div class="text-xs text-gray-500">{{ $order->seller->email }}</div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-sm text-gray-400">Utilisateur supprimé</span>
+                                @endif
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($order->item)
+                                    <div class="flex items-center">
+                                        @if($order->item->images && count($order->item->images) > 0)
+                                            <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
+                                                 class="w-10 h-10 rounded-lg mr-3 object-cover" alt="Article">
+                                        @endif
+                                        <div>
+                                            <div class="text-sm font-medium text-gray-900">{{ Str::limit($order->item->title, 30) }}</div>
+                                            <div class="text-xs text-gray-500">{{ $order->item->brand->name ?? 'Sans marque' }}</div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <span class="text-sm text-gray-400">Article supprimé</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm font-bold text-gray-900">{{ number_format($order->total_amount ?? 0, 2) }} {{ $order->currency ?? 'USD' }}</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
                                 @php
                                     $statusClasses = [
-                                        'pending' => 'bg-warning',
-                                        'confirmed' => 'bg-info',
-                                        'shipped' => 'bg-primary',
-                                        'delivered' => 'bg-success',
-                                        'cancelled' => 'bg-danger'
+                                        'pending' => 'bg-yellow-100 text-yellow-800',
+                                        'confirmed' => 'bg-blue-100 text-blue-800',
+                                        'shipped' => 'bg-indigo-100 text-indigo-800',
+                                        'delivered' => 'bg-green-100 text-green-800',
+                                        'cancelled' => 'bg-red-100 text-red-800'
                                     ];
                                     $statusLabels = [
                                         'pending' => 'En attente',
@@ -161,25 +160,31 @@
                                         'cancelled' => 'Annulé'
                                     ];
                                 @endphp
-                                <span class="badge {{ $statusClasses[$order->status] ?? 'bg-secondary' }}">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
                                     {{ $statusLabels[$order->status] ?? $order->status }}
                                 </span>
                             </td>
-                            <td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div>{{ $order->created_at->format('d/m/Y H:i') }}</div>
-                                <small class="text-muted">{{ $order->created_at->diffForHumans() }}</small>
+                                <div class="text-xs text-gray-400">{{ $order->created_at->diffForHumans() }}</div>
                             </td>
-                            <td>
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" onclick="viewOrder({{ $order->id }})">
-                                        <i class="fas fa-eye"></i>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="viewOrder({{ $order->id }})" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
+                                            title="Voir détails">
+                                        <i class="fas fa-eye text-sm"></i>
                                     </button>
                                     @if($order->status === 'pending')
-                                        <button class="btn btn-outline-success" onclick="confirmOrder({{ $order->id }})">
-                                            <i class="fas fa-check"></i>
+                                        <button onclick="confirmOrder({{ $order->id }})" 
+                                                class="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors duration-150"
+                                                title="Confirmer">
+                                            <i class="fas fa-check text-sm"></i>
                                         </button>
-                                        <button class="btn btn-outline-danger" onclick="cancelOrder({{ $order->id }})">
-                                            <i class="fas fa-times"></i>
+                                        <button onclick="cancelOrder({{ $order->id }})" 
+                                                class="inline-flex items-center px-3 py-1.5 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-150"
+                                                title="Annuler">
+                                            <i class="fas fa-times text-sm"></i>
                                         </button>
                                     @endif
                                 </div>
@@ -190,20 +195,23 @@
                 </table>
             </div>
             
-            <!-- Pagination -->
-            @if($orders->hasPages())
-                <div class="card-footer">
-                    {{ $orders->appends(request()->query())->links() }}
-                </div>
-            @endif
         @else
-            <div class="text-center py-5">
-                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                <h5>Aucune commande trouvée</h5>
-                <p class="text-muted">Il n'y a aucune commande correspondant à vos critères.</p>
+            <div class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                    <i class="fas fa-shopping-cart text-3xl text-gray-400"></i>
+                </div>
+                <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune commande trouvée</h5>
+                <p class="text-gray-500">Il n'y a aucune commande correspondant à vos critères.</p>
             </div>
         @endif
     </div>
+    
+    <!-- Pagination -->
+    @if(isset($orders) && $orders->hasPages())
+        <div class="border-t border-gray-200 px-6 py-4">
+            {{ $orders->appends(request()->query())->links() }}
+        </div>
+    @endif
 </div>
 
 <script>

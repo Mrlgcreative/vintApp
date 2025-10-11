@@ -48,7 +48,14 @@ class AdminController extends Controller
                 ->where('currency', 'CDF')
                 ->sum('amount'),
             
-            'pending_wallets' => Wallet::where('status', 'pending')->count(),
+            // Wallets en attente de confirmation (type='pending')
+            'pending_wallets' => Wallet::where('type', 'pending')->count(),
+            'pending_wallets_usd' => Wallet::where('type', 'pending')
+                ->where('currency', 'USD')
+                ->sum('balance'),
+            'pending_wallets_cdf' => Wallet::where('type', 'pending')
+                ->where('currency', 'CDF')
+                ->sum('balance'),
             'total_wallet_balance' => Wallet::where('is_active', true)->sum('balance'),
             
             // Wallets Entreprise (Commissions)
@@ -239,8 +246,10 @@ class AdminController extends Controller
      */
     public function pendingWallets()
     {
+        // Récupérer les wallets de type 'pending' (argent en attente de confirmation acheteur)
         $pendingWallets = Wallet::with(['user'])
-            ->where('status', 'pending')
+            ->where('type', 'pending')
+            ->orderBy('balance', 'desc')
             ->paginate(20);
             
         return view('admin.wallets.pending', compact('pendingWallets'));

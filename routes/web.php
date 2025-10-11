@@ -16,7 +16,7 @@ use App\Http\Controllers\ExchangeRateController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
 
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
 // Routes de test supprimées
 Route::get('/test-create', function() {
@@ -28,55 +28,52 @@ Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
 
 Route::middleware('auth')->group(function () {
-    // 🔒 TOUTES les routes dans ce groupe nécessitent une authentification ET une vérification d'email
-    Route::middleware('verified')->group(function () {
-        // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
-        Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
-        Route::post('/items', [ItemController::class, 'store'])->name('items.store');
-        Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
-        Route::get('/items/personalization', [ItemController::class, 'personalization'])->name('items.personalization');
-        Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
-        Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
-        Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
-        Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
-        Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
-        
-        // Routes du profil - 🔒 BLOQUÉES si email non vérifié
-        Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-        Route::patch('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
-        Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
-        Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
-        Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
-        Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
-        
-        // Settings page - 🔒 BLOQUÉE si email non vérifié
-        Route::get('/settings', function() {
-            return view('settings.index');
-        })->name('settings.index');
-        
-        // Dashboard routes - 🔒 BLOQUÉES si email non vérifié
-        Route::get('/dashboard/analytics', [App\Http\Controllers\DashboardController::class, 'analytics'])->name('dashboard.analytics');
-        Route::get('/dashboard/notifications', [App\Http\Controllers\DashboardController::class, 'notifications'])->name('dashboard.notifications');
-        Route::patch('/dashboard/notifications/{id}/read', [App\Http\Controllers\DashboardController::class, 'markNotificationAsRead'])->name('dashboard.notifications.read');
-        Route::patch('/dashboard/notifications/read-all', [App\Http\Controllers\DashboardController::class, 'markAllNotificationsAsRead'])->name('dashboard.notifications.read-all');
-    });
+    // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
+    Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
+    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+    Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
+    Route::get('/items/personalization', [ItemController::class, 'personalization'])->name('items.personalization');
+    Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('items.update');
+    Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
+    Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
+    Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
     
-    // Routes accessibles même sans vérification email (UNIQUEMENT lecture)
+    // Routes du profil
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::patch('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
+    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
+    Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
+    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    
+    // Settings page
+    Route::get('/settings', function() {
+        return view('settings.index');
+    })->name('settings.index');
+    
+    // Dashboard routes
+    Route::get('/dashboard/analytics', [App\Http\Controllers\DashboardController::class, 'analytics'])->name('dashboard.analytics');
+    Route::get('/dashboard/notifications', [App\Http\Controllers\DashboardController::class, 'notifications'])->name('dashboard.notifications');
+    Route::patch('/dashboard/notifications/{id}/read', [App\Http\Controllers\DashboardController::class, 'markNotificationAsRead'])->name('dashboard.notifications.read');
+    Route::patch('/dashboard/notifications/read-all', [App\Http\Controllers\DashboardController::class, 'markAllNotificationsAsRead'])->name('dashboard.notifications.read-all');
+    
+    // Routes accessibles (lecture)
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
     
-    // Thème - Accessible sans vérification
+    // Thème
     Route::post('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
     Route::post('/theme/set', [ThemeController::class, 'set'])->name('theme.set');
     Route::get('/theme/get', [ThemeController::class, 'get'])->name('theme.get');
 });
 
 // Routes pour les commandes
-// 🔒 Nécessite email vérifié pour passer commande
-Route::middleware(['auth', 'verified'])->group(function () {
+// Routes des commandes
+Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
@@ -86,11 +83,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
     Route::get('/my-sales', [OrderController::class, 'mySales'])->name('orders.my-sales');
     Route::post('/orders/{order}/confirm-payment', [OrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
+    Route::post('/orders/{order}/confirm-delivery', [OrderController::class, 'confirmDelivery'])->name('orders.confirm-delivery');
+    Route::post('/orders/{order}/mark-shipped', [OrderController::class, 'markAsShipped'])->name('orders.mark-shipped');
+    Route::post('/orders/{order}/mark-delivered', [OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
 });
 
 // Messagerie (type WhatsApp)
-// 🔒 Nécessite email vérifié pour envoyer des messages
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
     Route::get('/messages/create', [App\Http\Controllers\MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
@@ -327,6 +326,10 @@ Route::prefix('payments')->group(function () {
         $transaction = \App\Models\Transaction::findOrFail($transactionId);
         return view('payment-status', compact('transaction'));
     })->name('payments.status');
+    
+    // Pages de callback pour simulation
+    Route::get('/success/{transaction_id}', [PaymentController::class, 'paymentSuccess'])->name('payments.success');
+    Route::get('/error', [PaymentController::class, 'paymentError'])->name('payments.error');
 });
 
 // Routes pour le panier

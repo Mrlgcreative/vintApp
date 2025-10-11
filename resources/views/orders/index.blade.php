@@ -85,6 +85,22 @@
                                                 Annuler
                                             </button>
                                         @endif
+
+                                        @if(in_array($order->status, ['shipped', 'delivered']) && !$order->confirmed_by_buyer_at)
+                                            <button class="btn btn-success btn-sm" 
+                                                    data-order-id="{{ $order->id }}"
+                                                    onclick="confirmDelivery(this.dataset.orderId)">
+                                                <i class="fas fa-check-circle me-2"></i>
+                                                Commande Reçue
+                                            </button>
+                                        @endif
+
+                                        @if($order->confirmed_by_buyer_at)
+                                            <div class="alert alert-success mb-0 py-2" role="alert">
+                                                <i class="fas fa-check-circle me-1"></i>
+                                                <small>Réception confirmée le {{ $order->confirmed_by_buyer_at->format('d/m/Y') }}</small>
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -137,6 +153,38 @@ function cancelOrder(orderId) {
         .catch(error => {
             console.error('Error:', error);
             alert('Une erreur est survenue');
+        });
+    }
+}
+
+function confirmDelivery(orderId) {
+    // Demander une confirmation avec possibilité d'ajouter un commentaire
+    const note = prompt('Confirmez-vous avoir reçu votre commande ?\n\nVous pouvez ajouter un commentaire (optionnel) :');
+    
+    if (note !== null) { // L'utilisateur n'a pas cliqué sur Annuler
+        fetch(`/orders/${orderId}/confirm-delivery`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                note: note || ''
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(data.error || 'Erreur lors de la confirmation');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la confirmation');
         });
     }
 }

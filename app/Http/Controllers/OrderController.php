@@ -286,14 +286,22 @@ class OrderController extends Controller
     /**
      * Afficher les commandes du vendeur
      */
-    public function mySales()
+    public function mySales(Request $request)
     {
-        $orders = Order::with(['item.category', 'item.brand', 'buyer'])
-            ->whereHas('item', function($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        $query = Order::with(['item.category', 'item.brand', 'buyer'])
+            ->whereHas('item', function($q) {
+                $q->where('user_id', Auth::id());
+            });
+
+        // Filtrer par statut si spécifié
+        if ($request->has('status') && $request->status) {
+            // Support pour plusieurs statuts séparés par virgule (ex: delivered,completed)
+            $statuses = explode(',', $request->status);
+            $query->whereIn('status', $statuses);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return view('orders.my-sales', compact('orders'));
     }
@@ -337,6 +345,333 @@ class OrderController extends Controller
             }
             
             return back()->withErrors(['error' => 'Une erreur est survenue lors de la confirmation du paiement.']);
+        }
+    }
+
+    /**
+     * Marquer la commande comme expédiée (vendeur)
+     */
+    public function markAsShipped(Order $order)
+    {
+        // Vérifier que c'est bien le vendeur qui expédie
+        if ($order->item->user_id !== Auth::id()) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Vous n\'êtes pas autorisé à modifier cette commande.'
+                ], 403);
+            }
+            return back()->withErrors(['error' => 'Vous n\'êtes pas autorisé à modifier cette commande.']);
+        }
+
+        // Vérifier que la commande est en statut confirmed
+        if ($order->status !== 'confirmed') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Cette commande ne peut pas être expédiée dans son état actuel.'
+                ], 400);
+            }
+            return back()->withErrors(['error' => 'Cette commande ne peut pas être expédiée dans son état actuel.']);
+        }
+
+        try {
+            $order->status = 'shipped';
+            $order->shipped_at = now();
+            $order->save();
+
+            if (request()->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Commande marquée comme expédiée !']);
+            }
+
+            return redirect()->route('orders.show', $order)
+                ->with('success', 'Commande marquée comme expédiée avec succès !');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du marquage expédié: ' . $e->getMessage());
+            
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'error' => 'Une erreur est survenue.'], 500);
+            }
+            
+            return back()->withErrors(['error' => 'Une erreur est survenue lors du marquage de la commande.']);
+        }
+    }
+
+    /**
+     * Marquer la commande comme livrée (vendeur)
+     */
+    public function markAsDelivered(Order $order)
+    {
+        // Vérifier que c'est bien le vendeur qui livre
+        if ($order->item->user_id !== Auth::id()) {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Vous n\'êtes pas autorisé à modifier cette commande.'
+                ], 403);
+            }
+            return back()->withErrors(['error' => 'Vous n\'êtes pas autorisé à modifier cette commande.']);
+        }
+
+        // Vérifier que la commande est en statut shipped
+        if ($order->status !== 'shipped') {
+            if (request()->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Cette commande doit d\'abord être marquée comme expédiée.'
+                ], 400);
+            }
+            return back()->withErrors(['error' => 'Cette commande doit d\'abord être marquée comme expédiée.']);
+        }
+
+        try {
+            $order->status = 'delivered';
+            $order->delivered_at = now();
+            $order->save();
+
+            if (request()->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Commande marquée comme livrée !']);
+            }
+
+            return redirect()->route('orders.show', $order)
+                ->with('success', 'Commande marquée comme livrée avec succès !');
+
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du marquage livré: ' . $e->getMessage());
+            
+            if (request()->expectsJson()) {
+                return response()->json(['success' => false, 'error' => 'Une erreur est survenue.'], 500);
+            }
+            
+            return back()->withErrors(['error' => 'Une erreur est survenue lors du marquage de la commande.']);
+        }
+    }
+
+    /**
+     * Confirmer la réception de la livraison par le client
+     */
+    public function confirmDelivery(Request $request, Order $order)
+    {
+        // Vérifier que c'est bien l'acheteur qui confirme
+        if ($order->buyer_id !== Auth::id()) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Vous n\'êtes pas autorisé à confirmer la réception de cette commande.'
+                ], 403);
+            }
+            return back()->withErrors(['error' => 'Vous n\'êtes pas autorisé à confirmer la réception de cette commande.']);
+        }
+
+        // Vérifier que la commande est en statut shipped ou delivered
+        if (!in_array($order->status, ['shipped', 'delivered'])) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Cette commande n\'est pas encore expédiée.'
+                ], 400);
+            }
+            return back()->withErrors(['error' => 'Cette commande n\'est pas encore expédiée.']);
+        }
+
+        // Vérifier si la commande n'a pas déjà été confirmée
+        if ($order->confirmed_by_buyer_at) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Vous avez déjà confirmé la réception de cette commande.'
+                ], 400);
+            }
+            return back()->withErrors(['error' => 'Vous avez déjà confirmé la réception de cette commande.']);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Enregistrer la confirmation de livraison
+            $order->confirmed_by_buyer_at = now();
+            $order->buyer_confirmation_note = $request->input('note');
+            $order->status = 'completed';
+            $order->save();
+
+            // Récupérer les pourcentages de commission et transport depuis les settings
+            $commissionPercent = (float) (DB::table('settings')
+                ->where('key', 'platform_commission_percentage')
+                ->value('value') ?? 10);
+            
+            $transportPercent = (float) (DB::table('settings')
+                ->where('key', 'transport_fee_percentage')
+                ->value('value') ?? 5);
+            
+            // Calculer les montants de distribution
+            $totalAmount = (float) $order->total_amount;
+            $commissionAmount = round($totalAmount * ($commissionPercent / 100), 2);
+            $transportAmount = round($totalAmount * ($transportPercent / 100), 2);
+            $sellerAmount = $totalAmount - $commissionAmount - $transportAmount;
+            
+            Log::info("Distribution calculée pour commande #{$order->id}", [
+                'total' => $totalAmount,
+                'commission_percent' => $commissionPercent,
+                'commission_amount' => $commissionAmount,
+                'transport_percent' => $transportPercent,
+                'transport_amount' => $transportAmount,
+                'seller_amount' => $sellerAmount,
+                'currency' => $order->currency
+            ]);
+
+            // Transférer l'argent du wallet pending au wallet main du vendeur
+            $seller = User::find($order->seller_id);
+            if ($seller) {
+                // Récupérer le wallet pending du vendeur
+                $sellerPendingWallet = \App\Models\Wallet::where('user_id', $seller->id)
+                    ->where('type', 'pending')
+                    ->where('currency', $order->currency)
+                    ->first();
+                
+                if ($sellerPendingWallet && $sellerPendingWallet->balance >= $order->total_amount) {
+                    // Créer ou récupérer le wallet main du vendeur
+                    $sellerMainWallet = \App\Models\Wallet::firstOrCreate(
+                        [
+                            'user_id' => $seller->id,
+                            'type' => 'main',
+                            'currency' => $order->currency
+                        ],
+                        [
+                            'balance' => 0,
+                            'status' => 'active',
+                            'is_active' => true
+                        ]
+                    );
+                    
+                    // Créer ou récupérer le wallet enterprise pour la commission et transport
+                    $enterpriseWallet = \App\Models\Wallet::firstOrCreate(
+                        [
+                            'user_id' => null, // Wallet de la plateforme
+                            'type' => 'enterprise',
+                            'currency' => $order->currency
+                        ],
+                        [
+                            'balance' => 0,
+                            'status' => 'active',
+                            'is_active' => true
+                        ]
+                    );
+                    
+                    // Débiter le montant total du wallet pending
+                    $sellerPendingWallet->decrement('balance', $totalAmount);
+                    
+                    // Créditer le montant du vendeur (après déductions) dans le wallet main
+                    $sellerMainWallet->increment('balance', $sellerAmount);
+                    
+                    // Créditer la commission + transport dans le wallet enterprise
+                    $platformAmount = $commissionAmount + $transportAmount;
+                    $enterpriseWallet->increment('balance', $platformAmount);
+                    
+                    // Log pour traçabilité
+                    Log::info("Distribution effectuée", [
+                        'seller_id' => $seller->id,
+                        'order_id' => $order->id,
+                        'total_amount' => $totalAmount,
+                        'seller_amount' => $sellerAmount,
+                        'commission_amount' => $commissionAmount,
+                        'transport_amount' => $transportAmount,
+                        'platform_amount' => $platformAmount,
+                        'currency' => $order->currency,
+                        'pending_balance' => $sellerPendingWallet->balance,
+                        'main_balance' => $sellerMainWallet->balance,
+                        'enterprise_balance' => $enterpriseWallet->balance
+                    ]);
+                    
+                    // Créer une transaction pour le vendeur
+                    \App\Models\Transaction::create([
+                        'transaction_id' => 'SELLER-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                        'user_id' => $seller->id,
+                        'buyer_id' => $seller->id,
+                        'wallet_id' => $sellerMainWallet->id,
+                        'amount' => $sellerAmount,
+                        'currency' => $order->currency,
+                        'type' => 'deposit',
+                        'status' => 'completed',
+                        'payment_method' => 'wallet',
+                        'purpose' => 'Vente confirmée - Commande #' . $order->id . ' (Montant net après commission ' . $commissionPercent . '% et transport ' . $transportPercent . '%)',
+                        'provider' => 'Wallet Transfer',
+                        'phone' => 'N/A',
+                    ]);
+                    
+                    // Créer une transaction pour la commission plateforme
+                    \App\Models\Transaction::create([
+                        'transaction_id' => 'COMMISSION-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                        'user_id' => 1, // Admin/Plateforme (à adapter si vous avez un autre ID admin)
+                        'buyer_id' => $order->buyer_id, // L'acheteur qui a payé
+                        'wallet_id' => $enterpriseWallet->id,
+                        'amount' => $commissionAmount,
+                        'currency' => $order->currency,
+                        'type' => 'deposit',
+                        'status' => 'completed',
+                        'payment_method' => 'wallet',
+                        'purpose' => 'Commission plateforme (' . $commissionPercent . '%) - Commande #' . $order->id,
+                        'provider' => 'Platform Commission',
+                        'phone' => 'N/A',
+                    ]);
+                    
+                    // Créer une transaction pour les frais de transport
+                    \App\Models\Transaction::create([
+                        'transaction_id' => 'TRANSPORT-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                        'user_id' => 1, // Admin/Plateforme (à adapter si vous avez un autre ID admin)
+                        'buyer_id' => $order->buyer_id, // L'acheteur qui a payé
+                        'wallet_id' => $enterpriseWallet->id,
+                        'amount' => $transportAmount,
+                        'currency' => $order->currency,
+                        'type' => 'deposit',
+                        'status' => 'completed',
+                        'payment_method' => 'wallet',
+                        'purpose' => 'Frais de transport (' . $transportPercent . '%) - Commande #' . $order->id,
+                        'provider' => 'Transport Fee',
+                        'phone' => 'N/A',
+                    ]);
+                } else {
+                    Log::warning("Solde insuffisant dans le wallet pending pour la commande #{$order->id}");
+                }
+                
+                // Créer une notification pour le vendeur avec détails de distribution
+                $seller->notifications()->create([
+                    'type' => 'order_delivered_confirmed',
+                    'title' => 'Commande confirmée reçue - Paiement distribué',
+                    'message' => Auth::user()->name . ' a confirmé avoir reçu la commande #' . $order->id . '. ' .
+                                'Montant reçu: ' . number_format($sellerAmount, 2) . ' ' . $order->currency . ' ' .
+                                '(Total: ' . number_format($totalAmount, 2) . ' - ' .
+                                'Commission: ' . number_format($commissionAmount, 2) . ' - ' .
+                                'Transport: ' . number_format($transportAmount, 2) . ')',
+                    'action_url' => route('orders.show', $order->id),
+                    'is_read' => false,
+                ]);
+            }
+
+            DB::commit();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Réception confirmée avec succès ! Merci pour votre retour.'
+                ]);
+            }
+
+            return redirect()->route('orders.show', $order)
+                ->with('success', '✅ Réception confirmée avec succès ! Merci pour votre retour.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la confirmation de livraison: ' . $e->getMessage());
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false, 
+                    'error' => 'Une erreur est survenue lors de la confirmation de livraison.'
+                ], 500);
+            }
+            
+            return back()->withErrors(['error' => 'Une erreur est survenue lors de la confirmation de livraison.']);
         }
     }
 }

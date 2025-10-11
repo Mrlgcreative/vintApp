@@ -181,6 +181,7 @@
                         </a>
                         
                         <div>
+                            {{-- Acheteur : Bouton payer si commande en attente (pending) --}}
                             @if($order->buyer_id === Auth::id() && $order->status === 'pending')
                                 <form method="POST" action="{{ route('orders.confirm-payment', $order) }}" style="display: inline;">
                                     @csrf
@@ -194,15 +195,35 @@
                                 </form>
                             @endif
                             
-                            @if($order->item->user_id === Auth::id())
-                                <a href="{{ route('orders.edit', $order) }}" 
-                                   class="btn btn-warning me-2"
-                                   aria-label="Modifier le statut de la commande {{ $order->order_number }}">
-                                    <i class="fas fa-edit me-2"></i>
-                                    Modifier le statut
-                                </a>
+                            {{-- Vendeur : Bouton expédier si commande confirmée (payée) --}}
+                            @if($order->item->user_id === Auth::id() && $order->status === 'confirmed')
+                                <form method="POST" action="{{ route('orders.mark-shipped', $order) }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="btn btn-primary me-2" 
+                                            onclick="return confirm('Marquer cette commande comme expédiée ?')"
+                                            aria-label="Marquer la commande {{ $order->order_number }} comme expédiée">
+                                        <i class="fas fa-shipping-fast me-2"></i>
+                                        📦 Expédier la commande
+                                    </button>
+                                </form>
                             @endif
                             
+                            {{-- Vendeur : Bouton marquer comme livrée si commande expédiée --}}
+                            @if($order->item->user_id === Auth::id() && $order->status === 'shipped')
+                                <form method="POST" action="{{ route('orders.mark-delivered', $order) }}" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" 
+                                            class="btn btn-success me-2" 
+                                            onclick="return confirm('Marquer cette commande comme livrée ?')"
+                                            aria-label="Marquer la commande {{ $order->order_number }} comme livrée">
+                                        <i class="fas fa-check-circle me-2"></i>
+                                        ✅ Marquer comme livrée
+                                    </button>
+                                </form>
+                            @endif
+                            
+                            {{-- Acheteur : Annuler si pas encore payé --}}
                             @if($order->buyer_id === Auth::id() && $order->status === 'pending')
                                 <form method="POST" action="{{ route('orders.destroy', $order) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
                                     @csrf
@@ -246,8 +267,85 @@
                         
                         <a href="{{ route('items.show', $order->item) }}#contact" class="btn btn-outline-info">
                             <i class="fas fa-envelope me-2"></i>
-                            Contacter le vendeur
+                            Contacter {{ $order->buyer_id === Auth::id() ? 'le vendeur' : 'l\'acheteur' }}
                         </a>
+
+                        {{-- Messages d'état selon le statut de la commande --}}
+                        @if($order->status === 'pending')
+                            <div class="alert alert-warning mb-0" role="alert">
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>En attente de paiement</strong>
+                                @if($order->buyer_id === Auth::id())
+                                    <br><small>Veuillez confirmer le paiement pour continuer</small>
+                                @else
+                                    <br><small>L'acheteur n'a pas encore payé</small>
+                                @endif
+                            </div>
+                        @elseif($order->status === 'confirmed')
+                            <div class="alert alert-info mb-0" role="alert">
+                                <i class="fas fa-box me-2"></i>
+                                <strong>Paiement confirmé</strong>
+                                @if($order->item->user_id === Auth::id())
+                                    <br><small>Vous pouvez maintenant expédier la commande</small>
+                                @else
+                                    <br><small>En attente d'expédition par le vendeur</small>
+                                @endif
+                            </div>
+                        @elseif($order->status === 'shipped' && !$order->confirmed_by_buyer_at)
+                            @if($order->buyer_id === Auth::id())
+                                <button class="btn btn-success btn-lg" 
+                                        onclick="confirmDelivery()">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    ✅ Commande Reçue
+                                </button>
+                                <div class="alert alert-primary mb-0 mt-2" role="alert">
+                                    <i class="fas fa-truck me-2"></i>
+                                    <small>Cliquez sur "Commande Reçue" une fois la livraison effectuée</small>
+                                </div>
+                            @else
+                                <div class="alert alert-primary mb-0" role="alert">
+                                    <i class="fas fa-shipping-fast me-2"></i>
+                                    <strong>Commande expédiée</strong>
+                                    <br><small>En attente de confirmation de réception par l'acheteur</small>
+                                </div>
+                            @endif
+                        @elseif($order->status === 'delivered' && !$order->confirmed_by_buyer_at)
+                            @if($order->buyer_id === Auth::id())
+                                <button class="btn btn-success btn-lg" 
+                                        onclick="confirmDelivery()">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    ✅ Commande Reçue
+                                </button>
+                                <div class="alert alert-primary mb-0 mt-2" role="alert">
+                                    <i class="fas fa-home me-2"></i>
+                                    <small>Confirmez la réception pour finaliser la transaction</small>
+                                </div>
+                            @else
+                                <div class="alert alert-success mb-0" role="alert">
+                                    <i class="fas fa-check me-2"></i>
+                                    <strong>Commande livrée</strong>
+                                    <br><small>En attente de confirmation par l'acheteur</small>
+                                </div>
+                            @endif
+                        @endif
+
+                        {{-- Confirmation de réception effectuée --}}
+                        @if($order->confirmed_by_buyer_at)
+                            <div class="alert alert-success mb-0" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                <strong>✅ Réception confirmée</strong>
+                                <br>
+                                <small>Le {{ $order->confirmed_by_buyer_at->format('d/m/Y à H:i') }}</small>
+                                @if($order->buyer_confirmation_note)
+                                    <br><small class="text-muted fst-italic">"{{ $order->buyer_confirmation_note }}"</small>
+                                @endif
+                                <hr class="my-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-money-bill-wave me-1"></i>
+                                    La distribution des fonds a été effectuée
+                                </small>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -317,7 +415,38 @@
 </style>
 
 <script>
-// Script simplifié - Formulaire HTML utilisé pour la confirmation
+// Script pour confirmer la réception de la commande
+function confirmDelivery() {
+    const note = prompt('Confirmez-vous avoir reçu votre commande ?\n\nVous pouvez ajouter un commentaire (optionnel) :');
+    
+    if (note !== null) { // L'utilisateur n'a pas cliqué sur Annuler
+        fetch('{{ route('orders.confirm-delivery', $order) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                note: note || ''
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                window.location.reload();
+            } else {
+                alert(data.error || 'Erreur lors de la confirmation');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors de la confirmation');
+        });
+    }
+}
+
 console.log('Page de commande chargée');
 </script>
 @endsection 

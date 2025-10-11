@@ -183,20 +183,225 @@ class PaymentController extends Controller
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:1',
+            'currency' => 'required|string|in:USD,CDF',
             'purpose' => 'required|string',
+            'provider' => 'nullable|string',
+            'phone' => 'nullable|string',
         ]);
-        // TODO: Créer une transaction simulée avec status 'success'
-        // TODO: Appeler PaymentService::distributeFunds
-        // TODO: Retourner un message JSON clair avec le détail de la distribution
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Paiement simulé',
-            'amount' => $request->amount,
-            'distribution' => [
-                ['beneficiary_type' => 'seller', 'amount' => round($request->amount * 0.7, 2)],
-                ['beneficiary_type' => 'carrier', 'amount' => round($request->amount * 0.2, 2)],
-                ['beneficiary_type' => 'service', 'amount' => round($request->amount * 0.1, 2)],
-            ]
-        ]);
+        
+        // Récupérer le panier
+        $cart = session('cart', []);
+        
+        // Déterminer la devise prioritaire et calculer le montant total
+        $totalAmount = 0;
+        $priorityCurrency = 'USD'; // Devise par défaut
+        
+        if (!empty($cart)) {
+            // Compter les devises dans le panier
+            $currencyCounts = [];
+            foreach ($cart as $itemId => $cartItem) {
+                $item = \App\Models\Item::find($itemId);
+                if ($item) {
+                    $currency = $item->currency ?? 'USD';
+                    $currencyCounts[$currency] = ($currencyCounts[$currency] ?? 0) + 1;
+                }
+            }
+            
+            // Déterminer la devise prioritaire (la plus fréquente)
+            if (!empty($currencyCounts)) {
+                arsort($currencyCounts);
+                $priorityCurrency = array_key_first($currencyCounts);
+            }
+            
+            // Récupérer le taux de change depuis l'API
+            $exchangeRate = \Illuminate\Support\Facades\Cache::remember('usd_cdf_rate', 3600, function () {
+                try {
+                    $controller = new ExchangeRateController();
+                    $response = $controller->getRate();
+                    $data = $response->getData(true);
+                    return $data['rate'] ?? 2650.00; // Taux de secours
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Erreur récupération taux: ' . $e->getMessage());
+                    return 2650.00; // Taux de secours
+                }
+            });
+            
+            // Calculer le montant total dans la devise prioritaire
+            foreach ($cart as $itemId => $cartItem) {
+                $item = \App\Models\Item::find($itemId);
+                if ($item) {
+                    $itemTotal = $item->price * $cartItem['quantity'];
+                    $itemCurrency = $item->currency ?? 'USD';
+                    
+                    // Convertir si nécessaire
+                    if ($itemCurrency !== $priorityCurrency) {
+                        if ($priorityCurrency === 'USD' && $itemCurrency === 'CDF') {
+                            // CDF vers USD
+                            $itemTotal = $itemTotal / $exchangeRate;
+                        } elseif ($priorityCurrency === 'CDF' && $itemCurrency === 'USD') {
+                            // USD vers CDF
+                            $itemTotal = $itemTotal * $exchangeRate;
+                        }
+                    }
+                    
+                    $totalAmount += $itemTotal;
+                }
+            }
+            
+            $totalAmount = round($totalAmount, 2);
+        } else {
+            // Si pas de panier, utiliser les données de la requête
+            $totalAmount = $request->amount;
+            $priorityCurrency = $request->currency;
+        }
+        
+        // Simuler un délai de traitement (3-5 secondes)
+        sleep(rand(3, 5));
+        
+        // 80% de chance de succès
+        $success = rand(1, 100) <= 80;
+        
+        // Générer un ID de transaction unique
+        $transaction_id = 'TXN-' . strtoupper(\Illuminate\Support\Str::random(12));
+        
+        if ($success) {
+            // Récupérer ou créer le wallet de l'utilisateur
+            $user = \App\Models\User::find($request->buyer_id);
+            $wallet = $user->wallet ?? \App\Models\Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'balance' => 0,
+                    'currency' => $priorityCurrency, // Devise prioritaire
+                    'status' => 'active'
+                ]
+            );
+            
+            // Créer une transaction simulée
+            $transaction = \App\Models\Transaction::create([
+                'transaction_id' => $transaction_id,
+                'user_id' => $request->buyer_id,
+                'buyer_id' => $request->buyer_id, // Pour compatibilité avec l'ancienne structure
+                'wallet_id' => $wallet->id,
+                'amount' => $totalAmount, // Montant total dans la devise prioritaire
+                'currency' => $priorityCurrency, // Devise prioritaire du panier
+                'provider' => $request->provider ?? 'Mobile Money',
+                'phone' => $request->phone ?? 'N/A',
+                'purpose' => $request->purpose,
+                'status' => 'completed',
+                'type' => 'deposit',
+                'payment_method' => 'orange_money', // Par défaut
+            ]);
+            
+            // Créer automatiquement les commandes depuis le panier
+            if (!empty($cart)) {
+                foreach ($cart as $itemId => $cartItem) {
+                    $item = \App\Models\Item::find($itemId);
+                    if ($item) {
+                        $orderAmount = $item->price * $cartItem['quantity'];
+                        
+                        // Créer ou récupérer le wallet "pending" du vendeur
+                        $seller = \App\Models\User::find($item->user_id);
+                        $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
+                            [
+                                'user_id' => $seller->id,
+                                'type' => 'pending',
+                                'currency' => $item->currency
+                            ],
+                            [
+                                'balance' => 0,
+                                'status' => 'active',
+                                'is_active' => true
+                            ]
+                        );
+                        
+                        // Ajouter le montant au wallet pending du vendeur
+                        $sellerPendingWallet->increment('balance', $orderAmount);
+                        
+                        // Créer la commande avec le prix original de l'article
+                        $order = \App\Models\Order::create([
+                            'buyer_id' => $request->buyer_id,
+                            'seller_id' => $item->user_id,
+                            'item_id' => $item->id,
+                            'quantity' => $cartItem['quantity'],
+                            'unit_price' => $item->price,
+                            'total_amount' => $orderAmount,
+                            'currency' => $item->currency, // Devise originale de l'article
+                            'status' => 'pending', // Paiement effectué, en attente d'expédition
+                            'shipping_address' => 'À définir', // L'utilisateur pourra le modifier
+                            'shipping_city' => 'À définir',
+                            'shipping_phone' => $request->phone ?? 'N/A',
+                            'paid_at' => now(),
+                            'notes' => 'Paiement effectué via ' . ($request->provider ?? 'Mobile Money') . ' - Transaction: ' . $transaction_id . ' - Montant en attente dans le wallet pending du vendeur',
+                        ]);
+                        
+                        // Mettre à jour le stock
+                        $item->quantity -= $cartItem['quantity'];
+                        if ($item->quantity <= 0) {
+                            $item->status = 'sold';
+                        }
+                        $item->save();
+                        
+                        // Log pour traçabilité
+                        \Illuminate\Support\Facades\Log::info("Paiement ajouté au wallet pending", [
+                            'seller_id' => $seller->id,
+                            'order_id' => $order->id,
+                            'amount' => $orderAmount,
+                            'currency' => $item->currency,
+                            'pending_wallet_balance' => $sellerPendingWallet->balance
+                        ]);
+                    }
+                }
+                
+                // Vider le panier après la création des commandes
+                session()->forget('cart');
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'transaction_id' => $transaction_id,
+                'message' => 'Paiement réussi',
+                'amount' => $totalAmount,
+                'currency' => $priorityCurrency,
+                'distribution' => [
+                    ['beneficiary_type' => 'seller', 'amount' => round($totalAmount * 0.7, 2)],
+                    ['beneficiary_type' => 'carrier', 'amount' => round($totalAmount * 0.2, 2)],
+                    ['beneficiary_type' => 'service', 'amount' => round($totalAmount * 0.1, 2)],
+                ]
+            ]);
+        } else {
+            $errors = [
+                'Solde insuffisant',
+                'Numéro de téléphone invalide',
+                'Délai d\'attente dépassé',
+                'Transaction refusée par l\'opérateur',
+                'Erreur de réseau'
+            ];
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => $errors[array_rand($errors)]
+            ], 400);
+        }
+    }
+    
+    public function paymentSuccess($transaction_id)
+    {
+        $transaction = \App\Models\Transaction::where('transaction_id', $transaction_id)->first();
+        
+        if (!$transaction) {
+            return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
+        }
+        
+        return view('payments.success', compact('transaction'));
+    }
+    
+    public function paymentError(Request $request)
+    {
+        $error = $request->query('error', 'Une erreur est survenue lors du paiement');
+        $amount = $request->query('amount', 0);
+        $provider = $request->query('provider', 'Mobile Money');
+        
+        return view('payments.error', compact('error', 'amount', 'provider'));
     }
 }
+

@@ -12,6 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Vérifier si la table existe déjà
+        if (Schema::hasTable('settings')) {
+            return;
+        }
+        
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
             $table->string('key')->unique(); // Clé du paramètre
