@@ -3,65 +3,68 @@
 @section('title', 'Paramètres Système')
 
 @section('content')
-<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+<div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
     @if(session('success'))
-        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-sm" role="alert">
+        <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                <span>{{ session('success') }}</span>
-                <button type="button" class="ml-auto text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times"></i>
+                <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
+                <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
+                <button type="button" class="ml-2 text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg shadow-sm" role="alert">
+        <div class="mb-4 sm:mb-6 bg-red-50 border border-red-200 text-red-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                <span>{{ session('error') }}</span>
-                <button type="button" class="ml-auto text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times"></i>
+                <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
+                <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
+                <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
         </div>
     @endif
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-2xl font-semibold text-gray-900 mb-4 sm:mb-0">
-                <i class="fas fa-cogs mr-3 text-gray-600"></i>
-                Paramètres Système
+    <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">
+                <i class="fas fa-cogs mr-2 sm:mr-3 text-gray-600 text-base sm:text-xl"></i>
+                <span class="hidden sm:inline">Paramètres Système</span>
+                <span class="sm:hidden">Paramètres</span>
             </h1>
-            <div class="flex flex-col sm:flex-row gap-3">
-                <button class="inline-flex items-center px-4 py-2 border border-cyan-300 text-cyan-700 bg-cyan-50 rounded-lg hover:bg-cyan-100 transition-colors duration-200" onclick="clearCache()">
+            <div class="flex flex-col xs:flex-row gap-2 sm:gap-3">
+                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-cyan-300 text-cyan-700 bg-cyan-50 rounded-lg hover:bg-cyan-100 transition-colors duration-200" onclick="clearCache()">
                     <i class="fas fa-trash mr-2"></i>
-                    Vider Cache
+                    <span class="hidden xs:inline">Vider Cache</span>
+                    <span class="xs:hidden">Cache</span>
                 </button>
-                <button class="inline-flex items-center px-4 py-2 border border-blue-300 text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200" onclick="backupSettings()">
+                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-blue-300 text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200" onclick="backupSettings()">
                     <i class="fas fa-download mr-2"></i>
-                    Sauvegarder
+                    <span class="hidden xs:inline">Sauvegarder</span>
+                    <span class="xs:hidden">Backup</span>
                 </button>
             </div>
         </div>
         
-        <div class="p-6">
-            <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-6">
+        <div class="p-4 sm:p-6">
+            <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-4 sm:space-y-6">
                 @csrf
                 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                     @if(isset($settings) && (is_array($settings) ? count($settings) : $settings->count()) > 0)
                         @foreach($categories as $category)
                             @if(isset($settings[$category]))
-                                <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
-                                    <div class="mb-6">
-                                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                                            <i class="fas fa-cog mr-3 text-gray-600"></i>
+                                <div class="bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                                    <div class="mb-4 sm:mb-6">
+                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
+                                            <i class="fas fa-cog mr-2 sm:mr-3 text-gray-600 text-sm sm:text-base"></i>
                                             {{ ucfirst($category) }}
                                         </h3>
                                     </div>
-                                    <div class="space-y-4">
+                                    <div class="space-y-3 sm:space-y-4">
                                         @foreach($settings[$category] as $setting)
                                             <div class="space-y-2">
                                                 <label class="block text-sm font-medium text-gray-700">
@@ -1213,52 +1216,54 @@ function updateLocationRestrictionsUI(enabled) {
 </script>
 
 <!-- Modal pour activer le mode maintenance -->
-<div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-xl bg-white">
-        <div class="mt-3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-tools mr-2 text-orange-600"></i>
-                    Activer le Mode Maintenance
+<div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 px-4">
+    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-full max-w-md sm:w-96 shadow-lg rounded-xl bg-white">
+        <div class="mt-2 sm:mt-3">
+            <div class="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-tools mr-2 text-orange-600 text-sm sm:text-base"></i>
+                    <span class="hidden sm:inline">Activer le Mode Maintenance</span>
+                    <span class="sm:hidden">Mode Maintenance</span>
                 </h3>
                 <button onclick="hideMaintenanceModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
+                    <i class="fas fa-times text-lg sm:text-xl"></i>
                 </button>
             </div>
             
             <form id="maintenanceForm" onsubmit="event.preventDefault(); enableMaintenance();">
-                <div class="space-y-4">
+                <div class="space-y-3 sm:space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                             Message personnalisé
                         </label>
                         <textarea name="message" 
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                   rows="3" 
                                   placeholder="Nous effectuons actuellement des travaux de maintenance..."></textarea>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                             Temps estimé (optionnel)
                         </label>
                         <input type="text" 
                                name="estimated_time" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                placeholder="Ex: 2 heures, 30 minutes...">
                     </div>
                 </div>
                 
-                <div class="flex items-center justify-end pt-6 space-x-3">
+                <div class="flex flex-col xs:flex-row items-center justify-end pt-4 sm:pt-6 space-y-2 xs:space-y-0 xs:space-x-3">
                     <button type="button" 
                             onclick="hideMaintenanceModal()" 
-                            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                         <i class="fas fa-tools mr-2"></i>
-                        Activer la maintenance
+                        <span class="hidden xs:inline">Activer la maintenance</span>
+                        <span class="xs:hidden">Activer</span>
                     </button>
                 </div>
             </form>

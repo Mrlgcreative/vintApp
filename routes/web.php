@@ -28,9 +28,9 @@ Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
 
 Route::middleware('auth')->group(function () {
-    // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
-    // 🔒 Nécessite email vérifié pour créer/vendre des items
+    // 🔒 TOUTES les routes dans ce groupe nécessitent une authentification ET une vérification d'email
     Route::middleware('verified')->group(function () {
+        // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
         Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
         Route::post('/items', [ItemController::class, 'store'])->name('items.store');
         Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
@@ -40,34 +40,38 @@ Route::middleware('auth')->group(function () {
         Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
         Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
         Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
+        
+        // Routes du profil - 🔒 BLOQUÉES si email non vérifié
+        Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::patch('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
+        Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+        Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
+        Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
+        Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+        
+        // Settings page - 🔒 BLOQUÉE si email non vérifié
+        Route::get('/settings', function() {
+            return view('settings.index');
+        })->name('settings.index');
+        
+        // Dashboard routes - 🔒 BLOQUÉES si email non vérifié
+        Route::get('/dashboard/analytics', [App\Http\Controllers\DashboardController::class, 'analytics'])->name('dashboard.analytics');
+        Route::get('/dashboard/notifications', [App\Http\Controllers\DashboardController::class, 'notifications'])->name('dashboard.notifications');
+        Route::patch('/dashboard/notifications/{id}/read', [App\Http\Controllers\DashboardController::class, 'markNotificationAsRead'])->name('dashboard.notifications.read');
+        Route::patch('/dashboard/notifications/read-all', [App\Http\Controllers\DashboardController::class, 'markAllNotificationsAsRead'])->name('dashboard.notifications.read-all');
     });
     
-    // Routes accessibles sans vérification email
+    // Routes accessibles même sans vérification email (UNIQUEMENT lecture)
     Route::get('/items/{item}', [ItemController::class, 'show'])->name('items.show');
-    Route::post('/items/{item}/favorite', [ItemController::class, 'toggleFavorite'])->name('items.favorite');
-
-    // Routes du profil
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-    Route::patch('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
-    Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
-    Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
-    Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
-    Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
     
-    // Settings page
-    Route::get('/settings', function() {
-        return view('settings.index');
-    })->name('settings.index');
-    
-    // Dashboard routes
-    Route::get('/dashboard/analytics', [App\Http\Controllers\DashboardController::class, 'analytics'])->name('dashboard.analytics');
-    Route::get('/dashboard/notifications', [App\Http\Controllers\DashboardController::class, 'notifications'])->name('dashboard.notifications');
-    Route::patch('/dashboard/notifications/{id}/read', [App\Http\Controllers\DashboardController::class, 'markNotificationAsRead'])->name('dashboard.notifications.read');
-    Route::patch('/dashboard/notifications/read-all', [App\Http\Controllers\DashboardController::class, 'markAllNotificationsAsRead'])->name('dashboard.notifications.read-all');
+    // Thème - Accessible sans vérification
+    Route::post('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
+    Route::post('/theme/set', [ThemeController::class, 'set'])->name('theme.set');
+    Route::get('/theme/get', [ThemeController::class, 'get'])->name('theme.get');
 });
 
 // Routes pour les commandes
@@ -107,13 +111,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/discounts/requests', [App\Http\Controllers\MessageController::class, 'getDiscountRequests'])->name('discounts.requests');
 });
 
-// Routes pour le thème
-Route::middleware(['auth'])->group(function () {
-    Route::post('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
-    Route::post('/theme/set', [ThemeController::class, 'set'])->name('theme.set');
-    Route::get('/theme/get', [ThemeController::class, 'get'])->name('theme.get');
-});
-
 // Routes pour les catégories
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
 Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create')->middleware('auth');
@@ -128,7 +125,7 @@ Route::resource('brands', App\Http\Controllers\BrandController::class);
 Route::resource('reviews', App\Http\Controllers\ReviewController::class);
 
 // Routes d'administration
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:60,1'])->group(function () {
     // Dashboard
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     

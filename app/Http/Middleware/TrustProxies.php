@@ -12,7 +12,20 @@ class TrustProxies extends Middleware
      *
      * @var array<int, string>|string|null
      */
-    protected $proxies = '*'; // Faire confiance à tous les proxies (ngrok, Cloudflare, etc.)
+    protected $proxies; // Configuration dynamique basée sur l'environnement
+    
+    public function __construct()
+    {
+        // En développement : faire confiance uniquement à localhost et ngrok
+        if (app()->environment('local', 'development')) {
+            $this->proxies = ['127.0.0.1', '::1'];
+        } 
+        // En production : utiliser la variable d'environnement TRUSTED_PROXIES
+        else {
+            $trustedProxies = env('TRUSTED_PROXIES', '');
+            $this->proxies = $trustedProxies ? explode(',', $trustedProxies) : [];
+        }
+    }
 
     /**
      * The headers that should be used to detect proxies.

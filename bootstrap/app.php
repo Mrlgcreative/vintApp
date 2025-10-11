@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
             \App\Http\Middleware\TrimStrings::class,
             \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+            \App\Http\Middleware\SecurityHeaders::class, // ✅ Headers de sécurité sur toutes les requêtes
         ]);
 
         // Web Middleware Group
@@ -47,7 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
             'signed' => \App\Http\Middleware\ValidateSignature::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-            'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class, // ✅ Notre middleware personnalisé
             'role' => \App\Http\Middleware\CheckRole::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'dynamic.config' => \App\Http\Middleware\DynamicConfigMiddleware::class,

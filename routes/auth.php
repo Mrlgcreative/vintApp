@@ -3,13 +3,12 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\Auth\AppleAuthController;
+use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
-use App\Http\Controllers\Auth\EmailVerificationNotificationController;
-use App\Http\Controllers\Auth\EmailVerificationPromptController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -17,13 +16,15 @@ Route::middleware('guest')->group(function () {
     Route::get('register', [RegisterController::class, 'showRegistrationForm'])
         ->name('register');
 
-    Route::post('register', [RegisterController::class, 'register']);
+    Route::post('register', [RegisterController::class, 'register'])
+        ->middleware('throttle:3,10'); // Max 3 inscriptions toutes les 10 minutes
 
     // Routes de connexion
     Route::get('login', [LoginController::class, 'showLoginForm'])
         ->name('login');
 
-    Route::post('login', [LoginController::class, 'login']);
+    Route::post('login', [LoginController::class, 'login'])
+        ->middleware('throttle:5,1'); // Max 5 tentatives par minute (protection brute force)
 
     // Routes Google OAuth
     Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])
@@ -31,6 +32,13 @@ Route::middleware('guest')->group(function () {
 
     Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback'])
         ->name('auth.google.callback');
+
+    // Routes Apple OAuth
+    Route::get('auth/apple', [AppleAuthController::class, 'redirectToApple'])
+        ->name('auth.apple');
+
+    Route::post('auth/apple/callback', [AppleAuthController::class, 'handleAppleCallback'])
+        ->name('auth.apple.callback');
 
     // Routes de réinitialisation de mot de passe
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
@@ -48,14 +56,14 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->group(function () {
     // Routes de vérification d'email
-    Route::get('verify-email', EmailVerificationPromptController::class)
+    Route::get('verify-email', [EmailVerificationController::class, 'notice'])
         ->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+    Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
 

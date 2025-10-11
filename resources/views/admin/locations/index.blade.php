@@ -3,53 +3,57 @@
 @section('title', 'Zones Autorisées')
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-4 sm:space-y-6 px-3 sm:px-0">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
-                <i class="fas fa-map-marked-alt text-primary-600 mr-2"></i>
-                Zones Autorisées
+            <h1 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                <i class="fas fa-map-marked-alt text-primary-600 mr-2 text-lg sm:text-xl"></i>
+                <span class="hidden sm:inline">Zones Autorisées</span>
+                <span class="sm:hidden">Zones</span>
             </h1>
-            <p class="text-gray-600 mt-1">
-                Gérez les villes et régions ayant accès à VintApp
+            <p class="text-sm sm:text-base text-gray-600 mt-1">
+                <span class="hidden sm:inline">Gérez les villes et régions ayant accès à VintApp</span>
+                <span class="sm:hidden">Gérez les villes et régions</span>
             </p>
         </div>
         
-        <div class="flex gap-3">
+        <div class="flex flex-col xs:flex-row gap-2 sm:gap-3">
             <button onclick="openModal('addCityModal')" 
-                    class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
+                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>
-                Ajouter une ville
+                <span class="hidden xs:inline">Ajouter une ville</span>
+                <span class="xs:hidden">Ville</span>
             </button>
             <button onclick="openModal('addRegionModal')" 
-                    class="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>
-                Ajouter une région
+                <span class="hidden xs:inline">Ajouter une région</span>
+                <span class="xs:hidden">Région</span>
             </button>
         </div>
     </div>
 
     <!-- Alerts -->
     @if(session('success'))
-        <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-4 flex items-start gap-3">
-            <i class="fas fa-check-circle text-green-500 text-xl mt-0.5"></i>
+        <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-3 sm:p-4 flex items-start gap-2 sm:gap-3">
+            <i class="fas fa-check-circle text-green-500 text-lg sm:text-xl mt-0.5"></i>
             <div class="flex-1">
-                <p class="text-green-800 font-medium">{{ session('success') }}</p>
+                <p class="text-sm sm:text-base text-green-800 font-medium">{{ session('success') }}</p>
             </div>
             <button onclick="this.parentElement.remove()" class="text-green-500 hover:text-green-700">
-                <i class="fas fa-times"></i>
+                <i class="fas fa-times text-sm"></i>
             </button>
         </div>
     @endif
 
     @if($errors->any())
-        <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-4">
-            <div class="flex items-start gap-3">
-                <i class="fas fa-exclamation-circle text-red-500 text-xl mt-0.5"></i>
+        <div class="bg-red-50 border-l-4 border-red-500 rounded-lg p-3 sm:p-4">
+            <div class="flex items-start gap-2 sm:gap-3">
+                <i class="fas fa-exclamation-circle text-red-500 text-lg sm:text-xl mt-0.5"></i>
                 <div class="flex-1">
-                    <p class="text-red-800 font-semibold mb-2">Erreur(s) :</p>
-                    <ul class="list-disc list-inside space-y-1 text-red-700">
+                    <p class="text-sm sm:text-base text-red-800 font-semibold mb-2">Erreur(s) :</p>
+                    <ul class="list-disc list-inside space-y-1 text-sm sm:text-base text-red-700">
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -60,29 +64,31 @@
     @endif
 
     <!-- 🗺️ SECTION: Carte GPS Interactive OpenStreetMap -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div class="flex items-center justify-between mb-4">
+    <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
             <div>
-                <h2 class="text-xl font-bold text-gray-900">
+                <h2 class="text-base sm:text-lg lg:text-xl font-bold text-gray-900">
                     <i class="fas fa-globe-africa text-green-600 mr-2"></i>
-                    Carte des Villes Autorisées (OpenStreetMap)
+                    <span class="hidden sm:inline">Carte des Villes Autorisées (OpenStreetMap)</span>
+                    <span class="sm:hidden">Carte des Villes</span>
                 </h2>
-                <p class="text-sm text-gray-600 mt-1">
-                    Visualisation GPS des <span id="map-city-count" class="font-semibold text-primary-600">{{ $stats['total_cities'] }}</span> villes dans <span id="map-country-count" class="font-semibold text-purple-600">{{ $stats['countries_count'] }}</span> pays
+                <p class="text-xs sm:text-sm text-gray-600 mt-1">
+                    <span id="map-city-count" class="font-semibold text-primary-600">{{ $stats['total_cities'] }}</span> villes dans 
+                    <span id="map-country-count" class="font-semibold text-purple-600">{{ $stats['countries_count'] }}</span> pays
                 </p>
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <button onclick="centerMapOnCountry('COD')" 
-                        class="px-3 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium">
+                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-xs sm:text-sm font-medium">
                     <span class="country-flag">🇨🇩</span> RDC
                 </button>
                 <button onclick="fitAllMarkers()" 
-                        class="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                    <i class="fas fa-compress-arrows-alt"></i> Tout
+                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-xs sm:text-sm font-medium">
+                    <i class="fas fa-compress-arrows-alt"></i> <span class="hidden xs:inline">Tout</span>
                 </button>
                 <button onclick="refreshMapData()" 
-                        class="px-3 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-sm font-medium">
-                    <i class="fas fa-sync-alt"></i> Actualiser
+                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs sm:text-sm font-medium">
+                    <i class="fas fa-sync-alt"></i> <span class="hidden xs:inline">Actualiser</span>
                 </button>
             </div>
         </div>
@@ -120,39 +126,39 @@
     </div>
 
     <!-- Statistiques -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-blue-600">Villes Totales</p>
-                    <p class="text-3xl font-bold text-blue-900 mt-1">{{ $stats['total_cities'] }}</p>
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+        <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-blue-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div class="flex-1">
+                    <p class="text-xs sm:text-sm font-medium text-blue-600">Villes Totales</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-900 mt-0.5 sm:mt-1">{{ $stats['total_cities'] }}</p>
                 </div>
-                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-city text-white text-xl"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-green-600">Villes Actives</p>
-                    <p class="text-3xl font-bold text-green-900 mt-1">{{ $stats['active_cities'] }}</p>
-                </div>
-                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-circle text-white text-xl"></i>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
+                    <i class="fas fa-city text-white text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-purple-600">Régions Totales</p>
-                    <p class="text-3xl font-bold text-purple-900 mt-1">{{ $stats['total_regions'] }}</p>
+        <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-green-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div class="flex-1">
+                    <p class="text-xs sm:text-sm font-medium text-green-600">Villes Actives</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-900 mt-0.5 sm:mt-1">{{ $stats['active_cities'] }}</p>
                 </div>
-                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-map text-white text-xl"></i>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-green-500 rounded-lg flex items-center justify-center shrink-0">
+                    <i class="fas fa-check-circle text-white text-sm sm:text-base lg:text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-purple-200">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div class="flex-1">
+                    <p class="text-xs sm:text-sm font-medium text-purple-600">Régions Totales</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-900 mt-0.5 sm:mt-1">{{ $stats['total_regions'] }}</p>
+                </div>
+                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-purple-500 rounded-lg flex items-center justify-center shrink-0">
+                    <i class="fas fa-map text-white text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
@@ -199,44 +205,46 @@
     @endif
 
     <!-- Tabs -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="border-b border-gray-200">
+    <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200">
+        <div class="border-b border-gray-200 overflow-x-auto">
             <nav class="flex -mb-px">
                 <button onclick="switchTab('cities')" 
                         id="tab-cities"
-                        class="tab-button active px-6 py-4 text-sm font-medium border-b-2 border-primary-600 text-primary-600">
-                    <i class="fas fa-city mr-2"></i>
-                    Villes ({{ $cities->total() }})
+                        class="tab-button active px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-primary-600 text-primary-600 whitespace-nowrap">
+                    <i class="fas fa-city mr-1 sm:mr-2"></i>
+                    <span class="hidden xs:inline">Villes ({{ $cities->total() }})</span>
+                    <span class="xs:hidden">Villes</span>
                 </button>
                 <button onclick="switchTab('regions')" 
                         id="tab-regions"
-                        class="tab-button px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                    <i class="fas fa-map-marked mr-2"></i>
-                    Régions ({{ $regions->total() }})
+                        class="tab-button px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                    <i class="fas fa-map-marked mr-1 sm:mr-2"></i>
+                    <span class="hidden xs:inline">Régions ({{ $regions->total() }})</span>
+                    <span class="xs:hidden">Régions</span>
                 </button>
             </nav>
         </div>
 
         <!-- Tab Content: Villes -->
-        <div id="content-cities" class="tab-content p-6">
+        <div id="content-cities" class="tab-content p-3 sm:p-4 lg:p-6">
             @if($cities->count() > 0)
                 <!-- Vue Desktop (Table) -->
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ville</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Région</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ville</th>
+                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Région</th>
+                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pays</th>
+                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                                <th class="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                                <th class="px-4 lg:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @foreach($cities as $city)
                             <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-4 lg:px-6 py-4 whitespace-nowrap">
                                     <div class="font-semibold text-gray-900">{{ $city->name }}</div>
                                     @if($city->description)
                                         <div class="text-sm text-gray-500">{{ Str::limit($city->description, 40) }}</div>
@@ -460,33 +468,41 @@
 </div>
 
 <!-- Modal: Ajouter une ville (🌍 Version Mondiale) -->
-<div id="addCityModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+<div id="addCityModal" class="fixed inset-0 z-50 hidden overflow-y-auto px-3 sm:px-4">
+    <div class="flex items-center justify-center min-h-screen pt-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeModal('addCityModal')"></div>
         
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
         
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full sm:p-6">
-            <div class="mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-globe text-primary-600 mr-2"></i>
-                    Ajouter une ville (monde entier)
-                </h3>
-                <p class="text-sm text-gray-600 mt-1">Recherchez n'importe quelle ville dans le monde</p>
+        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle w-full sm:max-w-2xl">
+            <div class="mb-3 sm:mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+                            <i class="fas fa-globe text-primary-600 mr-2 text-sm sm:text-base"></i>
+                            <span class="hidden sm:inline">Ajouter une ville (monde entier)</span>
+                            <span class="sm:hidden">Ajouter une ville</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-gray-600 mt-1">Recherchez n'importe quelle ville dans le monde</p>
+                    </div>
+                    <button onclick="closeModal('addCityModal')" class="text-gray-400 hover:text-gray-600 ml-2">
+                        <i class="fas fa-times text-lg sm:text-xl"></i>
+                    </button>
+                </div>
             </div>
             
-            <form action="{{ route('admin.locations.cities.store') }}" method="POST" id="cityForm" class="space-y-4">
+            <form action="{{ route('admin.locations.cities.store') }}" method="POST" id="cityForm" class="space-y-3 sm:space-y-4">
                 @csrf
                 
                 <!-- Sélection du pays -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                         <i class="fas fa-flag mr-1"></i>
                         Pays <span class="text-red-500">*</span>
                     </label>
                     <select id="worldCountrySelect" name="country_code" required 
                             onchange="onCountryChange()"
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                            class="w-full px-3 sm:px-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                         <option value="">-- Sélectionnez un pays --</option>
                         <option value="CD" selected>🇨🇩 Congo (RDC)</option>
                         <option value="CG">🇨🇬 Congo-Brazzaville</option>
@@ -501,7 +517,7 @@
 
                 <!-- Recherche de ville avec autocomplete -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                         <i class="fas fa-search mr-1"></i>
                         Rechercher une ville <span class="text-red-500">*</span>
                     </label>
@@ -1390,38 +1406,85 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <style>
     #map {
-        height: 500px;
+        height: 400px;
         width: 100%;
-        border-radius: 12px;
+        border-radius: 8px;
         position: relative;
     }
+    
+    @media (min-width: 640px) {
+        #map {
+            height: 500px;
+            border-radius: 12px;
+        }
+    }
+    
     .country-flag {
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         line-height: 1;
     }
+    
+    @media (min-width: 640px) {
+        .country-flag {
+            font-size: 1.5rem;
+        }
+    }
+    
     /* Style pour les popups Leaflet */
     .leaflet-popup-content {
-        margin: 12px;
-        line-height: 1.5;
+        margin: 8px;
+        line-height: 1.4;
     }
+    
+    @media (min-width: 640px) {
+        .leaflet-popup-content {
+            margin: 12px;
+            line-height: 1.5;
+        }
+    }
+    
     .leaflet-popup-content h4 {
-        margin: 0 0 8px 0;
-        font-size: 16px;
+        margin: 0 0 6px 0;
+        font-size: 14px;
         font-weight: 600;
         color: #1f2937;
     }
+    
+    @media (min-width: 640px) {
+        .leaflet-popup-content h4 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+    }
+    
     .leaflet-popup-content p {
-        margin: 4px 0;
-        font-size: 13px;
+        margin: 3px 0;
+        font-size: 12px;
         color: #4b5563;
     }
+    
+    @media (min-width: 640px) {
+        .leaflet-popup-content p {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+    }
+    
     .marker-popup .status-badge {
         display: inline-block;
-        padding: 2px 8px;
+        padding: 2px 6px;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
     }
+    
+    @media (min-width: 640px) {
+        .marker-popup .status-badge {
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+    }
+    
     .marker-popup .status-active {
         background-color: #d1fae5;
         color: #065f46;

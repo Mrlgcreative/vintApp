@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Cache;
 
 class PaymentCallbackController extends Controller
 {
@@ -38,6 +39,15 @@ class PaymentCallbackController extends Controller
                 'ip' => $request->ip(),
                 'payload' => $request->all(),
             ]);
+
+            // Protection contre les replay attacks
+            if (!$this->preventReplayAttack($request, $provider)) {
+                Log::warning("Replay attack détecté pour callback {$callback->id}", [
+                    'ip' => $request->ip(),
+                    'provider' => $provider
+                ]);
+                return response()->json(['status' => 'error', 'message' => 'Duplicate callback'], 409);
+            }
 
             // Vérifier la signature selon le provider
             if ($this->verifyCallbackSignature($request, $provider)) {
@@ -96,9 +106,12 @@ class PaymentCallbackController extends Controller
         // Vérification basique de l'IP (à améliorer selon les specs de chaque opérateur)
         $clientIp = $request->ip();
         
-        // En développement, accepter localhost
-        if (app()->environment('local') && in_array($clientIp, ['127.0.0.1', '::1'])) {
-            return true;
+        // ⚠️ SÉCURITÉ : En développement, logger mais TOUJOURS vérifier la signature
+        if (app()->environment('local')) {
+            Log::info("Environnement local détecté", [
+                'ip' => $clientIp,
+                'provider' => $provider
+            ]);
         }
 
         // Vérifier selon le provider
@@ -494,5 +507,32 @@ class PaymentCallbackController extends Controller
                 'completed_at' => $transaction->completed_at,
             ],
         ]);
+    }
+
+    /**
+     * Protection contre les replay attacks
+     * Empêche qu'un même callback soit traité plusieurs fois
+     */
+    protected function preventReplayAttack(Request $request, string $provider): bool
+    {
+        // Créer une signature unique basée sur le contenu du callback
+        $payload = json_encode($request->all());
+        $signature = hash('sha256', $provider . $payload . $request->ip());
+        $cacheKey = 'callback_replay_' . $signature;
+        
+        // Vérifier si cette signature a déjà été traitée (dans les 10 dernières minutes)
+        if (Cache::has($cacheKey)) {
+            Log::warning('Replay attack détecté', [
+                'provider' => $provider,
+                'ip' => $request->ip(),
+                'signature' => substr($signature, 0, 16) . '...',
+            ]);
+            return false;
+        }
+        
+        // Marquer cette signature comme traitée (expire après 10 minutes)
+        Cache::put($cacheKey, true, now()->addMinutes(10));
+        
+        return true;
     }
 }

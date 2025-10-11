@@ -1,6 +1,127 @@
 @extends('app')
 
 @section('content')
+
+<!-- 🎉 MODALE DE SUCCÈS - Affichée uniquement après vérification d'email -->
+@if(session('email_verified'))
+<div class="modal fade show" id="emailVerifiedModal" tabindex="-1" aria-labelledby="emailVerifiedModalLabel" style="display: block; background-color: rgba(0, 0, 0, 0.5);" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Header avec animation -->
+            <div class="modal-header border-0 bg-gradient text-white text-center d-block" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
+                <div class="text-center py-3">
+                    <!-- Icône animée -->
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white" style="width: 80px; height: 80px; animation: bounce 1s infinite;">
+                            <i class="fas fa-check-circle text-success" style="font-size: 3.5rem;"></i>
+                        </div>
+                    </div>
+                    <h3 class="modal-title fw-bold mb-0" id="emailVerifiedModalLabel">
+                        🎉 Email Vérifié avec Succès !
+                    </h3>
+                </div>
+            </div>
+            
+            <!-- Contenu -->
+            <div class="modal-body px-4 py-4 text-center">
+                <p class="text-dark fs-5 mb-3">
+                    <strong>Bienvenue sur VintApp !</strong>
+                </p>
+                <p class="text-muted mb-4">
+                    Votre compte est maintenant <span class="badge bg-success">ACTIF</span>. Vous avez désormais accès à toutes les fonctionnalités de la plateforme.
+                </p>
+                
+                <!-- Liste des fonctionnalités débloquées -->
+                <div class="text-start bg-light rounded-3 p-3 mb-4">
+                    <p class="fw-semibold text-dark mb-2">
+                        <i class="fas fa-unlock text-success me-2"></i>
+                        Fonctionnalités débloquées :
+                    </p>
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span>Créer et vendre des articles</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span>Passer des commandes</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span>Envoyer des messages</span>
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check text-success me-2"></i>
+                            <span>Gérer votre profil</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Confetti symbolique -->
+                <div class="mb-3" style="font-size: 2rem;">
+                    🎊 🎉 ✨ 🎊
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="modal-footer border-0 justify-content-center pb-4">
+                <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" data-bs-dismiss="modal" onclick="this.closest('.modal').style.display='none'">
+                    <i class="fas fa-rocket me-2"></i>
+                    Commencer à Explorer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    .bg-gradient {
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    }
+    
+    #emailVerifiedModal .modal-content {
+        animation: slideInDown 0.5s ease-out;
+    }
+    
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    // Fermer la modale si on clique en dehors
+    document.getElementById('emailVerifiedModal')?.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+        }
+    });
+    
+    // Fermer avec la touche Échap
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('emailVerifiedModal');
+            if (modal) modal.style.display = 'none';
+        }
+    });
+</script>
+@endif
+
 <style>
 /* Override Bootstrap avec des styles Tailwind-like */
 .tw-container {
@@ -94,6 +215,78 @@
     .tw-grid-cols-4, .tw-grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .tw-container { padding: 0 0.5rem; }
 }
+
+/* Styles responsive pour le graphique */
+#sales-chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 250px;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #fafafa;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+@media (max-width: 1024px) {
+    #sales-chart-container {
+        height: 220px;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .chart-bar-label {
+        font-size: 1rem !important;
+    }
+    .chart-month-label {
+        font-size: 0.75rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #sales-chart-container {
+        height: 200px;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+    .chart-bar-column {
+        min-width: 50px !important;
+        flex: 0 0 50px;
+    }
+    .chart-bar-label {
+        font-size: 0.875rem !important;
+    }
+    .chart-month-label {
+        font-size: 0.7rem !important;
+    }
+    .chart-stats-grid {
+        grid-template-columns: repeat(1, 1fr) !important;
+        gap: 0.75rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #sales-chart-container {
+        height: 180px;
+        gap: 0.4rem;
+        padding: 0.5rem;
+    }
+    .chart-bar-column {
+        min-width: 40px !important;
+        flex: 0 0 40px;
+    }
+    .chart-bar-label {
+        font-size: 0.75rem !important;
+    }
+    .chart-month-label {
+        font-size: 0.65rem !important;
+    }
+    .chart-percentage-label {
+        font-size: 0.6rem !important;
+    }
+}
 </style>
 
 <div class="tw-container">
@@ -122,7 +315,11 @@
                 <div class="tw-flex-1">
                     <div class="tw-text-gray-600 tw-font-semibold">Ventes</div>
                     <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ $stats['total_sales'] ?? 0 }}</div>
-                    <div class="tw-text-sm tw-text-gray-500">Revenu : {{ number_format($stats['total_revenue'] ?? 0, 2) }} €</div>
+                    <div class="tw-text-sm tw-text-gray-500">
+                        {{ number_format($stats['total_revenue'] ?? 0, 2) }} USD
+                        <span class="tw-text-gray-400">|</span>
+                        {{ number_format(($stats['total_revenue'] ?? 0) * 2450, 0) }} CDF
+                    </div>
                 </div>
             </div>
         </div>
@@ -348,27 +545,131 @@
             </h3>
         </div>
         <div class="tw-p-6">
-            @if(isset($salesChart))
-                <div class="tw-text-center">
-                    <p class="tw-text-gray-500 tw-mb-4">Graphique des ventes</p>
-                    <div class="tw-grid tw-grid-cols-2 tw-mb-4" style="grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1rem;">
-                        @foreach($salesChart['labels'] as $index => $label)
-                            <div class="tw-text-center tw-p-4 tw-bg-indigo-50 tw-rounded-lg tw-border-indigo-100" style="border: 1px solid;">
-                                <div class="tw-text-2xl tw-font-bold tw-text-indigo-600 tw-mb-4" style="margin-bottom: 0.5rem;">{{ $salesChart['data'][$index] ?? 0 }}</div>
-                                <small class="tw-text-gray-600 tw-font-semibold">{{ $label }}</small>
+            @php
+                // Données de démonstration si $salesChart n'existe pas
+                $chartData = $salesChart ?? [
+                    'labels' => ['Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct'],
+                    'data' => [12, 19, 15, 25, 22, 30]
+                ];
+                $maxValue = max($chartData['data']) ?: 1;
+            @endphp
+            
+            <!-- Graphique en barres visuelles -->
+            <div style="padding: 1rem 0; background-color: white;">
+                <!-- Message d'aide scroll mobile (visible uniquement sur mobile) -->
+                <div id="chart-scroll-hint" style="display: none; text-align: center; color: #6b7280; font-size: 0.75rem; margin-bottom: 0.5rem; padding: 0.5rem; background-color: #f3f4f6; border-radius: 0.25rem;">
+                    <i class="fas fa-hand-point-right"></i> Faites défiler horizontalement pour voir tous les mois
+                </div>
+                
+                <div id="sales-chart-container">
+                    @foreach($chartData['data'] as $index => $value)
+                        @php
+                            $percentage = ($value / $maxValue) * 100;
+                            $colors = ['#8b5cf6', '#10b981', '#06b6d4', '#f59e0b', '#ef4444', '#6366f1'];
+                            $color = $colors[$index % count($colors)];
+                        @endphp
+                        <div class="chart-bar-column" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 60px;">
+                            <!-- Valeur au-dessus de la barre -->
+                            <div class="chart-bar-label" style="font-size: 1.25rem; font-weight: 700; color: #111827; min-height: 30px;">
+                                {{ $value }}
                             </div>
-                        @endforeach
+                            <!-- Conteneur de barre avec fond visible -->
+                            <div style="width: 100%; background-color: #e5e7eb; border-radius: 0.5rem; position: relative; overflow: hidden; flex-grow: 1; display: flex; align-items: flex-end; border: 1px solid #d1d5db;">
+                                <div class="chart-bar" 
+                                     style="width: 100%; 
+                                            background: linear-gradient(180deg, {{ $color }} 0%, {{ $color }}cc 100%); 
+                                            border-radius: 0.5rem 0.5rem 0 0;
+                                            transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+                                            height: 0%;
+                                            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+                                            position: relative;"
+                                     data-height="{{ $percentage }}">
+                                     <!-- Mini étiquette sur la barre -->
+                                     <div class="chart-percentage-label" style="position: absolute; top: 5px; left: 0; right: 0; text-align: center; color: white; font-size: 0.75rem; font-weight: 600; opacity: 0.9;">
+                                         {{ number_format($percentage, 0) }}%
+                                     </div>
+                                </div>
+                            </div>
+                            <!-- Label du mois -->
+                            <div class="chart-month-label" style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-top: 0.5rem;">
+                                {{ $chartData['labels'][$index] }}
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+                
+                <!-- Légende et statistiques -->
+                <div class="chart-stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #f3f4f6;">
+                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
+                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">TOTAL</div>
+                        <div style="font-size: 1.875rem; font-weight: 700; color: #8b5cf6;">
+                            {{ array_sum($chartData['data']) }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">ventes</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
+                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">MOYENNE</div>
+                        <div style="font-size: 1.875rem; font-weight: 700; color: #10b981;">
+                            {{ round(array_sum($chartData['data']) / count($chartData['data']), 1) }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">par mois</div>
+                    </div>
+                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
+                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">MEILLEUR</div>
+                        <div style="font-size: 1.875rem; font-weight: 700; color: #f59e0b;">
+                            {{ max($chartData['data']) }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">{{ $chartData['labels'][array_search(max($chartData['data']), $chartData['data'])] }}</div>
                     </div>
                 </div>
-            @else
-                <div class="tw-text-center tw-py-12">
-                    <div style="width: 4rem; height: 4rem; background-color: #f3f4f6; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
-                        <i class="fas fa-chart-line" style="color: #9ca3af; font-size: 1.5rem;"></i>
-                    </div>
-                    <p class="tw-text-gray-500">Aucune donnée de vente disponible</p>
-                </div>
-            @endif
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Animation des barres du graphique avec fallback
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🎨 Initialisation du graphique...');
+        
+        const bars = document.querySelectorAll('.chart-bar');
+        console.log('📊 Barres trouvées:', bars.length);
+        
+        if (bars.length === 0) {
+            console.warn('⚠️ Aucune barre trouvée!');
+            return;
+        }
+        
+        // Animation immédiate avec délai progressif
+        bars.forEach((bar, index) => {
+            const targetHeight = bar.getAttribute('data-height');
+            console.log(`Barre ${index}: hauteur cible = ${targetHeight}%`);
+            
+            setTimeout(() => {
+                bar.style.height = targetHeight + '%';
+                bar.style.opacity = '1';
+            }, 200 + (index * 100)); // Délai progressif pour effet cascade
+        });
+        
+        // Observer pour réanimer si nécessaire (scroll)
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && entry.target.style.height === '0%') {
+                        const bar = entry.target;
+                        const targetHeight = bar.getAttribute('data-height');
+                        setTimeout(() => {
+                            bar.style.height = targetHeight + '%';
+                            bar.style.opacity = '1';
+                        }, 100);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            bars.forEach(bar => observer.observe(bar));
+        }
+        
+        console.log('✅ Graphique initialisé avec succès');
+    });
+</script>
 @endsection 

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -53,10 +54,14 @@ class RegisterController extends Controller
             'newsletter_subscribed' => $request->boolean('newsletter'),
         ]);
 
+        // Déclencher l'événement Registered pour envoyer l'email de vérification
+        event(new Registered($user));
+
         // Connecter automatiquement l'utilisateur
         Auth::login($user);
 
-        // Rediriger vers le dashboard
-        return redirect()->route('dashboard')->with('success', 'Compte créé avec succès ! Bienvenue sur VintApp.');
+        // Rediriger vers la page de notification de vérification d'email
+        return redirect()->route('verification.notice')
+            ->with('success', 'Compte créé avec succès ! Veuillez vérifier votre email pour activer votre compte.');
     }
 }

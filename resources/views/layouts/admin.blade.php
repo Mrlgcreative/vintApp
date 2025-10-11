@@ -399,32 +399,44 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
 
     <script>
-        // Initialisation des composants
-        $(document).ready(function() {
-            // Select2
-            $('.select2').select2();
+        // Attendre que le DOM et jQuery soient complètement chargés
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Admin layout JavaScript chargé');
 
-            // Flatpickr (datepicker)
-            flatpickr(".datepicker", {
-                locale: "fr",
-                dateFormat: "Y-m-d",
-                allowInput: true
-            });
+            // Initialisation des composants jQuery
+            if (typeof $ !== 'undefined') {
+                // Select2
+                $('.select2').select2();
 
-            // Flatpickr (datetimepicker)
-            flatpickr(".datetimepicker", {
-                locale: "fr",
-                dateFormat: "Y-m-d H:i",
-                enableTime: true,
-                time_24hr: true,
-                allowInput: true
-            });
+                // Flatpickr (datepicker)
+                flatpickr(".datepicker", {
+                    locale: "fr",
+                    dateFormat: "Y-m-d",
+                    allowInput: true
+                });
+
+                // Flatpickr (datetimepicker)
+                flatpickr(".datetimepicker", {
+                    locale: "fr",
+                    dateFormat: "Y-m-d H:i",
+                    enableTime: true,
+                    time_24hr: true,
+                    allowInput: true
+                });
+            }
 
             // Sidebar Toggle - Gestion responsive améliorée
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             const mainContent = document.getElementById('main-content');
+            
+            console.log('🔍 Éléments sidebar:', {
+                toggle: !!sidebarToggle,
+                sidebar: !!sidebar,
+                overlay: !!sidebarOverlay,
+                mainContent: !!mainContent
+            });
             
             // État initial basé sur la taille de l'écran
             function initSidebar() {
@@ -466,6 +478,7 @@
             // Toggle du sidebar
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
+                    console.log('🔘 Sidebar toggle cliqué');
                     const isActive = sidebar.classList.toggle('active');
                     
                     if (window.innerWidth >= 1024) {
@@ -498,11 +511,14 @@
                         }
                     }
                 });
+            } else {
+                console.error('❌ Bouton sidebar-toggle non trouvé');
             }
 
             // Fermer le sidebar sur clic overlay (mobile uniquement)
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function() {
+                    console.log('🔘 Overlay cliqué');
                     sidebar.classList.remove('active');
                     sidebar.style.transform = 'translateX(-100%)';
                     sidebarOverlay.style.opacity = '0';
@@ -535,22 +551,35 @@
             const userDropdown = document.getElementById('userDropdown');
             const userDropdownMenu = document.getElementById('user-dropdown');
 
+            console.log('🔍 Éléments dropdowns:', {
+                notificationsDropdown: !!notificationsDropdown,
+                notificationsDropdownMenu: !!notificationsDropdownMenu,
+                userDropdown: !!userDropdown,
+                userDropdownMenu: !!userDropdownMenu
+            });
+
             // Toggle notifications dropdown
-            if (notificationsDropdown) {
+            if (notificationsDropdown && notificationsDropdownMenu) {
                 notificationsDropdown.addEventListener('click', function(e) {
+                    console.log('🔔 Dropdown notifications cliqué');
                     e.stopPropagation();
                     notificationsDropdownMenu.classList.toggle('hidden');
                     userDropdownMenu.classList.add('hidden');
                 });
+            } else {
+                console.error('❌ Dropdown notifications non trouvé');
             }
 
             // Toggle user dropdown
-            if (userDropdown) {
+            if (userDropdown && userDropdownMenu) {
                 userDropdown.addEventListener('click', function(e) {
+                    console.log('👤 Dropdown profil cliqué');
                     e.stopPropagation();
                     userDropdownMenu.classList.toggle('hidden');
                     notificationsDropdownMenu.classList.add('hidden');
                 });
+            } else {
+                console.error('❌ Dropdown profil non trouvé');
             }
 
             // Fermer les dropdowns en cliquant ailleurs
@@ -562,6 +591,11 @@
 
         // Gestion des notifications
         function fetchNotifications() {
+            if (typeof $ === 'undefined') {
+                console.error('❌ jQuery non chargé');
+                return;
+            }
+
             $.get('/admin/notifications', function(data) {
                 const badge = document.getElementById('notification-badge');
                 
@@ -605,15 +639,17 @@
         }
 
         // Rafraîchir les notifications toutes les 30 secondes
-        fetchNotifications();
-        setInterval(fetchNotifications, 30000);
+        if (typeof $ !== 'undefined') {
+            fetchNotifications();
+            setInterval(fetchNotifications, 30000);
 
-        // Protection CSRF pour les requêtes AJAX
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-        });
+            // Protection CSRF pour les requêtes AJAX
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        }
     </script>
 
     <!-- Admin Utils JavaScript -->
