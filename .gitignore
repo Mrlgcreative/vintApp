@@ -4,6 +4,7 @@
 .env.example
 .env.backup
 .env.production
+.APPLE_OAUTH_QUUICKSTART.md
 .phpactor.json
 .phpunit.result.cache
 /.fleet

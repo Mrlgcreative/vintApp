@@ -141,9 +141,9 @@ http://localhost:8000/login
 ```env
 APP_URL=http://localhost:8000
 
-# Google OAuth (déjà configuré)
-GOOGLE_CLIENT_ID=736526835549-ru9pu56fq4i9eneh2h6ds4r280i1gjg4.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
+# Google OAuth (exemple - remplacez par vos vraies valeurs)
+GOOGLE_CLIENT_ID=123456789012-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxxxxxxxxx
 GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 
 # Apple OAuth (à configurer)
