@@ -537,6 +537,22 @@ class AdminController extends Controller
     }
 
     /**
+     * Afficher les détails d'une commande
+     */
+    public function orderShow($id)
+    {
+        $order = Order::with([
+            'buyer', 
+            'seller', 
+            'item', 
+            'item.category', 
+            'item.brand'
+        ])->findOrFail($id);
+        
+        return view('admin.orders.show', compact('order'));
+    }
+
+    /**
      * Gestion des marques
      */
     public function brands()
@@ -2437,5 +2453,184 @@ class AdminController extends Controller
                 'message' => 'Erreur lors de la mise à jour de l\'ordre',
             ], 500);
         }
+    }
+
+    /**
+     * ===================================
+     * GESTION DE LA NEWSLETTER
+     * ===================================
+     */
+
+    /**
+     * Liste des abonnés newsletter
+     */
+    public function newsletterSubscribers()
+    {
+        $subscribers = \App\Models\NewsletterSubscriber::latest()->paginate(50);
+        
+        $stats = [
+            'total' => \App\Models\NewsletterSubscriber::count(),
+            'active' => \App\Models\NewsletterSubscriber::active()->count(),
+            'verified' => \App\Models\NewsletterSubscriber::verified()->count(),
+            'total_emails_sent' => \App\Models\NewsletterSubscriber::sum('emails_sent'),
+            'total_emails_opened' => \App\Models\NewsletterSubscriber::sum('emails_opened'),
+            'total_clicks' => \App\Models\NewsletterSubscriber::sum('emails_clicked'),
+        ];
+
+        return view('admin.newsletter.subscribers', compact('subscribers', 'stats'));
+    }
+
+    /**
+     * Envoyer une newsletter
+     */
+    public function sendNewsletter()
+    {
+        return view('admin.newsletter.send');
+    }
+
+    /**
+     * Traiter l'envoi de la newsletter
+     */
+    public function processSendNewsletter(Request $request)
+    {
+        $validated = $request->validate([
+            'subject' => 'required|string|max:255',
+            'content' => 'required|string',
+            'recipient_type' => 'required|in:all,active,verified',
+        ]);
+
+        try {
+            // Récupérer les abonnés selon le type
+            $query = \App\Models\NewsletterSubscriber::query();
+            
+            if ($validated['recipient_type'] === 'active') {
+                $query->active();
+            } elseif ($validated['recipient_type'] === 'verified') {
+                $query->verified();
+            }
+
+            $subscribers = $query->get();
+            $sentCount = 0;
+
+            foreach ($subscribers as $subscriber) {
+                try {
+                    \Mail::to($subscriber->email)->send(
+                        new \App\Mail\PromotionEmail($subscriber, $validated['subject'], $validated['content'])
+                    );
+                    $subscriber->incrementEmailsSent();
+                    $sentCount++;
+                } catch (\Exception $e) {
+                    Log::error('Erreur envoi newsletter à ' . $subscriber->email . ': ' . $e->getMessage());
+                }
+            }
+
+            return redirect()->route('admin.newsletter.subscribers')
+                ->with('success', "Newsletter envoyée à {$sentCount} abonné(s) !");
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi de la newsletter: ' . $e->getMessage());
+            return back()->with('error', 'Erreur lors de l\'envoi de la newsletter');
+        }
+    }
+
+    /**
+     * Supprimer un abonné
+     */
+    public function deleteNewsletterSubscriber($id)
+    {
+        try {
+            $subscriber = \App\Models\NewsletterSubscriber::findOrFail($id);
+            $subscriber->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Abonné supprimé avec succès !',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur suppression abonné newsletter: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression',
+            ], 500);
+        }
+    }
+
+    /**
+     * Activer/désactiver un abonné
+     */
+    public function toggleNewsletterSubscriber($id)
+    {
+        try {
+            $subscriber = \App\Models\NewsletterSubscriber::findOrFail($id);
+            
+            if ($subscriber->is_active) {
+                $subscriber->unsubscribe();
+                $message = 'Abonné désactivé';
+            } else {
+                $subscriber->resubscribe();
+                $message = 'Abonné réactivé';
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'is_active' => $subscriber->is_active,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur toggle abonné newsletter: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la modification',
+            ], 500);
+        }
+    }
+
+    /**
+     * Exporter les abonnés en CSV
+     */
+    public function exportNewsletterSubscribers()
+    {
+        $subscribers = \App\Models\NewsletterSubscriber::all();
+        
+        $filename = 'newsletter_subscribers_' . date('Y-m-d_His') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function() use ($subscribers) {
+            $file = fopen('php://output', 'w');
+            
+            // En-têtes CSV
+            fputcsv($file, [
+                'ID', 'Email', 'Nom', 'Actif', 'Vérifié', 'Date vérification',
+                'Nouveaux articles', 'Promotions', 'Newsletters',
+                'Emails envoyés', 'Emails ouverts', 'Clics',
+                'Dernier email', 'Date inscription'
+            ]);
+
+            // Données
+            foreach ($subscribers as $subscriber) {
+                fputcsv($file, [
+                    $subscriber->id,
+                    $subscriber->email,
+                    $subscriber->name,
+                    $subscriber->is_active ? 'Oui' : 'Non',
+                    $subscriber->email_verified ? 'Oui' : 'Non',
+                    $subscriber->verified_at ? $subscriber->verified_at->format('Y-m-d H:i:s') : '',
+                    $subscriber->receive_new_items ? 'Oui' : 'Non',
+                    $subscriber->receive_promotions ? 'Oui' : 'Non',
+                    $subscriber->receive_newsletters ? 'Oui' : 'Non',
+                    $subscriber->emails_sent,
+                    $subscriber->emails_opened,
+                    $subscriber->emails_clicked,
+                    $subscriber->last_email_sent_at ? $subscriber->last_email_sent_at->format('Y-m-d H:i:s') : '',
+                    $subscriber->created_at->format('Y-m-d H:i:s'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

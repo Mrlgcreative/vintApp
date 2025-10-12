@@ -453,6 +453,59 @@
                     </div>
                 </div>
                 
+                <!-- Section Newsletter -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                                <i class="fas fa-envelope text-blue-600 mr-3"></i>
+                                Newsletter
+                            </h3>
+                            <p class="text-sm text-gray-600 mt-1">
+                                Gérez vos abonnés et envoyez des newsletters automatiques
+                            </p>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg border border-blue-200 p-6">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-paper-plane text-2xl text-blue-600"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-base font-semibold text-gray-900 mb-2">Gestion de la Newsletter</h4>
+                                        <p class="text-sm text-gray-600 mb-4">
+                                            Gérez vos abonnés, consultez les statistiques et envoyez des newsletters personnalisées.
+                                        </p>
+                                        <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Liste complète des abonnés avec statistiques</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Emails automatiques de bienvenue</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Notifications des nouveaux articles</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Envoi de promotions et newsletters</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Tracking des ouvertures et clics</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Export CSV des abonnés</li>
+                                        </ul>
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('admin.settings.newsletter.subscribers') }}" 
+                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                                <i class="fas fa-users mr-2"></i>
+                                                Voir les Abonnés
+                                            </a>
+                                            <a href="{{ route('admin.settings.newsletter.send') }}" 
+                                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                                <i class="fas fa-paper-plane mr-2"></i>
+                                                Envoyer une Newsletter
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Section Wallet Entreprise (Commissions) -->
                 <div class="border-t border-gray-200 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">

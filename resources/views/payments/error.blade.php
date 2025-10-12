@@ -36,8 +36,16 @@
                             <div class="detail-row">
                                 <span class="detail-label">Montant tenté</span>
                                 <span class="detail-value">
-                                    {{ number_format($amount, 2) }} USD
-                                    <small class="text-muted">({{ number_format($amount * 2450, 0) }} CDF)</small>
+                                    {{ number_format($amount, 2) }} {{ $currency ?? 'USD' }}
+                                    @if(isset($currency))
+                                        @if($currency === 'USD')
+                                            <small class="text-muted">({{ number_format($amount * 2650, 0) }} CDF)</small>
+                                        @elseif($currency === 'CDF')
+                                            <small class="text-muted">({{ number_format($amount / 2650, 2) }} USD)</small>
+                                        @endif
+                                    @else
+                                        <small class="text-muted">({{ number_format($amount * 2650, 0) }} CDF)</small>
+                                    @endif
                                 </span>
                             </div>
                         @endif

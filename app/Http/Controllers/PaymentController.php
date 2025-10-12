@@ -400,8 +400,9 @@ class PaymentController extends Controller
         $error = $request->query('error', 'Une erreur est survenue lors du paiement');
         $amount = $request->query('amount', 0);
         $provider = $request->query('provider', 'Mobile Money');
+        $currency = $request->query('currency', 'USD');
         
-        return view('payments.error', compact('error', 'amount', 'provider'));
+        return view('payments.error', compact('error', 'amount', 'provider', 'currency'));
     }
 }
 

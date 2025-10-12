@@ -153,6 +153,9 @@ class ItemController extends Controller
 
         $item->save();
 
+        // Déclencher l'événement pour envoyer les emails newsletter
+        event(new \App\Events\ItemCreated($item));
+
         return redirect()->route('items.show', $item)
             ->with('success', 'Article créé avec succès !');
     }

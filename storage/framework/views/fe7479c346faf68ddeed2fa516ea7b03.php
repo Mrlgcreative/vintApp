@@ -267,6 +267,12 @@ function showNotification(message, type = 'primary') {
     background-color: rgba(79, 0, 206, 0.7);
     border-radius: 50%;
     padding: 12px;
+    display: none; /* Masquer les boutons prev/next */
+}
+
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+    display: none; /* Masquer complètement les contrôles */
 }
 
 #heroCarousel .carousel-control-prev-icon:hover,
@@ -545,40 +551,56 @@ function showNotification(message, type = 'primary') {
     .articles-section .col-lg-3,
     .articles-section .col-md-4,
     .articles-section .col-sm-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-bottom: 10px;
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+        padding-left: 3px;
+        padding-right: 3px;
+        margin-bottom: 8px;
     }
     .article-card {
-        border-radius: 10px;
+        border-radius: 8px;
         min-width: 0;
         max-width: 100%;
-        height: 170px;
-        padding: 0.5rem 0.5rem 0.2rem 0.5rem;
+        height: 120px;
+        padding: 0.25rem 0.25rem 0.1rem 0.25rem;
     }
     .article-image {
-        height: 70px;
+        height: 50px;
+        border-radius: 6px;
     }
     .article-title {
-        font-size: 12px;
-        margin-bottom: 0.2rem;
+        font-size: 9px;
+        margin-bottom: 0.1rem;
+        line-height: 1.1;
     }
     .article-description {
-        font-size: 10px;
-        margin-bottom: 0.3rem;
+        font-size: 8px;
+        margin-bottom: 0.2rem;
+        line-height: 1.1;
+        display: none; /* Masquer la description sur mobile */
     }
     .price-tag {
-        font-size: 11px;
-        padding: 0.15rem 0.5rem;
+        font-size: 8px;
+        padding: 0.08rem 0.35rem;
     }
     .article-meta {
-        font-size: 10px;
+        font-size: 7px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1px;
     }
     .badge.bg-violet-light {
-        font-size: 9px;
-        padding: 0.15em 0.5em;
+        font-size: 6px;
+        padding: 0.08em 0.3em;
+    }
+    
+    .article-content {
+        padding: 0.3rem;
+    }
+    
+    .article-price {
+        top: 4px;
+        right: 4px;
     }
 }
 </style>

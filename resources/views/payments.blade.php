@@ -35,9 +35,9 @@
                                 arsort($currencyCounts);
                                 $priorityCurrency = array_key_first($currencyCounts);
                                 
-                                // Calculer le total dans la devise prioritaire
+                                // Calculer le sous-total dans la devise prioritaire
                                 $exchangeRate = 2650; // Taux par défaut, sera récupéré via API
-                                $totalInPriority = 0;
+                                $subtotalInPriority = 0;
                                 
                                 foreach($cart as $item) {
                                     $itemTotal = $item['price'] * $item['quantity'];
@@ -51,16 +51,39 @@
                                         }
                                     }
                                     
-                                    $totalInPriority += $itemTotal;
+                                    $subtotalInPriority += $itemTotal;
                                 }
                                 
-                                $totalInPriority = round($totalInPriority, 2);
+                                $subtotalInPriority = round($subtotalInPriority, 2);
+                                
+                                // Calculer les frais de transport dans la devise prioritaire
+                                $transportFeeInPriority = ($subtotalInPriority * $transportFeePercentage) / 100;
+                                $transportFeeInPriority = round($transportFeeInPriority, 2);
+                                
+                                // Total final
+                                $totalInPriority = $subtotalInPriority + $transportFeeInPriority;
                             @endphp
-                            <div class="text-end">
-                                <strong>Total : {{ number_format($totalInPriority, 2) }} {{ $priorityCurrency }}</strong>
+                            
+                            <!-- Récapitulatif des montants -->
+                            <div class="border-top pt-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Sous-total :</span>
+                                    <strong>{{ number_format($subtotalInPriority, 2) }} {{ $priorityCurrency }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>
+                                        Frais de livraison :
+                                        <small class="text-muted">({{ $transportFeePercentage }}%)</small>
+                                    </span>
+                                    <strong class="text-primary">+{{ number_format($transportFeeInPriority, 2) }} {{ $priorityCurrency }}</strong>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <span class="h5 mb-0">Total à payer :</span>
+                                    <span class="h5 mb-0 text-success fw-bold">{{ number_format($totalInPriority, 2) }} {{ $priorityCurrency }}</span>
+                                </div>
                                 @if(count($currencyCounts) > 1)
-                                    <br>
-                                    <small class="text-muted">
+                                    <small class="text-muted d-block mt-2">
                                         <i class="fas fa-info-circle"></i> Devises mixtes converties en {{ $priorityCurrency }}
                                     </small>
                                 @endif
@@ -113,11 +136,11 @@
                             @endphp
                             @if($displayCurrency === 'USD')
                                 <small class="text-muted">
-                                    Environ <span id="amount-cdf">0</span> CDF (1 USD = 2650 CDF)
+                                    Environ <span id="amount-cdf">0</span> CDF (1 USD = <span id="rate-display"></span>2650</span> CDF)
                                 </small>
                             @elseif($displayCurrency === 'CDF')
                                 <small class="text-muted">
-                                    Environ <span id="amount-usd">0</span> USD (1 USD = 2650 CDF)
+                                    Environ <span id="amount-usd">0</span> USD (1 USD = <span id="rate-display">2650</span> CDF)
                                 </small>
                             @endif
                         </div>
@@ -152,6 +175,13 @@ fetch('/exchange/rate')
         if (data.status === 'success') {
             exchangeRate = data.rate;
             console.log('Taux de change USD/CDF:', exchangeRate);
+            
+            // Mettre à jour l'affichage du taux
+            const rateDisplayElements = document.querySelectorAll('#rate-display');
+            rateDisplayElements.forEach(element => {
+                element.textContent = exchangeRate.toLocaleString('fr-FR');
+            });
+            
             // Mettre à jour la conversion affichée
             updateCurrencyConversion();
         }
@@ -176,7 +206,21 @@ const operators = {
         pattern: '^8[45][0-9]{7}$',
         format: '84XXXXXXX ou 85XXXXXXX'
     },
+    '89': { 
+        name: 'Orange Money', 
+        provider: 'Orange Money',
+        logo: '/images/operators/orange.png',
+        pattern: '^8[45][0-9]{7}$',
+        format: '84XXXXXXX ou 85XXXXXXX'
+    },
     '81': { 
+        name: 'Vodacom M-Pesa', 
+        provider: 'Vodacom M-Pesa',
+        logo: '/images/operators/mpesa.png',
+        pattern: '^8[12][0-9]{7}$',
+        format: '81XXXXXXX ou 82XXXXXXX'
+    },
+    '83': { 
         name: 'Vodacom M-Pesa', 
         provider: 'Vodacom M-Pesa',
         logo: '/images/operators/mpesa.png',
@@ -191,6 +235,13 @@ const operators = {
         format: '81XXXXXXX ou 82XXXXXXX'
     },
     '97': { 
+        name: 'Airtel Money', 
+        provider: 'Airtel Money',
+        logo: '/images/operators/airtel.png',
+        pattern: '^9[79][0-9]{7}$',
+        format: '97XXXXXXX ou 99XXXXXXX'
+    },
+    '98': { 
         name: 'Airtel Money', 
         provider: 'Airtel Money',
         logo: '/images/operators/airtel.png',
@@ -405,7 +456,8 @@ document.getElementById('payment-form').addEventListener('submit', async functio
             const errorParams = new URLSearchParams({
                 error: data.message || 'Une erreur est survenue',
                 amount: amount,
-                provider: provider
+                provider: provider,
+                currency: productCurrency
             });
             window.location.href = '{{ route("payments.error") }}?' + errorParams.toString();
         }

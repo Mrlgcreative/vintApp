@@ -443,6 +443,23 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Newsletter Subscription -->
+                <hr class="my-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-6 text-center">
+                        <h5 class="mb-3">📧 Restez informé !</h5>
+                        <p class="text-muted">Inscrivez-vous à notre newsletter pour recevoir nos dernières offres et nouveautés.</p>
+                        <form id="newsletterForm" class="d-flex gap-2 justify-content-center">
+                            @csrf
+                            <input type="email" id="newsletterEmail" class="form-control" placeholder="Votre email" required style="max-width: 300px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>S'abonner
+                            </button>
+                        </form>
+                        <div id="newsletterMessage" class="mt-2"></div>
+                    </div>
+                </div>
         <style>
         /* Footer responsive : 2 colonnes sur mobile */
         @media (max-width: 767.98px) {
@@ -1659,6 +1676,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('✅ Notifications temps réel activées');
             }
+        </script>
+
+        <!-- Script Newsletter -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const newsletterForm = document.getElementById('newsletterForm');
+                const newsletterMessage = document.getElementById('newsletterMessage');
+                
+                if (newsletterForm) {
+                    newsletterForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        
+                        const email = document.getElementById('newsletterEmail').value;
+                        const submitBtn = this.querySelector('button[type="submit"]');
+                        const originalBtnText = submitBtn.innerHTML;
+                        
+                        // Désactiver le bouton pendant l'envoi
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi...';
+                        
+                        try {
+                            const response = await fetch('{{ route("newsletter.subscribe") }}', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({ email: email })
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (data.success) {
+                                newsletterMessage.innerHTML = `
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-check-circle me-2"></i>${data.message}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                `;
+                                newsletterForm.reset();
+                            } else {
+                                newsletterMessage.innerHTML = `
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-exclamation-circle me-2"></i>${data.message}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                `;
+                            }
+                        } catch (error) {
+                            newsletterMessage.innerHTML = `
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-exclamation-circle me-2"></i>Une erreur est survenue. Veuillez réessayer.
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            `;
+                        }
+                        
+                        // Réactiver le bouton
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalBtnText;
+                        
+                        // Auto-masquer le message après 5 secondes
+                        setTimeout(() => {
+                            newsletterMessage.innerHTML = '';
+                        }, 5000);
+                    });
+                }
+            });
         </script>
 
         <style>

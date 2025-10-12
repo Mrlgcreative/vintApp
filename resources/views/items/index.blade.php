@@ -3,27 +3,74 @@
 @media (max-width: 768px) {
     .row.g-4 > [class^="col-"],
     .row.g-4 > [class*=" col-"] {
-        flex: 0 0 50%;
-        max-width: 50%;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-bottom: 10px;
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+        padding-left: 3px;
+        padding-right: 3px;
+        margin-bottom: 8px;
     }
     .item-card {
-        margin-bottom: 1.2rem;
+        margin-bottom: 1rem;
         min-width: 0;
         max-width: 100%;
-        height: 170px;
-        padding: 0.5rem 0.5rem 0.2rem 0.5rem;
+        height: 120px;
+        padding: 0.25rem 0.25rem 0.1rem 0.25rem;
+        border-radius: 8px;
     }
     .card-img-top, .item-card img {
-        height: 90px !important;
+        height: 50px !important;
+        border-radius: 6px 6px 0 0;
     }
     .card-title {
-        font-size: 13px;
+        font-size: 9px;
+        line-height: 1.1;
+        margin-bottom: 0.1rem;
     }
     .card-text {
-        font-size: 11px;
+        font-size: 8px;
+        line-height: 1.1;
+        display: none; /* Masquer la description sur mobile */
+    }
+    .card-body {
+        padding: 0.3rem;
+    }
+    .badge {
+        font-size: 6px;
+        padding: 0.08em 0.3em;
+    }
+    .condition-badge {
+        font-size: 6px;
+        padding: 0.15em 0.4em;
+        border-radius: 6px;
+    }
+    .favorite-btn {
+        width: 20px;
+        height: 20px;
+        padding: 0;
+        font-size: 9px;
+        margin: 2px;
+    }
+    .btn-primary.w-100 {
+        font-size: 8px;
+        padding: 0.2rem 0.25rem;
+        margin-top: 0.2rem !important;
+    }
+    .btn-primary.w-100 i {
+        display: none; /* Masquer l'icône sur mobile */
+    }
+    .text-primary.fw-bold {
+        font-size: 9px;
+    }
+    .text-muted small, small.text-muted {
+        font-size: 7px;
+    }
+    .d-flex.justify-content-between.align-items-center {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1px;
+    }
+    .d-flex.justify-content-between.align-items-center.mb-2 {
+        margin-bottom: 0.15rem !important;
     }
 }
 </style>
@@ -376,10 +423,13 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 @media (max-width: 768px) {
     .item-card {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.8rem;
     }
     .card-img-top, .item-card img {
-        height: 160px !important;
+        height: 50px !important;
+    }
+    .card-body {
+        padding: 0.3rem;
     }
 }
 </style>

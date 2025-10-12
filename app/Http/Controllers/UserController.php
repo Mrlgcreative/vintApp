@@ -302,4 +302,179 @@ public function uploadAvatar(Request $request)
             'message' => 'Compte supprimé avec succès'
         ]);
     }
+
+    /**
+     * Sauvegarder une adresse de livraison
+     */
+    public function saveDeliveryAddress(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'city' => 'required|string|max:255',
+            'commune' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
+            'notes' => 'nullable|string|max:1000',
+            'is_default' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreurs de validation',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        // Si c'est la première adresse ou si is_default est true
+        $isDefault = $request->is_default || $user->deliveryAddresses()->count() === 0;
+
+        $deliveryAddress = $user->deliveryAddresses()->create([
+            'full_name' => $request->full_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'city' => $request->city,
+            'commune' => $request->commune,
+            'address' => $request->address,
+            'notes' => $request->notes,
+            'is_default' => $isDefault,
+        ]);
+
+        // Si c'est défini comme adresse par défaut, retirer le statut des autres
+        if ($isDefault) {
+            $deliveryAddress->setAsDefault();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adresse de livraison enregistrée avec succès',
+            'data' => $deliveryAddress
+        ]);
+    }
+
+    /**
+     * Obtenir toutes les adresses de livraison de l'utilisateur
+     */
+    public function getDeliveryAddresses(Request $request)
+    {
+        $user = $request->user();
+        $addresses = $user->deliveryAddresses()->orderBy('is_default', 'desc')->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $addresses
+        ]);
+    }
+
+    /**
+     * Obtenir l'adresse de livraison par défaut
+     */
+    public function getDefaultDeliveryAddress(Request $request)
+    {
+        $user = $request->user();
+        $address = $user->deliveryAddresses()->where('is_default', true)->first();
+
+        if (!$address) {
+            $address = $user->deliveryAddresses()->latest()->first();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $address
+        ]);
+    }
+
+    /**
+     * Mettre à jour une adresse de livraison
+     */
+    public function updateDeliveryAddress(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'full_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'email' => 'required|email|max:255',
+            'city' => 'required|string|max:255',
+            'commune' => 'required|string|max:255',
+            'address' => 'required|string|max:500',
+            'notes' => 'nullable|string|max:1000',
+            'is_default' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreurs de validation',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+
+        $deliveryAddress->update([
+            'full_name' => $request->full_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'city' => $request->city,
+            'commune' => $request->commune,
+            'address' => $request->address,
+            'notes' => $request->notes,
+            'is_default' => $request->is_default ?? $deliveryAddress->is_default,
+        ]);
+
+        // Si c'est défini comme adresse par défaut
+        if ($request->is_default) {
+            $deliveryAddress->setAsDefault();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adresse de livraison mise à jour avec succès',
+            'data' => $deliveryAddress
+        ]);
+    }
+
+    /**
+     * Définir une adresse comme adresse par défaut
+     */
+    public function setDefaultDeliveryAddress(Request $request, $id)
+    {
+        $user = $request->user();
+        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+
+        $deliveryAddress->setAsDefault();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adresse définie comme adresse par défaut',
+            'data' => $deliveryAddress
+        ]);
+    }
+
+    /**
+     * Supprimer une adresse de livraison
+     */
+    public function deleteDeliveryAddress(Request $request, $id)
+    {
+        $user = $request->user();
+        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+
+        // Si c'est l'adresse par défaut, définir une autre comme par défaut
+        if ($deliveryAddress->is_default) {
+            $newDefault = $user->deliveryAddresses()->where('id', '!=', $id)->first();
+            if ($newDefault) {
+                $newDefault->update(['is_default' => true]);
+            }
+        }
+
+        $deliveryAddress->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Adresse de livraison supprimée avec succès'
+        ]);
+    }
 }

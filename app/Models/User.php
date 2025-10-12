@@ -426,6 +426,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Adresses de livraison de l'utilisateur
+     */
+    public function deliveryAddresses()
+    {
+        return $this->hasMany(DeliveryAddress::class);
+    }
+
+    /**
      * Envoyer la notification de vérification d'email personnalisée
      */
     public function sendEmailVerificationNotification()

@@ -90,6 +90,11 @@
                         class="px-2 sm:px-3 py-1.5 sm:py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors text-xs sm:text-sm font-medium">
                     <i class="fas fa-sync-alt"></i> <span class="hidden xs:inline">Actualiser</span>
                 </button>
+                <button onclick="showMapHelp()" 
+                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs sm:text-sm font-medium"
+                        title="Aide & Raccourcis">
+                    <i class="fas fa-question-circle"></i>
+                </button>
             </div>
         </div>
         
@@ -105,6 +110,23 @@
         </div>
         
         <!-- Légende -->
+        <!-- Mode marquage -->
+        <div id="mapModeIndicator" class="hidden mt-3 mb-2 bg-blue-50 border-l-4 border-blue-500 rounded-lg p-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-mouse-pointer text-blue-600 text-lg"></i>
+                    <div>
+                        <p class="font-semibold text-blue-900 text-sm">Mode Marquage Activé</p>
+                        <p class="text-xs text-blue-700">Cliquez sur la carte pour placer un marqueur de nouvelle ville</p>
+                    </div>
+                </div>
+                <button onclick="disableMapMarkerMode()" 
+                        class="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                    <i class="fas fa-times mr-1"></i> Désactiver
+                </button>
+            </div>
+        </div>
+        
         <div class="mt-4 flex flex-wrap gap-4 text-sm">
             <div class="flex items-center gap-2">
                 <div class="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow"></div>
@@ -115,9 +137,15 @@
                 <span class="text-gray-700">Ville inactive</span>
             </div>
             <div class="flex items-center gap-2">
-                <i class="fas fa-map-marker-alt text-gray-400 text-lg"></i>
-                <span class="text-gray-700">Sans coordonnées GPS</span>
+                <div class="w-4 h-4 bg-blue-500 rounded-full border-2 border-white shadow"></div>
+                <span class="text-gray-700">Nouveau marqueur</span>
             </div>
+            <button onclick="enableMapMarkerMode()" 
+                    class="flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium">
+                <i class="fas fa-map-marker-alt"></i>
+                <span class="hidden sm:inline">Ajouter ville par clic</span>
+                <span class="sm:hidden">Marquer</span>
+            </button>
             <div class="flex items-center gap-2 ml-auto">
                 <i class="fas fa-map text-gray-500"></i>
                 <span class="text-xs text-gray-500">Propulsé par OpenStreetMap</span>
@@ -491,7 +519,7 @@
                 </div>
             </div>
             
-            <form action="{{ route('admin.locations.cities.store') }}" method="POST" id="cityForm" class="space-y-3 sm:space-y-4">
+            <form action="{{ route('admin.locations.cities.store') }}" method="POST" id="cityForm" class="space-y-3 sm:space-y-4" onsubmit="return handleCityFormSubmit(event)">
                 @csrf
                 
                 <!-- Sélection du pays -->
@@ -533,6 +561,10 @@
                         </div>
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Exemples: Paris, Tokyo, New York, Kinshasa...</p>
+                    <div class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
+                        <i class="fas fa-lightbulb mr-1"></i>
+                        <strong>Astuce :</strong> Vous pouvez aussi cliquer sur la carte ci-dessous pour placer un marqueur !
+                    </div>
                 </div>
 
                 <!-- Nom de la ville (rempli auto) -->
@@ -751,7 +783,11 @@ function toggleCityStatus(cityId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload();
+            // Mettre à jour le marqueur sur la carte
+            updateCityMarkerStatus(cityId, data.city);
+            showToast('Statut de la ville mis à jour', 'success');
+            // Recharger pour mettre à jour l'interface
+            setTimeout(() => location.reload(), 1000);
         }
     })
     .catch(error => console.error('Erreur:', error));
@@ -780,6 +816,9 @@ function toggleRegionStatus(regionId) {
 // Supprimer ville
 function deleteCity(cityId, cityName) {
     if (!confirm(`Êtes-vous sûr de vouloir supprimer la ville "${cityName}" ?`)) return;
+    
+    // Supprimer le marqueur de la carte avant de supprimer de la DB
+    removeCityMarkerFromMap(cityId);
     
     const form = document.createElement('form');
     form.method = 'POST';
@@ -841,6 +880,9 @@ function editRegion(regionId) {
 let map;
 let markers;
 let allCitiesData = [];
+let mapMarkerMode = false;
+let tempMarker = null;
+let cityMarkersMap = new Map(); // Map pour stocker les marqueurs par cityId
 
 // Initialiser la carte Leaflet
 function initMap() {
@@ -862,6 +904,9 @@ function initMap() {
     });
     
     map.addLayer(markers);
+    
+    // Ajouter l'événement de clic sur la carte pour le mode marquage
+    map.on('click', onMapClick);
     
     // Charger les villes
     loadCitiesOnMap();
@@ -893,58 +938,115 @@ function loadCitiesOnMap() {
 function displayCitiesOnMap(cities) {
     // Vider les markers existants
     markers.clearLayers();
+    cityMarkersMap.clear();
     
     cities.forEach(city => {
         if (city.latitude && city.longitude) {
-            // Couleur selon le statut
-            const iconColor = city.is_active ? '#10b981' : '#ef4444'; // green-500 : red-500
-            
-            // Créer un marqueur personnalisé
-            const customIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div style="
-                    background-color: ${iconColor};
-                    width: 16px;
-                    height: 16px;
-                    border-radius: 50%;
-                    border: 2px solid white;
-                    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-                "></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            });
-            
-            const marker = L.marker([city.latitude, city.longitude], { icon: customIcon });
-            
-            // Contenu du popup
-            const popupContent = `
-                <div class="marker-popup" style="min-width: 220px;">
-                    <h4>
-                        <span style="font-size: 1.3rem; margin-right: 6px;">${getCountryFlag(city.country_code)}</span>
-                        ${city.name}
-                    </h4>
-                    <p><strong>Pays:</strong> ${city.country}</p>
-                    ${city.population ? `<p><strong>Population:</strong> ${formatNumber(city.population)}</p>` : ''}
-                    <p>
-                        <strong>Statut:</strong> 
-                        <span class="status-badge ${city.is_active ? 'status-active' : 'status-inactive'}">
-                            ${city.is_active ? '✓ Active' : '✗ Inactive'}
-                        </span>
-                    </p>
-                    <p style="font-size: 11px; color: #6b7280; margin-top: 8px; border-top: 1px solid #e5e7eb; padding-top: 8px;">
-                        📍 ${city.latitude.toFixed(4)}°, ${city.longitude.toFixed(4)}°
-                    </p>
-                </div>
-            `;
-            
-            marker.bindPopup(popupContent);
-            markers.addLayer(marker);
+            addCityMarkerToMap(city);
         }
     });
     
     // Ajuster la vue pour afficher tous les markers
     if (cities.length > 0 && markers.getLayers().length > 0) {
         map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+    }
+}
+
+// Ajouter un marqueur de ville sur la carte
+function addCityMarkerToMap(city) {
+    // Couleur selon le statut
+    const iconColor = city.is_active ? '#10b981' : '#ef4444'; // green-500 : red-500
+    
+    // Créer un marqueur personnalisé avec logo de localisation
+    const customIcon = L.divIcon({
+        className: 'custom-location-icon',
+        html: `<div style="
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <i class="fas fa-map-marker-alt" style="
+                font-size: 32px;
+                color: ${iconColor};
+                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+                -webkit-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+            "></i>
+            <div style="
+                position: absolute;
+                top: 8px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 12px;
+                height: 12px;
+                background-color: white;
+                border-radius: 50%;
+                border: 2px solid ${iconColor};
+            "></div>
+        </div>`,
+        iconSize: [32, 40],
+        iconAnchor: [16, 40],
+        popupAnchor: [0, -40]
+    });
+    
+    const marker = L.marker([city.latitude, city.longitude], { icon: customIcon });
+    
+    // Contenu du popup
+    const popupContent = `
+        <div class="marker-popup" style="min-width: 220px;">
+            <h4>
+                <span style="font-size: 1.3rem; margin-right: 6px;">${getCountryFlag(city.country_code)}</span>
+                ${city.name}
+            </h4>
+            <p><strong>Pays:</strong> ${city.country}</p>
+            ${city.population ? `<p><strong>Population:</strong> ${formatNumber(city.population)}</p>` : ''}
+            <p>
+                <strong>Statut:</strong> 
+                <span class="status-badge ${city.is_active ? 'status-active' : 'status-inactive'}">
+                    ${city.is_active ? '✓ Active' : '✗ Inactive'}
+                </span>
+            </p>
+            <p style="font-size: 11px; color: #6b7280; margin-top: 8px; border-top: 1px solid #e5e7eb; padding-top: 8px;">
+                📍 ${city.latitude.toFixed(4)}°, ${city.longitude.toFixed(4)}°
+            </p>
+        </div>
+    `;
+    
+    marker.bindPopup(popupContent);
+    markers.addLayer(marker);
+    
+    // Stocker le marqueur avec l'ID de la ville
+    cityMarkersMap.set(city.id, marker);
+    
+    // Ajouter la ville aux données si elle n'existe pas déjà
+    if (!allCitiesData.find(c => c.id === city.id)) {
+        allCitiesData.push(city);
+    }
+}
+
+// Supprimer un marqueur de ville de la carte
+function removeCityMarkerFromMap(cityId) {
+    const marker = cityMarkersMap.get(cityId);
+    if (marker) {
+        markers.removeLayer(marker);
+        cityMarkersMap.delete(cityId);
+        
+        // Supprimer des données
+        allCitiesData = allCitiesData.filter(c => c.id !== cityId);
+        
+        showToast('Marqueur supprimé de la carte', 'info');
+    }
+}
+
+// Mettre à jour le statut d'un marqueur de ville
+function updateCityMarkerStatus(cityId, cityData) {
+    // Supprimer l'ancien marqueur
+    removeCityMarkerFromMap(cityId);
+    
+    // Ajouter le nouveau marqueur avec le statut mis à jour
+    if (cityData && cityData.latitude && cityData.longitude) {
+        addCityMarkerToMap(cityData);
+        showToast(`Marqueur de ${cityData.name} mis à jour`, 'success');
     }
 }
 
@@ -1024,6 +1126,357 @@ function getCountryFlag(countryCode) {
 // Formater un nombre avec des séparateurs
 function formatNumber(num) {
     return new Intl.NumberFormat('fr-FR').format(num);
+}
+
+// ========================================
+// 🎯 MODE MARQUAGE SUR CARTE
+// ========================================
+
+// Activer le mode marquage
+function enableMapMarkerMode() {
+    mapMarkerMode = true;
+    document.getElementById('mapModeIndicator').classList.remove('hidden');
+    document.getElementById('map').style.cursor = 'crosshair';
+    
+    // Message de confirmation
+    showToast('Mode marquage activé ! Cliquez sur la carte pour placer une ville.', 'info');
+}
+
+// Désactiver le mode marquage
+function disableMapMarkerMode() {
+    mapMarkerMode = false;
+    document.getElementById('mapModeIndicator').classList.add('hidden');
+    document.getElementById('map').style.cursor = '';
+    
+    // Supprimer le marqueur temporaire si existant
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+        tempMarker = null;
+    }
+    
+    showToast('Mode marquage désactivé', 'info');
+}
+
+// Gestion du clic sur la carte
+function onMapClick(e) {
+    if (!mapMarkerMode) return;
+    
+    const lat = e.latlng.lat;
+    const lng = e.latlng.lng;
+    
+    // Supprimer l'ancien marqueur temporaire
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+    }
+    
+    // Créer un nouveau marqueur temporaire bleu avec logo de localisation
+    const blueIcon = L.divIcon({
+        className: 'custom-location-icon temp-marker',
+        html: `<div style="
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <i class="fas fa-map-marker-alt" style="
+                font-size: 36px;
+                color: #3b82f6;
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+                -webkit-filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+                animation: pulse 1.5s infinite;
+            "></i>
+            <div style="
+                position: absolute;
+                top: 9px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 14px;
+                height: 14px;
+                background-color: white;
+                border-radius: 50%;
+                border: 2px solid #3b82f6;
+                animation: pulse 1.5s infinite;
+            "></div>
+        </div>`,
+        iconSize: [36, 44],
+        iconAnchor: [18, 44],
+        popupAnchor: [0, -44]
+    });
+    
+    tempMarker = L.marker([lat, lng], { icon: blueIcon }).addTo(map);
+    
+    // Popup avec formulaire rapide
+    const popupContent = `
+        <div style="min-width: 280px;">
+            <h4 style="margin: 0 0 12px 0; font-size: 16px; font-weight: 600; color: #1f2937;">
+                <i class="fas fa-map-marker-alt text-blue-600"></i>
+                Nouvelle ville
+            </h4>
+            <div style="background: #f3f4f6; padding: 8px; border-radius: 6px; margin-bottom: 12px; font-size: 12px;">
+                <strong>📍 Coordonnées :</strong><br>
+                Latitude: ${lat.toFixed(6)}°<br>
+                Longitude: ${lng.toFixed(6)}°
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button onclick="openAddCityWithCoords(${lat}, ${lng})" 
+                        style="flex: 1; padding: 8px 12px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">
+                    <i class="fas fa-plus-circle"></i> Ajouter ville
+                </button>
+                <button onclick="cancelTempMarker()" 
+                        style="padding: 8px 12px; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <p style="margin: 10px 0 0 0; font-size: 11px; color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 8px;">
+                💡 Le système va rechercher le nom de la ville via géocodage inversé
+            </p>
+        </div>
+    `;
+    
+    tempMarker.bindPopup(popupContent).openPopup();
+    
+    // Centrer légèrement au-dessus du marqueur pour voir le popup
+    map.panTo([lat, lng]);
+    
+    showToast('Marqueur placé ! Cliquez sur "Ajouter ville" pour continuer.', 'success');
+}
+
+// Ouvrir le modal d'ajout avec coordonnées pré-remplies
+function openAddCityWithCoords(lat, lng) {
+    // Désactiver le mode marquage
+    disableMapMarkerMode();
+    
+    // Pré-remplir les coordonnées
+    document.getElementById('cityLatitudeInput').value = lat.toFixed(6);
+    document.getElementById('cityLongitudeInput').value = lng.toFixed(6);
+    
+    // Effectuer un géocodage inversé pour obtenir le nom de la ville
+    reverseGeocode(lat, lng);
+    
+    // Ouvrir le modal
+    openModal('addCityModal');
+    
+    showToast('Recherche du nom de la ville en cours...', 'info');
+}
+
+// Annuler le marqueur temporaire
+function cancelTempMarker() {
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+        tempMarker = null;
+    }
+    showToast('Marqueur supprimé', 'info');
+}
+
+// Géocodage inversé (coordonnées → nom de ville)
+function reverseGeocode(lat, lng) {
+    const loadingMsg = showToast('🔍 Recherche du nom de la ville...', 'info', 0);
+    
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`, {
+        headers: {
+            'Accept-Language': 'fr'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Supprimer le message de loading
+        if (loadingMsg) loadingMsg.remove();
+        
+        if (data && data.address) {
+            const address = data.address;
+            
+            // Extraire le nom de la ville (plusieurs possibilités)
+            const cityName = address.city || address.town || address.village || address.municipality || address.county || 'Ville inconnue';
+            const region = address.state || address.region || address.province || '';
+            const country = address.country || '';
+            const countryCode = address.country_code ? address.country_code.toUpperCase() : 'CD';
+            
+            // Remplir le formulaire
+            document.getElementById('cityNameInput').value = cityName;
+            document.getElementById('cityRegionInput').value = region;
+            document.getElementById('worldCountrySelect').value = countryCode;
+            document.getElementById('countryName').value = country;
+            
+            // Activer le bouton submit
+            document.getElementById('submitCityBtn').disabled = false;
+            
+            // Afficher l'aperçu
+            document.getElementById('cityPreviewFlag').textContent = getCountryFlag(countryCode);
+            document.getElementById('cityPreviewName').textContent = cityName;
+            document.getElementById('cityPreviewLocation').textContent = `${region ? region + ', ' : ''}${country}`;
+            document.getElementById('cityPreviewCoords').textContent = `📍 ${lat.toFixed(6)}°, ${lng.toFixed(6)}°`;
+            document.getElementById('cityPreview').classList.remove('hidden');
+            
+            showToast(`✅ Ville trouvée : ${cityName}`, 'success');
+        } else {
+            showToast('⚠️ Lieu trouvé mais pas de ville identifiée. Entrez le nom manuellement.', 'warning');
+            document.getElementById('cityNameInput').value = '';
+            document.getElementById('cityNameInput').readOnly = false;
+            document.getElementById('cityNameInput').focus();
+        }
+    })
+    .catch(error => {
+        console.error('Erreur géocodage inversé:', error);
+        if (loadingMsg) loadingMsg.remove();
+        showToast('❌ Erreur lors de la recherche. Entrez le nom manuellement.', 'error');
+        document.getElementById('cityNameInput').readOnly = false;
+        document.getElementById('cityNameInput').focus();
+    });
+}
+
+// Fonction helper pour afficher des toasts
+function showToast(message, type = 'info', duration = 3000) {
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        warning: 'bg-orange-500',
+        info: 'bg-blue-500'
+    };
+    
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3 animate-slide-up`;
+    toast.style.animation = 'slideUp 0.3s ease-out';
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.style.animation = 'slideDown 0.3s ease-out';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+    
+    return toast;
+}
+
+// Visualiser la ville sur la carte principale
+function viewOnMap() {
+    const lat = parseFloat(document.getElementById('cityLatitudeInput').value);
+    const lng = parseFloat(document.getElementById('cityLongitudeInput').value);
+    
+    if (lat && lng) {
+        // Fermer le modal
+        closeModal('addCityModal');
+        
+        // Centrer la carte sur les coordonnées
+        map.setView([lat, lng], 12);
+        
+        // Ajouter un marqueur temporaire si pas déjà présent
+        if (!tempMarker) {
+            const blueIcon = L.divIcon({
+                className: 'custom-location-icon temp-marker',
+                html: `<div style="
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <i class="fas fa-map-marker-alt" style="
+                        font-size: 36px;
+                        color: #3b82f6;
+                        filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+                        -webkit-filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+                        animation: pulse 1.5s infinite;
+                    "></i>
+                    <div style="
+                        position: absolute;
+                        top: 9px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        width: 14px;
+                        height: 14px;
+                        background-color: white;
+                        border-radius: 50%;
+                        border: 2px solid #3b82f6;
+                        animation: pulse 1.5s infinite;
+                    "></div>
+                </div>`,
+                iconSize: [36, 44],
+                iconAnchor: [18, 44],
+                popupAnchor: [0, -44]
+            });
+            
+            tempMarker = L.marker([lat, lng], { icon: blueIcon }).addTo(map);
+        }
+        
+        showToast('📍 Position affichée sur la carte', 'info');
+    }
+}
+
+// Afficher l'aide de la carte
+function showMapHelp() {
+    const helpHTML = `
+        <div style="max-width: 500px;">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">
+                <i class="fas fa-info-circle text-purple-600"></i>
+                Guide d'utilisation de la carte
+            </h3>
+            
+            <div style="background: #f9fafb; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #374151;">
+                    🎯 Mode Marquage
+                </h4>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 13px; color: #6b7280;">
+                    <li style="margin-bottom: 6px;">
+                        <strong>1.</strong> Cliquez sur "Ajouter ville par clic" ou appuyez sur <kbd style="background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-family: monospace;">M</kbd>
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                        <strong>2.</strong> Cliquez sur la carte à l'emplacement souhaité
+                    </li>
+                    <li style="margin-bottom: 6px;">
+                        <strong>3.</strong> Le système recherche automatiquement le nom de la ville
+                    </li>
+                    <li>
+                        <strong>4.</strong> Validez et sauvegardez la nouvelle ville
+                    </li>
+                </ul>
+            </div>
+            
+            <div style="background: #eff6ff; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px; color: #1e40af;">
+                    ⌨️ Raccourcis clavier
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Activer/Désactiver mode marquage</span>
+                        <kbd style="background: #e5e7eb; padding: 2px 8px; border-radius: 4px; font-family: monospace;">M</kbd>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Annuler le mode marquage</span>
+                        <kbd style="background: #e5e7eb; padding: 2px 8px; border-radius: 4px; font-family: monospace;">Escape</kbd>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 12px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                <p style="margin: 0; font-size: 12px; color: #92400e;">
+                    <i class="fas fa-lightbulb" style="color: #f59e0b;"></i>
+                    <strong>Astuce :</strong> Vous pouvez zoomer sur la carte (molette ou +/-) pour placer le marqueur avec plus de précision !
+                </p>
+            </div>
+            
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e5e7eb; text-align: center;">
+                <button onclick="this.closest('.leaflet-popup').remove(); enableMapMarkerMode();" 
+                        style="padding: 8px 16px; background: #8b5cf6; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                    <i class="fas fa-play"></i> Essayer maintenant
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Créer un popup au centre de la carte
+    const center = map.getCenter();
+    L.popup({
+        maxWidth: 550,
+        closeButton: true
+    })
+    .setLatLng(center)
+    .setContent(helpHTML)
+    .openOn(map);
 }
 
 // ========================================
@@ -1334,6 +1787,7 @@ function selectCity(cityData) {
 function resetCityForm() {
     selectedCityData = null;
     document.getElementById('cityNameInput').value = '';
+    document.getElementById('cityNameInput').readOnly = true;
     document.getElementById('cityRegionInput').value = '';
     document.getElementById('cityLatitudeInput').value = '';
     document.getElementById('cityLongitudeInput').value = '';
@@ -1351,6 +1805,76 @@ document.addEventListener('click', function(e) {
     }
 });
 
+// ========================================
+// 📝 GESTION SOUMISSION FORMULAIRE VILLE
+// ========================================
+
+// Gérer la soumission du formulaire de ville via AJAX
+function handleCityFormSubmit(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    const submitBtn = document.getElementById('submitCityBtn');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    // Désactiver le bouton et afficher un loader
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Ajout en cours...';
+    
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Ajouter la ville sur la carte immédiatement
+            if (data.city && data.city.latitude && data.city.longitude) {
+                addCityMarkerToMap(data.city);
+                
+                // Centrer la carte sur la nouvelle ville
+                map.setView([data.city.latitude, data.city.longitude], 10);
+                
+                showToast(`✅ Ville "${data.city.name}" ajoutée avec succès !`, 'success', 4000);
+            }
+            
+            // Fermer le modal
+            closeModal('addCityModal');
+            
+            // Réinitialiser le formulaire
+            form.reset();
+            resetCityForm();
+            
+            // Mettre à jour le compteur de villes
+            const cityCount = document.getElementById('map-city-count');
+            if (cityCount) {
+                cityCount.textContent = parseInt(cityCount.textContent) + 1;
+            }
+            
+            // Recharger la page après 2 secondes pour mettre à jour la liste
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showToast('❌ Erreur: ' + (data.message || 'Impossible d\'ajouter la ville'), 'error');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showToast('❌ Erreur lors de l\'ajout de la ville', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnText;
+    });
+    
+    return false;
+}
+
 // Initialiser la carte au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser la carte Leaflet
@@ -1361,6 +1885,28 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 🌍 Setup autocomplete ville
     setupCitySearch();
+    
+    // 🎯 Raccourcis clavier pour le mode marquage
+    document.addEventListener('keydown', function(e) {
+        // Touche "M" pour activer/désactiver le mode marquage
+        if (e.key === 'm' || e.key === 'M') {
+            // Vérifier qu'on n'est pas dans un input
+            if (document.activeElement.tagName !== 'INPUT' && 
+                document.activeElement.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                if (mapMarkerMode) {
+                    disableMapMarkerMode();
+                } else {
+                    enableMapMarkerMode();
+                }
+            }
+        }
+        
+        // Touche "Escape" pour désactiver le mode marquage
+        if (e.key === 'Escape' && mapMarkerMode) {
+            disableMapMarkerMode();
+        }
+    });
     
     // Surveiller les changements de coordonnées
     const latInput = document.getElementById('cityLatitude');
@@ -1522,6 +2068,76 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     .marker-inactive {
         background-color: #ef4444;
+    }
+    
+    /* Style pour les icônes de localisation personnalisées */
+    .custom-location-icon {
+        background: transparent !important;
+        border: none !important;
+    }
+    
+    /* Animation pour les icônes de localisation */
+    .custom-location-icon i {
+        transition: transform 0.2s ease;
+    }
+    
+    .custom-location-icon:hover i {
+        transform: scale(1.1);
+    }
+    
+    /* Style pour le marqueur temporaire */
+    .temp-marker i {
+        animation: bounce 1.5s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+    
+    /* Animations pour les toasts */
+    @keyframes slideUp {
+        from {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideDown {
+        from {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateY(100%);
+            opacity: 0;
+        }
+    }
+    
+    /* Animation pulse pour le marqueur temporaire */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(59, 130, 246, 0.7);
+        }
+        50% {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 8px rgba(59, 130, 246, 0);
+        }
+        100% {
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4), 0 0 0 0 rgba(59, 130, 246, 0);
+        }
+    }
+    
+    /* Curseur crosshair pour le mode marquage */
+    #map.marker-mode {
+        cursor: crosshair !important;
     }
 </style>
 @endpush

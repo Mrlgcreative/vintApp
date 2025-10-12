@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ThemeController;
+use App\Http\Controllers\NewsletterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WelcomeController;
@@ -15,6 +16,16 @@ use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('home');
+
+// Routes Newsletter publiques
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+Route::get('/newsletter/preferences/{token}', [NewsletterController::class, 'preferences'])->name('newsletter.preferences');
+Route::put('/newsletter/preferences/{token}', [NewsletterController::class, 'updatePreferences'])->name('newsletter.preferences.update');
+Route::get('/newsletter/verify/{token}', [NewsletterController::class, 'verify'])->name('newsletter.verify');
+Route::get('/newsletter/track/open/{token}', [NewsletterController::class, 'trackOpen'])->name('newsletter.track.open');
+Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
+Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 
 Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
@@ -258,6 +269,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
             Route::post('/{slide}/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleHeroSlide'])->name('toggle');
             Route::post('/reorder', [App\Http\Controllers\Admin\AdminController::class, 'reorderHeroSlides'])->name('reorder');
         });
+        
+        // Routes pour la Newsletter
+        Route::prefix('newsletter')->name('newsletter.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'newsletterSubscribers'])->name('subscribers');
+            Route::get('/send', [App\Http\Controllers\Admin\AdminController::class, 'sendNewsletter'])->name('send');
+            Route::post('/send', [App\Http\Controllers\Admin\AdminController::class, 'processSendNewsletter'])->name('process');
+            Route::delete('/{id}', [App\Http\Controllers\Admin\AdminController::class, 'deleteNewsletterSubscriber'])->name('delete');
+            Route::post('/{id}/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleNewsletterSubscriber'])->name('toggle');
+            Route::get('/export', [App\Http\Controllers\Admin\AdminController::class, 'exportNewsletterSubscribers'])->name('export');
+        });
     });
 
     // API pour notifications
@@ -357,6 +378,16 @@ Route::prefix('cart')->group(function () {
     Route::get('/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
     Route::get('/pay', [CartController::class, 'pay'])->name('cart.pay');
     Route::get('/buy/{id}', [App\Http\Controllers\ItemController::class, 'buy'])->name('cart.buy');
+});
+
+// Routes pour les adresses de livraison
+Route::middleware(['auth'])->prefix('delivery-address')->name('delivery.')->group(function () {
+    Route::post('/', [App\Http\Controllers\UserController::class, 'saveDeliveryAddress'])->name('save');
+    Route::get('/', [App\Http\Controllers\UserController::class, 'getDeliveryAddresses'])->name('list');
+    Route::get('/default', [App\Http\Controllers\UserController::class, 'getDefaultDeliveryAddress'])->name('default');
+    Route::put('/{id}', [App\Http\Controllers\UserController::class, 'updateDeliveryAddress'])->name('update');
+    Route::post('/{id}/set-default', [App\Http\Controllers\UserController::class, 'setDefaultDeliveryAddress'])->name('set-default');
+    Route::delete('/{id}', [App\Http\Controllers\UserController::class, 'deleteDeliveryAddress'])->name('delete');
 });
 
 // Routes Taux de change (PUBLIC - pas d'auth nécessaire pour consulter le taux)

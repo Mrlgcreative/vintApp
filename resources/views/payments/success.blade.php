@@ -25,11 +25,23 @@
                         <!-- Montant en grand -->
                         <div class="amount-highlight mb-4">
                             <div class="display-4 fw-bold text-primary">
-                                {{ number_format($transaction->amount, 2) }} USD
+                                {{ number_format($transaction->amount, 2) }} {{ $transaction->currency ?? 'USD' }}
                             </div>
-                            <div class="text-muted">
-                                {{ number_format($transaction->amount * 2450, 0) }} CDF
-                            </div>
+                            @if(isset($transaction->currency))
+                                @if($transaction->currency === 'USD')
+                                    <div class="text-muted">
+                                        Environ {{ number_format($transaction->amount * 2650, 0) }} CDF
+                                    </div>
+                                @elseif($transaction->currency === 'CDF')
+                                    <div class="text-muted">
+                                        Environ {{ number_format($transaction->amount / 2650, 2) }} USD
+                                    </div>
+                                @endif
+                            @else
+                                <div class="text-muted">
+                                    {{ number_format($transaction->amount * 2650, 0) }} CDF
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- Détails de la transaction -->

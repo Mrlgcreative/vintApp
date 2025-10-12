@@ -65,6 +65,25 @@ class LocationAccessController extends Controller
         // Vider le cache
         Cache::flush();
 
+        // Retourner JSON si c'est une requête AJAX
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "La ville {$city->name} ({$city->country}) a été ajoutée avec succès.",
+                'city' => [
+                    'id' => $city->id,
+                    'name' => $city->name,
+                    'country' => $city->country,
+                    'country_code' => $city->country_code,
+                    'region' => $city->region,
+                    'latitude' => $city->latitude,
+                    'longitude' => $city->longitude,
+                    'population' => $city->population,
+                    'is_active' => $city->is_active,
+                ]
+            ]);
+        }
+
         return redirect()->route('admin.locations.index')
             ->with('success', "La ville {$city->name} ({$city->country}) a été ajoutée avec succès.");
     }
@@ -125,7 +144,18 @@ class LocationAccessController extends Controller
         return response()->json([
             'success' => true,
             'is_active' => $city->is_active,
-            'message' => $city->is_active ? "Ville activée" : "Ville désactivée"
+            'message' => $city->is_active ? "Ville activée" : "Ville désactivée",
+            'city' => [
+                'id' => $city->id,
+                'name' => $city->name,
+                'country' => $city->country,
+                'country_code' => $city->country_code,
+                'region' => $city->region,
+                'latitude' => $city->latitude,
+                'longitude' => $city->longitude,
+                'population' => $city->population,
+                'is_active' => $city->is_active,
+            ]
         ]);
     }
 

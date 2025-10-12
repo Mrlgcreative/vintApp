@@ -112,10 +112,30 @@ class CartController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
-        $total = collect($cart)->sum(function($item) {
+        
+        // Calculer le sous-total
+        $subtotal = collect($cart)->sum(function($item) {
             return $item['price'] * $item['quantity'];
         });
-        return view('checkout', ['cart' => $cart, 'total' => $total]);
+        
+        // Récupérer le pourcentage des frais de transport depuis les settings
+        $transportFeePercentage = \DB::table('settings')
+            ->where('key', 'transport_fee_percentage')
+            ->value('value') ?? 5;
+        
+        // Calculer les frais de transport
+        $transportFee = ($subtotal * $transportFeePercentage) / 100;
+        
+        // Calculer le total
+        $total = $subtotal + $transportFee;
+        
+        return view('checkout', [
+            'cart' => $cart, 
+            'subtotal' => $subtotal,
+            'transportFee' => $transportFee,
+            'transportFeePercentage' => $transportFeePercentage,
+            'total' => $total
+        ]);
     }
 
     // Page de paiement mobile avec pré-remplissage
@@ -125,9 +145,29 @@ class CartController extends Controller
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
-        $total = collect($cart)->sum(function($item) {
+        
+        // Calculer le sous-total
+        $subtotal = collect($cart)->sum(function($item) {
             return $item['price'] * $item['quantity'];
         });
-        return view('payments', ['cart' => $cart, 'total' => $total]);
+        
+        // Récupérer le pourcentage des frais de transport depuis les settings
+        $transportFeePercentage = \DB::table('settings')
+            ->where('key', 'transport_fee_percentage')
+            ->value('value') ?? 5;
+        
+        // Calculer les frais de transport
+        $transportFee = ($subtotal * $transportFeePercentage) / 100;
+        
+        // Calculer le total
+        $total = $subtotal + $transportFee;
+        
+        return view('payments', [
+            'cart' => $cart, 
+            'subtotal' => $subtotal,
+            'transportFee' => $transportFee,
+            'transportFeePercentage' => $transportFeePercentage,
+            'total' => $total
+        ]);
     }
 }
