@@ -21,49 +21,53 @@ function showNotification(message, type = 'primary') {
         toast.show();
 }
 </script>
-@extends('app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="home-container">
   
     <!-- Hero Carrousel -->
-    @if(isset($heroSlides) && $heroSlides->count() > 0)
+    <?php if(isset($heroSlides) && $heroSlides->count() > 0): ?>
         <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000">
             <!-- Indicateurs -->
             <div class="carousel-indicators">
-                @foreach($heroSlides as $index => $slide)
-                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}" aria-current="{{ $index === 0 ? 'true' : 'false' }}" aria-label="Slide {{ $index + 1 }}"></button>
-                @endforeach
+                <?php $__currentLoopData = $heroSlides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?php echo e($index); ?>" class="<?php echo e($index === 0 ? 'active' : ''); ?>" aria-current="<?php echo e($index === 0 ? 'true' : 'false'); ?>" aria-label="Slide <?php echo e($index + 1); ?>"></button>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Slides -->
             <div class="carousel-inner">
-                @foreach($heroSlides as $index => $slide)
-                    <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="hero-slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ Storage::url($slide->image_path) }}'); background-size: cover; background-position: center;">
+                <?php $__currentLoopData = $heroSlides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="carousel-item <?php echo e($index === 0 ? 'active' : ''); ?>">
+                        <div class="hero-slide" style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('<?php echo e(Storage::url($slide->image_path)); ?>'); background-size: cover; background-position: center;">
                             <div class="container h-100">
                                 <div class="row align-items-center h-100">
                                     <div class="col-lg-8 col-xl-7">
                                         <div class="hero-content" data-aos="fade-up">
                                             <h1 class="display-3 fw-bold text-white mb-4 hero-title">
-                                                {{ $slide->title }}
+                                                <?php echo e($slide->title); ?>
+
                                             </h1>
-                                            @if($slide->subtitle)
+                                            <?php if($slide->subtitle): ?>
                                                 <p class="lead text-white mb-4 hero-subtitle">
-                                                    {{ $slide->subtitle }}
+                                                    <?php echo e($slide->subtitle); ?>
+
                                                 </p>
-                                            @endif
+                                            <?php endif; ?>
                                             <div class="d-flex gap-3 flex-wrap">
-                                                @if($slide->button_primary_text && $slide->button_primary_url)
-                                                    <a href="{{ $slide->button_primary_url }}" class="btn btn-light btn-lg banner-action-btn">
-                                                        <i class="fas fa-arrow-right me-2"></i>{{ $slide->button_primary_text }}
+                                                <?php if($slide->button_primary_text && $slide->button_primary_url): ?>
+                                                    <a href="<?php echo e($slide->button_primary_url); ?>" class="btn btn-light btn-lg banner-action-btn">
+                                                        <i class="fas fa-arrow-right me-2"></i><?php echo e($slide->button_primary_text); ?>
+
                                                     </a>
-                                                @endif
-                                                @if($slide->button_secondary_text && $slide->button_secondary_url)
-                                                    <a href="{{ $slide->button_secondary_url }}" class="btn btn-outline-light btn-lg banner-action-btn">
-                                                        <i class="fas fa-search me-2"></i>{{ $slide->button_secondary_text }}
+                                                <?php endif; ?>
+                                                <?php if($slide->button_secondary_text && $slide->button_secondary_url): ?>
+                                                    <a href="<?php echo e($slide->button_secondary_url); ?>" class="btn btn-outline-light btn-lg banner-action-btn">
+                                                        <i class="fas fa-search me-2"></i><?php echo e($slide->button_secondary_text); ?>
+
                                                     </a>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -71,11 +75,11 @@ function showNotification(message, type = 'primary') {
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Contrôles -->
-            @if($heroSlides->count() > 1)
+            <?php if($heroSlides->count() > 1): ?>
                 <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Précédent</span>
@@ -84,33 +88,37 @@ function showNotification(message, type = 'primary') {
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Suivant</span>
                 </button>
-            @endif
+            <?php endif; ?>
         </div>
-    @else
+    <?php else: ?>
         <!-- Fallback si aucun slide n'existe -->
-        <div class="hero-banner" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ $heroSettings['image'] ?? '' }}'); background-size: cover; background-position: center; background-attachment: fixed;">
+        <div class="hero-banner" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('<?php echo e($heroSettings['image'] ?? ''); ?>'); background-size: cover; background-position: center; background-attachment: fixed;">
             <div class="banner-overlay">
                 <div class="container">
                     <div class="row align-items-center min-vh-50">
                         <div class="col-lg-6">
                             <h1 class="display-4 fw-bold text-white mb-4">
-                                {{ $heroSettings['title'] ?? 'Bienvenue sur VintApp' }}
+                                <?php echo e($heroSettings['title'] ?? 'Bienvenue sur VintApp'); ?>
+
                             </h1>
                             <p class="lead text-white mb-4">
-                                {{ $heroSettings['subtitle'] ?? 'La marketplace de confiance' }}
+                                <?php echo e($heroSettings['subtitle'] ?? 'La marketplace de confiance'); ?>
+
                             </p>
                             <div class="d-flex gap-3">
-                                @auth
-                                    <a href="{{ route('items.create') }}" class="btn btn-light btn-sm banner-action-btn">
-                                        <i class="fas fa-plus me-1"></i>{{ $heroSettings['button_primary'] ?? 'Vendre' }}
+                                <?php if(auth()->guard()->check()): ?>
+                                    <a href="<?php echo e(route('items.create')); ?>" class="btn btn-light btn-sm banner-action-btn">
+                                        <i class="fas fa-plus me-1"></i><?php echo e($heroSettings['button_primary'] ?? 'Vendre'); ?>
+
                                     </a>
-                                @else
-                                    <a href="{{ route('register') }}" class="btn btn-light btn-sm banner-action-btn">
+                                <?php else: ?>
+                                    <a href="<?php echo e(route('register')); ?>" class="btn btn-light btn-sm banner-action-btn">
                                         <i class="fas fa-user-plus me-1"></i>Commencer
                                     </a>
-                                @endauth
-                                <a href="{{ route('items.index') }}" class="btn btn-outline-light btn-sm banner-action-btn">
-                                    <i class="fas fa-search me-1"></i>{{ $heroSettings['button_secondary'] ?? 'Explorer' }}
+                                <?php endif; ?>
+                                <a href="<?php echo e(route('items.index')); ?>" class="btn btn-outline-light btn-sm banner-action-btn">
+                                    <i class="fas fa-search me-1"></i><?php echo e($heroSettings['button_secondary'] ?? 'Explorer'); ?>
+
                                 </a>
                             </div>
                         </div>
@@ -118,7 +126,7 @@ function showNotification(message, type = 'primary') {
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Catégories d'articles -->
     <section class="categories-section py-5">
@@ -128,19 +136,19 @@ function showNotification(message, type = 'primary') {
                 Catégories populaires
             </h2>
             <div class="row g-4">
-                @foreach($categories as $category)
+                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="col-md-3 col-sm-6">
-                    <a href="{{ route('items.index', ['category' => $category->id]) }}" class="text-decoration-none">
+                    <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" class="text-decoration-none">
                         <div class="category-card">
                             <div class="category-icon">
-                                <i class="fas fa-{{ $category->icon ?? 'tag' }} fa-2x text-violet"></i>
+                                <i class="fas fa-<?php echo e($category->icon ?? 'tag'); ?> fa-2x text-violet"></i>
                             </div>
-                            <h5 class="category-title">{{ $category->name }}</h5>
-                            <p class="category-count">{{ $category->items_count ?? 0 }} articles</p>
+                            <h5 class="category-title"><?php echo e($category->name); ?></h5>
+                            <p class="category-count"><?php echo e($category->items_count ?? 0); ?> articles</p>
                         </div>
                     </a>
                 </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
     </section>
@@ -153,58 +161,58 @@ function showNotification(message, type = 'primary') {
                     <i class="fas fa-newspaper me-2 text-violet"></i>
                     Derniers articles
                 </h2>
-                <a href="{{ route('items.index') }}" class="btn btn-outline-violet">
+                <a href="<?php echo e(route('items.index')); ?>" class="btn btn-outline-violet">
                     Voir tout <i class="fas fa-arrow-right ms-1"></i>
                 </a>
             </div>
             
             <div class="row g-4">
-                @forelse($latestItems as $item)
+                <?php $__empty_1 = true; $__currentLoopData = $latestItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="col-lg-3 col-md-4 col-sm-6">
                     <div class="article-card">
                         <div class="article-image">
-                            @php
+                            <?php
                                 $imgPath = ($item->images && count($item->images) > 0) ? $item->images[0] : null;
-                            @endphp
-                            @if($imgPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($imgPath))
-                                <img src="{{ Storage::url($imgPath) }}" alt="{{ $item->name }}" class="img-fluid">
-                            @else
+                            ?>
+                            <?php if($imgPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($imgPath)): ?>
+                                <img src="<?php echo e(Storage::url($imgPath)); ?>" alt="<?php echo e($item->name); ?>" class="img-fluid">
+                            <?php else: ?>
                                 <div class="no-image">
                                     <i class="fas fa-image fa-2x text-muted"></i>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                             <div class="article-price">
-                                <span class="price-tag">{{ number_format($item->price) }} {{ $item->currency }}</span>
+                                <span class="price-tag"><?php echo e(number_format($item->price)); ?> <?php echo e($item->currency); ?></span>
                             </div>
                         </div>
                         <div class="article-content">
-                            <h6 class="article-title">{{ Str::limit($item->name, 50) }}</h6>
-                            <p class="article-description">{{ Str::limit($item->description, 80) }}</p>
-                            <h6 class="article-title">{{ Str::limit($item->price, 50) }} {{ $item->currency }}</h6>
+                            <h6 class="article-title"><?php echo e(Str::limit($item->name, 50)); ?></h6>
+                            <p class="article-description"><?php echo e(Str::limit($item->description, 80)); ?></p>
+                            <h6 class="article-title"><?php echo e(Str::limit($item->price, 50)); ?> <?php echo e($item->currency); ?></h6>
                             <div class="article-meta">
-                                <span class="badge bg-violet-light">{{ $item->condition }}</span>
-                                <small class="text-muted">{{ $item->created_at->diffForHumans() }}</small>
+                                <span class="badge bg-violet-light"><?php echo e($item->condition); ?></span>
+                                <small class="text-muted"><?php echo e($item->created_at->diffForHumans()); ?></small>
                             </div>
                         </div>
-                        <a href="{{ route('items.show', $item) }}" class="stretched-link"></a>
+                        <a href="<?php echo e(route('items.show', $item)); ?>" class="stretched-link"></a>
                     </div>
                 </div>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div class="col-12 text-center py-5">
                     <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
                     <h4 class="text-muted">Aucun article disponible</h4>
                     <p class="text-muted">Soyez le premier à publier un article !</p>
-                    @auth
-                        <a href="{{ route('items.create') }}" class="btn btn-violet">
+                    <?php if(auth()->guard()->check()): ?>
+                        <a href="<?php echo e(route('items.create')); ?>" class="btn btn-violet">
                             <i class="fas fa-plus me-2"></i>Publier un article
                         </a>
-                    @else
-                        <a href="{{ route('register') }}" class="btn btn-violet">
+                    <?php else: ?>
+                        <a href="<?php echo e(route('register')); ?>" class="btn btn-violet">
                             <i class="fas fa-user-plus me-2"></i>Rejoindre VintApp
                         </a>
-                    @endauth
+                    <?php endif; ?>
                 </div>
-                @endforelse
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -574,4 +582,5 @@ function showNotification(message, type = 'primary') {
     }
 }
 </style>
-@endsection 
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/home.blade.php ENDPATH**/ ?>

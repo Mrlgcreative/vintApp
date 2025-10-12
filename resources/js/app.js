@@ -3,6 +3,9 @@
 // Import des styles CSS
 import '../css/app.css';
 
+// Import de Laravel Echo et Pusher (pour les notifications temps réel)
+import './bootstrap';
+
 // Utilitaires de performance
 const Utils = {
     // Debounce pour limiter les appels fréquents

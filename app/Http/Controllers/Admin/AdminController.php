@@ -2270,4 +2270,172 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Affiche la liste des Hero Slides
+     */
+    public function heroSlides()
+    {
+        $slides = \App\Models\HeroSlide::ordered()->get();
+        
+        return view('admin.settings.hero-slides', compact('slides'));
+    }
+
+    /**
+     * Crée un nouveau Hero Slide
+     */
+    public function storeHeroSlide(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            'button_primary_text' => 'nullable|string|max:100',
+            'button_primary_url' => 'nullable|string|max:255',
+            'button_secondary_text' => 'nullable|string|max:100',
+            'button_secondary_url' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        try {
+            // Upload de l'image
+            $imagePath = $request->file('image')->store('hero-slides', 'public');
+
+            // Récupérer l'ordre le plus élevé
+            $maxOrder = \App\Models\HeroSlide::max('order') ?? 0;
+
+            \App\Models\HeroSlide::create([
+                'title' => $validated['title'],
+                'subtitle' => $validated['subtitle'] ?? null,
+                'image_path' => $imagePath,
+                'button_primary_text' => $validated['button_primary_text'] ?? null,
+                'button_primary_url' => $validated['button_primary_url'] ?? null,
+                'button_secondary_text' => $validated['button_secondary_text'] ?? null,
+                'button_secondary_url' => $validated['button_secondary_url'] ?? null,
+                'order' => $maxOrder + 1,
+                'is_active' => $validated['is_active'] ?? true,
+            ]);
+
+            return redirect()->back()->with('success', 'Slide ajoutée avec succès !');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création du slide: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la création du slide: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Met à jour un Hero Slide
+     */
+    public function updateHeroSlide(Request $request, $slideId)
+    {
+        $slide = \App\Models\HeroSlide::findOrFail($slideId);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:500',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'button_primary_text' => 'nullable|string|max:100',
+            'button_primary_url' => 'nullable|string|max:255',
+            'button_secondary_text' => 'nullable|string|max:100',
+            'button_secondary_url' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+        ]);
+
+        try {
+            $data = [
+                'title' => $validated['title'],
+                'subtitle' => $validated['subtitle'] ?? null,
+                'button_primary_text' => $validated['button_primary_text'] ?? null,
+                'button_primary_url' => $validated['button_primary_url'] ?? null,
+                'button_secondary_text' => $validated['button_secondary_text'] ?? null,
+                'button_secondary_url' => $validated['button_secondary_url'] ?? null,
+                'is_active' => $validated['is_active'] ?? $slide->is_active,
+            ];
+
+            // Si une nouvelle image est uploadée
+            if ($request->hasFile('image')) {
+                // Supprimer l'ancienne image
+                if ($slide->image_path && Storage::disk('public')->exists($slide->image_path)) {
+                    Storage::disk('public')->delete($slide->image_path);
+                }
+                
+                $data['image_path'] = $request->file('image')->store('hero-slides', 'public');
+            }
+
+            $slide->update($data);
+
+            return redirect()->back()->with('success', 'Slide mise à jour avec succès !');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la mise à jour du slide: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la mise à jour du slide: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Supprime un Hero Slide
+     */
+    public function destroyHeroSlide($slideId)
+    {
+        try {
+            $slide = \App\Models\HeroSlide::findOrFail($slideId);
+
+            // Supprimer l'image
+            if ($slide->image_path && Storage::disk('public')->exists($slide->image_path)) {
+                Storage::disk('public')->delete($slide->image_path);
+            }
+
+            $slide->delete();
+
+            return redirect()->back()->with('success', 'Slide supprimée avec succès !');
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression du slide: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la suppression du slide: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Active/Désactive un Hero Slide
+     */
+    public function toggleHeroSlide($slideId)
+    {
+        try {
+            $slide = \App\Models\HeroSlide::findOrFail($slideId);
+            $slide->is_active = !$slide->is_active;
+            $slide->save();
+
+            $status = $slide->is_active ? 'activée' : 'désactivée';
+            return redirect()->back()->with('success', "Slide {$status} avec succès !");
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du toggle du slide: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Erreur lors de la modification du slide');
+        }
+    }
+
+    /**
+     * Réordonne les Hero Slides
+     */
+    public function reorderHeroSlides(Request $request)
+    {
+        $validated = $request->validate([
+            'order' => 'required|array',
+            'order.*' => 'required|integer|exists:hero_slides,id',
+        ]);
+
+        try {
+            foreach ($validated['order'] as $index => $slideId) {
+                \App\Models\HeroSlide::where('id', $slideId)->update(['order' => $index + 1]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ordre mis à jour avec succès !',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors du réordonnancement des slides: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour de l\'ordre',
+            ], 500);
+        }
+    }
 }

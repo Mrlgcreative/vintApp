@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Setting;
+use App\Models\HeroSlide;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
@@ -27,7 +28,10 @@ class WelcomeController extends Controller
             'categories' => \App\Models\Category::where('is_active', true)->count(),
         ];
 
-        // Paramètres du Hero
+        // Récupérer les slides du carrousel actives
+        $heroSlides = HeroSlide::active()->ordered()->get();
+
+        // Paramètres du Hero (fallback si pas de slides)
         $heroSettings = [
             'title' => Setting::get('hero_title', 'Découvrez des articles uniques'),
             'subtitle' => Setting::get('hero_subtitle', 'La marketplace moderne pour acheter et vendre en toute sécurité.'),
@@ -36,6 +40,6 @@ class WelcomeController extends Controller
             'button_secondary' => Setting::get('hero_button_secondary_text', 'Parcourir'),
         ];
 
-        return view('home', compact('categories', 'latestItems', 'stats', 'heroSettings'));
+        return view('home', compact('categories', 'latestItems', 'stats', 'heroSlides', 'heroSettings'));
     }
 } 

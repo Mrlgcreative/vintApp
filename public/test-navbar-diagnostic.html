@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 Test Navbar - Diagnostic Complet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 { color: #4f00ce; margin-top: 0; }
+        h2 { color: #6f42c1; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        .result { 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background: #4f00ce;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover { background: #6f00ee; }
+        code {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #e83e8c;
+        }
+        .console {
+            background: #1e1e1e;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .checklist {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #4f00ce;
+            margin: 15px 0;
+        }
+        .checklist li {
+            margin: 8px 0;
+        }
+        .status-ok { color: #28a745; }
+        .status-warning { color: #ffc107; }
+        .status-error { color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔧 Diagnostic Navbar VintApp</h1>
+        <p>Ce test vérifie pourquoi la navbar ne s'affiche pas correctement sur mobile en mode desktop.</p>
+        
+        <div class="test-grid">
+            <div>
+                <h2>📊 Informations Système</h2>
+                <div id="system-info"></div>
+            </div>
+            
+            <div>
+                <h2>🎯 Tests de Media Query</h2>
+                <div id="media-query-results"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🧪 Tests Interactifs</h2>
+            <button onclick="runCompleteTest()">🚀 Test Complet</button>
+            <button onclick="testNavbarForce()">💪 Forcer Navbar</button>
+            <button onclick="testBootstrap()">📦 Test Bootstrap</button>
+            <button onclick="clearConsole()">🗑️ Effacer Console</button>
+            
+            <div class="console" id="console-output"></div>
+        </div>
+        
+        <div class="card">
+            <h2>✅ Checklist Correction</h2>
+            <div class="checklist">
+                <h4>Vérifications à effectuer :</h4>
+                <ul>
+                    <li>✅ Cache Laravel vidé (<code>php artisan view:clear</code>)</li>
+                    <li>✅ Assets recompilés (<code>npm run build</code>)</li>
+                    <li>✅ Media queries corrigées (tactile + largeur)</li>
+                    <li>✅ Script de débogage ajouté</li>
+                    <li>🔄 Test sur mobile mode desktop</li>
+                    <li>🔄 Test sur ordinateur</li>
+                    <li>🔄 Test du bouton toggle (tablettes)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>🔗 Liens de Test</h2>
+            <p><strong>Application principale :</strong> <a href="/" target="_blank">http://localhost:8000</a></p>
+            <p><strong>Dashboard :</strong> <a href="/dashboard" target="_blank">http://localhost:8000/dashboard</a></p>
+            <p><strong>Test notifications :</strong> <a href="/test-notifications" target="_blank">http://localhost:8000/test-notifications</a></p>
+        </div>
+    </div>
+
+    <script>
+        let consoleDiv = document.getElementById('console-output');
+        
+        function addLog(message, type = 'info') {
+            const colors = {
+                info: '#00aaff',
+                success: '#00ff00',
+                warning: '#ffff00',
+                error: '#ff5555'
+            };
+            
+            const line = document.createElement('div');
+            line.style.color = colors[type] || '#00ff00';
+            line.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(line);
+            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+        }
+        
+        function clearConsole() {
+            consoleDiv.innerHTML = '';
+        }
+        
+        function updateSystemInfo() {
+            const systemInfo = document.getElementById('system-info');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const isMobile = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
+            const isTouch = 'ontouchstart' in window;
+            const zoom = Math.round(window.devicePixelRatio * 100);
+            
+            systemInfo.innerHTML = `
+                <div class="result info">
+                    <strong>📏 Résolution :</strong> ${width} × ${height} px<br>
+                    <strong>📱 Mobile UA :</strong> ${isMobile ? 'OUI' : 'NON'}<br>
+                    <strong>👆 Tactile :</strong> ${isTouch ? 'OUI' : 'NON'}<br>
+                    <strong>🔍 Zoom :</strong> ${zoom}%<br>
+                    <strong>🌐 Navigateur :</strong> ${navigator.userAgent.match(/Chrome|Firefox|Safari|Edge/)?.[0] || 'Inconnu'}
+                </div>
+            `;
+        }
+        
+        function updateMediaQueries() {
+            const mediaResults = document.getElementById('media-query-results');
+            const queries = [
+                { name: 'max-width: 767.98px', query: '(max-width: 767.98px)' },
+                { name: 'min-width: 768px', query: '(min-width: 768px)' },
+                { name: 'hover: none', query: '(hover: none)' },
+                { name: 'pointer: coarse', query: '(pointer: coarse)' },
+                { name: 'max-width: 991.98px', query: '(max-width: 991.98px)' }
+            ];
+            
+            let html = '';
+            queries.forEach(q => {
+                const matches = window.matchMedia(q.query).matches;
+                const status = matches ? 'success' : 'info';
+                const icon = matches ? '✅' : '❌';
+                html += `<div class="result ${status}">${icon} ${q.name}: ${matches ? 'ACTIF' : 'INACTIF'}</div>`;
+            });
+            
+            mediaResults.innerHTML = html;
+        }
+        
+        function runCompleteTest() {
+            clearConsole();
+            addLog('🚀 Démarrage du diagnostic complet...', 'info');
+            
+            // Test 1: Informations système
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            addLog(`📏 Résolution détectée: ${width} × ${height} px`, 'info');
+            
+            if (width < 768) {
+                addLog('⚠️ Largeur < 768px: Mode mobile détecté', 'warning');
+            } else {
+                addLog('✅ Largeur ≥ 768px: Mode desktop détecté', 'success');
+            }
+            
+            // Test 2: Media queries
+            const isTouchDevice = window.matchMedia('(hover: none)').matches;
+            const isCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+            
+            addLog(`👆 Appareil tactile (hover: none): ${isTouchDevice}`, isTouchDevice ? 'warning' : 'info');
+            addLog(`🖱️ Pointeur grossier (pointer: coarse): ${isCoarsePointer}`, isCoarsePointer ? 'warning' : 'info');
+            
+            // Test 3: Navbar
+            const navbar = document.querySelector('nav.top-navbar');
+            if (navbar) {
+                const styles = getComputedStyle(navbar);
+                addLog('🧭 Navbar trouvée dans le DOM', 'success');
+                addLog(`   Display: ${styles.display}`, styles.display === 'none' ? 'error' : 'success');
+                addLog(`   Visibility: ${styles.visibility}`, styles.visibility === 'hidden' ? 'error' : 'success');
+                addLog(`   Opacity: ${styles.opacity}`, parseFloat(styles.opacity) === 0 ? 'error' : 'success');
+            } else {
+                addLog('❌ Navbar NON trouvée dans le DOM', 'error');
+            }
+            
+            // Test 4: Bootstrap
+            if (typeof bootstrap !== 'undefined') {
+                addLog(`✅ Bootstrap chargé (version ${bootstrap.Alert?.VERSION || 'inconnue'})`, 'success');
+            } else {
+                addLog('❌ Bootstrap NON chargé', 'error');
+            }
+            
+            // Test 5: Navbar collapse
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse) {
+                const collapseStyles = getComputedStyle(navbarCollapse);
+                addLog('📋 Navbar-collapse trouvée', 'success');
+                addLog(`   Display: ${collapseStyles.display}`, collapseStyles.display === 'none' ? 'warning' : 'success');
+                addLog(`   Classes: ${navbarCollapse.className}`, 'info');
+            }
+            
+            // Diagnostic final
+            addLog('', 'info');
+            addLog('═══════════════════════════════════', 'info');
+            addLog('📋 DIAGNOSTIC FINAL', 'info');
+            addLog('═══════════════════════════════════', 'info');
+            
+            if (width >= 768 && navbar && getComputedStyle(navbar).display !== 'none') {
+                addLog('🎉 NAVBAR OK: Devrait être visible', 'success');
+            } else if (width >= 768 && (!navbar || getComputedStyle(navbar).display === 'none')) {
+                addLog('❌ PROBLÈME: Navbar cachée sur écran large', 'error');
+                addLog('   Solutions:', 'warning');
+                addLog('   1. Vider cache navigateur (Ctrl+Shift+R)', 'warning');
+                addLog('   2. Vérifier console erreurs (F12)', 'warning');
+                addLog('   3. Utiliser "Forcer Navbar" ci-dessous', 'warning');
+            } else if (width < 768 && isTouchDevice) {
+                addLog('📱 MODE MOBILE: Navbar cachée par design', 'info');
+                addLog('   → Utilisez la barre violette en haut + nav en bas', 'info');
+            } else {
+                addLog('🤔 CAS SPÉCIAL: Mode desktop sur mobile?', 'warning');
+                addLog('   → Essayez "Forcer Navbar"', 'warning');
+            }
+        }
+        
+        function testNavbarForce() {
+            addLog('💪 Tentative de forçage navbar...', 'warning');
+            
+            const navbar = document.querySelector('nav.top-navbar');
+            if (!navbar) {
+                addLog('❌ Navbar non trouvée', 'error');
+                return;
+            }
+            
+            // Forcer l'affichage
+            navbar.style.display = 'block';
+            navbar.style.visibility = 'visible';
+            navbar.style.opacity = '1';
+            
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            if (navbarCollapse && window.innerWidth >= 992) {
+                navbarCollapse.classList.add('show');
+                navbarCollapse.style.display = 'flex';
+                addLog('📋 Navbar-collapse forcée visible', 'success');
+            }
+            
+            // Masquer éléments mobiles
+            const mobileTopBar = document.getElementById('mobile-top-bar');
+            const mobileBottomNav = document.getElementById('mobile-bottom-nav');
+            
+            if (mobileTopBar) {
+                mobileTopBar.style.display = 'none';
+                addLog('📱 Barre mobile du haut masquée', 'success');
+            }
+            
+            if (mobileBottomNav) {
+                mobileBottomNav.style.display = 'none';
+                addLog('📱 Navigation mobile du bas masquée', 'success');
+            }
+            
+            addLog('✅ Forçage terminé - Vérifiez la navbar!', 'success');
+        }
+        
+        function testBootstrap() {
+            addLog('📦 Test des fonctionnalités Bootstrap...', 'info');
+            
+            if (typeof bootstrap === 'undefined') {
+                addLog('❌ Bootstrap non chargé', 'error');
+                return;
+            }
+            
+            addLog('✅ Bootstrap détecté', 'success');
+            
+            // Test du toggle
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            const navbarCollapse = document.querySelector('.navbar-collapse');
+            
+            if (navbarToggler && navbarCollapse) {
+                addLog('🔘 Bouton toggle trouvé', 'success');
+                
+                // Simuler un clic
+                addLog('🖱️ Simulation clic toggle...', 'warning');
+                navbarToggler.click();
+                
+                setTimeout(() => {
+                    const isShown = navbarCollapse.classList.contains('show');
+                    addLog(`📋 État après clic: ${isShown ? 'OUVERT' : 'FERMÉ'}`, isShown ? 'success' : 'warning');
+                }, 200);
+            } else {
+                addLog('❌ Éléments Bootstrap manquants', 'error');
+            }
+        }
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSystemInfo();
+            updateMediaQueries();
+            addLog('🎯 Page de diagnostic chargée', 'success');
+            addLog('Cliquez sur "Test Complet" pour commencer', 'info');
+        });
+        
+        // Mise à jour lors du redimensionnement
+        window.addEventListener('resize', function() {
+            updateSystemInfo();
+            updateMediaQueries();
+            addLog(`🔄 Redimensionnement: ${window.innerWidth}px`, 'info');
+        });
+    </script>
+</body>
+</html>

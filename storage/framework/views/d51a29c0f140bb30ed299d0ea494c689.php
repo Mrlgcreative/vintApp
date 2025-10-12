@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="description" content="@yield('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité')">
-        <meta name="keywords" content="@yield('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique')">
+        <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+        <meta name="description" content="<?php echo $__env->yieldContent('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité'); ?>">
+        <meta name="keywords" content="<?php echo $__env->yieldContent('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique'); ?>">
 
-        <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
-        <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
+        <title><?php echo $__env->yieldContent('title', '<?php echo e($appName ?? "Vintapp"); ?>'); ?></title>
+        <link rel="icon" type="image/x-icon" href="<?php echo e(asset($appFavicon ?? '/favicon.ico')); ?>">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -21,23 +21,23 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
         <!-- Vinted Violet CSS -->
-        <link href="{{ asset('css/vinted-violet.css') }}" rel="stylesheet">
+        <link href="<?php echo e(asset('css/vinted-violet.css')); ?>" rel="stylesheet">
 
         <!-- Custom Styles -->
-        @stack('styles')
+        <?php echo $__env->yieldPushContent('styles'); ?>
 
         <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
         <script>
-        window.userTheme = "{{ addslashes(Auth::user()?->theme_preference ?? '') }}";
-        window.isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+        window.userTheme = "<?php echo e(addslashes(Auth::user()?->theme_preference ?? '')); ?>";
+        window.isAuthenticated = <?php echo e(Auth::check() ? 'true' : 'false'); ?>;
         </script>
     </head>
     <body class="font-sans antialiased">
         <!-- Bande violette mobile avec nom de l'app -->
         <div id="mobile-top-bar" class="d-md-none d-lg-none d-xl-none">
             <div class="mobile-top-bar-content justify-content-between">
-                <span class="mobile-app-name">{{ $appName ?? 'Vintapp' }}</span>
+                <span class="mobile-app-name"><?php echo e($appName ?? 'Vintapp'); ?></span>
                 <span class="mobile-notification-link d-flex align-items-center" id="mobile-notification-btn" style="cursor:pointer;">
                     <i class="fas fa-bell fa-lg text-white"></i>
                 </span>
@@ -71,16 +71,27 @@ document.addEventListener('DOMContentLoaded', function() {
         <!-- Navigation principale -->
         <nav class="navbar navbar-expand-lg navbar-dark top-navbar" style="background-color:rgb(79, 0, 206);">
             <div class="container">
-                <a class="navbar-brand fw-bold" href="{{ url('/') }}">
-                    <x-app-brand 
-                        :show-logo="true"
-                        :show-name="true"
-                        logo-height="32px"
-                        logo-width="100px"
-                        name-size="1.5rem"
-                        name-class="text-white"
-                        class="d-flex align-items-center"
-                    />
+                <a class="navbar-brand fw-bold" href="<?php echo e(url('/')); ?>">
+                    <?php if (isset($component)) { $__componentOriginalac37604bae5cded3771d6931140b8398 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalac37604bae5cded3771d6931140b8398 = $attributes; } ?>
+<?php $component = App\View\Components\AppBrand::resolve(['showLogo' => true,'showName' => true,'logoHeight' => '32px','logoWidth' => '100px','nameSize' => '1.5rem','nameClass' => 'text-white','class' => 'd-flex align-items-center'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-brand'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppBrand::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $attributes = $__attributesOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__attributesOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $component = $__componentOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__componentOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -91,84 +102,84 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Navigation gauche -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
-                               href="{{ route('dashboard') }}">
+                            <a class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>" 
+                               href="<?php echo e(route('dashboard')); ?>">
                                 <i class="fas fa-tachometer-alt me-1"></i>
                                 Dashboard
                             </a>
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('items.index') ? 'active' : '' }}" 
-                               href="{{ route('items.index') }}">
+                            <a class="nav-link <?php echo e(request()->routeIs('items.index') ? 'active' : ''); ?>" 
+                               href="<?php echo e(route('items.index')); ?>">
                                 <i class="fas fa-box me-1"></i>
                                 Articles
                             </a>
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('categories.*') ? 'active' : '' }}" 
-                               href="{{ route('categories.index') }}">
+                            <a class="nav-link <?php echo e(request()->routeIs('categories.*') ? 'active' : ''); ?>" 
+                               href="<?php echo e(route('categories.index')); ?>">
                                 <i class="fas fa-layer-group me-1"></i>
                                 Catégories
                             </a>
                         </li>
                         
                         <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('brands.*') ? 'active' : '' }}" 
-                               href="{{ route('brands.index') }}">
+                            <a class="nav-link <?php echo e(request()->routeIs('brands.*') ? 'active' : ''); ?>" 
+                               href="<?php echo e(route('brands.index')); ?>">
                                 <i class="fas fa-tags me-1"></i>
                                 Marques
                             </a>
                         </li>
                         
-                        @auth
+                        <?php if(auth()->guard()->check()): ?>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('items.my-items') ? 'active' : '' }}" 
-                                   href="{{ route('items.my-items') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('items.my-items') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('items.my-items')); ?>">
                                     <i class="fas fa-list me-1"></i>
                                     Articles
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('orders.index') ? 'active' : '' }}" 
-                                   href="{{ route('orders.index') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('orders.index') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('orders.index')); ?>">
                                     <i class="fas fa-shopping-cart me-1"></i>
                                     Commandes
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('orders.my-sales') ? 'active' : '' }}" 
-                                   href="{{ route('orders.my-sales') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('orders.my-sales') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('orders.my-sales')); ?>">
                                     <i class="fas fa-store me-1"></i>
                                     Ventes
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('wallet.*') ? 'active' : '' }}" 
-                                   href="{{ route('wallet.index') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('wallet.*') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('wallet.index')); ?>">
                                     <i class="fas fa-wallet me-1"></i>
                                     Wallet
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}" 
-                                   href="{{ route('messages.index') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('messages.*') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('messages.index')); ?>">
                                     <i class="fas fa-comments me-1"></i>
                                     Messages
                                 </a>
                             </li>
-                        @endauth
+                        <?php endif; ?>
                     </ul>
 
                     <!-- Barre de recherche -->
-                    <form class="d-flex me-3" method="GET" action="{{ route('items.search') }}">
+                    <form class="d-flex me-3" method="GET" action="<?php echo e(route('items.search')); ?>">
                         <div class="input-group" style="min-width: 300px;">
                             <input class="form-control focus-ring" 
                                    type="search" 
                                    name="q" 
                                    placeholder="Rechercher un article..." 
-                                   value="{{ request('q') }}">
+                                   value="<?php echo e(request('q')); ?>">
                             <button class="btn btn-light" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -177,22 +188,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     <!-- Navigation droite -->
                     <ul class="navbar-nav">
-                        @guest
+                        <?php if(auth()->guard()->guest()): ?>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" 
-                                   href="{{ route('login') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('login') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('login')); ?>">
                                     <i class="fas fa-sign-in-alt me-1"></i>
                                     Connexion
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" 
-                                   href="{{ route('register') }}">
+                                <a class="nav-link <?php echo e(request()->routeIs('register') ? 'active' : ''); ?>" 
+                                   href="<?php echo e(route('register')); ?>">
                                     <i class="fas fa-user-plus me-1"></i>
                                     Inscription
                                 </a>
                             </li>
-                        @else
+                        <?php else: ?>
                             <!-- Notifications -->
                             <li class="nav-item dropdown me-2">
                                 <a class="nav-link position-relative" href="#" role="button" data-bs-toggle="dropdown" id="notifications-dropdown">
@@ -215,20 +226,22 @@ document.addEventListener('DOMContentLoaded', function() {
                                    data-bs-toggle="dropdown">
                                     <div class="rounded-circle bg-light text-dark d-flex align-items-center justify-content-center me-2" 
                                          style="width: 32px; height: 32px; font-weight: bold; font-size: 1.1rem;">
-                                        {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(Auth::user()->name, 0, 1))); ?>
+
                                     </div>
-                                    {{ Auth::user()->name }}
+                                    <?php echo e(Auth::user()->name); ?>
+
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
                                     <li class="px-3 py-2 text-muted small">Profil & Paramètres</li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('profile.edit')); ?>">
                                             <i class="fas fa-user-cog me-2"></i>
                                             Mon profil
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('items.personalization') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('items.personalization')); ?>">
                                             <i class="fas fa-cogs me-2"></i>
                                             Personnalisation
                                         </a>
@@ -242,13 +255,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="px-3 py-2 text-muted small">Navigation</li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('categories.index') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('categories.index')); ?>">
                                             <i class="fas fa-layer-group me-2"></i>
                                             Catégories
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('brands.index') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('brands.index')); ?>">
                                             <i class="fas fa-tags me-2"></i>
                                             Marques
                                         </a>
@@ -256,31 +269,31 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="px-3 py-2 text-muted small">Ventes & Achats</li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('items.create') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('items.create')); ?>">
                                             <i class="fas fa-plus me-2"></i>
                                             Vendre un article
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('items.my-items') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('items.my-items')); ?>">
                                             <i class="fas fa-box me-2"></i>
                                             Mes articles
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('orders.index') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('orders.index')); ?>">
                                             <i class="fas fa-shopping-cart me-2"></i>
                                             Mes commandes
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('orders.my-sales') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('orders.my-sales')); ?>">
                                             <i class="fas fa-store me-2"></i>
                                             Mes ventes
                                         </a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('wallet.index') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('wallet.index')); ?>">
                                             <i class="fas fa-wallet me-2"></i>
                                             Wallet
                                         </a>
@@ -294,15 +307,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <li><hr class="dropdown-divider"></li>
                                     <li class="px-3 py-2 text-muted small">Messagerie</li>
                                     <li>
-                                        <a class="dropdown-item" href="{{ route('messages.index') }}">
+                                        <a class="dropdown-item" href="<?php echo e(route('messages.index')); ?>">
                                             <i class="fas fa-envelope me-2"></i>
                                             Messages
                                         </a>
                                     </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
+                                        <form method="POST" action="<?php echo e(route('logout')); ?>">
+                                            <?php echo csrf_field(); ?>
                                             <button type="submit" class="dropdown-item text-danger">
                                                 <i class="fas fa-sign-out-alt me-2"></i>
                                                 Déconnexion
@@ -311,105 +324,118 @@ document.addEventListener('DOMContentLoaded', function() {
                                     </li>
                                 </ul>
                             </li>
-                        @endguest
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <!-- Breadcrumb -->
-        @if(!request()->routeIs('welcome'))
+        <?php if(!request()->routeIs('welcome')): ?>
             <nav aria-label="breadcrumb" class="bg-light py-2">
                 <div class="container">
                     <ol class="breadcrumb mb-0">
                         <li class="breadcrumb-item">
-                            <a href="{{ url('/') }}" class="text-decoration-none">
+                            <a href="<?php echo e(url('/')); ?>" class="text-decoration-none">
                                 <i class="fas fa-home me-1"></i>
                                 Accueil
                             </a>
                         </li>
-                        @if(request()->routeIs('dashboard'))
+                        <?php if(request()->routeIs('dashboard')): ?>
                             <li class="breadcrumb-item active">Dashboard</li>
-                        @elseif(request()->routeIs('categories.*'))
+                        <?php elseif(request()->routeIs('categories.*')): ?>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('categories.index') }}" class="text-decoration-none">Catégories</a>
+                                <a href="<?php echo e(route('categories.index')); ?>" class="text-decoration-none">Catégories</a>
                             </li>
-                            @if(request()->routeIs('categories.show'))
-                                <li class="breadcrumb-item active">{{ $category->name ?? 'Détails' }}</li>
-                            @elseif(request()->routeIs('categories.create'))
+                            <?php if(request()->routeIs('categories.show')): ?>
+                                <li class="breadcrumb-item active"><?php echo e($category->name ?? 'Détails'); ?></li>
+                            <?php elseif(request()->routeIs('categories.create')): ?>
                                 <li class="breadcrumb-item active">Créer une catégorie</li>
-                            @elseif(request()->routeIs('categories.edit'))
+                            <?php elseif(request()->routeIs('categories.edit')): ?>
                                 <li class="breadcrumb-item active">Modifier une catégorie</li>
-                            @endif
-                        @elseif(request()->routeIs('brands.*'))
+                            <?php endif; ?>
+                        <?php elseif(request()->routeIs('brands.*')): ?>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('brands.index') }}" class="text-decoration-none">Marques</a>
+                                <a href="<?php echo e(route('brands.index')); ?>" class="text-decoration-none">Marques</a>
                             </li>
-                            @if(request()->routeIs('brands.show'))
-                                <li class="breadcrumb-item active">{{ $brand->name ?? 'Détails' }}</li>
-                            @elseif(request()->routeIs('brands.create'))
+                            <?php if(request()->routeIs('brands.show')): ?>
+                                <li class="breadcrumb-item active"><?php echo e($brand->name ?? 'Détails'); ?></li>
+                            <?php elseif(request()->routeIs('brands.create')): ?>
                                 <li class="breadcrumb-item active">Créer une marque</li>
-                            @elseif(request()->routeIs('brands.edit'))
+                            <?php elseif(request()->routeIs('brands.edit')): ?>
                                 <li class="breadcrumb-item active">Modifier une marque</li>
-                            @endif
-                        @elseif(request()->routeIs('items.*'))
+                            <?php endif; ?>
+                        <?php elseif(request()->routeIs('items.*')): ?>
                             <li class="breadcrumb-item">
-                                <a href="{{ route('items.index') }}" class="text-decoration-none">Articles</a>
+                                <a href="<?php echo e(route('items.index')); ?>" class="text-decoration-none">Articles</a>
                             </li>
-                            @if(request()->routeIs('items.show'))
-                                <li class="breadcrumb-item active">{{ $item->name ?? 'Détails' }}</li>
-                            @elseif(request()->routeIs('items.create'))
+                            <?php if(request()->routeIs('items.show')): ?>
+                                <li class="breadcrumb-item active"><?php echo e($item->name ?? 'Détails'); ?></li>
+                            <?php elseif(request()->routeIs('items.create')): ?>
                                 <li class="breadcrumb-item active">Créer un article</li>
-                            @elseif(request()->routeIs('items.edit'))
+                            <?php elseif(request()->routeIs('items.edit')): ?>
                                 <li class="breadcrumb-item active">Modifier un article</li>
-                            @elseif(request()->routeIs('items.my-items'))
+                            <?php elseif(request()->routeIs('items.my-items')): ?>
                                 <li class="breadcrumb-item active">Mes articles</li>
-                            @elseif(request()->routeIs('items.search'))
+                            <?php elseif(request()->routeIs('items.search')): ?>
                                 <li class="breadcrumb-item active">Recherche</li>
-                            @endif
-                        @elseif(request()->routeIs('profile.*'))
+                            <?php endif; ?>
+                        <?php elseif(request()->routeIs('profile.*')): ?>
                             <li class="breadcrumb-item active">Profil</li>
-                        @endif
+                        <?php endif; ?>
                     </ol>
                 </div>
             </nav>
-        @endif
+        <?php endif; ?>
 
         <!-- Contenu principal -->
         <main class="min-vh-100">
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </main>
 
         <!-- Footer -->
-        @if(!request()->routeIs('messages.*'))
+        <?php if(!request()->routeIs('messages.*')): ?>
         <footer class="bg-dark text-light py-4 mt-5">
             <div class="container">
                 <div class="row footer-row-custom">
                     <div class="col-md-4 col-6 mb-4">
                         <h5>
-                            <x-app-brand 
-                                :show-logo="true"
-                                :show-name="true"
-                                logo-height="24px"
-                                logo-width="80px"
-                                name-size="1.25rem"
-                                name-class="text-white"
-                            />
+                            <?php if (isset($component)) { $__componentOriginalac37604bae5cded3771d6931140b8398 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalac37604bae5cded3771d6931140b8398 = $attributes; } ?>
+<?php $component = App\View\Components\AppBrand::resolve(['showLogo' => true,'showName' => true,'logoHeight' => '24px','logoWidth' => '80px','nameSize' => '1.25rem','nameClass' => 'text-white'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-brand'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppBrand::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $attributes = $__attributesOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__attributesOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $component = $__componentOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__componentOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
                         </h5>
                         <p class="text-muted">
-                            {{ $appDescription ?? 'La marketplace de confiance pour acheter et vendre des articles d\'occasion.' }}
+                            <?php echo e($appDescription ?? 'La marketplace de confiance pour acheter et vendre des articles d\'occasion.'); ?>
+
                         </p>
                     </div>
                     <div class="col-md-2 col-6 mb-4">
                         <h6>Navigation</h6>
                         <ul class="list-unstyled">
-                            <li><a href="{{ route('items.index') }}" class="text-muted text-decoration-none">Articles</a></li>
-                            <li><a href="{{ route('categories.index') }}" class="text-muted text-decoration-none">Catégories</a></li>
-                            <li><a href="{{ route('brands.index') }}" class="text-muted text-decoration-none">Marques</a></li>
-                            <li><a href="{{ route('items.search') }}" class="text-muted text-decoration-none">Recherche</a></li>
-                            @auth
-                                <li><a href="{{ route('items.my-items') }}" class="text-muted text-decoration-none">Mes articles</a></li>
-                            @endauth
+                            <li><a href="<?php echo e(route('items.index')); ?>" class="text-muted text-decoration-none">Articles</a></li>
+                            <li><a href="<?php echo e(route('categories.index')); ?>" class="text-muted text-decoration-none">Catégories</a></li>
+                            <li><a href="<?php echo e(route('brands.index')); ?>" class="text-muted text-decoration-none">Marques</a></li>
+                            <li><a href="<?php echo e(route('items.search')); ?>" class="text-muted text-decoration-none">Recherche</a></li>
+                            <?php if(auth()->guard()->check()): ?>
+                                <li><a href="<?php echo e(route('items.my-items')); ?>" class="text-muted text-decoration-none">Mes articles</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                     <div class="col-md-2 col-6 mb-4">
@@ -458,43 +484,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <small class="text-muted">
-                            © {{ date('Y') }} {{ $appName ?? config('app.name', 'VintApp') }}. Tous droits réservés.
+                            © <?php echo e(date('Y')); ?> <?php echo e($appName ?? config('app.name', 'VintApp')); ?>. Tous droits réservés.
                         </small>
                     </div>
                 </div>
             </div>
         </footer>
-        @endif
+        <?php endif; ?>
 
         <!-- Barre de navigation mobile (bottom nav) -->
         <nav id="mobile-bottom-nav" class="d-md-none d-lg-none d-xl-none">
             <ul class="bottom-nav-list">
                 <li>
-                    <a href="{{ url('/') }}" class="bottom-nav-link {{ request()->is('/') ? 'active' : '' }}">
+                    <a href="<?php echo e(url('/')); ?>" class="bottom-nav-link <?php echo e(request()->is('/') ? 'active' : ''); ?>">
                         <i class="fas fa-home"></i>
                         <span>Accueil</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('items.create') }}" class="bottom-nav-link {{ request()->routeIs('items.create') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('items.create')); ?>" class="bottom-nav-link <?php echo e(request()->routeIs('items.create') ? 'active' : ''); ?>">
                         <i class="fas fa-plus-circle"></i>
                         <span>Vente</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('items.index') }}" class="bottom-nav-link {{ request()->routeIs('items.*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('items.index')); ?>" class="bottom-nav-link <?php echo e(request()->routeIs('items.*') ? 'active' : ''); ?>">
                         <i class="fas fa-box"></i>
                         <span>Articles</span>
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('wallet.index') }}" class="bottom-nav-link {{ request()->routeIs('wallet.*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('wallet.index')); ?>" class="bottom-nav-link <?php echo e(request()->routeIs('wallet.*') ? 'active' : ''); ?>">
                         <i class="fas fa-wallet"></i>
                         <span>Wallet</span>
                     </a>
                 </li>
                 <li class="position-relative">
-                    <a href="{{ route('settings.index') }}" class="bottom-nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                    <a href="<?php echo e(route('settings.index')); ?>" class="bottom-nav-link <?php echo e(request()->routeIs('settings.*') ? 'active' : ''); ?>">
                         <i class="fas fa-cog"></i>
                         <span>Paramètres</span>
                     </a>
@@ -506,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
         <!-- Custom Scripts -->
-        @stack('scripts')
+        <?php echo $__env->yieldPushContent('scripts'); ?>
 
         <!-- Scripts personnalisés -->
         <script>
@@ -594,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Gestion des notifications en temps réel
-            @auth
+            <?php if(auth()->guard()->check()): ?>
             let notificationCount = 0;
             let notificationInterval;
 
@@ -722,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     notificationInterval = setInterval(loadNotifications, 10000);
                 }
             });
-            @endauth
+            <?php endif; ?>
 
             // Gestion spéciale des catégories
             initializeCategoryFeatures();
@@ -1551,16 +1577,16 @@ document.addEventListener('DOMContentLoaded', function() {
         </style>
 
         <!-- Composant Notifications Temps Réel -->
-        @auth
+        <?php if(auth()->guard()->check()): ?>
         <div id="realtime-notification-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;"></div>
         
         <script type="module">
             // Notifications en temps réel avec Laravel Echo
-            if (window.Echo && {{ Auth::id() }}) {
-                console.log('🔔 Initialisation des notifications temps réel pour l\'utilisateur {{ Auth::id() }}');
+            if (window.Echo && <?php echo e(Auth::id()); ?>) {
+                console.log('🔔 Initialisation des notifications temps réel pour l\'utilisateur <?php echo e(Auth::id()); ?>');
                 
                 // Écouter le canal privé de l'utilisateur
-                window.Echo.private('user.{{ Auth::id() }}')
+                window.Echo.private('user.<?php echo e(Auth::id()); ?>')
                     .listen('.order.notification', (data) => {
                         console.log('📬 Notification reçue:', data);
                         showRealtimeNotification(data);
@@ -1683,9 +1709,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
             }
         </style>
-        @endauth
+        <?php endif; ?>
 
         <!-- Widget d'assistance -->
-        @include('support.widget')
+        <?php echo $__env->make('support.widget', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     </body>
 </html>
+<?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/app.blade.php ENDPATH**/ ?>

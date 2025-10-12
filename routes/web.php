@@ -248,6 +248,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         // Routes pour les restrictions géographiques
         Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
         Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
+        
+        // Routes pour les Hero Slides (Carrousel)
+        Route::prefix('hero-slides')->name('hero-slides.')->group(function () {
+            Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'heroSlides'])->name('index');
+            Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'storeHeroSlide'])->name('store');
+            Route::put('/{slide}', [App\Http\Controllers\Admin\AdminController::class, 'updateHeroSlide'])->name('update');
+            Route::delete('/{slide}', [App\Http\Controllers\Admin\AdminController::class, 'destroyHeroSlide'])->name('destroy');
+            Route::post('/{slide}/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleHeroSlide'])->name('toggle');
+            Route::post('/reorder', [App\Http\Controllers\Admin\AdminController::class, 'reorderHeroSlides'])->name('reorder');
+        });
     });
 
     // API pour notifications

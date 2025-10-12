@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title>Test Notifications Temps Réel</title>
     
-    {{-- Charger Laravel Echo et Pusher via Vite (production) --}}
-    @if(file_exists(public_path('build/manifest.json')))
-        @php
+    
+    <?php if(file_exists(public_path('build/manifest.json'))): ?>
+        <?php
             $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true);
             $jsFile = $manifest['resources/js/app.js']['file'] ?? null;
             $cssFile = $manifest['resources/js/app.js']['css'][0] ?? null;
-        @endphp
-        @if($jsFile)
-            <script type="module" src="{{ asset('build/' . $jsFile) }}"></script>
-        @endif
-        @if($cssFile)
-            <link rel="stylesheet" href="{{ asset('build/' . $cssFile) }}">
-        @endif
-    @else
-        {{-- Fallback: charger directement si manifest manquant --}}
-        <script type="module" src="{{ asset('build/assets/app-LEPBYlP0.js') }}"></script>
-        <link rel="stylesheet" href="{{ asset('build/assets/app-YxIKdCll.css') }}">
-    @endif
+        ?>
+        <?php if($jsFile): ?>
+            <script type="module" src="<?php echo e(asset('build/' . $jsFile)); ?>"></script>
+        <?php endif; ?>
+        <?php if($cssFile): ?>
+            <link rel="stylesheet" href="<?php echo e(asset('build/' . $cssFile)); ?>">
+        <?php endif; ?>
+    <?php else: ?>
+        
+        <script type="module" src="<?php echo e(asset('build/assets/app-LEPBYlP0.js')); ?>"></script>
+        <link rel="stylesheet" href="<?php echo e(asset('build/assets/app-YxIKdCll.css')); ?>">
+    <?php endif; ?>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -86,7 +86,7 @@
                     État de la connexion
                 </h5>
                 <p class="mb-0" id="statusText">Vérification...</p>
-                <small class="text-muted">Utilisateur connecté: <strong>{{ Auth::user()->name ?? 'Non connecté' }}</strong> (ID: {{ Auth::id() ?? 'N/A' }})</small>
+                <small class="text-muted">Utilisateur connecté: <strong><?php echo e(Auth::user()->name ?? 'Non connecté'); ?></strong> (ID: <?php echo e(Auth::id() ?? 'N/A'); ?>)</small>
             </div>
         </div>
 
@@ -97,19 +97,19 @@
                 <table class="table table-sm">
                     <tr>
                         <td><strong>BROADCAST_CONNECTION:</strong></td>
-                        <td><span class="badge bg-info">{{ config('broadcasting.default') }}</span></td>
+                        <td><span class="badge bg-info"><?php echo e(config('broadcasting.default')); ?></span></td>
                     </tr>
                     <tr>
                         <td><strong>Pusher Key:</strong></td>
-                        <td><code>{{ config('broadcasting.connections.pusher.key') ?: 'Non configuré' }}</code></td>
+                        <td><code><?php echo e(config('broadcasting.connections.pusher.key') ?: 'Non configuré'); ?></code></td>
                     </tr>
                     <tr>
                         <td><strong>Pusher Cluster:</strong></td>
-                        <td><code>{{ config('broadcasting.connections.pusher.options.cluster') ?: 'Non configuré' }}</code></td>
+                        <td><code><?php echo e(config('broadcasting.connections.pusher.options.cluster') ?: 'Non configuré'); ?></code></td>
                     </tr>
                     <tr>
                         <td><strong>Canal d'écoute:</strong></td>
-                        <td><code>private-user.{{ Auth::id() }}</code></td>
+                        <td><code>private-user.<?php echo e(Auth::id()); ?></code></td>
                     </tr>
                 </table>
             </div>
@@ -192,8 +192,8 @@
             if (window.Echo) {
                 addLog('✅ Laravel Echo détecté', 'success');
             
-            @if(Auth::check())
-                const userId = {{ Auth::id() }};
+            <?php if(Auth::check()): ?>
+                const userId = <?php echo e(Auth::id()); ?>;
                 addLog(`📡 Écoute sur le canal: private-user.${userId}`, 'info');
 
                 window.Echo.private(`user.${userId}`)
@@ -231,10 +231,10 @@
                         console.error('❌ Erreur Pusher:', error);
                     });
                 }
-            @else
+            <?php else: ?>
                 addLog('❌ Utilisateur non connecté', 'error');
                 updateStatus(false, 'Non connecté');
-            @endif
+            <?php endif; ?>
             } else {
                 addLog('❌ Laravel Echo non trouvé !', 'error');
                 addLog('Vérifiez que les assets sont compilés (npm run build)', 'error');
@@ -292,3 +292,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/test-notifications.blade.php ENDPATH**/ ?>

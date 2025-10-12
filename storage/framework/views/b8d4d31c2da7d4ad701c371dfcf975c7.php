@@ -1,32 +1,32 @@
-@extends('layouts.admin')
 
-@section('title', 'Paramètres Système')
 
-@section('content')
+<?php $__env->startSection('title', 'Paramètres Système'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
+                <span class="text-sm sm:text-base flex-1"><?php echo e(session('success')); ?></span>
                 <button type="button" class="ml-2 text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 
-    @if(session('error'))
+    <?php if(session('error')): ?>
         <div class="mb-4 sm:mb-6 bg-red-50 border border-red-200 text-red-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
                 <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
+                <span class="text-sm sm:text-base flex-1"><?php echo e(session('error')); ?></span>
                 <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 
     <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200">
         <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
@@ -50,35 +50,37 @@
         </div>
         
         <div class="p-4 sm:p-6">
-            <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-4 sm:space-y-6">
-                @csrf
+            <form action="<?php echo e(route('admin.settings.update')); ?>" method="POST" id="settingsForm" class="space-y-4 sm:space-y-6">
+                <?php echo csrf_field(); ?>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    @if(isset($settings) && (is_array($settings) ? count($settings) : $settings->count()) > 0)
-                        @foreach($categories as $category)
-                            @if(isset($settings[$category]))
+                    <?php if(isset($settings) && (is_array($settings) ? count($settings) : $settings->count()) > 0): ?>
+                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php if(isset($settings[$category])): ?>
                                 <div class="bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
                                     <div class="mb-4 sm:mb-6">
                                         <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
                                             <i class="fas fa-cog mr-2 sm:mr-3 text-gray-600 text-sm sm:text-base"></i>
-                                            {{ ucfirst($category) }}
+                                            <?php echo e(ucfirst($category)); ?>
+
                                         </h3>
                                     </div>
                                     <div class="space-y-3 sm:space-y-4">
-                                        @foreach($settings[$category] as $setting)
+                                        <?php $__currentLoopData = $settings[$category]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $setting): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="space-y-2">
                                                 <label class="block text-sm font-medium text-gray-700">
-                                                    {{ $setting->label }}
-                                                    @if($setting->description)
+                                                    <?php echo e($setting->label); ?>
+
+                                                    <?php if($setting->description): ?>
                                                         <i class="fas fa-info-circle text-gray-400 ml-1 cursor-help" 
-                                                           title="{{ $setting->description }}" 
-                                                           data-tooltip="{{ $setting->description }}"></i>
-                                                    @endif
+                                                           title="<?php echo e($setting->description); ?>" 
+                                                           data-tooltip="<?php echo e($setting->description); ?>"></i>
+                                                    <?php endif; ?>
                                                 </label>
                                                 
-                                                @if($setting->key === 'app_logo')
+                                                <?php if($setting->key === 'app_logo'): ?>
                                                     <div class="mb-3">
-                                                        <img src="{{ asset($setting->value) }}" 
+                                                        <img src="<?php echo e(asset($setting->value)); ?>" 
                                                              alt="Logo actuel" 
                                                              class="h-16 w-32 object-contain border border-gray-200 rounded-lg p-2 bg-white shadow-sm"
                                                              id="logo-preview">
@@ -89,74 +91,75 @@
                                                            accept="image/*"
                                                            onchange="previewLogo(this)">
                                                     <input type="hidden" 
-                                                           name="settings[{{ $setting->key }}]"
-                                                           value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
+                                                           name="settings[<?php echo e($setting->key); ?>]"
+                                                           value="<?php echo e(is_array($setting->value) ? json_encode($setting->value) : $setting->value); ?>">
                                                     <p class="text-xs text-gray-500 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
-                                                            @elseif($setting->type === 'json' || $setting->type === 'array')
+                                                            <?php elseif($setting->type === 'json' || $setting->type === 'array'): ?>
                                                     <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
-                                                              name="settings[{{ $setting->key }}]"
+                                                              name="settings[<?php echo e($setting->key); ?>]"
                                                               rows="5"
-                                                              data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
+                                                              data-original-value="<?php echo e(is_array($setting->value) ? json_encode($setting->value) : $setting->value); ?>"><?php echo e(is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value); ?></textarea>
                                                     <p class="text-xs text-gray-500 mt-1">Format JSON</p>
-                                                @elseif($setting->type === 'boolean')
+                                                <?php elseif($setting->type === 'boolean'): ?>
                                                     <div class="flex items-center space-x-3">
                                                         <!-- Hidden input pour s'assurer que la valeur false est envoyée -->
-                                                        <input type="hidden" name="settings[{{ $setting->key }}]" value="0">
+                                                        <input type="hidden" name="settings[<?php echo e($setting->key); ?>]" value="0">
                                                         <label class="inline-flex items-center cursor-pointer">
                                                             <input type="checkbox" 
                                                                    class="sr-only peer" 
-                                                                   name="settings[{{ $setting->key }}]"
-                                                                   id="{{ $setting->key }}"
+                                                                   name="settings[<?php echo e($setting->key); ?>]"
+                                                                   id="<?php echo e($setting->key); ?>"
                                                                    value="1"
-                                                                   {{ $setting->value ? 'checked' : '' }}>
+                                                                   <?php echo e($setting->value ? 'checked' : ''); ?>>
                                                             <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                            <span class="ml-3 text-sm font-medium text-gray-700" id="{{ $setting->key }}_label">
-                                                                {{ $setting->value ? 'Activé' : 'Désactivé' }}
+                                                            <span class="ml-3 text-sm font-medium text-gray-700" id="<?php echo e($setting->key); ?>_label">
+                                                                <?php echo e($setting->value ? 'Activé' : 'Désactivé'); ?>
+
                                                             </span>
                                                         </label>
                                                     </div>
-                                                @elseif($setting->type === 'integer')
+                                                <?php elseif($setting->type === 'integer'): ?>
                                                     <input type="number" 
                                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
-                                                           name="settings[{{ $setting->key }}]"
-                                                           value="{{ $setting->value }}" 
+                                                           name="settings[<?php echo e($setting->key); ?>]"
+                                                           value="<?php echo e($setting->value); ?>" 
                                                            step="1"
-                                                           data-original-value="{{ $setting->value }}">
-                                                @elseif($setting->type === 'float')
+                                                           data-original-value="<?php echo e($setting->value); ?>">
+                                                <?php elseif($setting->type === 'float'): ?>
                                                     <input type="number" 
                                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
-                                                           name="settings[{{ $setting->key }}]"
-                                                           value="{{ $setting->value }}" 
+                                                           name="settings[<?php echo e($setting->key); ?>]"
+                                                           value="<?php echo e($setting->value); ?>" 
                                                            step="0.01"
-                                                           data-original-value="{{ $setting->value }}">
-                                                @else
-                                                    @if(str_contains($setting->key, 'email'))
+                                                           data-original-value="<?php echo e($setting->value); ?>">
+                                                <?php else: ?>
+                                                    <?php if(str_contains($setting->key, 'email')): ?>
                                                         <input type="email" 
                                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
-                                                               name="settings[{{ $setting->key }}]"
-                                                               value="{{ $setting->value }}"
-                                                               data-original-value="{{ $setting->value }}">
-                                                    @elseif(str_contains($setting->key, 'phone'))
+                                                               name="settings[<?php echo e($setting->key); ?>]"
+                                                               value="<?php echo e($setting->value); ?>"
+                                                               data-original-value="<?php echo e($setting->value); ?>">
+                                                    <?php elseif(str_contains($setting->key, 'phone')): ?>
                                                         <input type="tel" 
                                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
-                                                               name="settings[{{ $setting->key }}]"
-                                                               value="{{ $setting->value }}"
-                                                               data-original-value="{{ $setting->value }}">
-                                                    @else
+                                                               name="settings[<?php echo e($setting->key); ?>]"
+                                                               value="<?php echo e($setting->value); ?>"
+                                                               data-original-value="<?php echo e($setting->value); ?>">
+                                                    <?php else: ?>
                                                         <input type="text" 
                                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
-                                                               name="settings[{{ $setting->key }}]"
-                                                               value="{{ $setting->value }}"
-                                                               data-original-value="{{ $setting->value }}">
-                                                    @endif
-                                                @endif
+                                                               name="settings[<?php echo e($setting->key); ?>]"
+                                                               value="<?php echo e($setting->value); ?>"
+                                                               data-original-value="<?php echo e($setting->value); ?>">
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
                                 </div>
-                            @endif
-                        @endforeach
-                    @else
+                            <?php endif; ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php else: ?>
                         <div class="col-span-2">
                             <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
                                 <i class="fas fa-info-circle text-blue-600 text-2xl mb-3"></i>
@@ -164,7 +167,7 @@
                                 <p class="text-blue-700">Veuillez exécuter les migrations et seeders.</p>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Section Mode Maintenance -->
@@ -183,28 +186,31 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2 rounded-full {{ $maintenanceStatus ? 'bg-red-100' : 'bg-green-100' }}">
-                                        <i class="fas {{ $maintenanceStatus ? 'fa-exclamation-triangle text-red-600' : 'fa-check-circle text-green-600' }} text-lg"></i>
+                                    <div class="p-2 rounded-full <?php echo e($maintenanceStatus ? 'bg-red-100' : 'bg-green-100'); ?>">
+                                        <i class="fas <?php echo e($maintenanceStatus ? 'fa-exclamation-triangle text-red-600' : 'fa-check-circle text-green-600'); ?> text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900">
-                                            Statut : {{ $maintenanceStatus ? 'Mode maintenance ACTIVÉ' : 'Site en ligne' }}
+                                            Statut : <?php echo e($maintenanceStatus ? 'Mode maintenance ACTIVÉ' : 'Site en ligne'); ?>
+
                                         </p>
                                         <p class="text-sm text-gray-500">
-                                            {{ $maintenanceStatus ? 'Le site affiche la page de maintenance aux visiteurs' : 'Le site est accessible normalement' }}
+                                            <?php echo e($maintenanceStatus ? 'Le site affiche la page de maintenance aux visiteurs' : 'Le site est accessible normalement'); ?>
+
                                         </p>
                                     </div>
                                 </div>
                                 
                                 <button type="button" 
-                                        onclick="{{ $maintenanceStatus ? 'disableMaintenance()' : 'showMaintenanceModal()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
-                                    <i class="fas {{ $maintenanceStatus ? 'fa-play' : 'fa-pause' }} mr-2"></i>
-                                    {{ $maintenanceStatus ? 'Désactiver' : 'Activer' }}
+                                        onclick="<?php echo e($maintenanceStatus ? 'disableMaintenance()' : 'showMaintenanceModal()'); ?>"
+                                        class="inline-flex items-center px-4 py-2 <?php echo e($maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'); ?> text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas <?php echo e($maintenanceStatus ? 'fa-play' : 'fa-pause'); ?> mr-2"></i>
+                                    <?php echo e($maintenanceStatus ? 'Désactiver' : 'Activer'); ?>
+
                                 </button>
                             </div>
                             
-                            @if($maintenanceStatus)
+                            <?php if($maintenanceStatus): ?>
                                 <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-info-circle text-red-600 mr-2"></i>
@@ -213,7 +219,7 @@
                                         </p>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -285,33 +291,36 @@
                             </p>
                         </div>
                         
-                        @php
+                        <?php
                             $preregEnabled = \App\Models\Setting::get('preregistration_enabled', true);
                             $preregCount = \App\Models\UserWaiting::count();
                             $preregLimit = \App\Models\Setting::get('preregistration_limit', 0);
-                        @endphp
+                        ?>
                         
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100' : 'bg-red-100' }}">
-                                        <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600' }} text-lg"></i>
+                                    <div class="p-2 rounded-full <?php echo e($preregEnabled ? 'bg-green-100' : 'bg-red-100'); ?>">
+                                        <i class="fas <?php echo e($preregEnabled ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600'); ?> text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900">
-                                            Statut : {{ $preregEnabled ? 'MODE PRÉ-INSCRIPTION ACTIF' : 'MODE NORMAL' }}
+                                            Statut : <?php echo e($preregEnabled ? 'MODE PRÉ-INSCRIPTION ACTIF' : 'MODE NORMAL'); ?>
+
                                         </p>
                                         <p class="text-sm text-gray-500">
-                                            {{ $preregEnabled ? '🔒 Application verrouillée - Seule la pré-inscription est accessible' : '✅ Application accessible normalement' }}
+                                            <?php echo e($preregEnabled ? '🔒 Application verrouillée - Seule la pré-inscription est accessible' : '✅ Application accessible normalement'); ?>
+
                                         </p>
                                     </div>
                                 </div>
                                 
                                 <button type="button" 
-                                        onclick="{{ $preregEnabled ? 'disablePreregistration()' : 'enablePreregistration()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
-                                    <i class="fas {{ $preregEnabled ? 'fa-lock-open' : 'fa-lock' }} mr-2"></i>
-                                    {{ $preregEnabled ? 'Désactiver' : 'Activer' }}
+                                        onclick="<?php echo e($preregEnabled ? 'disablePreregistration()' : 'enablePreregistration()'); ?>"
+                                        class="inline-flex items-center px-4 py-2 <?php echo e($preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'); ?> text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                    <i class="fas <?php echo e($preregEnabled ? 'fa-lock-open' : 'fa-lock'); ?> mr-2"></i>
+                                    <?php echo e($preregEnabled ? 'Désactiver' : 'Activer'); ?>
+
                                 </button>
                             </div>
                             
@@ -321,7 +330,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="text-sm text-gray-600">Total inscriptions</p>
-                                            <p class="text-2xl font-bold text-gray-900">{{ $preregCount }}</p>
+                                            <p class="text-2xl font-bold text-gray-900"><?php echo e($preregCount); ?></p>
                                         </div>
                                         <div class="p-3 bg-blue-100 rounded-lg">
                                             <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -333,7 +342,7 @@
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="text-sm text-gray-600">Limite configurée</p>
-                                            <p class="text-2xl font-bold text-gray-900">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
+                                            <p class="text-2xl font-bold text-gray-900"><?php echo e($preregLimit > 0 ? $preregLimit : '∞'); ?></p>
                                         </div>
                                         <div class="p-3 bg-yellow-100 rounded-lg">
                                             <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
@@ -346,11 +355,12 @@
                                         <div>
                                             <p class="text-sm text-gray-600">Places restantes</p>
                                             <p class="text-2xl font-bold text-gray-900">
-                                                @if($preregLimit > 0)
-                                                    {{ max(0, $preregLimit - $preregCount) }}
-                                                @else
+                                                <?php if($preregLimit > 0): ?>
+                                                    <?php echo e(max(0, $preregLimit - $preregCount)); ?>
+
+                                                <?php else: ?>
                                                     ∞
-                                                @endif
+                                                <?php endif; ?>
                                             </p>
                                         </div>
                                         <div class="p-3 bg-green-100 rounded-lg">
@@ -362,19 +372,19 @@
                             
                             <!-- Actions rapides -->
                             <div class="flex flex-wrap gap-2">
-                                <a href="{{ route('admin.settings.preregistration') }}" 
+                                <a href="<?php echo e(route('admin.settings.preregistration')); ?>" 
                                    class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-cog mr-2"></i>
                                     Configurer
                                 </a>
                                 
-                                <a href="{{ route('admin.waiting-users.index') }}" 
+                                <a href="<?php echo e(route('admin.waiting-users.index')); ?>" 
                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-list mr-2"></i>
                                     Gérer les inscriptions
                                 </a>
                                 
-                                <a href="{{ route('preregistration.index') }}" 
+                                <a href="<?php echo e(route('preregistration.index')); ?>" 
                                    target="_blank"
                                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-external-link-alt mr-2"></i>
@@ -382,18 +392,18 @@
                                 </a>
                             </div>
                             
-                            @if($preregLimit > 0 && $preregCount >= $preregLimit)
+                            <?php if($preregLimit > 0 && $preregCount >= $preregLimit): ?>
                                 <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
                                         <p class="text-red-800 text-sm">
-                                            <strong>Limite atteinte :</strong> Le nombre maximum de pré-inscriptions ({{ $preregLimit }}) a été atteint.
+                                            <strong>Limite atteinte :</strong> Le nombre maximum de pré-inscriptions (<?php echo e($preregLimit); ?>) a été atteint.
                                         </p>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                             
-                            @if(!$preregEnabled)
+                            <?php if(!$preregEnabled): ?>
                                 <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-info-circle text-orange-600 mr-2"></i>
@@ -402,7 +412,7 @@
                                         </p>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -441,7 +451,7 @@
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Activation/désactivation individuelle</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Réordonnancement par glisser-déposer</li>
                                         </ul>
-                                        <a href="{{ route('admin.settings.hero-slides.index') }}" 
+                                        <a href="<?php echo e(route('admin.settings.hero-slides.index')); ?>" 
                                            class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
                                             <i class="fas fa-cog mr-2"></i>
                                             Gérer les Slides du Carrousel
@@ -462,7 +472,7 @@
                                 Wallet Entreprise - Commissions de la Plateforme
                             </h3>
                             <p class="text-sm text-gray-600 mt-1">
-                                Gestion des commissions collectées sur chaque vente ({{ $enterpriseWallets['commission_rate'] }}% par défaut)
+                                Gestion des commissions collectées sur chaque vente (<?php echo e($enterpriseWallets['commission_rate']); ?>% par défaut)
                             </p>
                         </div>
                         
@@ -481,31 +491,33 @@
                                     </div>
                                 </div>
                                 
-                                @if($enterpriseWallets['usd'])
+                                <?php if($enterpriseWallets['usd']): ?>
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-600">Solde actuel</span>
                                             <span class="text-2xl font-bold text-purple-600">
-                                                ${{ number_format($enterpriseWallets['usd']->balance, 2) }}
+                                                $<?php echo e(number_format($enterpriseWallets['usd']->balance, 2)); ?>
+
                                             </span>
                                         </div>
                                         <div class="flex justify-between items-center pt-3 border-t border-gray-200">
                                             <span class="text-xs text-gray-500">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['usd']->id }}</span>
+                                            <span class="text-xs font-mono text-gray-700">#<?php echo e($enterpriseWallets['usd']->id); ?></span>
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs text-gray-500">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                {{ $enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif' }}
+                                                <?php echo e($enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif'); ?>
+
                                             </span>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
                                         <p class="text-sm text-gray-600">Wallet USD non créé</p>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                             
                             <!-- Wallet CDF -->
@@ -522,31 +534,32 @@
                                     </div>
                                 </div>
                                 
-                                @if($enterpriseWallets['cdf'])
+                                <?php if($enterpriseWallets['cdf']): ?>
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-600">Solde actuel</span>
                                             <span class="text-2xl font-bold text-indigo-600">
-                                                {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
+                                                <?php echo e(number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ')); ?> FC
                                             </span>
                                         </div>
                                         <div class="flex justify-between items-center pt-3 border-t border-gray-200">
                                             <span class="text-xs text-gray-500">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['cdf']->id }}</span>
+                                            <span class="text-xs font-mono text-gray-700">#<?php echo e($enterpriseWallets['cdf']->id); ?></span>
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs text-gray-500">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                {{ $enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif' }}
+                                                <?php echo e($enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif'); ?>
+
                                             </span>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
                                         <p class="text-sm text-gray-600">Wallet CDF non créé</p>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
                         
@@ -563,7 +576,7 @@
                                     <ul class="text-xs text-gray-600 space-y-1">
                                         <li class="flex items-start">
                                             <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
-                                            <span>Sur chaque vente confirmée, {{ $enterpriseWallets['commission_rate'] }}% est prélevé automatiquement</span>
+                                            <span>Sur chaque vente confirmée, <?php echo e($enterpriseWallets['commission_rate']); ?>% est prélevé automatiquement</span>
                                         </li>
                                         <li class="flex items-start">
                                             <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
@@ -584,12 +597,12 @@
                         
                         <!-- Boutons d'action -->
                         <div class="mt-6 flex flex-wrap gap-3">
-                            <a href="{{ route('admin.wallets.index') }}" 
+                            <a href="<?php echo e(route('admin.wallets.index')); ?>" 
                                class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                 <i class="fas fa-wallet mr-2"></i>
                                 Voir tous les wallets
                             </a>
-                            <a href="{{ route('admin.transactions.index') }}" 
+                            <a href="<?php echo e(route('admin.transactions.index')); ?>" 
                                class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Historique des transactions
@@ -616,9 +629,9 @@
 
 <script>
 // Configuration des URLs pour les requêtes AJAX
-const MAINTENANCE_ENABLE_URL = '{{ route('admin.settings.maintenance.enable') }}';
-const MAINTENANCE_DISABLE_URL = '{{ route('admin.settings.maintenance.disable') }}';
-const CSRF_TOKEN = '{{ csrf_token() }}';
+const MAINTENANCE_ENABLE_URL = '<?php echo e(route('admin.settings.maintenance.enable')); ?>';
+const MAINTENANCE_DISABLE_URL = '<?php echo e(route('admin.settings.maintenance.disable')); ?>';
+const CSRF_TOKEN = '<?php echo e(csrf_token()); ?>';
 
 // Stockage des valeurs initiales pour détecter les changements
 let initialFormValues = {};
@@ -819,7 +832,7 @@ function clearCache() {
         button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Vidage en cours...';
         button.disabled = true;
 
-        fetch('{{ route("admin.settings.clear-cache") }}', {
+        fetch('<?php echo e(route("admin.settings.clear-cache")); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1086,7 +1099,7 @@ async function enablePreregistration() {
     }
     
     try {
-        const response = await fetch('{{ route("admin.settings.preregistration.toggle") }}', {
+        const response = await fetch('<?php echo e(route("admin.settings.preregistration.toggle")); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN,
@@ -1123,7 +1136,7 @@ async function disablePreregistration() {
     }
     
     try {
-        const response = await fetch('{{ route("admin.settings.preregistration.toggle") }}', {
+        const response = await fetch('<?php echo e(route("admin.settings.preregistration.toggle")); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN,
@@ -1162,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 async function loadLocationRestrictionsStatus() {
     try {
-        const response = await fetch('{{ route("admin.settings.location-restrictions.status") }}', {
+        const response = await fetch('<?php echo e(route("admin.settings.location-restrictions.status")); ?>', {
             method: 'GET',
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN,
@@ -1201,7 +1214,7 @@ async function toggleLocationRestrictions() {
     currentBtn.disabled = true;
     
     try {
-        const response = await fetch('{{ route("admin.settings.location-restrictions.toggle") }}', {
+        const response = await fetch('<?php echo e(route("admin.settings.location-restrictions.toggle")); ?>', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': CSRF_TOKEN,
@@ -1316,4 +1329,5 @@ function updateLocationRestrictionsUI(enabled) {
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/admin/settings/index.blade.php ENDPATH**/ ?>
