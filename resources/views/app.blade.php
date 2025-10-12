@@ -1468,6 +1468,141 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         </style>
 
+        <!-- Composant Notifications Temps Réel -->
+        @auth
+        <div id="realtime-notification-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;"></div>
+        
+        <script type="module">
+            // Notifications en temps réel avec Laravel Echo
+            if (window.Echo && {{ Auth::id() }}) {
+                console.log('🔔 Initialisation des notifications temps réel pour l\'utilisateur {{ Auth::id() }}');
+                
+                // Écouter le canal privé de l'utilisateur
+                window.Echo.private('user.{{ Auth::id() }}')
+                    .listen('.order.notification', (data) => {
+                        console.log('📬 Notification reçue:', data);
+                        showRealtimeNotification(data);
+                        
+                        // Mettre à jour le compteur de notifications
+                        updateNotificationBadge();
+                        
+                        // Jouer un son (optionnel)
+                        playNotificationSound();
+                    })
+                    .error((error) => {
+                        console.error('❌ Erreur canal notifications:', error);
+                    });
+
+                // Fonction pour afficher la notification
+                function showRealtimeNotification(data) {
+                    const container = document.getElementById('realtime-notification-container');
+                    if (!container) return;
+
+                    // Icône selon le type de notification
+                    const icons = {
+                        'new_order': '<i class="fas fa-shopping-cart text-primary"></i>',
+                        'payment_confirmed': '<i class="fas fa-check-circle text-success"></i>',
+                        'order_shipped': '<i class="fas fa-shipping-fast text-info"></i>',
+                        'order_delivered': '<i class="fas fa-box-check text-success"></i>',
+                        'order_completed': '<i class="fas fa-star text-warning"></i>'
+                    };
+
+                    // Couleurs selon le type
+                    const colors = {
+                        'new_order': 'primary',
+                        'payment_confirmed': 'success',
+                        'order_shipped': 'info',
+                        'order_delivered': 'success',
+                        'order_completed': 'warning'
+                    };
+
+                    const icon = icons[data.type] || '<i class="fas fa-bell text-secondary"></i>';
+                    const color = colors[data.type] || 'secondary';
+
+                    // Créer la notification
+                    const notification = document.createElement('div');
+                    notification.className = `alert alert-${color} alert-dismissible fade show shadow-lg mb-3`;
+                    notification.style.cssText = 'animation: slideInRight 0.5s ease; border-left: 4px solid currentColor;';
+                    notification.innerHTML = `
+                        <div class="d-flex align-items-start">
+                            <div class="me-3" style="font-size: 1.5rem;">
+                                ${icon}
+                            </div>
+                            <div class="flex-grow-1">
+                                <h6 class="alert-heading mb-1">${data.message}</h6>
+                                <small class="d-block text-muted">
+                                    <strong>Commande #${data.order_number}</strong><br>
+                                    ${data.item_name} - ${data.total_amount} ${data.currency}
+                                </small>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    `;
+
+                    container.appendChild(notification);
+
+                    // Auto-fermeture après 8 secondes
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        setTimeout(() => notification.remove(), 500);
+                    }, 8000);
+
+                    // Click pour voir la commande
+                    notification.style.cursor = 'pointer';
+                    notification.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('btn-close')) {
+                            window.location.href = `/orders/${data.order_id}`;
+                        }
+                    });
+                }
+
+                // Mettre à jour le badge de compteur
+                function updateNotificationBadge() {
+                    const badge = document.querySelector('#notificationsDropdown .badge');
+                    if (badge) {
+                        const currentCount = parseInt(badge.textContent) || 0;
+                        badge.textContent = currentCount + 1;
+                        badge.classList.remove('d-none');
+                    }
+                }
+
+                // Son de notification (optionnel)
+                function playNotificationSound() {
+                    try {
+                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvPTgjoIGWS45+mjUBELTKXh6rdmHgU2jdXxzYAuBSh+zPLaizsIHGe96+mnUhILP5vd78hwKAUsgc3z1oU6CBxmvO3qp1MRDEyj4Oq4aiIFNozT8c6GMAUqf83y2Ik4CBtlu+zpp1USCz6Z3O7LcisEK4DN8daFOggcZrvs6qdUEAw/m9vvy3IrBSh+zfPYiTgIG2a77OilVBILP5nb78txLAUogM3z1oU6CBxmvO3qp1MRDUqj4Oq4aiIENozT8c6HLwUpfs3y2Ik4CBtlu+zpp1QSDECb3O7McisFKIDN89aGOgcbZrvt6qhVEgxNo+Dqt2ogBTWM0/HOhzEFKYDN8tiIOgcbZLvs66dUEgxAm9zuy3IsJCh+zPPYiToIG2S77OqmUhEMT6Ph6bllHwU3i9Pwy4YwBSh+zfLZiTkIG2S76+unVBIMQJrc78txLAUof8zz2Io5CBtkuuvqp1QSDEyj4Oq2Zh4FNY3T8c+HLwUpfszy2Ik6BxtkuuzqplISC0yj4Oq3Zh4FNY3T8c+GLgUpfszy2Ik5CBxku+vqplUSDE2k4eu4aR0FNYzS8c6DLwUpf8zy2Ik5CBxku+zqqFURDEyj4eu3ZR4FNo3S8c6HMQUpfszy2Ig5CBxku+zqp1MRDEyk4eu3Zh4FNY3S8c6HLgUpfszy2Yo5CBxku+vrp1MSC0uk4Ou3Zh4FNY3S8c6HLgUpf83y2Yk5CBtlu+zqp1QSDEyk4eu3Zh4FNY3S8c6HLgUpf83y2Yk5CBtlvOzqp1QRDEuk4Ou1ZR4FNo3S8c6FLgUpf83y2Yk6CBtlvOzqp1QRC0qj4eu1ZR4FNo3S8c2FLgUpf8zy2Yk6BxplvOzpp1QRDEqj4euyZB4FNozS8c6FLgUpgM3y2Ik6BxplvOzqp1QRDEuj4euyZB4FNo3S8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euyZB4FNo3S8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4=');
+                        audio.volume = 0.3;
+                        audio.play().catch(() => {}); // Ignore si l'utilisateur n'a pas interagi
+                    } catch (e) {}
+                }
+
+                console.log('✅ Notifications temps réel activées');
+            }
+        </script>
+
+        <style>
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            #realtime-notification-container .alert {
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            
+            #realtime-notification-container .alert:hover {
+                transform: scale(1.02);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+            }
+        </style>
+        @endauth
+
         <!-- Widget d'assistance -->
         @include('support.widget')
     </body>

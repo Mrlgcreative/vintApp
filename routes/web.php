@@ -23,6 +23,11 @@ Route::get('/test-create', function() {
     return 'Route de test accessible';
 });
 
+// Page de test pour les notifications temps réel
+Route::get('/test-notifications', function() {
+    return view('test-notifications');
+})->middleware('auth')->name('test.notifications');
+
 // Routes publiques pour les items
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');

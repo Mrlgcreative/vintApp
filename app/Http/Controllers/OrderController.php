@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Item;
 use App\models\Wallet;
 use App\Models\User;
+use App\Events\OrderNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -101,6 +102,14 @@ class OrderController extends Controller
             $item->save();
 
             DB::commit();
+
+            // 🔔 Envoyer notification au vendeur (nouvelle commande)
+            broadcast(new OrderNotification(
+                $order,
+                'new_order',
+                "🛒 Nouvelle commande de {$order->buyer->name}",
+                $item->user_id // ID du vendeur
+            ))->toOthers();
 
             return redirect()->route('orders.show', $order)
                 ->with('success', 'Commande créée avec succès !');
@@ -330,6 +339,14 @@ class OrderController extends Controller
             $order->status = 'confirmed';
             $order->save();
 
+            // 🔔 Notification au vendeur (paiement confirmé)
+            broadcast(new OrderNotification(
+                $order,
+                'payment_confirmed',
+                "💰 Paiement confirmé pour la commande #{$order->order_number}",
+                $order->item->user_id // ID du vendeur
+            ))->toOthers();
+
             if (request()->expectsJson()) {
                 return response()->json(['success' => true, 'message' => 'Paiement confirmé avec succès !']);
             }
@@ -380,6 +397,14 @@ class OrderController extends Controller
             $order->shipped_at = now();
             $order->save();
 
+            // 🔔 Notification à l'acheteur (commande expédiée)
+            broadcast(new OrderNotification(
+                $order,
+                'order_shipped',
+                "📦 Votre commande #{$order->order_number} a été expédiée",
+                $order->buyer_id // ID de l'acheteur
+            ))->toOthers();
+
             if (request()->expectsJson()) {
                 return response()->json(['success' => true, 'message' => 'Commande marquée comme expédiée !']);
             }
@@ -429,6 +454,14 @@ class OrderController extends Controller
             $order->status = 'delivered';
             $order->delivered_at = now();
             $order->save();
+
+            // 🔔 Notification à l'acheteur (commande livrée)
+            broadcast(new OrderNotification(
+                $order,
+                'order_delivered',
+                "🚚 Votre commande #{$order->order_number} a été livrée",
+                $order->buyer_id // ID de l'acheteur
+            ))->toOthers();
 
             if (request()->expectsJson()) {
                 return response()->json(['success' => true, 'message' => 'Commande marquée comme livrée !']);
