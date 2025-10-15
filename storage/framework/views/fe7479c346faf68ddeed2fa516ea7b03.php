@@ -168,7 +168,7 @@ function showNotification(message, type = 'primary') {
             
             <div class="row g-4">
                 <?php $__empty_1 = true; $__currentLoopData = $latestItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="col-lg-3 col-md-4 col-sm-6 ">
                     <div class="article-card">
                         <div class="article-image">
                             <?php
@@ -494,73 +494,106 @@ function showNotification(message, type = 'primary') {
 /* Responsive */
 @media (max-width: 768px) {
     .hero-slide {
-        min-height: 50vh;
-        height: 50vh;
+        min-height: 45vh;
+        height: 45vh;
         background-attachment: scroll !important;
+        border-radius: 22px;
+        box-shadow: 0 4px 18px rgba(79,0,206,0.10);
+        overflow: hidden;
+        margin: 0.7rem 0.7rem;
     }
-    
-    .hero-title {
-        font-size: 2rem !important;
-    }
-    
-    .hero-subtitle {
-        font-size: 1rem !important;
-    }
-    
-    .banner-action-btn {
-        font-size: 0.89rem;
-        padding: 0.35rem 0.8rem 0.32rem 0.8rem;
-        border-radius: 18px;
-    }
-    
-    .d-flex.gap-3 {
-        gap: 0.7rem !important;
-    }
-    
     .hero-banner {
         background-attachment: scroll !important;
+        border-radius: 22px;
+        box-shadow: 0 4px 18px rgba(79,0,206,0.10);
+        overflow: hidden;
+        margin: 0.7rem 0.5rem;
     }
     .banner-overlay {
         min-height: 40vh;
+        background: rgba(0,0,0,0.45);
+        border-radius: 22px;
+        padding: 1.2rem 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .hero-title {
+        font-size: 2.2rem !important;
+        text-align: center;
+        margin-bottom: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.25);
+    }
+    .hero-subtitle {
+        font-size: 1.1rem !important;
+        text-align: center;
+        margin-bottom: 1.1rem;
+        text-shadow: 1px 1px 4px rgba(0,0,0,0.18);
+    }
+    .banner-action-btn {
+        font-size: 1rem;
+        padding: 0.45rem 1.2rem 0.4rem 1.2rem;
+        border-radius: 24px;
+        font-weight: 600;
+        box-shadow: 0 2px 8px rgba(79,0,206,0.10);
+        margin: 0.2rem auto;
+        display: block;
+        width: 90%;
+        max-width: 260px;
+    }
+    .d-flex.gap-3 {
+        gap: 0.7rem !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    .row.align-items-center.min-vh-50 {
+        justify-content: center;
+    }
+    .col-lg-6 {
+        width: 100%;
+        max-width: 100%;
+        margin: auto auto;
     }
     .category-card {
         padding: 0.7rem 0.5rem;
-        width: 100%;
+        width:75%;
         min-width: 0;
         max-width: 120px;
-        height: 90px;
-        margin: 0 auto;
+        height: 60px;
+        margin: auto auto;
     }
     .category-icon i {
-        font-size: 1.3rem !important;
+        font-size: 0.5rem !important;
     }
     .category-title {
-        font-size: 11px;
+        font-size: 9px;
         margin-bottom: 0.2rem;
     }
     .category-count {
         font-size: 10px;
     }
     .col-md-3.col-sm-6 {
-        flex: 0 0 33.3333%;
-        max-width: 33.3333%;
-        padding-left: 4px;
-        padding-right: 4px;
-        margin-bottom: 10px;
+        flex: 0 0 25%;
+        max-width: 25%;
+        padding-left: 2px;
+        padding-right: 6px;
+        margin-bottom: 8px;
     }
     .articles-section .col-lg-3,
     .articles-section .col-md-4,
     .articles-section .col-sm-6 {
-        flex: 0 0 33.3333%;
-        max-width: 33.3333%;
-        padding-left: 3px;
-        padding-right: 3px;
+        flex: 0 0 25%;
+        max-width: 25%;
+        padding-left: 2px;
+        padding-right: 2px;
         margin-bottom: 8px;
     }
     .article-card {
         border-radius: 8px;
         min-width: 0;
-        max-width: 100%;
+        max-width: 90%;
         height: 120px;
         padding: 0.25rem 0.25rem 0.1rem 0.25rem;
     }

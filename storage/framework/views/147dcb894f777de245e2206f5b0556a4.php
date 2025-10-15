@@ -458,7 +458,8 @@ document.getElementById('payment-form').addEventListener('submit', async functio
             const errorParams = new URLSearchParams({
                 error: data.message || 'Une erreur est survenue',
                 amount: amount,
-                provider: provider
+                provider: provider,
+                currency: productCurrency
             });
             window.location.href = '<?php echo e(route("payments.error")); ?>?' + errorParams.toString();
         }

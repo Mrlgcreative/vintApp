@@ -1797,8 +1797,10 @@ document.addEventListener('DOMContentLoaded', function() {
         </style>
         <?php endif; ?>
 
-        <!-- Widget d'assistance -->
-        <?php echo $__env->make('support.widget', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        <!-- Widget d'assistance : affiché uniquement sur desktop -->
+        <div class="d-none d-md-block">
+            <?php echo $__env->make('support.widget', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+        </div>
     </body>
 </html>
 <?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/app.blade.php ENDPATH**/ ?>

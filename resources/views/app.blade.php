@@ -1771,7 +1771,9 @@ document.addEventListener('DOMContentLoaded', function() {
         </style>
         @endauth
 
-        <!-- Widget d'assistance -->
-        @include('support.widget')
+        <!-- Widget d'assistance : affiché uniquement sur desktop -->
+        <div class="d-none d-md-block">
+            @include('support.widget')
+        </div>
     </body>
 </html>
