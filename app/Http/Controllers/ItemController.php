@@ -101,6 +101,9 @@ class ItemController extends Controller
             'brand_id' => 'nullable|exists:brands,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'specifications' => 'nullable|array',
+            'color' => 'nullable|string|max:50',
+            'size' => 'nullable|string|max:50',
+            'item_number' => 'nullable|string|max:50',
         ]);
 
         $item = new Item();
@@ -113,6 +116,9 @@ class ItemController extends Controller
         $item->condition = $request->condition;
         $item->category_id = $request->category_id;
         $item->brand_id = $request->brand_id;
+        $item->color = $request->color;
+        $item->size = $request->size;
+        $item->item_number = $request->item_number;
         $item->status = 'active';
 
         // Gestion des spécifications
@@ -223,6 +229,9 @@ class ItemController extends Controller
             'brand_id' => 'nullable|exists:brands,id',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'specifications' => 'nullable|array',
+            'color' => 'nullable|string|max:50',
+            'size' => 'nullable|string|max:50',
+            'item_number' => 'nullable|string|max:50',
         ]);
 
         $item->name = $request->name;
@@ -233,6 +242,9 @@ class ItemController extends Controller
         $item->condition = $request->condition;
         $item->category_id = $request->category_id;
         $item->brand_id = $request->brand_id;
+        $item->color = $request->color;
+        $item->size = $request->size;
+        $item->item_number = $request->item_number;
 
         // Gestion des spécifications
         if ($request->filled('specifications') && is_array($request->specifications)) {

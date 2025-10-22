@@ -267,11 +267,8 @@ body {
     overflow: hidden;
 }
 
-.top-navbar,
 footer,
-.breadcrumb,
-#mobile-top-bar,
-#mobile-bottom-nav {
+.breadcrumb {
     display: none !important;
 }
 
@@ -299,12 +296,13 @@ main.min-vh-100 {
 
 .whatsapp-container {
     position: fixed;
-    top: 0;
+    top: auto;
     left: 0;
     right: 0;
     bottom: 0;
     width: 100vw;
     height: 100vh;
+    padding-bottom: 64px; /* Espace pour la navbar mobile */
     display: flex;
     flex-direction: column;
     background: var(--whatsapp-bg);
@@ -333,6 +331,7 @@ main.min-vh-100 {
     align-items: center;
     padding: 12px 16px;
     gap: 12px;
+    top:20%;
 }
 
 .back-btn {
@@ -737,7 +736,7 @@ main.min-vh-100 {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 12px;
+    padding: 10px 12px;
     background: rgba(0,0,0,0.05);
     border-radius: 8px;
     text-decoration: none;
@@ -752,7 +751,7 @@ main.min-vh-100 {
     gap: 4px;
     font-size: 11px;
     color: var(--whatsapp-light-text);
-    margin-top: 4px;
+    margin-top: 24px;
 }
 
 .message-status i {
@@ -782,6 +781,7 @@ main.min-vh-100 {
     background: #F0F0F0;
     padding: 8px 16px;
     border-top: 1px solid var(--whatsapp-dark-gray);
+   
 }
 
 .input-wrapper {
@@ -812,6 +812,7 @@ main.min-vh-100 {
 
 .text-input-container {
     flex: 1;
+    position: relative;
 }
 
 .message-input {
@@ -885,10 +886,19 @@ main.min-vh-100 {
 
 /* Responsive */
 @media (max-width: 768px) {
+
     .whatsapp-container {
-        height: 100vh;
+        height: calc(100vh - 64px);
+        top:5%;
     }
     
+    .input-container{
+    background: #F0F0F0;
+    padding: 8px 16px;
+    margin-bottom:10%;
+    border-top: 1px solid var(--whatsapp-dark-gray);
+    }
+
     .message-bubble {
         max-width: 85%;
     }
@@ -896,6 +906,7 @@ main.min-vh-100 {
     .header-actions .action-btn:not(:last-child) {
         display: none;
     }
+
     
     .product-badge {
         padding: 8px 12px;
@@ -946,6 +957,8 @@ main.min-vh-100 {
 .dropdown-item i {
     width: 16px;
     text-align: center;
+/* Zone de saisie */
+
 }
 </style>
 @endpush
@@ -994,7 +1007,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Envoi du formulaire
+    // Fonction pour créer un nouveau message dans l'interface
+    function appendNewMessage(message, isAuthor) {
+        const messageGroup = document.createElement('div');
+        messageGroup.className = `message-group ${isAuthor ? 'sent' : 'received'}`;
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.className = 'message-bubble';
+        
+        // Contenu du message
+        if (message.content) {
+            const messageText = document.createElement('div');
+            messageText.className = 'message-text';
+            messageText.innerHTML = message.content.replace(/\n/g, '<br>');
+            messageBubble.appendChild(messageText);
+        }
+        
+        // Pièce jointe
+        if (message.attachment) {
+            const attachmentDiv = document.createElement('div');
+            attachmentDiv.className = 'message-attachment';
+            
+            if (message.attachment.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                const img = document.createElement('img');
+                img.src = message.attachment;
+                img.className = 'attachment-image';
+                img.onclick = () => showImageModal(message.attachment);
+                attachmentDiv.appendChild(img);
+            } else {
+                const link = document.createElement('a');
+                link.href = message.attachment;
+                link.className = 'attachment-file';
+                link.innerHTML = `<i class="fas fa-file"></i> Pièce jointe`;
+                attachmentDiv.appendChild(link);
+            }
+            messageBubble.appendChild(attachmentDiv);
+        }
+        
+        // Horodatage
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        messageBubble.appendChild(timeDiv);
+        
+        messageGroup.appendChild(messageBubble);
+        return messageGroup;
+    }
+
+    // Envoi du formulaire optimisé
     if (messageForm) {
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
@@ -1002,30 +1062,53 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             const submitButton = this.querySelector('.send-btn');
             const originalIcon = submitButton.innerHTML;
+            const messageContent = this.querySelector('#messageContent').value.trim();
+            const attachmentFile = this.querySelector('#attachmentInput').files[0];
+            
+            if (!messageContent && !attachmentFile) return;
             
             // Désactiver le bouton et changer l'icône
             submitButton.disabled = true;
             submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             
+            // Ajouter immédiatement le message dans l'interface
+            const tempMessage = {
+                content: messageContent,
+                attachment: attachmentFile ? URL.createObjectURL(attachmentFile) : null
+            };
+            const newMessageElement = appendNewMessage(tempMessage, true);
+            document.querySelector('.messages-wrapper').appendChild(newMessageElement);
+            
+            // Scroll vers le bas
+            container.scrollTop = container.scrollHeight;
+            
+            // Réinitialiser le formulaire
+            this.querySelector('#messageContent').value = '';
+            this.querySelector('#attachmentInput').value = '';
+            if (attachmentPreview) {
+                attachmentPreview.style.display = 'none';
+            }
+            
             fetch(this.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
                 }
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    // Recharger la page pour afficher le nouveau message
-                    window.location.reload();
-                } else {
+                if (!data.success) {
+                    // En cas d'erreur, supprimer le message temporaire et afficher l'erreur
+                    newMessageElement.remove();
                     alert(data.error || 'Erreur lors de l\'envoi du message');
                 }
             })
             .catch(error => {
                 console.error('Erreur:', error);
-                alert('Une erreur est survenue');
+                newMessageElement.remove();
+                alert('Une erreur est survenue lors de l\'envoi');
             })
             .finally(() => {
                 // Réactiver le bouton

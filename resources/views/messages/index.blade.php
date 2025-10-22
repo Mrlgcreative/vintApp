@@ -57,7 +57,7 @@
                         <!-- Produit concerné -->
                         <div class="card-body">
                             <div class="d-flex align-items-start mb-3">
-                                @if($contact->item->images && count($contact->item->images) > 0)
+                                @if($contact->item && $contact->item->images && count($contact->item->images) > 0)
                                     <img src="{{ Storage::url($contact->item->images[0]) }}" 
                                          alt="{{ $contact->item->name }}" 
                                          class="me-3 rounded" 
@@ -69,17 +69,21 @@
                                     </div>
                                 @endif
                                 <div class="flex-grow-1 min-width-0">
-                                    <h6 class="fw-bold mb-1 text-truncate">{{ $contact->item->name }}</h6>
-                                    <div class="d-flex align-items-center justify-content-between mb-2">
-                                        <span class="text-primary fw-bold">{{ $contact->item->formatted_price }}</span>
-                                        @if($contact->has_discount)
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-tag me-1"></i>
-                                                Réduction accordée
-                                            </span>
-                                        @endif
-                                    </div>
-                                    <small class="text-muted">{{ $contact->item->category->name }}</small>
+                                    @if($contact->item)
+                                        <h6 class="fw-bold mb-1 text-truncate">{{ $contact->item->name }}</h6>
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span class="text-primary fw-bold">{{ $contact->item->formatted_price }}</span>
+                                            @if($contact->has_discount)
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-tag me-1"></i>
+                                                    Réduction accordée
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <small class="text-muted">{{ $contact->item->category->name }}</small>
+                                    @else
+                                        <h6 class="fw-bold mb-1 text-muted">Article non disponible</h6>
+                                    @endif
                                 </div>
                             </div>
 
@@ -120,10 +124,12 @@
                                     <i class="fas fa-comments me-1"></i>
                                     Ouvrir la conversation
                                 </a>
-                                <a href="{{ route('items.show', $contact->item) }}" 
-                                   class="btn btn-outline-secondary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                @if($contact->item)
+                                    <a href="{{ route('items.show', $contact->item) }}" 
+                                       class="btn btn-outline-secondary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>

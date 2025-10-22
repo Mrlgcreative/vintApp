@@ -14,60 +14,214 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- Scripts Vite (Tailwind CSS) - Chargé en premier -->
+        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+
         <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
         
         <!-- Font Awesome -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
 
         <!-- Vinted Violet CSS -->
         <link href="<?php echo e(asset('css/vinted-violet.css')); ?>" rel="stylesheet">
 
         <!-- Custom Styles -->
         <?php echo $__env->yieldPushContent('styles'); ?>
-
-        <!-- Scripts -->
-        <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+        
         <script>
         window.userTheme = "<?php echo e(addslashes(Auth::user()?->theme_preference ?? '')); ?>";
         window.isAuthenticated = <?php echo e(Auth::check() ? 'true' : 'false'); ?>;
         </script>
     </head>
-    <body class="font-sans antialiased">
-        <!-- Bande violette mobile avec nom de l'app -->
-        <div id="mobile-top-bar" class="d-md-none d-lg-none d-xl-none">
-            <div class="mobile-top-bar-content justify-content-between">
-                <span class="mobile-app-name"><?php echo e($appName ?? 'Vintapp'); ?></span>
-                <span class="mobile-notification-link d-flex align-items-center" id="mobile-notification-btn" style="cursor:pointer;">
-                    <i class="fas fa-bell fa-lg text-white"></i>
-                </span>
+    <body class="font-sans antialiased bg-white">
+        <!-- Barre de profil moderne Tailwind - visible sur toutes les pages -->
+        <?php if(auth()->guard()->check()): ?>
+        <div class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+            <!-- Profil + Nom + Notifications + Panier -->
+            <div class="max-w-7xl mx-auto px-4 py-3">
+                <div class="flex items-center justify-between">
+                    <!-- Profil + Nom (gauche) -->
+                    <div class="flex items-center gap-3">
+                        <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-2 hover:opacity-80 transition-opacity no-underline" style="text-decoration: none;">
+                            <?php if(Auth::user()->avatar): ?>
+                                <img src="<?php echo e(asset('storage/' . Auth::user()->avatar)); ?>" 
+                                     alt="<?php echo e(Auth::user()->name); ?>" 
+                                     class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 ring-2 ring-purple-100">
+                            <?php else: ?>
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                    <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
+
+                                </div>
+                            <?php endif; ?>
+                            <span class="font-semibold text-gray-800 text-sm sm:text-base"><?php echo e(Auth::user()->name); ?></span>
+                        </a>
+                    </div>
+                    
+                    <!-- Notifications + Panier (droite) -->
+                    <div class="flex items-center gap-2">
+                        <!-- Notifications -->
+                        <button class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors" onclick="toggleNotifications()">
+                            <i class="fas fa-bell text-gray-700 text-lg"></i>
+                            <?php
+                                $unreadNotifications = 0; // Remplacer par: Auth::user()->unreadNotifications->count()
+                            ?>
+                            <?php if($unreadNotifications > 0): ?>
+                                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                            <?php endif; ?>
+                        </button>
+                        
+                        <!-- Panier -->
+                        <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors">
+                            <i class="fas fa-shopping-cart text-gray-700 text-lg"></i>
+                            <?php if(session('cart') && count(session('cart')) > 0): ?>
+                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
+                                    <?php echo e(count(session('cart'))); ?>
+
+                                </span>
+                            <?php endif; ?>
+                        </a>
+                    </div>
+                </div>
             </div>
-            <!-- Dropdown notifications mobile, caché par défaut -->
-            <div id="mobile-notification-dropdown" style="display:none; position:fixed; top:56px; right:12px; left:auto; z-index:2000; min-width:300px; max-width:90vw;">
-                <ul class="dropdown-menu show dropdown-menu-end" style="min-width: 300px; position:static; float:none;">
-                    <li><h6 class="dropdown-header">Notifications</h6></li>
-                    <li><div class="dropdown-item text-center text-muted">Aucune notification</div></li>
-                </ul>
-            </div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Affichage du dropdown notifications sur mobile
-    const notifBtn = document.getElementById('mobile-notification-btn');
-    const notifDropdown = document.getElementById('mobile-notification-dropdown');
-    if (notifBtn && notifDropdown) {
-        notifBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notifDropdown.style.display = notifDropdown.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', function(e) {
-            if (!notifDropdown.contains(e.target) && e.target !== notifBtn) {
-                notifDropdown.style.display = 'none';
-            }
-        });
-    }
-});
-</script>
+            
+            <!-- Barre de recherche intégrée sous le profil -->
+            
         </div>
+        <?php endif; ?>
+        
+        <!-- Navigation Bootstrap (masquée sur mobile) -->
+        <style>
+            /* Force Tailwind styles for profile bar */
+            .bg-white { background-color: #ffffff !important; }
+            .border-b { border-bottom-width: 1px !important; }
+            .border-gray-200 { border-color: #e5e7eb !important; }
+            .sticky { position: sticky !important; }
+            .top-0 { top: 0 !important; }
+            .z-50 { z-index: 50 !important; }
+            .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; }
+            .max-w-7xl { max-width: 80rem !important; }
+            .mx-auto { margin-left: auto !important; margin-right: auto !important; }
+            .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
+            .py-3 { padding-top: 0.75rem !important; padding-bottom: 0.75rem !important; }
+            .flex { display: flex !important; }
+            .items-center { align-items: center !important; }
+            .justify-center { justify-content: center !important; }
+            .justify-between { justify-content: space-between !important; }
+            .gap-3 { gap: 0.75rem !important; }
+            .gap-2 { gap: 0.5rem !important; }
+            .w-10 { width: 2.5rem !important; }
+            .h-10 { height: 2.5rem !important; }
+            .w-5 { width: 1.25rem !important; }
+            .h-5 { height: 1.25rem !important; }
+            .w-2 { width: 0.5rem !important; }
+            .h-2 { height: 0.5rem !important; }
+            .w-80 { width: 20rem !important; }
+            .rounded-full { border-radius: 9999px !important; }
+            .rounded-lg { border-radius: 0.5rem !important; }
+            .object-cover { object-fit: cover !important; }
+            .border-2 { border-width: 2px !important; }
+            .border-purple-200 { border-color: #e9d5ff !important; }
+            .ring-2 { box-shadow: 0 0 0 2px rgba(243, 232, 255, 1) !important; }
+            .ring-purple-100 { --tw-ring-color: #f3e8ff !important; }
+            .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)) !important; }
+            .from-purple-600 { --tw-gradient-from: #9333ea !important; --tw-gradient-to: rgba(147, 51, 234, 0) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important; }
+            .to-cyan-400 { --tw-gradient-to: #22d3ee !important; }
+            .text-white { color: #ffffff !important; }
+            .text-gray-800 { color: #1f2937 !important; }
+            .text-gray-700 { color: #374151 !important; }
+            .text-gray-500 { color: #6b7280 !important; }
+            .text-gray-400 { color: #9ca3af !important; }
+            .text-gray-600 { color: #4b5563 !important; }
+            .text-purple-600 { color: #9333ea !important; }
+            .font-bold { font-weight: 700 !important; }
+            .font-semibold { font-weight: 600 !important; }
+            .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
+            .text-lg { font-size: 1.125rem !important; line-height: 1.75rem !important; }
+            .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
+            .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+            .relative { position: relative !important; }
+            .absolute { position: absolute !important; }
+            .fixed { position: fixed !important; }
+            .inset-0 { top: 0 !important; right: 0 !important; bottom: 0 !important; left: 0 !important; }
+            .p-2\.5 { padding: 0.625rem !important; }
+            .p-4 { padding: 1rem !important; }
+            .-top-0\.5 { top: -0.125rem !important; }
+            .-right-0\.5 { right: -0.125rem !important; }
+            .top-1\.5 { top: 0.375rem !important; }
+            .right-1\.5 { right: 0.375rem !important; }
+            .top-16 { top: 4rem !important; }
+            .right-4 { right: 1rem !important; }
+            .bg-red-500 { background-color: #ef4444 !important; }
+            .bg-purple-600 { background-color: #9333ea !important; }
+            .bg-black { background-color: #000000 !important; }
+            .bg-opacity-50 { --tw-bg-opacity: 0.5 !important; }
+            .hover\:bg-gray-100:hover { background-color: #f3f4f6 !important; }
+            .hover\:bg-gray-50:hover { background-color: #f9fafb !important; }
+            .hover\:bg-purple-700:hover { background-color: #7e22ce !important; }
+            .hover\:opacity-80:hover { opacity: 0.8 !important; }
+            .hover\:text-gray-600:hover { color: #4b5563 !important; }
+            .transition-colors { transition-property: color, background-color, border-color, text-decoration-color, fill, stroke !important; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; transition-duration: 150ms !important; }
+            .transition-opacity { transition-property: opacity !important; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; transition-duration: 150ms !important; }
+            .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite !important; }
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: .5; }
+            }
+            .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
+            .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important; }
+            .max-h-96 { max-height: 24rem !important; }
+            .overflow-y-auto { overflow-y: auto !important; }
+            .space-y-4 > * + * { margin-top: 1rem !important; }
+            .block { display: block !important; }
+            .mb-2 { margin-bottom: 0.5rem !important; }
+            .mb-3 { margin-bottom: 0.75rem !important; }
+            .mt-2 { margin-top: 0.5rem !important; }
+            .w-full { width: 100% !important; }
+            .max-w-md { max-width: 28rem !important; }
+            .border { border-width: 1px !important; }
+            .border-gray-300 { border-color: #d1d5db !important; }
+            .px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+            .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+            .focus\:outline-none:focus { outline: 2px solid transparent !important; outline-offset: 2px !important; }
+            .focus\:ring-2:focus { --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color) !important; --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color) !important; box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important; }
+            .focus\:ring-purple-500:focus { --tw-ring-color: #a855f7 !important; }
+            .flex-1 { flex: 1 1 0% !important; }
+            .text-center { text-align: center !important; }
+            
+            /* Remove text decoration from links */
+            .no-underline { text-decoration: none !important; }
+            a.no-underline:hover { text-decoration: none !important; }
+            
+            /* Responsive: classes sm: pour écrans >= 640px */
+            @media (min-width: 640px) {
+                .sm\:text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
+            }
+            
+            /* Responsive: classes md: pour écrans >= 768px */
+            @media (min-width: 768px) {
+                .md\:hidden { display: none !important; }
+            }
+            
+            /* Responsive: max-w avec calc pour mobile */
+            .max-w-\[calc\(100vw-2rem\)\] { max-width: calc(100vw - 2rem) !important; }
+            
+            @media (max-width: 767.98px) {
+                .top-navbar {
+                    display: none !important;
+                }
+                /* Ajustements mobile pour la barre de profil */
+                .px-4 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+                .py-3 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
+                .gap-3 { gap: 0.5rem !important; }
+                .gap-2 { gap: 0.375rem !important; }
+                .w-10 { width: 2rem !important; }
+                .h-10 { height: 2rem !important; }
+                .text-sm { font-size: 0.75rem !important; }
+                .p-2\.5 { padding: 0.5rem !important; }
+            }
+        </style>
+        
         <!-- Navigation principale -->
         <nav class="navbar navbar-expand-lg navbar-dark top-navbar" style="background-color:rgb(79, 0, 206);">
             <div class="container">
@@ -486,17 +640,19 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div id="newsletterMessage" class="mt-2"></div>
                     </div>
                 </div>
-        <style>
-        /* Footer responsive : 2 colonnes sur mobile */
-        @media (max-width: 767.98px) {
-            .footer-row-custom > [class^="col-"],
-            .footer-row-custom > [class*=" col-"] {
-                flex: 0 0 50%;
-                max-width: 50%;
-                margin-bottom: 1.5rem;
-            }
-        }
-        </style>
+                
+                <style>
+                /* Footer responsive : 2 colonnes sur mobile */
+                @media (max-width: 767.98px) {
+                    .footer-row-custom > [class^="col-"],
+                    .footer-row-custom > [class*=" col-"] {
+                        flex: 0 0 50%;
+                        max-width: 50%;
+                        margin-bottom: 1.5rem;
+                    }
+                }
+                </style>
+                
                 <hr class="my-4">
                 <div class="row align-items-center">
                     <div class="col-md-6">
@@ -553,305 +709,143 @@ document.addEventListener('DOMContentLoaded', function() {
 
         <!-- Scripts personnalisés -->
         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // CORRECTION NAVBAR - Script de débogage et correction forcée
-            console.log('🔧 Initialisation correction navbar...');
+        // Fonction pour afficher les notifications (panneau Tailwind)
+        function toggleNotifications() {
+            const existingPanel = document.getElementById('notifications-panel');
             
-            // Vérifier la largeur d'écran
-            const screenWidth = window.innerWidth;
-            const isMobile = /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent);
-            const isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+            if (existingPanel) {
+                existingPanel.remove();
+                return;
+            }
             
-            console.log('📱 Détection appareil:', {
-                width: screenWidth,
-                isMobile: isMobile,
-                isTouch: isTouchDevice,
-                userAgent: navigator.userAgent.substring(0, 50) + '...'
-            });
+            const panel = document.createElement('div');
+            panel.id = 'notifications-panel';
+            panel.className = 'fixed top-16 right-4 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto';
+            panel.innerHTML = `
+                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-800">Notifications</h3>
+                    <button onclick="this.closest('#notifications-panel').remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <p class="text-gray-500 text-sm text-center">Aucune notification</p>
+                </div>
+            `;
             
-            // Forcer la visibilité de la navbar sur écrans larges
-            const navbar = document.querySelector('nav.top-navbar');
-            const navbarCollapse = document.querySelector('.navbar-collapse');
+            document.body.appendChild(panel);
             
-            if (navbar && screenWidth >= 768) {
-                console.log('✅ Écran ≥ 768px - Forcer affichage navbar');
-                navbar.style.display = 'block';
-                navbar.style.visibility = 'visible';
-                
-                if (navbarCollapse) {
-                    // Sur desktop (≥ 992px), afficher directement
-                    if (screenWidth >= 992) {
-                        navbarCollapse.classList.add('show');
-                        navbarCollapse.style.display = 'flex';
-                        console.log('💻 Mode Desktop - navbar-collapse visible');
-                    } else {
-                        // Sur tablette/mobile large (768-991px), utiliser le toggle
-                        console.log('📱 Mode Tablette - navbar-collapse en mode toggle');
+            // Fermer en cliquant à l'extérieur
+            setTimeout(() => {
+                document.addEventListener('click', function closePanel(e) {
+                    if (!panel.contains(e.target) && !e.target.closest('[onclick*="toggleNotifications"]')) {
+                        panel.remove();
+                        document.removeEventListener('click', closePanel);
                     }
-                }
-                
-                // Masquer les éléments mobiles
-                const mobileTopBar = document.getElementById('mobile-top-bar');
-                const mobileBottomNav = document.getElementById('mobile-bottom-nav');
-                if (mobileTopBar) mobileTopBar.style.display = 'none';
-                if (mobileBottomNav) mobileBottomNav.style.display = 'none';
-            }
-            
-            // Améliorer le fonctionnement du bouton toggle Bootstrap
-            const navbarToggler = document.querySelector('.navbar-toggler');
-            if (navbarToggler && navbarCollapse) {
-                navbarToggler.addEventListener('click', function() {
-                    console.log('🔘 Toggle navbar cliqué');
-                    setTimeout(() => {
-                        const isShown = navbarCollapse.classList.contains('show');
-                        console.log('📋 État navbar-collapse:', isShown ? 'OUVERT' : 'FERMÉ');
-                    }, 100);
                 });
+            }, 100);
+        }
+        
+        // Fonction pour afficher les filtres (modal Tailwind)
+        function toggleFilters() {
+            const existingModal = document.getElementById('filters-modal');
+            
+            if (existingModal) {
+                existingModal.remove();
+                return;
             }
             
-            // Animation des notifications
-            const notificationBadge = document.querySelector('.badge');
-            if (notificationBadge) {
-                notificationBadge.addEventListener('click', function() {
-                    this.style.animation = 'pulse 0.5s ease-in-out';
-                    setTimeout(() => {
-                        this.style.animation = '';
-                    }, 500);
-                });
-            }
-
-            // Amélioration de la navigation active
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.nav-link');
+            const modal = document.createElement('div');
+            modal.id = 'filters-modal';
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg shadow-2xl w-full max-w-md">
+                    <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+                        <h3 class="font-semibold text-gray-800">Filtres de recherche</h3>
+                        <button onclick="this.closest('#filters-modal').remove()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Catégorie</label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option>Toutes les catégories</option>
+                                <option>Vêtements</option>
+                                <option>Électronique</option>
+                                <option>Maison</option>
+                                <option>Sports</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Prix</label>
+                            <div class="flex gap-2">
+                                <input type="number" placeholder="Min" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <input type="number" placeholder="Max" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">État</label>
+                            <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option>Tous les états</option>
+                                <option>Neuf</option>
+                                <option>Comme neuf</option>
+                                <option>Très bon état</option>
+                                <option>Bon état</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t border-gray-200 flex gap-2">
+                        <button onclick="resetFilters()" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                            Réinitialiser
+                        </button>
+                        <button onclick="applyFilters()" class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                            Appliquer
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            navLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
+            document.body.appendChild(modal);
+            
+            // Fermer en cliquant sur le fond
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
                 }
             });
-
-            // Tooltip pour les icônes
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
+        }
+        
+        function resetFilters() {
+            document.getElementById('filters-modal').remove();
+        }
+        
+        function applyFilters() {
+            // Logique d'application des filtres
+            document.getElementById('filters-modal').remove();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Application Vintapp chargée');
+            
+            // Gestion du thème
+            applyTheme(getPreferredTheme());
+            
             // Gestion des notifications en temps réel
             <?php if(auth()->guard()->check()): ?>
-            let notificationCount = 0;
-            let notificationInterval;
-
-            function loadNotifications() {
-                fetch('/notifications')
-                    .then(response => response.json())
-                    .then(data => {
-                        updateNotificationBadge(data.count);
-                        updateNotificationList(data.notifications);
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors du chargement des notifications:', error);
-                    });
-            }
-
-            function updateNotificationBadge(count) {
-                const badge = document.getElementById('notifications-badge');
-                if (badge) {
-                    if (count > 0) {
-                        badge.textContent = count;
-                        badge.style.display = 'block';
-                        notificationCount = count;
-                    } else {
-                        badge.style.display = 'none';
-                        notificationCount = 0;
-                    }
-                }
-            }
-
-            function updateNotificationList(notifications) {
-                const list = document.getElementById('notifications-list');
-                if (!list) return;
-
-                // Supprimer les éléments existants sauf le header
-                const header = list.querySelector('.dropdown-header');
-                list.innerHTML = '';
-                list.appendChild(header);
-
-                if (notifications.length === 0) {
-                    const noNotificationItem = document.createElement('li');
-                    noNotificationItem.innerHTML = '<div class="dropdown-item text-center text-muted">Aucune notification</div>';
-                    list.appendChild(noNotificationItem);
-                } else {
-                    notifications.forEach(notification => {
-                        const item = document.createElement('li');
-                        const notificationUrl = notification.url || '/messages';
-                        item.innerHTML = `
-                            <a class="dropdown-item notification-item" href="${notificationUrl}" data-notification-id="${notification.id}">
-                                <div class="d-flex align-items-start">
-                                    <div class="flex-shrink-0">
-                                        <i class="fas fa-bell text-primary"></i>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <div class="fw-bold">${notification.title}</div>
-                                        <div class="small text-muted">${notification.message}</div>
-                                        <div class="small text-muted">${new Date(notification.created_at).toLocaleString()}</div>
-                                    </div>
-                                </div>
-                            </a>
-                        `;
-                        list.appendChild(item);
-                    });
-
-                    // Ajouter un lien "Voir toutes"
-                    const viewAllItem = document.createElement('li');
-                    viewAllItem.innerHTML = '<hr class="dropdown-divider">';
-                    list.appendChild(viewAllItem);
-
-                    const viewAllLink = document.createElement('li');
-                    viewAllLink.innerHTML = '<a class="dropdown-item text-center" href="/messages">Voir toutes</a>';
-                    list.appendChild(viewAllLink);
-                }
-            }
-
-            function markNotificationAsRead(notificationId) {
-                fetch(`/notifications/${notificationId}/read`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        loadNotifications(); // Recharger les notifications
-                    }
-                })
-                .catch(error => {
-                    console.error('Erreur lors du marquage de la notification:', error);
-                });
-            }
-
-            // Gestionnaire de clic sur les notifications
-            document.addEventListener('click', function(e) {
-                if (e.target.closest('.notification-item')) {
-                    const notificationItem = e.target.closest('.notification-item');
-                    const notificationId = notificationItem.getAttribute('data-notification-id');
-                    const notificationUrl = notificationItem.getAttribute('href');
-                    
-                    // Marquer comme lue et rediriger
-                    markNotificationAsRead(notificationId);
-                    
-                    // Permettre la redirection naturelle si l'URL n'est pas "#"
-                    if (notificationUrl && notificationUrl !== '#') {
-                        // La redirection naturelle du lien se fera
-                        return true;
-                    } else {
-                        e.preventDefault();
-                    }
-                }
-            });
-
-            // Charger les notifications au chargement de la page
             loadNotifications();
-
-            // Actualiser les notifications toutes les 10 secondes
-            notificationInterval = setInterval(loadNotifications, 10000);
-
-            // Arrêter l'intervalle quand la page n'est plus visible
-            document.addEventListener('visibilitychange', function() {
-                if (document.hidden) {
-                    clearInterval(notificationInterval);
-                } else {
-                    notificationInterval = setInterval(loadNotifications, 10000);
-                }
-            });
+            setInterval(loadNotifications, 30000); // Toutes les 30 secondes
             <?php endif; ?>
-
-            // Gestion spéciale des catégories
-            initializeCategoryFeatures();
         });
-
-        // Fonctions spécifiques aux catégories
-        function initializeCategoryFeatures() {
-            // Animation des cartes de catégories
-            const categoryCards = document.querySelectorAll('.category-card');
-            categoryCards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-4px) scale(1.02)';
-                });
-                
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
-            });
-
-            // Recherche live dans les catégories
-            const categorySearch = document.getElementById('category-search');
-            if (categorySearch) {
-                categorySearch.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const categoryItems = document.querySelectorAll('.category-list-item');
-                    
-                    categoryItems.forEach(item => {
-                        const categoryName = item.querySelector('.category-name')?.textContent.toLowerCase() || '';
-                        const categoryDescription = item.querySelector('.category-description')?.textContent.toLowerCase() || '';
-                        
-                        if (categoryName.includes(searchTerm) || categoryDescription.includes(searchTerm)) {
-                            item.style.display = 'block';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
-                });
-            }
-
-            // Gestion des sous-catégories expandables
-            const expandableCategories = document.querySelectorAll('.expandable-category');
-            expandableCategories.forEach(category => {
-                const toggle = category.querySelector('.category-toggle');
-                const subcategories = category.querySelector('.subcategories');
-                
-                if (toggle && subcategories) {
-                    toggle.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        
-                        const isExpanded = subcategories.style.display === 'block';
-                        subcategories.style.display = isExpanded ? 'none' : 'block';
-                        
-                        const icon = toggle.querySelector('i');
-                        if (icon) {
-                            icon.className = isExpanded ? 'fas fa-chevron-right' : 'fas fa-chevron-down';
-                        }
-                    });
-                }
-            });
-
-            // Préchargement des catégories populaires
-            if (window.location.pathname === '/categories') {
-                preloadPopularCategories();
-            }
+        
+        <?php if(auth()->guard()->check()): ?>
+        function loadNotifications() {
+            // Simulation - à remplacer par fetch('/notifications')
+            console.log('Chargement des notifications...');
         }
-
-        function preloadPopularCategories() {
-            // Précharger les images des catégories les plus populaires
-            fetch('/api/categories/popular')
-                .then(response => response.json())
-                .then(categories => {
-                    categories.forEach(category => {
-                        if (category.image) {
-                            const img = new Image();
-                            img.src = category.image;
-                        }
-                    });
-                })
-                .catch(error => {
-                    console.log('Préchargement des catégories non disponible');
-                });
-        }
-        </script>
-
-      
-        <script>
+        <?php endif; ?>
+        
+        // Gestion du thème
         function applyTheme(theme) {
             if (theme === 'auto') {
                 const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -866,21 +860,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 label.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
             }
         }
+        
         function getPreferredTheme() {
             const localTheme = localStorage.getItem('theme');
             if (localTheme) return localTheme;
             if (window.userTheme && window.userTheme !== '') return window.userTheme;
             return 'auto';
         }
-        function handleSystemThemeChange(e) {
-            const current = getPreferredTheme();
-            if (current === 'auto') {
-                applyTheme('auto');
-            }
-        }
+        
         document.addEventListener('DOMContentLoaded', () => {
-            applyTheme(getPreferredTheme());
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleSystemThemeChange);
             const themeToggle = document.getElementById('theme-toggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', function(e) {
@@ -889,113 +877,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     let next = current === 'auto' ? 'light' : current === 'light' ? 'dark' : 'auto';
                     applyTheme(next);
                     localStorage.setItem('theme', next);
-                    if (window.isAuthenticated) {
-                        fetch('/profile/theme', {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                            },
-                            body: JSON.stringify({ theme_preference: next })
-                        });
-                    }
                 });
             }
         });
         </script>
 
         <style>
-        /* Bande violette mobile en haut */
-        #mobile-top-bar {
-            display: flex;
-            align-items: center;
-            background: rgb(79, 0, 206);
-            height: 48px;
-            width: 100vw;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1100;
-            box-shadow: 0 2px 8px rgba(79,0,206,0.07);
+        /* Styles personnalisés */
+        .top-navbar {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
-        .mobile-top-bar-content {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-left: 18px;
-            padding-right: 12px;
-        }
-        .mobile-profile-link {
-            text-decoration: none;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        .mobile-profile-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #eee;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-        }
-        /* .mobile-profile-name { display: none; } */
-        .mobile-app-name {
-            color: #fff;
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        @media (min-width: 768px) {
-            #mobile-top-bar {
-                display: none !important;
-            }
-        }
-        /* Décale le contenu principal vers le bas sur mobile pour ne pas être caché par la top bar */
+        
         @media (max-width: 767.98px) {
-            main.min-vh-100 {
-                padding-top: 56px;
-            }
-        }
-        
-        /* CORRECTION NAVBAR - Solution complète pour mobile/desktop */
-        
-        /* 1. Masquer navbar UNIQUEMENT sur vrais mobiles (tactiles) */
-        @media (max-width: 767.98px) and (hover: none) and (pointer: coarse) {
-            nav.top-navbar {
+            .top-navbar {
                 display: none !important;
             }
+            
+            main.min-vh-100 {
+                padding-bottom: 80px;
+            }
         }
         
-        /* 2. FORCER l'affichage navbar sur écrans ≥ 768px (desktop + mobile mode desktop) */
         @media (min-width: 768px) {
-            nav.top-navbar {
-                display: block !important;
-            }
-            .navbar-collapse {
-                display: flex !important;
-            }
-            #mobile-top-bar,
             #mobile-bottom-nav {
                 display: none !important;
             }
         }
         
-        /* 3. Assurer le collapse Bootstrap fonctionne */
-        @media (max-width: 991.98px) {
-            .navbar-collapse.collapse:not(.show) {
-                display: none !important;
-            }
-            .navbar-collapse.collapse.show {
-                display: block !important;
-            }
-        }
-
-        /* Barre de navigation mobile (bottom nav) */
+        /* Bottom Navigation Mobile */
         #mobile-bottom-nav {
             position: fixed;
             left: 0;
@@ -1010,6 +919,7 @@ document.addEventListener('DOMContentLoaded', function() {
             display: flex;
             align-items: center;
         }
+        
         .bottom-nav-list {
             display: flex;
             justify-content: space-around;
@@ -1020,6 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
             list-style: none;
             height: 100%;
         }
+        
         .bottom-nav-link {
             display: flex;
             flex-direction: column;
@@ -1032,58 +943,39 @@ document.addEventListener('DOMContentLoaded', function() {
             height: 100%;
             width: 64px;
             transition: color 0.2s;
-            position: relative;
         }
+        
         .bottom-nav-link i {
             font-size: 22px;
             margin-bottom: 2px;
         }
-        .mobile-profile-initials {
-            color: #fff;
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-left: 2px;
-            letter-spacing: 0.5px;
-        }
+        
         .bottom-nav-link.active,
-        .bottom-nav-link:active,
-        .bottom-nav-link:focus {
+        .bottom-nav-link:active {
             color: rgb(79, 0, 206);
         }
-        .bottom-nav-link.active i {
-            color: rgb(79, 0, 206);
-        }
+        
         .bottom-nav-link span {
             font-size: 11px;
             margin-top: 2px;
         }
-        @media (min-width: 768px) {
-            #mobile-bottom-nav {
-                display: none !important;
-            }
-        }
-
-         /* Styles Vinted Violet personnalisés */
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
+        
+        /* Navbar styling */
         .nav-link {
             transition: all 0.3s ease;
             font-weight: 500;
         }
-
+        
         .nav-link:hover {
             color: rgba(255, 255, 255, 0.9) !important;
             transform: translateY(-1px);
         }
-
+        
         .nav-link.active {
             font-weight: 600;
             position: relative;
         }
-
+        
         .nav-link.active::after {
             content: '';
             position: absolute;
@@ -1094,713 +986,23 @@ document.addEventListener('DOMContentLoaded', function() {
             background-color: white;
             border-radius: 1px;
         }
-
+        
         .dropdown-menu {
             border: none;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
             border-radius: 12px;
         }
-
+        
         .dropdown-item {
             padding: 0.75rem 1rem;
             transition: all 0.2s ease;
-            border-radius: 0;
         }
-
-        .dropdown-item:hover {
-            background-color: var(--vinted-accent);
-            color: var(--vinted-primary);
-        }
-
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0;
-        }
-
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: ">";
-            color: var(--vinted-gray-400);
-        }
-
-        /* Animation pour les notifications */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsive - Large screens */
-        @media (max-width: 1200px) {
-            .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-            
-            .navbar .container {
-                padding-left: 1rem;
-                padding-right: 1rem;
-            }
-        }
-
-        /* Responsive - Medium screens */
-        @media (max-width: 992px) {
-            .navbar-brand {
-                font-size: 1.25rem;
-            }
-            
-            .navbar-nav {
-                margin-top: 1rem;
-                padding-top: 1rem;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .navbar-collapse {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 0.5rem;
-                padding: 1rem;
-                margin-top: 0.5rem;
-            }
-            
-            .input-group {
-                min-width: auto !important;
-                margin-bottom: 1rem;
-            }
-            
-            .navbar-nav .nav-link {
-                padding: 0.75rem 0;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .navbar-nav .nav-link:last-child {
-                border-bottom: none;
-            }
-            
-            /* Footer responsive */
-            footer .row {
-                text-align: center;
-            }
-            
-            footer .col-md-4,
-            footer .col-md-2 {
-                margin-bottom: 2rem;
-            }
-            
-            footer .col-md-4:last-child,
-            footer .col-md-2:last-child {
-                margin-bottom: 0;
-            }
-        }
-
-        /* Responsive - Small screens */
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0.5rem 0;
-            }
-            
-            .navbar-brand {
-                font-size: 1.1rem;
-            }
-            
-            .navbar-toggler {
-                border: none;
-                padding: 0.25rem 0.5rem;
-                font-size: 1rem;
-            }
-            
-            .navbar-toggler:focus {
-                box-shadow: none;
-            }
-            
-            .navbar-nav {
-                margin-top: 0.5rem;
-                padding-top: 0.5rem;
-            }
-            
-            .navbar-nav .nav-link {
-                padding: 0.5rem 0;
-                font-size: 0.9rem;
-            }
-            
-            .input-group {
-                margin-bottom: 0.5rem;
-            }
-            
-            .input-group .form-control {
-                font-size: 16px; /* Évite le zoom sur iOS */
-            }
-            
-            .dropdown-menu {
-                position: static !important;
-                float: none;
-                width: 100%;
-                margin-top: 0.5rem;
-                border-radius: 0.5rem;
-                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            }
-            
-            .dropdown-item {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-            
-            /* Breadcrumb mobile */
-            .breadcrumb {
-                font-size: 0.8rem;
-                padding: 0.5rem 0;
-            }
-            
-            .breadcrumb-item {
-                max-width: 150px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-            
-            /* Footer mobile */
-            footer {
-                padding: 2rem 0;
-            }
-            
-            footer .row {
-                text-align: center;
-            }
-            
-            footer .col-md-4,
-            footer .col-md-2 {
-                margin-bottom: 1.5rem;
-            }
-            
-            footer h5,
-            footer h6 {
-                margin-bottom: 1rem;
-            }
-            
-            footer .d-flex.gap-2 {
-                justify-content: center;
-            }
-        }
-
-        /* Responsive - Extra small screens */
-        @media (max-width: 576px) {
-            .navbar-brand {
-                font-size: 1rem;
-            }
-            
-            .navbar-nav .nav-link {
-                font-size: 0.85rem;
-                padding: 0.5rem 0;
-            }
-            
-            .input-group {
-                margin-bottom: 0.5rem;
-            }
-            
-            .input-group .form-control {
-                font-size: 16px;
-                padding: 0.5rem 0.75rem;
-            }
-            
-            .input-group .btn {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.9rem;
-            }
-            
-            .dropdown-item {
-                padding: 0.5rem 0.75rem;
-                font-size: 0.85rem;
-            }
-            
-            /* Breadcrumb très mobile */
-            .breadcrumb {
-                font-size: 0.75rem;
-                padding: 0.25rem 0;
-            }
-            
-            .breadcrumb-item {
-                max-width: 100px;
-            }
-            
-            /* Footer très mobile */
-            footer {
-                padding: 1.5rem 0;
-            }
-            
-            footer .container {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-            }
-            
-            footer .row {
-                margin-left: -0.5rem;
-                margin-right: -0.5rem;
-            }
-            
-            footer .col-md-4,
-            footer .col-md-2 {
-                padding-left: 0.5rem;
-                padding-right: 0.5rem;
-                margin-bottom: 1rem;
-            }
-            
-            footer h5 {
-                font-size: 1rem;
-            }
-            
-            footer h6 {
-                font-size: 0.9rem;
-            }
-            
-            footer p,
-            footer li,
-            footer small {
-                font-size: 0.8rem;
-            }
-        }
-
-        /* Responsive - Extra extra small screens */
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 0.25rem 0;
-            }
-            
-            .navbar-brand {
-                font-size: 0.9rem;
-            }
-            
-            .navbar-nav .nav-link {
-                font-size: 0.8rem;
-                padding: 0.375rem 0;
-            }
-            
-            .input-group .form-control {
-                font-size: 16px;
-                padding: 0.375rem 0.5rem;
-            }
-            
-            .input-group .btn {
-                padding: 0.375rem 0.5rem;
-                font-size: 0.8rem;
-            }
-            
-            .dropdown-item {
-                padding: 0.375rem 0.5rem;
-                font-size: 0.8rem;
-            }
-            
-            /* Breadcrumb extra mobile */
-            .breadcrumb {
-                font-size: 0.7rem;
-                padding: 0.25rem 0;
-            }
-            
-            .breadcrumb-item {
-                max-width: 80px;
-            }
-            
-            /* Footer extra mobile */
-            footer {
-                padding: 1rem 0;
-            }
-            
-            footer .container {
-                padding-left: 0.25rem;
-                padding-right: 0.25rem;
-            }
-            
-            footer .row {
-                margin-left: -0.25rem;
-                margin-right: -0.25rem;
-            }
-            
-            footer .col-md-4,
-            footer .col-md-2 {
-                padding-left: 0.25rem;
-                padding-right: 0.25rem;
-                margin-bottom: 0.75rem;
-            }
-            
-            footer h5 {
-                font-size: 0.9rem;
-            }
-            
-            footer h6 {
-                font-size: 0.8rem;
-            }
-            
-            footer p,
-            footer li,
-            footer small {
-                font-size: 0.75rem;
-            }
-        }
-
-        /* Styles pour les écrans tactiles */
-        @media (hover: none) and (pointer: coarse) {
-            .nav-link {
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-            }
-            
-            .dropdown-item {
-                min-height: 44px;
-                display: flex;
-                align-items: center;
-            }
-            
-            .btn {
-                min-height: 44px;
-            }
-            
-            .form-control,
-            .form-select {
-                min-height: 44px;
-            }
-        }
-
-        /* Styles pour les écrans haute densité */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            .navbar {
-                border-width: 0.5px;
-            }
-            
-            .card {
-                border-width: 0.5px;
-            }
-            
-            .btn {
-                border-width: 0.5px;
-            }
-        }
-
-        /* Styles pour les écrans en mode paysage sur mobile */
-        @media (max-width: 768px) and (orientation: landscape) {
-            .navbar {
-                padding: 0.25rem 0;
-            }
-            
-            .navbar-brand {
-                font-size: 0.9rem;
-            }
-            
-            .navbar-nav {
-                margin-top: 0.25rem;
-                padding-top: 0.25rem;
-            }
-            
-            .navbar-nav .nav-link {
-                padding: 0.25rem 0;
-                font-size: 0.8rem;
-            }
-        }
-
-        /* Effets de hover pour les cartes */
-        .card.hover-lift {
-            transition: all 0.2s ease;
-        }
-
-        .card.hover-lift:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Boutons avec effet de lift */
-        .btn.hover-lift {
-            transition: all 0.2s ease;
-        }
-
-        .btn.hover-lift:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
-        }
-
-        /* Amélioration de l'accessibilité */
-        .nav-link:focus,
-        .dropdown-item:focus,
-        .btn:focus {
-            outline: 2px solid #007bff;
-            outline-offset: 2px;
-        }
-
-        /* Amélioration de la lisibilité */
-        @media (prefers-reduced-motion: reduce) {
-            .nav-link,
-            .dropdown-item,
-            .btn,
-            .card {
-                transition: none;
-            }
-        }
-
-        /* Styles spécifiques pour les catégories */
-        .category-card {
-            transition: all 0.3s ease;
-            border: 1px solid var(--bs-border-color);
-        }
-
-        .category-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-            border-color: var(--vinted-primary);
-        }
-
-        .category-icon {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--vinted-primary), var(--vinted-secondary));
-            color: white;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .category-stats {
-            font-size: 0.875rem;
-            color: var(--bs-text-muted);
-        }
-
-        .category-list-item {
-            transition: all 0.2s ease;
-            border-radius: 8px;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .category-list-item:hover {
-            background-color: var(--bs-light);
-            transform: translateX(4px);
-        }
-
-        .subcategory-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .subcategory-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .category-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 1.25rem;
-            }
-        }
-        </style>
-
-        <!-- Composant Notifications Temps Réel -->
-        <?php if(auth()->guard()->check()): ?>
-        <div id="realtime-notification-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999; max-width: 400px;"></div>
         
-        <script type="module">
-            // Notifications en temps réel avec Laravel Echo
-            if (window.Echo && <?php echo e(Auth::id()); ?>) {
-                console.log('🔔 Initialisation des notifications temps réel pour l\'utilisateur <?php echo e(Auth::id()); ?>');
-                
-                // Écouter le canal privé de l'utilisateur
-                window.Echo.private('user.<?php echo e(Auth::id()); ?>')
-                    .listen('.order.notification', (data) => {
-                        console.log('📬 Notification reçue:', data);
-                        showRealtimeNotification(data);
-                        
-                        // Mettre à jour le compteur de notifications
-                        updateNotificationBadge();
-                        
-                        // Jouer un son (optionnel)
-                        playNotificationSound();
-                    })
-                    .error((error) => {
-                        console.error('❌ Erreur canal notifications:', error);
-                    });
-
-                // Fonction pour afficher la notification
-                function showRealtimeNotification(data) {
-                    const container = document.getElementById('realtime-notification-container');
-                    if (!container) return;
-
-                    // Icône selon le type de notification
-                    const icons = {
-                        'new_order': '<i class="fas fa-shopping-cart text-primary"></i>',
-                        'payment_confirmed': '<i class="fas fa-check-circle text-success"></i>',
-                        'order_shipped': '<i class="fas fa-shipping-fast text-info"></i>',
-                        'order_delivered': '<i class="fas fa-box-check text-success"></i>',
-                        'order_completed': '<i class="fas fa-star text-warning"></i>'
-                    };
-
-                    // Couleurs selon le type
-                    const colors = {
-                        'new_order': 'primary',
-                        'payment_confirmed': 'success',
-                        'order_shipped': 'info',
-                        'order_delivered': 'success',
-                        'order_completed': 'warning'
-                    };
-
-                    const icon = icons[data.type] || '<i class="fas fa-bell text-secondary"></i>';
-                    const color = colors[data.type] || 'secondary';
-
-                    // Créer la notification
-                    const notification = document.createElement('div');
-                    notification.className = `alert alert-${color} alert-dismissible fade show shadow-lg mb-3`;
-                    notification.style.cssText = 'animation: slideInRight 0.5s ease; border-left: 4px solid currentColor;';
-                    notification.innerHTML = `
-                        <div class="d-flex align-items-start">
-                            <div class="me-3" style="font-size: 1.5rem;">
-                                ${icon}
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-1">${data.message}</h6>
-                                <small class="d-block text-muted">
-                                    <strong>Commande #${data.order_number}</strong><br>
-                                    ${data.item_name} - ${data.total_amount} ${data.currency}
-                                </small>
-                            </div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    `;
-
-                    container.appendChild(notification);
-
-                    // Auto-fermeture après 8 secondes
-                    setTimeout(() => {
-                        notification.classList.remove('show');
-                        setTimeout(() => notification.remove(), 500);
-                    }, 8000);
-
-                    // Click pour voir la commande
-                    notification.style.cursor = 'pointer';
-                    notification.addEventListener('click', (e) => {
-                        if (!e.target.classList.contains('btn-close')) {
-                            window.location.href = `/orders/${data.order_id}`;
-                        }
-                    });
-                }
-
-                // Mettre à jour le badge de compteur
-                function updateNotificationBadge() {
-                    const badge = document.querySelector('#notificationsDropdown .badge');
-                    if (badge) {
-                        const currentCount = parseInt(badge.textContent) || 0;
-                        badge.textContent = currentCount + 1;
-                        badge.classList.remove('d-none');
-                    }
-                }
-
-                // Son de notification (optionnel)
-                function playNotificationSound() {
-                    try {
-                        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvPTgjoIGWS45+mjUBELTKXh6rdmHgU2jdXxzYAuBSh+zPLaizsIHGe96+mnUhILP5vd78hwKAUsgc3z1oU6CBxmvO3qp1MRDEyj4Oq4aiIFNozT8c6GMAUqf83y2Ik4CBtlu+zpp1USCz6Z3O7LcisEK4DN8daFOggcZrvs6qdUEAw/m9vvy3IrBSh+zfPYiTgIG2a77OilVBILP5nb78txLAUogM3z1oU6CBxmvO3qp1MRDUqj4Oq4aiIENozT8c6HLwUpfs3y2Ik4CBtlu+zpp1QSDECb3O7McisFKIDN89aGOgcbZrvt6qhVEgxNo+Dqt2ogBTWM0/HOhzEFKYDN8tiIOgcbZLvs66dUEgxAm9zuy3IsJCh+zPPYiToIG2S77OqmUhEMT6Ph6bllHwU3i9Pwy4YwBSh+zfLZiTkIG2S76+unVBIMQJrc78txLAUof8zz2Io5CBtkuuvqp1QSDEyj4Oq2Zh4FNY3T8c+HLwUpfszy2Ik6BxtkuuzqplISC0yj4Oq3Zh4FNY3T8c+GLgUpfszy2Ik5CBxku+vqplUSDE2k4eu4aR0FNYzS8c6DLwUpf8zy2Ik5CBxku+zqqFURDEyj4eu3ZR4FNo3S8c6HMQUpfszy2Ig5CBxku+zqp1MRDEyk4eu3Zh4FNY3S8c6HLgUpfszy2Yo5CBxku+vrp1MSC0uk4Ou3Zh4FNY3S8c6HLgUpf83y2Yk5CBtlu+zqp1QSDEyk4eu3Zh4FNY3S8c6HLgUpf83y2Yk5CBtlvOzqp1QRDEuk4Ou1ZR4FNo3S8c6FLgUpf83y2Yk6CBtlvOzqp1QRC0qj4eu1ZR4FNo3S8c2FLgUpf8zy2Yk6BxplvOzpp1QRDEqj4euyZB4FNozS8c6FLgUpgM3y2Ik6BxplvOzqp1QRDEuj4euyZB4FNo3S8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euyZB4FNo3S8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4FNozS8c6FMQUpgM3y2Ik6BxplvOzqp1MRDEqj4euuZB4=');
-                        audio.volume = 0.3;
-                        audio.play().catch(() => {}); // Ignore si l'utilisateur n'a pas interagi
-                    } catch (e) {}
-                }
-
-                console.log('✅ Notifications temps réel activées');
-            }
-        </script>
-
-        <!-- Script Newsletter -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const newsletterForm = document.getElementById('newsletterForm');
-                const newsletterMessage = document.getElementById('newsletterMessage');
-                
-                if (newsletterForm) {
-                    newsletterForm.addEventListener('submit', async function(e) {
-                        e.preventDefault();
-                        
-                        const email = document.getElementById('newsletterEmail').value;
-                        const submitBtn = this.querySelector('button[type="submit"]');
-                        const originalBtnText = submitBtn.innerHTML;
-                        
-                        // Désactiver le bouton pendant l'envoi
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Envoi...';
-                        
-                        try {
-                            const response = await fetch('<?php echo e(route("newsletter.subscribe")); ?>', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                    'Accept': 'application/json',
-                                },
-                                body: JSON.stringify({ email: email })
-                            });
-                            
-                            const data = await response.json();
-                            
-                            if (data.success) {
-                                newsletterMessage.innerHTML = `
-                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-check-circle me-2"></i>${data.message}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                `;
-                                newsletterForm.reset();
-                            } else {
-                                newsletterMessage.innerHTML = `
-                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                        <i class="fas fa-exclamation-circle me-2"></i>${data.message}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                `;
-                            }
-                        } catch (error) {
-                            newsletterMessage.innerHTML = `
-                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                    <i class="fas fa-exclamation-circle me-2"></i>Une erreur est survenue. Veuillez réessayer.
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            `;
-                        }
-                        
-                        // Réactiver le bouton
-                        submitBtn.disabled = false;
-                        submitBtn.innerHTML = originalBtnText;
-                        
-                        // Auto-masquer le message après 5 secondes
-                        setTimeout(() => {
-                            newsletterMessage.innerHTML = '';
-                        }, 5000);
-                    });
-                }
-            });
-        </script>
-
-        <style>
-            @keyframes slideInRight {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            
-            #realtime-notification-container .alert {
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            
-            #realtime-notification-container .alert:hover {
-                transform: scale(1.02);
-                box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
-            }
+        .dropdown-item:hover {
+            background-color: #f3e8ff;
+            color: rgb(79, 0, 206);
+        }
         </style>
-        <?php endif; ?>
-
-        <!-- Widget d'assistance : affiché uniquement sur desktop -->
-        <div class="d-none d-md-block">
-            <?php echo $__env->make('support.widget', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        </div>
     </body>
 </html>
 <?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/app.blade.php ENDPATH**/ ?>

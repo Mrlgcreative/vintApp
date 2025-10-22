@@ -77,6 +77,67 @@
                             </div>
                         </div>
 
+                        <!-- Détails du produit -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" 
+                                           class="form-control @error('color') is-invalid @enderror" 
+                                           id="color" 
+                                           name="color" 
+                                           value="{{ old('color') }}" 
+                                           placeholder="Couleur">
+                                    <label for="color">
+                                        <i class="fas fa-palette me-2"></i>
+                                        Couleur
+                                    </label>
+                                    @error('color')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select @error('size') is-invalid @enderror"
+                                            id="size"
+                                            name="size">
+                                        <option value="">Choisir une taille</option>
+                                        <option value="XS" {{ old('size') == 'XS' ? 'selected' : '' }}>XS</option>
+                                        <option value="S" {{ old('size') == 'S' ? 'selected' : '' }}>S</option>
+                                        <option value="M" {{ old('size') == 'M' ? 'selected' : '' }}>M</option>
+                                        <option value="L" {{ old('size') == 'L' ? 'selected' : '' }}>L</option>
+                                        <option value="XL" {{ old('size') == 'XL' ? 'selected' : '' }}>XL</option>
+                                        <option value="XXL" {{ old('size') == 'XXL' ? 'selected' : '' }}>XXL</option>
+                                        <option value="XXXL" {{ old('size') == 'XXXL' ? 'selected' : '' }}>XXXL</option>
+                                    </select>
+                                    <label for="size">
+                                        <i class="fas fa-ruler me-2"></i>
+                                        Taille
+                                    </label>
+                                    @error('size')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" 
+                                           class="form-control @error('item_number') is-invalid @enderror" 
+                                           id="item_number" 
+                                           name="item_number" 
+                                           value="{{ old('item_number') }}" 
+                                           placeholder="Numéro d'article">
+                                    <label for="item_number">
+                                        <i class="fas fa-hashtag me-2"></i>
+                                        Numéro d'article
+                                    </label>
+                                    @error('item_number')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Catégorie et marque -->
                         <div class="row mb-4">
                             <div class="col-md-6">

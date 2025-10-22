@@ -23,6 +23,9 @@ class Item extends Model
         'specifications',
         'images',
         'views',
+        'color',
+        'size',
+        'item_number',
     ];
 
     protected $casts = [

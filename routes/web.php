@@ -15,7 +15,18 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
 
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+// Page de démarrage
+Route::get('/splash', function() {
+    return view('splash');
+})->name('splash');
+
+// Page d'accueil avec WelcomeController
+Route::get('/home', [WelcomeController::class, 'index'])->name('home');
+
+// Redirection de la racine vers la page de démarrage
+Route::get('/', function() {
+    return redirect()->route('splash');
+});
 
 // Routes Newsletter publiques
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
@@ -84,8 +95,8 @@ Route::middleware('auth')->group(function () {
     // Thème
     Route::post('/theme/toggle', [ThemeController::class, 'toggle'])->name('theme.toggle');
     Route::post('/theme/set', [ThemeController::class, 'set'])->name('theme.set');
-    Route::get('/theme/get', [ThemeController::class, 'get'])->name('theme.get');
 });
+
 
 // Routes pour les commandes
 // Routes des commandes

@@ -100,14 +100,27 @@ class MessageController extends Controller
         $user = Auth::user();
         $recipientId = $request->recipient_id;
 
-        // Restriction : un vendeur ne peut écrire qu'à ses clients
-        // Un vendeur = utilisateur qui a vendu au moins un article (Order où il est seller)
-        $isSeller = \App\Models\Order::where('seller_id', $user->id)->exists();
-        if ($isSeller) {
-            // Récupérer les IDs des acheteurs de ce vendeur
-            $clientIds = \App\Models\Order::where('seller_id', $user->id)->pluck('buyer_id')->unique();
-            if (!$clientIds->contains($recipientId)) {
-                return response()->json(['success' => false, 'error' => 'Vous ne pouvez écrire qu’à vos clients.'], 403);
+        // Vérifier si c'est une conversation existante ou concernant un produit
+        $hasExistingConversation = Message::where(function($query) use ($user, $recipientId) {
+            $query->where('sender_id', $user->id)
+                  ->where('receiver_id', $recipientId);
+        })->orWhere(function($query) use ($user, $recipientId) {
+            $query->where('sender_id', $recipientId)
+                  ->where('receiver_id', $user->id);
+        })->exists();
+
+        // Si une conversation existe déjà ou si le destinataire a déjà acheté, autoriser le message
+        if (!$hasExistingConversation) {
+            $hasOrder = \App\Models\Order::where(function($query) use ($user, $recipientId) {
+                $query->where('seller_id', $user->id)
+                      ->where('buyer_id', $recipientId);
+            })->orWhere(function($query) use ($user, $recipientId) {
+                $query->where('seller_id', $recipientId)
+                      ->where('buyer_id', $user->id);
+            })->exists();
+            
+            if (!$hasOrder && !$request->has('item_id')) {
+                return response()->json(['success' => false, 'error' => 'Vous devez d\'abord initier une conversation à propos d\'un produit.'], 403);
             }
         }
 

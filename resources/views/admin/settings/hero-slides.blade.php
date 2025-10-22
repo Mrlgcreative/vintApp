@@ -54,15 +54,61 @@
                                 <button type="button" data-bs-target="#heroCarouselPreview" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></button>
                             @endforeach
                         </div>
-                        <div class="carousel-inner rounded-lg overflow-hidden" style="max-height: 400px;">
+                        <div class="carousel-inner rounded-lg overflow-hidden" style="max-height: 500px;">
                             @foreach($slides->where('is_active', true) as $index => $slide)
-                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                    <img src="{{ Storage::url($slide->image_path) }}" class="d-block w-100" style="object-fit: cover; height: 400px;" alt="{{ $slide->title }}">
-                                    <div class="carousel-caption d-md-block bg-dark bg-opacity-50 rounded p-3">
-                                        <h5 class="text-white fw-bold">{{ $slide->title }}</h5>
-                                        @if($slide->subtitle)
-                                            <p class="text-white">{{ $slide->subtitle }}</p>
-                                        @endif
+                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
+                                    <div class="d-flex align-items-center" style="min-height: 500px; padding: 40px;">
+                                        <div class="container">
+                                            <div class="row align-items-center">
+                                                @if($slide->image_position === 'left')
+                                                    <!-- Image à gauche -->
+                                                    <div class="col-md-6 text-center">
+                                                        <img src="{{ Storage::url($slide->image_path) }}" 
+                                                             class="img-fluid" 
+                                                             style="max-height: 400px; object-fit: contain;"
+                                                             alt="{{ $slide->title }}">
+                                                    </div>
+                                                    <!-- Texte à droite -->
+                                                    <div class="col-md-6 text-{{ $slide->text_position ?? 'left' }}">
+                                                        <h2 class="text-white fw-bold mb-3" style="font-size: 2.5rem;">{{ $slide->title }}</h2>
+                                                        @if($slide->subtitle)
+                                                            <p class="text-white mb-4" style="font-size: 1.2rem;">{{ $slide->subtitle }}</p>
+                                                        @endif
+                                                        <div class="d-flex gap-3 {{ $slide->text_position === 'center' ? 'justify-content-center' : ($slide->text_position === 'right' ? 'justify-content-end' : '') }}">
+                                                            @if($slide->button_primary_text)
+                                                                <a href="{{ $slide->button_primary_url ?? '#' }}" class="btn btn-light btn-lg px-4 py-2">{{ $slide->button_primary_text }}</a>
+                                                            @endif
+                                                            @if($slide->button_secondary_text)
+                                                                <a href="{{ $slide->button_secondary_url ?? '#' }}" class="btn btn-outline-light btn-lg px-4 py-2">{{ $slide->button_secondary_text }}</a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @else
+                                                    <!-- Texte à gauche (ou position choisie) -->
+                                                    <div class="col-md-6 text-{{ $slide->text_position ?? 'left' }}">
+                                                        <h2 class="text-white fw-bold mb-3" style="font-size: 2.5rem;">{{ $slide->title }}</h2>
+                                                        @if($slide->subtitle)
+                                                            <p class="text-white mb-4" style="font-size: 1.2rem;">{{ $slide->subtitle }}</p>
+                                                        @endif
+                                                        <div class="d-flex gap-3 {{ $slide->text_position === 'center' ? 'justify-content-center' : ($slide->text_position === 'right' ? 'justify-content-end' : '') }}">
+                                                            @if($slide->button_primary_text)
+                                                                <a href="{{ $slide->button_primary_url ?? '#' }}" class="btn btn-light btn-lg px-4 py-2">{{ $slide->button_primary_text }}</a>
+                                                            @endif
+                                                            @if($slide->button_secondary_text)
+                                                                <a href="{{ $slide->button_secondary_url ?? '#' }}" class="btn btn-outline-light btn-lg px-4 py-2">{{ $slide->button_secondary_text }}</a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <!-- Image à droite -->
+                                                    <div class="col-md-6 text-center">
+                                                        <img src="{{ Storage::url($slide->image_path) }}" 
+                                                             class="img-fluid" 
+                                                             style="max-height: {{ $slide->image_size === 'small' ? '250px' : ($slide->image_size === 'medium' ? '350px' : ($slide->image_size === 'large' ? '450px' : '100%')) }}; object-fit: contain;"
+                                                             alt="{{ $slide->title }}">
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -232,10 +278,66 @@
                     <input type="file" name="image" id="slideImage" accept="image/*"
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                            onchange="previewImage(this)">
-                    <p class="text-xs text-gray-500 mt-1">Formats: JPG, PNG, GIF - Max 5MB - Recommandé: 1920x600px</p>
+                    <p class="text-xs text-gray-500 mt-1">Formats: JPG, PNG, GIF - Max 5MB - Recommandé: 1920x1080px (PNG haute résolution)</p>
                     <div id="imagePreview" class="mt-3 hidden">
-                        <img id="previewImg" src="" alt="Aperçu" class="w-full h-48 object-cover rounded-lg">
+                        <img id="previewImg" src="" alt="Aperçu" class="w-full h-48 object-contain rounded-lg bg-gray-50">
                     </div>
+                </div>
+                
+                <!-- Couleur de fond personnalisable -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Couleur de fond <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <input type="color" name="background_color" id="backgroundColor" value="#6A0DAD"
+                               class="h-10 w-20 border border-gray-300 rounded cursor-pointer">
+                        <input type="text" id="backgroundColorHex" value="#6A0DAD" 
+                               pattern="^#[0-9A-Fa-f]{6}$"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               placeholder="#6A0DAD">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Choisissez la couleur de fond du carrousel</p>
+                </div>
+                
+                <!-- Position du texte et de l'image -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Position du texte <span class="text-red-500">*</span>
+                        </label>
+                        <select name="text_position" id="textPosition" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="left">À gauche</option>
+                            <option value="center">Au centre</option>
+                            <option value="right">À droite</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Position de l'image <span class="text-red-500">*</span>
+                        </label>
+                        <select name="image_position" id="imagePosition" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option value="right">À droite</option>
+                            <option value="left">À gauche</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Taille de l'image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Taille de l'image <span class="text-red-500">*</span>
+                    </label>
+                    <select name="image_size" id="imageSize" required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <option value="small">Petite (250px)</option>
+                        <option value="medium" selected>Moyenne (350px)</option>
+                        <option value="large">Grande (450px)</option>
+                        <option value="full">Pleine hauteur (100%)</option>
+                    </select>
+                    <p class="text-xs text-gray-500 mt-1">Définit la hauteur maximale de l'image dans le carrousel</p>
                 </div>
                 
                 <!-- Bouton Principal -->
@@ -337,6 +439,11 @@ function showAddModal() {
     // Réinitialiser le formulaire
     document.getElementById('slideForm').reset();
     document.getElementById('imagePreview').classList.add('hidden');
+    document.getElementById('backgroundColor').value = '#6A0DAD';
+    document.getElementById('backgroundColorHex').value = '#6A0DAD';
+    document.getElementById('textPosition').value = 'left';
+    document.getElementById('imagePosition').value = 'right';
+    document.getElementById('imageSize').value = 'medium';
     
     document.getElementById('slideModal').classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
@@ -359,6 +466,11 @@ function editSlide(slideId) {
     // Remplir le formulaire
     document.getElementById('slideTitle').value = slide.title || '';
     document.getElementById('slideSubtitle').value = slide.subtitle || '';
+    document.getElementById('backgroundColor').value = slide.background_color || '#6A0DAD';
+    document.getElementById('backgroundColorHex').value = slide.background_color || '#6A0DAD';
+    document.getElementById('textPosition').value = slide.text_position || 'left';
+    document.getElementById('imagePosition').value = slide.image_position || 'right';
+    document.getElementById('imageSize').value = slide.image_size || 'medium';
     document.getElementById('buttonPrimaryText').value = slide.button_primary_text || '';
     document.getElementById('buttonPrimaryUrl').value = slide.button_primary_url || '';
     document.getElementById('buttonSecondaryText').value = slide.button_secondary_text || '';
@@ -390,6 +502,25 @@ function previewImage(input) {
         reader.readAsDataURL(input.files[0]);
     }
 }
+
+// Synchroniser le color picker avec le champ texte
+document.addEventListener('DOMContentLoaded', function() {
+    const colorPicker = document.getElementById('backgroundColor');
+    const colorHex = document.getElementById('backgroundColorHex');
+    
+    if (colorPicker && colorHex) {
+        colorPicker.addEventListener('input', function() {
+            colorHex.value = this.value.toUpperCase();
+        });
+        
+        colorHex.addEventListener('input', function() {
+            const hex = this.value;
+            if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+                colorPicker.value = hex;
+            }
+        });
+    }
+});
 
 // Mettre à jour l'ordre des slides
 function updateSlidesOrder() {
