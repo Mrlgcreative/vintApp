@@ -81,6 +81,37 @@
             color: #999;
         }
 
+        .qr-code-section {
+            text-align: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 2px dashed #6A0DAD;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .qr-code-section img {
+            display: block;
+            margin: 0 auto 10px;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-code-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #6A0DAD;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .qr-code-instructions {
+            font-size: 11px;
+            color: #666;
+            line-height: 1.4;
+        }
+
         .parties-section {
             display: flex;
             justify-content: space-between;
@@ -364,6 +395,17 @@
                 @if($order->paid_at)
                 <div class="invoice-date" style="color: #10B981; font-weight: bold; margin-top: 5px;">
                     ✓ Payée le {{ $order->paid_at->format('d/m/Y') }}
+                </div>
+                @endif
+                
+                <!-- QR Code pour confirmation -->
+                @if($order->scan_token)
+                <div class="qr-code-section">
+                    <div class="qr-code-label">Confirmation de réception</div>
+                    {!! QrCode::size(120)->generate($order->scan_url) !!}
+                    <div class="qr-code-instructions">
+                        Scannez ce code pour<br>confirmer la réception
+                    </div>
                 </div>
                 @endif
             </div>

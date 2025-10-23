@@ -54,6 +54,10 @@ Route::get('/test-notifications', function() {
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
 
+// Routes publiques pour le scan QR code des commandes
+Route::get('/order/scan/{token}', [OrderController::class, 'scanOrder'])->name('orders.scan');
+Route::post('/order/scan/{token}/confirm', [OrderController::class, 'confirmOrderDelivery'])->name('orders.scan.confirm');
+
 Route::middleware('auth')->group(function () {
     // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
     Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');

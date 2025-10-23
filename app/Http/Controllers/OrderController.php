@@ -19,7 +19,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with(['item', 'buyer'])
+        $orders = Order::with(['item', 'buyer', 'deliveryAddress'])
             ->where('buyer_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -132,7 +132,7 @@ class OrderController extends Controller
             abort(403, 'Vous n\'êtes pas autorisé à voir cette commande.');
         }
 
-        $order->load(['item', 'buyer']);
+        $order->load(['item', 'buyer', 'deliveryAddress']);
 
         return view('orders.show', compact('order'));
     }
@@ -705,6 +705,121 @@ class OrderController extends Controller
             }
             
             return back()->withErrors(['error' => 'Une erreur est survenue lors de la confirmation de livraison.']);
+        }
+    }
+    
+    /**
+     * Afficher la page de scan du QR code
+     */
+    public function scanOrder($token)
+    {
+        $order = Order::with(['item', 'buyer', 'seller', 'deliveryAddress'])
+            ->where('scan_token', $token)
+            ->firstOrFail();
+        
+        // Marquer comme scanné si c'est le premier scan
+        if (!$order->scanned_at) {
+            $order->update(['scanned_at' => now()]);
+        }
+        
+        return view('orders.scan', compact('order'));
+    }
+    
+    /**
+     * Confirmer la réception de la commande via scan QR
+     */
+    public function confirmOrderDelivery(Request $request, $token)
+    {
+        try {
+            $order = Order::where('scan_token', $token)->firstOrFail();
+            
+            // Vérifier que la commande peut être confirmée
+            if ($order->confirmed_by_buyer_at) {
+                return redirect()->route('orders.scan', $token)
+                    ->with('info', 'Cette commande a déjà été confirmée le ' . $order->confirmed_by_buyer_at->format('d/m/Y à H:i'));
+            }
+            
+            // Confirmer la réception
+            $order->update([
+                'confirmed_by_buyer_at' => now(),
+                'buyer_confirmation_note' => $request->input('note', 'Confirmé via scan QR code'),
+                'status' => 'completed'
+            ]);
+            
+            // Distribuer les fonds (même logique que confirmDelivery)
+            $this->distributeFunds($order);
+            
+            return redirect()->route('orders.scan', $token)
+                ->with('success', 'Merci ! Votre réception a été confirmée avec succès. Les fonds ont été distribués.');
+                
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la confirmation via QR scan', [
+                'error' => $e->getMessage(),
+                'token' => $token,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return redirect()->route('orders.scan', $token)
+                ->with('error', 'Une erreur est survenue lors de la confirmation: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Distribuer les fonds après confirmation de réception
+     */
+    private function distributeFunds($order)
+    {
+        DB::beginTransaction();
+        
+        try {
+            // Récupérer les portefeuilles
+            $sellerWallet = \App\Models\Wallet::where('user_id', $order->seller_id)
+                ->where('currency', $order->currency)
+                ->first();
+            
+            if (!$sellerWallet) {
+                Log::warning('Portefeuille vendeur non trouvé', [
+                    'order_id' => $order->id,
+                    'seller_id' => $order->seller_id,
+                    'currency' => $order->currency,
+                ]);
+                DB::commit();
+                return; // Pas de wallet, on continue quand même
+            }
+            
+            // Calculer les montants (commission de 5%)
+            $commission = $order->total_amount * 0.05;
+            $sellerAmount = $order->total_amount - $commission;
+            
+            // Créditer le vendeur
+            $sellerWallet->increment('balance', $sellerAmount);
+            
+            // Enregistrer la transaction pour le vendeur
+            \App\Models\Transaction::create([
+                'wallet_id' => $sellerWallet->id,
+                'type' => 'vente',
+                'amount' => $sellerAmount,
+                'currency' => $order->currency,
+                'status' => 'completed',
+                'description' => 'Vente de ' . $order->item->name . ' (Commande #' . $order->order_number . ')',
+                'order_id' => $order->id,
+            ]);
+            
+            Log::info('Fonds distribués après confirmation', [
+                'order_id' => $order->id,
+                'seller_amount' => $sellerAmount,
+                'commission' => $commission,
+            ]);
+            
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la distribution des fonds', [
+                'error' => $e->getMessage(),
+                'order_id' => $order->id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
         }
     }
 }

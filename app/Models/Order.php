@@ -13,6 +13,7 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'buyer_id',
+        'delivery_address_id',
         'seller_id',
         'item_id',
         'quantity',
@@ -25,6 +26,8 @@ class Order extends Model
         'shipping_phone',
         'notes',
         'tracking_number',
+        'scan_token',
+        'scanned_at',
         'paid_at',
         'shipped_at',
         'delivered_at',
@@ -39,6 +42,7 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
         'confirmed_by_buyer_at' => 'datetime',
+        'scanned_at' => 'datetime',
     ];
 
     protected static function boot()
@@ -49,7 +53,19 @@ class Order extends Model
             if (empty($order->order_number)) {
                 $order->order_number = 'ORD-' . date('Y') . '-' . strtoupper(Str::random(8));
             }
+            // Générer un token unique pour le scan QR code
+            if (empty($order->scan_token)) {
+                $order->scan_token = Str::random(32);
+            }
         });
+    }
+    
+    /**
+     * Obtenir l'URL de scan du QR code
+     */
+    public function getScanUrlAttribute()
+    {
+        return route('orders.scan', ['token' => $this->scan_token]);
     }
 
     public function buyer()
@@ -65,6 +81,14 @@ class Order extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    /**
+     * Get the delivery address for this order
+     */
+    public function deliveryAddress()
+    {
+        return $this->belongsTo(DeliveryAddress::class, 'delivery_address_id');
     }
 
     /**

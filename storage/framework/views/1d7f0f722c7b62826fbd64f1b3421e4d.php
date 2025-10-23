@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>{{ config('app.name', 'VintApp') }}</title>
+<meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+<title><?php echo e(config('app.name', 'VintApp')); ?></title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -292,7 +292,7 @@ const splashContainer = document.getElementById('splashContainer');
 const redirectTimer = setTimeout(() => {
   splashContainer.classList.add('outro');
   setTimeout(() => {
-    window.location.href = "{{ route('home') }}";
+    window.location.href = "<?php echo e(route('home')); ?>";
   }, 800);
 }, 3500);
 
@@ -301,7 +301,7 @@ const redirectToHome = () => {
   clearTimeout(redirectTimer);
   splashContainer.classList.add('outro');
   setTimeout(() => {
-    window.location.href = "{{ route('home') }}";
+    window.location.href = "<?php echo e(route('home')); ?>";
   }, 800);
 };
 
@@ -311,3 +311,4 @@ document.addEventListener('touchstart', redirectToHome, { passive: true });
 
 </body>
 </html>
+<?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/splash.blade.php ENDPATH**/ ?>

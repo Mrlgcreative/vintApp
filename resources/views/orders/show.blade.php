@@ -75,15 +75,117 @@
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <h5>
-                                <i class="fas fa-truck me-2"></i>
+                                <i class="fas fa-map-marker-alt me-2"></i>
                                 Adresse de livraison
                             </h5>
-                            <div class="card">
+                            <div class="card border-primary">
                                 <div class="card-body">
-                                    <p class="mb-1"><strong>Ville:</strong> {{ $order->shipping_city }}</p>
-                                    <p class="mb-1"><strong>Téléphone:</strong> {{ $order->shipping_phone }}</p>
-                                    <p class="mb-0"><strong>Adresse:</strong></p>
-                                    <p class="text-muted">{{ $order->shipping_address }}</p>
+                                    @if($order->deliveryAddress)
+                                        {{-- Afficher depuis delivery_addresses --}}
+                                        <div class="mb-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-user text-purple me-2"></i>
+                                                <strong>Destinataire:</strong>
+                                            </div>
+                                            <p class="ms-4 mb-0">{{ $order->deliveryAddress->full_name }}</p>
+                                        </div>
+
+                                        @if($order->deliveryAddress->email)
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-envelope text-info me-2"></i>
+                                                    <strong>Email:</strong>
+                                                </div>
+                                                <p class="ms-4 mb-0">
+                                                    <a href="mailto:{{ $order->deliveryAddress->email }}" class="text-decoration-none">
+                                                        {{ $order->deliveryAddress->email }}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        @endif
+
+                                        <div class="mb-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-phone text-success me-2"></i>
+                                                <strong>Téléphone:</strong>
+                                            </div>
+                                            <p class="ms-4 mb-0">
+                                                <a href="tel:{{ $order->deliveryAddress->phone }}" class="text-decoration-none">
+                                                    {{ $order->deliveryAddress->phone }}
+                                                </a>
+                                            </p>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-city text-primary me-2"></i>
+                                                <strong>Ville / Commune:</strong>
+                                            </div>
+                                            <p class="ms-4 mb-0">{{ $order->deliveryAddress->city }}, {{ $order->deliveryAddress->commune }}</p>
+                                        </div>
+
+                                        <div class="mb-0">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="fas fa-home text-info me-2"></i>
+                                                <strong>Adresse complète:</strong>
+                                            </div>
+                                            <p class="ms-4 mb-0 text-muted">{{ $order->deliveryAddress->address }}</p>
+                                        </div>
+
+                                        @if($order->deliveryAddress->notes)
+                                            <div class="mt-3 p-2 bg-light rounded">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-sticky-note me-1"></i>
+                                                    <strong>Note:</strong> {{ $order->deliveryAddress->notes }}
+                                                </small>
+                                            </div>
+                                        @endif
+                                    @else
+                                        {{-- Fallback sur shipping_address si pas de deliveryAddress --}}
+                                        @if($order->shipping_city && $order->shipping_city !== 'À définir')
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-city text-primary me-2"></i>
+                                                    <strong>Ville:</strong>
+                                                </div>
+                                                <p class="ms-4 mb-0">{{ $order->shipping_city }}</p>
+                                            </div>
+                                        @endif
+
+                                        @if($order->shipping_phone)
+                                            <div class="mb-3">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-phone text-success me-2"></i>
+                                                    <strong>Téléphone:</strong>
+                                                </div>
+                                                <p class="ms-4 mb-0">
+                                                    <a href="tel:{{ $order->shipping_phone }}" class="text-decoration-none">
+                                                        {{ $order->shipping_phone }}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        @endif
+
+                                        @if($order->shipping_address && $order->shipping_address !== 'À définir')
+                                            <div class="mb-0">
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <i class="fas fa-home text-info me-2"></i>
+                                                    <strong>Adresse complète:</strong>
+                                                </div>
+                                                <p class="ms-4 mb-0 text-muted">{{ $order->shipping_address }}</p>
+                                            </div>
+                                        @endif
+
+                                        @if((!$order->shipping_city || $order->shipping_city === 'À définir') && 
+                                            (!$order->shipping_address || $order->shipping_address === 'À définir'))
+                                            <div class="alert alert-warning mb-0" role="alert">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <strong>Adresse non définie</strong>
+                                                <br>
+                                                <small>L'adresse de livraison n'a pas encore été définie pour cette commande.</small>
+                                            </div>
+                                        @endif
+                                    @endif
                                 </div>
                             </div>
                         </div>

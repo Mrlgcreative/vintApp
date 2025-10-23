@@ -63,6 +63,92 @@
         </div>
     @endif
 
+    <!-- 🧪 SECTION: Testeur de Restrictions Géographiques -->
+    <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-300 rounded-xl shadow-sm p-4 sm:p-6">
+        <div class="flex items-start gap-3 mb-4">
+            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shrink-0">
+                <i class="fas fa-flask text-white text-lg sm:text-xl"></i>
+            </div>
+            <div class="flex-1">
+                <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-1">
+                    Testeur de Restrictions Géographiques
+                </h3>
+                <p class="text-xs sm:text-sm text-gray-600">
+                    Simulez des villes pour vérifier si le système de blocage fonctionne correctement
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Test avec ville autorisée -->
+            <div class="bg-white rounded-lg p-4 border border-green-200">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fas fa-check-circle text-green-600"></i>
+                    <h4 class="font-semibold text-gray-900 text-sm sm:text-base">Test Ville Autorisée</h4>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-600 mb-3">
+                    Simuler une ville de la liste des villes actives
+                </p>
+                <div class="flex flex-col xs:flex-row gap-2">
+                    <select id="allowedCitySelect" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">-- Choisir une ville --</option>
+                        @foreach(\App\Models\AllowedCity::where('is_active', true)->orderBy('name')->get() as $city)
+                        <option value="{{ $city->name }}">{{ $city->name }} ({{ $city->country }})</option>
+                        @endforeach
+                    </select>
+                    <button onclick="testAllowedCity()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium whitespace-nowrap">
+                        <i class="fas fa-play mr-1"></i> Tester
+                    </button>
+                </div>
+            </div>
+
+            <!-- Test avec ville NON autorisée -->
+            <div class="bg-white rounded-lg p-4 border border-red-200">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fas fa-times-circle text-red-600"></i>
+                    <h4 class="font-semibold text-gray-900 text-sm sm:text-base">Test Ville Bloquée</h4>
+                </div>
+                <p class="text-xs sm:text-sm text-gray-600 mb-3">
+                    Simuler une ville NON présente dans la liste
+                </p>
+                <div class="flex flex-col xs:flex-row gap-2">
+                    <input type="text" id="blockedCityInput" placeholder="Ex: Bukavu, Goma, Lubumbashi..." class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <button onclick="testBlockedCity()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium whitespace-nowrap">
+                        <i class="fas fa-ban mr-1"></i> Tester
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <div class="flex items-start gap-2">
+                <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
+                <div class="flex-1 text-xs sm:text-sm text-blue-800">
+                    <p class="font-semibold mb-1">Comment ça marche :</p>
+                    <ul class="list-disc list-inside space-y-1 text-blue-700">
+                        <li><strong>Ville autorisée :</strong> Vous devriez voir la page normalement</li>
+                        <li><strong>Ville bloquée :</strong> Vous devriez voir la page "Zone non disponible"</li>
+                        <li>Pour activer le mode test, ajoutez <code class="bg-blue-100 px-1 rounded">ENABLE_GEO_TESTING=true</code> dans .env</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statut du mode test -->
+        <div class="mt-3 text-center">
+            @if(env('ENABLE_GEO_TESTING'))
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 border border-green-300">
+                    <i class="fas fa-check-circle mr-1"></i> Mode Test ACTIVÉ
+                </span>
+            @else
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 border border-gray-300">
+                    <i class="fas fa-times-circle mr-1"></i> Mode Test DÉSACTIVÉ
+                </span>
+            @endif
+        </div>
+    </div>
+
     <!-- 🗺️ SECTION: Carte GPS Interactive OpenStreetMap -->
     <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-3 sm:mb-4">
@@ -767,6 +853,57 @@ function openModal(modalId) {
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.add('hidden');
+}
+
+// ========================================
+// 🧪 FONCTIONS DE TEST GÉOGRAPHIQUE
+// ========================================
+
+// Tester une ville autorisée
+function testAllowedCity() {
+    const select = document.getElementById('allowedCitySelect');
+    const cityName = select.value;
+    
+    if (!cityName) {
+        alert('⚠️ Veuillez sélectionner une ville !');
+        return;
+    }
+    
+    // Ouvrir dans un nouvel onglet avec paramètre test_city
+    const testUrl = `{{ url('/') }}?test_city=${encodeURIComponent(cityName)}`;
+    
+    // Afficher un message de confirmation
+    if (confirm(`🧪 Test en cours...\n\n✅ Ville simulée : ${cityName}\n\nLe site devrait s'afficher normalement.\n\nVoulez-vous ouvrir dans un nouvel onglet ?`)) {
+        window.open(testUrl, '_blank');
+    }
+}
+
+// Tester une ville bloquée
+function testBlockedCity() {
+    const input = document.getElementById('blockedCityInput');
+    const cityName = input.value.trim();
+    
+    if (!cityName) {
+        alert('⚠️ Veuillez entrer un nom de ville !');
+        return;
+    }
+    
+    // Vérifier si la ville n'est PAS dans la liste des villes autorisées
+    const allowedSelect = document.getElementById('allowedCitySelect');
+    const allowedCities = Array.from(allowedSelect.options).map(opt => opt.value.toLowerCase());
+    
+    if (allowedCities.includes(cityName.toLowerCase())) {
+        alert(`⚠️ ERREUR : "${cityName}" est dans la liste des villes autorisées !\n\nPour tester le blocage, entrez une ville qui n'est PAS dans la liste.`);
+        return;
+    }
+    
+    // Ouvrir dans un nouvel onglet avec paramètre test_city
+    const testUrl = `{{ url('/') }}?test_city=${encodeURIComponent(cityName)}`;
+    
+    // Afficher un message de confirmation
+    if (confirm(`🧪 Test en cours...\n\n❌ Ville simulée : ${cityName}\n\nVous devriez voir la page "Zone non disponible".\n\nVoulez-vous ouvrir dans un nouvel onglet ?`)) {
+        window.open(testUrl, '_blank');
+    }
 }
 
 // Toggle statut ville

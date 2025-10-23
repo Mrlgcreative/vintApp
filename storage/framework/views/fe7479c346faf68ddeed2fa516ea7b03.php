@@ -1,6 +1,6 @@
-﻿@extends('app')
+﻿
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
     
@@ -42,9 +42,9 @@
 
 <!-- Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Toast Notification -->
 <div id="toast" class="fixed top-4 right-4 z-50 bg-violet-600 text-white px-5 py-3 rounded-xl shadow-lg transform translate-x-[400px] transition-transform duration-300 flex items-center gap-3">
@@ -63,9 +63,9 @@
     <!-- Barre de Recherche -->
     <div class="max-w-7xl mx-auto px-4 pt-6 pb-4 animate-slide-in">
         <div class="bg-white rounded-2xl shadow-sm border border-neutral-200/60 p-2 flex gap-2 hover:shadow-md transition-shadow duration-300">
-            <form action="{{ route('items.index') }}" method="GET" class="flex-1 flex gap-2">
+            <form action="<?php echo e(route('items.index')); ?>" method="GET" class="flex-1 flex gap-2">
                 <div class="flex-1 relative">
-                    <input type="search" name="q" value="{{ request('q') }}" placeholder="Rechercher des articles..." class="w-full h-12 pl-4 pr-28 rounded-xl bg-neutral-50 border-2 border-transparent focus:border-violet-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all duration-300 text-sm font-medium" />
+                    <input type="search" name="q" value="<?php echo e(request('q')); ?>" placeholder="Rechercher des articles..." class="w-full h-12 pl-4 pr-28 rounded-xl bg-neutral-50 border-2 border-transparent focus:border-violet-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all duration-300 text-sm font-medium" />
                     <button type="submit" class="absolute right-1.5 top-1.5 h-9 px-5 bg-gradient-to-r from-violet-600 to-violet-700 text-white rounded-lg text-sm font-semibold hover:from-violet-700 hover:to-violet-800 transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </button>
@@ -79,79 +79,83 @@
     </div>
 
     <!-- Hero Carousel -->
-    @if(isset($heroSlides) && $heroSlides->count() > 0)
+    <?php if(isset($heroSlides) && $heroSlides->count() > 0): ?>
         <div class="max-w-7xl mx-auto px-4 py-6 animate-slide-in">
             <div class="relative overflow-hidden rounded-3xl shadow-lg hero-gradient" id="heroCarousel">
                 <div class="flex transition-transform duration-700 ease-in-out" id="carouselInner">
-                    @foreach($heroSlides as $index => $slide)
-                        @php
+                    <?php $__currentLoopData = $heroSlides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php
                             $imgPos = $slide->image_position ?? 'left';
-                        @endphp
+                        ?>
                         <div class="min-w-full px-8 py-12 md:px-16 md:py-20">
                             <div class="grid md:grid-cols-2 gap-8 items-center">
-                                @if($imgPos === 'left')
+                                <?php if($imgPos === 'left'): ?>
                                     <div class="flex justify-center md:justify-start">
-                                        <img src="{{ Storage::url($slide->image_path) }}" alt="{{ $slide->title }}" class="w-full max-w-sm h-80 object-cover rounded-2xl shadow-2xl" />
+                                        <img src="<?php echo e(Storage::url($slide->image_path)); ?>" alt="<?php echo e($slide->title); ?>" class="w-full max-w-sm h-80 object-cover rounded-2xl shadow-2xl" />
                                     </div>
                                     <div class="text-white space-y-6">
-                                        <h1 class="text-4xl md:text-5xl font-bold leading-tight">{{ $slide->title }}</h1>
-                                        <p class="text-lg text-violet-100 leading-relaxed">{{ $slide->subtitle }}</p>
+                                        <h1 class="text-4xl md:text-5xl font-bold leading-tight"><?php echo e($slide->title); ?></h1>
+                                        <p class="text-lg text-violet-100 leading-relaxed"><?php echo e($slide->subtitle); ?></p>
                                         <div class="flex flex-wrap gap-4">
-                                            @if($slide->button_primary_text && $slide->button_primary_url)
-                                                <a href="{{ $slide->button_primary_url }}" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
-                                                    {{ $slide->button_primary_text }}
+                                            <?php if($slide->button_primary_text && $slide->button_primary_url): ?>
+                                                <a href="<?php echo e($slide->button_primary_url); ?>" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
+                                                    <?php echo e($slide->button_primary_text); ?>
+
                                                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                                 </a>
-                                            @endif
-                                            @if($slide->button_secondary_text && $slide->button_secondary_url)
-                                                <a href="{{ $slide->button_secondary_url }}" class="px-6 py-3 bg-violet-700/30 border-2 border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-300">
-                                                    {{ $slide->button_secondary_text }}
+                                            <?php endif; ?>
+                                            <?php if($slide->button_secondary_text && $slide->button_secondary_url): ?>
+                                                <a href="<?php echo e($slide->button_secondary_url); ?>" class="px-6 py-3 bg-violet-700/30 border-2 border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-300">
+                                                    <?php echo e($slide->button_secondary_text); ?>
+
                                                 </a>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="text-white space-y-6 order-2 md:order-1">
-                                        <h1 class="text-4xl md:text-5xl font-bold leading-tight">{{ $slide->title }}</h1>
-                                        <p class="text-lg text-violet-100 leading-relaxed">{{ $slide->subtitle }}</p>
+                                        <h1 class="text-4xl md:text-5xl font-bold leading-tight"><?php echo e($slide->title); ?></h1>
+                                        <p class="text-lg text-violet-100 leading-relaxed"><?php echo e($slide->subtitle); ?></p>
                                         <div class="flex flex-wrap gap-4">
-                                            @if($slide->button_primary_text && $slide->button_primary_url)
-                                                <a href="{{ $slide->button_primary_url }}" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
-                                                    {{ $slide->button_primary_text }}
+                                            <?php if($slide->button_primary_text && $slide->button_primary_url): ?>
+                                                <a href="<?php echo e($slide->button_primary_url); ?>" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
+                                                    <?php echo e($slide->button_primary_text); ?>
+
                                                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                                 </a>
-                                            @endif
-                                            @if($slide->button_secondary_text && $slide->button_secondary_url)
-                                                <a href="{{ $slide->button_secondary_url }}" class="px-6 py-3 bg-violet-700/30 border-2 border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-300">
-                                                    {{ $slide->button_secondary_text }}
+                                            <?php endif; ?>
+                                            <?php if($slide->button_secondary_text && $slide->button_secondary_url): ?>
+                                                <a href="<?php echo e($slide->button_secondary_url); ?>" class="px-6 py-3 bg-violet-700/30 border-2 border-white/30 text-white rounded-full font-semibold hover:bg-white/10 transition-all duration-300">
+                                                    <?php echo e($slide->button_secondary_text); ?>
+
                                                 </a>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="flex justify-center md:justify-end order-1 md:order-2">
-                                        <img src="{{ Storage::url($slide->image_path) }}" alt="{{ $slide->title }}" class="w-full max-w-sm h-80 object-cover rounded-2xl shadow-2xl" />
+                                        <img src="<?php echo e(Storage::url($slide->image_path)); ?>" alt="<?php echo e($slide->title); ?>" class="w-full max-w-sm h-80 object-cover rounded-2xl shadow-2xl" />
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
                 
                 <div class="absolute top-4 left-4 flex gap-2">
-                    @foreach($heroSlides as $index => $slide)
-                        <button onclick="goToSlide({{ $index }})" class="w-8 h-1 rounded-full carousel-indicator {{ $index === 0 ? 'active bg-white' : 'bg-white/50' }}"></button>
-                    @endforeach
+                    <?php $__currentLoopData = $heroSlides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <button onclick="goToSlide(<?php echo e($index); ?>)" class="w-8 h-1 rounded-full carousel-indicator <?php echo e($index === 0 ? 'active bg-white' : 'bg-white/50'); ?>"></button>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
         </div>
-    @else
+    <?php else: ?>
         <div class="max-w-7xl mx-auto px-4 py-6 animate-slide-in">
             <div class="relative overflow-hidden rounded-3xl shadow-lg hero-gradient px-8 py-12 md:px-16 md:py-20">
                 <div class="grid md:grid-cols-2 gap-8 items-center">
                     <div class="text-white space-y-6">
                         <h1 class="text-4xl md:text-5xl font-bold leading-tight">Bienvenue sur VintApp</h1>
                         <p class="text-lg text-violet-100 leading-relaxed">Découvrez des articles d''occasion de qualité</p>
-                        <a href="{{ route('items.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift">
+                        <a href="<?php echo e(route('items.index')); ?>" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift">
                             Explorer <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </a>
                     </div>
@@ -163,50 +167,50 @@
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 
     <!-- Catégories -->
     <section class="max-w-7xl mx-auto px-4 py-6">
         <h2 class="text-2xl font-bold text-neutral-800 mb-6">Catégories populaires</h2>
         
         <div class="md:hidden flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-            @foreach($categories as $category)
-                <a href="{{ route('items.index', ['category' => $category->id]) }}" class="flex-shrink-0 w-20 aspect-square category-gradient rounded-2xl p-3 flex flex-col items-center justify-center gap-2 text-center hover:-translate-y-1 transition-transform duration-300">
-                    <i data-lucide="{{ $category->icon ?? 'tag' }}" class="w-8 h-8 text-violet-600"></i>
-                    <span class="text-xs font-semibold text-violet-800 line-clamp-1">{{ $category->name }}</span>
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" class="flex-shrink-0 w-20 aspect-square category-gradient rounded-2xl p-3 flex flex-col items-center justify-center gap-2 text-center hover:-translate-y-1 transition-transform duration-300">
+                    <i data-lucide="<?php echo e($category->icon ?? 'tag'); ?>" class="w-8 h-8 text-violet-600"></i>
+                    <span class="text-xs font-semibold text-violet-800 line-clamp-1"><?php echo e($category->name); ?></span>
                 </a>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
         
         <div class="hidden md:grid grid-cols-3 lg:grid-cols-6 gap-4">
-            @foreach($categories as $category)
-                <a href="{{ route('items.index', ['category' => $category->id]) }}" class="category-gradient rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md">
-                    <i data-lucide="{{ $category->icon ?? 'tag' }}" class="w-10 h-10 text-violet-600"></i>
+            <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" class="category-gradient rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md">
+                    <i data-lucide="<?php echo e($category->icon ?? 'tag'); ?>" class="w-10 h-10 text-violet-600"></i>
                     <div>
-                        <p class="font-semibold text-neutral-800 mb-1">{{ $category->name }}</p>
-                        <p class="text-xs text-neutral-500">{{ $category->items_count ?? 0 }} articles</p>
+                        <p class="font-semibold text-neutral-800 mb-1"><?php echo e($category->name); ?></p>
+                        <p class="text-xs text-neutral-500"><?php echo e($category->items_count ?? 0); ?> articles</p>
                     </div>
                 </a>
-            @endforeach
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </section>
 
     <!-- Filtres rapides -->
     <section class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-            <a href="{{ route('items.index') }}" class="flex-shrink-0 px-5 py-2 {{ !request('sort') ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600' }} rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
+            <a href="<?php echo e(route('items.index')); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(!request('sort') ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
                 <i data-lucide="star" class="w-4 h-4"></i>
                 Tous
             </a>
-            <a href="{{ route('items.index', ['sort' => 'recent']) }}" class="flex-shrink-0 px-5 py-2 {{ request('sort') === 'recent' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600' }} rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
+            <a href="<?php echo e(route('items.index', ['sort' => 'recent'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'recent' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
                 <i data-lucide="sparkles" class="w-4 h-4"></i>
                 Nouveautés
             </a>
-            <a href="{{ route('items.index', ['sort' => 'popular']) }}" class="flex-shrink-0 px-5 py-2 {{ request('sort') === 'popular' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600' }} rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
+            <a href="<?php echo e(route('items.index', ['sort' => 'popular'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'popular' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
                 <i data-lucide="flame" class="w-4 h-4"></i>
                 Populaires
             </a>
-            <a href="{{ route('items.index', ['sort' => 'price_low']) }}" class="flex-shrink-0 px-5 py-2 {{ request('sort') === 'price_low' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600' }} rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
+            <a href="<?php echo e(route('items.index', ['sort' => 'price_low'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'price_low' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
                 <i data-lucide="tag" class="w-4 h-4"></i>
                 Prix croissant
             </a>
@@ -218,54 +222,57 @@
         <h2 class="text-2xl font-bold text-neutral-800 mb-6">Articles récents</h2>
         
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            @forelse($latestItems as $item)
-                @php
+            <?php $__empty_1 = true; $__currentLoopData = $latestItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php
                     $firstImage = is_string($item->images) ? json_decode($item->images, true)[0] ?? null : ($item->images[0] ?? null);
                     $imgPath = $firstImage;
-                @endphp
+                ?>
                 <div class="bg-white rounded-2xl overflow-hidden card-hover relative shadow-sm border border-neutral-100">
                     <div class="aspect-square bg-neutral-100 overflow-hidden relative">
-                        @if($imgPath && Storage::disk('public')->exists($imgPath))
-                            <img src="{{ Storage::url($imgPath) }}" alt="{{ $item->name }}" class="w-full h-full object-cover image-zoom" />
-                        @else
+                        <?php if($imgPath && Storage::disk('public')->exists($imgPath)): ?>
+                            <img src="<?php echo e(Storage::url($imgPath)); ?>" alt="<?php echo e($item->name); ?>" class="w-full h-full object-cover image-zoom" />
+                        <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center">
                                 <i data-lucide="image" class="w-16 h-16 text-neutral-300"></i>
                             </div>
-                        @endif
+                        <?php endif; ?>
                         
                         <span class="absolute top-2 right-2 px-3 py-1.5 bg-violet-600 text-white rounded-full text-xs font-bold badge-shadow">
-                            {{ number_format($item->price, 0, ',', ' ') }} {{ $item->currency }}
+                            <?php echo e(number_format($item->price, 0, ',', ' ')); ?> <?php echo e($item->currency); ?>
+
                         </span>
                     </div>
                     
                     <div class="p-3">
-                        <h3 class="font-semibold text-sm text-neutral-800 mb-2 line-clamp-2 min-h-[2.5rem]">{{ $item->name }}</h3>
+                        <h3 class="font-semibold text-sm text-neutral-800 mb-2 line-clamp-2 min-h-[2.5rem]"><?php echo e($item->name); ?></h3>
                         
                         <div class="flex items-center justify-between mb-2">
                             <span class="px-2 py-0.5 bg-violet-100 text-violet-600 rounded-full text-xs font-medium">
-                                {{ $item->condition }}
+                                <?php echo e($item->condition); ?>
+
                             </span>
                             
-                            <button onclick="addToCart({{ $item->id }})" class="w-7 h-7 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full flex items-center justify-center transition-colors duration-200">
+                            <button onclick="addToCart(<?php echo e($item->id); ?>)" class="w-7 h-7 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full flex items-center justify-center transition-colors duration-200">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
                         </div>
                         
                         <p class="text-xs text-neutral-500 flex items-center gap-1">
                             <i data-lucide="clock" class="w-3 h-3"></i>
-                            {{ $item->created_at->diffForHumans() }}
+                            <?php echo e($item->created_at->diffForHumans()); ?>
+
                         </p>
                     </div>
                     
-                    <a href="{{ route('items.show', $item) }}" class="absolute inset-0"></a>
+                    <a href="<?php echo e(route('items.show', $item)); ?>" class="absolute inset-0"></a>
                 </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div class="col-span-full text-center py-12">
                     <i data-lucide="box" class="w-16 h-16 text-neutral-300 mx-auto mb-4"></i>
                     <h3 class="text-lg font-semibold text-neutral-600 mb-2">Aucun article disponible</h3>
                     <p class="text-neutral-500">Revenez plus tard pour découvrir de nouveaux articles</p>
                 </div>
-            @endforelse
+            <?php endif; ?>
         </div>
     </section>
 
@@ -284,24 +291,25 @@
             </button>
         </div>
         
-        <form action="{{ route('items.index') }}" method="GET" id="filterForm" class="p-6 space-y-4">
+        <form action="<?php echo e(route('items.index')); ?>" method="GET" id="filterForm" class="p-6 space-y-4">
             <div>
                 <label class="block text-sm font-semibold text-neutral-700 mb-2">Catégorie</label>
                 <select name="category" class="w-full px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:border-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all">
                     <option value="">Toutes les catégories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
+                    <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <option value="<?php echo e($category->id); ?>" <?php echo e(request('category') == $category->id ? 'selected' : ''); ?>>
+                            <?php echo e($category->name); ?>
+
                         </option>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </select>
             </div>
             
             <div>
                 <label class="block text-sm font-semibold text-neutral-700 mb-2">Prix</label>
                 <div class="grid grid-cols-2 gap-3">
-                    <input type="number" name="price_min" placeholder="Prix min" value="{{ request('price_min') }}" class="px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:border-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all" />
-                    <input type="number" name="price_max" placeholder="Prix max" value="{{ request('price_max') }}" class="px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:border-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all" />
+                    <input type="number" name="price_min" placeholder="Prix min" value="<?php echo e(request('price_min')); ?>" class="px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:border-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all" />
+                    <input type="number" name="price_max" placeholder="Prix max" value="<?php echo e(request('price_max')); ?>" class="px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:border-violet-600 focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all" />
                 </div>
             </div>
             
@@ -324,9 +332,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-@if(isset($heroSlides) && $heroSlides->count() > 0)
+<?php if(isset($heroSlides) && $heroSlides->count() > 0): ?>
 let currentSlide = 0;
-const totalSlides = {{ $heroSlides->count() }};
+const totalSlides = <?php echo e($heroSlides->count()); ?>;
 
 function goToSlide(index) {
     currentSlide = index;
@@ -349,7 +357,7 @@ function goToSlide(index) {
 setInterval(() => {
     goToSlide((currentSlide + 1) % totalSlides);
 }, 5000);
-@endif
+<?php endif; ?>
 
 function showToast(message) {
     const toast = document.getElementById('toast');
@@ -390,4 +398,6 @@ function addToCart(itemId) {
 }
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/home.blade.php ENDPATH**/ ?>

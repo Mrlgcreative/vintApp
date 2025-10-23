@@ -2684,7 +2684,8 @@ class AdminController extends Controller
             'seller', 
             'item',
             'item.category',
-            'item.brand'
+            'item.brand',
+            'deliveryAddress'
         ])->findOrFail($id);
         
         // Récupérer l'historique de tracking
@@ -2694,18 +2695,34 @@ class AdminController extends Controller
         $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
         
         // Si pas de tracking, créer une entrée initiale avec l'adresse de livraison
-        if (!$currentTracking && $order->shipping_address) {
-            $currentTracking = \App\Models\OrderTracking::create([
-                'order_id' => $order->id,
-                'status' => 'pending',
-                'description' => 'Commande en attente de traitement',
-                'customer_address' => $order->shipping_address,
-                'customer_city' => $order->shipping_city,
-                'customer_phone' => $order->shipping_phone,
-                'tracked_at' => now(),
-            ]);
+        if (!$currentTracking) {
+            $customerAddress = null;
+            $customerCity = null;
+            $customerPhone = null;
             
-            $trackingHistory = collect([$currentTracking]);
+            if ($order->deliveryAddress) {
+                $customerAddress = $order->deliveryAddress->address;
+                $customerCity = $order->deliveryAddress->city;
+                $customerPhone = $order->deliveryAddress->phone;
+            } elseif ($order->shipping_address) {
+                $customerAddress = $order->shipping_address;
+                $customerCity = $order->shipping_city;
+                $customerPhone = $order->shipping_phone;
+            }
+            
+            if ($customerAddress) {
+                $currentTracking = \App\Models\OrderTracking::create([
+                    'order_id' => $order->id,
+                    'status' => 'pending',
+                    'description' => 'Commande en attente de traitement',
+                    'customer_address' => $customerAddress,
+                    'customer_city' => $customerCity,
+                    'customer_phone' => $customerPhone,
+                    'tracked_at' => now(),
+                ]);
+                
+                $trackingHistory = collect([$currentTracking]);
+            }
         }
         
         return view('admin.orders.tracking', compact('order', 'trackingHistory', 'currentTracking'));
@@ -2737,7 +2754,22 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
 
-            $order = Order::findOrFail($id);
+            $order = Order::with('deliveryAddress')->findOrFail($id);
+
+            // Récupérer les infos du client depuis delivery_address ou shipping_address
+            $customerAddress = $request->customer_address;
+            $customerCity = $request->customer_city;
+            $customerPhone = $request->customer_phone;
+            
+            if (!$customerAddress && $order->deliveryAddress) {
+                $customerAddress = $order->deliveryAddress->address;
+                $customerCity = $order->deliveryAddress->city;
+                $customerPhone = $order->deliveryAddress->phone;
+            } elseif (!$customerAddress) {
+                $customerAddress = $order->shipping_address;
+                $customerCity = $order->shipping_city;
+                $customerPhone = $order->shipping_phone;
+            }
 
             // Créer une nouvelle entrée de tracking
             $tracking = \App\Models\OrderTracking::create([
@@ -2753,9 +2785,9 @@ class AdminController extends Controller
                 'carrier' => $request->carrier,
                 'customer_latitude' => $request->customer_latitude,
                 'customer_longitude' => $request->customer_longitude,
-                'customer_address' => $request->customer_address,
-                'customer_city' => $request->customer_city,
-                'customer_phone' => $request->customer_phone,
+                'customer_address' => $customerAddress,
+                'customer_city' => $customerCity,
+                'customer_phone' => $customerPhone,
                 'estimated_delivery' => $request->estimated_delivery,
                 'tracked_at' => now(),
             ]);

@@ -198,6 +198,23 @@
         
         <div id="tracking-map"></div>
         
+        <!-- Affichage de la distance -->
+        <div id="distanceInfo" class="mt-4 bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-500 rounded-lg p-4" style="display: none;">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <i class="fas fa-route text-purple-600 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-600">Distance entre livreur et client</p>
+                        <p class="text-2xl font-bold text-purple-700" id="distanceValue">- km</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500">Temps estimé</p>
+                    <p class="text-lg font-semibold text-blue-600" id="estimatedTime">-</p>
+                </div>
+            </div>
+        </div>
+        
         @if($currentTracking)
         <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="bg-blue-50 rounded-lg p-4">
@@ -218,11 +235,48 @@
                     <i class="fas fa-flag-checkered text-green-600 mr-2"></i>
                     Destination (Client)
                 </h4>
-                <p class="text-sm text-green-800">
-                    {{ $currentTracking->customer_address ?? $order->shipping_address }}
-                </p>
-                @if($currentTracking->customer_city || $order->shipping_city)
-                    <p class="text-xs text-green-600 mt-1">{{ $currentTracking->customer_city ?? $order->shipping_city }}</p>
+                @if($order->deliveryAddress)
+                    {{-- Afficher depuis delivery_addresses --}}
+                    <p class="text-sm font-semibold text-green-900">{{ $order->deliveryAddress->full_name }}</p>
+                    <p class="text-sm text-green-800 mt-1">
+                        {{ $order->deliveryAddress->address }}
+                    </p>
+                    <p class="text-xs text-green-600 mt-1">
+                        <i class="fas fa-map-marker-alt mr-1"></i>
+                        {{ $order->deliveryAddress->commune }}, {{ $order->deliveryAddress->city }}
+                    </p>
+                    <p class="text-xs text-green-600 mt-1">
+                        <i class="fas fa-phone mr-1"></i>
+                        {{ $order->deliveryAddress->phone }}
+                    </p>
+                    @if($order->deliveryAddress->email)
+                        <p class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-envelope mr-1"></i>
+                            {{ $order->deliveryAddress->email }}
+                        </p>
+                    @endif
+                @elseif(($order->shipping_address && $order->shipping_address !== 'À définir') || ($currentTracking && $currentTracking->customer_address))
+                    {{-- Fallback sur shipping_address --}}
+                    <p class="text-sm text-green-800">
+                        {{ $currentTracking->customer_address ?? $order->shipping_address }}
+                    </p>
+                    @if($currentTracking->customer_city || ($order->shipping_city && $order->shipping_city !== 'À définir'))
+                        <p class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            {{ $currentTracking->customer_city ?? $order->shipping_city }}
+                        </p>
+                    @endif
+                    @if($order->shipping_phone)
+                        <p class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-phone mr-1"></i>
+                            {{ $order->shipping_phone }}
+                        </p>
+                    @endif
+                @else
+                    <div class="text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                        Adresse non définie
+                    </div>
                 @endif
             </div>
         </div>
@@ -329,15 +383,37 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                <button type="button" onclick="getCurrentLocation(event)" class="w-full px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition flex items-center justify-center">
+                    <i class="fas fa-crosshairs mr-2"></i>
+                    Utiliser ma position actuelle (GPS)
+                </button>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
-                    <input type="number" step="0.00000001" name="latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <input type="number" step="0.00000001" name="latitude" id="modal_latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" onchange="calculateModalDistance()">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
-                    <input type="number" step="0.00000001" name="longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <input type="number" step="0.00000001" name="longitude" id="modal_longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" onchange="calculateModalDistance()">
+                </div>
+            </div>
+
+            <!-- Affichage de la distance calculée dans le modal -->
+            <div id="modalDistanceInfo" class="mb-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg p-3" style="display: none;">
+                <div class="flex items-center">
+                    <i class="fas fa-route text-purple-600 text-xl mr-3"></i>
+                    <div>
+                        <p class="text-xs text-gray-600">Distance jusqu'au client</p>
+                        <p class="text-lg font-bold text-purple-700" id="modalDistanceValue">- km</p>
+                    </div>
+                    <div class="ml-auto text-right">
+                        <p class="text-xs text-gray-600">Temps estimé</p>
+                        <p class="text-sm font-semibold text-blue-600" id="modalEstimatedTime">-</p>
+                    </div>
                 </div>
             </div>
 
@@ -354,7 +430,13 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Code de Suivi</label>
-                    <input type="text" name="tracking_code" placeholder="Ex: TRACK123456" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <div class="flex gap-2">
+                        <input type="text" id="tracking_code" name="tracking_code" placeholder="Ex: TRACK123456" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-purple-500">
+                        <button type="button" onclick="generateTrackingCode()" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition whitespace-nowrap">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Code généré automatiquement</p>
                 </div>
             </div>
 
@@ -371,13 +453,87 @@
             <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
                 <div class="flex items-start">
                     <i class="fas fa-info-circle text-blue-600 mt-1 mr-3"></i>
-                    <div class="text-sm text-blue-800">
-                        <p class="font-semibold mb-1">Informations de Destination (Client)</p>
-                        <p class="text-xs">
-                            <strong>Adresse:</strong> {{ $order->shipping_address }}<br>
-                            <strong>Ville:</strong> {{ $order->shipping_city }}<br>
-                            <strong>Téléphone:</strong> {{ $order->shipping_phone }}
+                    <div class="text-sm text-blue-800 w-full">
+                        <p class="font-semibold mb-1">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            Informations de Destination (Client)
                         </p>
+                        @if($order->deliveryAddress)
+                            {{-- Afficher depuis delivery_addresses --}}
+                            <div class="text-xs space-y-1 mt-2">
+                                <div class="flex items-start">
+                                    <i class="fas fa-user text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <strong>Destinataire:</strong> {{ $order->deliveryAddress->full_name }}
+                                    </div>
+                                </div>
+                                @if($order->deliveryAddress->email)
+                                    <div class="flex items-start">
+                                        <i class="fas fa-envelope text-blue-500 mr-2 mt-0.5"></i>
+                                        <div>
+                                            <strong>Email:</strong> {{ $order->deliveryAddress->email }}
+                                        </div>
+                                    </div>
+                                @endif
+                                <div class="flex items-start">
+                                    <i class="fas fa-phone text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <strong>Téléphone:</strong> {{ $order->deliveryAddress->phone }}
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-city text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <strong>Ville / Commune:</strong> {{ $order->deliveryAddress->city }}, {{ $order->deliveryAddress->commune }}
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-home text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <strong>Adresse:</strong> {{ $order->deliveryAddress->address }}
+                                    </div>
+                                </div>
+                                @if($order->deliveryAddress->notes)
+                                    <div class="flex items-start mt-2 pt-2 border-t border-blue-200">
+                                        <i class="fas fa-sticky-note text-blue-500 mr-2 mt-0.5"></i>
+                                        <div>
+                                            <strong>Note:</strong> {{ $order->deliveryAddress->notes }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @elseif($order->shipping_address && $order->shipping_address !== 'À définir')
+                            {{-- Fallback sur shipping_address --}}
+                            <div class="text-xs space-y-1 mt-2">
+                                <div class="flex items-start">
+                                    <i class="fas fa-home text-blue-500 mr-2 mt-0.5"></i>
+                                    <div>
+                                        <strong>Adresse:</strong> {{ $order->shipping_address }}
+                                    </div>
+                                </div>
+                                @if($order->shipping_city && $order->shipping_city !== 'À définir')
+                                    <div class="flex items-start">
+                                        <i class="fas fa-city text-blue-500 mr-2 mt-0.5"></i>
+                                        <div>
+                                            <strong>Ville:</strong> {{ $order->shipping_city }}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($order->shipping_phone)
+                                    <div class="flex items-start">
+                                        <i class="fas fa-phone text-blue-500 mr-2 mt-0.5"></i>
+                                        <div>
+                                            <strong>Téléphone:</strong> {{ $order->shipping_phone }}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        @else
+                            <div class="text-xs mt-2 bg-yellow-50 border border-yellow-200 rounded px-3 py-2">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mr-1"></i>
+                                <span class="text-yellow-800">Adresse de livraison non définie pour cette commande</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -472,6 +628,12 @@ function initMap() {
             .addTo(map)
             .bindPopup('<div class="text-center"><strong>Position Actuelle</strong><br/>{{ $currentTracking->address ?? "En cours..." }}</div>');
 
+        // Calculer la distance
+        const distance = calculateDistance(currentLat, currentLng, destinationLat, destinationLng);
+        
+        // Afficher la distance sur la carte
+        updateDistanceDisplay(distance);
+
         // Tracer une ligne entre la position actuelle et la destination
         routeLine = L.polyline([
             [currentLat, currentLng],
@@ -483,6 +645,21 @@ function initMap() {
             dashArray: '10, 10'
         }).addTo(map);
 
+        // Ajouter un marqueur au milieu de la ligne avec la distance
+        const midLat = (currentLat + destinationLat) / 2;
+        const midLng = (currentLng + destinationLng) / 2;
+        
+        const distanceIcon = L.divIcon({
+            html: `<div style="background: white; padding: 8px 12px; border-radius: 20px; border: 2px solid #6A0DAD; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-weight: bold; color: #6A0DAD; white-space: nowrap;">
+                    <i class="fas fa-route"></i> ${distance} km
+                   </div>`,
+            className: 'distance-marker',
+            iconSize: [100, 30],
+            iconAnchor: [50, 15]
+        });
+        
+        L.marker([midLat, midLng], {icon: distanceIcon}).addTo(map);
+
         // Ajuster la vue pour afficher les deux marqueurs
         const bounds = L.latLngBounds([
             [currentLat, currentLng],
@@ -492,15 +669,155 @@ function initMap() {
     }
 }
 
+// Fonction pour générer un code de suivi unique
+function generateTrackingCode() {
+    const prefix = 'TRK';
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const code = `${prefix}-${timestamp}-${random}`;
+    document.getElementById('tracking_code').value = code;
+}
+
+// Fonction pour calculer la distance (formule de Haversine)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Rayon de la Terre en km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+    return distance.toFixed(2);
+}
+
+// Fonction pour estimer le temps de trajet
+function estimateTime(distanceKm) {
+    const avgSpeedKmh = 40; // Vitesse moyenne de 40 km/h
+    const hours = distanceKm / avgSpeedKmh;
+    const minutes = Math.round(hours * 60);
+    
+    if (minutes < 60) {
+        return `${minutes} min`;
+    } else {
+        const h = Math.floor(minutes / 60);
+        const m = minutes % 60;
+        return `${h}h ${m}min`;
+    }
+}
+
+// Fonction pour mettre à jour l'affichage de la distance
+function updateDistanceDisplay(distance) {
+    const distanceInfo = document.getElementById('distanceInfo');
+    const distanceValue = document.getElementById('distanceValue');
+    const estimatedTime = document.getElementById('estimatedTime');
+    
+    if (distance && distance > 0) {
+        distanceInfo.style.display = 'block';
+        distanceValue.textContent = `${distance} km`;
+        estimatedTime.textContent = estimateTime(parseFloat(distance));
+    } else {
+        distanceInfo.style.display = 'none';
+    }
+}
+
+// Obtenir la position actuelle avec GPS
+function getCurrentLocation(event) {
+    if ("geolocation" in navigator) {
+        const btn = event.target.closest('button');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Récupération de la position...';
+        btn.disabled = true;
+        
+        console.log('Demande de géolocalisation...');
+        
+        navigator.geolocation.getCurrentPosition(
+            function(position) {
+                console.log('Position obtenue:', position.coords);
+                document.getElementById('modal_latitude').value = position.coords.latitude.toFixed(8);
+                document.getElementById('modal_longitude').value = position.coords.longitude.toFixed(8);
+                calculateModalDistance();
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Position obtenue !';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 2000);
+            },
+            function(error) {
+                console.error('Erreur de géolocalisation:', error);
+                let errorMsg = 'Impossible d\'obtenir votre position.';
+                
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        errorMsg = 'Permission refusée. Veuillez autoriser l\'accès à votre localisation dans les paramètres du navigateur.';
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        errorMsg = 'Position non disponible. Vérifiez votre connexion GPS.';
+                        break;
+                    case error.TIMEOUT:
+                        errorMsg = 'Délai d\'attente dépassé. Réessayez.';
+                        break;
+                }
+                
+                alert(errorMsg);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        alert('La géolocalisation n\'est pas supportée par votre navigateur');
+    }
+}
+
+// Calculer la distance dans le modal en temps réel
+function calculateModalDistance() {
+    const lat = parseFloat(document.getElementById('modal_latitude').value);
+    const lng = parseFloat(document.getElementById('modal_longitude').value);
+    
+    @if($order->deliveryAddress)
+        // Utiliser les coordonnées de l'adresse de livraison si disponibles
+        // Pour l'instant, on utilise Kolwezi comme exemple (-10.715556, 25.471389)
+        const customerLat = -10.715556;
+        const customerLng = 25.471389;
+    @else
+        // Coordonnées par défaut (Kinshasa)
+        const customerLat = -4.325;
+        const customerLng = 15.308;
+    @endif
+    
+    if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+        const distance = calculateDistance(lat, lng, customerLat, customerLng);
+        const modalDistanceInfo = document.getElementById('modalDistanceInfo');
+        const modalDistanceValue = document.getElementById('modalDistanceValue');
+        const modalEstimatedTime = document.getElementById('modalEstimatedTime');
+        
+        modalDistanceInfo.style.display = 'block';
+        modalDistanceValue.textContent = `${distance} km`;
+        modalEstimatedTime.textContent = estimateTime(parseFloat(distance));
+    } else {
+        document.getElementById('modalDistanceInfo').style.display = 'none';
+    }
+}
+
 // Ouvrir le modal de mise à jour
 function openUpdateTrackingModal() {
     document.getElementById('updateTrackingModal').style.display = 'flex';
+    // Générer automatiquement un code de suivi
+    generateTrackingCode();
+    // Réinitialiser l'affichage de la distance
+    document.getElementById('modalDistanceInfo').style.display = 'none';
 }
 
 // Fermer le modal de mise à jour
 function closeUpdateTrackingModal() {
     document.getElementById('updateTrackingModal').style.display = 'none';
     document.getElementById('trackingUpdateForm').reset();
+    document.getElementById('modalDistanceInfo').style.display = 'none';
 }
 
 // Soumettre le formulaire de mise à jour
@@ -521,10 +838,31 @@ function updateTracking(event) {
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
             'Accept': 'application/json'
+            // Ne pas définir Content-Type, le navigateur le fera automatiquement pour FormData
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        // Log du statut de la réponse pour debug
+        console.log('Status:', response.status);
+        console.log('Headers:', response.headers);
+        
+        if (!response.ok) {
+            // Essayer de parser comme JSON, sinon comme texte
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                return response.json().then(err => {
+                    throw new Error(err.message || JSON.stringify(err.errors || 'Erreur de validation'));
+                });
+            } else {
+                return response.text().then(text => {
+                    console.error('Réponse HTML:', text.substring(0, 500));
+                    throw new Error('Le serveur a renvoyé une erreur HTML. Vérifiez les logs Laravel.');
+                });
+            }
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Afficher un message de succès
@@ -539,8 +877,8 @@ function updateTracking(event) {
         }
     })
     .catch(error => {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue lors de la mise à jour');
+        console.error('Erreur complète:', error);
+        alert('Une erreur est survenue lors de la mise à jour: ' + error.message);
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });

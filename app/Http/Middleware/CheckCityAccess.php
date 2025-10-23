@@ -47,8 +47,10 @@ class CheckCityAccess
             return $next($request);
         }
 
-        // Bypass en environnement local pour le développement
-        if (app()->environment('local') && $request->ip() === '127.0.0.1') {
+        // Bypass en environnement local pour le développement (SAUF si on veut tester)
+        $enableTestingMode = env('ENABLE_GEO_TESTING', false);
+        if (app()->environment('local') && $request->ip() === '127.0.0.1' && !$enableTestingMode) {
+            Log::info("Bypass localhost activé - Accès autorisé pour IP: 127.0.0.1");
             return $next($request);
         }
 
@@ -66,6 +68,15 @@ class CheckCityAccess
 
         // Récupérer l'IP de l'utilisateur
         $ip = $request->ip();
+        
+        // 🧪 MODE TEST : Permettre de simuler une IP via query parameter
+        $testIp = $request->query('test_ip');
+        $enableTestingMode = env('ENABLE_GEO_TESTING', false);
+        
+        if ($enableTestingMode && $testIp) {
+            $ip = $testIp;
+            Log::info("🧪 MODE TEST : Simulation IP = {$ip}");
+        }
 
         // Cache la vérification pour 1 heure par IP
         $cacheKey = "location_access_{$ip}";
@@ -97,11 +108,30 @@ class CheckCityAccess
     protected function checkLocationAccess($ip): bool
     {
         try {
+            // 🧪 MODE TEST : Simuler des villes spécifiques
+            $enableTestingMode = env('ENABLE_GEO_TESTING', false);
+            
+            if ($enableTestingMode && request()->query('test_city')) {
+                $testCity = request()->query('test_city');
+                $isAllowed = AllowedCity::isCityAllowed($testCity);
+                
+                Log::info("🧪 MODE TEST : Ville simulée = {$testCity}, Autorisée = " . ($isAllowed ? 'OUI' : 'NON'));
+                
+                return $isAllowed;
+            }
+            
             // Obtenir la localisation à partir de l'IP
             $position = Location::get($ip);
 
             if (!$position) {
                 Log::warning("Impossible de déterminer la localisation pour l'IP: {$ip}");
+                
+                // 🧪 En mode test, bloquer si on ne peut pas détecter
+                if ($enableTestingMode) {
+                    Log::warning("🧪 MODE TEST : Localisation non détectée - BLOQUÉ");
+                    return false;
+                }
+                
                 // Par défaut, autoriser si on ne peut pas détecter
                 return true;
             }
@@ -137,6 +167,14 @@ class CheckCityAccess
 
         } catch (\Exception $e) {
             Log::error("Erreur lors de la vérification de localisation: {$e->getMessage()}");
+            
+            // 🧪 En mode test, bloquer en cas d'erreur
+            $enableTestingMode = env('ENABLE_GEO_TESTING', false);
+            if ($enableTestingMode) {
+                Log::error("🧪 MODE TEST : Erreur - BLOQUÉ");
+                return false;
+            }
+            
             // En cas d'erreur, autoriser par sécurité
             return true;
         }
