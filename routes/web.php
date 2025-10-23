@@ -160,6 +160,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'users'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'userCreate'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'userStore'])->name('store');
+        
+        // 🆕 Routes pour les utilisateurs connectés en temps réel (AVANT les routes avec {user})
+        Route::get('/online', [App\Http\Controllers\Admin\AdminController::class, 'onlineUsers'])->name('online');
+        Route::get('/online/data', [App\Http\Controllers\Admin\AdminController::class, 'getOnlineUsersData'])->name('online.data');
+        Route::post('/sessions/{session}/logout', [App\Http\Controllers\Admin\AdminController::class, 'forceLogoutUser'])->name('sessions.logout');
+        
+        // Routes CRUD avec paramètre {user} (APRÈS les routes spécifiques)
         Route::get('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'userShow'])->name('show');
         Route::get('/{user}/edit', [App\Http\Controllers\Admin\AdminController::class, 'userEdit'])->name('edit');
         Route::put('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'userUpdate'])->name('update');
@@ -200,6 +207,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'orders'])->name('index');
         Route::get('/{order}', [App\Http\Controllers\Admin\AdminController::class, 'orderShow'])->name('show');
         Route::patch('/{order}/status', [App\Http\Controllers\Admin\AdminController::class, 'orderUpdateStatus'])->name('update-status');
+        
+        // 🆕 Liste des commandes avec traçage GPS
+        Route::get('/tracking/list', [App\Http\Controllers\Admin\AdminController::class, 'trackingList'])->name('tracking.list');
+        
+        // 🆕 Routes pour le traçage GPS des commandes
+        Route::get('/{order}/tracking', [App\Http\Controllers\Admin\AdminController::class, 'orderTracking'])->name('tracking');
+        Route::post('/{order}/tracking', [App\Http\Controllers\Admin\AdminController::class, 'updateOrderTracking'])->name('tracking.update');
+        
+        // 🆕 Routes pour la facture imprimable
+        Route::get('/{order}/invoice', [App\Http\Controllers\Admin\AdminController::class, 'orderInvoice'])->name('invoice');
+        Route::get('/{order}/invoice/download', [App\Http\Controllers\Admin\AdminController::class, 'downloadOrderInvoice'])->name('invoice.download');
     });
 
     // Gestion des marques (CRUD complet)

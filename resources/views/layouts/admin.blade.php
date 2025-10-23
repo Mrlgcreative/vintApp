@@ -154,7 +154,7 @@
                     </a>
 
                     <a href="{{ route('admin.users.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                         <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                         <span class="flex-1">Utilisateurs</span>
                         @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
@@ -162,6 +162,14 @@
                                 {{ $pendingUsersCount }}
                             </span>
                         @endif
+                    </a>
+
+                    <!-- 🆕 Menu Utilisateurs Connectés -->
+                    <a href="{{ route('admin.users.online') }}" 
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                        <span class="flex-1">Utilisateurs Connectés</span>
+                        <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
                     </a>
 
                     <a href="{{ route('admin.transactions.index') }}" 
@@ -182,9 +190,17 @@
                     </a>
 
                     <a href="{{ route('admin.orders.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                         <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                         <span>Commandes</span>
+                    </a>
+
+                    <!-- 🆕 Menu Traçage GPS -->
+                    <a href="{{ route('admin.orders.tracking.list') }}" 
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                        <span class="flex-1">Traçage GPS</span>
+                        <span class="inline-flex items-center justify-center w-3 h-3 bg-purple-400 rounded-full animate-pulse shadow-lg shadow-purple-400/50"></span>
                     </a>
 
                     <a href="{{ route('admin.brands.index') }}" 

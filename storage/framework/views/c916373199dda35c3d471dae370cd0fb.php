@@ -1,21 +1,21 @@
-@extends('layouts.admin')
 
-@section('title', 'Détails de la commande #' . $order->id)
-@section('page-title', 'Détails de la commande #' . $order->id)
 
-@section('content')
+<?php $__env->startSection('title', 'Détails de la commande #' . $order->id); ?>
+<?php $__env->startSection('page-title', 'Détails de la commande #' . $order->id); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="mb-6 flex items-center justify-between">
-    <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center text-primary-600 hover:text-primary-700">
+    <a href="<?php echo e(route('admin.orders.index')); ?>" class="inline-flex items-center text-primary-600 hover:text-primary-700">
         <i class="fas fa-arrow-left mr-2"></i> Retour aux commandes
     </a>
     
     <!-- 🆕 Boutons d'actions rapides -->
     <div class="flex gap-3">
-        <a href="{{ route('admin.orders.tracking', $order->id) }}" 
+        <a href="<?php echo e(route('admin.orders.tracking', $order->id)); ?>" 
             class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-md hover:shadow-lg">
             <i class="fas fa-map-marked-alt mr-2"></i> Traçage GPS
         </a>
-        <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank"
+        <a href="<?php echo e(route('admin.orders.invoice', $order->id)); ?>" target="_blank"
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg">
             <i class="fas fa-file-invoice mr-2"></i> Facture
         </a>
@@ -30,7 +30,8 @@
             <div class="border-b border-gray-200 px-6 py-4 bg-gradient-to-r from-primary-50 to-primary-100">
                 <h3 class="text-lg font-semibold text-gray-900">
                     <i class="fas fa-shopping-cart text-primary-600 mr-2"></i>
-                    Commande #{{ $order->id }}
+                    Commande #<?php echo e($order->id); ?>
+
                 </h3>
             </div>
             <div class="p-6">
@@ -39,13 +40,14 @@
                         <label class="block text-sm font-medium text-gray-500 mb-1">Date de commande</label>
                         <p class="text-base text-gray-900">
                             <i class="far fa-calendar text-gray-400 mr-2"></i>
-                            {{ $order->created_at->format('d/m/Y à H:i') }}
+                            <?php echo e($order->created_at->format('d/m/Y à H:i')); ?>
+
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Statut</label>
                         <p>
-                            @php
+                            <?php
                                 $statusColors = [
                                     'pending' => 'bg-yellow-100 text-yellow-800',
                                     'confirmed' => 'bg-blue-100 text-blue-800',
@@ -60,9 +62,10 @@
                                     'delivered' => 'Livrée',
                                     'cancelled' => 'Annulée',
                                 ];
-                            @endphp
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                {{ $statusLabels[$order->status] ?? $order->status }}
+                            ?>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium <?php echo e($statusColors[$order->status] ?? 'bg-gray-100 text-gray-800'); ?>">
+                                <?php echo e($statusLabels[$order->status] ?? $order->status); ?>
+
                             </span>
                         </p>
                     </div>
@@ -70,13 +73,14 @@
                         <label class="block text-sm font-medium text-gray-500 mb-1">Quantité</label>
                         <p class="text-base text-gray-900">
                             <i class="fas fa-box text-gray-400 mr-2"></i>
-                            {{ $order->quantity }} article(s)
+                            <?php echo e($order->quantity); ?> article(s)
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Montant total</label>
                         <p class="text-xl font-bold text-primary-600">
-                            {{ number_format($order->total_price, 2) }} {{ $order->currency ?? 'USD' }}
+                            <?php echo e(number_format($order->total_price, 2)); ?> <?php echo e($order->currency ?? 'USD'); ?>
+
                         </p>
                     </div>
                 </div>
@@ -92,43 +96,46 @@
                 </h3>
             </div>
             <div class="p-6">
-                @if($order->item)
+                <?php if($order->item): ?>
                 <div class="flex items-start gap-4">
-                    @if(!empty($order->item->images) && is_array($order->item->images))
-                    <img src="{{ Storage::url($order->item->images[0]) }}" 
-                         alt="{{ $order->item->name }}" 
+                    <?php if(!empty($order->item->images) && is_array($order->item->images)): ?>
+                    <img src="<?php echo e(Storage::url($order->item->images[0])); ?>" 
+                         alt="<?php echo e($order->item->name); ?>" 
                          class="w-24 h-24 object-cover rounded-lg border border-gray-200">
-                    @else
+                    <?php else: ?>
                     <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
                         <i class="fas fa-image text-gray-400 text-2xl"></i>
                     </div>
-                    @endif
+                    <?php endif; ?>
                     <div class="flex-1">
-                        <h4 class="font-semibold text-gray-900 text-lg mb-2">{{ $order->item->name }}</h4>
-                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $order->item->description }}</p>
+                        <h4 class="font-semibold text-gray-900 text-lg mb-2"><?php echo e($order->item->name); ?></h4>
+                        <p class="text-gray-600 text-sm mb-3 line-clamp-2"><?php echo e($order->item->description); ?></p>
                         <div class="flex flex-wrap gap-3">
-                            @if($order->item->category)
+                            <?php if($order->item->category): ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                <i class="fas fa-folder mr-1"></i> {{ $order->item->category->name }}
+                                <i class="fas fa-folder mr-1"></i> <?php echo e($order->item->category->name); ?>
+
                             </span>
-                            @endif
-                            @if($order->item->brand)
+                            <?php endif; ?>
+                            <?php if($order->item->brand): ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                                <i class="fas fa-copyright mr-1"></i> {{ $order->item->brand->name }}
+                                <i class="fas fa-copyright mr-1"></i> <?php echo e($order->item->brand->name); ?>
+
                             </span>
-                            @endif
+                            <?php endif; ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <i class="fas fa-dollar-sign mr-1"></i> {{ number_format($order->item->price, 2) }} {{ $order->item->currency ?? 'USD' }}
+                                <i class="fas fa-dollar-sign mr-1"></i> <?php echo e(number_format($order->item->price, 2)); ?> <?php echo e($order->item->currency ?? 'USD'); ?>
+
                             </span>
                         </div>
                     </div>
                 </div>
-                @else
+                <?php else: ?>
                 <p class="text-gray-500 text-center py-4">
                     <i class="fas fa-exclamation-triangle mr-2"></i>
                     Article non disponible
                 </p>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -144,37 +151,39 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Numéro de commande</label>
-                        <p class="text-base text-gray-900 font-mono">{{ $order->order_number }}</p>
+                        <p class="text-base text-gray-900 font-mono"><?php echo e($order->order_number); ?></p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Montant payé</label>
                         <p class="text-base text-gray-900 font-semibold">
-                            {{ number_format($order->total_amount, 2) }} {{ $order->currency ?? 'USD' }}
+                            <?php echo e(number_format($order->total_amount, 2)); ?> <?php echo e($order->currency ?? 'USD'); ?>
+
                         </p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Statut du paiement</label>
                         <p>
-                            @if($order->paid_at)
+                            <?php if($order->paid_at): ?>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                                 <i class="fas fa-check-circle mr-1"></i> Payé
                             </span>
-                            @else
+                            <?php else: ?>
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
                                 <i class="fas fa-clock mr-1"></i> En attente
                             </span>
-                            @endif
+                            <?php endif; ?>
                         </p>
                     </div>
-                    @if($order->paid_at)
+                    <?php if($order->paid_at): ?>
                     <div>
                         <label class="block text-sm font-medium text-gray-500 mb-1">Date de paiement</label>
                         <p class="text-base text-gray-900">
                             <i class="far fa-calendar text-gray-400 mr-2"></i>
-                            {{ $order->paid_at->format('d/m/Y à H:i') }}
+                            <?php echo e($order->paid_at->format('d/m/Y à H:i')); ?>
+
                         </p>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -191,41 +200,43 @@
                 </h3>
             </div>
             <div class="p-6">
-                @if($order->buyer)
+                <?php if($order->buyer): ?>
                 <div class="text-center mb-4">
-                    @if($order->buyer->profile_image)
-                    <img src="{{ Storage::url($order->buyer->profile_image) }}" 
-                         alt="{{ $order->buyer->name }}" 
+                    <?php if($order->buyer->profile_image): ?>
+                    <img src="<?php echo e(Storage::url($order->buyer->profile_image)); ?>" 
+                         alt="<?php echo e($order->buyer->name); ?>" 
                          class="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-blue-200">
-                    @else
+                    <?php else: ?>
                     <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
                         <i class="fas fa-user text-blue-600 text-2xl"></i>
                     </div>
-                    @endif
-                    <h4 class="font-semibold text-gray-900">{{ $order->buyer->name }}</h4>
-                    <p class="text-sm text-gray-500">{{ $order->buyer->email }}</p>
+                    <?php endif; ?>
+                    <h4 class="font-semibold text-gray-900"><?php echo e($order->buyer->name); ?></h4>
+                    <p class="text-sm text-gray-500"><?php echo e($order->buyer->email); ?></p>
                 </div>
                 <div class="space-y-2 pt-4 border-t border-gray-100">
-                    @if($order->buyer->phone)
+                    <?php if($order->buyer->phone): ?>
                     <p class="text-sm">
                         <i class="fas fa-phone text-gray-400 mr-2"></i>
-                        {{ $order->buyer->phone }}
+                        <?php echo e($order->buyer->phone); ?>
+
                     </p>
-                    @endif
-                    @if($order->buyer->city)
+                    <?php endif; ?>
+                    <?php if($order->buyer->city): ?>
                     <p class="text-sm">
                         <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
-                        {{ $order->buyer->city }}
+                        <?php echo e($order->buyer->city); ?>
+
                     </p>
-                    @endif
-                    <a href="{{ route('admin.users.show', $order->buyer_id) }}" 
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('admin.users.show', $order->buyer_id)); ?>" 
                        class="inline-flex items-center text-sm text-primary-600 hover:text-primary-700 mt-2">
                         <i class="fas fa-external-link-alt mr-1"></i> Voir le profil
                     </a>
                 </div>
-                @else
+                <?php else: ?>
                 <p class="text-gray-500 text-center">Utilisateur non disponible</p>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -238,41 +249,43 @@
                 </h3>
             </div>
             <div class="p-6">
-                @if($order->seller)
+                <?php if($order->seller): ?>
                 <div class="text-center mb-4">
-                    @if($order->seller->profile_image)
-                    <img src="{{ Storage::url($order->seller->profile_image) }}" 
-                         alt="{{ $order->seller->name }}" 
+                    <?php if($order->seller->profile_image): ?>
+                    <img src="<?php echo e(Storage::url($order->seller->profile_image)); ?>" 
+                         alt="<?php echo e($order->seller->name); ?>" 
                          class="w-20 h-20 rounded-full mx-auto mb-3 border-2 border-green-200">
-                    @else
+                    <?php else: ?>
                     <div class="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
                         <i class="fas fa-user text-green-600 text-2xl"></i>
                     </div>
-                    @endif
-                    <h4 class="font-semibold text-gray-900">{{ $order->seller->name }}</h4>
-                    <p class="text-sm text-gray-500">{{ $order->seller->email }}</p>
+                    <?php endif; ?>
+                    <h4 class="font-semibold text-gray-900"><?php echo e($order->seller->name); ?></h4>
+                    <p class="text-sm text-gray-500"><?php echo e($order->seller->email); ?></p>
                 </div>
                 <div class="space-y-2 pt-4 border-t border-gray-100">
-                    @if($order->seller->phone)
+                    <?php if($order->seller->phone): ?>
                     <p class="text-sm">
                         <i class="fas fa-phone text-gray-400 mr-2"></i>
-                        {{ $order->seller->phone }}
+                        <?php echo e($order->seller->phone); ?>
+
                     </p>
-                    @endif
-                    @if($order->seller->city)
+                    <?php endif; ?>
+                    <?php if($order->seller->city): ?>
                     <p class="text-sm">
                         <i class="fas fa-map-marker-alt text-gray-400 mr-2"></i>
-                        {{ $order->seller->city }}
+                        <?php echo e($order->seller->city); ?>
+
                     </p>
-                    @endif
-                    <a href="{{ route('admin.users.show', $order->seller_id) }}" 
+                    <?php endif; ?>
+                    <a href="<?php echo e(route('admin.users.show', $order->seller_id)); ?>" 
                        class="inline-flex items-center text-sm text-primary-600 hover:text-primary-700 mt-2">
                         <i class="fas fa-external-link-alt mr-1"></i> Voir le profil
                     </a>
                 </div>
-                @else
+                <?php else: ?>
                 <p class="text-gray-500 text-center">Utilisateur non disponible</p>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -288,7 +301,7 @@
                 <button onclick="window.print()" class="w-full inline-flex items-center justify-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
                     <i class="fas fa-print mr-2"></i> Imprimer
                 </button>
-                <a href="{{ route('admin.orders.index') }}" class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                <a href="<?php echo e(route('admin.orders.index')); ?>" class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                     <i class="fas fa-list mr-2"></i> Toutes les commandes
                 </a>
             </div>
@@ -296,7 +309,7 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
 <style>
 @media print {
@@ -308,3 +321,5 @@
     }
 }
 </style>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/admin/orders/show.blade.php ENDPATH**/ ?>

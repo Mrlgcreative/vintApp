@@ -31,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\MaintenanceMode::class,
             \App\Http\Middleware\CheckPreregistrationMode::class,
             \App\Http\Middleware\CheckCityAccess::class,
+            \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions utilisateurs
         ]);
 
         // API Middleware Group

@@ -68,6 +68,22 @@ class Order extends Model
     }
 
     /**
+     * Get the tracking information for this order
+     */
+    public function trackings()
+    {
+        return $this->hasMany(OrderTracking::class)->orderBy('tracked_at', 'desc');
+    }
+
+    /**
+     * Get the latest tracking information
+     */
+    public function latestTracking()
+    {
+        return $this->hasOne(OrderTracking::class)->latestOfMany('tracked_at');
+    }
+
+    /**
      * Get the formatted total amount with currency
      */
     public function getFormattedTotalAmountAttribute()

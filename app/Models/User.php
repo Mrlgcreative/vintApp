@@ -171,6 +171,25 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Relation avec les sessions de l'utilisateur
+     */
+    public function userSessions()
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    /**
+     * Obtenir les sessions actives de l'utilisateur
+     */
+    public function activeSessions()
+    {
+        return $this->hasMany(UserSession::class)
+            ->where('is_active', true)
+            ->where('last_activity', '>=', now()->subMinutes(5))
+            ->orderBy('last_activity', 'desc');
+    }
+
+    /**
      * Relation avec les wallets de l'utilisateur
      */
     public function wallets()

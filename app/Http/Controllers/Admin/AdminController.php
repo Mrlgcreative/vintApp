@@ -2649,4 +2649,332 @@ class AdminController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    // =============================================
+    // SYSTÈME DE TRAÇAGE DES COMMANDES
+    // =============================================
+
+    /**
+     * Afficher la liste de toutes les commandes avec traçage
+     */
+    public function trackingList()
+    {
+        // Récupérer la première commande avec tracking
+        $firstTrackedOrder = Order::whereHas('trackings')
+            ->with(['buyer', 'seller', 'latestTracking'])
+            ->latest()
+            ->first();
+        
+        // Si une commande existe, rediriger vers sa page de tracking
+        if ($firstTrackedOrder) {
+            return redirect()->route('admin.orders.tracking', $firstTrackedOrder->id);
+        }
+        
+        // Sinon, afficher la liste
+        return view('admin.orders.tracking-list');
+    }
+
+    /**
+     * Afficher le suivi d'une commande avec carte GPS
+     */
+    public function orderTracking($id)
+    {
+        $order = Order::with([
+            'buyer', 
+            'seller', 
+            'item',
+            'item.category',
+            'item.brand'
+        ])->findOrFail($id);
+        
+        // Récupérer l'historique de tracking
+        $trackingHistory = \App\Models\OrderTracking::getHistoryForOrder($id);
+        
+        // Récupérer la dernière position
+        $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
+        
+        // Si pas de tracking, créer une entrée initiale avec l'adresse de livraison
+        if (!$currentTracking && $order->shipping_address) {
+            $currentTracking = \App\Models\OrderTracking::create([
+                'order_id' => $order->id,
+                'status' => 'pending',
+                'description' => 'Commande en attente de traitement',
+                'customer_address' => $order->shipping_address,
+                'customer_city' => $order->shipping_city,
+                'customer_phone' => $order->shipping_phone,
+                'tracked_at' => now(),
+            ]);
+            
+            $trackingHistory = collect([$currentTracking]);
+        }
+        
+        return view('admin.orders.tracking', compact('order', 'trackingHistory', 'currentTracking'));
+    }
+
+    /**
+     * Mettre à jour la position de tracking d'une commande
+     */
+    public function updateOrderTracking(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|string|in:pending,picked_up,in_transit,out_for_delivery,delivered,failed,returned',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'country' => 'nullable|string|max:100',
+            'description' => 'nullable|string|max:1000',
+            'tracking_code' => 'nullable|string|max:100',
+            'carrier' => 'nullable|string|max:100',
+            'customer_latitude' => 'nullable|numeric|between:-90,90',
+            'customer_longitude' => 'nullable|numeric|between:-180,180',
+            'customer_address' => 'nullable|string|max:255',
+            'customer_city' => 'nullable|string|max:100',
+            'customer_phone' => 'nullable|string|max:20',
+            'estimated_delivery' => 'nullable|date',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $order = Order::findOrFail($id);
+
+            // Créer une nouvelle entrée de tracking
+            $tracking = \App\Models\OrderTracking::create([
+                'order_id' => $id,
+                'status' => $request->status,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'address' => $request->address,
+                'city' => $request->city,
+                'country' => $request->country ?? 'CD',
+                'description' => $request->description,
+                'tracking_code' => $request->tracking_code,
+                'carrier' => $request->carrier,
+                'customer_latitude' => $request->customer_latitude,
+                'customer_longitude' => $request->customer_longitude,
+                'customer_address' => $request->customer_address,
+                'customer_city' => $request->customer_city,
+                'customer_phone' => $request->customer_phone,
+                'estimated_delivery' => $request->estimated_delivery,
+                'tracked_at' => now(),
+            ]);
+
+            // Mettre à jour le statut de la commande si livré
+            if ($request->status === 'delivered' && $order->status !== 'delivered') {
+                $order->update([
+                    'status' => 'delivered',
+                    'delivered_at' => now(),
+                ]);
+            }
+
+            DB::commit();
+
+            Log::info('Tracking de commande mis à jour', [
+                'admin_id' => Auth::id(),
+                'order_id' => $id,
+                'status' => $request->status,
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Position de tracking mise à jour avec succès',
+                    'tracking' => $tracking,
+                ]);
+            }
+
+            return redirect()->route('admin.orders.tracking', $id)
+                ->with('success', 'Position de tracking mise à jour avec succès');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Erreur lors de la mise à jour du tracking', [
+                'error' => $e->getMessage(),
+                'order_id' => $id,
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Une erreur est survenue lors de la mise à jour',
+                ], 500);
+            }
+
+            return redirect()->back()
+                ->with('error', 'Une erreur est survenue lors de la mise à jour');
+        }
+    }
+
+    /**
+     * Générer et afficher la facture d'une commande
+     */
+    public function orderInvoice($id)
+    {
+        $order = Order::with([
+            'buyer', 
+            'seller', 
+            'item',
+            'item.category',
+            'item.brand'
+        ])->findOrFail($id);
+        
+        // Récupérer le tracking actuel
+        $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
+        
+        // Informations de l'entreprise (à personnaliser)
+        $company = [
+            'name' => config('app.name', 'VintApp'),
+            'address' => 'Kinshasa, RDC',
+            'phone' => '+243 XX XXX XXXX',
+            'email' => 'contact@vintapp.com',
+            'website' => 'www.vintapp.com',
+            'logo' => asset('images/logo.png'),
+        ];
+        
+        return view('admin.orders.invoice', compact('order', 'currentTracking', 'company'));
+    }
+
+    /**
+     * Télécharger la facture en PDF
+     */
+    public function downloadOrderInvoice($id)
+    {
+        // Note: Cette méthode nécessite l'installation de dompdf ou snappy
+        // composer require barryvdh/laravel-dompdf
+        
+        $order = Order::with([
+            'buyer', 
+            'seller', 
+            'item',
+            'item.category',
+            'item.brand'
+        ])->findOrFail($id);
+        
+        $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
+        
+        $company = [
+            'name' => config('app.name', 'VintApp'),
+            'address' => 'Kinshasa, RDC',
+            'phone' => '+243 XX XXX XXXX',
+            'email' => 'contact@vintapp.com',
+            'website' => 'www.vintapp.com',
+            'logo' => asset('images/logo.png'),
+        ];
+        
+        // Pour l'instant, on redirige vers la vue
+        // À implémenter avec dompdf plus tard
+        return view('admin.orders.invoice', compact('order', 'currentTracking', 'company'));
+    }
+
+    // =============================================
+    // UTILISATEURS CONNECTÉS EN TEMPS RÉEL
+    // =============================================
+
+    /**
+     * Afficher la liste des utilisateurs connectés
+     */
+    public function onlineUsers()
+    {
+        // Récupérer les sessions actives (< 5 minutes)
+        $onlineSessions = \App\Models\UserSession::getActiveSessions();
+        
+        // Grouper par utilisateur
+        $onlineUsers = $onlineSessions->groupBy('user_id')->map(function($sessions) {
+            $user = $sessions->first()->user;
+            $latestSession = $sessions->sortByDesc('last_activity')->first();
+            
+            return [
+                'user' => $user,
+                'session' => $latestSession,
+                'sessions_count' => $sessions->count(),
+                'devices' => $sessions->pluck('device_type')->unique()->values(),
+            ];
+        })->values();
+        
+        // Statistiques
+        $stats = [
+            'total_online' => $onlineUsers->count(),
+            'by_device' => [
+                'mobile' => $onlineSessions->where('device_type', 'mobile')->count(),
+                'tablet' => $onlineSessions->where('device_type', 'tablet')->count(),
+                'desktop' => $onlineSessions->where('device_type', 'desktop')->count(),
+            ],
+            'by_role' => [
+                'admin' => $onlineUsers->filter(fn($item) => $item['user']->hasRole('admin'))->count(),
+                'seller' => $onlineUsers->filter(fn($item) => $item['user']->is_seller)->count(),
+                'buyer' => $onlineUsers->filter(fn($item) => !$item['user']->hasRole('admin') && !$item['user']->is_seller)->count(),
+            ],
+        ];
+        
+        return view('admin.users.online', compact('onlineUsers', 'stats'));
+    }
+
+    /**
+     * API pour récupérer les utilisateurs connectés (AJAX)
+     */
+    public function getOnlineUsersData()
+    {
+        $onlineSessions = \App\Models\UserSession::getActiveSessions();
+        
+        $data = $onlineSessions->map(function($session) {
+            return [
+                'id' => $session->id,
+                'user' => [
+                    'id' => $session->user->id,
+                    'name' => $session->user->name,
+                    'email' => $session->user->email,
+                    'avatar' => $session->user->avatar ?? asset('images/default-avatar.png'),
+                ],
+                'device_type' => $session->device_type,
+                'device_icon' => $session->device_icon,
+                'browser' => $session->browser,
+                'browser_icon' => $session->browser_icon,
+                'os' => $session->os,
+                'ip_address' => $session->ip_address,
+                'location' => $session->location_text,
+                'last_activity' => $session->last_activity_text,
+                'last_activity_raw' => $session->last_activity->toIso8601String(),
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'count' => $data->count(),
+            'users' => $data,
+        ]);
+    }
+
+    /**
+     * Déconnecter un utilisateur (forcer la déconnexion)
+     */
+    public function forceLogoutUser(Request $request, $sessionId)
+    {
+        try {
+            $session = \App\Models\UserSession::findOrFail($sessionId);
+            $session->markAsInactive();
+            
+            Log::info('Utilisateur déconnecté par admin', [
+                'admin_id' => Auth::id(),
+                'user_id' => $session->user_id,
+                'session_id' => $sessionId,
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Utilisateur déconnecté avec succès',
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la déconnexion forcée', [
+                'error' => $e->getMessage(),
+                'session_id' => $sessionId,
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue',
+            ], 500);
+        }
+    }
 }
