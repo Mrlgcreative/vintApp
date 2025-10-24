@@ -1,6 +1,6 @@
-@extends('app')
 
-@push('styles')
+
+<?php $__env->startPush('styles'); ?>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
@@ -32,24 +32,24 @@
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Toast pour les notifications -->
 <div id="toast" class="fixed top-4 right-4 z-50 transform translate-x-[400px] transition-transform duration-300 flex items-center gap-3">
-    @if(session('success'))
+    <?php if(session('success')): ?>
         <div class="bg-green-500 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
             <span class="text-xl">✅</span>
-            <span>{{ session('success') }}</span>
+            <span><?php echo e(session('success')); ?></span>
         </div>
-    @endif
-    @if(session('error'))
+    <?php endif; ?>
+    <?php if(session('error')): ?>
         <div class="bg-red-500 text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3">
             <span class="text-xl">❌</span>
-            <span>{{ session('error') }}</span>
+            <span><?php echo e(session('error')); ?></span>
         </div>
-    @endif
+    <?php endif; ?>
 </div>
 
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-violet-50 py-8">
@@ -64,15 +64,16 @@
                     </div>
                     Mon panier
                 </h1>
-                @if(!empty($cart))
+                <?php if(!empty($cart)): ?>
                     <span class="px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-semibold">
-                        {{ count($cart) }} article{{ count($cart) > 1 ? 's' : '' }}
+                        <?php echo e(count($cart)); ?> article<?php echo e(count($cart) > 1 ? 's' : ''); ?>
+
                     </span>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
-        @if(empty($cart))
+        <?php if(empty($cart)): ?>
             <!-- Panier vide -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
                 <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -80,23 +81,23 @@
                 </div>
                 <h3 class="text-xl font-semibold text-slate-700 mb-3">Votre panier est vide</h3>
                 <p class="text-slate-500 mb-6">Découvrez nos articles et ajoutez-les à votre panier</p>
-                <a href="{{ route('items.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-violet-700 text-white rounded-xl font-semibold hover:from-violet-700 hover:to-violet-800 transition-all shadow-lg">
+                <a href="<?php echo e(route('items.index')); ?>" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-violet-700 text-white rounded-xl font-semibold hover:from-violet-700 hover:to-violet-800 transition-all shadow-lg">
                     <span>🏪</span>
                     Continuer mes achats
                 </a>
             </div>
-        @else
+        <?php else: ?>
             <!-- Actions du panier -->
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-                <form method="POST" action="{{ route('cart.clear') }}">
-                    @csrf
+                <form method="POST" action="<?php echo e(route('cart.clear')); ?>">
+                    <?php echo csrf_field(); ?>
                     <button type="submit" class="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 border-2 border-red-200 hover:border-red-300 text-red-600 rounded-xl font-medium transition-all">
                         <span>🗑️</span>
                         Vider le panier
                     </button>
                 </form>
                 
-                <a href="{{ route('items.index') }}" class="flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl font-medium transition-all">
+                <a href="<?php echo e(route('items.index')); ?>" class="flex items-center gap-2 px-4 py-2 bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 hover:border-slate-300 text-slate-600 rounded-xl font-medium transition-all">
                     <span>🔙</span>
                     Continuer mes achats
                 </a>
@@ -115,57 +116,60 @@
                 </div>
                 
                 <div class="divide-y divide-slate-100">
-                    @php $total = 0; @endphp
-                    @foreach($cart as $item)
-                        @php $total += $item['price'] * $item['quantity']; @endphp
+                    <?php $total = 0; ?>
+                    <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $total += $item['price'] * $item['quantity']; ?>
                         <div class="cart-item-hover px-6 py-6">
                             <div class="grid grid-cols-12 gap-4 items-center">
                                 <!-- Article -->
                                 <div class="col-span-5 flex items-center gap-4">
                                     <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                                        @if($item['image'])
-                                            <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
-                                        @else
+                                        <?php if($item['image']): ?>
+                                            <img src="<?php echo e(asset('storage/' . $item['image'])); ?>" alt="<?php echo e($item['name']); ?>" class="w-full h-full object-cover">
+                                        <?php else: ?>
                                             <div class="w-full h-full flex items-center justify-center">
                                                 <span class="text-2xl text-slate-400">📷</span>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     <div>
-                                        <h3 class="font-semibold text-slate-800 mb-1">{{ $item['name'] }}</h3>
-                                        @if(isset($item['has_discount']) && $item['has_discount'])
+                                        <h3 class="font-semibold text-slate-800 mb-1"><?php echo e($item['name']); ?></h3>
+                                        <?php if(isset($item['has_discount']) && $item['has_discount']): ?>
                                             <span class="inline-flex items-center gap-1 px-3 py-1 price-badge text-white rounded-full text-xs font-medium discount-glow">
                                                 <span>🏷️</span>
-                                                -{{ $item['discount_percentage'] }}%
+                                                -<?php echo e($item['discount_percentage']); ?>%
                                             </span>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 
                                 <!-- Prix -->
                                 <div class="col-span-2 text-center">
-                                    @if(isset($item['has_discount']) && $item['has_discount'])
+                                    <?php if(isset($item['has_discount']) && $item['has_discount']): ?>
                                         <div class="space-y-1">
                                             <div class="text-sm text-slate-400 line-through">
-                                                {{ number_format($item['original_price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                <?php echo e(number_format($item['original_price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                             </div>
                                             <div class="text-green-600 font-bold">
-                                                {{ number_format($item['price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                <?php echo e(number_format($item['price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                             </div>
                                         </div>
-                                    @else
+                                    <?php else: ?>
                                         <div class="font-semibold text-slate-700">
-                                            {{ number_format($item['price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                            <?php echo e(number_format($item['price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <!-- Quantité -->
                                 <div class="col-span-2 text-center">
-                                    <form method="POST" action="{{ route('cart.update', $item['id']) }}" class="flex items-center justify-center gap-2">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('cart.update', $item['id'])); ?>" class="flex items-center justify-center gap-2">
+                                        <?php echo csrf_field(); ?>
                                         <div class="flex items-center bg-slate-50 rounded-lg border-2 border-slate-200 focus-within:border-violet-500 transition-colors">
-                                            <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="w-16 px-3 py-2 bg-transparent text-center font-semibold text-slate-700 focus:outline-none">
+                                            <input type="number" name="quantity" value="<?php echo e($item['quantity']); ?>" min="1" class="w-16 px-3 py-2 bg-transparent text-center font-semibold text-slate-700 focus:outline-none">
                                         </div>
                                         <button type="submit" class="w-8 h-8 bg-violet-100 hover:bg-violet-200 text-violet-600 rounded-lg transition-colors flex items-center justify-center">
                                             <span class="text-sm">🔄</span>
@@ -176,14 +180,15 @@
                                 <!-- Sous-total -->
                                 <div class="col-span-2 text-center">
                                     <div class="font-bold text-lg text-slate-800">
-                                        {{ number_format($item['price'] * $item['quantity'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                        <?php echo e(number_format($item['price'] * $item['quantity'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                     </div>
                                 </div>
                                 
                                 <!-- Action -->
                                 <div class="col-span-1 text-center">
-                                    <form method="POST" action="{{ route('cart.remove', $item['id']) }}">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('cart.remove', $item['id'])); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors flex items-center justify-center">
                                             <span class="text-sm">❌</span>
                                         </button>
@@ -191,66 +196,69 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
 
             <!-- Articles du panier - Version Mobile -->
             <div class="lg:hidden space-y-4 mb-8">
-                @php $total = 0; @endphp
-                @foreach($cart as $item)
-                    @php $total += $item['price'] * $item['quantity']; @endphp
+                <?php $total = 0; ?>
+                <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $total += $item['price'] * $item['quantity']; ?>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 cart-item-hover">
                         <div class="flex gap-4">
                             <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
-                                @if($item['image'])
-                                    <img src="{{ asset('storage/' . $item['image']) }}" alt="{{ $item['name'] }}" class="w-full h-full object-cover">
-                                @else
+                                <?php if($item['image']): ?>
+                                    <img src="<?php echo e(asset('storage/' . $item['image'])); ?>" alt="<?php echo e($item['name']); ?>" class="w-full h-full object-cover">
+                                <?php else: ?>
                                     <div class="w-full h-full flex items-center justify-center">
                                         <span class="text-2xl text-slate-400">📷</span>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </div>
                             <div class="flex-1 space-y-3">
                                 <div>
-                                    <h3 class="font-semibold text-slate-800 mb-1">{{ $item['name'] }}</h3>
-                                    @if(isset($item['has_discount']) && $item['has_discount'])
+                                    <h3 class="font-semibold text-slate-800 mb-1"><?php echo e($item['name']); ?></h3>
+                                    <?php if(isset($item['has_discount']) && $item['has_discount']): ?>
                                         <span class="inline-flex items-center gap-1 px-2 py-1 price-badge text-white rounded-full text-xs font-medium">
                                             <span>🏷️</span>
-                                            -{{ $item['discount_percentage'] }}%
+                                            -<?php echo e($item['discount_percentage']); ?>%
                                         </span>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        @if(isset($item['has_discount']) && $item['has_discount'])
+                                        <?php if(isset($item['has_discount']) && $item['has_discount']): ?>
                                             <div class="text-sm text-slate-400 line-through">
-                                                {{ number_format($item['original_price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                <?php echo e(number_format($item['original_price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                             </div>
                                             <div class="text-green-600 font-bold">
-                                                {{ number_format($item['price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                <?php echo e(number_format($item['price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                             </div>
-                                        @else
+                                        <?php else: ?>
                                             <div class="font-semibold text-slate-700">
-                                                {{ number_format($item['price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                <?php echo e(number_format($item['price'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="flex items-center gap-2">
-                                        <form method="POST" action="{{ route('cart.update', $item['id']) }}" class="flex items-center gap-2">
-                                            @csrf
+                                        <form method="POST" action="<?php echo e(route('cart.update', $item['id'])); ?>" class="flex items-center gap-2">
+                                            <?php echo csrf_field(); ?>
                                             <div class="flex items-center bg-slate-50 rounded-lg border-2 border-slate-200">
-                                                <input type="number" name="quantity" value="{{ $item['quantity'] }}" min="1" class="w-12 px-2 py-1 bg-transparent text-center text-sm font-semibold text-slate-700 focus:outline-none">
+                                                <input type="number" name="quantity" value="<?php echo e($item['quantity']); ?>" min="1" class="w-12 px-2 py-1 bg-transparent text-center text-sm font-semibold text-slate-700 focus:outline-none">
                                             </div>
                                             <button type="submit" class="w-8 h-8 bg-violet-100 hover:bg-violet-200 text-violet-600 rounded-lg transition-colors flex items-center justify-center">
                                                 <span class="text-sm">🔄</span>
                                             </button>
                                         </form>
                                         
-                                        <form method="POST" action="{{ route('cart.remove', $item['id']) }}">
-                                            @csrf
+                                        <form method="POST" action="<?php echo e(route('cart.remove', $item['id'])); ?>">
+                                            <?php echo csrf_field(); ?>
                                             <button type="submit" class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg transition-colors flex items-center justify-center">
                                                 <span class="text-sm">❌</span>
                                             </button>
@@ -261,13 +269,14 @@
                                 <div class="text-right">
                                     <span class="text-sm text-slate-500">Sous-total: </span>
                                     <span class="font-bold text-slate-800">
-                                        {{ number_format($item['price'] * $item['quantity'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                        <?php echo e(number_format($item['price'] * $item['quantity'], 0, ',', ' ')); ?> <?php echo e($item['currency']); ?>
+
                                     </span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Résumé et checkout -->
@@ -276,7 +285,7 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-lg">
                             <span class="text-slate-600">Sous-total :</span>
-                            <span class="font-semibold text-slate-800">{{ number_format($total, 0, ',', ' ') }} {{ $item['currency'] ?? 'CDF' }}</span>
+                            <span class="font-semibold text-slate-800"><?php echo e(number_format($total, 0, ',', ' ')); ?> <?php echo e($item['currency'] ?? 'CDF'); ?></span>
                         </div>
                         <div class="flex items-center justify-between text-sm text-slate-500">
                             <span>Frais de livraison :</span>
@@ -285,22 +294,22 @@
                         <hr class="border-slate-200">
                         <div class="flex items-center justify-between text-xl font-bold">
                             <span class="text-slate-800">Total :</span>
-                            <span class="text-violet-600">{{ number_format($total, 0, ',', ' ') }} {{ $item['currency'] ?? 'CDF' }}</span>
+                            <span class="text-violet-600"><?php echo e(number_format($total, 0, ',', ' ')); ?> <?php echo e($item['currency'] ?? 'CDF'); ?></span>
                         </div>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('items.index') }}" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors text-center">
+                        <a href="<?php echo e(route('items.index')); ?>" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold transition-colors text-center">
                             Continuer mes achats
                         </a>
-                        <a href="{{ route('cart.checkout') }}" class="px-8 py-3 btn-gradient text-white rounded-xl font-semibold hover:shadow-lg transition-all text-center flex items-center justify-center gap-2">
+                        <a href="<?php echo e(route('cart.checkout')); ?>" class="px-8 py-3 btn-gradient text-white rounded-xl font-semibold hover:shadow-lg transition-all text-center flex items-center justify-center gap-2">
                             <span>💳</span>
                             Passer à la caisse
                         </a>
                     </div>
                 </div>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
@@ -336,4 +345,5 @@ document.querySelectorAll('form[action*="cart.remove"], form[action*="cart.clear
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/cart.blade.php ENDPATH**/ ?>

@@ -2,56 +2,72 @@
 
 <?php $__env->startPush('styles'); ?>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-    
-    /* Tailwind CSS CDN pour forcer les styles */
-    @import url('https://cdn.tailwindcss.com');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
     
     #home-content * { font-family: 'Inter', sans-serif !important; }
     
     .hero-gradient { background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%) !important; }
     .category-gradient { background: linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%) !important; }
     
+    .animate-slide-in { 
+        animation: slideIn 0.6s ease-out !important; 
+    }
+    
     @keyframes slideIn {
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
     }
     
-    .animate-slide-in { animation: slideIn 0.6s ease-out !important; }
-    
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
     
-    .hover-lift { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
-    .hover-lift:hover { transform: translateY(-4px) !important; box-shadow: 0 12px 24px -6px rgba(124, 58, 237, 0.3) !important; }
+    .hover-lift { 
+        transition: transform 0.3s ease !important; 
+    }
+    .hover-lift:hover { 
+        transform: translateY(-4px) !important; 
+    }
     
-    .card-hover { transition: all 0.3s ease !important; }
-    .card-hover:hover { transform: translateY(-6px) !important; box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15) !important; }
+    .card-hover { 
+        transition: all 0.3s ease !important; 
+    }
+    .card-hover:hover { 
+        transform: translateY(-6px) !important; 
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15) !important; 
+    }
     
-    .image-zoom { transition: transform 0.4s ease !important; }
-    .card-hover:hover .image-zoom { transform: scale(1.08) !important; }
+    .image-zoom { 
+        transition: transform 0.4s ease !important; 
+    }
+    .card-hover:hover .image-zoom { 
+        transform: scale(1.08) !important; 
+    }
     
-    .badge-shadow { box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important; }
+    .badge-shadow { 
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important; 
+    }
     
-    .carousel-indicator { transition: all 0.3s ease !important; }
-    .carousel-indicator.active { background-color: white !important; width: 2rem !important; }
+    .carousel-indicator { 
+        transition: all 0.3s ease !important; 
+    }
+    .carousel-indicator.active { 
+        background-color: white !important; 
+        width: 2rem !important; 
+    }
 </style>
 
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Lucide Icons -->
-<script src="https://unpkg.com/lucide@latest"></script>
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
 
 <!-- Toast Notification -->
 <div id="toast" class="fixed top-4 right-4 z-50 bg-violet-600 text-white px-5 py-3 rounded-xl shadow-lg transform translate-x-[400px] transition-transform duration-300 flex items-center gap-3">
-    <i data-lucide="check-circle" class="w-5 h-5"></i>
+    <span class="text-xl">✅</span>
     <span id="toastMessage">Notification</span>
     <button onclick="closeToast()" class="ml-2 hover:opacity-70">
-        <i data-lucide="x" class="w-4 h-4"></i>
+        <span class="text-lg">✖</span>
     </button>
 </div>
 
@@ -67,12 +83,12 @@
                 <div class="flex-1 relative">
                     <input type="search" name="q" value="<?php echo e(request('q')); ?>" placeholder="Rechercher des articles..." class="w-full h-12 pl-4 pr-28 rounded-xl bg-neutral-50 border-2 border-transparent focus:border-violet-600 focus:bg-white focus:outline-none focus:ring-4 focus:ring-violet-100 transition-all duration-300 text-sm font-medium" />
                     <button type="submit" class="absolute right-1.5 top-1.5 h-9 px-5 bg-gradient-to-r from-violet-600 to-violet-700 text-white rounded-lg text-sm font-semibold hover:from-violet-700 hover:to-violet-800 transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2">
-                        <i data-lucide="search" class="w-4 h-4"></i>
+                        <span>🔍</span>
                     </button>
                 </div>
             </form>
             <button onclick="toggleFiltersModal()" class="h-12 px-5 bg-neutral-50 hover:bg-white border-2 border-transparent hover:border-violet-600 rounded-xl text-violet-600 font-semibold text-sm transition-all duration-300 flex items-center gap-2">
-                <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+                <span>⚙️</span>
                 <span class="hidden sm:inline">Filtres</span>
             </button>
         </div>
@@ -101,7 +117,7 @@
                                                 <a href="<?php echo e($slide->button_primary_url); ?>" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
                                                     <?php echo e($slide->button_primary_text); ?>
 
-                                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                                    <span></span>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if($slide->button_secondary_text && $slide->button_secondary_url): ?>
@@ -121,7 +137,7 @@
                                                 <a href="<?php echo e($slide->button_primary_url); ?>" class="px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift inline-flex items-center gap-2">
                                                     <?php echo e($slide->button_primary_text); ?>
 
-                                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                                    <span></span>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if($slide->button_secondary_text && $slide->button_secondary_url): ?>
@@ -154,14 +170,14 @@
                 <div class="grid md:grid-cols-2 gap-8 items-center">
                     <div class="text-white space-y-6">
                         <h1 class="text-4xl md:text-5xl font-bold leading-tight">Bienvenue sur VintApp</h1>
-                        <p class="text-lg text-violet-100 leading-relaxed">Découvrez des articles d''occasion de qualité</p>
+                        <p class="text-lg text-violet-100 leading-relaxed">Découvrez des articles d'occasion de qualité</p>
                         <a href="<?php echo e(route('items.index')); ?>" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-violet-600 rounded-full font-semibold hover-lift">
-                            Explorer <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            Explorer <span>→</span>
                         </a>
                     </div>
                     <div class="flex justify-center">
                         <div class="w-80 h-80 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                            <i data-lucide="image" class="w-32 h-32 text-white/30"></i>
+                            <span class="text-8xl text-white/30">📷</span>
                         </div>
                     </div>
                 </div>
@@ -176,7 +192,7 @@
         <div class="md:hidden flex gap-3 overflow-x-auto scrollbar-hide pb-2">
             <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" class="flex-shrink-0 w-20 aspect-square category-gradient rounded-2xl p-3 flex flex-col items-center justify-center gap-2 text-center hover:-translate-y-1 transition-transform duration-300">
-                    <i data-lucide="<?php echo e($category->icon ?? 'tag'); ?>" class="w-8 h-8 text-violet-600"></i>
+                    <span class="text-2xl"></span>
                     <span class="text-xs font-semibold text-violet-800 line-clamp-1"><?php echo e($category->name); ?></span>
                 </a>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -185,7 +201,7 @@
         <div class="hidden md:grid grid-cols-3 lg:grid-cols-6 gap-4">
             <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" class="category-gradient rounded-2xl p-5 flex flex-col items-center gap-3 text-center hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md">
-                    <i data-lucide="<?php echo e($category->icon ?? 'tag'); ?>" class="w-10 h-10 text-violet-600"></i>
+                    <span class="text-4xl"></span>
                     <div>
                         <p class="font-semibold text-neutral-800 mb-1"><?php echo e($category->name); ?></p>
                         <p class="text-xs text-neutral-500"><?php echo e($category->items_count ?? 0); ?> articles</p>
@@ -199,19 +215,19 @@
     <section class="max-w-7xl mx-auto px-4 py-4">
         <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
             <a href="<?php echo e(route('items.index')); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(!request('sort') ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
-                <i data-lucide="star" class="w-4 h-4"></i>
+                <span>⭐</span>
                 Tous
             </a>
             <a href="<?php echo e(route('items.index', ['sort' => 'recent'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'recent' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
+                <span></span>
                 Nouveautés
             </a>
             <a href="<?php echo e(route('items.index', ['sort' => 'popular'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'popular' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
-                <i data-lucide="flame" class="w-4 h-4"></i>
+                <span></span>
                 Populaires
             </a>
             <a href="<?php echo e(route('items.index', ['sort' => 'price_low'])); ?>" class="flex-shrink-0 px-5 py-2 <?php echo e(request('sort') === 'price_low' ? 'bg-violet-600 text-white' : 'bg-white border-2 border-neutral-200 text-neutral-700 hover:border-violet-600 hover:text-violet-600'); ?> rounded-full font-medium text-sm transition-all duration-300 inline-flex items-center gap-2">
-                <i data-lucide="tag" class="w-4 h-4"></i>
+                <span>🏷️</span>
                 Prix croissant
             </a>
         </div>
@@ -233,7 +249,7 @@
                             <img src="<?php echo e(Storage::url($imgPath)); ?>" alt="<?php echo e($item->name); ?>" class="w-full h-full object-cover image-zoom" />
                         <?php else: ?>
                             <div class="w-full h-full flex items-center justify-center">
-                                <i data-lucide="image" class="w-16 h-16 text-neutral-300"></i>
+                                <span class="text-6xl text-neutral-300"></span>
                             </div>
                         <?php endif; ?>
                         
@@ -253,12 +269,12 @@
                             </span>
                             
                             <button onclick="addToCart(<?php echo e($item->id); ?>)" class="w-7 h-7 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full flex items-center justify-center transition-colors duration-200">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>+</span>
                             </button>
                         </div>
                         
                         <p class="text-xs text-neutral-500 flex items-center gap-1">
-                            <i data-lucide="clock" class="w-3 h-3"></i>
+                            <span>🕒</span>
                             <?php echo e($item->created_at->diffForHumans()); ?>
 
                         </p>
@@ -268,8 +284,8 @@
                 </div>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div class="col-span-full text-center py-12">
-                    <i data-lucide="box" class="w-16 h-16 text-neutral-300 mx-auto mb-4"></i>
-                    <h3 class="text-lg font-semibold text-neutral-600 mb-2">Aucun article disponible</h3>
+                    <span class="text-8xl text-neutral-300">📦</span>
+                    <h3 class="text-lg font-semibold text-neutral-600 mb-2 mt-4">Aucun article disponible</h3>
                     <p class="text-neutral-500">Revenez plus tard pour découvrir de nouveaux articles</p>
                 </div>
             <?php endif; ?>
@@ -283,11 +299,11 @@
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg">
         <div class="bg-gradient-to-r from-violet-600 to-violet-700 text-white px-6 py-5 rounded-t-3xl flex items-center justify-between">
             <h3 class="text-xl font-bold flex items-center gap-2">
-                <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                <span></span>
                 Filtres
             </h3>
             <button onclick="toggleFiltersModal()" class="hover:bg-white/10 rounded-full p-2 transition-colors">
-                <i data-lucide="x" class="w-5 h-5"></i>
+                <span></span>
             </button>
         </div>
         
@@ -326,12 +342,6 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof lucide !== 'undefined') {
-        lucide.createIcons();
-    }
-});
-
 <?php if(isset($heroSlides) && $heroSlides->count() > 0): ?>
 let currentSlide = 0;
 const totalSlides = <?php echo e($heroSlides->count()); ?>;
@@ -368,7 +378,6 @@ function showToast(message) {
         setTimeout(() => {
             toast.style.transform = 'translateX(400px)';
         }, 3000);
-        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 }
 
@@ -384,7 +393,6 @@ function toggleFiltersModal() {
     if (modal) {
         modal.classList.toggle('hidden');
         modal.classList.toggle('flex');
-        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 }
 
