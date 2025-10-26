@@ -1,10 +1,68 @@
 @extends('app')
 
+@push('styles')
+<style>
+    .firebase-auth-form {
+        position: relative;
+    }
+    
+    .loading-overlay {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(4px);
+    }
+    
+    .pulse-dot {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(0.8); opacity: 0.5; }
+        50% { transform: scale(1.2); opacity: 1; }
+    }
+    
+    .btn-firebase {
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .btn-firebase:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .toast-notification {
+        animation: slideInRight 0.3s ease-out;
+    }
+    
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+</style>
+@endpush
+
 @section('content')
+
+<!-- Toast Notifications Container -->
+<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" class="position-fixed top-0 start-0 w-100 h-100 loading-overlay d-none justify-content-center align-items-center" style="z-index: 9998;">
+    <div class="text-center">
+        <div class="d-flex justify-content-center mb-3">
+            <div class="pulse-dot bg-primary rounded-circle me-2" style="width: 12px; height: 12px;"></div>
+            <div class="pulse-dot bg-primary rounded-circle me-2" style="width: 12px; height: 12px; animation-delay: 0.2s;"></div>
+            <div class="pulse-dot bg-primary rounded-circle" style="width: 12px; height: 12px; animation-delay: 0.4s;"></div>
+        </div>
+        <p class="text-primary fw-medium">Connexion en cours...</p>
+    </div>
+</div>
+
 <div class="container-fluid">
     <div class="row justify-content-center align-items-center min-vh-100">
         <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg border-0">
+            <div class="card shadow-lg border-0 firebase-auth-form">
                 <div class="card-body p-5">
                     <!-- Logo et titre -->
                     <div class="text-center mb-4">
@@ -15,80 +73,56 @@
                         <p class="text-muted">Connectez-vous à votre compte VintApp</p>
                     </div>
 
-                    <!-- Formulaire de connexion -->
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-
-                        <!-- Email -->
+                    <!-- Connexion Firebase avec Email/Password -->
+                    <div class="mb-4">
                         <div class="form-floating mb-3">
                             <input type="email" 
-                                   class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" 
-                                   name="email" 
-                                   value="{{ old('email') }}" 
+                                   class="form-control" 
+                                   id="firebase-email" 
                                    placeholder="nom@exemple.com" 
-                                   required 
-                                   autofocus>
-                            <label for="email">
+                                   required>
+                            <label for="firebase-email">
                                 <i class="fas fa-envelope me-2"></i>
                                 Adresse email
                             </label>
-                            @error('email')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
-                        <!-- Mot de passe -->
                         <div class="form-floating mb-3">
                             <input type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" 
-                                   name="password" 
+                                   class="form-control" 
+                                   id="firebase-password" 
                                    placeholder="Mot de passe" 
                                    required>
-                            <label for="password">
+                            <label for="firebase-password">
                                 <i class="fas fa-lock me-2"></i>
                                 Mot de passe
                             </label>
-                            @error('password')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
                         </div>
 
                         <!-- Se souvenir de moi -->
                         <div class="form-check mb-3">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   name="remember" 
-                                   id="remember" 
-                                   {{ old('remember') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="remember">
+                            <input class="form-check-input" type="checkbox" id="remember-me">
+                            <label class="form-check-label" for="remember-me">
                                 Se souvenir de moi
                             </label>
                         </div>
 
-                        <!-- Bouton de connexion -->
+                        <!-- Bouton Firebase Login -->
                         <div class="d-grid mb-3">
-                            <button class="btn btn-primary btn-lg" type="submit">
+                            <button onclick="signInWithFirebaseEmail()" class="btn btn-primary btn-lg btn-firebase">
                                 <i class="fas fa-sign-in-alt me-2"></i>
-                                Se connecter
+                                Se connecter avec Firebase
                             </button>
                         </div>
 
                         <!-- Liens utiles -->
-                        <div class="text-center">
-                            @if (Route::has('password.request'))
-                                <a class="text-decoration-none" href="{{ route('password.request') }}">
-                                    <i class="fas fa-key me-1"></i>
-                                    Mot de passe oublié ?
-                                </a>
-                            @endif
+                        <div class="text-center mb-4">
+                            <a href="#" onclick="showForgotPassword()" class="text-decoration-none">
+                                <i class="fas fa-key me-1"></i>
+                                Mot de passe oublié ?
+                            </a>
                         </div>
-                    </form>
+                    </div>
 
                     <!-- Séparateur -->
                     <div class="position-relative my-4">
@@ -96,21 +130,26 @@
                         <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">OU</span>
                     </div>
 
-                    <!-- Connexion avec Google -->
+                    <!-- Connexion avec Google Firebase -->
                     <div class="d-grid mb-3">
-                        <a href="{{ route('auth.google') }}" class="btn btn-light btn-lg border d-flex align-items-center justify-content-center" style="background-color: white;">
+                        <button onclick="signInWithGoogle()" class="btn btn-light btn-lg border d-flex align-items-center justify-content-center btn-firebase" style="background-color: white;">
                             <svg width="18" height="18" viewBox="0 0 18 18" class="me-2" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
                                 <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18L12.05 13.56c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
                                 <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
                                 <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
                             </svg>
-                            <span style="color: #3c4043; font-weight: 500;">Se connecter avec Google</span>
-                        </a>
+                            <span style="color: #3c4043; font-weight: 500;">Google</span>
+                        </button>
                     </div>
 
-                    <!-- Connexion avec Apple -->
-                    
+                    <!-- Connexion avec Facebook Firebase -->
+                    <div class="d-grid mb-3">
+                        <button onclick="signInWithFacebook()" class="btn btn-primary btn-lg btn-firebase" style="background-color: #1877f2; border-color: #1877f2;">
+                            <i class="fab fa-facebook-f me-2"></i>
+                            Facebook
+                        </button>
+                    </div>
 
                     <!-- Séparateur -->
                     <hr class="my-4">
@@ -124,6 +163,16 @@
                                 S'inscrire
                             </a>
                         </p>
+                    </div>
+
+                    <!-- Fallback vers connexion Laravel classique -->
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Problème de connexion ? 
+                            <a href="#" onclick="showClassicLogin()" class="text-decoration-none">
+                                Utiliser la connexion classique
+                            </a>
+                        </small>
                     </div>
                 </div>
             </div>
@@ -139,71 +188,419 @@
     </div>
 </div>
 
-<style>
-.min-vh-100 {
-    min-height: 100vh;
+<!-- Formulaire Laravel classique (caché par défaut) -->
+<div id="classic-login-modal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Connexion classique</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                               name="email" value="{{ old('email') }}" required>
+                        <label>Email</label>
+                        @error('email')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                               name="password" required>
+                        <label>Mot de passe</label>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase SDK et JavaScript -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { 
+    getAuth, 
+    signInWithEmailAndPassword,
+    signInWithPopup, 
+    GoogleAuthProvider,
+    FacebookAuthProvider,
+    sendPasswordResetEmail,
+    onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+import { 
+    getMessaging, 
+    getToken 
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
+
+// Configuration Firebase
+const firebaseConfig = {
+    apiKey: "{{ config('firebase.web_config.apiKey') }}",
+    authDomain: "{{ config('firebase.web_config.authDomain') }}",
+    projectId: "{{ config('firebase.web_config.projectId') }}",
+    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
+    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
+    appId: "{{ config('firebase.web_config.appId') }}"
+};
+
+// Debug configuration
+console.log('🔥 Configuration Firebase complète:', firebaseConfig);
+
+// Validation critique de la configuration
+const configProblems = [];
+if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY_HERE') {
+    configProblems.push('API Key invalide');
+}
+if (!firebaseConfig.appId || firebaseConfig.appId.includes('YOUR_APP_ID_HERE')) {
+    configProblems.push('APP ID manquant (YOUR_APP_ID_HERE)');
 }
 
-.card {
-    border-radius: 1rem;
+if (configProblems.length > 0) {
+    console.error('❌ ERREUR CONFIGURATION FIREBASE:', configProblems);
+    alert('ERREUR: Configuration Firebase incomplète\n\n' + configProblems.join('\n') + 
+          '\n\nVeuillez configurer Firebase dans votre Console Firebase.');
 }
 
-.form-floating > .form-control {
-    border-radius: 0.5rem;
+// Validation de la configuration
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+    console.error('Configuration Firebase incomplète!');
+    showToast('Configuration Firebase manquante. Contactez l\'administrateur.', 'error');
 }
 
-.btn-lg {
-    border-radius: 0.5rem;
-    padding: 0.75rem 1.5rem;
+// Initialisation Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+let messaging = null;
+
+// Initialiser FCM si supporté
+try {
+    messaging = getMessaging(app);
+} catch (error) {
+    console.warn('FCM non supporté:', error);
 }
 
-.form-check-input:checked {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-}
+// Providers
+const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+    prompt: 'select_account'
+});
 
-/* Animation d'entrée */
-.card {
-    animation: slideInUp 0.5s ease-out;
-}
+const facebookProvider = new FacebookAuthProvider();
 
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+// Fonctions globales
+window.signInWithFirebaseEmail = async () => {
+    const email = document.getElementById('firebase-email').value.trim();
+    const password = document.getElementById('firebase-password').value;
+    
+    if (!email || !password) {
+        showToast('Veuillez remplir tous les champs', 'error');
+        return;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    
+    if (!validateEmail(email)) {
+        showToast('Adresse email invalide', 'error');
+        return;
+    }
+    
+    showLoading(true);
+    
+    try {
+        console.log('Tentative de connexion Firebase pour:', email);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log('Connexion Firebase réussie:', userCredential.user);
+        await handleFirebaseAuth(userCredential.user);
+    } catch (error) {
+        console.error('Erreur Firebase complète:', error);
+        console.error('Code erreur:', error.code);
+        console.error('Message erreur:', error.message);
+        
+        let message = 'Erreur de connexion Firebase';
+        
+        switch (error.code) {
+            case 'auth/user-not-found':
+                message = 'Aucun compte Firebase trouvé avec cet email. Vous devez d\'abord créer un compte Firebase.';
+                break;
+            case 'auth/wrong-password':
+                message = 'Mot de passe Firebase incorrect';
+                break;
+            case 'auth/invalid-email':
+                message = 'Adresse email invalide';
+                break;
+            case 'auth/user-disabled':
+                message = 'Ce compte Firebase a été désactivé';
+                break;
+            case 'auth/too-many-requests':
+                message = 'Trop de tentatives. Réessayez plus tard';
+                break;
+            case 'auth/invalid-api-key':
+                message = 'Clé API Firebase invalide. Configuration incorrecte.';
+                break;
+            case 'auth/app-not-authorized':
+                message = 'Application non autorisée pour ce projet Firebase';
+                break;
+            default:
+                message = `Erreur Firebase: ${error.code} - ${error.message}`;
+        }
+        
+        showToast(message, 'error');
+        showLoading(false);
+    }
+};
+
+window.signInWithGoogle = async () => {
+    showLoading(true);
+    
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        await handleFirebaseAuth(result.user);
+    } catch (error) {
+        console.error('Erreur Google Auth:', error);
+        
+        let message = 'Erreur de connexion Google';
+        if (error.code === 'auth/popup-closed-by-user') {
+            message = 'Connexion annulée';
+        } else if (error.code === 'auth/popup-blocked') {
+            message = 'Pop-up bloqué. Autorisez les pop-ups pour ce site';
+        }
+        
+        showToast(message, 'error');
+        showLoading(false);
+    }
+};
+
+window.signInWithFacebook = async () => {
+    showLoading(true);
+    
+    try {
+        const result = await signInWithPopup(auth, facebookProvider);
+        await handleFirebaseAuth(result.user);
+    } catch (error) {
+        console.error('Erreur Facebook Auth:', error);
+        
+        let message = 'Erreur de connexion Facebook';
+        if (error.code === 'auth/popup-closed-by-user') {
+            message = 'Connexion annulée';
+        } else if (error.code === 'auth/account-exists-with-different-credential') {
+            message = 'Un compte existe déjà avec cet email via un autre service';
+        }
+        
+        showToast(message, 'error');
+        showLoading(false);
+    }
+};
+
+window.showForgotPassword = async () => {
+    const email = document.getElementById('firebase-email').value.trim();
+    
+    if (!email) {
+        showToast('Veuillez saisir votre email d\'abord', 'warning');
+        document.getElementById('firebase-email').focus();
+        return;
+    }
+    
+    if (!validateEmail(email)) {
+        showToast('Adresse email invalide', 'error');
+        return;
+    }
+    
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showToast('Email de réinitialisation envoyé !', 'success');
+    } catch (error) {
+        console.error('Erreur reset password:', error);
+        showToast('Erreur lors de l\'envoi de l\'email', 'error');
+    }
+};
+
+window.showClassicLogin = () => {
+    const modal = new bootstrap.Modal(document.getElementById('classic-login-modal'));
+    modal.show();
+};
+
+// Gestion de l'authentification Firebase
+async function handleFirebaseAuth(user) {
+    try {
+        const idToken = await user.getIdToken();
+        
+        // Obtenir le token FCM si disponible
+        let fcmToken = null;
+        if (messaging) {
+            try {
+                const vapidKey = "{{ config('firebase.messaging.vapid_key', '') }}";
+                if (vapidKey) {
+                    fcmToken = await getToken(messaging, { vapidKey });
+                }
+            } catch (fcmError) {
+                console.warn('Token FCM non disponible:', fcmError);
+            }
+        }
+        
+        // Envoyer au serveur Laravel
+        const response = await fetch('{{ route("firebase.login") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ 
+                idToken: idToken,
+                fcmToken: fcmToken
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Erreur serveur: ' + response.status);
+        }
+        
+        const data = await response.json();
+        
+        console.log('Réponse serveur:', data);
+        
+        if (data.success) {
+            showToast('Connexion réussie ! Redirection...', 'success');
+            
+            // Sauvegarder le "se souvenir de moi" dans localStorage
+            const rememberMe = document.getElementById('remember-me').checked;
+            if (rememberMe) {
+                localStorage.setItem('firebase_remember_me', 'true');
+            }
+            
+            setTimeout(() => {
+                window.location.href = data.redirect || '{{ route("home") }}';
+            }, 1500);
+        } else {
+            console.error('Erreur serveur:', data);
+            throw new Error(data.message || 'Erreur de connexion côté serveur');
+        }
+    } catch (error) {
+        console.error('Erreur handleFirebaseAuth:', error);
+        showToast(error.message || 'Erreur lors de l\'authentification', 'error');
+        showLoading(false);
     }
 }
 
-/* Styles pour les erreurs */
-.invalid-feedback {
-    font-size: 0.875rem;
+// Fonctions utilitaires
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-/* Styles pour les liens */
-a:hover {
-    color: var(--primary-color);
-}
-
-/* Styles pour le focus */
-.form-control:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-/* Styles pour les icônes */
-.fas {
-    font-size: 0.875rem;
-}
-
-/* Styles responsives */
-@media (max-width: 768px) {
-    .card-body {
-        padding: 2rem !important;
+function showLoading(show) {
+    const overlay = document.getElementById('loading-overlay');
+    if (show) {
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+    } else {
+        overlay.classList.add('d-none');
+        overlay.classList.remove('d-flex');
     }
 }
-</style>
+
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    
+    const toastId = 'toast-' + Date.now();
+    const bgClass = {
+        success: 'bg-success',
+        error: 'bg-danger', 
+        warning: 'bg-warning',
+        info: 'bg-info'
+    }[type] || 'bg-info';
+    
+    const icon = {
+        success: '✅',
+        error: '❌',
+        warning: '⚠️',
+        info: 'ℹ️'
+    }[type] || 'ℹ️';
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast toast-notification ${bgClass} text-white" role="alert">
+            <div class="toast-header ${bgClass} text-white border-0">
+                <span class="me-2">${icon}</span>
+                <strong class="me-auto">VintApp</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                ${message}
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', toastHTML);
+    
+    const toastElement = document.getElementById(toastId);
+    const toast = new bootstrap.Toast(toastElement, {
+        autohide: true,
+        delay: type === 'success' ? 3000 : 5000
+    });
+    
+    toast.show();
+    
+    // Nettoyer après fermeture
+    toastElement.addEventListener('hidden.bs.toast', () => {
+        toastElement.remove();
+    });
+}
+
+// Gestion des événements DOM
+document.addEventListener('DOMContentLoaded', () => {
+    // Récupérer l'état "se souvenir de moi"
+    if (localStorage.getItem('firebase_remember_me') === 'true') {
+        document.getElementById('remember-me').checked = true;
+    }
+    
+    // Soumettre le formulaire avec Entrée
+    ['firebase-email', 'firebase-password'].forEach(id => {
+        document.getElementById(id).addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                signInWithFirebaseEmail();
+            }
+        });
+    });
+    
+    // Validation en temps réel de l'email
+    document.getElementById('firebase-email').addEventListener('blur', (e) => {
+        const email = e.target.value.trim();
+        if (email && !validateEmail(email)) {
+            e.target.classList.add('is-invalid');
+            if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('invalid-feedback')) {
+                const feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                feedback.textContent = 'Adresse email invalide';
+                e.target.parentNode.appendChild(feedback);
+            }
+        } else {
+            e.target.classList.remove('is-invalid');
+            const feedback = e.target.parentNode.querySelector('.invalid-feedback');
+            if (feedback) feedback.remove();
+        }
+    });
+});
+
+// Écouter les changements d'état d'authentification
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Utilisateur déjà connecté, vérifier avec le serveur
+        fetch('{{ route("firebase.check-auth") }}')
+            .then(response => response.json())
+            .then(data => {
+                if (data.authenticated) {
+                    showToast('Vous êtes déjà connecté', 'info');
+                    setTimeout(() => {
+                        window.location.href = '{{ route("home") }}';
+                    }, 1000);
+                }
+            })
+            .catch(console.error);
+    }
+});
+</script>
+
 @endsection 

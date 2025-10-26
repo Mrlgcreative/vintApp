@@ -141,12 +141,22 @@
                                 @foreach($items as $item)
                                 <tr>
                                     <td>
-                                        @if($item->images && count(json_decode($item->images, true)) > 0)
-                                            @php $images = json_decode($item->images, true); @endphp
-                                            <img src="{{ asset('storage/' . $images[0]) }}" 
-                                                 alt="{{ $item->name }}" 
-                                                 style="width:50px;height:50px;object-fit:cover;" 
-                                                 class="rounded">
+                                        @if($item->images)
+                                            @php 
+                                                // Vérifier si $item->images est déjà un array ou une string JSON
+                                                $images = is_array($item->images) ? $item->images : json_decode($item->images, true);
+                                            @endphp
+                                            @if($images && is_array($images) && count($images) > 0)
+                                                <img src="{{ asset('storage/' . $images[0]) }}" 
+                                                     alt="{{ $item->name }}" 
+                                                     style="width:50px;height:50px;object-fit:cover;" 
+                                                     class="rounded">
+                                            @else
+                                                <div class="bg-light d-flex align-items-center justify-content-center rounded" 
+                                                     style="width:50px;height:50px;">
+                                                    <i class="fas fa-image text-muted"></i>
+                                                </div>
+                                            @endif
                                         @else
                                             <div class="bg-light d-flex align-items-center justify-content-center rounded" 
                                                  style="width:50px;height:50px;">

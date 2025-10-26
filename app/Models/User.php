@@ -35,6 +35,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'google_token',
         'google_refresh_token',
         'apple_id',
+        'firebase_uid',
+        'fcm_token',
+        'provider_data',
     ];
 
     /**
@@ -47,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
         'google_token',
         'google_refresh_token',
+        'fcm_token',
     ];
 
     /**

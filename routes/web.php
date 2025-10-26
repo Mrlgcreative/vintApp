@@ -528,6 +528,27 @@ Route::middleware(['auth', 'admin'])->prefix('admin/waiting-users')->name('admin
 Route::get('/set-password', [App\Http\Controllers\Admin\AdminController::class, 'showSetPasswordForm'])->name('password.setup');
 Route::post('/set-password', [App\Http\Controllers\Admin\AdminController::class, 'setPassword'])->name('password.setup.store');
 
+// Firebase Authentication Routes
+Route::prefix('firebase')->name('firebase.')->group(function () {
+    // Routes de connexion Firebase
+    Route::post('/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('login');
+    Route::post('/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('register');
+    Route::post('/logout', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'logout'])->name('logout')->middleware('auth');
+    
+    // Vérification de l'état d'authentification
+    Route::get('/check-auth', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'checkAuthStatus'])->name('check-auth');
+    
+    // Gestion du token FCM pour les notifications push
+    Route::post('/fcm-token', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'saveFcmToken'])->name('fcm-token')->middleware('auth');
+    Route::delete('/fcm-token', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'removeFcmToken'])->name('fcm-token.remove')->middleware('auth');
+    
+    // Routes de test Firebase (à supprimer en production)
+    if (app()->environment(['local', 'testing'])) {
+        Route::get('/test-config', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'testConfig'])->name('test-config');
+        Route::get('/test-notification/{userId}', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'testNotification'])->name('test-notification');
+    }
+});
+
 require __DIR__.'/auth.php';
 
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)

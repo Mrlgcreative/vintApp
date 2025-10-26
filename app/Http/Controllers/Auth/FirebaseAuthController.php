@@ -1,0 +1,239 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Services\FirebaseService;
+
+class FirebaseAuthController extends Controller
+{
+    protected $firebaseService;
+
+    public function __construct(FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
+
+    /**
+     * Afficher la page de connexion Firebase
+     */
+    public function showLogin()
+    {
+        if (Auth::check()) {
+            return redirect()->route('home');
+        }
+
+        return view('auth.firebase-login');
+    }
+
+    /**
+     * Authentification avec Firebase ID Token
+     */
+    public function loginWithFirebase(Request $request)
+    {
+        $request->validate([
+            'idToken' => 'required|string'
+        ]);
+
+        try {
+            // Vérifier le token Firebase
+            $firebaseAuth = $this->firebaseService->auth();
+            $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
+            
+            // Récupérer les informations utilisateur depuis Firebase
+            $firebaseUid = $verifiedIdToken->claims()->get('sub');
+            $firebaseUser = $firebaseAuth->getUser($firebaseUid);
+
+            // Extraire les informations utilisateur
+            $email = $firebaseUser->email ?? null;
+            $name = $firebaseUser->displayName ?? 'Utilisateur';
+            $avatar = $firebaseUser->photoUrl ?? null;
+            $emailVerified = $firebaseUser->emailVerified ?? false;
+
+            if (!$email) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Adresse email requise pour la connexion'
+                ], 400);
+            }
+
+            // Trouver ou créer l'utilisateur local
+            $user = User::where('email', $email)
+                       ->orWhere('firebase_uid', $firebaseUid)
+                       ->first();
+
+            if ($user) {
+                // Mettre à jour les informations Firebase si nécessaire
+                $user->update([
+                    'firebase_uid' => $firebaseUid,
+                    'name' => $name,
+                    'avatar' => $avatar,
+                    'email_verified_at' => $emailVerified ? now() : $user->email_verified_at,
+                ]);
+            } else {
+                // Créer un nouvel utilisateur
+                $user = User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'firebase_uid' => $firebaseUid,
+                    'avatar' => $avatar,
+                    'email_verified_at' => $emailVerified ? now() : null,
+                    'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
+                ]);
+            }
+
+            // Enregistrer le token FCM si fourni
+            if ($request->filled('fcmToken')) {
+                $user->update(['fcm_token' => $request->fcmToken]);
+            }
+
+            // Connecter l'utilisateur
+            Auth::login($user, true);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Connexion réussie',
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                ],
+                'redirect' => route('home')
+            ]);
+
+        } catch (\Kreait\Firebase\Exception\Auth\InvalidIdToken $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Token d\'authentification invalide'
+            ], 401);
+
+        } catch (\Exception $e) {
+            logger('Firebase auth error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de connexion. Veuillez réessayer.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Inscription avec Firebase
+     */
+    public function registerWithFirebase(Request $request)
+    {
+        $request->validate([
+            'idToken' => 'required|string',
+            'name' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            // Utiliser la même logique que pour la connexion
+            return $this->loginWithFirebase($request);
+
+        } catch (\Exception $e) {
+            logger('Firebase register error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'inscription. Veuillez réessayer.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Déconnexion Firebase
+     */
+    public function logout(Request $request)
+    {
+        try {
+            // Supprimer le token FCM
+            if (Auth::check()) {
+                Auth::user()->update(['fcm_token' => null]);
+            }
+
+            Auth::logout();
+            
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Déconnexion réussie',
+                'redirect' => route('login')
+            ]);
+
+        } catch (\Exception $e) {
+            logger('Firebase logout error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la déconnexion'
+            ], 500);
+        }
+    }
+
+    /**
+     * Enregistrer le token FCM pour les notifications
+     */
+    public function saveFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string'
+        ]);
+
+        if (Auth::check()) {
+            Auth::user()->update([
+                'fcm_token' => $request->fcm_token
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Token FCM enregistré'
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Utilisateur non authentifié'
+        ], 401);
+    }
+
+    /**
+     * Obtenir les informations de configuration Firebase pour le frontend
+     */
+    public function getFirebaseConfig()
+    {
+        return response()->json([
+            'config' => config('firebase.web_config')
+        ]);
+    }
+
+    /**
+     * Vérifier le statut d'authentification
+     */
+    public function checkAuthStatus()
+    {
+        if (Auth::check()) {
+            return response()->json([
+                'authenticated' => true,
+                'user' => [
+                    'id' => Auth::user()->id,
+                    'name' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'avatar' => Auth::user()->avatar,
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'authenticated' => false
+        ]);
+    }
+}
