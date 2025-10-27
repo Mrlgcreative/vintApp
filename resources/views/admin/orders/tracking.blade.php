@@ -571,11 +571,12 @@ function initMap() {
     @if($currentTracking && $currentTracking->customer_latitude && $currentTracking->customer_longitude)
         const destinationLat = {{ $currentTracking->customer_latitude }};
         const destinationLng = {{ $currentTracking->customer_longitude }};
-    @elseif($order->shipping_address)
-        // Par défaut, centrer sur Kinshasa si pas de coordonnées
-        const destinationLat = -4.325;
-        const destinationLng = 15.308;
+    @elseif($order->deliveryAddress)
+        // Utiliser les coordonnées effectives de l'adresse de livraison (GPS ou par défaut selon la ville)
+        const destinationLat = {{ $order->deliveryAddress->effective_latitude }};
+        const destinationLng = {{ $order->deliveryAddress->effective_longitude }};
     @else
+        // Par défaut, centrer sur Kinshasa si aucune adresse de livraison
         const destinationLat = -4.325;
         const destinationLng = 15.308;
     @endif
@@ -780,10 +781,13 @@ function calculateModalDistance() {
     const lng = parseFloat(document.getElementById('modal_longitude').value);
     
     @if($order->deliveryAddress)
-        // Utiliser les coordonnées de l'adresse de livraison si disponibles
-        // Pour l'instant, on utilise Kolwezi comme exemple (-10.715556, 25.471389)
-        const customerLat = -10.715556;
-        const customerLng = 25.471389;
+        // Utiliser les coordonnées effectives de l'adresse de livraison (GPS ou par défaut selon la ville)
+        const customerLat = {{ $order->deliveryAddress->effective_latitude }};
+        const customerLng = {{ $order->deliveryAddress->effective_longitude }};
+    @elseif($currentTracking && $currentTracking->customer_latitude && $currentTracking->customer_longitude)
+        // Utiliser les coordonnées du tracking
+        const customerLat = {{ $currentTracking->customer_latitude }};
+        const customerLng = {{ $currentTracking->customer_longitude }};
     @else
         // Coordonnées par défaut (Kinshasa)
         const customerLat = -4.325;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Discount;
+use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -188,12 +189,19 @@ class MessageController extends Controller
     public function getNotifications(): JsonResponse
     {
         $user = Auth::user();
-        $notifications = $this->notificationService->getUnreadNotifications($user->id, 5);
-        $count = $this->notificationService->getUnreadCount($user->id);
+        
+        // Récupérer toutes les notifications récentes (pas seulement non lues)
+        $notifications = Notification::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+            
+        $unreadCount = $this->notificationService->getUnreadCount($user->id);
 
         return response()->json([
             'notifications' => $notifications,
-            'count' => $count
+            'unread_count' => $unreadCount,
+            'success' => true
         ]);
     }
 

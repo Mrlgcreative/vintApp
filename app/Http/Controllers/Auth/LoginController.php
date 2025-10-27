@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Traits\AdminRedirection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    use AdminRedirection;
     /**
      * Afficher la page de connexion
      */
@@ -33,7 +37,8 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('dashboard'));
+            // Utilisation du trait pour la redirection basée sur le rôle
+            return $this->redirectBasedOnRole(route('dashboard'), 'Connexion réussie');
         }
 
         throw ValidationException::withMessages([

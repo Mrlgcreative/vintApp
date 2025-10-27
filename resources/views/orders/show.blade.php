@@ -177,7 +177,8 @@
                                         @endif
 
                                         @if((!$order->shipping_city || $order->shipping_city === 'À définir') && 
-                                            (!$order->shipping_address || $order->shipping_address === 'À définir'))
+                                            (!$order->shipping_address || $order->shipping_address === 'À définir') &&
+                                            !$order->deliveryAddress)
                                             <div class="alert alert-warning mb-0" role="alert">
                                                 <i class="fas fa-exclamation-triangle me-2"></i>
                                                 <strong>Adresse non définie</strong>

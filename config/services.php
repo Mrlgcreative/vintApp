@@ -89,4 +89,42 @@ return [
         'redirect' => env('APPLE_REDIRECT_URI', env('APP_URL') . '/auth/apple/callback'),
     ],
 
+    // Configuration M-Pesa OAuth
+    'mpesa' => [
+        'consumer_key' => env('MPESA_API_KEY'),
+        'consumer_secret' => env('MPESA_API_SECRET'),
+        'shortcode' => env('MPESA_SHORTCODE', '174379'),
+        'passkey' => env('MPESA_PASSKEY'),
+        'environment' => env('MPESA_ENVIRONMENT', 'sandbox'),
+        'enabled' => env('MPESA_ENABLED', true),
+        'api_url' => env('MPESA_ENVIRONMENT', 'sandbox') === 'production' 
+            ? 'https://api.safaricom.co.ke'
+            : 'https://sandbox.safaricom.co.ke',
+    ],
+
+    // Configuration autres opérateurs mobile money
+    'orange_money' => [
+        'api_key' => env('ORANGE_MONEY_API_KEY'),
+        'api_secret' => env('ORANGE_MONEY_API_SECRET'),
+        'enabled' => env('ORANGE_MONEY_ENABLED', true),
+    ],
+
+    'airtel_money' => [
+        'client_id' => env('AIRTEL_MONEY_API_KEY'),
+        'client_secret' => env('AIRTEL_MONEY_API_SECRET'),
+        'enabled' => env('AIRTEL_MONEY_ENABLED', true),
+    ],
+
+    'africell' => [
+        'merchant_id' => env('AFRICELL_API_KEY'),
+        'api_secret' => env('AFRICELL_API_SECRET'),
+        'enabled' => env('AFRICELL_ENABLED', true),
+    ],
+
+    'illicocash' => [
+        'merchant_code' => env('ILLICOCASH_API_KEY'),
+        'api_token' => env('ILLICOCASH_API_SECRET'),
+        'enabled' => env('ILLICOCASH_ENABLED', true),
+    ],
+
 ];

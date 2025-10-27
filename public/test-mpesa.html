@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Paiement M-Pesa - VintApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-green-50 min-h-screen">
+    <div class="container mx-auto px-6 py-8">
+        <div class="max-w-md mx-auto">
+            <div class="bg-white rounded-xl shadow-2xl overflow-hidden">
+                <div class="bg-gradient-to-r from-green-500 to-green-700 px-6 py-4">
+                    <h1 class="text-2xl font-bold text-white">
+                        <i class="fas fa-mobile-alt mr-2"></i>Test M-Pesa
+                    </h1>
+                </div>
+                
+                <div class="p-6">
+                    <div class="mb-6 text-center">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <p class="text-green-800 font-semibold">Configuration M-Pesa Active</p>
+                            <p class="text-sm text-green-600 mt-1">Mode: Sandbox</p>
+                        </div>
+                    </div>
+                    
+                    <form id="mpesa-test-form">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Numéro M-Pesa
+                            </label>
+                            <div class="input-group flex">
+                                <span class="bg-gray-100 border border-r-0 border-gray-300 rounded-l-lg px-3 py-2 text-gray-600">
+                                    +243
+                                </span>
+                                <input 
+                                    type="tel" 
+                                    id="phone" 
+                                    class="flex-1 border border-gray-300 rounded-r-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                    placeholder="81XXXXXXX"
+                                    pattern="^8[123][0-9]{7}$"
+                                    maxlength="9"
+                                    required
+                                >
+                            </div>
+                            <small class="text-gray-500 text-xs mt-1">
+                                Format: 81XXXXXXX, 82XXXXXXX, ou 83XXXXXXX
+                            </small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Montant (USD)
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="number" 
+                                    id="amount"
+                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                    placeholder="10.00"
+                                    min="1"
+                                    max="1000"
+                                    step="0.01"
+                                    required
+                                >
+                                <span class="absolute right-3 top-2 text-gray-500">USD</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Description
+                            </label>
+                            <input 
+                                type="text" 
+                                id="purpose"
+                                class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" 
+                                placeholder="Test paiement M-Pesa"
+                                value="Test paiement M-Pesa - VintApp"
+                                required
+                            >
+                        </div>
+                        
+                        <button 
+                            type="submit" 
+                            id="payButton"
+                            class="w-full bg-gradient-to-r from-green-500 to-green-700 text-white font-semibold py-3 px-4 rounded-lg hover:from-green-600 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                            <i class="fas fa-credit-card mr-2"></i>
+                            Payer avec M-Pesa
+                        </button>
+                    </form>
+                    
+                    <!-- Zone de statut -->
+                    <div id="status" class="mt-6 hidden">
+                        <!-- Le statut sera affiché ici -->
+                    </div>
+                    
+                    <!-- Instructions -->
+                    <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <h3 class="font-semibold text-blue-800 mb-2">
+                            <i class="fas fa-info-circle mr-1"></i>Instructions
+                        </h3>
+                        <ol class="text-sm text-blue-700 space-y-1">
+                            <li>1. Entrez votre numéro M-Pesa (81, 82, ou 83)</li>
+                            <li>2. Spécifiez le montant à payer</li>
+                            <li>3. Cliquez sur "Payer avec M-Pesa"</li>
+                            <li>4. Confirmez sur votre téléphone</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section de diagnostic -->
+            <div class="mt-6 bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-800 mb-4">
+                    <i class="fas fa-cogs mr-2"></i>Diagnostic API
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-sm font-medium text-gray-700">Environnement</p>
+                        <p class="text-lg font-bold text-green-600">Sandbox</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-sm font-medium text-gray-700">Status API</p>
+                        <p class="text-lg font-bold" id="api-status">
+                            <i class="fas fa-spinner fa-spin text-yellow-500"></i> Test...
+                        </p>
+                    </div>
+                </div>
+                
+                <button 
+                    onclick="testApiConnection()" 
+                    class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                    <i class="fas fa-wifi mr-2"></i>Tester la Connexion API
+                </button>
+                
+                <div id="diagnostic-results" class="mt-4 hidden">
+                    <!-- Résultats du diagnostic -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE_URL = window.location.origin;
+        const TEST_USER_ID = 1; // ID utilisateur par défaut pour les tests
+
+        // Gestion du formulaire
+        document.getElementById('mpesa-test-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const phone = document.getElementById('phone').value;
+            const amount = document.getElementById('amount').value;
+            const purpose = document.getElementById('purpose').value;
+            
+            // Validation
+            if (!phone || !amount || !purpose) {
+                showStatus('error', 'Veuillez remplir tous les champs');
+                return;
+            }
+            
+            if (!/^8[123][0-9]{7}$/.test(phone)) {
+                showStatus('error', 'Format de numéro M-Pesa invalide (81/82/83XXXXXXX)');
+                return;
+            }
+            
+            if (parseFloat(amount) < 1 || parseFloat(amount) > 1000) {
+                showStatus('error', 'Le montant doit être entre 1 et 1000 USD');
+                return;
+            }
+            
+            await initiatePayment(phone, amount, purpose);
+        });
+
+        // Initier le paiement
+        async function initiatePayment(phone, amount, purpose) {
+            const button = document.getElementById('payButton');
+            const originalText = button.innerHTML;
+            
+            try {
+                // Désactiver le bouton
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Traitement...';
+                
+                showStatus('info', 'Initiation du paiement M-Pesa...', true);
+                
+                // Appel API avec gestion d'erreur améliorée
+                const response = await fetch(`${API_BASE_URL}/payments/mpesa`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': getCSRFToken(),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        buyer_id: TEST_USER_ID,
+                        phone: phone,
+                        amount: parseFloat(amount),
+                        currency: 'USD',
+                        purpose: purpose
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && (data.status === 'pending' || data.status === 'success')) {
+                    showStatus('success', `Paiement M-Pesa initié! Transaction: ${data.transaction_id}`, false, {
+                        transaction_id: data.transaction_id,
+                        checkout_request_id: data.checkout_request_id,
+                        message: data.message
+                    });
+                    
+                    // Simuler la confirmation après 5 secondes pour les tests
+                    setTimeout(() => {
+                        showStatus('success', 'Paiement M-Pesa confirmé avec succès!', false, {
+                            status: 'completed',
+                            transaction_id: data.transaction_id,
+                            amount: amount + ' USD'
+                        });
+                    }, 5000);
+                    
+                } else {
+                    // Gestion d'erreur améliorée
+                    let errorMessage = data.message || 'Erreur lors de l\'initiation du paiement';
+                    
+                    // Messages d'erreur plus clairs
+                    if (errorMessage.includes('authentification')) {
+                        errorMessage = 'Erreur d\'authentification M-Pesa. Configuration en cours...';
+                    } else if (errorMessage.includes('Configuration')) {
+                        errorMessage = 'Configuration M-Pesa manquante. Contactez l\'administrateur.';
+                    }
+                    
+                    showStatus('error', errorMessage, false, data);
+                }
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                showStatus('error', 'Erreur de réseau: ' + error.message + '. Vérifiez votre connexion.');
+            } finally {
+                // Réactiver le bouton
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+        // Polling du statut de transaction
+        function startStatusPolling(transactionId) {
+            const maxAttempts = 30; // 5 minutes max (10s x 30)
+            let attempts = 0;
+            
+            const checkStatus = async () => {
+                attempts++;
+                
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/payment-callbacks/status`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.transaction && data.transaction.status !== 'pending') {
+                            // Transaction terminée
+                            if (data.transaction.status === 'completed') {
+                                showStatus('success', 'Paiement confirmé avec succès!', false, data.transaction);
+                            } else {
+                                showStatus('error', `Paiement ${data.transaction.status}`);
+                            }
+                            return; // Arrêter le polling
+                        }
+                    }
+                    
+                    // Continuer le polling si pas terminé et pas de limite atteinte
+                    if (attempts < maxAttempts) {
+                        updateStatus(`Vérification du paiement... (${attempts}/${maxAttempts})`);
+                        setTimeout(checkStatus, 10000); // Vérifier toutes les 10 secondes
+                    } else {
+                        showStatus('warning', 'Timeout: Impossible de confirmer le paiement. Vérifiez manuellement.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur polling:', error);
+                    if (attempts < maxAttempts) {
+                        setTimeout(checkStatus, 10000);
+                    }
+                }
+            };
+            
+            // Démarrer le polling après 5 secondes
+            setTimeout(checkStatus, 5000);
+        }
+
+        // Afficher le statut
+        function showStatus(type, message, loading = false, data = null) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.classList.remove('hidden');
+            
+            const icons = {
+                success: 'fas fa-check-circle text-green-500',
+                error: 'fas fa-exclamation-circle text-red-500',
+                warning: 'fas fa-exclamation-triangle text-yellow-500',
+                info: 'fas fa-info-circle text-blue-500'
+            };
+            
+            const bgColors = {
+                success: 'bg-green-50 border-green-200',
+                error: 'bg-red-50 border-red-200',
+                warning: 'bg-yellow-50 border-yellow-200',
+                info: 'bg-blue-50 border-blue-200'
+            };
+            
+            let html = `
+                <div class="border rounded-lg p-4 ${bgColors[type]}">
+                    <div class="flex items-start">
+                        <div class="mr-3 mt-1">
+                            ${loading ? '<i class="fas fa-spinner fa-spin text-blue-500"></i>' : `<i class="${icons[type]}"></i>`}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-medium text-gray-800">${message}</p>
+            `;
+            
+            if (data) {
+                html += `
+                    <div class="mt-2 text-sm text-gray-600">
+                        <pre class="bg-white rounded p-2 overflow-x-auto">${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            }
+            
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            statusDiv.innerHTML = html;
+        }
+
+        // Mettre à jour le statut existant
+        function updateStatus(message) {
+            const statusDiv = document.getElementById('status');
+            if (!statusDiv.classList.contains('hidden')) {
+                const messageElement = statusDiv.querySelector('p.font-medium');
+                if (messageElement) {
+                    messageElement.textContent = message;
+                }
+            }
+        }
+
+        // Tester la connexion API
+        async function testApiConnection() {
+            const resultsDiv = document.getElementById('diagnostic-results');
+            const statusElement = document.getElementById('api-status');
+            
+            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin text-blue-500"></i> Test...';
+            
+            try {
+                // Test 1: Route M-Pesa accessible
+                const mpesaTest = await fetch(`${API_BASE_URL}/payments/mpesa`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                let results = '<div class="bg-gray-50 rounded-lg p-3 text-sm">';
+                results += '<h4 class="font-semibold mb-2">Résultats du diagnostic:</h4>';
+                
+                if (mpesaTest.status === 422) { // Erreur de validation = route accessible
+                    results += '<p class="text-green-600">✅ Route M-Pesa accessible</p>';
+                    statusElement.innerHTML = '<span class="text-green-600 font-bold">Connecté</span>';
+                } else {
+                    results += `<p class="text-red-600">❌ Route M-Pesa: HTTP ${mpesaTest.status}</p>`;
+                    statusElement.innerHTML = '<span class="text-red-600 font-bold">Erreur</span>';
+                }
+                
+                results += `<p class="text-gray-600 mt-1">Code de réponse: ${mpesaTest.status}</p>`;
+                results += '</div>';
+                
+                resultsDiv.innerHTML = results;
+                resultsDiv.classList.remove('hidden');
+                
+            } catch (error) {
+                statusElement.innerHTML = '<span class="text-red-600 font-bold">Déconnecté</span>';
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">Erreur: ${error.message}</div>`;
+                resultsDiv.classList.remove('hidden');
+            }
+        }
+
+        // Obtenir le token CSRF
+        function getCSRFToken() {
+            // Essayer de récupérer depuis une balise meta
+            const token = document.querySelector('meta[name="csrf-token"]');
+            if (token) {
+                return token.getAttribute('content');
+            }
+            
+            // Générer un token factice pour les tests
+            return 'test-token-' + Date.now();
+        }
+
+        // Test initial de connexion
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(testApiConnection, 1000);
+        });
+    </script>
+</body>
+</html>

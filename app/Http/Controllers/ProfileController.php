@@ -24,6 +24,22 @@ use Inertia\Response;
 class ProfileController extends Controller
 {
     /**
+     * Afficher la page d'accueil du profil
+     */
+    public function index(Request $request): View
+    {
+        $user = $request->user();
+        
+        // Récupérer les statistiques de l'utilisateur
+        $stats = $this->getUserStats($user);
+        
+        return view('profile.index', [
+            'user' => $user,
+            'stats' => $stats,
+        ]);
+    }
+
+    /**
      * Afficher la page de profil de l'utilisateur
      */
     public function edit(Request $request): View

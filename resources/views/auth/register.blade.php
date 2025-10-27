@@ -182,7 +182,7 @@
                         <div class="d-grid mb-3">
                             <button onclick="registerWithFirebaseEmail()" class="btn btn-success btn-lg btn-firebase">
                                 <i class="fas fa-user-plus me-2"></i>
-                                Créer mon compte Firebase
+                                Créer mon compte
                             </button>
                         </div>
                     </div>
@@ -212,6 +212,17 @@
                             <i class="fab fa-facebook-f me-2"></i>
                             Facebook
                         </button>
+                    </div>
+
+                    <!-- Message Apple (non configuré) -->
+                    <div class="d-grid mb-3">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fab fa-apple me-2"></i>
+                            <div>
+                                <strong>Apple Sign-In</strong> nécessite un Apple Developer Account (99$/an).
+                                <small class="d-block text-muted">Alternatives gratuites : Google, Facebook, Email</small>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Séparateur -->

@@ -138,16 +138,170 @@ class PaymentController extends Controller
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
             'amount' => 'required|numeric|min:1',
+            'currency' => 'required|string|in:USD,CDF',
+            'phone' => 'required|string|regex:/^[0-9]{9}$/',
             'purpose' => 'required|string',
         ]);
+
         if (!config('payments.providers.mpesa.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'Mpesa désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'M-Pesa désactivé.'], 403);
         }
+
         $apiKey = config('payments.providers.mpesa.api_key');
         $apiSecret = config('payments.providers.mpesa.api_secret');
-        // TODO: Appel API Mpesa ici
-        // TODO: Créer la transaction avec status 'pending'
-        return response()->json(['status' => 'pending', 'message' => 'Paiement Mpesa en cours...', 'provider' => 'mpesa']);
+
+        if (!$apiKey || !$apiSecret) {
+            return response()->json(['status' => 'error', 'message' => 'Configuration M-Pesa manquante.'], 500);
+        }
+
+        // Récupérer le panier pour traitement des commandes
+        $cart = session('cart', []);
+        
+        // Déterminer la devise prioritaire et calculer le montant total
+        $totalAmount = 0;
+        $priorityCurrency = $request->currency ?? 'USD';
+        
+        if (!empty($cart)) {
+            // Compter les devises dans le panier
+            $currencyCounts = [];
+            foreach ($cart as $itemId => $cartItem) {
+                $item = \App\Models\Item::find($itemId);
+                if ($item) {
+                    $currency = $item->currency ?? 'USD';
+                    $currencyCounts[$currency] = ($currencyCounts[$currency] ?? 0) + 1;
+                }
+            }
+            
+            // Déterminer la devise prioritaire (la plus fréquente)
+            if (!empty($currencyCounts)) {
+                arsort($currencyCounts);
+                $priorityCurrency = array_key_first($currencyCounts);
+            }
+            
+            // Récupérer le taux de change
+            $exchangeRate = \Illuminate\Support\Facades\Cache::remember('usd_cdf_rate', 3600, function () {
+                try {
+                    $controller = new ExchangeRateController();
+                    $response = $controller->getRate();
+                    $data = $response->getData(true);
+                    return $data['rate'] ?? 2650.00;
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Erreur récupération taux: ' . $e->getMessage());
+                    return 2650.00;
+                }
+            });
+            
+            // Calculer le montant total dans la devise prioritaire
+            foreach ($cart as $itemId => $cartItem) {
+                $item = \App\Models\Item::find($itemId);
+                if ($item) {
+                    $itemTotal = $item->price * $cartItem['quantity'];
+                    $itemCurrency = $item->currency ?? 'USD';
+                    
+                    // Convertir si nécessaire
+                    if ($itemCurrency !== $priorityCurrency) {
+                        if ($priorityCurrency === 'USD' && $itemCurrency === 'CDF') {
+                            $itemTotal = $itemTotal / $exchangeRate;
+                        } elseif ($priorityCurrency === 'CDF' && $itemCurrency === 'USD') {
+                            $itemTotal = $itemTotal * $exchangeRate;
+                        }
+                    }
+                    
+                    $totalAmount += $itemTotal;
+                }
+            }
+            
+            $totalAmount = round($totalAmount, 2);
+        } else {
+            $totalAmount = $request->amount;
+        }
+
+        // Générer un ID de transaction unique
+        $transaction_id = 'MPESA-' . strtoupper(\Illuminate\Support\Str::random(12));
+        
+        try {
+            // Préparer la requête M-Pesa
+            $mpesaData = [
+                'BusinessShortCode' => config('payments.providers.mpesa.shortcode', '174379'),
+                'Password' => base64_encode(config('payments.providers.mpesa.shortcode', '174379') . config('payments.providers.mpesa.passkey', '') . now()->format('YmdHis')),
+                'Timestamp' => now()->format('YmdHis'),
+                'TransactionType' => 'CustomerPayBillOnline',
+                'Amount' => (int)$totalAmount,
+                'PartyA' => '243' . $request->phone, // Numéro client avec code pays
+                'PartyB' => config('payments.providers.mpesa.shortcode', '174379'),
+                'PhoneNumber' => '243' . $request->phone,
+                'CallBackURL' => route('payment.callback', ['provider' => 'mpesa']),
+                'AccountReference' => $transaction_id,
+                'TransactionDesc' => $request->purpose
+            ];
+
+            // Obtenir le token d'authentification M-Pesa
+            $authResponse = \Illuminate\Support\Facades\Http::withBasicAuth($apiKey, $apiSecret)
+                ->get('https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials');
+
+            if (!$authResponse->successful()) {
+                throw new \Exception('Erreur d\'authentification M-Pesa');
+            }
+
+            $accessToken = $authResponse->json('access_token');
+
+            // Initier la transaction M-Pesa
+            $paymentResponse = \Illuminate\Support\Facades\Http::withToken($accessToken)
+                ->post('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', $mpesaData);
+
+            if (!$paymentResponse->successful()) {
+                throw new \Exception('Erreur lors de l\'initiation du paiement M-Pesa');
+            }
+
+            $responseData = $paymentResponse->json();
+
+            // Créer la transaction en base avec statut pending
+            $user = \App\Models\User::find($request->buyer_id);
+            $wallet = $user->wallet ?? \App\Models\Wallet::firstOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'balance' => 0,
+                    'currency' => $priorityCurrency,
+                    'status' => 'active'
+                ]
+            );
+
+            $transaction = \App\Models\Transaction::create([
+                'transaction_id' => $transaction_id,
+                'external_id' => $responseData['CheckoutRequestID'] ?? null,
+                'user_id' => $request->buyer_id,
+                'buyer_id' => $request->buyer_id,
+                'wallet_id' => $wallet->id,
+                'amount' => $totalAmount,
+                'currency' => $priorityCurrency,
+                'provider' => 'Vodacom M-Pesa',
+                'phone' => $request->phone,
+                'purpose' => $request->purpose,
+                'status' => 'pending',
+                'type' => 'deposit',
+                'payment_method' => 'mpesa',
+                'metadata' => json_encode([
+                    'mpesa_checkout_request_id' => $responseData['CheckoutRequestID'] ?? null,
+                    'mpesa_merchant_request_id' => $responseData['MerchantRequestID'] ?? null,
+                ])
+            ]);
+
+            return response()->json([
+                'status' => 'pending',
+                'message' => 'Paiement M-Pesa initié. Veuillez confirmer sur votre téléphone.',
+                'transaction_id' => $transaction_id,
+                'provider' => 'mpesa',
+                'checkout_request_id' => $responseData['CheckoutRequestID'] ?? null
+            ]);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Erreur M-Pesa: ' . $e->getMessage());
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors du traitement du paiement M-Pesa: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     // Paiement Africell Money
@@ -294,6 +448,11 @@ class PaymentController extends Controller
             
             // Créer automatiquement les commandes depuis le panier
             if (!empty($cart)) {
+                // Récupérer l'adresse de livraison par défaut du client
+                $defaultDeliveryAddress = \App\Models\DeliveryAddress::where('user_id', $request->buyer_id)
+                    ->where('is_default', true)
+                    ->first();
+                
                 foreach ($cart as $itemId => $cartItem) {
                     $item = \App\Models\Item::find($itemId);
                     if ($item) {
@@ -317,8 +476,8 @@ class PaymentController extends Controller
                         // Ajouter le montant au wallet pending du vendeur
                         $sellerPendingWallet->increment('balance', $orderAmount);
                         
-                        // Créer la commande avec le prix original de l'article
-                        $order = \App\Models\Order::create([
+                        // Préparer les données de commande avec l'adresse de livraison si disponible
+                        $orderData = [
                             'buyer_id' => $request->buyer_id,
                             'seller_id' => $item->user_id,
                             'item_id' => $item->id,
@@ -327,12 +486,25 @@ class PaymentController extends Controller
                             'total_amount' => $orderAmount,
                             'currency' => $item->currency, // Devise originale de l'article
                             'status' => 'pending', // Paiement effectué, en attente d'expédition
-                            'shipping_address' => 'À définir', // L'utilisateur pourra le modifier
-                            'shipping_city' => 'À définir',
-                            'shipping_phone' => $request->phone ?? 'N/A',
                             'paid_at' => now(),
                             'notes' => 'Paiement effectué via ' . ($request->provider ?? 'Mobile Money') . ' - Transaction: ' . $transaction_id . ' - Montant en attente dans le wallet pending du vendeur',
-                        ]);
+                        ];
+                        
+                        // Ajouter l'adresse de livraison si disponible
+                        if ($defaultDeliveryAddress) {
+                            $orderData['delivery_address_id'] = $defaultDeliveryAddress->id;
+                            $orderData['shipping_address'] = $defaultDeliveryAddress->address;
+                            $orderData['shipping_city'] = $defaultDeliveryAddress->city;
+                            $orderData['shipping_phone'] = $defaultDeliveryAddress->phone;
+                        } else {
+                            // Valeurs par défaut si pas d'adresse de livraison
+                            $orderData['shipping_address'] = 'À définir';
+                            $orderData['shipping_city'] = 'À définir';
+                            $orderData['shipping_phone'] = $request->phone ?? 'N/A';
+                        }
+                        
+                        // Créer la commande
+                        $order = \App\Models\Order::create($orderData);
                         
                         // Mettre à jour le stock
                         $item->quantity -= $cartItem['quantity'];

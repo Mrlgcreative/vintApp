@@ -111,7 +111,7 @@
                         <div class="d-grid mb-3">
                             <button onclick="signInWithFirebaseEmail()" class="btn btn-primary btn-lg btn-firebase">
                                 <i class="fas fa-sign-in-alt me-2"></i>
-                                Se connecter avec Firebase
+                                Se connecter
                             </button>
                         </div>
 
@@ -149,6 +149,25 @@
                             <i class="fab fa-facebook-f me-2"></i>
                             Facebook
                         </button>
+                    </div>
+
+                    <!-- Connexion avec Apple Firebase (masqué si non configuré) -->
+                    <div class="d-grid mb-3" id="apple-signin-container" style="display: none;">
+                        <button onclick="signInWithApple()" class="btn btn-dark btn-lg btn-firebase">
+                            <i class="fab fa-apple me-2"></i>
+                            Apple
+                        </button>
+                    </div>
+
+                    <!-- Message si Apple non configuré -->
+                    <div class="d-grid mb-3" id="apple-not-configured">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fab fa-apple me-2"></i>
+                            <div>
+                                <strong>Apple Sign-In</strong> nécessite un Apple Developer Account (99$/an).
+                                <a href="#" onclick="showAppleInfo()" class="alert-link">En savoir plus</a>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Séparateur -->
@@ -228,9 +247,12 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { 
     getAuth, 
     signInWithEmailAndPassword,
-    signInWithPopup, 
+    signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
     GoogleAuthProvider,
     FacebookAuthProvider,
+    OAuthProvider,
     sendPasswordResetEmail,
     onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -291,7 +313,26 @@ googleProvider.setCustomParameters({
     prompt: 'select_account'
 });
 
+// Ajouter des scopes spécifiques pour Google
+googleProvider.addScope('email');
+googleProvider.addScope('profile');
+
 const facebookProvider = new FacebookAuthProvider();
+
+// Apple provider
+const appleProvider = new OAuthProvider('apple.com');
+appleProvider.addScope('email');
+appleProvider.addScope('name');
+appleProvider.setCustomParameters({
+    // Optionnel: forcer l'affichage de l'interface de connexion
+    locale: 'fr'
+});
+
+// Debug des providers
+console.log('🔧 Google Provider configuré:', {
+    providerId: googleProvider.providerId,
+    customParameters: googleProvider.customParameters
+});
 
 // Fonctions globales
 window.signInWithFirebaseEmail = async () => {
@@ -354,19 +395,84 @@ window.signInWithFirebaseEmail = async () => {
 };
 
 window.signInWithGoogle = async () => {
+    console.log('🔍 Tentative de connexion Google...');
+    console.log('🔧 Configuration du provider Google:', googleProvider);
+    console.log('🔥 État de Firebase Auth:', {
+        currentUser: auth.currentUser,
+        config: {
+            apiKey: auth.config.apiKey.substring(0, 10) + '...',
+            authDomain: auth.config.authDomain,
+            projectId: auth.config.projectId
+        }
+    });
+    
+    // Vérification pré-connexion
+    if (!auth.config.apiKey || !auth.config.authDomain) {
+        showToast('Configuration Firebase incomplète', 'error');
+        return;
+    }
+    
     showLoading(true);
     
     try {
-        const result = await signInWithPopup(auth, googleProvider);
+        console.log('🚀 Ouverture du popup Google Auth...');
+        let result;
+        
+        try {
+            result = await signInWithPopup(auth, googleProvider);
+        } catch (popupError) {
+            if (popupError.code === 'auth/unauthorized-domain' || popupError.code === 'auth/popup-blocked') {
+                console.log('🔄 Pop-up échoué, essai avec redirect...');
+                await signInWithRedirect(auth, googleProvider);
+                return; // La redirection va gérer la suite
+            }
+            throw popupError; // Re-throw other errors
+        }
+        
+        console.log('✅ Connexion Google réussie:', result.user);
+        console.log('👤 Utilisateur:', {
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL
+        });
+        
         await handleFirebaseAuth(result.user);
     } catch (error) {
-        console.error('Erreur Google Auth:', error);
+        console.error('❌ Erreur Google Auth complète:', error);
+        console.error('📝 Code erreur:', error.code);
+        console.error('💬 Message erreur:', error.message);
+        console.error('🔗 Détails additionnels:', error.customData);
         
         let message = 'Erreur de connexion Google';
-        if (error.code === 'auth/popup-closed-by-user') {
-            message = 'Connexion annulée';
-        } else if (error.code === 'auth/popup-blocked') {
-            message = 'Pop-up bloqué. Autorisez les pop-ups pour ce site';
+        
+        switch (error.code) {
+            case 'auth/popup-closed-by-user':
+                message = 'Connexion Google annulée par l\'utilisateur';
+                break;
+            case 'auth/popup-blocked':
+                message = 'Pop-up bloqué. Veuillez autoriser les pop-ups pour ce site';
+                break;
+            case 'auth/cancelled-popup-request':
+                message = 'Une autre demande de connexion est en cours';
+                break;
+            case 'auth/operation-not-allowed':
+                message = 'Connexion Google désactivée. Vérifiez la configuration Firebase';
+                break;
+            case 'auth/unauthorized-domain':
+                message = 'Domaine non autorisé pour Google Auth. Vérifiez les domaines autorisés dans Firebase';
+                break;
+            case 'auth/web-storage-unsupported':
+                message = 'Stockage web non supporté par ce navigateur';
+                break;
+            case 'auth/network-request-failed':
+                message = 'Erreur réseau. Vérifiez votre connexion internet';
+                break;
+            case 'auth/too-many-requests':
+                message = 'Trop de tentatives. Réessayez plus tard';
+                break;
+            default:
+                message = `Erreur Google Auth: ${error.code} - ${error.message}`;
         }
         
         showToast(message, 'error');
@@ -392,6 +498,94 @@ window.signInWithFacebook = async () => {
         
         showToast(message, 'error');
         showLoading(false);
+    }
+};
+
+window.signInWithApple = async () => {
+    console.log('🍎 Tentative de connexion Apple...');
+    showLoading(true);
+    
+    try {
+        let result;
+        
+        try {
+            result = await signInWithPopup(auth, appleProvider);
+        } catch (popupError) {
+            if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/unauthorized-domain') {
+                console.log('🔄 Pop-up Apple échoué, essai avec redirect...');
+                await signInWithRedirect(auth, appleProvider);
+                return;
+            }
+            throw popupError;
+        }
+        
+        console.log('✅ Connexion Apple réussie:', result.user);
+        await handleFirebaseAuth(result.user);
+        
+    } catch (error) {
+        console.error('❌ Erreur Apple Auth:', error);
+        
+        let message = 'Erreur de connexion Apple';
+        
+        switch (error.code) {
+            case 'auth/popup-closed-by-user':
+                message = 'Connexion Apple annulée';
+                break;
+            case 'auth/operation-not-allowed':
+                message = 'Connexion Apple désactivée. Vérifiez la configuration Firebase';
+                break;
+            case 'auth/unauthorized-domain':
+                message = 'Domaine non autorisé pour Apple Auth';
+                break;
+            case 'auth/account-exists-with-different-credential':
+                message = 'Un compte existe déjà avec cet email via un autre service';
+                break;
+            default:
+                message = `Erreur Apple Auth: ${error.code} - ${error.message}`;
+        }
+        
+        showToast(message, 'error');
+        showLoading(false);
+    }
+};
+
+window.showAppleInfo = () => {
+    const message = `
+        <strong>Configuration Apple Sign-In :</strong><br><br>
+        
+        <strong>Prérequis :</strong><br>
+        • Apple Developer Account (99$/an)<br>
+        • Configuration App ID et Service ID<br>
+        • Clés privées Apple<br><br>
+        
+        <strong>Guide complet :</strong> Consultez APPLE_SIGNIN_COMPLETE_GUIDE.md<br><br>
+        
+        <strong>Alternatives gratuites :</strong><br>
+        • Google OAuth ✅<br>
+        • Facebook Login ✅<br>
+        • Email/Mot de passe ✅
+    `;
+    
+    showToast(message, 'info');
+};
+
+window.checkAppleAuthAvailability = async () => {
+    // Tenter de créer le provider Apple pour voir s'il est configuré
+    try {
+        // Test simple - si ça passe, Apple est potentiellement configuré
+        const testProvider = new OAuthProvider('apple.com');
+        
+        // Vérifier via une tentative de connexion factice (qui échouera mais nous dira si c'est configuré)
+        // Pour l'instant, on masque Apple par défaut
+        document.getElementById('apple-signin-container').style.display = 'none';
+        document.getElementById('apple-not-configured').style.display = 'block';
+        
+        console.log('🍎 Apple Auth: Non configuré (normal sans Apple Developer Account)');
+        
+    } catch (error) {
+        document.getElementById('apple-signin-container').style.display = 'none';
+        document.getElementById('apple-not-configured').style.display = 'block';
+        console.log('🍎 Apple Auth: Non disponible');
     }
 };
 
@@ -549,7 +743,25 @@ function showToast(message, type = 'info') {
 }
 
 // Gestion des événements DOM
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Vérifier la disponibilité d'Apple Auth
+    checkAppleAuthAvailability();
+    
+    // Vérifier s'il y a un résultat de redirection Google
+    try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+            console.log('✅ Connexion Google par redirect réussie:', result.user);
+            showLoading(true);
+            await handleFirebaseAuth(result.user);
+        }
+    } catch (error) {
+        console.error('❌ Erreur redirect result:', error);
+        if (error.code !== 'auth/no-auth-result') {
+            showToast(`Erreur de connexion Google: ${error.message}`, 'error');
+        }
+    }
+    
     // Récupérer l'état "se souvenir de moi"
     if (localStorage.getItem('firebase_remember_me') === 'true') {
         document.getElementById('remember-me').checked = true;

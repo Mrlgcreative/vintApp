@@ -56,101 +56,112 @@
                             <option value="bank" @if(request('payment_method') == 'bank') selected @endif>Banque</option>
                         </select>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Date début</label>
-                                <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
-                            </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date début</label>
+                            <input type="date" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('start_date') }}">
                         </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Date fin</label>
-                                <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
-                            </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date fin</label>
+                            <input type="date" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('end_date') }}">
                         </div>
                     </div>
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" onclick="toggleFilterModal()">Fermer</button>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Appliquer</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                    <button type="submit" class="btn btn-primary">Appliquer</button>
-                </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Tableau des transactions -->
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
+<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
                     <tr>
-                        <th>ID</th>
-                        <th>Utilisateur</th>
-                        <th>Montant</th>
-                        <th>Méthode</th>
-                        <th>Statut</th>
-                        <th>Date</th>
-                        <th>Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($transactions as $transaction)
-                        <tr>
-                            <td>{{ $transaction->id }}</td>
-                            <td>
-                                <div class="d-flex align-items-center">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $transaction->id }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
                                     @if($transaction->user->avatar)
-                                        <img src="{{ $transaction->user->avatar_url }}" class="rounded-circle me-2" width="32" height="32">
+                                        <img src="{{ $transaction->user->avatar_url }}" class="w-8 h-8 rounded-full mr-3" alt="Avatar">
                                     @else
-                                        <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px">
-                                            <span class="text-white">{{ $transaction->user->initial }}</span>
+                                        <div class="w-8 h-8 bg-gray-500 rounded-full mr-3 flex items-center justify-center">
+                                            <span class="text-white text-sm font-medium">{{ $transaction->user->initial }}</span>
                                         </div>
                                     @endif
-                                    {{ $transaction->user->name }}
+                                    <div class="text-sm font-medium text-gray-900">{{ $transaction->user->name }}</div>
                                 </div>
                             </td>
-                            <td class="transaction-amount">
-                                {{ number_format($transaction->amount, 2) }}
-                                <small>{{ $transaction->currency }}</small>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">
+                                    {{ number_format($transaction->amount, 2) }}
+                                    <span class="text-xs text-gray-500">{{ $transaction->currency }}</span>
+                                </div>
                             </td>
-                            <td>
-                                @switch($transaction->payment_method)
-                                    @case('wallet')
-                                        <i class="fas fa-wallet text-primary me-1"></i>
-                                        @break
-                                    @case('airtel_money')
-                                        <i class="fas fa-mobile-alt text-danger me-1"></i>
-                                        @break
-                                    @case('orange_money')
-                                        <i class="fas fa-mobile-alt text-warning me-1"></i>
-                                        @break
-                                    @case('mpesa')
-                                        <i class="fas fa-mobile-alt text-success me-1"></i>
-                                        @break
-                                    @default
-                                        <i class="fas fa-money-bill-wave text-secondary me-1"></i>
-                                @endswitch
-                                {{ ucfirst(str_replace('_', ' ', $transaction->payment_method)) }}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center text-sm text-gray-900">
+                                    @switch($transaction->payment_method)
+                                        @case('wallet')
+                                            <i class="fas fa-wallet text-blue-500 mr-2"></i>
+                                            @break
+                                        @case('airtel_money')
+                                            <i class="fas fa-mobile-alt text-red-500 mr-2"></i>
+                                            @break
+                                        @case('orange_money')
+                                            <i class="fas fa-mobile-alt text-orange-500 mr-2"></i>
+                                            @break
+                                        @case('mpesa')
+                                            <i class="fas fa-mobile-alt text-green-500 mr-2"></i>
+                                            @break
+                                        @default
+                                            <i class="fas fa-money-bill-wave text-gray-500 mr-2"></i>
+                                    @endswitch
+                                    {{ ucfirst(str_replace('_', ' ', $transaction->payment_method)) }}
+                                </div>
                             </td>
-                            <td>
-                                <span class="badge status-badge bg-{{ $transaction->status === 'completed' ? 'success' : ($transaction->status === 'pending' ? 'warning' : ($transaction->status === 'failed' ? 'danger' : 'secondary')) }}">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                    {{ $transaction->status === 'completed' ? 'bg-green-100 text-green-800' : 
+                                       ($transaction->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                       ($transaction->status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
                                     {{ ucfirst($transaction->status) }}
                                 </span>
                             </td>
-                            <td>{{ $transaction->created_at->format('d/m/Y H:i') }}</td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="{{ route('admin.transactions.show', $transaction) }}" class="btn btn-sm btn-outline-primary">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $transaction->created_at->format('d/m/Y H:i') }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <div class="flex space-x-2">
+                                    <a href="{{ route('admin.transactions.show', $transaction) }}" 
+                                       class="inline-flex items-center px-3 py-1 border border-blue-300 text-blue-700 rounded-md hover:bg-blue-50 transition-colors">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     @if($transaction->status === 'pending')
-                                        <button type="button" class="btn btn-sm btn-outline-success" onclick="updateStatus({{ $transaction->id }}, 'completed')">
+                                        <button type="button" 
+                                                class="inline-flex items-center px-3 py-1 border border-green-300 text-green-700 rounded-md hover:bg-green-50 transition-colors" 
+                                                onclick="updateStatus({{ $transaction->id }}, 'completed')">
                                             <i class="fas fa-check"></i>
                                         </button>
-                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="updateStatus({{ $transaction->id }}, 'failed')">
+                                        <button type="button" 
+                                                class="inline-flex items-center px-3 py-1 border border-red-300 text-red-700 rounded-md hover:bg-red-50 transition-colors" 
+                                                onclick="updateStatus({{ $transaction->id }}, 'failed')">
                                             <i class="fas fa-times"></i>
                                         </button>
                                     @endif
@@ -159,10 +170,10 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
-                                <div class="text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3"></i>
-                                    <p>Aucune transaction trouvée</p>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="text-gray-500">
+                                    <i class="fas fa-inbox text-4xl mb-4 text-gray-400"></i>
+                                    <p class="text-lg font-medium">Aucune transaction trouvée</p>
                                 </div>
                             </td>
                         </tr>
@@ -171,11 +182,13 @@
             </table>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <div>
+        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+            <div class="text-sm text-gray-700">
                 Affichage de {{ $transactions->firstItem() ?? 0 }}-{{ $transactions->lastItem() ?? 0 }} sur {{ $transactions->total() }} transactions
             </div>
-            {{ $transactions->links() }}
+            <div class="pagination-wrapper">
+                {{ $transactions->links() }}
+            </div>
         </div>
     </div>
 </div>
@@ -183,6 +196,34 @@
 
 @push('scripts')
 <script>
+    function toggleFilterModal() {
+        const modal = document.getElementById('filterModal');
+        if (modal.classList.contains('hidden')) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } else {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Fermer le modal en cliquant à l'extérieur
+    document.getElementById('filterModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            toggleFilterModal();
+        }
+    });
+
+    // Fermer le modal avec la touche Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('filterModal');
+            if (!modal.classList.contains('hidden')) {
+                toggleFilterModal();
+            }
+        }
+    });
+
     function updateStatus(transactionId, newStatus) {
         if (!confirm('Êtes-vous sûr de vouloir mettre à jour le statut de cette transaction ?')) {
             return;

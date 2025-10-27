@@ -27,6 +27,17 @@ class DashboardController extends Controller
             return redirect()->route('login');
         }
 
+        // Vérifier si l'utilisateur est admin et le rediriger vers le dashboard admin
+        $isAdmin = DB::table('role_user')
+            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('role_user.user_id', $user->id)
+            ->where('roles.slug', 'admin')
+            ->exists();
+            
+        if ($isAdmin) {
+            return redirect()->route('admin.dashboard');
+        }
+
         $stats = $this->getUserStats($user);
         $recentItems = $this->getRecentItems($user);
         $recentOrders = $this->getRecentOrders($user);

@@ -247,26 +247,50 @@ class MobileMoneyService
      */
     private function cashOutMPesa(string $phone, float $amount, string $currency, WalletTransaction $transaction): array
     {
-        $config = $this->providers['mpesa'];
+        // Détecter si c'est un numéro RDC
+        $isRDC = $this->isRDCNumber($phone);
         
-        $apiKey = config('services.mpesa.api_key', 'DEMO_KEY');
-        $publicKey = config('services.mpesa.public_key', 'DEMO_PUBLIC');
-
-        if ($apiKey === 'DEMO_KEY') {
-            return $this->simulateCashOut('mpesa', $phone, $amount, $currency, $transaction);
+        if ($isRDC) {
+            Log::info("RDC number detected, using Vodacom RDC flow", [
+                'phone' => substr($phone, 0, 7) . '...',
+                'amount' => $amount,
+            ]);
+        }
+        
+        // Obtenir le token OAuth (avec détection automatique RDC/Kenya)
+        $accessToken = $this->getMPesaAccessToken($phone);
+        
+        if (!$accessToken) {
+            Log::info("No access token available, using simulation", [
+                'country' => $isRDC ? 'RDC' : 'Kenya',
+                'phone' => substr($phone, 0, 7) . '...',
+            ]);
+            return $this->simulateRDCCashOut($phone, $amount, $currency, $transaction);
         }
 
         try {
+            $config = $this->providers['mpesa'];
+            $shortcode = config('services.mpesa.shortcode');
+            $passkey = config('services.mpesa.passkey');
+            
+            // Timestamp for the request
+            $timestamp = now()->format('YmdHis');
+            $password = base64_encode($shortcode . $passkey . $timestamp);
+
             $response = Http::withHeaders([
-                'Authorization' => "Bearer {$apiKey}",
+                'Authorization' => "Bearer {$accessToken}",
                 'Content-Type' => 'application/json',
-                'Origin' => config('app.url'),
-            ])->post("{$config['api_url']}/paymentrequest", [
-                'input_TransactionReference' => $transaction->reference,
-                'input_CustomerMSISDN' => $phone,
-                'input_Amount' => $amount,
-                'input_ThirdPartyConversationID' => $transaction->reference,
-                'input_ServiceProviderCode' => config('services.mpesa.service_code'),
+            ])->post("{$config['api_url']}/b2c/v1/paymentrequest", [
+                'InitiatorName' => config('app.name'),
+                'SecurityCredential' => $password,
+                'CommandID' => 'BusinessPayment',
+                'Amount' => $amount,
+                'PartyA' => $shortcode,
+                'PartyB' => $phone,
+                'Remarks' => "Retrait VintApp - {$transaction->reference}",
+                'QueueTimeOutURL' => route('withdrawals.webhook', ['provider' => 'mpesa']),
+                'ResultURL' => route('withdrawals.webhook', ['provider' => 'mpesa']),
+                'Occasion' => 'Retrait',
             ]);
 
             if ($response->successful()) {
@@ -275,7 +299,7 @@ class MobileMoneyService
                 return [
                     'status' => 'processing',
                     'message' => 'Retrait M-Pesa en cours',
-                    'provider_reference' => $data['output_ConversationID'] ?? null,
+                    'provider_reference' => $data['ConversationID'] ?? null,
                     'provider_response' => $data,
                 ];
             }
@@ -283,6 +307,11 @@ class MobileMoneyService
             throw new Exception("M-Pesa API error: " . $response->body());
 
         } catch (Exception $e) {
+            Log::error("M-Pesa cash-out failed", [
+                'phone' => $phone,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+            ]);
             throw new Exception("M-Pesa cash-out failed: " . $e->getMessage());
         }
     }
@@ -454,6 +483,407 @@ class MobileMoneyService
         }
 
         return $phone;
+    }
+
+    /**
+     * Initier un décaissement via un agent mobile money
+     *
+     * @param int|null $agentId ID de l'agent (optionnel)
+     * @param string $agentPhone Numéro de téléphone de l'agent
+     * @param float $amount Montant à retirer
+     * @param string $currency Devise (USD ou CDF)
+     * @param WalletTransaction $transaction La transaction wallet associée
+     * @return array Résultat de l'opération
+     */
+    public function cashOutAgent(
+        ?int $agentId,
+        string $agentPhone,
+        float $amount,
+        string $currency,
+        WalletTransaction $transaction
+    ): array {
+        try {
+            // Normaliser le numéro de téléphone de l'agent
+            $normalizedAgentPhone = $this->normalizePhoneNumber($agentPhone);
+
+            // Log de l'initiation du décaissement via agent
+            Log::info("Initiation cash-out via agent", [
+                'agent_id' => $agentId,
+                'agent_phone' => $normalizedAgentPhone,
+                'amount' => $amount,
+                'currency' => $currency,
+                'transaction_id' => $transaction->id,
+            ]);
+
+            // Déterminer le provider de l'agent selon le préfixe du numéro
+            $provider = $this->detectProviderFromPhone($normalizedAgentPhone);
+            
+            if (!$provider) {
+                throw new Exception("Impossible de déterminer l'opérateur pour le numéro agent: {$normalizedAgentPhone}");
+            }
+
+            // Validation du provider
+            if (!isset($this->providers[$provider])) {
+                throw new Exception("Opérateur mobile money invalide pour l'agent : {$provider}");
+            }
+
+            // Configuration spécifique pour les agents
+            $agentConfig = $this->getAgentConfiguration($provider);
+
+            // Appeler l'API spécifique aux agents du provider
+            $result = match ($provider) {
+                'orange_money' => $this->cashOutAgentOrangeMoney($normalizedAgentPhone, $amount, $currency, $transaction, $agentId),
+                'airtel_money' => $this->cashOutAgentAirtelMoney($normalizedAgentPhone, $amount, $currency, $transaction, $agentId),
+                'mpesa' => $this->cashOutAgentMPesa($normalizedAgentPhone, $amount, $currency, $transaction, $agentId),
+                'africell' => $this->cashOutAgentAfricell($normalizedAgentPhone, $amount, $currency, $transaction, $agentId),
+                'illicocash' => $this->cashOutAgentIllicocash($normalizedAgentPhone, $amount, $currency, $transaction, $agentId),
+                default => throw new Exception("Décaissement agent non implémenté pour : {$provider}"),
+            };
+
+            // Enrichir le résultat avec les informations de l'agent
+            $result['agent_info'] = [
+                'agent_id' => $agentId,
+                'agent_phone' => $normalizedAgentPhone,
+                'detected_provider' => $provider,
+            ];
+
+            // Log du résultat
+            Log::info("Cash-out agent résultat", [
+                'agent_id' => $agentId,
+                'provider' => $provider,
+                'status' => $result['status'],
+                'reference' => $result['provider_reference'] ?? null,
+            ]);
+
+            return $result;
+
+        } catch (Exception $e) {
+            Log::error("Erreur cash-out agent", [
+                'agent_id' => $agentId,
+                'agent_phone' => $agentPhone,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'status' => 'failed',
+                'message' => $e->getMessage(),
+                'provider_reference' => null,
+                'agent_info' => [
+                    'agent_id' => $agentId,
+                    'agent_phone' => $agentPhone,
+                ],
+            ];
+        }
+    }
+
+    /**
+     * Détecte l'opérateur mobile money à partir du numéro de téléphone
+     */
+    private function detectProviderFromPhone(string $phone): ?string
+    {
+        // Retirer le préfixe pays (+243)
+        $localNumber = str_replace(['+243', '243'], '', $phone);
+        
+        // Extraire les 2 premiers chiffres
+        $prefix = substr($localNumber, 0, 2);
+        
+        return match ($prefix) {
+            '84', '85', '89' => 'orange_money',
+            '81', '82', '83' => 'mpesa',
+            '97', '98', '99' => 'airtel_money',
+            '90', '91', '92', '93' => 'africell',
+            default => null,
+        };
+    }
+
+    /**
+     * Obtient la configuration spécifique aux agents pour un provider
+     */
+    private function getAgentConfiguration(string $provider): array
+    {
+        return config("agent_services.{$provider}_agent", []);
+    }
+
+    /**
+     * Cash-out via agent Orange Money
+     */
+    private function cashOutAgentOrangeMoney(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        $config = $this->getAgentConfiguration('orange_money');
+        
+        $agentKey = $config['agent_key'];
+        $apiKey = $config['api_key'];
+
+        if (!$agentKey || !$apiKey) {
+            throw new Exception("Configuration agent Orange Money manquante");
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'Content-Type' => 'application/json',
+                'X-Agent-Key' => $agentKey,
+            ])->post("{$config['api_url']}/agent-cashout", [
+                'agent_msisdn' => $agentPhone,
+                'agent_id' => $agentId,
+                'currency' => $currency,
+                'transaction_id' => $transaction->reference,
+                'amount' => $amount,
+                'callback_url' => route('wallet.withdrawals.webhook', ['provider' => 'orange_money']),
+                'reference' => $transaction->reference,
+                'description' => "Décaissement via agent Orange Money - Ref: {$transaction->reference}",
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                return [
+                    'status' => $data['status'] === 'success' ? 'processing' : 'failed',
+                    'message' => 'Décaissement via agent Orange Money en cours',
+                    'provider_reference' => $data['agent_transaction_id'] ?? $data['transaction_id'] ?? null,
+                    'provider_response' => $data,
+                ];
+            }
+
+            throw new Exception("Orange Money Agent API error: " . $response->body());
+
+        } catch (Exception $e) {
+            throw new Exception("Orange Money agent cash-out failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cash-out via agent Airtel Money
+     */
+    private function cashOutAgentAirtelMoney(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        $config = $this->getAgentConfiguration('airtel_money');
+        
+        $clientId = $config['client_id'];
+        $clientSecret = $config['client_secret'];
+
+        if (!$clientId || !$clientSecret) {
+            throw new Exception("Configuration agent Airtel Money manquante");
+        }
+
+        try {
+            // 1. Obtenir le token d'authentification
+            $authResponse = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->post('https://openapiuat.airtel.africa/auth/oauth2/token', [
+                'client_id' => $clientId,
+                'client_secret' => $clientSecret,
+                'grant_type' => 'client_credentials',
+            ]);
+
+            if (!$authResponse->successful()) {
+                throw new Exception("Airtel Money agent authentication failed");
+            }
+
+            $token = $authResponse->json()['access_token'];
+
+            // 2. Initier le décaissement via agent
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$token}",
+                'Content-Type' => 'application/json',
+                'X-Country' => 'CD',
+                'X-Currency' => $currency,
+            ])->post("{$config['api_url']}/agent-disbursement", [
+                'agent' => [
+                    'msisdn' => $agentPhone,
+                    'agent_id' => $agentId,
+                ],
+                'reference' => $transaction->reference,
+                'transaction' => [
+                    'amount' => $amount,
+                    'id' => $transaction->reference,
+                    'currency' => $currency,
+                ],
+                'callback_url' => route('wallet.withdrawals.webhook', ['provider' => 'airtel_money']),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                return [
+                    'status' => $data['status']['success'] ? 'processing' : 'failed',
+                    'message' => $data['status']['message'] ?? 'Décaissement via agent Airtel en cours',
+                    'provider_reference' => $data['data']['transaction']['id'] ?? null,
+                    'provider_response' => $data,
+                ];
+            }
+
+            throw new Exception("Airtel Money Agent API error: " . $response->body());
+
+        } catch (Exception $e) {
+            throw new Exception("Airtel Money agent cash-out failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cash-out via agent M-Pesa
+     */
+    private function cashOutAgentMPesa(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        // Détecter si c'est un agent RDC
+        $isRDC = $this->isRDCNumber($agentPhone);
+        
+        // Obtenir le token OAuth (avec détection automatique RDC/Kenya)
+        $accessToken = $this->getMPesaAccessToken($agentPhone);
+        
+        if (!$accessToken) {
+            if ($isRDC) {
+                Log::info("Agent RDC detected, using simulation", [
+                    'agent_phone' => substr($agentPhone, 0, 7) . '...',
+                    'agent_id' => $agentId,
+                ]);
+                return $this->simulateRDCAgentCashOut($agentPhone, $amount, $currency, $transaction, $agentId);
+            }
+            throw new Exception("Impossible d'obtenir le token M-Pesa OAuth");
+        }
+
+        try {
+            $shortcode = config('services.mpesa.shortcode');
+            $passkey = config('services.mpesa.passkey');
+            
+            // Timestamp for the request
+            $timestamp = now()->format('YmdHis');
+            $password = base64_encode($shortcode . $passkey . $timestamp);
+
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$accessToken}",
+                'Content-Type' => 'application/json',
+            ])->post('https://api.safaricom.co.ke/mpesa/b2c/v1/paymentrequest', [
+                'InitiatorName' => config('app.name'),
+                'SecurityCredential' => $password,
+                'CommandID' => 'BusinessPayment',
+                'Amount' => $amount,
+                'PartyA' => $shortcode,
+                'PartyB' => $agentPhone,
+                'Remarks' => "Décaissement agent VintApp - {$transaction->reference}",
+                'QueueTimeOutURL' => route('withdrawals.webhook', ['provider' => 'mpesa']),
+                'ResultURL' => route('withdrawals.webhook', ['provider' => 'mpesa']),
+                'Occasion' => "Agent {$agentId}",
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                return [
+                    'status' => 'processing',
+                    'message' => 'Décaissement via agent M-Pesa en cours',
+                    'provider_reference' => $data['ConversationID'] ?? null,
+                    'provider_response' => $data,
+                ];
+            }
+
+            throw new Exception("M-Pesa Agent API error: " . $response->body());
+
+        } catch (Exception $e) {
+            Log::error("M-Pesa agent cash-out failed", [
+                'agent_phone' => $agentPhone,
+                'agent_id' => $agentId,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+            ]);
+            throw new Exception("M-Pesa agent cash-out failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cash-out via agent Africell Money
+     */
+    private function cashOutAgentAfricell(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        $config = $this->getAgentConfiguration('africell');
+        
+        $agentConfigId = $config['agent_id'];
+        $apiSecret = $config['api_secret'];
+
+        if (!$agentConfigId || !$apiSecret) {
+            throw new Exception("Configuration agent Africell manquante");
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'X-Agent-ID' => $agentConfigId,
+                'X-API-Secret' => $apiSecret,
+                'Content-Type' => 'application/json',
+            ])->post("{$config['api_url']}/agent-payout", [
+                'agent_msisdn' => $agentPhone,
+                'agent_id' => $agentId,
+                'amount' => $amount,
+                'currency' => $currency,
+                'reference' => $transaction->reference,
+                'description' => "Décaissement via agent Africell - Ref: {$transaction->reference}",
+                'callback_url' => route('wallet.withdrawals.webhook', ['provider' => 'africell']),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                return [
+                    'status' => 'processing',
+                    'message' => 'Décaissement via agent Africell en cours',
+                    'provider_reference' => $data['agent_transaction_id'] ?? $data['transaction_id'] ?? null,
+                    'provider_response' => $data,
+                ];
+            }
+
+            throw new Exception("Africell Agent API error: " . $response->body());
+
+        } catch (Exception $e) {
+            throw new Exception("Africell agent cash-out failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Cash-out via agent Illicocash
+     */
+    private function cashOutAgentIllicocash(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        $config = $this->getAgentConfiguration('illicocash');
+        
+        $agentCode = $config['agent_code'];
+        $apiToken = $config['api_token'];
+
+        if (!$agentCode || !$apiToken) {
+            throw new Exception("Configuration agent Illicocash manquante");
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiToken}",
+                'Content-Type' => 'application/json',
+                'X-Agent-Code' => $agentCode,
+            ])->post("{$config['api_url']}/agent-disbursement", [
+                'agent_phone' => $agentPhone,
+                'agent_id' => $agentId,
+                'amount' => $amount,
+                'currency' => $currency,
+                'transaction_ref' => $transaction->reference,
+                'description' => "Décaissement via agent Illicocash - Ref: {$transaction->reference}",
+                'webhook_url' => route('wallet.withdrawals.webhook', ['provider' => 'illicocash']),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                
+                return [
+                    'status' => $data['status'] === 'success' ? 'processing' : 'failed',
+                    'message' => $data['message'] ?? 'Décaissement via agent Illicocash en cours',
+                    'provider_reference' => $data['agent_reference'] ?? $data['reference'] ?? null,
+                    'provider_response' => $data,
+                ];
+            }
+
+            throw new Exception("Illicocash Agent API error: " . $response->body());
+
+        } catch (Exception $e) {
+            throw new Exception("Illicocash agent cash-out failed: " . $e->getMessage());
+        }
     }
 
     /**
@@ -685,5 +1115,153 @@ class MobileMoneyService
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
         return hash_equals($expectedSignature, $signature);
+    }
+
+    /**
+     * Simuler un cash-out RDC (en attendant les vraies clés Vodacom RDC)
+     */
+    private function simulateRDCCashOut(string $phone, float $amount, string $currency, WalletTransaction $transaction): array
+    {
+        Log::info("Simulating Vodacom RDC cash-out", [
+            'phone' => substr($phone, 0, 7) . '...',
+            'amount' => $amount,
+            'currency' => $currency,
+            'transaction_id' => $transaction->id,
+        ]);
+
+        return [
+            'status' => 'processing',
+            'message' => "Retrait M-Pesa RDC en cours (simulé)",
+            'provider_reference' => 'VDC-RDC-' . time() . '-' . rand(1000, 9999),
+            'provider_response' => [
+                'ConversationID' => 'RDC_' . date('YmdHis') . '_' . rand(100000, 999999),
+                'OriginatorConversationID' => 'VINTAPP_' . time(),
+                'ResponseCode' => '0',
+                'ResponseDescription' => 'Request accepted for processing (Vodacom RDC Simulation)',
+                'simulation' => true,
+                'country' => 'RDC',
+                'provider' => 'Vodacom M-Pesa',
+            ],
+        ];
+    }
+
+    /**
+     * Simuler un cash-out agent RDC (en attendant les vraies clés Vodacom RDC)
+     */
+    private function simulateRDCAgentCashOut(string $agentPhone, float $amount, string $currency, WalletTransaction $transaction, ?int $agentId): array
+    {
+        Log::info("Simulating Vodacom RDC agent cash-out", [
+            'agent_phone' => substr($agentPhone, 0, 7) . '...',
+            'agent_id' => $agentId,
+            'amount' => $amount,
+            'currency' => $currency,
+            'transaction_id' => $transaction->id,
+        ]);
+
+        return [
+            'status' => 'processing',
+            'message' => "Décaissement agent M-Pesa RDC en cours (simulé)",
+            'provider_reference' => 'VDC-AGENT-RDC-' . time() . '-' . rand(1000, 9999),
+            'provider_response' => [
+                'ConversationID' => 'RDC_AGENT_' . date('YmdHis') . '_' . rand(100000, 999999),
+                'OriginatorConversationID' => 'VINTAPP_AGENT_' . time(),
+                'ResponseCode' => '0',
+                'ResponseDescription' => 'Agent cash-out accepted for processing (Vodacom RDC Simulation)',
+                'simulation' => true,
+                'country' => 'RDC',
+                'provider' => 'Vodacom M-Pesa',
+                'agent_id' => $agentId,
+                'agent_phone' => $agentPhone,
+            ],
+        ];
+    }
+
+    /**
+     * Détecter si un numéro est RDC (Vodacom RDC) ou Kenya (Safaricom)
+     */
+    private function isRDCNumber(string $normalizedPhone): bool
+    {
+        // Numéros RDC commencent par +243
+        return str_starts_with($normalizedPhone, '+243');
+    }
+
+    /**
+     * Obtenir un token d'accès OAuth pour M-Pesa
+     */
+    private function getMPesaAccessToken(string $phoneNumber = ''): ?string
+    {
+        try {
+            $isRDC = $this->isRDCNumber($phoneNumber);
+            
+            if ($isRDC) {
+                // Pour Vodacom RDC - utiliser les clés spécifiques RDC si disponibles
+                $consumerKey = config('services.vodacom_rdc.consumer_key') ?? env('VODACOM_RDC_CONSUMER_KEY');
+                $consumerSecret = config('services.vodacom_rdc.consumer_secret') ?? env('VODACOM_RDC_CONSUMER_SECRET');
+                $environment = config('services.vodacom_rdc.environment', 'sandbox');
+                
+                if (!$consumerKey || !$consumerSecret) {
+                    Log::info("Vodacom RDC credentials not configured, using simulation");
+                    return null; // Simulation mode
+                }
+                
+                // URLs Vodacom RDC
+                $oauthUrl = $environment === 'production'
+                    ? 'https://openapi.m-pesa.com/ipg/v2/token'
+                    : 'https://openapi.m-pesa.com/sandbox/ipg/v2/token';
+                    
+            } else {
+                // Pour Safaricom Kenya (numéros +254)
+                $consumerKey = config('services.mpesa.consumer_key') ?? env('MPESA_API_KEY');
+                $consumerSecret = config('services.mpesa.consumer_secret') ?? env('MPESA_API_SECRET');
+                $environment = config('services.mpesa.environment', 'sandbox');
+
+                if (!$consumerKey || !$consumerSecret) {
+                    Log::warning("M-Pesa credentials not configured");
+                    return null;
+                }
+
+                // URLs Safaricom Kenya
+                $oauthUrl = $environment === 'production'
+                    ? 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials'
+                    : 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+            }
+
+            // Encoder les credentials en base64
+            $credentials = base64_encode($consumerKey . ':' . $consumerSecret);
+
+            Log::info("M-Pesa OAuth attempt", [
+                'country' => $isRDC ? 'RDC' : 'Kenya',
+                'environment' => $environment,
+                'phone_prefix' => substr($phoneNumber, 0, 7),
+            ]);
+
+            $response = Http::withHeaders([
+                'Authorization' => "Basic {$credentials}",
+                'Content-Type' => 'application/json',
+            ])->get($oauthUrl);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $accessToken = $data['access_token'] ?? null;
+
+                if ($accessToken) {
+                    Log::info("M-Pesa OAuth token obtained successfully");
+                    return $accessToken;
+                }
+            }
+
+            Log::error("M-Pesa OAuth failed", [
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            return null;
+
+        } catch (Exception $e) {
+            Log::error("M-Pesa OAuth exception", [
+                'error' => $e->getMessage(),
+            ]);
+            return null;
+        }
     }
 }

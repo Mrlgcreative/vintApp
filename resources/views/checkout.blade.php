@@ -93,6 +93,47 @@
                                 <div class="invalid-feedback">Veuillez entrer votre adresse complète.</div>
                             </div>
 
+                            <!-- Position GPS (optionnelle) -->
+                            <div class="col-12 mb-3">
+                                <div class="card border-info">
+                                    <div class="card-header bg-info text-white">
+                                        <h6 class="mb-0">
+                                            <i class="fas fa-map-marker-alt me-2"></i>
+                                            Position GPS (Optionnelle - pour un suivi précis)
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <label for="latitude" class="form-label">
+                                                    <i class="fas fa-crosshairs me-1"></i>Latitude
+                                                </label>
+                                                <input type="number" step="0.00000001" class="form-control" 
+                                                       id="latitude" name="latitude" placeholder="-4.325000">
+                                                <small class="text-muted">Ex: -4.325000 (Kinshasa)</small>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="longitude" class="form-label">
+                                                    <i class="fas fa-crosshairs me-1"></i>Longitude
+                                                </label>
+                                                <input type="number" step="0.00000001" class="form-control" 
+                                                       id="longitude" name="longitude" placeholder="15.307778">
+                                                <small class="text-muted">Ex: 15.307778 (Kinshasa)</small>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <button type="button" class="btn btn-outline-info btn-sm" id="getCurrentLocationBtn">
+                                                <i class="fas fa-location-arrow me-1"></i>
+                                                Utiliser ma position actuelle (GPS)
+                                            </button>
+                                            <small class="text-muted d-block mt-1">
+                                                Cela permettra un suivi de livraison plus précis sur la carte
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Notes de livraison -->
                             <div class="col-12 mb-3">
                                 <label for="notes" class="form-label">
@@ -249,6 +290,61 @@ document.addEventListener('DOMContentLoaded', function() {
     // Charger l'adresse par défaut au chargement de la page
     loadDefaultAddress();
 
+    // Gestion du bouton de géolocalisation
+    const getCurrentLocationBtn = document.getElementById('getCurrentLocationBtn');
+    if (getCurrentLocationBtn) {
+        getCurrentLocationBtn.addEventListener('click', function() {
+            if ("geolocation" in navigator) {
+                const originalText = this.innerHTML;
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Récupération de la position...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(8);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(8);
+                        
+                        getCurrentLocationBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i>Position obtenue !';
+                        getCurrentLocationBtn.className = 'btn btn-success btn-sm';
+                        
+                        setTimeout(() => {
+                            getCurrentLocationBtn.innerHTML = originalText;
+                            getCurrentLocationBtn.className = 'btn btn-outline-info btn-sm';
+                            getCurrentLocationBtn.disabled = false;
+                        }, 2000);
+                    },
+                    function(error) {
+                        console.error('Erreur de géolocalisation:', error);
+                        let errorMsg = 'Impossible d\'obtenir votre position.';
+                        
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMsg = 'Permission refusée. Autorisez l\'accès à votre localisation.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMsg = 'Position non disponible. Vérifiez votre GPS.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMsg = 'Délai d\'attente dépassé. Réessayez.';
+                                break;
+                        }
+                        
+                        showToast(errorMsg, 'error');
+                        getCurrentLocationBtn.innerHTML = originalText;
+                        getCurrentLocationBtn.disabled = false;
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                showToast('La géolocalisation n\'est pas supportée par votre navigateur', 'error');
+            }
+        });
+    }
+
     // Fonction pour charger l'adresse par défaut
     function loadDefaultAddress() {
         fetch('/delivery-address/default', {
@@ -272,6 +368,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('commune').value = address.commune;
                 document.getElementById('address').value = address.address;
                 document.getElementById('notes').value = address.notes || '';
+                
+                // Charger les coordonnées GPS si disponibles
+                if (address.latitude) {
+                    document.getElementById('latitude').value = address.latitude;
+                }
+                if (address.longitude) {
+                    document.getElementById('longitude').value = address.longitude;
+                }
 
                 // Afficher les informations confirmées
                 showConfirmedInfo(address);
@@ -324,6 +428,8 @@ document.addEventListener('DOMContentLoaded', function() {
             city: document.getElementById('city').value,
             commune: document.getElementById('commune').value,
             address: document.getElementById('address').value,
+            latitude: document.getElementById('latitude').value || null,
+            longitude: document.getElementById('longitude').value || null,
             notes: document.getElementById('notes').value,
             is_default: true
         };

@@ -15,6 +15,8 @@ class DeliveryAddress extends Model
         'city',
         'commune',
         'address',
+        'latitude',
+        'longitude',
         'notes',
         'is_default',
     ];
@@ -51,5 +53,51 @@ class DeliveryAddress extends Model
     public function getFullAddressAttribute(): string
     {
         return "{$this->address}, {$this->commune}, {$this->city}";
+    }
+
+    /**
+     * Vérifier si l'adresse a des coordonnées GPS
+     */
+    public function hasCoordinates(): bool
+    {
+        return !is_null($this->latitude) && !is_null($this->longitude);
+    }
+
+    /**
+     * Obtenir les coordonnées par défaut pour les villes du Congo
+     */
+    public function getDefaultCoordinatesAttribute(): array
+    {
+        $cityCoordinates = [
+            'Kinshasa' => ['lat' => -4.325, 'lng' => 15.308],
+            'Lubumbashi' => ['lat' => -11.655, 'lng' => 27.479],
+            'Kolwezi' => ['lat' => -10.715556, 'lng' => 25.471389],
+            'Kisangani' => ['lat' => 0.516, 'lng' => 25.191],
+            'Bukavu' => ['lat' => -2.507, 'lng' => 28.842],
+            'Goma' => ['lat' => -1.674, 'lng' => 29.227],
+            'Kananga' => ['lat' => -5.896, 'lng' => 22.452],
+            'Mbuji-Mayi' => ['lat' => -6.136, 'lng' => 23.590],
+            'Likasi' => ['lat' => -10.982, 'lng' => 26.737],
+            'Matadi' => ['lat' => -5.838, 'lng' => 13.463],
+        ];
+
+        $city = ucfirst(strtolower(trim($this->city)));
+        return $cityCoordinates[$city] ?? ['lat' => -4.325, 'lng' => 15.308]; // Kinshasa par défaut
+    }
+
+    /**
+     * Obtenir la latitude effective (coordonnées GPS ou par défaut selon la ville)
+     */
+    public function getEffectiveLatitudeAttribute(): float
+    {
+        return $this->latitude ?? $this->default_coordinates['lat'];
+    }
+
+    /**
+     * Obtenir la longitude effective (coordonnées GPS ou par défaut selon la ville)
+     */
+    public function getEffectiveLongitudeAttribute(): float
+    {
+        return $this->longitude ?? $this->default_coordinates['lng'];
     }
 }

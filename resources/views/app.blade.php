@@ -45,9 +45,19 @@
                     <div class="flex items-center gap-3">
                         <a href="{{ route('profile.index') }}" class="flex items-center gap-2 hover:opacity-80 transition-opacity no-underline" style="text-decoration: none;">
                             @if(Auth::user()->avatar)
-                                <img src="{{ asset('storage/' . Auth::user()->avatar) }}" 
+                                @php
+                                    // Déterminer si c'est une URL complète ou un chemin local
+                                    $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
+                                        ? Auth::user()->avatar 
+                                        : asset('storage/' . Auth::user()->avatar);
+                                @endphp
+                                <img src="{{ $avatarUrl }}" 
                                      alt="{{ Auth::user()->name }}" 
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 ring-2 ring-purple-100">
+                                     class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 ring-2 ring-purple-100"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-sm shadow-md" style="display: none;">
+                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                                </div>
                             @else
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
                                     {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
@@ -63,7 +73,7 @@
                         <button class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors" onclick="toggleNotifications()">
                             <i class="fas fa-bell text-gray-700 text-lg"></i>
                             @php
-                                $unreadNotifications = 0; // Remplacer par: Auth::user()->unreadNotifications->count()
+                                $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
                             @endphp
                             @if($unreadNotifications > 0)
                                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
@@ -700,12 +710,15 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="p-4">
-                    <p class="text-gray-500 text-sm text-center">Aucune notification</p>
+                <div class="p-4" id="mobile-notifications-content">
+                    <p class="text-gray-500 text-sm text-center">Chargement...</p>
                 </div>
             `;
             
             document.body.appendChild(panel);
+            
+            // Charger les notifications
+            loadMobileNotifications();
             
             // Fermer en cliquant à l'extérieur
             setTimeout(() => {
@@ -797,11 +810,65 @@
             document.getElementById('filters-modal').remove();
         }
         
+        function loadMobileNotifications() {
+            @auth
+            const content = document.getElementById('mobile-notifications-content');
+            if (!content) return;
+            
+            fetch('/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.notifications.length === 0) {
+                        content.innerHTML = '<p class="text-gray-500 text-sm text-center">Aucune notification</p>';
+                        return;
+                    }
+                    
+                    content.innerHTML = data.notifications.map(notification => `
+                        <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" 
+                             onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
+                            <div class="flex items-start gap-3">
+                                <i class="fas ${getNotificationIcon(notification.type)} text-purple-600 mt-1"></i>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-gray-800 text-sm">${notification.title}</div>
+                                    <div class="text-gray-600 text-xs mt-1">${notification.message}</div>
+                                    <div class="text-gray-400 text-xs mt-1">${formatDate(notification.created_at)}</div>
+                                </div>
+                                ${!notification.read_at ? '<div class="w-2 h-2 bg-red-500 rounded-full"></div>' : ''}
+                            </div>
+                        </div>
+                    `).join('');
+                })
+                .catch(error => {
+                    content.innerHTML = '<p class="text-red-500 text-sm text-center">Erreur de chargement</p>';
+                });
+            @else
+            document.getElementById('mobile-notifications-content').innerHTML = '<p class="text-gray-500 text-sm text-center">Connectez-vous pour voir vos notifications</p>';
+            @endauth
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Application Vintapp chargée');
             
             // Gestion du thème
             applyTheme(getPreferredTheme());
+            
+            // Initialisation du service worker pour notifications push
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker enregistré:', registration);
+                    })
+                    .catch(error => {
+                        console.error('❌ Erreur Service Worker:', error);
+                    });
+            }
+            
+            // Demander permission pour notifications
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    console.log('🔔 Permission notifications:', permission);
+                });
+            }
             
             // Gestion des notifications en temps réel
             @auth
@@ -812,8 +879,101 @@
         
         @auth
         function loadNotifications() {
-            // Simulation - à remplacer par fetch('/notifications')
-            console.log('Chargement des notifications...');
+            fetch('/notifications')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('📋 Notifications chargées:', data);
+                    updateNotificationBadge(data.unread_count);
+                    updateNotificationsList(data.notifications);
+                })
+                .catch(error => {
+                    console.error('❌ Erreur chargement notifications:', error);
+                });
+        }
+        
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notifications-badge');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+            
+            // Badge mobile (Tailwind)
+            const mobileBadge = document.querySelector('.animate-pulse');
+            if (mobileBadge) {
+                mobileBadge.style.display = count > 0 ? 'block' : 'none';
+            }
+        }
+        
+        function updateNotificationsList(notifications) {
+            const list = document.getElementById('notifications-list');
+            if (!list) return;
+            
+            list.innerHTML = '<li><h6 class="dropdown-header">Notifications</h6></li>';
+            
+            if (notifications.length === 0) {
+                list.innerHTML += '<li><div class="dropdown-item text-center text-muted">Aucune notification</div></li>';
+                return;
+            }
+            
+            notifications.forEach(notification => {
+                const item = document.createElement('li');
+                item.innerHTML = `
+                    <a class="dropdown-item ${!notification.read_at ? 'fw-bold' : ''}" 
+                       href="#" 
+                       onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
+                        <div class="d-flex align-items-start">
+                            <i class="fas ${getNotificationIcon(notification.type)} me-2 mt-1 text-primary"></i>
+                            <div class="flex-grow-1">
+                                <div class="fw-bold">${notification.title}</div>
+                                <small class="text-muted">${notification.message}</small>
+                                <br><small class="text-muted">${formatDate(notification.created_at)}</small>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                list.appendChild(item);
+            });
+        }
+        
+        function getNotificationIcon(type) {
+            const icons = {
+                'new_message': 'fa-comment',
+                'new_order': 'fa-shopping-cart',
+                'discount_applied': 'fa-percentage',
+                'item_favorited': 'fa-heart'
+            };
+            return icons[type] || 'fa-bell';
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'À l\'instant';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' min';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + ' h';
+            return Math.floor(diff / 86400000) + ' j';
+        }
+        
+        function markNotificationAsRead(notificationId, url) {
+            fetch(`/notifications/${notificationId}/read`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            }).then(() => {
+                loadNotifications(); // Recharger les notifications
+                if (url && url !== '#') {
+                    window.location.href = url;
+                }
+            });
         }
         @endauth
         

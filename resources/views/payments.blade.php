@@ -423,8 +423,28 @@ document.getElementById('payment-form').addEventListener('submit', async functio
 
         console.log('Envoi de la requête...'); // Debug
 
-        // Appel API de simulation
-        const response = await fetch('{{ route("payments.simulate") }}', {
+        // Déterminer la route API selon le provider
+        let apiRoute;
+        switch(provider) {
+            case 'Vodacom M-Pesa':
+                apiRoute = '{{ route("payments.mpesa") }}';
+                break;
+            case 'Orange Money':
+                apiRoute = '{{ route("payments.orange_money") }}';
+                break;
+            case 'Airtel Money':
+                apiRoute = '{{ route("payments.airtel_money") }}';
+                break;
+            case 'Africell Money':
+                apiRoute = '{{ route("payments.africell") }}';
+                break;
+            default:
+                // Fallback vers simulation pour tests
+                apiRoute = '{{ route("payments.simulate") }}';
+        }
+
+        // Appel API réelle du provider
+        const response = await fetch(apiRoute, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

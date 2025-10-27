@@ -21,6 +21,12 @@ return [
             'enabled' => env('MPESA_ENABLED', true),
             'api_key' => env('MPESA_API_KEY'),
             'api_secret' => env('MPESA_API_SECRET'),
+            'shortcode' => env('MPESA_SHORTCODE', '174379'),
+            'passkey' => env('MPESA_PASSKEY'),
+            'environment' => env('MPESA_ENVIRONMENT', 'sandbox'), // sandbox ou production
+            'base_url' => env('MPESA_ENVIRONMENT', 'sandbox') === 'sandbox' 
+                ? 'https://sandbox.safaricom.co.ke' 
+                : 'https://api.safaricom.co.ke',
         ],
         'africell' => [
             'enabled' => env('AFRICELL_ENABLED', true),

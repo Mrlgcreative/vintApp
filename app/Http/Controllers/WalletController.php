@@ -157,7 +157,11 @@ class WalletController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01|max:' . $wallet->balance,
             'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
-            'payment_method' => 'required|string|in:orange_money,airtel_money,mpesa,africell,illicocash',
+            // Ajout du mode 'agent' pour permettre le décaissement via un agent mobile money
+            'payment_method' => 'required|string|in:orange_money,airtel_money,mpesa,africell,illicocash,agent',
+            // Si payment_method == agent, on attend l'id de l'agent ou son numéro
+            'agent_id' => 'nullable|integer',
+            'agent_phone' => ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15', 'required_if:payment_method,agent'],
             'description' => 'nullable|string|max:255',
         ]);
 
@@ -171,6 +175,19 @@ class WalletController extends Controller
             DB::beginTransaction();
 
             // 1. Créer la transaction de retrait
+            // Construire les métadonnées du retrait (inclut info agent si fournie)
+            $metadata = [
+                'phone_number' => $validated['phone_number'],
+                'payment_method' => $validated['payment_method'],
+                'withdrawal_date' => now()->toDateTimeString(),
+            ];
+            if (!empty($validated['agent_id'])) {
+                $metadata['agent_id'] = $validated['agent_id'];
+            }
+            if (!empty($validated['agent_phone'])) {
+                $metadata['agent_phone'] = $validated['agent_phone'];
+            }
+
             $transaction = $wallet->transactions()->create([
                 'type' => 'debit',
                 'amount' => $validated['amount'],
@@ -179,11 +196,7 @@ class WalletController extends Controller
                 'reference' => 'WTH-' . time() . '-' . rand(1000, 9999),
                 'status' => 'processing',
                 'provider' => $validated['payment_method'],
-                'metadata' => json_encode([
-                    'phone_number' => $validated['phone_number'],
-                    'payment_method' => $validated['payment_method'],
-                    'withdrawal_date' => now()->toDateTimeString(),
-                ])
+                'metadata' => json_encode($metadata)
             ]);
 
             // 2. Créer la demande de retrait
@@ -204,13 +217,27 @@ class WalletController extends Controller
 
             // 4. Appeler l'API de décaissement (asynchrone)
             try {
-                $cashOutResponse = $this->mobileMoneyService->cashOut(
-                    $validated['payment_method'],
-                    $validated['phone_number'],
-                    $validated['amount'],
-                    $wallet->currency,
-                    $transaction
-                );
+                // Si le paiement se fait via un agent, appeler la méthode dédiée
+                if ($validated['payment_method'] === 'agent') {
+                    $agentId = $validated['agent_id'] ?? null;
+                    $agentPhone = $validated['agent_phone'] ?? $validated['phone_number'];
+
+                    $cashOutResponse = $this->mobileMoneyService->cashOutAgent(
+                        $agentId,
+                        $agentPhone,
+                        $validated['amount'],
+                        $wallet->currency,
+                        $transaction
+                    );
+                } else {
+                    $cashOutResponse = $this->mobileMoneyService->cashOut(
+                        $validated['payment_method'],
+                        $validated['phone_number'],
+                        $validated['amount'],
+                        $wallet->currency,
+                        $transaction
+                    );
+                }
 
                 // Mettre à jour avec la réponse du provider
                 $withdrawalRequest->update([

@@ -7,6 +7,8 @@ use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\NewsletterController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
@@ -23,9 +25,28 @@ Route::get('/splash', function() {
 // Page d'accueil avec WelcomeController
 Route::get('/home', [WelcomeController::class, 'index'])->name('home');
 
-// Redirection de la racine vers la page de démarrage
+// Page d'accueil principale - gestion des redirections par rôle
 Route::get('/', function() {
-    return redirect()->route('splash');
+    if (Auth::check()) {
+        $user = Auth::user();
+        
+        // Vérification simple via la table role_user pour les admins
+        $isAdmin = DB::table('role_user')
+            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('role_user.user_id', $user->id)
+            ->where('roles.slug', 'admin')
+            ->exists();
+            
+        if ($isAdmin) {
+            return redirect()->route('admin.dashboard');
+        }
+        
+        // Utilisateurs connectés non-admin → page d'accueil
+        return app(WelcomeController::class)->index();
+    }
+    
+    // Utilisateurs non connectés → page splash
+    return view('splash');
 });
 
 // Routes Newsletter publiques
@@ -187,17 +208,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
 
     // Gestion des wallets
     Route::prefix('wallets')->name('wallets.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'wallets'])->name('index');
+        Route::get('/', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Admin\WalletController::class, 'store'])->name('store');
+        Route::get('/{wallet}', [App\Http\Controllers\Admin\WalletController::class, 'show'])->name('show');
+        Route::get('/{wallet}/transactions', [App\Http\Controllers\Admin\WalletController::class, 'transactions'])->name('transactions');
+        Route::post('/{wallet}/withdraw', [App\Http\Controllers\Admin\WalletController::class, 'withdraw'])->name('withdraw');
+        Route::post('/add-commission', [App\Http\Controllers\Admin\WalletController::class, 'addCommission'])->name('add-commission');
+        
+        // Routes pour les wallets utilisateurs (ancienne gestion)
         Route::get('/pending', [App\Http\Controllers\Admin\AdminController::class, 'pendingWallets'])->name('pending');
-        Route::get('/{wallet}', [App\Http\Controllers\Admin\AdminController::class, 'walletShow'])->name('show');
         Route::post('/{wallet}/approve', [App\Http\Controllers\Admin\AdminController::class, 'approveWallet'])->name('approve');
         Route::post('/{wallet}/reject', [App\Http\Controllers\Admin\AdminController::class, 'rejectWallet'])->name('reject');
         Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminController::class, 'bulkApproveWallets'])->name('bulk-approve');
+        Route::post('/bulk-reject', [App\Http\Controllers\Admin\AdminController::class, 'bulkRejectWallets'])->name('bulk-reject');
         
         // 🆕 Transfert de commission vers WalletEntreprise
         Route::post('/transfer-commission', [App\Http\Controllers\WalletController::class, 'transferCommission'])
             ->name('transfer-commission');
-        Route::post('/bulk-reject', [App\Http\Controllers\Admin\AdminController::class, 'bulkRejectWallets'])->name('bulk-reject');
     });
 
     // Gestion des transactions

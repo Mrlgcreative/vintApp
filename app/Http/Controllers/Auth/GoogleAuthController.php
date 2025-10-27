@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\AdminRedirection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -13,6 +15,7 @@ use Exception;
 
 class GoogleAuthController extends Controller
 {
+    use AdminRedirection;
     /**
      * Rediriger vers Google pour l'authentification
      */
@@ -60,8 +63,8 @@ class GoogleAuthController extends Controller
             // Connecter l'utilisateur
             Auth::login($user, true);
 
-            // Rediriger vers le dashboard avec message de succès
-            return redirect()->intended('/dashboard')->with('success', '🎉 Connexion réussie avec Google !');
+            // Utilisation du trait pour la redirection basée sur le rôle
+            return $this->redirectBasedOnRole('/dashboard', 'Connexion réussie avec Google');
 
         } catch (Exception $e) {
             // En cas d'erreur, rediriger vers la page de connexion avec un message d'erreur
