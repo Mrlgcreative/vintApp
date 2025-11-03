@@ -131,11 +131,107 @@ class FirebaseAuthController extends Controller
         $request->validate([
             'idToken' => 'required|string',
             'name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'newsletter' => 'boolean',
+            'referral_code' => 'nullable|string|exists:referral_codes,code',
         ]);
 
         try {
-            // Utiliser la même logique que pour la connexion
-            return $this->loginWithFirebase($request);
+            // Vérifier le token Firebase
+            $firebaseAuth = $this->firebaseService->auth();
+            $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
+            
+            // Récupérer les informations utilisateur depuis Firebase
+            $firebaseUid = $verifiedIdToken->claims()->get('sub');
+            $firebaseUser = $firebaseAuth->getUser($firebaseUid);
+
+            // Extraire les informations utilisateur
+            $email = $firebaseUser->email ?? null;
+            $name = $request->name ?? $firebaseUser->displayName ?? 'Utilisateur';
+            $avatar = $firebaseUser->photoUrl ?? null;
+            $emailVerified = $firebaseUser->emailVerified ?? false;
+
+            if (!$email) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Adresse email requise pour l\'inscription'
+                ], 400);
+            }
+
+            // Vérifier si l'utilisateur existe déjà
+            $existingUser = User::where('email', $email)
+                               ->orWhere('firebase_uid', $firebaseUid)
+                               ->first();
+
+            if ($existingUser) {
+                // Utilisateur existant - connexion
+                $existingUser->update([
+                    'firebase_uid' => $firebaseUid,
+                    'name' => $name,
+                    'avatar' => $avatar,
+                    'email_verified_at' => $emailVerified ? now() : $existingUser->email_verified_at,
+                ]);
+
+                // Enregistrer le token FCM si fourni
+                if ($request->filled('fcmToken')) {
+                    $existingUser->update(['fcm_token' => $request->fcmToken]);
+                }
+
+                Auth::login($existingUser, true);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Connexion réussie',
+                    'user' => [
+                        'id' => $existingUser->id,
+                        'name' => $existingUser->name,
+                        'email' => $existingUser->email,
+                        'avatar' => $existingUser->avatar,
+                    ],
+                    'redirect' => route('home')
+                ]);
+            }
+
+            // Nouveau utilisateur - inscription
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'phone' => $request->phone ?? '',
+                'firebase_uid' => $firebaseUid,
+                'avatar' => $avatar,
+                'email_verified_at' => $emailVerified ? now() : null,
+                'newsletter_subscribed' => $request->boolean('newsletter'),
+                'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
+            ]);
+
+            // Appliquer le code de parrainage s'il est fourni
+            $referralMessage = '';
+            if ($request->filled('referral_code')) {
+                $referral = $user->applyReferralCode($request->referral_code);
+                if ($referral) {
+                    $referralMessage = ' Code de parrainage appliqué avec succès !';
+                }
+            }
+
+            // Enregistrer le token FCM si fourni
+            if ($request->filled('fcmToken')) {
+                $user->update(['fcm_token' => $request->fcmToken]);
+            }
+
+            // Connecter l'utilisateur
+            Auth::login($user, true);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Inscription réussie !' . $referralMessage,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'avatar' => $user->avatar,
+                ],
+                'redirect' => route('home')
+            ]);
 
         } catch (\Exception $e) {
             logger('Firebase register error: ' . $e->getMessage());

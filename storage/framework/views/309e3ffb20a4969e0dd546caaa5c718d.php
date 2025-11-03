@@ -159,6 +159,17 @@
                     </div>
                     <i class="fas fa-chevron-right text-muted"></i>
                 </a>
+
+                <a href="<?php echo e(route('affiliate.dashboard')); ?>" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <div class="settings-icon bg-gradient-primary text-white me-3" style="background: linear-gradient(45deg, #667eea, #764ba2);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">Affiliation <span class="badge bg-success ms-2">NOUVEAU</span></div>
+                        <small class="text-muted">Parrainez vos amis et gagnez des points</small>
+                    </div>
+                    <i class="fas fa-chevron-right text-muted"></i>
+                </a>
             </div>
         </div>
     </div>
@@ -471,6 +482,36 @@
 @keyframes pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
+}
+
+/* Style spécial pour l'affiliation */
+.affiliate-item {
+    position: relative;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    border-left: 4px solid transparent;
+    border-image: linear-gradient(45deg, #667eea, #764ba2) 1;
+}
+
+.affiliate-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.affiliate-item:hover::before {
+    opacity: 1;
+}
+
+.affiliate-item:hover {
+    transform: translateX(6px);
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
 }
 
 /* Responsive */

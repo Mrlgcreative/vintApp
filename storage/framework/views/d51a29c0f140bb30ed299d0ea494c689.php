@@ -335,6 +335,15 @@
                                 </a>
                             </li>
                         <?php endif; ?>
+                        
+                        <!-- Centre d'aide (accessible à tous) -->
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo e(request()->routeIs('help.*') ? 'active' : ''); ?>" 
+                               href="<?php echo e(route('help.index')); ?>">
+                                <i class="fas fa-question-circle me-1"></i>
+                                Aide
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Barre de recherche -->
@@ -606,30 +615,36 @@
                     <div class="col-md-2 col-6 mb-4">
                         <h6>Support</h6>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-muted text-decoration-none">Aide</a></li>
-                            <li><a href="#" class="text-muted text-decoration-none">Contact</a></li>
-                            <li><a href="#" class="text-muted text-decoration-none">FAQ</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>" class="text-muted text-decoration-none">Centre d'aide</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#contact" class="text-muted text-decoration-none">Contact</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#getting-started" class="text-muted text-decoration-none">FAQ</a></li>
+                            <?php if(auth()->guard()->check()): ?>
+                            <li><a href="<?php echo e(route('affiliate.dashboard')); ?>" class="text-muted text-decoration-none">Affiliation</a></li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                     <div class="col-md-2 col-6 mb-4">
                         <h6>Légal</h6>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-muted text-decoration-none">CGU</a></li>
-                            <li><a href="#" class="text-muted text-decoration-none">Confidentialité</a></li>
-                            <li><a href="#" class="text-muted text-decoration-none">Cookies</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">CGU</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">Confidentialité</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">Sécurité</a></li>
                         </ul>
                     </div>
                     <div class="col-md-2 col-6 mb-4">
                         <h6>Suivez-nous</h6>
                         <div class="d-flex gap-2">
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="https://facebook.com/vintapp" target="_blank" class="text-muted text-decoration-none" title="Facebook VintApp">
                                 <i class="fab fa-facebook fa-lg"></i>
                             </a>
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="https://twitter.com/vintapp" target="_blank" class="text-muted text-decoration-none" title="Twitter VintApp">
                                 <i class="fab fa-twitter fa-lg"></i>
                             </a>
-                            <a href="#" class="text-muted text-decoration-none">
+                            <a href="https://instagram.com/vintapp" target="_blank" class="text-muted text-decoration-none" title="Instagram VintApp">
                                 <i class="fab fa-instagram fa-lg"></i>
+                            </a>
+                            <a href="https://whatsapp.com/channel/vintapp" target="_blank" class="text-muted text-decoration-none" title="WhatsApp VintApp">
+                                <i class="fab fa-whatsapp fa-lg"></i>
                             </a>
                         </div>
                     </div>

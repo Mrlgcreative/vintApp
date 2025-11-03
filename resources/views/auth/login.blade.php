@@ -144,22 +144,22 @@
                     </div>
 
                     <!-- Connexion avec Facebook Firebase -->
-                    <div class="d-grid mb-3">
+                    <!-- <div class="d-grid mb-3">
                         <button onclick="signInWithFacebook()" class="btn btn-primary btn-lg btn-firebase" style="background-color: #1877f2; border-color: #1877f2;">
                             <i class="fab fa-facebook-f me-2"></i>
                             Facebook
                         </button>
-                    </div>
+                    </div> -->
 
                     <!-- Connexion avec Apple Firebase (masqué si non configuré) -->
-                    <div class="d-grid mb-3" id="apple-signin-container" style="display: none;">
+                    <!-- <div class="d-grid mb-3" id="apple-signin-container" style="display: none;">
                         <button onclick="signInWithApple()" class="btn btn-dark btn-lg btn-firebase">
                             <i class="fab fa-apple me-2"></i>
                             Apple
                         </button>
-                    </div>
+                    </div> -->
 
-                    <!-- Message si Apple non configuré -->
+                    <!-- Message si Apple non configuré
                     <div class="d-grid mb-3" id="apple-not-configured">
                         <div class="alert alert-info d-flex align-items-center" role="alert">
                             <i class="fab fa-apple me-2"></i>
@@ -168,7 +168,7 @@
                                 <a href="#" onclick="showAppleInfo()" class="alert-link">En savoir plus</a>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Séparateur -->
                     <hr class="my-4">
@@ -622,18 +622,7 @@ async function handleFirebaseAuth(user) {
     try {
         const idToken = await user.getIdToken();
         
-        // Obtenir le token FCM si disponible
-        let fcmToken = null;
-        if (messaging) {
-            try {
-                const vapidKey = "{{ config('firebase.messaging.vapid_key', '') }}";
-                if (vapidKey) {
-                    fcmToken = await getToken(messaging, { vapidKey });
-                }
-            } catch (fcmError) {
-                console.warn('Token FCM non disponible:', fcmError);
-            }
-        }
+        // FCM désactivé pour optimiser les performances
         
         // Envoyer au serveur Laravel
         const response = await fetch('{{ route("firebase.login") }}', {

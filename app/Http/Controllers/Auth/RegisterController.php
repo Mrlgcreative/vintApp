@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Events\UserRegisteredWithReferral;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,6 +33,7 @@ class RegisterController extends Controller
             'address' => 'required|string|max:500',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => 'required|accepted',
+            'referral_code' => 'nullable|string|exists:referral_codes,code',
         ], [
             'name.required' => 'Le nom est requis.',
             'email.required' => 'L\'adresse email est requise.',
@@ -43,6 +45,7 @@ class RegisterController extends Controller
             'password.confirmed' => 'La confirmation du mot de passe ne correspond pas.',
             'terms.required' => 'Vous devez accepter les conditions d\'utilisation.',
             'terms.accepted' => 'Vous devez accepter les conditions d\'utilisation.',
+            'referral_code.exists' => 'Le code de parrainage saisi n\'existe pas.',
         ]);
 
         $user = User::create([
@@ -54,8 +57,22 @@ class RegisterController extends Controller
             'newsletter_subscribed' => $request->boolean('newsletter'),
         ]);
 
-        // Déclencher l'événement Registered pour envoyer l'email de vérification
+        // Appliquer le code de parrainage s'il est fourni
+        $referral = null;
+        $referralCode = $request->filled('referral_code') ? $request->referral_code : session('referral_code');
+        
+        if ($referralCode) {
+            $referral = $user->applyReferralCode($referralCode);
+            if ($referral) {
+                session()->flash('referral_success', 'Code de parrainage appliqué avec succès ! Vous avez reçu des points de bienvenue.');
+                // Supprimer le code de la session maintenant qu'il a été utilisé
+                session()->forget('referral_code');
+            }
+        }
+
+        // Déclencher les événements
         event(new Registered($user));
+        event(new UserRegisteredWithReferral($user, $referral));
 
         // Connecter automatiquement l'utilisateur
         Auth::login($user);

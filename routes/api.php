@@ -36,6 +36,9 @@ Route::get('/health', function () {
     ]);
 });
 
+// Validation de code de parrainage (public pour l'inscription)
+Route::post('/validate-referral-code', [App\Http\Controllers\AffiliateController::class, 'validateReferralCode']);
+
 // Routes de callback pour les paiements (publiques car appelées par les opérateurs)
 Route::prefix('payment-callbacks')->group(function () {
     // Callback universel pour chaque opérateur
@@ -149,6 +152,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{brand}', [BrandController::class, 'show']);
         Route::put('/{brand}', [BrandController::class, 'update']);
         Route::delete('/{brand}', [BrandController::class, 'destroy']);
+    });
+
+    // Affiliate routes
+    Route::prefix('affiliate')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\AffiliateController::class, 'dashboard']);
+        Route::get('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'getReferralCodes']);
+        Route::post('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'createReferralCode']);
+        Route::post('/referral-codes/custom', [App\Http\Controllers\AffiliateController::class, 'createCustomReferralCode']);
+        Route::get('/referrals', [App\Http\Controllers\AffiliateController::class, 'getReferrals']);
+        Route::get('/points-history', [App\Http\Controllers\AffiliateController::class, 'getPointsHistory']);
+        Route::post('/convert-points', [App\Http\Controllers\AffiliateController::class, 'convertPointsToCash']);
+        Route::post('/calculate-conversion', [App\Http\Controllers\AffiliateController::class, 'calculateConversion']);
+        Route::get('/redemptions', [App\Http\Controllers\AffiliateController::class, 'getRedemptions']);
+        Route::post('/apply-referral-code', [App\Http\Controllers\AffiliateController::class, 'applyReferralCode']);
+        Route::get('/generate-link', [App\Http\Controllers\AffiliateController::class, 'generateReferralLink']);
     });
 });
 

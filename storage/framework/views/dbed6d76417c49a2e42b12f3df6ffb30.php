@@ -120,6 +120,25 @@
                         </div>
 
                         <div class="form-floating mb-3">
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="firebase-referral-code" 
+                                   placeholder="Code de parrainage"
+                                   value="<?php echo e(session('referral_code', '')); ?>"
+                                   style="text-transform: uppercase;">
+                            <label for="firebase-referral-code">
+                                <i class="fas fa-gift me-2"></i>
+                                Code de parrainage (optionnel)
+                            </label>
+                            <div class="form-text">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Obtenez des points bonus avec un code de parrainage
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
                             <input type="password" 
                                    class="form-control" 
                                    id="firebase-password" 
@@ -212,6 +231,17 @@
                             <i class="fab fa-facebook-f me-2"></i>
                             Facebook
                         </button>
+                    </div>
+
+                    <!-- Message Apple (non configuré) -->
+                    <div class="d-grid mb-3">
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <i class="fab fa-apple me-2"></i>
+                            <div>
+                                <strong>Apple Sign-In</strong> nécessite un Apple Developer Account (99$/an).
+                                <small class="d-block text-muted">Alternatives gratuites : Google, Facebook, Email</small>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Séparateur -->
@@ -346,6 +376,38 @@ unset($__errorArgs, $__bag); ?>"
                                   name="address" style="height: 80px" required><?php echo e(old('address')); ?></textarea>
                         <label>Adresse</label>
                         <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="invalid-feedback"><?php echo e($message); ?></div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control <?php $__errorArgs = ['referral_code'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                               name="referral_code" value="<?php echo e(old('referral_code')); ?>" 
+                               style="text-transform: uppercase;" placeholder="Code de parrainage">
+                        <label>
+                            <i class="fas fa-gift me-2"></i>
+                            Code de parrainage (optionnel)
+                        </label>
+                        <div class="form-text">
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                Obtenez des points bonus avec un code de parrainage
+                            </small>
+                        </div>
+                        <?php $__errorArgs = ['referral_code'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -535,6 +597,7 @@ window.registerWithFirebaseEmail = async () => {
     const password = document.getElementById('firebase-password').value;
     const confirmPassword = document.getElementById('firebase-password-confirm').value;
     const phone = document.getElementById('firebase-phone').value.trim();
+    const referralCode = document.getElementById('firebase-referral-code').value.trim().toUpperCase();
     const termsAccepted = document.getElementById('firebase-terms').checked;
     const newsletter = document.getElementById('firebase-newsletter').checked;
     
@@ -574,7 +637,7 @@ window.registerWithFirebaseEmail = async () => {
             await updateProfile(userCredential.user, { displayName: name });
         }
         
-        await handleFirebaseAuth(userCredential.user, { phone, newsletter });
+        await handleFirebaseAuth(userCredential.user, { phone, newsletter, referralCode });
     } catch (error) {
         console.error('Erreur inscription email:', error);
         let message = 'Erreur lors de l\'inscription';
@@ -607,7 +670,8 @@ window.signUpWithGoogle = async () => {
     try {
         const result = await signInWithPopup(auth, googleProvider);
         await handleFirebaseAuth(result.user, {
-            newsletter: document.getElementById('firebase-newsletter').checked
+            newsletter: document.getElementById('firebase-newsletter').checked,
+            referralCode: document.getElementById('firebase-referral-code').value.trim().toUpperCase()
         });
     } catch (error) {
         console.error('Erreur Google Auth:', error);
@@ -632,7 +696,8 @@ window.signUpWithFacebook = async () => {
     try {
         const result = await signInWithPopup(auth, facebookProvider);
         await handleFirebaseAuth(result.user, {
-            newsletter: document.getElementById('firebase-newsletter').checked
+            newsletter: document.getElementById('firebase-newsletter').checked,
+            referralCode: document.getElementById('firebase-referral-code').value.trim().toUpperCase()
         });
     } catch (error) {
         console.error('Erreur Facebook Auth:', error);
@@ -684,7 +749,8 @@ async function handleFirebaseAuth(user, additionalData = {}) {
                 fcmToken: fcmToken,
                 name: user.displayName,
                 phone: additionalData.phone || '',
-                newsletter: additionalData.newsletter || false
+                newsletter: additionalData.newsletter || false,
+                referral_code: additionalData.referralCode || ''
             })
         });
         
@@ -722,6 +788,45 @@ function showLoading(show) {
     } else {
         overlay.classList.add('d-none');
         overlay.classList.remove('d-flex');
+    }
+}
+
+async function validateReferralCode(code) {
+    if (!code) return;
+    
+    try {
+        const response = await fetch('/api/validate-referral-code', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+            },
+            body: JSON.stringify({ referral_code: code })
+        });
+        
+        const data = await response.json();
+        const input = document.getElementById('firebase-referral-code');
+        
+        if (data.valid) {
+            input.classList.remove('is-invalid');
+            input.classList.add('is-valid');
+            
+            // Afficher des infos sur le code
+            let infoText = input.parentNode.querySelector('.form-text small');
+            if (infoText) {
+                infoText.innerHTML = `<i class="fas fa-check-circle text-success me-1"></i>Code valide ! Parrainé par <strong>${data.referrer_name}</strong>`;
+            }
+        } else {
+            input.classList.remove('is-valid');
+            input.classList.add('is-invalid');
+            
+            let infoText = input.parentNode.querySelector('.form-text small');
+            if (infoText) {
+                infoText.innerHTML = `<i class="fas fa-times-circle text-danger me-1"></i>Code invalide ou expiré`;
+            }
+        }
+    } catch (error) {
+        console.error('Erreur validation code:', error);
     }
 }
 
@@ -834,8 +939,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
+    // Validation du code de parrainage
+    document.getElementById('firebase-referral-code').addEventListener('input', (e) => {
+        const code = e.target.value.trim().toUpperCase();
+        e.target.value = code; // Forcer uppercase
+        
+        if (code.length >= 3) {
+            validateReferralCode(code);
+        } else {
+            e.target.classList.remove('is-valid', 'is-invalid');
+        }
+    });
+
     // Soumettre le formulaire avec Entrée
-    ['firebase-name', 'firebase-email', 'firebase-password', 'firebase-password-confirm'].forEach(id => {
+    ['firebase-name', 'firebase-email', 'firebase-password', 'firebase-password-confirm', 'firebase-referral-code'].forEach(id => {
         document.getElementById(id).addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -938,69 +1055,7 @@ a:hover {
     border-top: 1px solid #dee2e6;
 }
 
-<!-- Modal Conditions d'utilisation -->
-<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="termsModalLabel">
-                    <i class="fas fa-file-contract me-2"></i>
-                    Conditions d'utilisation
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h6>1. Acceptation des conditions</h6>
-                <p>En utilisant VintApp, vous acceptez d'être lié par ces conditions d'utilisation.</p>
-                
-                <h6>2. Utilisation du service</h6>
-                <p>Vous vous engagez à utiliser le service de manière légale et éthique.</p>
-                
-                <h6>3. Responsabilités</h6>
-                <p>Vous êtes responsable du contenu que vous publiez et des transactions que vous effectuez.</p>
-                
-                <h6>4. Confidentialité</h6>
-                <p>Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Modal Politique de confidentialité -->
-<div class="modal fade" id="privacyModal" tabindex="-1" aria-labelledby="privacyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="privacyModalLabel">
-                    <i class="fas fa-user-shield me-2"></i>
-                    Politique de confidentialité
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <h6>1. Collecte des données</h6>
-                <p>Nous collectons uniquement les données nécessaires au fonctionnement du service.</p>
-                
-                <h6>2. Utilisation des données</h6>
-                <p>Vos données sont utilisées pour améliorer votre expérience et sécuriser le service.</p>
-                
-                <h6>3. Protection des données</h6>
-                <p>Nous mettons en place des mesures de sécurité appropriées pour protéger vos données.</p>
-                
-                <h6>4. Vos droits</h6>
-                <p>Vous avez le droit d'accéder, de modifier et de supprimer vos données personnelles.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
 .min-vh-100 {
     min-height: 100vh;
 }

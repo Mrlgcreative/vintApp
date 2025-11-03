@@ -16,6 +16,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
+use App\Http\Controllers\AffiliateController;
 
 // Page de démarrage
 Route::get('/splash', function() {
@@ -577,6 +578,45 @@ Route::prefix('firebase')->name('firebase.')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// === ROUTES SYSTEME D'AFFILIATION ===
+Route::middleware(['auth'])->prefix('affiliate')->name('affiliate.')->group(function () {
+    // Dashboard principal
+    Route::get('/dashboard', [AffiliateController::class, 'showDashboard'])->name('dashboard');
+    
+    // Gestion des codes de parrainage
+    Route::get('/referral-codes', [AffiliateController::class, 'getReferralCodes'])->name('referral-codes.index');
+    Route::post('/referral-codes', [AffiliateController::class, 'createReferralCode'])->name('referral-codes.create');
+    
+    // Parrainages
+    Route::get('/referrals', [AffiliateController::class, 'getReferrals'])->name('referrals.index');
+    Route::post('/apply-referral', [AffiliateController::class, 'applyReferralCode'])->name('referrals.apply');
+    
+    // Points et transactions
+    Route::get('/points/history', [AffiliateController::class, 'getPointsHistory'])->name('points.history');
+    Route::post('/points/convert-cash', [AffiliateController::class, 'convertPointsToCash'])->name('points.convert-cash');
+    Route::post('/points/generate-discount', [AffiliateController::class, 'generateDiscountCode'])->name('points.generate-discount');
+    Route::post('/points/calculate-conversion', [AffiliateController::class, 'calculateConversion'])->name('points.calculate');
+    
+    // Rachats
+    Route::get('/redemptions', [AffiliateController::class, 'getRedemptions'])->name('redemptions.index');
+    
+    // Classement
+    Route::get('/leaderboard', [AffiliateController::class, 'getLeaderboard'])->name('leaderboard');
+});
+
+// Route publique pour l'inscription avec support des codes de parrainage
+Route::get('/register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+
+// Route courte pour les liens de parrainage (ex: /r/MONCODE)
+Route::get('/r/{code}', function ($code) {
+    return redirect()->route('register', ['ref' => $code]);
+})->name('referral.link');
+
+// Route pour le centre d'aide
+Route::get('/help', function() {
+    return view('help.index');
+})->name('help.index');
 
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
 if (app()->environment(['local', 'testing'])) {

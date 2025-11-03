@@ -463,4 +463,236 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $this->notify(new \App\Notifications\VerifyEmailNotification);
     }
+
+    /**
+     * === RELATIONS SYSTEME D'AFFILIATION ===
+     */
+
+    /**
+     * Relation avec les points de l'utilisateur
+     */
+    public function points()
+    {
+        return $this->hasOne(UserPoints::class);
+    }
+
+    /**
+     * Codes de parrainage créés par l'utilisateur
+     */
+    public function referralCodes()
+    {
+        return $this->hasMany(ReferralCode::class);
+    }
+
+    /**
+     * Code de parrainage principal de l'utilisateur
+     */
+    public function mainReferralCode()
+    {
+        return $this->hasOne(ReferralCode::class)->where('is_active', true)->oldest();
+    }
+
+    /**
+     * Parrainages effectués par cet utilisateur (en tant que parrain)
+     */
+    public function referrals()
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
+    }
+
+    /**
+     * Parrainage de cet utilisateur (en tant que filleul)
+     */
+    public function referredBy()
+    {
+        return $this->hasOne(Referral::class, 'referred_id');
+    }
+
+    /**
+     * Utilisateur qui a parrainé cet utilisateur
+     */
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /**
+     * Transactions de points de l'utilisateur
+     */
+    public function pointTransactions()
+    {
+        return $this->hasMany(PointTransaction::class);
+    }
+
+    /**
+     * Rachats de points de l'utilisateur
+     */
+    public function pointRedemptions()
+    {
+        return $this->hasMany(PointRedemption::class);
+    }
+
+    /**
+     * === METHODES SYSTEME D'AFFILIATION ===
+     */
+
+    /**
+     * Génère un code de parrainage unique pour l'utilisateur
+     */
+    public function generateReferralCode(string $title = null): ReferralCode
+    {
+        return $this->referralCodes()->create([
+            'title' => $title ?? 'Code principal',
+            'description' => 'Code de parrainage principal',
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Obtient ou crée le système de points pour l'utilisateur
+     */
+    public function getOrCreatePoints(): UserPoints
+    {
+        $points = $this->points;
+        if (!$points) {
+            $points = UserPoints::createForUser($this->id);
+            $this->setRelation('points', $points);
+        }
+        return $points;
+    }
+
+    /**
+     * Ajoute des points bonus d'inscription
+     */
+    public function addSignupBonus(float $points = 100): void
+    {
+        $this->getOrCreatePoints()->credit(
+            $points,
+            'earn_signup_bonus',
+            'Bonus d\'inscription à VintApp'
+        );
+    }
+
+    /**
+     * Ajoute des points pour un achat
+     */
+    public function addPurchasePoints(float $orderAmount, float $percentage = 2.0): void
+    {
+        $points = ($orderAmount * $percentage) / 100;
+        $this->getOrCreatePoints()->credit(
+            $points,
+            'earn_purchase',
+            "Points d'achat pour commande de {$orderAmount} USD"
+        );
+    }
+
+    /**
+     * Ajoute des points pour une vente
+     */
+    public function addSalePoints(float $saleAmount, float $percentage = 1.0): void
+    {
+        $points = ($saleAmount * $percentage) / 100;
+        $this->getOrCreatePoints()->credit(
+            $points,
+            'earn_sale',
+            "Points de vente pour {$saleAmount} USD"
+        );
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut être parrainé
+     */
+    public function canBeReferred(): bool
+    {
+        return $this->referred_by === null && $this->referredBy === null;
+    }
+
+    /**
+     * Applique un code de parrainage à l'utilisateur
+     */
+    public function applyReferralCode(string $code): ?Referral
+    {
+        if (!$this->canBeReferred()) {
+            return null;
+        }
+
+        $referralCode = ReferralCode::where('code', $code)
+                                   ->active()
+                                   ->available()
+                                   ->first();
+
+        if (!$referralCode || $referralCode->user_id === $this->id) {
+            return null;
+        }
+
+        // Utiliser le code
+        if (!$referralCode->use()) {
+            return null;
+        }
+
+        // Créer la relation de parrainage
+        $referral = Referral::create([
+            'referrer_id' => $referralCode->user_id,
+            'referred_id' => $this->id,
+            'referral_code_id' => $referralCode->id,
+            'status' => 'pending',
+            'bonus_points' => $referralCode->bonus_points
+        ]);
+
+        // Mettre à jour l'utilisateur
+        $this->update(['referred_by' => $referralCode->user_id]);
+
+        return $referral;
+    }
+
+    /**
+     * Active le parrainage (appelé lors de la validation email)
+     */
+    public function activateReferral(): void
+    {
+        $referral = $this->referredBy;
+        if ($referral && $referral->status === 'pending') {
+            $referral->activate();
+            
+            // Ajouter le bonus au filleul si applicable
+            if ($referral->bonus_points > 0) {
+                $this->getOrCreatePoints()->credit(
+                    $referral->bonus_points,
+                    'earn_signup_bonus',
+                    'Bonus de parrainage'
+                );
+            }
+        }
+    }
+
+    /**
+     * Obtient les statistiques d'affiliation de l'utilisateur
+     */
+    public function getAffiliateStats(): array
+    {
+        $points = $this->getOrCreatePoints();
+        
+        return [
+            'points' => $points->getStats(),
+            'referrals' => [
+                'total' => $this->referrals()->count(),
+                'active' => $this->referrals()->active()->count(),
+                'completed' => $this->referrals()->completed()->count(),
+                'pending' => $this->referrals()->pending()->count(),
+                'total_points_earned' => $this->referrals()->sum('points_earned'),
+            ],
+            'referral_codes' => [
+                'total' => $this->referralCodes()->count(),
+                'active' => $this->referralCodes()->active()->count(),
+                'total_uses' => $this->referralCodes()->sum('current_uses'),
+            ],
+            'redemptions' => [
+                'total' => $this->pointRedemptions()->count(),
+                'completed' => $this->pointRedemptions()->completed()->count(),
+                'total_redeemed_value' => $this->pointRedemptions()->completed()->sum('cash_amount'),
+            ],
+            'referred_by' => $this->referrer?->name,
+            'referral_activated' => $this->referral_activated_at !== null,
+        ];
+    }
 }

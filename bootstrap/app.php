@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckPreregistrationMode::class,
             \App\Http\Middleware\CheckCityAccess::class,
             \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions utilisateurs
+            \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Gérer les codes de parrainage
         ]);
 
         // API Middleware Group
@@ -57,6 +58,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'dynamic.config' => \App\Http\Middleware\DynamicConfigMiddleware::class,
             'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
             'preregistration' => \App\Http\Middleware\CheckPreregistrationMode::class,
+            'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
