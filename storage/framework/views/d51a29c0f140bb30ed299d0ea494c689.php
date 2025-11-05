@@ -36,70 +36,92 @@
     </head>
     <body class="font-sans antialiased bg-white">
         <!-- Barre de profil moderne Tailwind - visible sur toutes les pages -->
-        <?php if(auth()->guard()->check()): ?>
         <div class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-            <!-- Profil + Nom + Notifications + Panier -->
+            <!-- Profil + Nom + Actions -->
             <div class="max-w-7xl mx-auto px-4 py-3">
                 <div class="flex items-center justify-between">
-                    <!-- Profil + Nom (gauche) -->
-                    <div class="flex items-center gap-3">
-                        <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-2 hover:opacity-80 transition-opacity no-underline" style="text-decoration: none;">
-                            <?php if(Auth::user()->avatar): ?>
-                                <?php
-                                    // Déterminer si c'est une URL complète ou un chemin local
-                                    $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
-                                        ? Auth::user()->avatar 
-                                        : asset('storage/' . Auth::user()->avatar);
-                                ?>
-                                <img src="<?php echo e($avatarUrl); ?>" 
-                                     alt="<?php echo e(Auth::user()->name); ?>" 
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 ring-2 ring-purple-100"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-sm shadow-md" style="display: none;">
-                                    <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
+                    <?php if(auth()->guard()->check()): ?>
+                        <!-- Profil + Nom (gauche) - Utilisateur connecté -->
+                        <div class="flex items-center gap-3">
+                            <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center gap-2 hover:opacity-80 transition-opacity no-underline" style="text-decoration: none;">
+                                <?php if(Auth::user()->avatar): ?>
+                                    <?php
+                                        // Déterminer si c'est une URL complète ou un chemin local
+                                        $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
+                                            ? Auth::user()->avatar 
+                                            : asset('storage/' . Auth::user()->avatar);
+                                    ?>
+                                    <img src="<?php echo e($avatarUrl); ?>" 
+                                         alt="<?php echo e(Auth::user()->name); ?>" 
+                                         class="w-10 h-10 rounded-full object-cover border-2 border-purple-200 ring-2 ring-purple-100"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-sm shadow-md" style="display: none;">
+                                        <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
-                                </div>
-                            <?php else: ?>
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                    <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                        <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
-                                </div>
-                            <?php endif; ?>
-                            <span class="font-semibold text-gray-800 text-sm sm:text-base"><?php echo e(Auth::user()->name); ?></span>
-                        </a>
-                    </div>
-                    
-                    <!-- Notifications + Panier (droite) -->
-                    <div class="flex items-center gap-2">
-                        <!-- Notifications -->
-                        <button class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors" onclick="toggleNotifications()">
-                            <i class="fas fa-bell text-gray-700 text-lg"></i>
-                            <?php
-                                $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
-                            ?>
-                            <?php if($unreadNotifications > 0): ?>
-                                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            <?php endif; ?>
-                        </button>
+                                    </div>
+                                <?php endif; ?>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base"><?php echo e(Auth::user()->name); ?></span>
+                            </a>
+                        </div>
                         
-                        <!-- Panier -->
-                        <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors">
-                            <i class="fas fa-shopping-cart text-gray-700 text-lg"></i>
-                            <?php if(session('cart') && count(session('cart')) > 0): ?>
-                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
-                                    <?php echo e(count(session('cart'))); ?>
+                        <!-- Notifications + Panier (droite) - Utilisateur connecté -->
+                        <div class="flex items-center gap-2">
+                            <!-- Notifications -->
+                            <button class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors" onclick="toggleNotifications()">
+                                <i class="fas fa-bell text-gray-700 text-lg"></i>
+                                <?php
+                                    $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
+                                ?>
+                                <?php if($unreadNotifications > 0): ?>
+                                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                                <?php endif; ?>
+                            </button>
+                            
+                            <!-- Panier -->
+                            <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors">
+                                <i class="fas fa-shopping-cart text-gray-700 text-lg"></i>
+                                <?php if(session('cart') && count(session('cart')) > 0): ?>
+                                    <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold shadow-sm">
+                                        <?php echo e(count(session('cart'))); ?>
 
-                                </span>
-                            <?php endif; ?>
-                        </a>
-                    </div>
+                                    </span>
+                                <?php endif; ?>
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <!-- Logo/Nom d'app (gauche) - Utilisateur non connecté -->
+                        <div class="flex items-center gap-3">
+                            <a href="<?php echo e(url('/')); ?>" class="flex items-center gap-2 hover:opacity-80 transition-opacity no-underline" style="text-decoration: none;">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <span class="font-semibold text-gray-800 text-sm sm:text-base"><?php echo e(config('app.name', 'VintApp')); ?></span>
+                            </a>
+                        </div>
+                        
+                        <!-- Boutons de connexion (droite) - Utilisateur non connecté -->
+                        <div class="flex items-center gap-2">
+                            <a href="<?php echo e(route('login')); ?>" class="no-underline px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-full font-semibold text-sm transition-colors border border-purple-200 hover:border-purple-300" style="text-decoration: none;">
+                                <i class="fas fa-sign-in-alt me-1"></i>
+                                Se connecter
+                            </a>
+                            <a href="<?php echo e(route('register')); ?>" class="no-underline px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-full font-semibold text-sm transition-colors shadow-sm" style="text-decoration: none;">
+                                <i class="fas fa-user-plus me-1"></i>
+                                S'inscrire
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
             
             <!-- Barre de recherche intégrée sous le profil -->
             
         </div>
-        <?php endif; ?>
         
         <!-- Navigation Bootstrap (masquée sur mobile) -->
         <style>
@@ -193,16 +215,31 @@
             .border { border-width: 1px !important; }
             .border-gray-300 { border-color: #d1d5db !important; }
             .px-3 { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
+            .px-4 { padding-left: 1rem !important; padding-right: 1rem !important; }
             .py-2 { padding-top: 0.5rem !important; padding-bottom: 0.5rem !important; }
             .focus\:outline-none:focus { outline: 2px solid transparent !important; outline-offset: 2px !important; }
             .focus\:ring-2:focus { --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color) !important; --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color) !important; box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000) !important; }
             .focus\:ring-purple-500:focus { --tw-ring-color: #a855f7 !important; }
             .flex-1 { flex: 1 1 0% !important; }
             .text-center { text-align: center !important; }
+            .border { border-width: 1px !important; }
+            .border-purple-200 { border-color: #e9d5ff !important; }
+            .border-purple-300 { border-color: #d8b4fe !important; }
+            .hover\:border-purple-300:hover { border-color: #d8b4fe !important; }
+            .hover\:bg-purple-50:hover { background-color: #faf5ff !important; }
+            .hover\:bg-purple-700:hover { background-color: #7c3aed !important; }
             
             /* Remove text decoration from links */
             .no-underline { text-decoration: none !important; }
             a.no-underline:hover { text-decoration: none !important; }
+            
+            /* Force no underline for auth buttons */
+            a[href*="login"], a[href*="register"] { 
+                text-decoration: none !important; 
+            }
+            a[href*="login"]:hover, a[href*="register"]:hover { 
+                text-decoration: none !important; 
+            }
             
             /* Responsive: classes sm: pour écrans >= 640px */
             @media (min-width: 640px) {
@@ -626,9 +663,10 @@
                     <div class="col-md-2 col-6 mb-4">
                         <h6>Légal</h6>
                         <ul class="list-unstyled">
-                            <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">CGU</a></li>
-                            <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">Confidentialité</a></li>
+                            <li><a href="<?php echo e(route('terms')); ?>" class="text-muted text-decoration-none">CGU</a></li>
+                            <li><a href="<?php echo e(route('privacy')); ?>" class="text-muted text-decoration-none">Confidentialité</a></li>
                             <li><a href="<?php echo e(route('help.index')); ?>#safety" class="text-muted text-decoration-none">Sécurité</a></li>
+                            <li><a href="<?php echo e(route('help.index')); ?>#contact" class="text-muted text-decoration-none">Mentions légales</a></li>
                         </ul>
                     </div>
                     <div class="col-md-2 col-6 mb-4">
@@ -737,6 +775,13 @@
         <script>
         // Fonction pour afficher les notifications (panneau Tailwind)
         function toggleNotifications() {
+            // Vérifier si l'utilisateur est connecté
+            if (!window.isAuthenticated) {
+                // Rediriger vers la page de connexion
+                window.location.href = '<?php echo e(route("login")); ?>';
+                return;
+            }
+            
             const existingPanel = document.getElementById('notifications-panel');
             
             if (existingPanel) {

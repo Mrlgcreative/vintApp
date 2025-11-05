@@ -239,6 +239,23 @@
                         @endif
                     </a>
 
+                    <!-- 🎯 Menu Affiliation et Récompenses -->
+                    <a href="{{ route('admin.affiliate.index') }}" 
+                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                        <span class="flex-1">Affiliation</span>
+                        @php
+                            $topPerformersCount = \App\Models\User::whereHas('referrals', function($q) {
+                                $q->whereDate('created_at', '>=', now()->subDays(30));
+                            })->count();
+                        @endphp
+                        @if($topPerformersCount > 0)
+                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 bg-yellow-400 rounded-full">
+                                {{ $topPerformersCount }}
+                            </span>
+                        @endif
+                    </a>
+
                     <a href="{{ route('admin.reports') }}" 
                        class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                         <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>

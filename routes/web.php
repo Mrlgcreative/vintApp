@@ -388,6 +388,61 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/api/world/cities/search', [App\Http\Controllers\Admin\LocationAccessController::class, 'searchWorldCities'])->name('api.search-world-cities');
         Route::post('/api/world/cities/geocode', [App\Http\Controllers\Admin\LocationAccessController::class, 'geocodeCity'])->name('api.geocode-city');
     });
+
+    // 🎯 Gestion des Affiliations et Récompenses
+    Route::prefix('affiliate')->name('affiliate.')->group(function () {
+        // Page principale de gestion
+        Route::get('/', [App\Http\Controllers\Admin\AffiliateController::class, 'index'])->name('index');
+        
+        // API Routes pour les données
+        Route::prefix('api')->name('api.')->group(function () {
+            // Statistiques du dashboard
+            Route::get('/stats', [App\Http\Controllers\Admin\AffiliateController::class, 'getDashboardStats'])->name('stats');
+            
+            // Top performers
+            Route::get('/top-performers', [App\Http\Controllers\Admin\AffiliateController::class, 'getTopPerformers'])->name('top-performers');
+            
+            // Liste des parrains avec filtres et pagination
+            Route::get('/referrers', [App\Http\Controllers\Admin\AffiliateController::class, 'getReferrers'])->name('referrers');
+            
+            // Options pour les selects
+            Route::get('/referrer-options', [App\Http\Controllers\Admin\AffiliateController::class, 'getReferrersList'])->name('referrer-options');
+            
+            // Activités récentes
+            Route::get('/recent-activity', [App\Http\Controllers\Admin\AffiliateController::class, 'getRecentActivity'])->name('recent-activity');
+            
+            // Statistiques par niveau (pour graphique)
+            Route::get('/level-stats', [App\Http\Controllers\Admin\AffiliateController::class, 'getLevelStats'])->name('level-stats');
+            
+            // Statistiques des codes
+            Route::get('/codes/stats', [App\Http\Controllers\Admin\AffiliateController::class, 'getCodesStats'])->name('codes-stats');
+        });
+        
+        // Gestion des récompenses
+        Route::prefix('rewards')->name('rewards.')->group(function () {
+            Route::post('/', [App\Http\Controllers\Admin\AffiliateController::class, 'createReward'])->name('create');
+            Route::get('/', [App\Http\Controllers\Admin\AffiliateController::class, 'getRewards'])->name('index');
+            Route::get('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'getReward'])->name('show');
+            Route::put('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'updateReward'])->name('update');
+            Route::delete('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'revokeReward'])->name('revoke');
+        });
+        
+        // Actions sur les parrains
+        Route::prefix('referrers')->name('referrers.')->group(function () {
+            Route::get('/{user}/details', [App\Http\Controllers\Admin\AffiliateController::class, 'getReferrerDetails'])->name('details');
+            Route::post('/{user}/promote', [App\Http\Controllers\Admin\AffiliateController::class, 'promoteReferrer'])->name('promote');
+            Route::post('/{user}/suspend', [App\Http\Controllers\Admin\AffiliateController::class, 'suspendReferrer'])->name('suspend');
+            Route::post('/{user}/message', [App\Http\Controllers\Admin\AffiliateController::class, 'sendMessageToReferrer'])->name('message');
+            Route::get('/{user}/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportReferrerData'])->name('export');
+        });
+        
+        // Export et rapports
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportReport'])->name('export');
+            Route::get('/top-performers/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportTopPerformers'])->name('top-performers.export');
+            Route::post('/bulk-reward', [App\Http\Controllers\Admin\AffiliateController::class, 'bulkReward'])->name('bulk-reward');
+        });
+    });
 });
 
 // Route publique pour la page de restriction géographique
@@ -617,6 +672,16 @@ Route::get('/r/{code}', function ($code) {
 Route::get('/help', function() {
     return view('help.index');
 })->name('help.index');
+
+// Route pour les conditions d'utilisation
+Route::get('/terms', function() {
+    return view('legal.terms');
+})->name('terms');
+
+// Route pour la politique de confidentialité
+Route::get('/privacy', function() {
+    return view('legal.privacy');
+})->name('privacy');
 
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
 if (app()->environment(['local', 'testing'])) {

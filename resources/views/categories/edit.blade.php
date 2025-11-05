@@ -1,6 +1,9 @@
 @extends('app')
 
 @section('content')
+@php
+use Illuminate\Support\Facades\Storage;
+@endphp
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
@@ -25,7 +28,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('categories.update', $category) }}" method="POST">
+                    <form action="{{ route('categories.update', $category) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
@@ -75,6 +78,38 @@
                                 Utilisez les classes FontAwesome (ex: fas fa-tshirt, fas fa-laptop, fas fa-car)
                             </div>
                             @error('icon')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Image de la catégorie</label>
+                            
+                            @if($category->image && Storage::disk('public')->exists($category->image))
+                                <div class="mb-2">
+                                    <img src="{{ Storage::url($category->image) }}" 
+                                         alt="{{ $category->name }}" 
+                                         class="img-thumbnail" 
+                                         style="max-width: 150px; max-height: 150px;">
+                                    <p class="text-muted small mt-1">Image actuelle</p>
+                                </div>
+                            @endif
+                            
+                            <input type="file" 
+                                   name="image" 
+                                   id="image" 
+                                   class="form-control @error('image') is-invalid @enderror" 
+                                   accept="image/*">
+                            <div class="form-text">
+                                Formats acceptés : JPEG, PNG, JPG, GIF, SVG. Taille maximale : 2MB.
+                                @if($category->image)
+                                    <br>Laisser vide pour garder l'image actuelle.
+                                @endif
+                            </div>
+                            <div id="image-preview" class="mt-2" style="display: none;">
+                                <img id="preview-img" src="" alt="Aperçu" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                            </div>
+                            @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
@@ -181,10 +216,29 @@
 document.addEventListener('DOMContentLoaded', function() {
     const iconInput = document.getElementById('icon');
     const iconPreview = document.getElementById('icon-preview');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+    const previewImg = document.getElementById('preview-img');
     
+    // Prévisualisation de l'icône
     iconInput.addEventListener('input', function() {
         const iconClass = this.value || 'fas fa-folder';
         iconPreview.className = iconClass;
+    });
+    
+    // Prévisualisation de l'image
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.style.display = 'none';
+        }
     });
 });
 </script>

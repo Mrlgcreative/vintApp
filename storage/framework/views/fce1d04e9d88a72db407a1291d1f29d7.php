@@ -116,6 +116,240 @@
                         </div>
                     </div>
 
+                    <!-- Guides détaillés -->
+                    <div class="guides-section mb-5">
+                        <h4 class="mb-3">Guides pas à pas</h4>
+                        
+                        <!-- Guide création de compte -->
+                        <div class="card mb-4" id="guide-signup">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-user-plus me-2"></i> Guide : Créer un compte VintApp</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="step-by-step">
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-success text-white">1</div>
+                                                <div class="step-content">
+                                                    <h6>Accéder à la page d'inscription</h6>
+                                                    <p>Cliquez sur le bouton <strong>"S'inscrire"</strong> en haut à droite de la page d'accueil ou <a href="<?php echo e(route('register')); ?>" class="text-success">cliquez ici</a>.</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-success text-white">2</div>
+                                                <div class="step-content">
+                                                    <h6>Choisir votre méthode d'inscription</h6>
+                                                    <p>Vous avez plusieurs options :</p>
+                                                    <ul>
+                                                        <li><strong>Email :</strong> Inscription classique avec email et mot de passe</li>
+                                                        <li><strong>Google :</strong> Inscription rapide avec votre compte Google</li>
+                                                        <li><strong>Facebook :</strong> Inscription via votre profil Facebook</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-success text-white">3</div>
+                                                <div class="step-content">
+                                                    <h6>Remplir vos informations</h6>
+                                                    <p>Saisissez les informations demandées :</p>
+                                                    <ul>
+                                                        <li>Nom complet</li>
+                                                        <li>Adresse email (vérifiée)</li>
+                                                        <li>Mot de passe sécurisé (min. 8 caractères)</li>
+                                                        <li>Code de parrainage (optionnel) pour gagner des points bonus</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-success text-white">4</div>
+                                                <div class="step-content">
+                                                    <h6>Vérifier votre email</h6>
+                                                    <p>Consultez votre boîte email et cliquez sur le lien de vérification. Sans cette étape, certaines fonctionnalités seront limitées.</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step">
+                                                <div class="step-number bg-success text-white">5</div>
+                                                <div class="step-content">
+                                                    <h6>Compléter votre profil</h6>
+                                                    <p>Ajoutez une photo de profil et complétez vos informations pour inspirer confiance aux autres utilisateurs.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="tips-box bg-light p-3 rounded">
+                                            <h6><i class="fas fa-lightbulb text-warning me-2"></i>Conseils</h6>
+                                            <ul class="small mb-0">
+                                                <li>Utilisez un mot de passe unique et sécurisé</li>
+                                                <li>Vérifiez que votre email est correct</li>
+                                                <li>Activez la double authentification pour plus de sécurité</li>
+                                                <li>Utilisez un code de parrainage pour gagner des points</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Guide première annonce -->
+                        <div class="card mb-4" id="guide-first-listing">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-camera me-2"></i> Guide : Créer votre première annonce</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="step-by-step">
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-primary text-white">1</div>
+                                                <div class="step-content">
+                                                    <h6>Préparer l'article</h6>
+                                                    <p>Avant de créer l'annonce, préparez votre article :</p>
+                                                    <ul>
+                                                        <li>Nettoyez l'article si nécessaire</li>
+                                                        <li>Vérifiez l'état et notez les défauts</li>
+                                                        <li>Recherchez la marque, le modèle, la taille</li>
+                                                        <li>Préparez un espace pour les photos (éclairage naturel)</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-primary text-white">2</div>
+                                                <div class="step-content">
+                                                    <h6>Accéder à la création d'annonce</h6>
+                                                    <p>Cliquez sur <strong>"Vendre un article"</strong> dans le menu ou <a href="<?php echo e(route('items.create')); ?>" class="text-primary">cliquez ici</a>.</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-primary text-white">3</div>
+                                                <div class="step-content">
+                                                    <h6>Prendre de belles photos</h6>
+                                                    <p>Les photos sont cruciales pour vendre :</p>
+                                                    <ul>
+                                                        <li><strong>Quantité :</strong> 3-8 photos minimum</li>
+                                                        <li><strong>Angle principal :</strong> Vue d'ensemble de face</li>
+                                                        <li><strong>Détails :</strong> Étiquette, défauts éventuels</li>
+                                                        <li><strong>Éclairage :</strong> Lumière naturelle, pas de flash</li>
+                                                        <li><strong>Arrière-plan :</strong> Neutre et propre</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-primary text-white">4</div>
+                                                <div class="step-content">
+                                                    <h6>Rédiger le titre et la description</h6>
+                                                    <p><strong>Titre accrocheur :</strong></p>
+                                                    <ul>
+                                                        <li>Marque + Modèle + Taille</li>
+                                                        <li>État de l'article</li>
+                                                        <li>Caractéristique unique</li>
+                                                    </ul>
+                                                    <p><strong>Description détaillée :</strong></p>
+                                                    <ul>
+                                                        <li>Matière, couleur, dimensions</li>
+                                                        <li>État précis et défauts</li>
+                                                        <li>Contexte d'achat et d'utilisation</li>
+                                                        <li>Raison de la vente</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-primary text-white">5</div>
+                                                <div class="step-content">
+                                                    <h6>Fixer le prix juste</h6>
+                                                    <p>Pour déterminer le bon prix :</p>
+                                                    <ul>
+                                                        <li>Recherchez des articles similaires sur VintApp</li>
+                                                        <li>Considérez l'état de votre article</li>
+                                                        <li>Prix neuf ÷ 2 ou 3 selon l'état</li>
+                                                        <li>Laissez une marge de négociation</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step">
+                                                <div class="step-number bg-primary text-white">6</div>
+                                                <div class="step-content">
+                                                    <h6>Choisir catégorie et marque</h6>
+                                                    <p>Sélectionnez la bonne catégorie et la marque pour que votre article soit trouvé facilement par les acheteurs.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="tips-box bg-light p-3 rounded">
+                                            <h6><i class="fas fa-star text-warning me-2"></i>Astuces de pro</h6>
+                                            <ul class="small mb-3">
+                                                <li>Postez le soir (18h-21h) pour plus de visibilité</li>
+                                                <li>Répondez rapidement aux messages</li>
+                                                <li>Soyez honnête sur l'état</li>
+                                                <li>Proposez plusieurs moyens de livraison</li>
+                                            </ul>
+                                            
+                                            <div class="alert alert-success small">
+                                                <strong>💡 Le saviez-vous ?</strong><br>
+                                                Les articles avec plus de 5 photos se vendent 40% plus rapidement !
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Guide connexion -->
+                        <div class="card mb-4" id="guide-login">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-sign-in-alt me-2"></i> Guide : Se connecter à votre compte</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-8">
+                                        <div class="step-by-step">
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-info text-white">1</div>
+                                                <div class="step-content">
+                                                    <h6>Accéder à la connexion</h6>
+                                                    <p>Cliquez sur <strong>"Connexion"</strong> en haut à droite ou <a href="<?php echo e(route('login')); ?>" class="text-info">cliquez ici</a>.</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step mb-4">
+                                                <div class="step-number bg-info text-white">2</div>
+                                                <div class="step-content">
+                                                    <h6>Saisir vos identifiants</h6>
+                                                    <p>Entrez votre email et mot de passe, ou utilisez la connexion rapide avec Google/Facebook.</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="step">
+                                                <div class="step-number bg-info text-white">3</div>
+                                                <div class="step-content">
+                                                    <h6>Problème de connexion ?</h6>
+                                                    <p>Si vous avez oublié votre mot de passe, cliquez sur "Mot de passe oublié" pour le réinitialiser par email.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="alert alert-info">
+                                            <h6><i class="fas fa-shield-alt me-2"></i>Sécurité</h6>
+                                            <p class="small mb-0">Activez la double authentification dans vos paramètres pour sécuriser votre compte.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- FAQ Premiers pas -->
                     <div class="faq-section">
                         <h4 class="mb-3">Questions fréquentes - Premiers pas</h4>
@@ -195,6 +429,107 @@
                                     <i class="fas fa-credit-card fa-3x text-warning mb-3"></i>
                                     <h5>Payer</h5>
                                     <p class="small">Payez en sécurité avec nos méthodes de paiement protégées</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guide d'achat détaillé -->
+                    <div class="card mb-4" id="guide-buying">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i> Guide : Acheter en toute sécurité</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="step-by-step">
+                                        <div class="step mb-4">
+                                            <div class="step-number bg-primary text-white">1</div>
+                                            <div class="step-content">
+                                                <h6>Rechercher l'article idéal</h6>
+                                                <p>Utilisez notre système de recherche avancé :</p>
+                                                <ul>
+                                                    <li>Tapez des mots-clés précis dans la barre de recherche</li>
+                                                    <li>Utilisez les filtres : catégorie, marque, prix, état</li>
+                                                    <li>Triez par prix, date ou pertinence</li>
+                                                    <li>Sauvegardez vos recherches favorites</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="step mb-4">
+                                            <div class="step-number bg-primary text-white">2</div>
+                                            <div class="step-content">
+                                                <h6>Analyser l'annonce</h6>
+                                                <p>Vérifiez soigneusement :</p>
+                                                <ul>
+                                                    <li><strong>Photos :</strong> Examinez tous les angles</li>
+                                                    <li><strong>Description :</strong> Lisez attentivement l'état</li>
+                                                    <li><strong>Prix :</strong> Comparez avec des articles similaires</li>
+                                                    <li><strong>Vendeur :</strong> Consultez ses évaluations</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="step mb-4">
+                                            <div class="step-number bg-primary text-white">3</div>
+                                            <div class="step-content">
+                                                <h6>Contacter le vendeur</h6>
+                                                <p>Posez les bonnes questions :</p>
+                                                <ul>
+                                                    <li>"Pouvez-vous me donner plus de détails sur l'état ?"</li>
+                                                    <li>"Y a-t-il des défauts non mentionnés ?"</li>
+                                                    <li>"Depuis combien de temps le possédez-vous ?"</li>
+                                                    <li>"Le prix est-il négociable ?"</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="step mb-4">
+                                            <div class="step-number bg-primary text-white">4</div>
+                                            <div class="step-content">
+                                                <h6>Négocier le prix</h6>
+                                                <p>Conseils pour une négociation réussie :</p>
+                                                <ul>
+                                                    <li>Soyez poli et respectueux</li>
+                                                    <li>Justifiez votre offre (défauts, prix du marché)</li>
+                                                    <li>Proposez un prix raisonnable (15-20% de réduction max)</li>
+                                                    <li>Soyez prêt à acheter immédiatement si accepté</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="step">
+                                            <div class="step-number bg-primary text-white">5</div>
+                                            <div class="step-content">
+                                                <h6>Finaliser l'achat</h6>
+                                                <p>Dernières étapes :</p>
+                                                <ul>
+                                                    <li>Choisissez le mode de livraison</li>
+                                                    <li>Payez via notre système sécurisé</li>
+                                                    <li>Vérifiez l'article à réception</li>
+                                                    <li>Laissez une évaluation au vendeur</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="alert alert-warning">
+                                        <h6><i class="fas fa-exclamation-triangle me-2"></i>Signaux d'alarme</h6>
+                                        <ul class="small mb-0">
+                                            <li>Prix anormalement bas</li>
+                                            <li>Photos floues ou de mauvaise qualité</li>
+                                            <li>Vendeur qui refuse de répondre aux questions</li>
+                                            <li>Demande de paiement hors plateforme</li>
+                                            <li>Évaluations négatives répétées</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="alert alert-success">
+                                        <h6><i class="fas fa-shield-alt me-2"></i>Protection acheteur</h6>
+                                        <p class="small mb-0">Vous êtes protégé ! Si l'article ne correspond pas à la description, contactez notre support dans les 48h.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -715,6 +1050,105 @@
     border-bottom: none;
 }
 
+/* Styles pour les guides étape par étape */
+.step-by-step {
+    position: relative;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding-left: 4rem;
+}
+
+.step-number {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    z-index: 2;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 1.25rem;
+    top: 2.5rem;
+    bottom: -1rem;
+    width: 2px;
+    background: linear-gradient(to bottom, #e9ecef 0%, #dee2e6 100%);
+}
+
+.step-content {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-left: 1rem;
+    border-left: 4px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.step:hover .step-content {
+    border-left-color: #0d6efd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.step-content h6 {
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.step-content ul {
+    margin-bottom: 0;
+}
+
+.tips-box {
+    position: sticky;
+    top: 20px;
+}
+
+.guides-section .card-header {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+}
+
+.guides-section .bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+.guides-section .bg-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%) !important;
+}
+
+.guides-section .bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%) !important;
+}
+
+/* Animation de surbrillance */
+@keyframes highlight {
+    0% { 
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 20px 10px rgba(13, 110, 253, 0.2);
+        transform: scale(1.02);
+    }
+    100% { 
+        box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+        transform: scale(1);
+    }
+}
+
 @media (max-width: 768px) {
     .help-header {
         padding: 2rem 0 !important;
@@ -727,6 +1161,32 @@
     .help-sidebar {
         position: relative !important;
         top: 0 !important;
+    }
+    
+    /* Guides responsives */
+    .step {
+        padding-left: 3rem;
+    }
+    
+    .step-number {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.9rem;
+    }
+    
+    .step:not(:last-child)::after {
+        left: 1rem;
+    }
+    
+    .step-content {
+        margin-left: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .tips-box {
+        position: relative;
+        top: 0;
+        margin-top: 1rem;
     }
 }
 </style>
@@ -797,6 +1257,21 @@ document.addEventListener('DOMContentLoaded', function() {
             title: 'Comment utiliser mes points ?',
             section: 'affiliate',
             content: 'Convertissez vos points en argent ou codes de réduction'
+        },
+        'connexion': {
+            title: 'Comment se connecter ?',
+            section: 'getting-started',
+            content: 'Guide de connexion avec email ou réseaux sociaux'
+        },
+        'première annonce': {
+            title: 'Créer sa première annonce',
+            section: 'getting-started', 
+            content: 'Guide complet pour vendre son premier article'
+        },
+        'photos': {
+            title: 'Comment bien photographier ?',
+            section: 'getting-started',
+            content: 'Conseils pour prendre de belles photos de vos articles'
         }
     };
     
@@ -900,6 +1375,45 @@ document.addEventListener('DOMContentLoaded', function() {
         card.style.transform = 'translateY(20px)';
         card.style.transition = 'all 0.6s ease';
         observer.observe(card);
+    });
+    
+    // Gestion des liens vers les guides
+    document.querySelectorAll('a[href^="#guide-"]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const guideId = this.getAttribute('href').substring(1);
+            const guideElement = document.getElementById(guideId);
+            
+            if (guideElement) {
+                // S'assurer que la section "getting-started" est affichée
+                const gettingStartedLink = document.querySelector('[data-category="getting-started"]');
+                if (gettingStartedLink) {
+                    gettingStartedLink.click();
+                }
+                
+                // Délai pour laisser la section se charger
+                setTimeout(() => {
+                    guideElement.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                    
+                    // Effet de surbrillance
+                    guideElement.style.animation = 'highlight 2s ease-in-out';
+                }, 300);
+            }
+        });
+    });
+    
+    // Vérifier si on arrive sur la page avec une ancre de guide
+    window.addEventListener('load', function() {
+        const hash = window.location.hash;
+        if (hash && hash.startsWith('#guide-')) {
+            const link = document.querySelector(`a[href="${hash}"]`);
+            if (link) {
+                link.click();
+            }
+        }
     });
 });
 </script>

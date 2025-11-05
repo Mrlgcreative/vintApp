@@ -1,6 +1,12 @@
 
 
 <?php $__env->startSection('content'); ?>
+<meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+<script>
+    // Contexte utilisateur pour JavaScript
+    window.user = <?php echo json_encode([
+        'id' => auth()->user()->id ?? 0, 'name' => auth()->user()->name ?? 'Utilisateur', 'referral_code' => auth()->user()->referral_code ?? 'REF001') ?>;
+</script>
 <div class="container-fluid">
     <div class="row">
         <!-- Sidebar Navigation -->
@@ -202,67 +208,76 @@
 
             <!-- Codes Section -->
             <div id="section-codes" class="content-section d-none">
-                <h2><i class="fas fa-qr-code text-secondary"></i> Mes Codes de Parrainage</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-qr-code text-secondary"></i> Mes Codes de Parrainage</h2>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCodeModal">
+                        <i class="fas fa-plus"></i> Nouveau Code
+                    </button>
+                </div>
                 
+                <!-- Stats Cards for Codes -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-plus"></i> Créer un Nouveau Code</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="createCodeForm">
-                                    <div class="mb-3">
-                                        <label class="form-label">Titre du code:</label>
-                                        <input type="text" class="form-control" id="codeTitle" maxlength="100" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Description:</label>
-                                        <textarea class="form-control" id="codeDescription" rows="3" maxlength="500"></textarea>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Limite d'utilisation:</label>
-                                                <input type="number" class="form-control" id="codeMaxUses" min="1" max="10000">
-                                                <small class="form-text text-muted">Laissez vide pour illimité</small>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label class="form-label">Points bonus:</label>
-                                                <input type="number" class="form-control" id="codeBonusPoints" min="0" max="1000" step="1">
-                                                <small class="form-text text-muted">Points bonus pour le filleul</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-plus"></i> Créer le Code
-                                    </button>
-                                </form>
+                    <div class="col-md-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <div class="text-primary mb-2">
+                                    <i class="fas fa-qr-code fa-2x"></i>
+                                </div>
+                                <h4 class="card-title text-primary" id="totalCodes">0</h4>
+                                <p class="card-text text-muted">Codes Créés</p>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card bg-light">
-                            <div class="card-header">
-                                <h5><i class="fas fa-info-circle"></i> Conseils</h5>
+                    <div class="col-md-3">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <div class="text-success mb-2">
+                                    <i class="fas fa-check-circle fa-2x"></i>
+                                </div>
+                                <h4 class="card-title text-success" id="activeCodes">0</h4>
+                                <p class="card-text text-muted">Codes Actifs</p>
                             </div>
-                            <div class="card-body">
-                                <ul class="list-unstyled">
-                                    <li><i class="fas fa-check text-success"></i> Maximum 5 codes actifs par utilisateur</li>
-                                    <li><i class="fas fa-check text-success"></i> Codes générés automatiquement</li>
-                                    <li><i class="fas fa-check text-success"></i> Partagez vos codes sur les réseaux sociaux</li>
-                                    <li><i class="fas fa-check text-success"></i> Plus de parrainages = plus de points</li>
-                                </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <div class="text-info mb-2">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                                <h4 class="card-title text-info" id="totalUses">0</h4>
+                                <p class="card-text text-muted">Utilisations</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <div class="text-warning mb-2">
+                                    <i class="fas fa-star fa-2x"></i>
+                                </div>
+                                <h4 class="card-title text-warning" id="bestPerforming">-</h4>
+                                <p class="card-text text-muted">Meilleur Code</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Codes List -->
                 <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-list"></i> Mes Codes Existants</h5>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="fas fa-list"></i> Mes Codes Existants</h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="codeStatusFilter">
+                                <option value="all">Tous les statuts</option>
+                                <option value="active">Actifs</option>
+                                <option value="inactive">Inactifs</option>
+                                <option value="expired">Expirés</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="refreshCodesList()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="referralCodesList">
@@ -302,6 +317,122 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Code Modal -->
+<div class="modal fade" id="createCodeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="fas fa-plus"></i> Créer un Nouveau Code de Parrainage</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createCodeForm">
+                    <!-- Auto-generated title display -->
+                    <div class="mb-3">
+                        <label class="form-label">Titre du code (généré automatiquement):</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codeTitle" readonly>
+                            <button class="btn btn-outline-secondary" type="button" onclick="generateCodeTitle()">
+                                <i class="fas fa-refresh"></i> Regénérer
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Le titre sera automatiquement généré lors de la création</small>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Description (optionnelle):</label>
+                                <textarea class="form-control" id="codeDescription" rows="3" maxlength="500" placeholder="Décrivez votre code de parrainage..."></textarea>
+                                <small class="form-text text-muted">Maximum 500 caractères</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Type de code:</label>
+                                <select class="form-control" id="codeType" onchange="updateCodePreview()">
+                                    <option value="general">Général</option>
+                                    <option value="limited">Limité</option>
+                                    <option value="premium">Premium</option>
+                                    <option value="seasonal">Saisonnier</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Limite d'utilisation:</label>
+                                <input type="number" class="form-control" id="codeMaxUses" min="1" max="10000" placeholder="Illimité">
+                                <small class="form-text text-muted">Laissez vide pour illimité</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Points bonus pour le filleul:</label>
+                                <input type="number" class="form-control" id="codeBonusPoints" min="0" max="1000" step="10" placeholder="0">
+                                <small class="form-text text-muted">Points supplémentaires à l'inscription</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Date d'expiration:</label>
+                                <select class="form-control" id="codeExpiry">
+                                    <option value="">Pas d'expiration</option>
+                                    <option value="7">7 jours</option>
+                                    <option value="30">30 jours</option>
+                                    <option value="60">60 jours</option>
+                                    <option value="90">90 jours</option>
+                                    <option value="365">1 an</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Statut:</label>
+                                <select class="form-control" id="codeStatus">
+                                    <option value="active">Actif</option>
+                                    <option value="inactive">Inactif</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Code Preview -->
+                    <div class="card bg-light mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-eye"></i> Aperçu du Code</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="codePreview" class="text-center">
+                                <div class="code-display p-3 border rounded bg-white">
+                                    <h5 id="previewTitle">Code Parrainage #001</h5>
+                                    <div class="code-value h4 text-primary font-monospace" id="previewCode">PARRAINS001</div>
+                                    <div class="code-details">
+                                        <small class="text-muted" id="previewDetails">Général • Illimité • Permanent</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="submit" form="createCodeForm" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Créer le Code
+                </button>
             </div>
         </div>
     </div>
@@ -433,6 +564,91 @@
 
 .share-buttons .btn {
     margin: 0.25rem;
+}
+
+/* Code Section Styles */
+.code-display {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #0d6efd !important;
+}
+
+.code-value {
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+/* Stats cards hover effect */
+.card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease-in-out;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* Code type badges */
+.code-type-general { background-color: #6c757d; }
+.code-type-limited { background-color: #fd7e14; }
+.code-type-premium { background-color: #6f42c1; }
+.code-type-seasonal { background-color: #20c997; }
+
+/* Form enhancements */
+.form-select-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Code list enhancements */
+.code-card {
+    border-left: 4px solid #0d6efd;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.code-card:hover {
+    border-left-color: #0a58ca;
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.code-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.code-stat {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.code-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .modal-lg {
+        max-width: 95%;
+        margin: 1rem auto;
+    }
+    
+    .code-stats {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    
+    .code-actions {
+        flex-direction: column;
+    }
+    
+    .code-actions .btn {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+    }
 }
 </style>
 <?php $__env->stopPush(); ?>

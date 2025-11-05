@@ -651,6 +651,7 @@ async function handleFirebaseAuth(user) {
         const idToken = await user.getIdToken();
         
         // FCM désactivé pour optimiser les performances
+        let fcmToken = null; // Définir fcmToken comme null
         
         // Envoyer au serveur Laravel
         const response = await fetch('<?php echo e(route("firebase.login")); ?>', {

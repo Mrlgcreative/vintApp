@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -48,9 +49,18 @@ class CategoryController extends Controller
             'name' => 'required|string|max:100|unique:categories,name',
             'description' => 'nullable|string|max:500',
             'icon' => 'nullable|string|max:50',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'parent_id' => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
         ]);
+
+        // Gérer l'upload d'image
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('categories', $imageName, 'public');
+            $validated['image'] = $imagePath;
+        }
 
         // Générer un slug unique
         $slug = Str::slug($validated['name']);
@@ -139,6 +149,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:100|unique:categories,name,' . $category->id,
             'description' => 'nullable|string|max:500',
             'icon' => 'nullable|string|max:50',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'parent_id' => 'nullable|exists:categories,id',
             'sort_order' => 'nullable|integer|min:0',
         ]);
@@ -148,6 +159,19 @@ class CategoryController extends Controller
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Une catégorie ne peut pas être son propre parent.');
+        }
+
+        // Gérer l'upload d'image
+        if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si elle existe
+            if ($category->image && Storage::disk('public')->exists($category->image)) {
+                Storage::disk('public')->delete($category->image);
+            }
+            
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('categories', $imageName, 'public');
+            $validated['image'] = $imagePath;
         }
 
         // Générer un slug unique si le nom change

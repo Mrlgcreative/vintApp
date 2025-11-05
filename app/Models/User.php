@@ -533,6 +533,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Récompenses d'affiliation reçues par l'utilisateur
+     */
+    public function affiliateRewards()
+    {
+        return $this->hasMany(AffiliateReward::class);
+    }
+
+    /**
+     * Récompenses d'affiliation actives
+     */
+    public function activeAffiliateRewards()
+    {
+        return $this->hasMany(AffiliateReward::class)->active();
+    }
+
+    /**
      * === METHODES SYSTEME D'AFFILIATION ===
      */
 
