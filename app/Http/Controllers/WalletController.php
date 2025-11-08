@@ -36,12 +36,11 @@ class WalletController extends Controller
         $usdWallet = $this->getOrCreateUserWallet($user, 'USD');
         $cdfWallet = $this->getOrCreateUserWallet($user, 'CDF');
 
-        // Récupérer les transactions récentes
+        // Récupérer les transactions récentes avec pagination
         $recentTransactions = WalletTransaction::whereIn('wallet_id', [$usdWallet->id, $cdfWallet->id])
             ->with('wallet')
             ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
+            ->paginate(15); // Pagination de 15 par page
 
         return view('wallet.index', compact('usdWallet', 'cdfWallet', 'recentTransactions'));
     }

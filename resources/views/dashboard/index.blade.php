@@ -4,105 +4,71 @@
 
 <!-- 🎉 MODALE DE SUCCÈS - Affichée uniquement après vérification d'email -->
 @if(session('email_verified'))
-<div class="modal fade show" id="emailVerifiedModal" tabindex="-1" aria-labelledby="emailVerifiedModalLabel" style="display: block; background-color: rgba(0, 0, 0, 0.5);" aria-modal="true" role="dialog">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <!-- Header avec animation -->
-            <div class="modal-header border-0 bg-gradient text-white text-center d-block" style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%);">
-                <div class="text-center py-3">
-                    <!-- Icône animée -->
-                    <div class="mb-3">
-                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white" style="width: 80px; height: 80px; animation: bounce 1s infinite;">
-                            <i class="fas fa-check-circle text-success" style="font-size: 3.5rem;"></i>
-                        </div>
-                    </div>
-                    <h3 class="modal-title fw-bold mb-0" id="emailVerifiedModalLabel">
-                        🎉 Email Vérifié avec Succès !
-                    </h3>
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" id="emailVerifiedModal">
+    <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full mx-4 overflow-hidden transform transition-all duration-500 scale-100">
+        <!-- Header avec animation -->
+        <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-center py-8">
+            <!-- Icône animée -->
+            <div class="mb-4">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto animate-bounce">
+                    <i class="fas fa-check-circle text-emerald-500 text-4xl"></i>
                 </div>
+            </div>
+            <h3 class="text-2xl font-bold">
+                🎉 Email Vérifié avec Succès !
+            </h3>
+        </div>
+        
+        <!-- Contenu -->
+        <div class="p-6 text-center">
+            <p class="text-xl font-semibold text-gray-900 mb-3">
+                Bienvenue sur VintApp !
+            </p>
+            <p class="text-gray-600 mb-6">
+                Votre compte est maintenant <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg font-medium">ACTIF</span>. Vous avez désormais accès à toutes les fonctionnalités de la plateforme.
+            </p>
+            
+            <!-- Liste des fonctionnalités débloquées -->
+            <div class="bg-gray-50 rounded-2xl p-4 mb-6 text-left">
+                <p class="font-semibold text-gray-900 mb-3 flex items-center">
+                    <i class="fas fa-unlock text-emerald-500 mr-2"></i>
+                    Fonctionnalités débloquées :
+                </p>
+                <ul class="space-y-2 text-sm">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-emerald-500 mr-2"></i>
+                        Créer et vendre des articles
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-emerald-500 mr-2"></i>
+                        Passer des commandes
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-emerald-500 mr-2"></i>
+                        Envoyer des messages
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-emerald-500 mr-2"></i>
+                        Gérer votre profil
+                    </li>
+                </ul>
             </div>
             
-            <!-- Contenu -->
-            <div class="modal-body px-4 py-4 text-center">
-                <p class="text-dark fs-5 mb-3">
-                    <strong>Bienvenue sur VintApp !</strong>
-                </p>
-                <p class="text-muted mb-4">
-                    Votre compte est maintenant <span class="badge bg-success">ACTIF</span>. Vous avez désormais accès à toutes les fonctionnalités de la plateforme.
-                </p>
-                
-                <!-- Liste des fonctionnalités débloquées -->
-                <div class="text-start bg-light rounded-3 p-3 mb-4">
-                    <p class="fw-semibold text-dark mb-2">
-                        <i class="fas fa-unlock text-success me-2"></i>
-                        Fonctionnalités débloquées :
-                    </p>
-                    <ul class="list-unstyled mb-0 small">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            <span>Créer et vendre des articles</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            <span>Passer des commandes</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success me-2"></i>
-                            <span>Envoyer des messages</span>
-                        </li>
-                        <li class="mb-0">
-                            <i class="fas fa-check text-success me-2"></i>
-                            <span>Gérer votre profil</span>
-                        </li>
-                    </ul>
-                </div>
-                
-                <!-- Confetti symbolique -->
-                <div class="mb-3" style="font-size: 2rem;">
-                    🎊 🎉 ✨ 🎊
-                </div>
+            <!-- Confetti symbolique -->
+            <div class="text-4xl mb-4">
+                🎊 🎉 ✨ 🎊
             </div>
-            
-            <!-- Footer -->
-            <div class="modal-footer border-0 justify-content-center pb-4">
-                <button type="button" class="btn btn-success btn-lg px-5 shadow-sm" data-bs-dismiss="modal" onclick="this.closest('.modal').style.display='none'">
-                    <i class="fas fa-rocket me-2"></i>
-                    Commencer à Explorer
-                </button>
-            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-6 text-center border-t border-gray-100">
+            <button type="button" class="bg-emerald-500 hover:bg-emerald-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg transition-all duration-300 hover:shadow-xl" onclick="document.getElementById('emailVerifiedModal').style.display='none'">
+                <i class="fas fa-rocket mr-2"></i>
+                Commencer à Explorer
+            </button>
         </div>
     </div>
 </div>
-
-<style>
-    @keyframes bounce {
-        0%, 100% {
-            transform: translateY(0);
-        }
-        50% {
-            transform: translateY(-10px);
-        }
-    }
-    
-    .bg-gradient {
-        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-    }
-    
-    #emailVerifiedModal .modal-content {
-        animation: slideInDown 0.5s ease-out;
-    }
-    
-    @keyframes slideInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
 
 <script>
     // Fermer la modale si on clique en dehors
@@ -122,509 +88,337 @@
 </script>
 @endif
 
-<style>
-/* Override Bootstrap avec des styles Tailwind-like */
-.tw-container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    margin-top: 2rem;
-}
-.tw-grid {
-    display: grid;
-    gap: 1.5rem;
-}
-.tw-grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-.tw-grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.tw-grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-.tw-card {
-    background: white;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    border: 1px solid #f3f4f6;
-    transition: all 0.2s;
-}
-.tw-card:hover {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px) scale(1.02);
-}
-.tw-p-6 { padding: 1.5rem; }
-.tw-p-4 { padding: 1rem; }
-.tw-mb-8 { margin-bottom: 2rem; }
-.tw-mb-4 { margin-bottom: 1rem; }
-.tw-flex { display: flex; }
-.tw-items-center { align-items: center; }
-.tw-space-x-4 > * + * { margin-left: 1rem; }
-.tw-space-y-3 > * + * { margin-top: 0.75rem; }
-.tw-w-12 { width: 3rem; }
-.tw-h-12 { height: 3rem; }
-.tw-rounded-full { border-radius: 9999px; }
-.tw-bg-gradient-violet { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
-.tw-bg-gradient-green { background: linear-gradient(135deg, #10b981, #34d399); }
-.tw-bg-gradient-blue { background: linear-gradient(135deg, #06b6d4, #67e8f9); }
-.tw-bg-gradient-orange { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
-.tw-text-white { color: white; }
-.tw-text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-.tw-font-bold { font-weight: 700; }
-.tw-font-semibold { font-weight: 600; }
-.tw-text-gray-900 { color: #111827; }
-.tw-text-gray-600 { color: #4b5563; }
-.tw-text-gray-500 { color: #6b7280; }
-.tw-text-sm { font-size: 0.875rem; line-height: 1.25rem; }
-.tw-bg-slate-50 { background-color: #f8fafc; }
-.tw-border-b { border-bottom-width: 1px; }
-.tw-border-gray-100 { border-color: #f3f4f6; }
-.tw-rounded-t-xl { border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; }
-.tw-bg-gray-50 { background-color: #f9fafb; }
-.tw-rounded-lg { border-radius: 0.5rem; }
-.tw-hover-violet:hover { background-color: #f3f0ff; }
-.tw-hover-green:hover { background-color: #ecfdf5; }
-.tw-hover-blue:hover { background-color: #f0f9ff; }
-.tw-hover-orange:hover { background-color: #fffbeb; }
-.tw-px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
-.tw-py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
-.tw-bg-violet-500 { background-color: #8b5cf6; }
-.tw-bg-green-500 { background-color: #10b981; }
-.tw-bg-yellow-500 { background-color: #eab308; }
-.tw-text-center { text-align: center; }
-.tw-py-8 { padding-top: 2rem; padding-bottom: 2rem; }
-.tw-py-12 { padding-top: 3rem; padding-bottom: 3rem; }
-.tw-text-xl { font-size: 1.25rem; line-height: 1.75rem; }
-.tw-text-2xl { font-size: 1.5rem; line-height: 2rem; }
-.tw-text-indigo-600 { color: #4f46e5; }
-.tw-bg-indigo-50 { background-color: #eef2ff; }
-.tw-border-indigo-100 { border-color: #e0e7ff; }
-.tw-flex-1 { flex: 1 1 0%; }
-.tw-justify-between { justify-content: space-between; }
-.tw-items-start { align-items: flex-start; }
-.tw-ml-3 { margin-left: 0.75rem; }
-.tw-whitespace-nowrap { white-space: nowrap; }
-.tw-text-xs { font-size: 0.75rem; line-height: 1rem; }
-.tw-leading-relaxed { line-height: 1.625; }
-
-@media (max-width: 1024px) {
-    .tw-grid-cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 768px) {
-    .tw-grid-cols-4, .tw-grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-    .tw-container { padding: 0 0.5rem; }
-}
-
-/* Styles responsive pour le graphique */
-#sales-chart-container {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    height: 250px;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    background-color: #fafafa;
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
-
-@media (max-width: 1024px) {
-    #sales-chart-container {
-        height: 220px;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
-    .chart-bar-label {
-        font-size: 1rem !important;
-    }
-    .chart-month-label {
-        font-size: 0.75rem !important;
-    }
-}
-
-@media (max-width: 768px) {
-    #sales-chart-container {
-        height: 200px;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        overflow-x: auto;
-        justify-content: flex-start;
-    }
-    .chart-bar-column {
-        min-width: 50px !important;
-        flex: 0 0 50px;
-    }
-    .chart-bar-label {
-        font-size: 0.875rem !important;
-    }
-    .chart-month-label {
-        font-size: 0.7rem !important;
-    }
-    .chart-stats-grid {
-        grid-template-columns: repeat(1, 1fr) !important;
-        gap: 0.75rem !important;
-    }
-}
-
-@media (max-width: 480px) {
-    #sales-chart-container {
-        height: 180px;
-        gap: 0.4rem;
-        padding: 0.5rem;
-    }
-    .chart-bar-column {
-        min-width: 40px !important;
-        flex: 0 0 40px;
-    }
-    .chart-bar-label {
-        font-size: 0.75rem !important;
-    }
-    .chart-month-label {
-        font-size: 0.65rem !important;
-    }
-    .chart-percentage-label {
-        font-size: 0.6rem !important;
-    }
-}
-</style>
-
-<div class="tw-container">
-    <!-- Cards de statistiques -->
-    <div class="tw-grid tw-grid-cols-4 tw-mb-8">
-        <!-- Card Articles -->
-        <div class="tw-card">
-            <div class="tw-p-6 tw-flex tw-items-center tw-space-x-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-gradient-violet tw-rounded-full tw-flex tw-items-center" style="justify-content: center;">
-                    <i class="fas fa-box tw-text-white" style="font-size: 1.25rem;"></i>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-text-gray-600 tw-font-semibold">Articles</div>
-                    <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ $stats['total_items'] ?? 0 }}</div>
-                    <div class="tw-text-sm tw-text-gray-500">Actifs : {{ $stats['active_items'] ?? 0 }}</div>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-indigo-50/30 py-8">
+    <div class="container mx-auto px-4 max-w-7xl">
+        <!-- Cards de statistiques -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Card Articles -->
+            <div class="bg-white rounded-2xl shadow-lg shadow-violet-600/10 border border-gray-100/50 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-violet-500 to-violet-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-box text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-600 font-semibold">Articles</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $stats['total_items'] ?? 0 }}</p>
+                        <p class="text-sm text-gray-500">Actifs : {{ $stats['active_items'] ?? 0 }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Card Ventes -->
-        <div class="tw-card">
-            <div class="tw-p-6 tw-flex tw-items-center tw-space-x-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-gradient-green tw-rounded-full tw-flex tw-items-center" style="justify-content: center;">
-                    <i class="fas fa-shopping-cart tw-text-white" style="font-size: 1.25rem;"></i>
+            <!-- Card Ventes -->
+            <div class="bg-white rounded-2xl shadow-lg shadow-emerald-600/10 border border-gray-100/50 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-shopping-cart text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-600 font-semibold">Ventes</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $stats['total_sales'] ?? 0 }}</p>
+                        <p class="text-sm text-gray-500">
+                            {{ number_format($stats['total_revenue'] ?? 0, 2) }} USD
+                            <span class="text-gray-400">|</span>
+                            {{ number_format(($stats['total_revenue'] ?? 0) * 2450, 0) }} CDF
+                        </p>
+                    </div>
                 </div>
-                <div class="tw-flex-1">
-                    <div class="tw-text-gray-600 tw-font-semibold">Ventes</div>
-                    <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ $stats['total_sales'] ?? 0 }}</div>
-                    <div class="tw-text-sm tw-text-gray-500">
-                        {{ number_format($stats['total_revenue'] ?? 0, 2) }} USD
-                        <span class="tw-text-gray-400">|</span>
-                        {{ number_format(($stats['total_revenue'] ?? 0) * 2450, 0) }} CDF
+            </div>
+
+            <!-- Card Messages -->
+            <div class="bg-white rounded-2xl shadow-lg shadow-cyan-600/10 border border-gray-100/50 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-envelope text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-600 font-semibold">Messages</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $stats['unread_messages'] ?? 0 }}</p>
+                        <p class="text-sm text-gray-500">Non lus</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Support -->
+            <div class="bg-white rounded-2xl shadow-lg shadow-amber-600/10 border border-gray-100/50 p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-headset text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-600 font-semibold">Support</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ $stats['pending_support_chats'] ?? 0 }}</p>
+                        <p class="text-sm text-gray-500">En attente</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Card Messages -->
-        <div class="tw-card">
-            <div class="tw-p-6 tw-flex tw-items-center tw-space-x-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-gradient-blue tw-rounded-full tw-flex tw-items-center" style="justify-content: center;">
-                    <i class="fas fa-envelope tw-text-white" style="font-size: 1.25rem;"></i>
+        <!-- Section Support -->
+        <div class="mb-8">
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-amber-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                            <i class="fas fa-headset text-amber-500 mr-3"></i>
+                            Support Client
+                        </h3>
+                        @if(Route::has('admin.support.index'))
+                            <a href="{{ route('admin.support.index') }}" 
+                               class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                Voir tout
+                            </a>
+                        @else
+                            <a href="{{ route('support.index') }}" 
+                               class="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors">
+                                Mes demandes
+                            </a>
+                        @endif
+                    </div>
                 </div>
-                <div class="tw-flex-1">
-                    <div class="tw-text-gray-600 tw-font-semibold">Messages</div>
-                    <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ $stats['unread_messages'] ?? 0 }}</div>
-                    <div class="tw-text-sm tw-text-gray-500">Non lus</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card Support -->
-        <div class="tw-card">
-            <div class="tw-p-6 tw-flex tw-items-center tw-space-x-4">
-                <div class="tw-w-12 tw-h-12 tw-bg-gradient-orange tw-rounded-full tw-flex tw-items-center" style="justify-content: center;">
-                    <i class="fas fa-headset tw-text-white" style="font-size: 1.25rem;"></i>
-                </div>
-                <div class="tw-flex-1">
-                    <div class="tw-text-gray-600 tw-font-semibold">Support</div>
-                    <div class="tw-text-3xl tw-font-bold tw-text-gray-900">{{ $stats['pending_support_chats'] ?? 0 }}</div>
-                    <div class="tw-text-sm tw-text-gray-500">En attente</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section Support -->
-    <div class="tw-mb-8">
-        <div class="tw-card">
-            <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">
-                <div class="tw-flex tw-justify-between tw-items-center">
-                    <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                        <i class="fas fa-headset" style="color: #f59e0b; margin-right: 0.75rem;"></i>
-                        Support Client
-                    </h3>
-                    @if(Route::has('admin.support.index'))
-                        <a href="{{ route('admin.support.index') }}" 
-                           class="tw-text-sm tw-text-blue-600 hover:tw-text-blue-800 tw-font-medium">
-                            Voir tout
-                        </a>
-                    @else
-                        <a href="{{ route('support.index') }}" 
-                           class="tw-text-sm tw-text-blue-600 hover:tw-text-blue-800 tw-font-medium">
-                            Mes demandes
-                        </a>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-gray-900">{{ $stats['total_support_chats'] ?? 0 }}</div>
+                            <div class="text-sm text-gray-500">Total conversations</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-red-600">{{ $stats['open_support_chats'] ?? 0 }}</div>
+                            <div class="text-sm text-gray-500">Nouvelles demandes</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-yellow-600">{{ $stats['pending_support_chats'] ?? 0 }}</div>
+                            <div class="text-sm text-gray-500">En cours</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-orange-600">{{ $stats['unassigned_support_chats'] ?? 0 }}</div>
+                            <div class="text-sm text-gray-500">Non assignées</div>
+                        </div>
+                    </div>
+                    @if(($stats['unassigned_support_chats'] ?? 0) > 0)
+                        <div class="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle text-orange-600 mr-3"></i>
+                                <span class="text-orange-800 font-medium">
+                                    {{ $stats['unassigned_support_chats'] ?? 0 }} conversation(s) nécessitent votre attention
+                                </span>
+                                @if(Route::has('admin.support.index'))
+                                    <a href="{{ route('admin.support.index', ['assigned_to' => 'unassigned']) }}" 
+                                       class="ml-auto text-orange-600 hover:text-orange-800 font-medium transition-colors">
+                                        Voir →
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
-            <div class="tw-p-6">
-                <div class="tw-grid tw-grid-cols-4 tw-gap-4">
-                    <div class="tw-text-center">
-                        <div class="tw-text-2xl tw-font-bold tw-text-gray-900">{{ $stats['total_support_chats'] ?? 0 }}</div>
-                        <div class="tw-text-sm tw-text-gray-500">Total conversations</div>
-                    </div>
-                    <div class="tw-text-center">
-                        <div class="tw-text-2xl tw-font-bold tw-text-red-600">{{ $stats['open_support_chats'] ?? 0 }}</div>
-                        <div class="tw-text-sm tw-text-gray-500">Nouvelles demandes</div>
-                    </div>
-                    <div class="tw-text-center">
-                        <div class="tw-text-2xl tw-font-bold tw-text-yellow-600">{{ $stats['pending_support_chats'] ?? 0 }}</div>
-                        <div class="tw-text-sm tw-text-gray-500">En cours</div>
-                    </div>
-                    <div class="tw-text-center">
-                        <div class="tw-text-2xl tw-font-bold tw-text-orange-600">{{ $stats['unassigned_support_chats'] ?? 0 }}</div>
-                        <div class="tw-text-sm tw-text-gray-500">Non assignées</div>
-                    </div>
+        </div>
+
+        <!-- Section Articles et Commandes -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Articles récents -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-violet-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-box text-violet-500 mr-3"></i>
+                        Articles récents
+                    </h3>
                 </div>
-                @if(($stats['unassigned_support_chats'] ?? 0) > 0)
-                    <div class="tw-mt-4 tw-p-3 tw-bg-orange-50 tw-border tw-border-orange-200 tw-rounded-lg">
-                        <div class="tw-flex tw-items-center">
-                            <i class="fas fa-exclamation-triangle tw-text-orange-600 tw-mr-2"></i>
-                            <span class="tw-text-orange-800 tw-font-medium">
-                                {{ $stats['unassigned_support_chats'] ?? 0 }} conversation(s) nécessitent votre attention
-                            </span>
-                            @if(Route::has('admin.support.index'))
-                                <a href="{{ route('admin.support.index', ['assigned_to' => 'unassigned']) }}" 
-                                   class="tw-ml-auto tw-text-orange-600 hover:tw-text-orange-800 tw-font-medium">
-                                    Voir →
-                                </a>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Section Articles et Commandes -->
-    <div class="tw-grid tw-grid-cols-2 tw-mb-8">
-        <!-- Articles récents -->
-        <div class="tw-card">
-            <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">
-                <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                    <i class="fas fa-box" style="color: #8b5cf6; margin-right: 0.75rem;"></i>
-                    Articles récents
-                </h3>
-            </div>
-            <div class="tw-p-6">
-                @if(isset($recentItems) && $recentItems->count() > 0)
-                    <div class="tw-space-y-3">
-                        @foreach($recentItems as $item)
-                            <div class="tw-flex tw-justify-between tw-items-center tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover-violet" style="transition: background-color 0.15s;">
-                                <div>
-                                    <h6 class="tw-font-semibold tw-text-gray-900 tw-mb-4" style="margin-bottom: 0.25rem;">{{ $item->name }}</h6>
-                                    <small class="tw-text-gray-500">{{ $item->category->name ?? 'N/A' }}</small>
-                                </div>
-                                <span class="tw-px-3 tw-py-1 tw-bg-violet-500 tw-text-white tw-text-sm tw-font-semibold" style="border-radius: 9999px;">
-                                    {{ $item->formatted_price }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="tw-text-gray-500 tw-text-center tw-py-8">Aucun article récent</p>
-                @endif
-            </div>
-        </div>
-
-        <!-- Commandes récentes -->
-        <div class="tw-card">
-            <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">
-                <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                    <i class="fas fa-shopping-cart" style="color: #10b981; margin-right: 0.75rem;"></i>
-                    Commandes récentes
-                </h3>
-            </div>
-            <div class="tw-p-6">
-                @if(isset($recentOrders) && $recentOrders->count() > 0)
-                    <div class="tw-space-y-3">
-                        @foreach($recentOrders as $order)
-                            <div class="tw-flex tw-justify-between tw-items-center tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover-green" style="transition: background-color 0.15s;">
-                                <div>
-                                    <h6 class="tw-font-semibold tw-text-gray-900" style="margin-bottom: 0.25rem;">Commande #{{ $order->id }}</h6>
-                                    <small class="tw-text-gray-500">{{ $order->item->name ?? 'N/A' }}</small>
-                                </div>
-                                <span class="tw-px-3 tw-py-1 tw-text-sm tw-font-semibold {{ $order->status === 'completed' ? 'tw-bg-green-500' : 'tw-bg-yellow-500' }} tw-text-white" style="border-radius: 9999px;">
-                                    {{ ucfirst($order->status) }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="tw-text-gray-500 tw-text-center tw-py-8">Aucune commande récente</p>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Section Messages et Notifications -->
-    <div class="tw-grid tw-grid-cols-2 tw-mb-8">
-        <!-- Messages récents -->
-        <div class="tw-card">
-            <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">
-                <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                    <i class="fas fa-envelope" style="color: #06b6d4; margin-right: 0.75rem;"></i>
-                    Messages récents
-                </h3>
-            </div>
-            <div class="tw-p-6">
-                @if(isset($recentMessages) && $recentMessages->count() > 0)
-                    <div class="tw-space-y-3">
-                        @foreach($recentMessages as $msg)
-                            <div class="tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover-blue" style="transition: background-color 0.15s;">
-                                <div class="tw-flex tw-justify-between tw-items-start">
-                                    <div class="tw-flex-1">
-                                        <h6 class="tw-font-semibold tw-text-gray-900" style="margin-bottom: 0.25rem;">{{ $msg->sender->name ?? 'N/A' }}</h6>
-                                        <p class="tw-text-gray-600 tw-text-sm tw-leading-relaxed">{{ Str::limit($msg->content, 50) }}</p>
+                <div class="p-6">
+                    @if(isset($recentItems) && $recentItems->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($recentItems as $item)
+                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl hover:bg-violet-50 transition-colors duration-200">
+                                    <div>
+                                        <h6 class="font-semibold text-gray-900 mb-1">{{ $item->name }}</h6>
+                                        <p class="text-sm text-gray-500">{{ $item->category->name ?? 'N/A' }}</p>
                                     </div>
-                                    <small class="tw-text-gray-500 tw-text-xs tw-ml-3 tw-whitespace-nowrap">{{ $msg->created_at->diffForHumans() }}</small>
+                                    <span class="px-3 py-1 bg-violet-500 text-white text-sm font-semibold rounded-full">
+                                        {{ $item->formatted_price }}
+                                    </span>
                                 </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <p class="tw-text-gray-500 tw-text-center tw-py-8">Aucun message récent</p>
-                @endif
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-center py-8">Aucun article récent</p>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Commandes récentes -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-emerald-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-shopping-cart text-emerald-500 mr-3"></i>
+                        Commandes récentes
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if(isset($recentOrders) && $recentOrders->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($recentOrders as $order)
+                                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl hover:bg-emerald-50 transition-colors duration-200">
+                                    <div>
+                                        <h6 class="font-semibold text-gray-900 mb-1">Commande #{{ $order->id }}</h6>
+                                        <p class="text-sm text-gray-500">{{ $order->item->name ?? 'N/A' }}</p>
+                                    </div>
+                                    <span class="px-3 py-1 text-sm font-semibold rounded-full {{ $order->status === 'completed' ? 'bg-emerald-500 text-white' : 'bg-yellow-500 text-white' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-center py-8">Aucune commande récente</p>
+                    @endif
+                </div>
             </div>
         </div>
 
-        <!-- Notifications -->
-        <div class="tw-card">
-            <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">  
-                <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                    <i class="fas fa-bell" style="color: #f59e0b; margin-right: 0.75rem;"></i>
-                    Notifications
+        <!-- Section Messages et Notifications -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Messages récents -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-cyan-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-envelope text-cyan-500 mr-3"></i>
+                        Messages récents
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if(isset($recentMessages) && $recentMessages->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($recentMessages as $msg)
+                                <div class="p-4 bg-gray-50 rounded-xl hover:bg-cyan-50 transition-colors duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-900 mb-1">{{ $msg->sender->name ?? 'N/A' }}</h6>
+                                            <p class="text-gray-600 text-sm leading-relaxed">{{ Str::limit($msg->content, 50) }}</p>
+                                        </div>
+                                        <p class="text-gray-500 text-xs ml-3 whitespace-nowrap">{{ $msg->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-center py-8">Aucun message récent</p>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-amber-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">  
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-bell text-amber-500 mr-3"></i>
+                        Notifications
+                    </h3>
+                </div>
+                <div class="p-6">
+                    @if(isset($notifications) && $notifications->count() > 0)
+                        <div class="space-y-4">
+                            @foreach($notifications as $notif)
+                                <div class="p-4 bg-gray-50 rounded-xl hover:bg-amber-50 transition-colors duration-200">
+                                    <div class="flex justify-between items-start">
+                                        <div class="flex-1">
+                                            <h6 class="font-semibold text-gray-900 mb-1">{{ $notif->title }}</h6>
+                                            <p class="text-gray-600 text-sm leading-relaxed">{{ Str::limit($notif->message, 50) }}</p>
+                                        </div>
+                                        <p class="text-gray-500 text-xs ml-3 whitespace-nowrap">{{ $notif->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-gray-500 text-center py-8">Aucune notification</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique des ventes -->
+        <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-indigo-600/10 border border-gray-100/50 overflow-hidden mb-8">
+            <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-chart-line text-indigo-500 mr-3"></i>
+                    Évolution des ventes (6 derniers mois)
                 </h3>
             </div>
-            <div class="tw-p-6">
-                @if(isset($notifications) && $notifications->count() > 0)
-                    <div class="tw-space-y-3">
-                        @foreach($notifications as $notif)
-                            <div class="tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-hover-orange" style="transition: background-color 0.15s;">
-                                <div class="tw-flex tw-justify-between tw-items-start">
-                                    <div class="tw-flex-1">
-                                        <h6 class="tw-font-semibold tw-text-gray-900" style="margin-bottom: 0.25rem;">{{ $notif->title }}</h6>
-                                        <p class="tw-text-gray-600 tw-text-sm tw-leading-relaxed">{{ Str::limit($notif->message, 50) }}</p>
+            <div class="p-6">
+                @php
+                    // Données de démonstration si $salesChart n'existe pas
+                    $chartData = $salesChart ?? [
+                        'labels' => ['Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct'],
+                        'data' => [12, 19, 15, 25, 22, 30]
+                    ];
+                    $maxValue = max($chartData['data']) ?: 1;
+                @endphp
+                
+                <!-- Graphique en barres visuelles -->
+                <div class="p-4 bg-white">
+                    <!-- Message d'aide scroll mobile (visible uniquement sur mobile) -->
+                    <div id="chart-scroll-hint" class="hidden text-center text-gray-500 text-xs mb-2 p-2 bg-gray-100 rounded">
+                        <i class="fas fa-hand-point-right"></i> Faites défiler horizontalement pour voir tous les mois
+                    </div>
+                    
+                    <div id="sales-chart-container" class="flex gap-4 justify-between">
+                        @foreach($chartData['data'] as $index => $value)
+                            @php
+                                $percentage = ($value / $maxValue) * 100;
+                                $colors = ['#8b5cf6', '#10b981', '#06b6d4', '#f59e0b', '#ef4444', '#6366f1'];
+                                $color = $colors[$index % count($colors)];
+                            @endphp
+                            <div class="flex-1 flex flex-col items-center gap-2 min-w-[60px]">
+                                <!-- Valeur au-dessus de la barre -->
+                                <div class="text-xl font-bold text-gray-800 min-h-[30px]">
+                                    {{ $value }}
+                                </div>
+                                <!-- Conteneur de barre avec fond visible -->
+                                <div class="w-full bg-gray-200 rounded-lg relative overflow-hidden flex-grow flex items-end border border-gray-300 h-32">
+                                    <div class="chart-bar w-full rounded-t-lg transition-all duration-1000 ease-out relative shadow-inner"
+                                         style="background: linear-gradient(180deg, {{ $color }} 0%, {{ $color }}cc 100%); height: 0%;"
+                                         data-height="{{ $percentage }}">
+                                         <!-- Mini étiquette sur la barre -->
+                                         <div class="absolute top-1 left-0 right-0 text-center text-white text-xs font-semibold opacity-90">
+                                             {{ number_format($percentage, 0) }}%
+                                         </div>
                                     </div>
-                                    <small class="tw-text-gray-500 tw-text-xs tw-ml-3 tw-whitespace-nowrap">{{ $notif->created_at->diffForHumans() }}</small>
+                                </div>
+                                <!-- Label du mois -->
+                                <div class="text-sm font-semibold text-gray-600 mt-2">
+                                    {{ $chartData['labels'][$index] }}
                                 </div>
                             </div>
                         @endforeach
                     </div>
-                @else
-                    <p class="tw-text-gray-500 tw-text-center tw-py-8">Aucune notification</p>
-                @endif
-            </div>
-        </div>
-    </div>
-
-    <!-- Section Graphique des ventes -->
-    <div class="tw-card">
-        <div class="tw-p-4 tw-border-b tw-border-gray-100 tw-bg-slate-50 tw-rounded-t-xl">
-            <h3 class="tw-text-xl tw-font-semibold tw-text-gray-900 tw-flex tw-items-center">
-                <i class="fas fa-chart-line" style="color: #4f46e5; margin-right: 0.75rem;"></i>
-                Évolution des ventes (6 derniers mois)
-            </h3>
-        </div>
-        <div class="tw-p-6">
-            @php
-                // Données de démonstration si $salesChart n'existe pas
-                $chartData = $salesChart ?? [
-                    'labels' => ['Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct'],
-                    'data' => [12, 19, 15, 25, 22, 30]
-                ];
-                $maxValue = max($chartData['data']) ?: 1;
-            @endphp
-            
-            <!-- Graphique en barres visuelles -->
-            <div style="padding: 1rem 0; background-color: white;">
-                <!-- Message d'aide scroll mobile (visible uniquement sur mobile) -->
-                <div id="chart-scroll-hint" style="display: none; text-align: center; color: #6b7280; font-size: 0.75rem; margin-bottom: 0.5rem; padding: 0.5rem; background-color: #f3f4f6; border-radius: 0.25rem;">
-                    <i class="fas fa-hand-point-right"></i> Faites défiler horizontalement pour voir tous les mois
-                </div>
-                
-                <div id="sales-chart-container">
-                    @foreach($chartData['data'] as $index => $value)
-                        @php
-                            $percentage = ($value / $maxValue) * 100;
-                            $colors = ['#8b5cf6', '#10b981', '#06b6d4', '#f59e0b', '#ef4444', '#6366f1'];
-                            $color = $colors[$index % count($colors)];
-                        @endphp
-                        <div class="chart-bar-column" style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; min-width: 60px;">
-                            <!-- Valeur au-dessus de la barre -->
-                            <div class="chart-bar-label" style="font-size: 1.25rem; font-weight: 700; color: #111827; min-height: 30px;">
-                                {{ $value }}
+                    
+                    <!-- Légende et statistiques -->
+                    <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t-2 border-gray-100">
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-xs text-gray-500 font-semibold mb-2">TOTAL</div>
+                            <div class="text-3xl font-bold text-purple-600">
+                                {{ array_sum($chartData['data']) }}
                             </div>
-                            <!-- Conteneur de barre avec fond visible -->
-                            <div style="width: 100%; background-color: #e5e7eb; border-radius: 0.5rem; position: relative; overflow: hidden; flex-grow: 1; display: flex; align-items: flex-end; border: 1px solid #d1d5db;">
-                                <div class="chart-bar" 
-                                     style="width: 100%; 
-                                            background: linear-gradient(180deg, {{ $color }} 0%, {{ $color }}cc 100%); 
-                                            border-radius: 0.5rem 0.5rem 0 0;
-                                            transition: height 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-                                            height: 0%;
-                                            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-                                            position: relative;"
-                                     data-height="{{ $percentage }}">
-                                     <!-- Mini étiquette sur la barre -->
-                                     <div class="chart-percentage-label" style="position: absolute; top: 5px; left: 0; right: 0; text-align: center; color: white; font-size: 0.75rem; font-weight: 600; opacity: 0.9;">
-                                         {{ number_format($percentage, 0) }}%
-                                     </div>
-                                </div>
+                            <div class="text-xs text-gray-400 mt-1">ventes</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-xs text-gray-500 font-semibold mb-2">MOYENNE</div>
+                            <div class="text-3xl font-bold text-emerald-600">
+                                {{ round(array_sum($chartData['data']) / count($chartData['data']), 1) }}
                             </div>
-                            <!-- Label du mois -->
-                            <div class="chart-month-label" style="font-size: 0.875rem; font-weight: 600; color: #4b5563; margin-top: 0.5rem;">
-                                {{ $chartData['labels'][$index] }}
+                            <div class="text-xs text-gray-400 mt-1">par mois</div>
+                        </div>
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <div class="text-xs text-gray-500 font-semibold mb-2">MEILLEUR</div>
+                            <div class="text-3xl font-bold text-amber-600">
+                                {{ max($chartData['data']) }}
                             </div>
+                            <div class="text-xs text-gray-400 mt-1">{{ $chartData['labels'][array_search(max($chartData['data']), $chartData['data'])] }}</div>
                         </div>
-                    @endforeach
-                </div>
-                
-                <!-- Légende et statistiques -->
-                <div class="chart-stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid #f3f4f6;">
-                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
-                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">TOTAL</div>
-                        <div style="font-size: 1.875rem; font-weight: 700; color: #8b5cf6;">
-                            {{ array_sum($chartData['data']) }}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">ventes</div>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
-                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">MOYENNE</div>
-                        <div style="font-size: 1.875rem; font-weight: 700; color: #10b981;">
-                            {{ round(array_sum($chartData['data']) / count($chartData['data']), 1) }}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">par mois</div>
-                    </div>
-                    <div style="text-align: center; padding: 1rem; background-color: #f9fafb; border-radius: 0.5rem;">
-                        <div style="font-size: 0.75rem; color: #6b7280; font-weight: 600; margin-bottom: 0.5rem;">MEILLEUR</div>
-                        <div style="font-size: 1.875rem; font-weight: 700; color: #f59e0b;">
-                            {{ max($chartData['data']) }}
-                        </div>
-                        <div style="font-size: 0.75rem; color: #9ca3af; margin-top: 0.25rem;">{{ $chartData['labels'][array_search(max($chartData['data']), $chartData['data'])] }}</div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 <script>

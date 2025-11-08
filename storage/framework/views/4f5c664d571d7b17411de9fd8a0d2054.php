@@ -1,13 +1,13 @@
-@extends('app')
-@section('title', 'creation-cat')
-@section('content')
+
+<?php $__env->startSection('title', 'creation-cat'); ?>
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumb -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('categories.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors duration-200">
+                    <a href="<?php echo e(route('categories.index')); ?>" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors duration-200">
                         <i class="fas fa-layer-group mr-2"></i>
                         Catégories
                     </a>
@@ -47,7 +47,7 @@
 
                 <div class="p-6">
                     <!-- Messages d'erreur -->
-                    @if ($errors->any())
+                    <?php if($errors->any()): ?>
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
@@ -57,31 +57,31 @@
                                     <h3 class="text-sm font-medium text-red-800">Des erreurs ont été détectées :</h3>
                                     <div class="mt-2 text-sm text-red-700">
                                         <ul class="list-disc list-inside space-y-1">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
+                                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li><?php echo e($error); ?></li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if (session('error'))
+                    <?php if(session('error')): ?>
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-exclamation-circle text-red-400"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <div class="text-sm text-red-700">{{ session('error') }}</div>
+                                    <div class="text-sm text-red-700"><?php echo e(session('error')); ?></div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                    <form action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                        @csrf
+                    <form action="<?php echo e(route('categories.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        <?php echo csrf_field(); ?>
                         
                         <!-- Nom -->
                         <div>
@@ -91,17 +91,32 @@
                             <input type="text" 
                                    name="name" 
                                    id="name" 
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('name') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                                   value="{{ old('name') }}" 
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                   value="<?php echo e(old('name')); ?>" 
                                    required 
                                    maxlength="100"
                                    placeholder="Ex: Vêtements, Électronique, Automobile...">
-                            @error('name')
+                            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Description -->
@@ -113,15 +128,30 @@
                                       id="description" 
                                       rows="3" 
                                       maxlength="500"
-                                      class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 resize-none @error('description') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror"
-                                      placeholder="Description détaillée de la catégorie...">{{ old('description') }}</textarea>
+                                      class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 resize-none <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                                      placeholder="Description détaillée de la catégorie..."><?php echo e(old('description')); ?></textarea>
                             <p class="mt-1 text-xs text-gray-500">Maximum 500 caractères</p>
-                            @error('description')
+                            <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Icône -->
@@ -132,14 +162,21 @@
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <i id="icon-preview" class="{{ old('icon', 'fas fa-folder') }} text-purple-600"></i>
+                                        <i id="icon-preview" class="<?php echo e(old('icon', 'fas fa-folder')); ?> text-purple-600"></i>
                                     </div>
                                 </div>
                                 <input type="text" 
                                        name="icon" 
                                        id="icon" 
-                                       class="block w-full pl-16 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('icon') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                                       value="{{ old('icon') }}" 
+                                       class="block w-full pl-16 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 <?php $__errorArgs = ['icon'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                       value="<?php echo e(old('icon')); ?>" 
                                        placeholder="fas fa-tshirt"
                                        maxlength="50">
                             </div>
@@ -149,12 +186,20 @@
                                     Voir la liste des icônes
                                 </a>
                             </p>
-                            @error('icon')
+                            <?php $__errorArgs = ['icon'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Image -->
@@ -167,7 +212,14 @@
                                        name="image" 
                                        id="image" 
                                        accept="image/*"
-                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-colors duration-200 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 @error('image') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
+                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-colors duration-200 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 <?php $__errorArgs = ['image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                             </div>
                             <p class="mt-1 text-xs text-gray-500">
                                 Formats acceptés : JPEG, PNG, JPG, GIF, SVG. Taille maximale : 2MB.
@@ -186,12 +238,20 @@
                                 </div>
                             </div>
                             
-                            @error('image')
+                            <?php $__errorArgs = ['image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Catégorie parente -->
@@ -201,26 +261,42 @@
                             </label>
                             <select name="parent_id" 
                                     id="parent_id" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('parent_id') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
+                                    class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 <?php $__errorArgs = ['parent_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                                 <option value="">-- Aucune (catégorie principale) --</option>
-                                @if(isset($parentCategories))
-                                    @foreach($parentCategories as $parent)
-                                        <option value="{{ $parent->id }}" 
-                                                {{ old('parent_id') == $parent->id ? 'selected' : '' }}>
-                                            {{ $parent->name }}
+                                <?php if(isset($parentCategories)): ?>
+                                    <?php $__currentLoopData = $parentCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $parent): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($parent->id); ?>" 
+                                                <?php echo e(old('parent_id') == $parent->id ? 'selected' : ''); ?>>
+                                            <?php echo e($parent->name); ?>
+
                                         </option>
-                                    @endforeach
-                                @endif
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endif; ?>
                             </select>
                             <p class="mt-1 text-xs text-gray-500">
                                 Sélectionnez une catégorie parente pour créer une sous-catégorie
                             </p>
-                            @error('parent_id')
+                            <?php $__errorArgs = ['parent_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Ordre d'affichage -->
@@ -231,19 +307,34 @@
                             <input type="number" 
                                    name="sort_order" 
                                    id="sort_order" 
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('sort_order') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                                   value="{{ old('sort_order', 0) }}" 
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 <?php $__errorArgs = ['sort_order'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                   value="<?php echo e(old('sort_order', 0)); ?>" 
                                    min="0"
                                    placeholder="0">
                             <p class="mt-1 text-xs text-gray-500">
                                 Plus le nombre est petit, plus la catégorie apparaîtra en premier dans la liste
                             </p>
-                            @error('sort_order')
+                            <?php $__errorArgs = ['sort_order'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Statut actif -->
@@ -263,14 +354,14 @@
                                        name="is_active" 
                                        value="1"
                                        class="sr-only peer" 
-                                       {{ old('is_active', true) ? 'checked' : '' }}>
+                                       <?php echo e(old('is_active', true) ? 'checked' : ''); ?>>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
                             </label>
                         </div>
 
                         <!-- Boutons d'action -->
                         <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
-                            <a href="{{ route('categories.index') }}" 
+                            <a href="<?php echo e(route('categories.index')); ?>" 
                                class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Annuler
@@ -318,4 +409,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/categories/create.blade.php ENDPATH**/ ?>

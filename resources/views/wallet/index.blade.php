@@ -3,153 +3,179 @@
 @section('title', 'Mon Portefeuille')
 
 @section('content')
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h3 mb-0">
-                    <i class="fas fa-wallet text-primary me-2"></i>
-                    Mon Portefeuille
-                </h1>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-primary" onclick="refreshBalances()">
-                        <i class="fas fa-sync-alt"></i> Actualiser
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- En-tête avec gradient vert -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-xl p-6 text-white">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold flex items-center gap-3">
+                            <i class="fas fa-wallet text-emerald-200"></i>
+                            Mon Portefeuille
+                        </h1>
+                        <p class="text-emerald-100 mt-2">Gérez vos finances en toute simplicité</p>
+                    </div>
+                    <button class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 hover:bg-white/30 transition-all duration-200" onclick="refreshBalances()">
+                        <i class="fas fa-sync-alt mr-2"></i>
+                        Actualiser
                     </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Cartes des soldes -->
-    <div class="row mb-4">
-        <!-- Wallet USD -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+        <!-- Cartes des soldes -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Wallet USD -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h5 class="card-title text-success mb-1">
-                                <i class="fas fa-dollar-sign me-2"></i>Dollar Américain
-                            </h5>
-                            <p class="text-muted small mb-0">USD</p>
+                            <h2 class="text-green-600 text-lg font-semibold flex items-center gap-2">
+                                <i class="fas fa-dollar-sign"></i>
+                                Dollar Américain
+                            </h2>
+                            <p class="text-gray-500 text-sm">USD</p>
                         </div>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <div class="relative">
+                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" 
+                                    onclick="toggleDropdown('usd-dropdown')">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('wallet.add-funds', $usdWallet) }}">
-                                    <i class="fas fa-plus text-success me-2"></i>Ajouter des fonds
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('wallet.withdraw-funds', $usdWallet) }}">
-                                    <i class="fas fa-minus text-danger me-2"></i>Retirer des fonds
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('wallet.transactions', $usdWallet) }}">
-                                    <i class="fas fa-history text-info me-2"></i>Voir l'historique
-                                </a></li>
-                            </ul>
+                            <div id="usd-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg">
+                                    <i class="fas fa-plus text-green-500"></i>
+                                    Ajouter des fonds
+                                </a>
+                                <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-minus text-red-500"></i>
+                                    Retirer des fonds
+                                </a>
+                                <hr class="border-gray-200">
+                                <a href="{{ route('wallet.transactions', $usdWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 last:rounded-b-lg">
+                                    <i class="fas fa-history text-blue-500"></i>
+                                    Voir l'historique
+                                </a>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="text-center py-3">
-                        <h2 class="display-5 fw-bold text-success mb-2" id="usd-balance">
+                    <div class="text-center py-6">
+                        <p class="text-4xl font-bold text-green-600 mb-2" id="usd-balance">
                             ${{ number_format($usdWallet->balance, 2, '.', ',') }}
-                        </h2>
-                        <p class="text-muted mb-0">Solde disponible</p>
+                        </p>
+                        <p class="text-gray-500">Solde disponible</p>
                     </div>
                     
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="{{ route('wallet.add-funds', $usdWallet) }}" class="btn btn-success flex-fill">
-                            <i class="fas fa-plus me-1"></i>Ajouter
+                    <div class="flex gap-3">
+                        <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
+                           class="flex-1 bg-green-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200 text-center">
+                            <i class="fas fa-plus mr-2"></i>Ajouter
                         </a>
-                        <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" class="btn btn-outline-danger flex-fill">
-                            <i class="fas fa-minus me-1"></i>Retirer
+                        <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" 
+                           class="flex-1 border border-red-300 text-red-600 py-3 px-4 rounded-lg font-medium hover:bg-red-50 transition-colors duration-200 text-center">
+                            <i class="fas fa-minus mr-2"></i>Retirer
                         </a>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Wallet CDF -->
-        <div class="col-md-6 mb-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
+            <!-- Wallet CDF -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h5 class="card-title text-warning mb-1">
-                                <i class="fas fa-coins me-2"></i>Franc Congolais
-                            </h5>
-                            <p class="text-muted small mb-0">CDF</p>
+                            <h2 class="text-yellow-600 text-lg font-semibold flex items-center gap-2">
+                                <i class="fas fa-coins"></i>
+                                Franc Congolais
+                            </h2>
+                            <p class="text-gray-500 text-sm">CDF</p>
                         </div>
-                        <div class="dropdown">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <div class="relative">
+                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" 
+                                    onclick="toggleDropdown('cdf-dropdown')">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{{ route('wallet.add-funds', $cdfWallet) }}">
-                                    <i class="fas fa-plus text-success me-2"></i>Ajouter des fonds
-                                </a></li>
-                                <li><a class="dropdown-item" href="{{ route('wallet.withdraw-funds', $cdfWallet) }}">
-                                    <i class="fas fa-minus text-danger me-2"></i>Retirer des fonds
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="{{ route('wallet.transactions', $cdfWallet) }}">
-                                    <i class="fas fa-history text-info me-2"></i>Voir l'historique
-                                </a></li>
-                            </ul>
+                            <div id="cdf-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg">
+                                    <i class="fas fa-plus text-green-500"></i>
+                                    Ajouter des fonds
+                                </a>
+                                <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                    <i class="fas fa-minus text-red-500"></i>
+                                    Retirer des fonds
+                                </a>
+                                <hr class="border-gray-200">
+                                <a href="{{ route('wallet.transactions', $cdfWallet) }}" 
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 last:rounded-b-lg">
+                                    <i class="fas fa-history text-blue-500"></i>
+                                    Voir l'historique
+                                </a>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="text-center py-3">
-                        <h2 class="display-5 fw-bold text-warning mb-2" id="cdf-balance">
+                    <div class="text-center py-6">
+                        <p class="text-4xl font-bold text-yellow-600 mb-2" id="cdf-balance">
                             {{ number_format($cdfWallet->balance, 2, ',', ' ') }} FC
-                        </h2>
-                        <p class="text-muted mb-0">Solde disponible</p>
+                        </p>
+                        <p class="text-gray-500">Solde disponible</p>
                     </div>
                     
-                    <div class="d-flex gap-2 mt-3">
-                        <a href="{{ route('wallet.add-funds', $cdfWallet) }}" class="btn btn-warning flex-fill">
-                            <i class="fas fa-plus me-1"></i>Ajouter
+                    <div class="flex gap-3">
+                        <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
+                           class="flex-1 bg-yellow-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-yellow-600 transition-colors duration-200 text-center">
+                            <i class="fas fa-plus mr-2"></i>Ajouter
                         </a>
-                        <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" class="btn btn-outline-danger flex-fill">
-                            <i class="fas fa-minus me-1"></i>Retirer
+                        <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" 
+                           class="flex-1 border border-red-300 text-red-600 py-3 px-4 rounded-lg font-medium hover:bg-red-50 transition-colors duration-200 text-center">
+                            <i class="fas fa-minus mr-2"></i>Retirer
                         </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Carte de conversion de devises -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-gradient-primary text-white">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-exchange-alt me-2"></i>
+        <!-- Carte de conversion de devises -->
+        <div class="mb-8">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                    <h2 class="text-xl font-bold flex items-center gap-2 mb-2">
+                        <i class="fas fa-exchange-alt"></i>
                         Convertir entre devises (USD ⇄ CDF)
-                    </h5>
-                    <small class="mb-0">Convertissez facilement vos dollars en francs congolais et vice-versa</small>
+                    </h2>
+                    <p class="text-blue-100">Convertissez facilement vos dollars en francs congolais et vice-versa</p>
                 </div>
-                <div class="card-body">
+                <div class="p-6">
                     <!-- Options de conversion rapide -->
-                    <div class="d-flex gap-2 mb-3">
-                        <button type="button" class="btn btn-sm btn-outline-success" onclick="quickConvert('USD', 'CDF')">
-                            <i class="fas fa-arrow-right me-1"></i> USD → CDF
+                    <div class="flex gap-3 mb-6">
+                        <button type="button" 
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors duration-200" 
+                                onclick="quickConvert('USD', 'CDF')">
+                            <i class="fas fa-arrow-right"></i>
+                            USD → CDF
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-warning" onclick="quickConvert('CDF', 'USD')">
-                            <i class="fas fa-arrow-right me-1"></i> CDF → USD
+                        <button type="button" 
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-colors duration-200" 
+                                onclick="quickConvert('CDF', 'USD')">
+                            <i class="fas fa-arrow-right"></i>
+                            CDF → USD
                         </button>
                     </div>
 
                     <form id="conversionForm">
                         @csrf
-                        <div class="row g-3">
+                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <!-- Source -->
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">De</label>
-                                <select class="form-select form-select-lg mb-2" id="fromWallet" name="from_wallet_id" required>
+                            <div class="lg:col-span-5">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">De</label>
+                                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                        id="fromWallet" name="from_wallet_id" required>
                                     <option value="{{ $usdWallet->id }}" data-currency="USD">
                                         USD - ${{ number_format($usdWallet->balance, 2) }}
                                     </option>
@@ -157,33 +183,37 @@
                                         CDF - {{ number_format($cdfWallet->balance, 2) }} FC
                                     </option>
                                 </select>
-                                <div class="input-group input-group-lg">
+                                <div class="flex">
                                     <input type="number" 
-                                           class="form-control" 
+                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                            id="fromAmount" 
                                            name="amount" 
                                            placeholder="0.00" 
                                            step="0.01" 
                                            min="0.01" 
                                            required>
-                                    <span class="input-group-text fw-bold" id="fromCurrency">USD</span>
+                                    <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 font-medium" 
+                                          id="fromCurrency">USD</span>
                                 </div>
-                                <small class="text-muted">
+                                <p class="text-sm text-gray-500 mt-2">
                                     Solde disponible: <span id="fromBalance">${{ number_format($usdWallet->balance, 2) }}</span>
-                                </small>
+                                </p>
                             </div>
 
                             <!-- Bouton d'échange -->
-                            <div class="col-md-2 d-flex align-items-center justify-content-center">
-                                <button type="button" class="btn btn-outline-primary btn-lg rounded-circle" id="swapBtn" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-exchange-alt fa-lg"></i>
+                            <div class="lg:col-span-2 flex items-center justify-center">
+                                <button type="button" 
+                                        class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full hover:bg-blue-200 transition-all duration-300 transform hover:scale-110" 
+                                        id="swapBtn">
+                                    <i class="fas fa-exchange-alt"></i>
                                 </button>
                             </div>
 
                             <!-- Destination -->
-                            <div class="col-md-5">
-                                <label class="form-label fw-bold">Vers</label>
-                                <select class="form-select form-select-lg mb-2" id="toWallet" name="to_wallet_id" required>
+                            <div class="lg:col-span-5">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Vers</label>
+                                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                        id="toWallet" name="to_wallet_id" required>
                                     <option value="{{ $cdfWallet->id }}" data-currency="CDF">
                                         CDF - {{ number_format($cdfWallet->balance, 2) }} FC
                                     </option>
@@ -191,53 +221,56 @@
                                         USD - ${{ number_format($usdWallet->balance, 2) }}
                                     </option>
                                 </select>
-                                <div class="input-group input-group-lg">
+                                <div class="flex">
                                     <input type="text" 
-                                           class="form-control bg-light" 
+                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg bg-gray-50" 
                                            id="toAmount" 
                                            placeholder="0.00" 
                                            readonly>
-                                    <span class="input-group-text fw-bold" id="toCurrency">CDF</span>
+                                    <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 font-medium" 
+                                          id="toCurrency">CDF</span>
                                 </div>
-                                <small class="text-muted">
+                                <p class="text-sm text-gray-500 mt-2">
                                     Solde actuel: <span id="toBalance">{{ number_format($cdfWallet->balance, 2) }} FC</span>
-                                </small>
+                                </p>
                             </div>
                         </div>
 
                         <!-- Taux de change -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="alert alert-info mb-0" id="rateAlert">
-                                    <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                        <div class="flex-grow-1">
-                                            <i class="fas fa-info-circle me-2"></i>
-                                            <span>Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
-                                            <span id="rateSource" class="badge bg-success ms-2" style="display: none;">
-                                                <i class="fas fa-check-circle"></i> Taux réel
+                        <div class="mt-6">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" id="rateAlert">
+                                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <i class="fas fa-info-circle text-blue-600"></i>
+                                            <span class="text-gray-700">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
+                                            <span id="rateSource" class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium hidden">
+                                                Temps réel
                                             </span>
-                                            <span id="rateFallback" class="badge bg-warning ms-2" style="display: none;">
-                                                <i class="fas fa-exclamation-triangle"></i> Taux de secours
+                                            <span id="rateFallback" class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium hidden">
+                                                Taux de secours
                                             </span>
                                         </div>
-                                        <div class="d-flex gap-2 align-items-center mt-2 mt-md-0">
-                                            <button type="button" class="btn btn-sm btn-outline-primary" id="refreshRateBtn" onclick="refreshExchangeRate()">
-                                                <i class="fas fa-sync-alt" id="refreshIcon"></i>
-                                            </button>
-                                            <small class="text-muted d-none d-md-block">
-                                                <i class="fas fa-clock me-1"></i>
-                                                <span id="lastUpdate">Chargement...</span>
+                                        <div class="flex flex-wrap gap-4">
+                                            <small class="text-gray-600 flex items-center gap-1">
+                                                <i class="fas fa-arrow-right"></i>
+                                                <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
+                                            </small>
+                                            <small class="text-gray-600 flex items-center gap-1">
+                                                <i class="fas fa-arrow-left"></i>
+                                                <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
                                             </small>
                                         </div>
                                     </div>
-                                    <div class="d-flex gap-3 mt-2 flex-wrap">
-                                        <small class="text-muted">
-                                            <i class="fas fa-arrow-right me-1"></i>
-                                            <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
-                                        </small>
-                                        <small class="text-muted">
-                                            <i class="fas fa-arrow-left me-1"></i>
-                                            <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
+                                    <div class="flex items-center gap-3">
+                                        <button type="button" 
+                                                class="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-200" 
+                                                id="refreshRateBtn" onclick="refreshExchangeRate()">
+                                            <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                                            Actualiser
+                                        </button>
+                                        <small class="text-gray-500 hidden lg:block">
+                                            Mis à jour: <span id="lastUpdate">À l'instant</span>
                                         </small>
                                     </div>
                                 </div>
@@ -245,170 +278,362 @@
                         </div>
 
                         <!-- Bouton de conversion -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg w-100" id="convertBtn">
-                                    <i class="fas fa-exchange-alt me-2"></i>
-                                    Convertir maintenant
-                                </button>
-                            </div>
+                        <div class="mt-6">
+                            <button type="submit" 
+                                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg" 
+                                    id="convertBtn">
+                                <i class="fas fa-exchange-alt mr-2"></i>
+                                Convertir maintenant
+                            </button>
                         </div>
 
                         <!-- Exemples de conversion -->
-                        <div class="row mt-3">
-                            <div class="col-12">
-                                <div class="card bg-light border-0">
-                                    <div class="card-body py-2">
-                                        <small class="text-muted d-block mb-2">
-                                            <i class="fas fa-calculator me-1"></i> 
-                                            <strong>Exemples de conversion :</strong>
-                                        </small>
-                                        <div class="row g-2 text-center">
-                                            <div class="col-md-3 col-6">
-                                                <div class="p-2 bg-white rounded">
-                                                    <small class="text-success fw-bold">$1</small>
-                                                    <div class="small text-muted">→</div>
-                                                    <small class="text-warning fw-bold" id="example1">2,500 FC</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-6">
-                                                <div class="p-2 bg-white rounded">
-                                                    <small class="text-success fw-bold">$10</small>
-                                                    <div class="small text-muted">→</div>
-                                                    <small class="text-warning fw-bold" id="example2">25,000 FC</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-6">
-                                                <div class="p-2 bg-white rounded">
-                                                    <small class="text-warning fw-bold">10,000 FC</small>
-                                                    <div class="small text-muted">→</div>
-                                                    <small class="text-success fw-bold" id="example3">$4.00</small>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-3 col-6">
-                                                <div class="p-2 bg-white rounded">
-                                                    <small class="text-warning fw-bold">50,000 FC</small>
-                                                    <div class="small text-muted">→</div>
-                                                    <small class="text-success fw-bold" id="example4">$20.00</small>
-                                                </div>
-                                            </div>
-                                        </div>
+                        <div class="mt-6">
+                            <div class="bg-gray-50 rounded-lg p-4">
+                                <p class="text-sm text-gray-600 mb-3 flex items-center gap-2">
+                                    <i class="fas fa-calculator"></i>
+                                    <strong>Exemples de conversion :</strong>
+                                </p>
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 mb-1">$1 USD =</p>
+                                        <p class="text-sm font-semibold text-gray-900" id="example1">2,650 FC</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 mb-1">$10 USD =</p>
+                                        <p class="text-sm font-semibold text-gray-900" id="example2">26,500 FC</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 mb-1">10,000 FC =</p>
+                                        <p class="text-sm font-semibold text-gray-900" id="example3">$3.77</p>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 mb-1">50,000 FC =</p>
+                                        <p class="text-sm font-semibold text-gray-900" id="example4">$18.87</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Messages -->
-                        <div id="conversionMessage" class="mt-3" style="display: none;"></div>
+                        <div id="conversionMessage" class="mt-6 hidden"></div>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Transactions récentes -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0 pb-0">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-history text-info me-2"></i>
-                            Transactions récentes
-                        </h5>
-                        <small class="text-muted">10 dernières transactions</small>
+        <!-- Transactions récentes -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-history text-blue-500"></i>
+                        Transactions récentes
+                    </h2>
+                    <div class="flex items-center gap-3">
+                        <small class="text-gray-500">{{ $recentTransactions->total() }} transaction(s)</small>
+                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                            Page {{ $recentTransactions->currentPage() }}/{{ $recentTransactions->lastPage() }}
+                        </span>
                     </div>
                 </div>
-                <div class="card-body">
-                    @if($recentTransactions->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Date</th>
-                                        <th>Type</th>
-                                        <th>Description</th>
-                                        <th>Montant</th>
-                                        <th>Devise</th>
-                                        <th>Solde après</th>
+                
+                <!-- Filtres rapides -->
+                <div class="flex flex-wrap gap-2">
+                    <button class="inline-flex items-center gap-2 px-3 py-1 bg-gray-800 text-white rounded-lg text-sm font-medium" 
+                            id="filterAll" onclick="filterTransactions('all')">
+                        <i class="fas fa-list"></i>Toutes
+                    </button>
+                    <button class="inline-flex items-center gap-2 px-3 py-1 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors duration-200" 
+                            id="filterCredit" onclick="filterTransactions('credit')">
+                        <i class="fas fa-plus"></i>Crédits
+                    </button>
+                    <button class="inline-flex items-center gap-2 px-3 py-1 bg-red-50 text-red-700 rounded-lg text-sm hover:bg-red-100 transition-colors duration-200" 
+                            id="filterDebit" onclick="filterTransactions('debit')">
+                        <i class="fas fa-minus"></i>Débits
+                    </button>
+                    <button class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors duration-200" 
+                            id="filterUSD" onclick="filterTransactions('USD')">
+                        <i class="fas fa-dollar-sign"></i>USD
+                    </button>
+                    <button class="inline-flex items-center gap-2 px-3 py-1 bg-yellow-50 text-yellow-700 rounded-lg text-sm hover:bg-yellow-100 transition-colors duration-200" 
+                            id="filterCDF" onclick="filterTransactions('CDF')">
+                        <i class="fas fa-coins"></i>CDF
+                    </button>
+                </div>
+            </div>
+            
+            <div class="p-0">
+                @if($recentTransactions->count() > 0)
+                    <!-- Version Desktop/Tablet - Tableau -->
+                    <div class="hidden sm:block overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/2">Description</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Montant</th>
+                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Devise</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden xl:table-cell">Solde après</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @foreach($recentTransactions as $transaction)
+                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ $transaction->created_at->format('d/m/Y') }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $transaction->created_at->format('H:i') }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            @php
+                                                $typeConfig = [
+                                                    'credit' => ['class' => 'bg-green-100 text-green-800', 'icon' => 'fa-plus'],
+                                                    'debit' => ['class' => 'bg-red-100 text-red-800', 'icon' => 'fa-minus'],
+                                                ];
+                                                $config = $typeConfig[$transaction->type] ?? ['class' => 'bg-gray-100 text-gray-800', 'icon' => 'fa-circle'];
+                                            @endphp
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
+                                                <i class="fas {{ $config['icon'] }}"></i>
+                                                {{ ucfirst($transaction->type) }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <div class="text-sm text-gray-900">{{ $transaction->description }}</div>
+                                            @if($transaction->reference)
+                                                <div class="text-xs text-gray-500 mt-1">Réf: {{ $transaction->reference }}</div>
+                                            @endif
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="text-sm font-semibold {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ $transaction->type === 'credit' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }}
+                                                {{ $transaction->wallet->currency }}
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-center hidden lg:table-cell">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $transaction->wallet->currency === 'USD' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                {{ $transaction->wallet->currency }}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right hidden xl:table-cell">
+                                            <div class="text-sm text-gray-900">
+                                                {{ number_format($transaction->balance_after, 2) }} {{ $transaction->wallet->currency }}
+                                            </div>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($recentTransactions as $transaction)
-                                        <tr>
-                                            <td>
-                                                <small class="text-muted">
-                                                    {{ $transaction->created_at->format('d/m/Y H:i') }}
-                                                </small>
-                                            </td>
-                                            <td>
-                                                @if($transaction->type === 'credit')
-                                                    <span class="badge bg-success">
-                                                        <i class="fas fa-plus me-1"></i>Crédit
-                                                    </span>
-                                                @else
-                                                    <span class="badge bg-danger">
-                                                        <i class="fas fa-minus me-1"></i>Débit
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td>{{ $transaction->description }}</td>
-                                            <td>
-                                                <span class="fw-bold {{ $transaction->type === 'credit' ? 'text-success' : 'text-danger' }}">
-                                                    {{ $transaction->type === 'credit' ? '+' : '-' }}
-                                                    @if($transaction->wallet->currency === 'CDF')
-                                                        {{ number_format($transaction->amount, 2, ',', ' ') }} FC
-                                                    @else
-                                                        ${{ number_format($transaction->amount, 2, '.', ',') }}
-                                                    @endif
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-{{ $transaction->wallet->currency === 'USD' ? 'success' : 'warning' }}">
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Version Mobile - Cards -->
+                    <div class="block sm:hidden">
+                        <div class="p-4 space-y-4">
+                            @foreach($recentTransactions as $transaction)
+                                @php
+                                    $source = '';
+                                    $icon = 'fas fa-circle';
+                                    $badgeClass = 'bg-gray-100 text-gray-800';
+                                    
+                                    if (str_contains(strtolower($transaction->description), 'vente')) {
+                                        if (str_contains($transaction->description, 'commission')) {
+                                            $source = '💰 Commission Vente';
+                                            $icon = 'fas fa-percentage';
+                                            $badgeClass = 'bg-blue-100 text-blue-800';
+                                        } else {
+                                            $source = '🛍️ Vente Produit';
+                                            $icon = 'fas fa-shopping-cart';
+                                            $badgeClass = 'bg-green-100 text-green-800';
+                                        }
+                                    } elseif (str_contains(strtolower($transaction->description), 'parrainage')) {
+                                        $source = '🤝 Argent Parrainage';
+                                        $icon = 'fas fa-users';
+                                        $badgeClass = 'bg-purple-100 text-purple-800';
+                                    } elseif (str_contains(strtolower($transaction->description), 'conversion')) {
+                                        $source = '🔄 Conversion de Devise';
+                                        $icon = 'fas fa-exchange-alt';
+                                        $badgeClass = 'bg-yellow-100 text-yellow-800';
+                                    } elseif (str_contains(strtolower($transaction->description), 'recharge')) {
+                                        $source = '📱 Recharge Mobile Money';
+                                        $icon = 'fas fa-mobile-alt';
+                                        $badgeClass = 'bg-green-100 text-green-800';
+                                    } else {
+                                        $source = '💳 Transaction Générale';
+                                        $icon = 'fas fa-credit-card';
+                                        $badgeClass = 'bg-gray-100 text-gray-800';
+                                    }
+                                @endphp
+                                
+                                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 transaction-card">
+                                    <div class="flex items-start justify-between mb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-full {{ $transaction->type === 'credit' ? 'bg-green-100' : 'bg-red-100' }} flex items-center justify-center">
+                                                <i class="{{ $icon }} {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="font-semibold text-gray-900 text-sm">{{ $source }}</h6>
+                                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium {{ $badgeClass }}">
                                                     {{ $transaction->wallet->currency }}
                                                 </span>
-                                            </td>
-                                            <td>
-                                                <small class="text-muted">
-                                                    @if($transaction->wallet->currency === 'CDF')
-                                                        {{ number_format($transaction->balance_after, 2, ',', ' ') }} FC
-                                                    @else
-                                                        ${{ number_format($transaction->balance_after, 2, '.', ',') }}
-                                                    @endif
-                                                </small>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-lg font-bold {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}">
+                                                {{ $transaction->type === 'credit' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }}
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $transaction->created_at->format('d/m/Y H:i') }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-700 mb-2">{{ $transaction->description }}</p>
+                                        @if($transaction->reference)
+                                            <p class="text-xs text-gray-500">Réf: {{ $transaction->reference }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
-                    @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-receipt fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Aucune transaction</h5>
-                            <p class="text-muted">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
-                            <div class="d-flex gap-2 justify-content-center">
-                                <a href="{{ route('wallet.add-funds', $usdWallet) }}" class="btn btn-success">
-                                    <i class="fas fa-plus me-1"></i>Ajouter des fonds USD
-                                </a>
-                                <a href="{{ route('wallet.add-funds', $cdfWallet) }}" class="btn btn-warning">
-                                    <i class="fas fa-plus me-1"></i>Ajouter des fonds CDF
-                                </a>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    @if($recentTransactions->hasPages())
+                        <div class="flex flex-col sm:flex-row justify-between items-center p-6 bg-gray-50 border-t border-gray-200">
+                            <div class="flex items-center mb-4 sm:mb-0">
+                                <small class="text-gray-600">
+                                    Affichage de {{ $recentTransactions->firstItem() }} à {{ $recentTransactions->lastItem() }} 
+                                    sur {{ $recentTransactions->total() }} transactions
+                                </small>
+                            </div>
+                            <div class="flex gap-2">
+                                {{ $recentTransactions->links() }}
                             </div>
                         </div>
                     @endif
-                </div>
+                @else
+                    <!-- État vide -->
+                    <div class="text-center py-16">
+                        <div class="mb-6">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full">
+                                <i class="fas fa-receipt text-3xl text-gray-400"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucune transaction</h3>
+                        <p class="text-gray-500 mb-8 max-w-md mx-auto">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
+                        
+                        <!-- Sources d'argent possibles -->
+                        <div class="mb-8">
+                            <h4 class="text-lg font-medium text-gray-700 mb-6">💡 Comment recevoir de l'argent dans votre portefeuille :</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
+                                <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-shopping-cart text-2xl text-green-600 mb-2"></i>
+                                        <h5 class="font-semibold text-green-800">Vendre des articles</h5>
+                                        <p class="text-sm text-green-700">Recevez l'argent de vos ventes</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-percentage text-2xl text-blue-600 mb-2"></i>
+                                        <h5 class="font-semibold text-blue-800">Commissions</h5>
+                                        <p class="text-sm text-blue-700">Gagnez des commissions sur les ventes</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-users text-2xl text-purple-600 mb-2"></i>
+                                        <h5 class="font-semibold text-purple-800">Parrainage</h5>
+                                        <p class="text-sm text-purple-700">Bonus de parrainage d'amis</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-gift text-2xl text-yellow-600 mb-2"></i>
+                                        <h5 class="font-semibold text-yellow-800">Bonus</h5>
+                                        <p class="text-sm text-yellow-700">Récompenses et bonus spéciaux</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 rounded-lg border border-emerald-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-mobile-alt text-2xl text-emerald-600 mb-2"></i>
+                                        <h5 class="font-semibold text-emerald-800">Recharge Mobile</h5>
+                                        <p class="text-sm text-emerald-700">Ajout de fonds via Mobile Money</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg border border-indigo-200">
+                                    <div class="text-center">
+                                        <i class="fas fa-exchange-alt text-2xl text-indigo-600 mb-2"></i>
+                                        <h5 class="font-semibold text-indigo-800">Conversion</h5>
+                                        <p class="text-sm text-indigo-700">Change entre USD et CDF</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
+                               class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200">
+                                <i class="fas fa-plus"></i>Ajouter des fonds USD
+                            </a>
+                            <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
+                               class="inline-flex items-center gap-2 bg-yellow-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-yellow-600 transition-colors duration-200">
+                                <i class="fas fa-plus"></i>Ajouter des fonds CDF
+                            </a>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
-@push('scripts')
 <script>
 // Taux de change global
 let currentRate = 2650;
 let rateLastUpdate = null;
 let isFallbackRate = false;
+
+// Fonction pour basculer l'affichage des dropdowns
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+    
+    // Fermer tous les autres dropdowns
+    allDropdowns.forEach(d => {
+        if (d.id !== dropdownId) {
+            d.classList.add('hidden');
+        }
+    });
+    
+    // Basculer le dropdown courant
+    dropdown.classList.toggle('hidden');
+}
+
+// Fermer les dropdowns en cliquant ailleurs
+document.addEventListener('click', function(event) {
+    const dropdowns = document.querySelectorAll('[id$="-dropdown"]');
+    const buttons = document.querySelectorAll('[onclick*="toggleDropdown"]');
+    
+    let clickedOnButton = false;
+    buttons.forEach(button => {
+        if (button.contains(event.target)) {
+            clickedOnButton = true;
+        }
+    });
+    
+    if (!clickedOnButton) {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    }
+});
 
 // Récupérer le taux de change actuel depuis l'API
 async function fetchExchangeRate() {
@@ -443,7 +668,6 @@ async function refreshExchangeRate() {
     refreshBtn.disabled = true;
     
     try {
-        // Vider le cache et récupérer un nouveau taux
         const response = await fetch('{{ route("exchange.rate") }}', {
             method: 'GET',
             headers: {
@@ -463,7 +687,6 @@ async function refreshExchangeRate() {
             updateExamples();
             updateRateIndicators();
             
-            // Notification de succès
             showNotification('success', `Taux de change mis à jour: 1 USD = ${currentRate.toLocaleString('fr-FR')} CDF`);
         }
     } catch (error) {
@@ -486,21 +709,21 @@ function updateRateIndicators() {
     
     // Afficher le type de taux
     if (isFallbackRate) {
-        rateSource.style.display = 'none';
-        rateFallback.style.display = 'inline-block';
-        rateAlert.classList.remove('alert-info');
-        rateAlert.classList.add('alert-warning');
+        rateSource.classList.add('hidden');
+        rateFallback.classList.remove('hidden');
+        rateAlert.classList.remove('bg-blue-50', 'border-blue-200');
+        rateAlert.classList.add('bg-yellow-50', 'border-yellow-200');
     } else {
-        rateSource.style.display = 'inline-block';
-        rateFallback.style.display = 'none';
-        rateAlert.classList.remove('alert-warning');
-        rateAlert.classList.add('alert-info');
+        rateSource.classList.remove('hidden');
+        rateFallback.classList.add('hidden');
+        rateAlert.classList.remove('bg-yellow-50', 'border-yellow-200');
+        rateAlert.classList.add('bg-blue-50', 'border-blue-200');
     }
     
     // Mettre à jour le temps écoulé
     if (rateLastUpdate) {
         const now = new Date();
-        const diff = Math.floor((now - rateLastUpdate) / 1000); // secondes
+        const diff = Math.floor((now - rateLastUpdate) / 1000);
         
         if (diff < 60) {
             lastUpdate.textContent = `Il y a ${diff}s`;
@@ -514,15 +737,15 @@ function updateRateIndicators() {
     }
     
     // Mettre à jour les flèches de conversion
-    rateFwd.textContent = currentRate.toLocaleString('fr-FR');
-    rateBwd.textContent = currentRate.toLocaleString('fr-FR');
+    if (rateFwd) rateFwd.textContent = currentRate.toLocaleString('fr-FR');
+    if (rateBwd) rateBwd.textContent = currentRate.toLocaleString('fr-FR');
 }
 
 // Afficher une erreur de chargement du taux
 function showRateError() {
     const rateAlert = document.getElementById('rateAlert');
-    rateAlert.classList.remove('alert-info');
-    rateAlert.classList.add('alert-danger');
+    rateAlert.classList.remove('bg-blue-50', 'border-blue-200');
+    rateAlert.classList.add('bg-red-50', 'border-red-200');
     document.getElementById('exchangeRate').textContent = 'Erreur de chargement';
 }
 
@@ -541,8 +764,13 @@ function updateExamples() {
 
 // Mettre à jour l'affichage du taux
 function updateRateDisplay() {
-    const fromCurrency = document.getElementById('fromWallet').selectedOptions[0].dataset.currency;
-    const toCurrency = document.getElementById('toWallet').selectedOptions[0].dataset.currency;
+    const fromWallet = document.getElementById('fromWallet');
+    const toWallet = document.getElementById('toWallet');
+    
+    if (!fromWallet || !toWallet) return;
+    
+    const fromCurrency = fromWallet.selectedOptions[0].dataset.currency;
+    const toCurrency = toWallet.selectedOptions[0].dataset.currency;
     
     let rateText;
     if (fromCurrency === 'USD' && toCurrency === 'CDF') {
@@ -558,15 +786,19 @@ function updateRateDisplay() {
 
 // Afficher une notification
 function showNotification(type, message) {
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertClass = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
     const icon = type === 'success' ? 'check-circle' : 'exclamation-triangle';
     
     const notification = document.createElement('div');
-    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
-    notification.style.zIndex = '9999';
+    notification.className = `fixed top-4 right-4 z-50 max-w-sm w-full ${alertClass} border rounded-lg p-4 shadow-lg`;
     notification.innerHTML = `
-        <i class="fas fa-${icon} me-2"></i>${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="flex items-center gap-3">
+            <i class="fas fa-${icon}"></i>
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-auto">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     `;
     
     document.body.appendChild(notification);
@@ -604,7 +836,6 @@ function swapWallets() {
     const fromWallet = document.getElementById('fromWallet');
     const toWallet = document.getElementById('toWallet');
     
-    // Échanger les valeurs
     const tempValue = fromWallet.value;
     const tempIndex = fromWallet.selectedIndex;
     
@@ -614,18 +845,16 @@ function swapWallets() {
     toWallet.value = tempValue;
     toWallet.selectedIndex = tempIndex;
     
-    // Mettre à jour l'interface
     updateCurrencyLabels();
     updateBalanceLabels();
     calculateConversion();
 }
 
-// Conversion rapide (boutons USD→CDF et CDF→USD)
+// Conversion rapide
 function quickConvert(fromCurrency, toCurrency) {
     const fromWallet = document.getElementById('fromWallet');
     const toWallet = document.getElementById('toWallet');
     
-    // Trouver les wallets correspondants
     const fromOptions = Array.from(fromWallet.options);
     const toOptions = Array.from(toWallet.options);
     
@@ -640,21 +869,7 @@ function quickConvert(fromCurrency, toCurrency) {
         updateBalanceLabels();
         calculateConversion();
         
-        // Focus sur le champ montant
         document.getElementById('fromAmount').focus();
-        
-        // Animation de confirmation
-        const fromBtn = event.target;
-        const originalText = fromBtn.innerHTML;
-        fromBtn.innerHTML = '<i class="fas fa-check me-1"></i> Sélectionné !';
-        fromBtn.classList.remove('btn-outline-success', 'btn-outline-warning');
-        fromBtn.classList.add('btn-success');
-        
-        setTimeout(() => {
-            fromBtn.innerHTML = originalText;
-            fromBtn.classList.remove('btn-success');
-            fromBtn.classList.add(fromCurrency === 'USD' ? 'btn-outline-success' : 'btn-outline-warning');
-        }, 1500);
     }
 }
 
@@ -689,16 +904,14 @@ async function submitConversion(event) {
     const messageDiv = document.getElementById('conversionMessage');
     const originalBtnText = convertBtn.innerHTML;
     
-    // Validation
     const fromAmount = parseFloat(document.getElementById('fromAmount').value);
     if (!fromAmount || fromAmount <= 0) {
         showMessage('error', 'Veuillez entrer un montant valide');
         return;
     }
     
-    // Désactiver le bouton
     convertBtn.disabled = true;
-    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Conversion en cours...';
+    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Conversion en cours...';
     
     try {
         const formData = new FormData(event.target);
@@ -726,7 +939,6 @@ async function submitConversion(event) {
                 <small>Taux appliqué: ${data.rate.toLocaleString('fr-FR')}</small>
             `);
             
-            // Rafraîchir la page après 2 secondes
             setTimeout(() => {
                 location.reload();
             }, 2000);
@@ -746,69 +958,128 @@ async function submitConversion(event) {
 // Afficher un message
 function showMessage(type, message) {
     const messageDiv = document.getElementById('conversionMessage');
-    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertClass = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
     const icon = type === 'success' ? 'check-circle' : 'exclamation-triangle';
     
     messageDiv.innerHTML = `
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-            <i class="fas fa-${icon} me-2"></i>${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="border rounded-lg p-4 ${alertClass}">
+            <div class="flex items-center gap-2">
+                <i class="fas fa-${icon}"></i>
+                <span>${message}</span>
+            </div>
         </div>
     `;
-    messageDiv.style.display = 'block';
+    messageDiv.classList.remove('hidden');
 }
 
 function refreshBalances() {
-    // Animation des soldes pendant le chargement
     const usdBalance = document.getElementById('usd-balance');
     const cdfBalance = document.getElementById('cdf-balance');
     
-    // Ajouter un spinner temporaire
     const originalUsd = usdBalance.innerHTML;
     const originalCdf = cdfBalance.innerHTML;
     
     usdBalance.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     cdfBalance.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
     
-    // Simuler un délai pour l'effet visuel
     setTimeout(() => {
         location.reload();
     }, 500);
 }
 
-// Animation d'entrée pour les cartes
+// Fonctions de filtrage des transactions
+function filterTransactions(type) {
+    const desktopRows = document.querySelectorAll('tbody tr');
+    const mobileCards = document.querySelectorAll('.transaction-card');
+    const buttons = document.querySelectorAll('[id^="filter"]');
+    
+    // Reset all buttons
+    buttons.forEach(btn => {
+        btn.classList.remove('bg-gray-800', 'text-white');
+        btn.classList.add('bg-gray-50', 'text-gray-700');
+    });
+    
+    // Set active button
+    const activeButton = document.getElementById('filter' + type.charAt(0).toUpperCase() + type.slice(1));
+    if (activeButton) {
+        activeButton.classList.remove('bg-gray-50', 'text-gray-700');
+        activeButton.classList.add('bg-gray-800', 'text-white');
+    }
+    
+    let visibleCount = 0;
+    
+    // Filtrer les lignes desktop
+    desktopRows.forEach(row => {
+        const shouldShow = shouldShowTransaction(row, type);
+        if (shouldShow) {
+            row.style.display = '';
+            visibleCount++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Filtrer les cartes mobile
+    mobileCards.forEach(card => {
+        const shouldShow = shouldShowTransaction(card, type);
+        if (shouldShow) {
+            card.style.display = '';
+            if (desktopRows.length === 0) visibleCount++;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function shouldShowTransaction(element, type) {
+    if (type === 'all') {
+        return true;
+    }
+    
+    if (type === 'credit' || type === 'debit') {
+        const badge = element.querySelector('.bg-green-100, .bg-red-100');
+        if (!badge) return false;
+        const isCredit = badge.classList.contains('bg-green-100');
+        return (type === 'credit' && isCredit) || (type === 'debit' && !isCredit);
+    }
+    
+    if (type === 'USD' || type === 'CDF') {
+        const currencyBadges = element.querySelectorAll('[class*="bg-blue-100"], [class*="bg-yellow-100"]');
+        let hasCurrency = false;
+        currencyBadges.forEach(badge => {
+            if (badge.textContent.trim() === type) {
+                hasCurrency = true;
+            }
+        });
+        return hasCurrency;
+    }
+    
+    return false;
+}
+
+// Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    // Récupérer le taux de change
     fetchExchangeRate();
     
-    // Event listeners
-    document.getElementById('fromAmount').addEventListener('input', calculateConversion);
-    document.getElementById('fromWallet').addEventListener('change', function() {
-        updateCurrencyLabels();
-        updateBalanceLabels();
-        calculateConversion();
-    });
-    document.getElementById('toWallet').addEventListener('change', function() {
-        updateCurrencyLabels();
-        updateBalanceLabels();
-        calculateConversion();
-    });
-    document.getElementById('swapBtn').addEventListener('click', swapWallets);
-    document.getElementById('conversionForm').addEventListener('submit', submitConversion);
+    const fromAmountInput = document.getElementById('fromAmount');
+    const fromWalletSelect = document.getElementById('fromWallet');
+    const toWalletSelect = document.getElementById('toWallet');
+    const swapBtn = document.getElementById('swapBtn');
+    const conversionForm = document.getElementById('conversionForm');
     
-    // Animation des cartes
-    const cards = document.querySelectorAll('.card');
-    cards.forEach((card, index) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        
-        setTimeout(() => {
-            card.style.transition = 'all 0.5s ease';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-        }, index * 100);
+    if (fromAmountInput) fromAmountInput.addEventListener('input', calculateConversion);
+    if (fromWalletSelect) fromWalletSelect.addEventListener('change', function() {
+        updateCurrencyLabels();
+        updateBalanceLabels();
+        calculateConversion();
     });
+    if (toWalletSelect) toWalletSelect.addEventListener('change', function() {
+        updateCurrencyLabels();
+        updateBalanceLabels();
+        calculateConversion();
+    });
+    if (swapBtn) swapBtn.addEventListener('click', swapWallets);
+    if (conversionForm) conversionForm.addEventListener('submit', submitConversion);
 });
 </script>
-@endpush
 @endsection

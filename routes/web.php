@@ -60,7 +60,7 @@ Route::get('/newsletter/track/open/{token}', [NewsletterController::class, 'trac
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 // Routes de test supprimées
 Route::get('/test-create', function() {
@@ -638,6 +638,7 @@ require __DIR__.'/auth.php';
 Route::middleware(['auth'])->prefix('affiliate')->name('affiliate.')->group(function () {
     // Dashboard principal
     Route::get('/dashboard', [AffiliateController::class, 'showDashboard'])->name('dashboard');
+    Route::get('/dashboard-data', [AffiliateController::class, 'dashboard'])->name('dashboard.data');
     
     // Gestion des codes de parrainage
     Route::get('/referral-codes', [AffiliateController::class, 'getReferralCodes'])->name('referral-codes.index');
@@ -682,6 +683,10 @@ Route::get('/terms', function() {
 Route::get('/privacy', function() {
     return view('legal.privacy');
 })->name('privacy');
+
+// Routes Firebase Authentication
+Route::post('/auth/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('auth.firebase.login');
+Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
 
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
 if (app()->environment(['local', 'testing'])) {

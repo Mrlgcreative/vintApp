@@ -1,39 +1,42 @@
 <?php $__env->startSection('content'); ?>
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 py-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <a href="<?php echo e(route('home')); ?>" class="hover:text-purple-600 transition-colors">Accueil</a>
+            <a href="<?php echo e(route('home')); ?>" class="hover:text-amber-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <a href="<?php echo e(route('items.index')); ?>" class="hover:text-purple-600 transition-colors">Produits</a>
+            <a href="<?php echo e(route('items.index')); ?>" class="hover:text-amber-600 transition-colors">Produits</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-gray-900 font-medium">Vendre un article</span>
+            <a href="<?php echo e(route('items.show', $item)); ?>" class="hover:text-amber-600 transition-colors"><?php echo e($item->name); ?></a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <span class="text-gray-900 font-medium">Modifier</span>
         </nav>
 
         <div class="max-w-4xl mx-auto">
             <!-- Header Card -->
-            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden mb-8">
-                <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6 lg:p-8">
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-amber-600/10 border border-gray-100/50 overflow-hidden mb-8">
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-6 lg:p-8">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                            <i class="fas fa-plus text-xl"></i>
+                            <i class="fas fa-edit text-xl"></i>
                         </div>
                         <div>
-                            <h1 class="text-2xl lg:text-3xl font-bold">Vendre un article</h1>
-                            <p class="text-purple-100 mt-1">Créez votre annonce en quelques étapes</p>
+                            <h1 class="text-2xl lg:text-3xl font-bold">Modifier l'article</h1>
+                            <p class="text-amber-100 mt-1">Mettez à jour les informations de votre produit</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form -->
                 <div class="p-6 lg:p-8">
-                    <form method="POST" action="<?php echo e(route('items.store')); ?>" enctype="multipart/form-data" id="createItemForm" class="space-y-8">
+                    <form method="POST" action="<?php echo e(route('items.update', $item)); ?>" enctype="multipart/form-data" id="editItemForm" class="space-y-8">
                         <?php echo csrf_field(); ?>
+                        <?php echo method_field('PUT'); ?>
 
                         <!-- Informations de base -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
-                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-info-circle"></i>
                                 </div>
                                 <h2 class="text-xl font-bold text-gray-900">Informations de base</h2>
@@ -44,11 +47,11 @@
                                 <!-- Nom de l'article -->
                                 <div class="lg:col-span-2">
                                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-tag text-purple-600 mr-2"></i>
+                                        <i class="fas fa-tag text-amber-600 mr-2"></i>
                                         Nom de l'article *
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['name'];
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -58,7 +61,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                            id="name" 
                                            name="name" 
-                                           value="<?php echo e(old('name')); ?>" 
+                                           value="<?php echo e(old('name', $item->name)); ?>" 
                                            placeholder="Ex: iPhone 14 Pro Max 256GB"
                                            required>
                                     <?php $__errorArgs = ['name'];
@@ -80,11 +83,11 @@ unset($__errorArgs, $__bag); ?>
                                 <!-- Prix -->
                                 <div>
                                     <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-dollar-sign text-purple-600 mr-2"></i>
+                                        <i class="fas fa-dollar-sign text-amber-600 mr-2"></i>
                                         Prix *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['price'];
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['price'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -94,7 +97,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                            id="price" 
                                            name="price" 
-                                           value="<?php echo e(old('price')); ?>" 
+                                           value="<?php echo e(old('price', $item->price)); ?>" 
                                            placeholder="0.00" 
                                            step="0.01" 
                                            min="0" 
@@ -116,13 +119,50 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Description -->
+                            <!-- Devise -->
                             <div>
+                                <label for="currency" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-money-bill text-amber-600 mr-2"></i>
+                                    Devise *
+                                </label>
+                                <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['currency'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-4 ring-red-500/20 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                        id="currency" 
+                                        name="currency" 
+                                        required>
+                                    <option value="">Choisir la devise</option>
+                                    <option value="USD" <?php echo e(old('currency', $item->currency) == 'USD' ? 'selected' : ''); ?>>USD ($)</option>
+                                    <option value="CDF" <?php echo e(old('currency', $item->currency) == 'CDF' ? 'selected' : ''); ?>>CDF (FC)</option>
+                                </select>
+                                <?php $__errorArgs = ['currency'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-500 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        <?php echo e($message); ?>
+
+                                    </p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-span-full">
                                 <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    <i class="fas fa-align-left text-purple-600 mr-2"></i>
+                                    <i class="fas fa-align-left text-amber-600 mr-2"></i>
                                     Description détaillée *
                                 </label>
-                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 resize-none <?php $__errorArgs = ['description'];
+                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 resize-none <?php $__errorArgs = ['description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -133,8 +173,8 @@ unset($__errorArgs, $__bag); ?>"
                                           id="description" 
                                           name="description" 
                                           rows="4"
-                                          placeholder="Décrivez votre article en détail pour attirer les acheteurs..."
-                                          required><?php echo e(old('description')); ?></textarea>
+                                          placeholder="Décrivez votre article en détail..."
+                                          required><?php echo e(old('description', $item->description)); ?></textarea>
                                 <?php $__errorArgs = ['description'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -149,134 +189,16 @@ $message = $__bag->first($__errorArgs[0]); ?>
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>
-                                <p class="text-gray-500 text-sm mt-2 flex items-center">
-                                    <i class="fas fa-info-circle mr-1"></i>
-                                    Décrivez votre article en détail pour attirer les acheteurs
-                                </p>
                             </div>
                         </div>
 
-                        <!-- Détails du produit -->
+                        <!-- Catégorie et informations produit -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
                                 <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-cogs"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Détails du produit</h2>
-                            </div>
-
-                            <!-- Couleur, Taille, Numéro -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Couleur -->
-                                <div>
-                                    <label for="color" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-palette text-purple-600 mr-2"></i>
-                                        Couleur
-                                    </label>
-                                    <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['color'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-4 ring-red-500/20 <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="color" 
-                                           name="color" 
-                                           value="<?php echo e(old('color')); ?>" 
-                                           placeholder="Ex: Noir, Blanc, Rouge">
-                                    <?php $__errorArgs = ['color'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                        <p class="text-red-500 text-sm mt-2 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <?php echo e($message); ?>
-
-                                        </p>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                </div>
-
-                                <!-- Taille -->
-                                <div>
-                                    <label for="size" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-ruler text-purple-600 mr-2"></i>
-                                        Taille
-                                    </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['size'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-4 ring-red-500/20 <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>"
-                                            id="size"
-                                            name="size">
-                                        <option value="">Choisir une taille</option>
-                                        <option value="XS" <?php echo e(old('size') == 'XS' ? 'selected' : ''); ?>>XS</option>
-                                        <option value="S" <?php echo e(old('size') == 'S' ? 'selected' : ''); ?>>S</option>
-                                        <option value="M" <?php echo e(old('size') == 'M' ? 'selected' : ''); ?>>M</option>
-                                        <option value="L" <?php echo e(old('size') == 'L' ? 'selected' : ''); ?>>L</option>
-                                        <option value="XL" <?php echo e(old('size') == 'XL' ? 'selected' : ''); ?>>XL</option>
-                                        <option value="XXL" <?php echo e(old('size') == 'XXL' ? 'selected' : ''); ?>>XXL</option>
-                                        <option value="XXXL" <?php echo e(old('size') == 'XXXL' ? 'selected' : ''); ?>>XXXL</option>
-                                    </select>
-                                    <?php $__errorArgs = ['size'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                        <p class="text-red-500 text-sm mt-2 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <?php echo e($message); ?>
-
-                                        </p>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                </div>
-
-                                <!-- Numéro d'article -->
-                                <div>
-                                    <label for="item_number" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-hashtag text-purple-600 mr-2"></i>
-                                        Numéro d'article
-                                    </label>
-                                    <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['item_number'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-4 ring-red-500/20 <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                                           id="item_number" 
-                                           name="item_number" 
-                                           value="<?php echo e(old('item_number')); ?>" 
-                                           placeholder="Ex: ABC123">
-                                    <?php $__errorArgs = ['item_number'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                        <p class="text-red-500 text-sm mt-2 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <?php echo e($message); ?>
-
-                                        </p>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">Informations produit</h2>
                             </div>
 
                             <!-- Catégorie et Marque -->
@@ -284,10 +206,10 @@ unset($__errorArgs, $__bag); ?>
                                 <!-- Catégorie -->
                                 <div>
                                     <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-folder text-purple-600 mr-2"></i>
+                                        <i class="fas fa-folder text-amber-600 mr-2"></i>
                                         Catégorie *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['category_id'];
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['category_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -301,7 +223,7 @@ unset($__errorArgs, $__bag); ?>"
                                         <option value="">Choisir une catégorie</option>
                                         <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($category->id); ?>" 
-                                                    <?php echo e(old('category_id') == $category->id ? 'selected' : ''); ?>>
+                                                    <?php echo e(old('category_id', $item->category_id) == $category->id ? 'selected' : ''); ?>>
                                                 <?php echo e($category->name); ?>
 
                                             </option>
@@ -326,10 +248,10 @@ unset($__errorArgs, $__bag); ?>
                                 <!-- Marque -->
                                 <div>
                                     <label for="brand_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-trademark text-purple-600 mr-2"></i>
+                                        <i class="fas fa-trademark text-amber-600 mr-2"></i>
                                         Marque
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['brand_id'];
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['brand_id'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -342,7 +264,7 @@ unset($__errorArgs, $__bag); ?>"
                                         <option value="">Choisir une marque (optionnel)</option>
                                         <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <option value="<?php echo e($brand->id); ?>" 
-                                                    <?php echo e(old('brand_id') == $brand->id ? 'selected' : ''); ?>>
+                                                    <?php echo e(old('brand_id', $item->brand_id) == $brand->id ? 'selected' : ''); ?>>
                                                 <?php echo e($brand->name); ?>
 
                                             </option>
@@ -365,52 +287,15 @@ unset($__errorArgs, $__bag); ?>
                                 </div>
                             </div>
 
-                            <!-- Devise et État -->
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <!-- Devise -->
-                                <div>
-                                    <label for="currency" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-money-bill text-purple-600 mr-2"></i>
-                                        Devise *
-                                    </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['currency'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> border-red-500 ring-4 ring-red-500/20 <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                                            id="currency" 
-                                            name="currency" 
-                                            required>
-                                        <option value="">Choisir la devise</option>
-                                        <option value="USD" <?php echo e(old('currency') == 'USD' ? 'selected' : ''); ?>>USD ($)</option>
-                                        <option value="CDF" <?php echo e(old('currency') == 'CDF' ? 'selected' : ''); ?>>CDF (FC)</option>
-                                    </select>
-                                    <?php $__errorArgs = ['currency'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                                        <p class="text-red-500 text-sm mt-2 flex items-center">
-                                            <i class="fas fa-exclamation-circle mr-1"></i>
-                                            <?php echo e($message); ?>
-
-                                        </p>
-                                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                                </div>
-
+                            <!-- État et Quantité -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- État -->
                                 <div>
                                     <label for="condition" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-star text-purple-600 mr-2"></i>
+                                        <i class="fas fa-star text-amber-600 mr-2"></i>
                                         État de l'article *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['condition'];
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['condition'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -422,11 +307,11 @@ unset($__errorArgs, $__bag); ?>"
                                             name="condition" 
                                             required>
                                         <option value="">Choisir l'état</option>
-                                        <option value="new" <?php echo e(old('condition') == 'new' ? 'selected' : ''); ?>>Neuf</option>
-                                        <option value="like_new" <?php echo e(old('condition') == 'like_new' ? 'selected' : ''); ?>>Comme neuf</option>
-                                        <option value="good" <?php echo e(old('condition') == 'good' ? 'selected' : ''); ?>>Bon état</option>
-                                        <option value="fair" <?php echo e(old('condition') == 'fair' ? 'selected' : ''); ?>>État correct</option>
-                                        <option value="poor" <?php echo e(old('condition') == 'poor' ? 'selected' : ''); ?>>Usé</option>
+                                        <option value="new" <?php echo e(old('condition', $item->condition) == 'new' ? 'selected' : ''); ?>>Neuf</option>
+                                        <option value="like_new" <?php echo e(old('condition', $item->condition) == 'like_new' ? 'selected' : ''); ?>>Comme neuf</option>
+                                        <option value="good" <?php echo e(old('condition', $item->condition) == 'good' ? 'selected' : ''); ?>>Bon état</option>
+                                        <option value="fair" <?php echo e(old('condition', $item->condition) == 'fair' ? 'selected' : ''); ?>>État correct</option>
+                                        <option value="poor" <?php echo e(old('condition', $item->condition) == 'poor' ? 'selected' : ''); ?>>Usé</option>
                                     </select>
                                     <?php $__errorArgs = ['condition'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -447,11 +332,11 @@ unset($__errorArgs, $__bag); ?>
                                 <!-- Quantité -->
                                 <div>
                                     <label for="quantity" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-boxes text-purple-600 mr-2"></i>
+                                        <i class="fas fa-boxes text-amber-600 mr-2"></i>
                                         Quantité disponible *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['quantity'];
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['quantity'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -461,7 +346,7 @@ endif;
 unset($__errorArgs, $__bag); ?>" 
                                            id="quantity" 
                                            name="quantity" 
-                                           value="<?php echo e(old('quantity', 1)); ?>" 
+                                           value="<?php echo e(old('quantity', $item->quantity)); ?>" 
                                            min="1" 
                                            required>
                                     <?php $__errorArgs = ['quantity'];
@@ -482,23 +367,49 @@ unset($__errorArgs, $__bag); ?>
                             </div>
                         </div>
 
-                        <!-- Images -->
+                        <!-- Images existantes -->
+                        <?php if($item->images && count($item->images) > 0): ?>
+                            <div class="space-y-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-images"></i>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-gray-900">Images actuelles</h2>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <?php $__currentLoopData = $item->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="relative group">
+                                            <img src="<?php echo e(Storage::url($image)); ?>" 
+                                                 class="w-full h-32 object-cover rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300"
+                                                 alt="Image <?php echo e($index + 1); ?>">
+                                            <button type="button" class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-300 remove-existing-image opacity-0 group-hover:opacity-100" 
+                                                    data-image="<?php echo e($image); ?>">
+                                                <i class="fas fa-times text-sm"></i>
+                                            </button>
+                                        </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Nouvelles images -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
-                                <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-images"></i>
+                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-plus"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Photos de l'article</h2>
+                                <h2 class="text-xl font-bold text-gray-900">Ajouter de nouvelles images</h2>
                             </div>
 
                             <div>
                                 <label for="images" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    <i class="fas fa-upload text-purple-600 mr-2"></i>
+                                    <i class="fas fa-upload text-amber-600 mr-2"></i>
                                     Sélectionner des images
                                 </label>
                                 <div class="relative">
                                     <input type="file" 
-                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['images.*'];
+                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 <?php $__errorArgs = ['images.*'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
@@ -533,10 +444,10 @@ endif;
 unset($__errorArgs, $__bag); ?>
                                 <p class="text-gray-500 text-sm mt-2 flex items-center">
                                     <i class="fas fa-info-circle mr-1"></i>
-                                    Vous pouvez sélectionner plusieurs images. Formats acceptés : JPG, PNG, GIF (max 2MB par image)
+                                    Vous pouvez ajouter de nouvelles images aux existantes
                                 </p>
                                 
-                                <!-- Prévisualisation des images -->
+                                <!-- Prévisualisation des nouvelles images -->
                                 <div id="imagePreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 hidden">
                                     <!-- Les prévisualisations seront ajoutées ici -->
                                 </div>
@@ -546,37 +457,65 @@ unset($__errorArgs, $__bag); ?>
                         <!-- Spécifications -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
-                                <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mr-3">
+                                <div class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-cogs"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Spécifications (optionnel)</h2>
+                                <h2 class="text-xl font-bold text-gray-900">Spécifications</h2>
                             </div>
 
                             <div id="specificationsContainer" class="space-y-4">
-                                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
-                                        <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
-                                               name="specifications[key][]" 
-                                               placeholder="Ex: Couleur, Matériau">
+                                <?php if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0): ?>
+                                    <?php $__currentLoopData = $item->specifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
+                                                <input type="text" 
+                                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
+                                                       name="specifications[key][]" 
+                                                       value="<?php echo e(is_string($key) ? $key : ''); ?>"
+                                                       placeholder="Ex: Couleur, Matériau">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
+                                                <input type="text" 
+                                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
+                                                       name="specifications[value][]" 
+                                                       value="<?php echo e(is_string($value) ? $value : ''); ?>"
+                                                       placeholder="Ex: Rouge, Coton">
+                                            </div>
+                                            <div>
+                                                <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php else: ?>
+                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
+                                            <input type="text" 
+                                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
+                                                   name="specifications[key][]" 
+                                                   placeholder="Ex: Couleur, Matériau">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
+                                            <input type="text" 
+                                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
+                                                   name="specifications[value][]" 
+                                                   placeholder="Ex: Rouge, Coton">
+                                        </div>
+                                        <div>
+                                            <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
-                                        <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
-                                               name="specifications[value][]" 
-                                               placeholder="Ex: Rouge, Coton">
-                                    </div>
-                                    <div>
-                                        <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                             
-                            <button type="button" class="bg-purple-100 hover:bg-purple-200 text-purple-600 px-6 py-3 rounded-xl transition-all duration-300 font-semibold" id="addSpecification">
+                            <button type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-600 px-6 py-3 rounded-xl transition-all duration-300 font-semibold" id="addSpecification">
                                 <i class="fas fa-plus mr-2"></i>
                                 Ajouter une spécification
                             </button>
@@ -584,13 +523,13 @@ unset($__errorArgs, $__bag); ?>
 
                         <!-- Boutons -->
                         <div class="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
-                            <a href="<?php echo e(route('items.index')); ?>" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl transition-all duration-300 font-semibold text-center">
+                            <a href="<?php echo e(route('items.show', $item)); ?>" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl transition-all duration-300 font-semibold text-center">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Annuler
                             </a>
-                            <button type="submit" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-3 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1">
-                                <i class="fas fa-check mr-2"></i>
-                                Publier l'article
+                            <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-3 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                <i class="fas fa-save mr-2"></i>
+                                Sauvegarder les modifications
                             </button>
                         </div>
                     </form>
@@ -602,7 +541,7 @@ unset($__errorArgs, $__bag); ?>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Prévisualisation des images
+    // Prévisualisation des nouvelles images
     const imageInput = document.getElementById('images');
     const imagePreview = document.getElementById('imagePreview');
     
@@ -636,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Supprimer une image de la prévisualisation
+    // Supprimer une nouvelle image de la prévisualisation
     imagePreview.addEventListener('click', function(e) {
         if (e.target.closest('.remove-image')) {
             const button = e.target.closest('.remove-image');
@@ -660,6 +599,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Supprimer une image existante
+    document.querySelectorAll('.remove-existing-image').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const image = this.dataset.image;
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
+                // Ici vous pourriez ajouter une logique pour supprimer l'image du serveur
+                this.closest('.relative').remove();
+            }
+        });
+    });
+
     // Gestion des spécifications
     const addSpecBtn = document.getElementById('addSpecification');
     const specContainer = document.getElementById('specificationsContainer');
@@ -671,14 +621,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                        name="specifications[key][]" 
                        placeholder="Ex: Couleur, Matériau">
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                        name="specifications[value][]" 
                        placeholder="Ex: Rouge, Coton">
             </div>
@@ -699,7 +649,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Validation du formulaire
-    const form = document.getElementById('createItemForm');
+    const form = document.getElementById('editItemForm');
     form.addEventListener('submit', function(e) {
         const requiredFields = form.querySelectorAll('[required]');
         let isValid = true;
@@ -741,11 +691,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputs = document.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {
-            this.parentElement.classList.add('ring-2', 'ring-purple-500/20');
+            this.parentElement.classList.add('ring-2', 'ring-amber-500/20');
         });
         
         input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('ring-2', 'ring-purple-500/20');
+            this.parentElement.classList.remove('ring-2', 'ring-amber-500/20');
         });
     });
 });
@@ -797,5 +747,5 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 </script>
-<?php $__env->stopSection(); ?>
-<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/items/create.blade.php ENDPATH**/ ?>
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/items/edit.blade.php ENDPATH**/ ?>

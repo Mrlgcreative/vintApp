@@ -1,529 +1,583 @@
 
 
 <?php $__env->startSection('content'); ?>
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">
-                            <i class="fas fa-shopping-cart me-2"></i>
-                            Commande <?php echo e($order->order_number); ?>
-
-                        </h3>
-                        <span class="badge <?php echo e($order->status_badge_class); ?> fs-6">
-                            <?php echo e($order->status_text); ?>
-
-                        </span>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-8" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a href="<?php echo e(route('orders.index')); ?>" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        Mes Commandes
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
+                        <span class="text-sm font-medium text-blue-600"><?php echo e($order->order_number); ?></span>
                     </div>
-                </div>
-                <div class="card-body">
-                    <!-- Informations de l'article -->
-                    <div class="row mb-4">
-                        <div class="col-md-4">
-                            <?php if($order->item->images && count($order->item->images) > 0): ?>
-                                <img src="<?php echo e(asset('storage/' . $order->item->images[0])); ?>" 
-                                     class="img-fluid rounded" 
-                                     alt="<?php echo e($order->item->name); ?>">
-                            <?php else: ?>
-                                <div class="bg-light d-flex align-items-center justify-content-center rounded" 
-                                     style="height: 200px;">
-                                    <i class="fas fa-image fa-3x text-muted"></i>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
+            <!-- Contenu principal -->
+            <div class="xl:col-span-3">
+                <div class="bg-white rounded-2xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div class="flex items-center mb-4 md:mb-0">
+                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-shopping-cart text-white text-xl"></i>
                                 </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="col-md-8">
-                            <h4><?php echo e($order->item->name); ?></h4>
-                            <p class="text-muted"><?php echo e($order->item->description); ?></p>
-                            
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <small class="text-muted">Prix unitaire</small>
-                                    <div class="h5 text-primary fw-bold"><?php echo e($order->formatted_unit_price); ?></div>
-                                </div>
-                                <div class="col-6">
-                                    <small class="text-muted">Quantité</small>
-                                    <div class="h5 fw-bold"><?php echo e($order->quantity); ?></div>
+                                <div>
+                                    <h1 class="text-2xl font-bold">Commande <?php echo e($order->order_number); ?></h1>
+                                    <p class="text-blue-100 text-sm">Détails complets de votre commande</p>
                                 </div>
                             </div>
+                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold <?php echo e($order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'))); ?> border border-white/20">
+                                <?php echo e($order->status_text); ?>
 
-                            <div class="mb-3">
-                                <span class="badge bg-primary me-2"><?php echo e($order->item->category->name); ?></span>
-                                <?php if($order->item->brand): ?>
-                                    <span class="badge bg-secondary"><?php echo e($order->item->brand->name); ?></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="p-6 space-y-8">
+                        <!-- Informations de l'article -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="flex justify-center">
+                                <?php if($order->item->images && count($order->item->images) > 0): ?>
+                                    <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                                        <img src="<?php echo e(asset('storage/' . $order->item->images[0])); ?>" 
+                                             class="w-full h-64 object-cover" 
+                                             alt="<?php echo e($order->item->name); ?>">
+                                    </div>
+                                <?php else: ?>
+                                    <div class="w-full max-w-sm h-64 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
+                                        <i class="fas fa-image text-gray-400 text-4xl"></i>
+                                    </div>
                                 <?php endif; ?>
-                                <span class="badge condition-badge condition-<?php echo e($order->item->condition); ?>">
-                                    <?php echo e(ucfirst(str_replace('_', ' ', $order->item->condition))); ?>
-
-                                </span>
                             </div>
-
-                            <div class="row mb-3">
-                                <div class="col-6">
-                                    <small class="text-muted">Vendeur</small>
-                                    <div class="fw-bold"><?php echo e($order->item->user->name); ?></div>
+                            <div class="space-y-6">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900 mb-3"><?php echo e($order->item->name); ?></h2>
+                                    <p class="text-gray-600 leading-relaxed"><?php echo e($order->item->description); ?></p>
                                 </div>
-                                <div class="col-6">
-                                    <small class="text-muted">Acheteur</small>
-                                    <div class="fw-bold"><?php echo e($order->buyer->name); ?></div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                                        <p class="text-xs text-blue-600 font-medium mb-1">Prix unitaire</p>
+                                        <p class="text-xl font-bold text-blue-800"><?php echo e($order->formatted_unit_price); ?></p>
+                                    </div>
+                                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                                        <p class="text-xs text-emerald-600 font-medium mb-1">Quantité</p>
+                                        <p class="text-xl font-bold text-emerald-800"><?php echo e($order->quantity); ?></p>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+                                        <?php echo e($order->item->category->name); ?>
+
+                                    </span>
+                                    <?php if($order->item->brand): ?>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                            <?php echo e($order->item->brand->name); ?>
+
+                                        </span>
+                                    <?php endif; ?>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold 
+                                        <?php echo e($order->item->condition === 'excellent' ? 'bg-emerald-100 text-emerald-800' : 
+                                           ($order->item->condition === 'good' ? 'bg-yellow-100 text-yellow-800' : 
+                                            ($order->item->condition === 'fair' ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800'))); ?>">
+                                        <?php echo e(ucfirst(str_replace('_', ' ', $order->item->condition))); ?>
+
+                                    </span>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="p-4 bg-purple-50 rounded-xl border border-purple-100">
+                                        <p class="text-xs text-purple-600 font-medium mb-1">Vendeur</p>
+                                        <p class="font-bold text-purple-900"><?php echo e($order->item->user->name); ?></p>
+                                    </div>
+                                    <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                                        <p class="text-xs text-indigo-600 font-medium mb-1">Acheteur</p>
+                                        <p class="font-bold text-indigo-900"><?php echo e($order->buyer->name); ?></p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <hr>
+                        <!-- Separator -->
+                        <div class="border-t border-gray-200"></div>
 
-                    <!-- Informations de livraison -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <h5>
-                                <i class="fas fa-map-marker-alt me-2"></i>
-                                Adresse de livraison
-                            </h5>
-                            <div class="card border-primary">
-                                <div class="card-body">
+                        <!-- Informations de livraison et paiement -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <!-- Adresse de livraison -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                                    Adresse de livraison
+                                </h3>
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
                                     <?php if($order->deliveryAddress): ?>
-                                        
-                                        <div class="mb-3">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-user text-purple me-2"></i>
-                                                <strong>Destinataire:</strong>
-                                            </div>
-                                            <p class="ms-4 mb-0"><?php echo e($order->deliveryAddress->full_name); ?></p>
-                                        </div>
-
-                                        <?php if($order->deliveryAddress->email): ?>
-                                            <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-envelope text-info me-2"></i>
-                                                    <strong>Email:</strong>
+                                        <div class="space-y-4">
+                                            <div class="flex items-start">
+                                                <i class="fas fa-user text-purple-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">Destinataire</p>
+                                                    <p class="text-gray-700"><?php echo e($order->deliveryAddress->full_name); ?></p>
                                                 </div>
-                                                <p class="ms-4 mb-0">
-                                                    <a href="mailto:<?php echo e($order->deliveryAddress->email); ?>" class="text-decoration-none">
-                                                        <?php echo e($order->deliveryAddress->email); ?>
+                                            </div>
+
+                                            <?php if($order->deliveryAddress->email): ?>
+                                                <div class="flex items-start">
+                                                    <i class="fas fa-envelope text-blue-500 mt-1 mr-3"></i>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-900">Email</p>
+                                                        <a href="mailto:<?php echo e($order->deliveryAddress->email); ?>" 
+                                                           class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                                                            <?php echo e($order->deliveryAddress->email); ?>
+
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+
+                                            <div class="flex items-start">
+                                                <i class="fas fa-phone text-emerald-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">Téléphone</p>
+                                                    <a href="tel:<?php echo e($order->deliveryAddress->phone); ?>" 
+                                                       class="text-emerald-600 hover:text-emerald-800 transition-colors duration-200">
+                                                        <?php echo e($order->deliveryAddress->phone); ?>
 
                                                     </a>
-                                                </p>
+                                                </div>
                                             </div>
-                                        <?php endif; ?>
 
-                                        <div class="mb-3">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-phone text-success me-2"></i>
-                                                <strong>Téléphone:</strong>
+                                            <div class="flex items-start">
+                                                <i class="fas fa-city text-indigo-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">Ville / Commune</p>
+                                                    <p class="text-gray-700"><?php echo e($order->deliveryAddress->city); ?>, <?php echo e($order->deliveryAddress->commune); ?></p>
+                                                </div>
                                             </div>
-                                            <p class="ms-4 mb-0">
-                                                <a href="tel:<?php echo e($order->deliveryAddress->phone); ?>" class="text-decoration-none">
-                                                    <?php echo e($order->deliveryAddress->phone); ?>
 
-                                                </a>
-                                            </p>
+                                            <div class="flex items-start">
+                                                <i class="fas fa-home text-blue-500 mt-1 mr-3"></i>
+                                                <div>
+                                                    <p class="font-semibold text-gray-900">Adresse complète</p>
+                                                    <p class="text-gray-600"><?php echo e($order->deliveryAddress->address); ?></p>
+                                                </div>
+                                            </div>
+
+                                            <?php if($order->deliveryAddress->notes): ?>
+                                                <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                    <div class="flex items-start">
+                                                        <i class="fas fa-sticky-note text-yellow-500 mt-1 mr-2"></i>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-yellow-800">Note:</p>
+                                                            <p class="text-sm text-yellow-700"><?php echo e($order->deliveryAddress->notes); ?></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
-
-                                        <div class="mb-3">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-city text-primary me-2"></i>
-                                                <strong>Ville / Commune:</strong>
-                                            </div>
-                                            <p class="ms-4 mb-0"><?php echo e($order->deliveryAddress->city); ?>, <?php echo e($order->deliveryAddress->commune); ?></p>
-                                        </div>
-
-                                        <div class="mb-0">
-                                            <div class="d-flex align-items-center mb-2">
-                                                <i class="fas fa-home text-info me-2"></i>
-                                                <strong>Adresse complète:</strong>
-                                            </div>
-                                            <p class="ms-4 mb-0 text-muted"><?php echo e($order->deliveryAddress->address); ?></p>
-                                        </div>
-
-                                        <?php if($order->deliveryAddress->notes): ?>
-                                            <div class="mt-3 p-2 bg-light rounded">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-sticky-note me-1"></i>
-                                                    <strong>Note:</strong> <?php echo e($order->deliveryAddress->notes); ?>
-
-                                                </small>
-                                            </div>
-                                        <?php endif; ?>
                                     <?php else: ?>
-                                        
-                                        <?php if($order->shipping_city && $order->shipping_city !== 'À définir'): ?>
-                                            <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-city text-primary me-2"></i>
-                                                    <strong>Ville:</strong>
+                                        <div class="space-y-4">
+                                            <?php if($order->shipping_city && $order->shipping_city !== 'À définir'): ?>
+                                                <div class="flex items-start">
+                                                    <i class="fas fa-city text-indigo-500 mt-1 mr-3"></i>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-900">Ville</p>
+                                                        <p class="text-gray-700"><?php echo e($order->shipping_city); ?></p>
+                                                    </div>
                                                 </div>
-                                                <p class="ms-4 mb-0"><?php echo e($order->shipping_city); ?></p>
-                                            </div>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
 
-                                        <?php if($order->shipping_phone): ?>
-                                            <div class="mb-3">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-phone text-success me-2"></i>
-                                                    <strong>Téléphone:</strong>
+                                            <?php if($order->shipping_phone): ?>
+                                                <div class="flex items-start">
+                                                    <i class="fas fa-phone text-emerald-500 mt-1 mr-3"></i>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-900">Téléphone</p>
+                                                        <a href="tel:<?php echo e($order->shipping_phone); ?>" 
+                                                           class="text-emerald-600 hover:text-emerald-800 transition-colors duration-200">
+                                                            <?php echo e($order->shipping_phone); ?>
+
+                                                        </a>
+                                                    </div>
                                                 </div>
-                                                <p class="ms-4 mb-0">
-                                                    <a href="tel:<?php echo e($order->shipping_phone); ?>" class="text-decoration-none">
-                                                        <?php echo e($order->shipping_phone); ?>
+                                            <?php endif; ?>
 
-                                                    </a>
-                                                </p>
-                                            </div>
-                                        <?php endif; ?>
-
-                                        <?php if($order->shipping_address && $order->shipping_address !== 'À définir'): ?>
-                                            <div class="mb-0">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-home text-info me-2"></i>
-                                                    <strong>Adresse complète:</strong>
+                                            <?php if($order->shipping_address && $order->shipping_address !== 'À définir'): ?>
+                                                <div class="flex items-start">
+                                                    <i class="fas fa-home text-blue-500 mt-1 mr-3"></i>
+                                                    <div>
+                                                        <p class="font-semibold text-gray-900">Adresse complète</p>
+                                                        <p class="text-gray-600"><?php echo e($order->shipping_address); ?></p>
+                                                    </div>
                                                 </div>
-                                                <p class="ms-4 mb-0 text-muted"><?php echo e($order->shipping_address); ?></p>
-                                            </div>
-                                        <?php endif; ?>
+                                            <?php endif; ?>
 
-                                        <?php if((!$order->shipping_city || $order->shipping_city === 'À définir') && 
-                                            (!$order->shipping_address || $order->shipping_address === 'À définir') &&
-                                            !$order->deliveryAddress): ?>
-                                            <div class="alert alert-warning mb-0" role="alert">
-                                                <i class="fas fa-exclamation-triangle me-2"></i>
-                                                <strong>Adresse non définie</strong>
-                                                <br>
-                                                <small>L'adresse de livraison n'a pas encore été définie pour cette commande.</small>
+                                            <?php if((!$order->shipping_city || $order->shipping_city === 'À définir') && 
+                                                (!$order->shipping_address || $order->shipping_address === 'À définir') &&
+                                                !$order->deliveryAddress): ?>
+                                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                                    <div class="flex">
+                                                        <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5 mr-3"></i>
+                                                        <div>
+                                                            <h4 class="text-sm font-semibold text-yellow-800">Adresse non définie</h4>
+                                                            <p class="text-sm text-yellow-700 mt-1">L'adresse de livraison n'a pas encore été définie pour cette commande.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+
+                            <!-- Détails du paiement -->
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-money-bill text-emerald-500 mr-2"></i>
+                                    Détails du paiement
+                                </h3>
+                                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-600">Prix unitaire:</span>
+                                            <span class="font-semibold text-gray-900"><?php echo e($order->formatted_unit_price); ?></span>
+                                        </div>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-600">Quantité:</span>
+                                            <span class="font-semibold text-gray-900"><?php echo e($order->quantity); ?></span>
+                                        </div>
+                                        <div class="border-t border-gray-200 pt-3">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-lg font-bold text-gray-900">Total:</span>
+                                                <span class="text-lg font-bold text-blue-600"><?php echo e($order->formatted_total_price); ?></span>
                                             </div>
-                                        <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Notes -->
+                        <?php if($order->notes): ?>
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                    <i class="fas fa-sticky-note text-yellow-500 mr-2"></i>
+                                    Notes
+                                </h3>
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
+                                    <p class="text-gray-800"><?php echo e($order->notes); ?></p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Historique des statuts -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                                <i class="fas fa-history text-purple-500 mr-2"></i>
+                                Historique
+                            </h3>
+                            <div class="relative">
+                                <!-- Timeline line -->
+                                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                                
+                                <div class="space-y-6">
+                                    <!-- Commande créée -->
+                                    <div class="relative flex items-start">
+                                        <div class="absolute left-4 w-4 h-4 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
+                                        <div class="ml-12">
+                                            <h4 class="text-sm font-semibold text-gray-900">Commande créée</h4>
+                                            <p class="text-sm text-gray-600"><?php echo e($order->created_at->format('d/m/Y H:i')); ?></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <?php if($order->paid_at): ?>
+                                        <div class="relative flex items-start">
+                                            <div class="absolute left-4 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-sm"></div>
+                                            <div class="ml-12">
+                                                <h4 class="text-sm font-semibold text-gray-900">Paiement confirmé</h4>
+                                                <p class="text-sm text-gray-600"><?php echo e($order->paid_at->format('d/m/Y H:i')); ?></p>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if($order->shipped_at): ?>
+                                        <div class="relative flex items-start">
+                                            <div class="absolute left-4 w-4 h-4 bg-indigo-500 rounded-full border-4 border-white shadow-sm"></div>
+                                            <div class="ml-12">
+                                                <h4 class="text-sm font-semibold text-gray-900">Expédiée</h4>
+                                                <p class="text-sm text-gray-600"><?php echo e($order->shipped_at->format('d/m/Y H:i')); ?></p>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <?php if($order->delivered_at): ?>
+                                        <div class="relative flex items-start">
+                                            <div class="absolute left-4 w-4 h-4 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
+                                            <div class="ml-12">
+                                                <h4 class="text-sm font-semibold text-gray-900">Livrée</h4>
+                                                <p class="text-sm text-gray-600"><?php echo e($order->delivered_at->format('d/m/Y H:i')); ?></p>
+                                            </div>
+                                        </div>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <h5>
-                                <i class="fas fa-money-bill me-2"></i>
-                                Détails du paiement
-                            </h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-6">Prix unitaire:</div>
-                                        <div class="col-6 text-end"><?php echo e($order->formatted_unit_price); ?></div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <div class="col-6">Quantité:</div>
-                                        <div class="col-6 text-end"><?php echo e($order->quantity); ?></div>
-                                    </div>
-                                    <hr>
-                                    <div class="row">
-                                        <div class="col-6"><strong>Total:</strong></div>
-                                        <div class="col-6 text-end"><strong class="text-primary"><?php echo e($order->formatted_total_price); ?></strong></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <?php if($order->notes): ?>
-                        <div class="mb-4">
-                            <h5>
-                                <i class="fas fa-sticky-note me-2"></i>
-                                Notes
-                            </h5>
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="mb-0"><?php echo e($order->notes); ?></p>
-                                </div>
+                        <!-- Actions principales -->
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-4 pt-6 border-t border-gray-200">
+                            <a href="<?php echo e(route('orders.index')); ?>" 
+                               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Retour aux commandes
+                            </a>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                
+                                <?php if($order->buyer_id === Auth::id() && $order->status === 'pending'): ?>
+                                    <form method="POST" action="<?php echo e(route('orders.confirm-payment', $order)); ?>">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" 
+                                                onclick="return confirm('Êtes-vous sûr de vouloir confirmer le paiement de cette commande ?')"
+                                                class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
+                                            <i class="fas fa-credit-card mr-2"></i>
+                                            Confirmer le paiement
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                
+                                <?php if($order->item->user_id === Auth::id() && $order->status === 'confirmed'): ?>
+                                    <form method="POST" action="<?php echo e(route('orders.mark-shipped', $order)); ?>">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" 
+                                                onclick="return confirm('Marquer cette commande comme expédiée ?')"
+                                                class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:from-blue-600 hover:to-blue-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300">
+                                            <i class="fas fa-shipping-fast mr-2"></i>
+                                            📦 Expédier la commande
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                
+                                <?php if($order->item->user_id === Auth::id() && $order->status === 'shipped'): ?>
+                                    <form method="POST" action="<?php echo e(route('orders.mark-delivered', $order)); ?>">
+                                        <?php echo csrf_field(); ?>
+                                        <button type="submit" 
+                                                onclick="return confirm('Marquer cette commande comme livrée ?')"
+                                                class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
+                                            <i class="fas fa-check-circle mr-2"></i>
+                                            ✅ Marquer comme livrée
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                                
+                                
+                                <?php if($order->buyer_id === Auth::id() && $order->status === 'pending'): ?>
+                                    <form method="POST" action="<?php echo e(route('orders.destroy', $order)); ?>" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
+                                        <button type="submit" 
+                                                class="w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-red-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300">
+                                            <i class="fas fa-times mr-2"></i>
+                                            Annuler
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                             </div>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- Historique des statuts -->
-                    <div class="mb-4">
-                        <h5>
-                            <i class="fas fa-history me-2"></i>
-                            Historique
-                        </h5>
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-marker bg-success"></div>
-                                <div class="timeline-content">
-                                    <h6>Commande créée</h6>
-                                    <p class="text-muted"><?php echo e($order->created_at->format('d/m/Y H:i')); ?></p>
-                                </div>
-                            </div>
-                            
-                            <?php if($order->paid_at): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-info"></div>
-                                    <div class="timeline-content">
-                                        <h6>Paiement confirmé</h6>
-                                        <p class="text-muted"><?php echo e($order->paid_at->format('d/m/Y H:i')); ?></p>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if($order->shipped_at): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-primary"></div>
-                                    <div class="timeline-content">
-                                        <h6>Expédiée</h6>
-                                        <p class="text-muted"><?php echo e($order->shipped_at->format('d/m/Y H:i')); ?></p>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if($order->delivered_at): ?>
-                                <div class="timeline-item">
-                                    <div class="timeline-marker bg-success"></div>
-                                    <div class="timeline-content">
-                                        <h6>Livrée</h6>
-                                        <p class="text-muted"><?php echo e($order->delivered_at->format('d/m/Y H:i')); ?></p>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="d-flex justify-content-between">
-                        <a href="<?php echo e(route('orders.index')); ?>" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i>
-                            Retour aux commandes
-                        </a>
-                        
-                        <div>
-                            
-                            <?php if($order->buyer_id === Auth::id() && $order->status === 'pending'): ?>
-                                <form method="POST" action="<?php echo e(route('orders.confirm-payment', $order)); ?>" style="display: inline;">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" 
-                                            class="btn btn-success me-2" 
-                                            onclick="return confirm('Êtes-vous sûr de vouloir confirmer le paiement de cette commande ?')"
-                                            aria-label="Confirmer le paiement de la commande <?php echo e($order->order_number); ?>">
-                                        <i class="fas fa-credit-card me-2"></i>
-                                        Confirmer le paiement
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                            
-                            
-                            <?php if($order->item->user_id === Auth::id() && $order->status === 'confirmed'): ?>
-                                <form method="POST" action="<?php echo e(route('orders.mark-shipped', $order)); ?>" style="display: inline;">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" 
-                                            class="btn btn-primary me-2" 
-                                            onclick="return confirm('Marquer cette commande comme expédiée ?')"
-                                            aria-label="Marquer la commande <?php echo e($order->order_number); ?> comme expédiée">
-                                        <i class="fas fa-shipping-fast me-2"></i>
-                                        📦 Expédier la commande
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                            
-                            
-                            <?php if($order->item->user_id === Auth::id() && $order->status === 'shipped'): ?>
-                                <form method="POST" action="<?php echo e(route('orders.mark-delivered', $order)); ?>" style="display: inline;">
-                                    <?php echo csrf_field(); ?>
-                                    <button type="submit" 
-                                            class="btn btn-success me-2" 
-                                            onclick="return confirm('Marquer cette commande comme livrée ?')"
-                                            aria-label="Marquer la commande <?php echo e($order->order_number); ?> comme livrée">
-                                        <i class="fas fa-check-circle me-2"></i>
-                                        ✅ Marquer comme livrée
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                            
-                            
-                            <?php if($order->buyer_id === Auth::id() && $order->status === 'pending'): ?>
-                                <form method="POST" action="<?php echo e(route('orders.destroy', $order)); ?>" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler cette commande ?')">
-                                    <?php echo csrf_field(); ?>
-                                    <?php echo method_field('DELETE'); ?>
-                                    <button type="submit" 
-                                            class="btn btn-danger"
-                                            aria-label="Annuler la commande <?php echo e($order->order_number); ?>">
-                                        <i class="fas fa-times me-2"></i>
-                                        Annuler
-                                    </button>
-                                </form>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <!-- Actions rapides -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-cogs me-2"></i>
-                        Actions rapides
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="<?php echo e(route('items.show', $order->item)); ?>" class="btn btn-outline-primary">
-                            <i class="fas fa-eye me-2"></i>
+            <!-- Sidebar -->
+            <div class="xl:col-span-1 space-y-6">
+                <!-- Actions rapides -->
+                <div class="bg-white rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-cogs text-gray-500 mr-2"></i>
+                            Actions rapides
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <a href="<?php echo e(route('items.show', $order->item)); ?>" 
+                           class="w-full inline-flex items-center justify-center px-4 py-3 border border-blue-300 text-blue-700 font-semibold rounded-xl hover:bg-blue-50 hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200">
+                            <i class="fas fa-eye mr-2"></i>
                             Voir l'article
                         </a>
                         
                         <?php if($order->item->user_id === Auth::id()): ?>
-                            <a href="<?php echo e(route('items.edit', $order->item)); ?>" class="btn btn-outline-warning">
-                                <i class="fas fa-edit me-2"></i>
+                            <a href="<?php echo e(route('items.edit', $order->item)); ?>" 
+                               class="w-full inline-flex items-center justify-center px-4 py-3 border border-yellow-300 text-yellow-700 font-semibold rounded-xl hover:bg-yellow-50 hover:border-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-all duration-200">
+                                <i class="fas fa-edit mr-2"></i>
                                 Modifier l'article
                             </a>
                         <?php endif; ?>
                         
-                        <a href="<?php echo e(route('items.show', $order->item)); ?>#contact" class="btn btn-outline-info">
-                            <i class="fas fa-envelope me-2"></i>
+                        <a href="<?php echo e(route('items.show', $order->item)); ?>#contact" 
+                           class="w-full inline-flex items-center justify-center px-4 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                            <i class="fas fa-envelope mr-2"></i>
                             Contacter <?php echo e($order->buyer_id === Auth::id() ? 'le vendeur' : 'l\'acheteur'); ?>
 
                         </a>
 
                         
                         <?php if($order->status === 'pending'): ?>
-                            <div class="alert alert-warning mb-0" role="alert">
-                                <i class="fas fa-clock me-2"></i>
-                                <strong>En attente de paiement</strong>
-                                <?php if($order->buyer_id === Auth::id()): ?>
-                                    <br><small>Veuillez confirmer le paiement pour continuer</small>
-                                <?php else: ?>
-                                    <br><small>L'acheteur n'a pas encore payé</small>
-                                <?php endif; ?>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                                <div class="flex">
+                                    <i class="fas fa-clock text-yellow-500 mt-0.5 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-yellow-800">En attente de paiement</h4>
+                                        <p class="text-sm text-yellow-700 mt-1">
+                                            <?php if($order->buyer_id === Auth::id()): ?>
+                                                Veuillez confirmer le paiement pour continuer
+                                            <?php else: ?>
+                                                L'acheteur n'a pas encore payé
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         <?php elseif($order->status === 'confirmed'): ?>
-                            <div class="alert alert-info mb-0" role="alert">
-                                <i class="fas fa-box me-2"></i>
-                                <strong>Paiement confirmé</strong>
-                                <?php if($order->item->user_id === Auth::id()): ?>
-                                    <br><small>Vous pouvez maintenant expédier la commande</small>
-                                <?php else: ?>
-                                    <br><small>En attente d'expédition par le vendeur</small>
-                                <?php endif; ?>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <div class="flex">
+                                    <i class="fas fa-box text-blue-500 mt-0.5 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-blue-800">Paiement confirmé</h4>
+                                        <p class="text-sm text-blue-700 mt-1">
+                                            <?php if($order->item->user_id === Auth::id()): ?>
+                                                Vous pouvez maintenant expédier la commande
+                                            <?php else: ?>
+                                                En attente d'expédition par le vendeur
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         <?php elseif($order->status === 'shipped' && !$order->confirmed_by_buyer_at): ?>
                             <?php if($order->buyer_id === Auth::id()): ?>
-                                <button class="btn btn-success btn-lg" 
-                                        onclick="confirmDelivery()">
-                                    <i class="fas fa-check-circle me-2"></i>
+                                <button onclick="confirmDelivery()"
+                                        class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
+                                    <i class="fas fa-check-circle mr-2"></i>
                                     ✅ Commande Reçue
                                 </button>
-                                <div class="alert alert-primary mb-0 mt-2" role="alert">
-                                    <i class="fas fa-truck me-2"></i>
-                                    <small>Cliquez sur "Commande Reçue" une fois la livraison effectuée</small>
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <div class="flex">
+                                        <i class="fas fa-truck text-blue-500 mt-0.5 mr-3"></i>
+                                        <div>
+                                            <p class="text-sm text-blue-700">Cliquez sur "Commande Reçue" une fois la livraison effectuée</p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php else: ?>
-                                <div class="alert alert-primary mb-0" role="alert">
-                                    <i class="fas fa-shipping-fast me-2"></i>
-                                    <strong>Commande expédiée</strong>
-                                    <br><small>En attente de confirmation de réception par l'acheteur</small>
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <div class="flex">
+                                        <i class="fas fa-shipping-fast text-blue-500 mt-0.5 mr-3"></i>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-blue-800">Commande expédiée</h4>
+                                            <p class="text-sm text-blue-700 mt-1">En attente de confirmation de réception par l'acheteur</p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php endif; ?>
                         <?php elseif($order->status === 'delivered' && !$order->confirmed_by_buyer_at): ?>
                             <?php if($order->buyer_id === Auth::id()): ?>
-                                <button class="btn btn-success btn-lg" 
-                                        onclick="confirmDelivery()">
-                                    <i class="fas fa-check-circle me-2"></i>
+                                <button onclick="confirmDelivery()"
+                                        class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
+                                    <i class="fas fa-check-circle mr-2"></i>
                                     ✅ Commande Reçue
                                 </button>
-                                <div class="alert alert-primary mb-0 mt-2" role="alert">
-                                    <i class="fas fa-home me-2"></i>
-                                    <small>Confirmez la réception pour finaliser la transaction</small>
+                                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                    <div class="flex">
+                                        <i class="fas fa-home text-blue-500 mt-0.5 mr-3"></i>
+                                        <div>
+                                            <p class="text-sm text-blue-700">Confirmez la réception pour finaliser la transaction</p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php else: ?>
-                                <div class="alert alert-success mb-0" role="alert">
-                                    <i class="fas fa-check me-2"></i>
-                                    <strong>Commande livrée</strong>
-                                    <br><small>En attente de confirmation par l'acheteur</small>
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                                    <div class="flex">
+                                        <i class="fas fa-check text-emerald-500 mt-0.5 mr-3"></i>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-emerald-800">Commande livrée</h4>
+                                            <p class="text-sm text-emerald-700 mt-1">En attente de confirmation par l'acheteur</p>
+                                        </div>
+                                    </div>
                                 </div>
                             <?php endif; ?>
                         <?php endif; ?>
 
                         
                         <?php if($order->confirmed_by_buyer_at): ?>
-                            <div class="alert alert-success mb-0" role="alert">
-                                <i class="fas fa-check-circle me-2"></i>
-                                <strong>✅ Réception confirmée</strong>
-                                <br>
-                                <small>Le <?php echo e($order->confirmed_by_buyer_at->format('d/m/Y à H:i')); ?></small>
-                                <?php if($order->buyer_confirmation_note): ?>
-                                    <br><small class="text-muted fst-italic">"<?php echo e($order->buyer_confirmation_note); ?>"</small>
-                                <?php endif; ?>
-                                <hr class="my-2">
-                                <small class="text-muted">
-                                    <i class="fas fa-money-bill-wave me-1"></i>
-                                    La distribution des fonds a été effectuée
-                                </small>
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                                <div class="flex">
+                                    <i class="fas fa-check-circle text-emerald-500 mt-0.5 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-emerald-800">✅ Réception confirmée</h4>
+                                        <p class="text-sm text-emerald-700 mt-1">
+                                            Le <?php echo e($order->confirmed_by_buyer_at->format('d/m/Y à H:i')); ?>
+
+                                        </p>
+                                        <?php if($order->buyer_confirmation_note): ?>
+                                            <p class="text-sm text-emerald-600 mt-2 italic">"<?php echo e($order->buyer_confirmation_note); ?>"</p>
+                                        <?php endif; ?>
+                                        <div class="border-t border-emerald-200 mt-3 pt-3">
+                                            <p class="text-xs text-emerald-600 flex items-center">
+                                                <i class="fas fa-money-bill-wave mr-1"></i>
+                                                La distribution des fonds a été effectuée
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Informations supplémentaires -->
+                <div class="bg-white rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                            Informations
+                        </h3>
+                    </div>
+                    <div class="p-6 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Numéro:</span>
+                            <span class="text-sm font-semibold text-gray-900"><?php echo e($order->order_number); ?></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Créée le:</span>
+                            <span class="text-sm font-semibold text-gray-900"><?php echo e($order->created_at->format('d/m/Y')); ?></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Devise:</span>
+                            <span class="text-sm font-semibold text-gray-900"><?php echo e($order->currency); ?></span>
+                        </div>
+                        <?php if($order->updated_at !== $order->created_at): ?>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-600">Modifiée le:</span>
+                                <span class="text-sm font-semibold text-gray-900"><?php echo e($order->updated_at->format('d/m/Y')); ?></span>
                             </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
-
-            <!-- Informations supplémentaires -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Informations
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-2">
-                        <div class="col-6"><small class="text-muted">Numéro:</small></div>
-                        <div class="col-6 text-end"><small><?php echo e($order->order_number); ?></small></div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-6"><small class="text-muted">Créée le:</small></div>
-                        <div class="col-6 text-end"><small><?php echo e($order->created_at->format('d/m/Y')); ?></small></div>
-                    </div>
-                    <div class="row mb-2">
-                        <div class="col-6"><small class="text-muted">Devise:</small></div>
-                        <div class="col-6 text-end"><small><?php echo e($order->currency); ?></small></div>
-                    </div>
-                    <?php if($order->updated_at !== $order->created_at): ?>
-                        <div class="row">
-                            <div class="col-6"><small class="text-muted">Modifiée le:</small></div>
-                            <div class="col-6 text-end"><small><?php echo e($order->updated_at->format('d/m/Y')); ?></small></div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
         </div>
     </div>
 </div>
-
-<style>
-.timeline {
-    position: relative;
-    padding-left: 30px;
-}
-
-.timeline-item {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: -35px;
-    top: 0;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
-.timeline-content {
-    padding-left: 20px;
-    border-left: 2px solid #e9ecef;
-    padding-bottom: 10px;
-}
-
-.timeline-content h6 {
-    margin-bottom: 5px;
-}
-</style>
 
 <script>
 // Script pour confirmer la réception de la commande

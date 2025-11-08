@@ -2,6 +2,44 @@
 
 <?php $__env->startSection('title', 'Gestion du Carrousel Hero'); ?>
 
+<?php $__env->startPush('styles'); ?>
+<style>
+/* Styles pour le slider de durée */
+.slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e5e7eb;
+    outline: none;
+    border-radius: 0.5rem;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #8b5cf6;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #8b5cf6;
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider::-webkit-slider-track {
+    background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 calc((6 - 3) / (15 - 3) * 100%), #e5e7eb calc((6 - 3) / (15 - 3) * 100%), #e5e7eb 100%);
+}
+</style>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
     <?php if(session('success')): ?>
@@ -153,6 +191,16 @@
                                                 <?php if($slide->subtitle): ?>
                                                     <p class="text-sm text-gray-600 mt-1"><?php echo e($slide->subtitle); ?></p>
                                                 <?php endif; ?>
+                                                <!-- Affichage de la durée -->
+                                                <div class="flex items-center gap-4 mt-2">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                                                        <i class="fas fa-clock mr-1"></i><?php echo e($slide->display_duration ?? 6); ?>s
+                                                    </span>
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-700">
+                                                        <i class="fas fa-expand-arrows-alt mr-1"></i><?php echo e(ucfirst($slide->image_size ?? 'medium')); ?>
+
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <!-- Handle de glisser-déposer -->
@@ -343,6 +391,23 @@
                     <p class="text-xs text-gray-500 mt-1">Définit la hauteur maximale de l'image dans le carrousel</p>
                 </div>
                 
+                <!-- Durée d'affichage -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Durée d'affichage <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex items-center gap-3">
+                        <input type="number" name="display_duration" id="displayDuration" 
+                               min="3" max="15" step="1" value="6" required
+                               class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center">
+                        <span class="text-sm text-gray-600 font-medium">secondes</span>
+                        <input type="range" id="durationRange" 
+                               min="3" max="15" step="1" value="6"
+                               class="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Temps d'affichage de cette slide avant passage automatique à la suivante (3-15 secondes)</p>
+                </div>
+                
                 <!-- Bouton Principal -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -447,6 +512,8 @@ function showAddModal() {
     document.getElementById('textPosition').value = 'left';
     document.getElementById('imagePosition').value = 'right';
     document.getElementById('imageSize').value = 'medium';
+    document.getElementById('displayDuration').value = 6;
+    document.getElementById('durationRange').value = 6;
     
     document.getElementById('slideModal').classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
@@ -474,6 +541,8 @@ function editSlide(slideId) {
     document.getElementById('textPosition').value = slide.text_position || 'left';
     document.getElementById('imagePosition').value = slide.image_position || 'right';
     document.getElementById('imageSize').value = slide.image_size || 'medium';
+    document.getElementById('displayDuration').value = slide.display_duration || 6;
+    document.getElementById('durationRange').value = slide.display_duration || 6;
     document.getElementById('buttonPrimaryText').value = slide.button_primary_text || '';
     document.getElementById('buttonPrimaryUrl').value = slide.button_primary_url || '';
     document.getElementById('buttonSecondaryText').value = slide.button_secondary_text || '';
@@ -521,6 +590,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
                 colorPicker.value = hex;
             }
+        });
+    }
+    
+    // Synchroniser le champ durée avec le slider
+    const durationInput = document.getElementById('displayDuration');
+    const durationRange = document.getElementById('durationRange');
+    
+    if (durationInput && durationRange) {
+        durationInput.addEventListener('input', function() {
+            const value = Math.max(3, Math.min(15, parseInt(this.value) || 6));
+            this.value = value;
+            durationRange.value = value;
+        });
+        
+        durationRange.addEventListener('input', function() {
+            durationInput.value = this.value;
         });
     }
 });

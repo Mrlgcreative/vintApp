@@ -1,118 +1,157 @@
 @extends('app')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-lg">
-                <div class="card-header bg-warning text-dark">
-                    <h4 class="mb-0">
-                        <i class="fas fa-edit me-2"></i>
-                        Modifier l'article
-                    </h4>
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30 py-8">
+    <div class="container mx-auto px-4">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+            <a href="{{ route('home') }}" class="hover:text-amber-600 transition-colors">Accueil</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <a href="{{ route('items.index') }}" class="hover:text-amber-600 transition-colors">Produits</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <a href="{{ route('items.show', $item) }}" class="hover:text-amber-600 transition-colors">{{ $item->name }}</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <span class="text-gray-900 font-medium">Modifier</span>
+        </nav>
+
+        <div class="max-w-4xl mx-auto">
+            <!-- Header Card -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-amber-600/10 border border-gray-100/50 overflow-hidden mb-8">
+                <div class="bg-gradient-to-r from-amber-500 to-amber-600 text-white p-6 lg:p-8">
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                            <i class="fas fa-edit text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl lg:text-3xl font-bold">Modifier l'article</h1>
+                            <p class="text-amber-100 mt-1">Mettez à jour les informations de votre produit</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <form method="POST" action="{{ route('items.update', $item) }}" enctype="multipart/form-data" id="editItemForm">
+
+                <!-- Form -->
+                <div class="p-6 lg:p-8">
+                    <form method="POST" action="{{ route('items.update', $item) }}" enctype="multipart/form-data" id="editItemForm" class="space-y-8">
                         @csrf
                         @method('PUT')
 
                         <!-- Informations de base -->
-                        <div class="row mb-4">
-                            <div class="col-12">
-                                <h5 class="mb-3">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Informations de base
-                                </h5>
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-info-circle"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">Informations de base</h2>
                             </div>
 
-                            <!-- Nom de l'article -->
-                            <div class="col-md-8">
-                                <div class="form-floating mb-3">
+                            <!-- Nom et Prix -->
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Nom de l'article -->
+                                <div class="lg:col-span-2">
+                                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-tag text-amber-600 mr-2"></i>
+                                        Nom de l'article *
+                                    </label>
                                     <input type="text" 
-                                           class="form-control @error('name') is-invalid @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('name') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="name" 
                                            name="name" 
                                            value="{{ old('name', $item->name) }}" 
-                                           placeholder="Nom de l'article" 
+                                           placeholder="Ex: iPhone 14 Pro Max 256GB"
                                            required>
-                                    <label for="name">
-                                        <i class="fas fa-tag me-2"></i>
-                                        Nom de l'article *
-                                    </label>
                                     @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <!-- Prix -->
+                                <div>
+                                    <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-dollar-sign text-amber-600 mr-2"></i>
+                                        Prix *
+                                    </label>
+                                    <input type="number" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('price') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           id="price" 
+                                           name="price" 
+                                           value="{{ old('price', $item->price) }}" 
+                                           placeholder="0.00" 
+                                           step="0.01" 
+                                           min="0" 
+                                           required>
+                                    @error('price')
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
                             </div>
 
-                            <!-- Prix et devise -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <input type="number" 
-                                               class="form-control @error('price') is-invalid @enderror" 
-                                               id="price" 
-                                               name="price" 
-                                               value="{{ old('price', $item->price) }}" 
-                                               placeholder="Prix" 
-                                               step="0.01" 
-                                               min="0" 
-                                               required>
-                                        <label for="price">
-                                            <i class="fas fa-dollar-sign me-2"></i>
-                                            Prix *
-                                        </label>
-                                        @error('price')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-floating mb-3">
-                                        <select class="form-select @error('currency') is-invalid @enderror" 
-                                                id="currency" 
-                                                name="currency" 
-                                                required>
-                                            <option value="">Choisir la devise</option>
-                                            <option value="USD" {{ old('currency', $item->currency) == 'USD' ? 'selected' : '' }}>USD ($)</option>
-                                            <option value="CDF" {{ old('currency', $item->currency) == 'CDF' ? 'selected' : '' }}>CDF (FC)</option>
-                                        </select>
-                                        <label for="currency">
-                                            <i class="fas fa-money-bill me-2"></i>
-                                            Devise *
-                                        </label>
-                                        @error('currency')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                            <!-- Devise -->
+                            <div>
+                                <label for="currency" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-money-bill text-amber-600 mr-2"></i>
+                                    Devise *
+                                </label>
+                                <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('currency') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                        id="currency" 
+                                        name="currency" 
+                                        required>
+                                    <option value="">Choisir la devise</option>
+                                    <option value="USD" {{ old('currency', $item->currency) == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                                    <option value="CDF" {{ old('currency', $item->currency) == 'CDF' ? 'selected' : '' }}>CDF (FC)</option>
+                                </select>
+                                @error('currency')
+                                    <p class="text-red-500 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
 
-                        <!-- Description -->
-                        <div class="mb-4">
-                            <div class="form-floating">
-                                <textarea class="form-control @error('description') is-invalid @enderror" 
-                                          id="description" 
-                                          name="description" 
-                                          placeholder="Description détaillée" 
-                                          style="height: 120px" 
-                                          required>{{ old('description', $item->description) }}</textarea>
-                                <label for="description">
-                                    <i class="fas fa-align-left me-2"></i>
+                            <!-- Description -->
+                            <div class="col-span-full">
+                                <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-align-left text-amber-600 mr-2"></i>
                                     Description détaillée *
                                 </label>
+                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 resize-none @error('description') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="4"
+                                          placeholder="Décrivez votre article en détail..."
+                                          required>{{ old('description', $item->description) }}</textarea>
                                 @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-red-500 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ $message }}
+                                    </p>
                                 @enderror
                             </div>
                         </div>
 
-                        <!-- Catégorie et marque -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <select class="form-select @error('category_id') is-invalid @enderror" 
+                        <!-- Catégorie et informations produit -->
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">Informations produit</h2>
+                            </div>
+
+                            <!-- Catégorie et Marque -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Catégorie -->
+                                <div>
+                                    <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-folder text-amber-600 mr-2"></i>
+                                        Catégorie *
+                                    </label>
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('category_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="category_id" 
                                             name="category_id" 
                                             required>
@@ -124,19 +163,21 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <label for="category_id">
-                                        <i class="fas fa-folder me-2"></i>
-                                        Catégorie *
-                                    </label>
                                     @error('category_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <select class="form-select @error('brand_id') is-invalid @enderror" 
+                                <!-- Marque -->
+                                <div>
+                                    <label for="brand_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-trademark text-amber-600 mr-2"></i>
+                                        Marque
+                                    </label>
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('brand_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="brand_id" 
                                             name="brand_id">
                                         <option value="">Choisir une marque (optionnel)</option>
@@ -147,22 +188,24 @@
                                             </option>
                                         @endforeach
                                     </select>
-                                    <label for="brand_id">
-                                        <i class="fas fa-trademark me-2"></i>
-                                        Marque
-                                    </label>
                                     @error('brand_id')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- Condition et quantité -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
-                                    <select class="form-select @error('condition') is-invalid @enderror" 
+                            <!-- État et Quantité -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- État -->
+                                <div>
+                                    <label for="condition" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-star text-amber-600 mr-2"></i>
+                                        État de l'article *
+                                    </label>
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('condition') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="condition" 
                                             name="condition" 
                                             required>
@@ -173,32 +216,32 @@
                                         <option value="fair" {{ old('condition', $item->condition) == 'fair' ? 'selected' : '' }}>État correct</option>
                                         <option value="poor" {{ old('condition', $item->condition) == 'poor' ? 'selected' : '' }}>Usé</option>
                                     </select>
-                                    <label for="condition">
-                                        <i class="fas fa-star me-2"></i>
-                                        État de l'article *
-                                    </label>
                                     @error('condition')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div class="col-md-6">
-                                <div class="form-floating mb-3">
+                                <!-- Quantité -->
+                                <div>
+                                    <label for="quantity" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-boxes text-amber-600 mr-2"></i>
+                                        Quantité disponible *
+                                    </label>
                                     <input type="number" 
-                                           class="form-control @error('quantity') is-invalid @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('quantity') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="quantity" 
                                            name="quantity" 
                                            value="{{ old('quantity', $item->quantity) }}" 
-                                           placeholder="Quantité" 
                                            min="1" 
                                            required>
-                                    <label for="quantity">
-                                        <i class="fas fa-boxes me-2"></i>
-                                        Quantité disponible *
-                                    </label>
                                     @error('quantity')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <p class="text-red-500 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i>
+                                            {{ $message }}
+                                        </p>
                                     @enderror
                                 </div>
                             </div>
@@ -206,24 +249,24 @@
 
                         <!-- Images existantes -->
                         @if($item->images && count($item->images) > 0)
-                            <div class="mb-4">
-                                <h5 class="mb-3">
-                                    <i class="fas fa-images me-2"></i>
-                                    Images actuelles
-                                </h5>
-                                <div class="row">
+                            <div class="space-y-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center mr-3">
+                                        <i class="fas fa-images"></i>
+                                    </div>
+                                    <h2 class="text-xl font-bold text-gray-900">Images actuelles</h2>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     @foreach($item->images as $index => $image)
-                                        <div class="col-md-3 mb-3">
-                                            <div class="position-relative">
-                                                <img src="{{ Storage::url($image) }}" 
-                                                     class="img-thumbnail" 
-                                                     alt="Image {{ $index + 1 }}"
-                                                     style="height: 150px; object-fit: cover;">
-                                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 remove-existing-image" 
-                                                        data-image="{{ $image }}">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </div>
+                                        <div class="relative group">
+                                            <img src="{{ Storage::url($image) }}" 
+                                                 class="w-full h-32 object-cover rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300"
+                                                 alt="Image {{ $index + 1 }}">
+                                            <button type="button" class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-300 remove-existing-image opacity-0 group-hover:opacity-100" 
+                                                    data-image="{{ $image }}">
+                                                <i class="fas fa-times text-sm"></i>
+                                            </button>
                                         </div>
                                     @endforeach
                                 </div>
@@ -231,106 +274,126 @@
                         @endif
 
                         <!-- Nouvelles images -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">
-                                <i class="fas fa-plus me-2"></i>
-                                Ajouter de nouvelles images
-                            </h5>
-                            <div class="form-floating mb-3">
-                                <input type="file" 
-                                       class="form-control @error('images.*') is-invalid @enderror" 
-                                       id="images" 
-                                       name="images[]" 
-                                       multiple 
-                                       accept="image/*">
-                                <label for="images">
-                                    <i class="fas fa-upload me-2"></i>
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">Ajouter de nouvelles images</h2>
+                            </div>
+
+                            <div>
+                                <label for="images" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-upload text-amber-600 mr-2"></i>
                                     Sélectionner des images
                                 </label>
+                                <div class="relative">
+                                    <input type="file" 
+                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300 @error('images.*') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           id="images" 
+                                           name="images[]" 
+                                           multiple 
+                                           accept="image/*">
+                                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                        <div class="text-center">
+                                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                            <p class="text-gray-500">Glissez vos images ici ou cliquez pour sélectionner</p>
+                                        </div>
+                                    </div>
+                                </div>
                                 @error('images.*')
-                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    <p class="text-red-500 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>
+                                        {{ $message }}
+                                    </p>
                                 @enderror
-                            </div>
-                            <div class="form-text">
-                                <small class="text-muted">
-                                    <i class="fas fa-info-circle me-1"></i>
+                                <p class="text-gray-500 text-sm mt-2 flex items-center">
+                                    <i class="fas fa-info-circle mr-1"></i>
                                     Vous pouvez ajouter de nouvelles images aux existantes
-                                </small>
-                            </div>
-                            
-                            <!-- Prévisualisation des nouvelles images -->
-                            <div id="imagePreview" class="row mt-3" style="display: none;">
-                                <!-- Les prévisualisations seront ajoutées ici -->
+                                </p>
+                                
+                                <!-- Prévisualisation des nouvelles images -->
+                                <div id="imagePreview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 hidden">
+                                    <!-- Les prévisualisations seront ajoutées ici -->
+                                </div>
                             </div>
                         </div>
 
                         <!-- Spécifications -->
-                        <div class="mb-4">
-                            <h5 class="mb-3">
-                                <i class="fas fa-cogs me-2"></i>
-                                Spécifications
-                            </h5>
-                            <div id="specificationsContainer">
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-cogs"></i>
+                                </div>
+                                <h2 class="text-xl font-bold text-gray-900">Spécifications</h2>
+                            </div>
+
+                            <div id="specificationsContainer" class="space-y-4">
                                 @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
                                     @foreach($item->specifications as $key => $value)
-                                        <div class="row mb-2 specification-row">
-                                            <div class="col-md-5">
+                                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                                                 <input type="text" 
-                                                       class="form-control" 
+                                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                                                        name="specifications[key][]" 
                                                        value="{{ is_string($key) ? $key : '' }}"
-                                                       placeholder="Nom de la spécification">
+                                                       placeholder="Ex: Couleur, Matériau">
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                                                 <input type="text" 
-                                                       class="form-control" 
+                                                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                                                        name="specifications[value][]" 
                                                        value="{{ is_string($value) ? $value : '' }}"
-                                                       placeholder="Valeur">
+                                                       placeholder="Ex: Rouge, Coton">
                                             </div>
-                                            <div class="col-md-2">
-                                                <button type="button" class="btn btn-outline-danger btn-sm remove-specification">
+                                            <div>
+                                                <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="row mb-2 specification-row">
-                                        <div class="col-md-5">
+                                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                                             <input type="text" 
-                                                   class="form-control" 
+                                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                                                    name="specifications[key][]" 
-                                                   placeholder="Nom de la spécification">
+                                                   placeholder="Ex: Couleur, Matériau">
                                         </div>
-                                        <div class="col-md-5">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                                             <input type="text" 
-                                                   class="form-control" 
+                                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                                                    name="specifications[value][]" 
-                                                   placeholder="Valeur">
+                                                   placeholder="Ex: Rouge, Coton">
                                         </div>
-                                        <div class="col-md-2">
-                                            <button type="button" class="btn btn-outline-danger btn-sm remove-specification">
+                                        <div>
+                                            <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
                                     </div>
                                 @endif
                             </div>
-                            <button type="button" class="btn btn-outline-primary btn-sm" id="addSpecification">
-                                <i class="fas fa-plus me-2"></i>
+                            
+                            <button type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-600 px-6 py-3 rounded-xl transition-all duration-300 font-semibold" id="addSpecification">
+                                <i class="fas fa-plus mr-2"></i>
                                 Ajouter une spécification
                             </button>
                         </div>
 
                         <!-- Boutons -->
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('items.show', $item) }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>
+                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
+                            <a href="{{ route('items.show', $item) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl transition-all duration-300 font-semibold text-center">
+                                <i class="fas fa-arrow-left mr-2"></i>
                                 Annuler
                             </a>
-                            <button type="submit" class="btn btn-warning btn-lg">
-                                <i class="fas fa-save me-2"></i>
+                            <button type="submit" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-8 py-3 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                <i class="fas fa-save mr-2"></i>
                                 Sauvegarder les modifications
                             </button>
                         </div>
@@ -349,30 +412,27 @@ document.addEventListener('DOMContentLoaded', function() {
     
     imageInput.addEventListener('change', function(e) {
         imagePreview.innerHTML = '';
-        imagePreview.style.display = 'none';
+        imagePreview.classList.add('hidden');
         
         if (this.files.length > 0) {
-            imagePreview.style.display = 'block';
+            imagePreview.classList.remove('hidden');
             
             Array.from(this.files).forEach((file, index) => {
                 if (file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = function(e) {
-                        const col = document.createElement('div');
-                        col.className = 'col-md-3 mb-3';
-                        col.innerHTML = `
-                            <div class="position-relative">
-                                <img src="${e.target.result}" 
-                                     class="img-thumbnail" 
-                                     alt="Prévisualisation ${index + 1}"
-                                     style="height: 150px; object-fit: cover;">
-                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 remove-image" 
-                                        data-index="${index}">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
+                        const div = document.createElement('div');
+                        div.className = 'relative group';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" 
+                                 class="w-full h-32 object-cover rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300"
+                                 alt="Prévisualisation ${index + 1}">
+                            <button type="button" class="absolute -top-2 -right-2 w-8 h-8 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all duration-300 remove-image opacity-0 group-hover:opacity-100" 
+                                    data-index="${index}">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
                         `;
-                        imagePreview.appendChild(col);
+                        imagePreview.appendChild(div);
                     };
                     reader.readAsDataURL(file);
                 }
@@ -382,8 +442,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Supprimer une nouvelle image de la prévisualisation
     imagePreview.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-image')) {
-            const index = parseInt(e.target.dataset.index);
+        if (e.target.closest('.remove-image')) {
+            const button = e.target.closest('.remove-image');
+            const index = parseInt(button.dataset.index);
             const dt = new DataTransfer();
             const input = document.getElementById('images');
             const { files } = input;
@@ -395,10 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             input.files = dt.files;
-            e.target.closest('.col-md-3').remove();
+            button.closest('.relative').remove();
             
             if (imagePreview.children.length === 0) {
-                imagePreview.style.display = 'none';
+                imagePreview.classList.add('hidden');
             }
         }
     });
@@ -409,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const image = this.dataset.image;
             if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
                 // Ici vous pourriez ajouter une logique pour supprimer l'image du serveur
-                this.closest('.col-md-3').remove();
+                this.closest('.relative').remove();
             }
         });
     });
@@ -420,22 +481,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     addSpecBtn.addEventListener('click', function() {
         const newRow = document.createElement('div');
-        newRow.className = 'row mb-2 specification-row';
+        newRow.className = 'grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row';
         newRow.innerHTML = `
-            <div class="col-md-5">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                 <input type="text" 
-                       class="form-control" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                        name="specifications[key][]" 
-                       placeholder="Nom de la spécification">
+                       placeholder="Ex: Couleur, Matériau">
             </div>
-            <div class="col-md-5">
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                 <input type="text" 
-                       class="form-control" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-amber-600 focus:ring-4 focus:ring-amber-600/20 outline-none transition-all duration-300" 
                        name="specifications[value][]" 
-                       placeholder="Valeur">
+                       placeholder="Ex: Rouge, Coton">
             </div>
-            <div class="col-md-2">
-                <button type="button" class="btn btn-outline-danger btn-sm remove-specification">
+            <div>
+                <button type="button" class="w-full bg-red-100 hover:bg-red-200 text-red-600 px-4 py-3 rounded-xl transition-all duration-300 remove-specification">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -445,8 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Supprimer une spécification
     specContainer.addEventListener('click', function(e) {
-        if (e.target.classList.contains('remove-specification') || 
-            e.target.closest('.remove-specification')) {
+        if (e.target.closest('.remove-specification')) {
             e.target.closest('.specification-row').remove();
         }
     });
@@ -459,16 +521,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
-                field.classList.add('is-invalid');
+                field.classList.add('border-red-500', 'ring-4', 'ring-red-500/20');
+                field.classList.remove('border-gray-200');
                 isValid = false;
             } else {
-                field.classList.remove('is-invalid');
+                field.classList.remove('border-red-500', 'ring-4', 'ring-red-500/20');
+                field.classList.add('border-gray-200');
             }
         });
         
         if (!isValid) {
             e.preventDefault();
-            showNotification('Veuillez remplir tous les champs obligatoires', 'danger');
+            showNotification('Veuillez remplir tous les champs obligatoires', 'error');
         }
     });
 
@@ -487,92 +551,65 @@ document.addEventListener('DOMContentLoaded', function() {
             this.value = 1;
         }
     });
+
+    // Animation des input focus
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-2', 'ring-amber-500/20');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-2', 'ring-amber-500/20');
+        });
+    });
 });
 
 // Fonction pour afficher les notifications
 function showNotification(message, type = 'info') {
+    const colors = {
+        success: 'from-emerald-500 to-emerald-600',
+        error: 'from-red-500 to-red-600',
+        warning: 'from-amber-500 to-amber-600',
+        info: 'from-blue-500 to-blue-600'
+    };
+
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        warning: 'fa-exclamation-triangle',
+        info: 'fa-info-circle'
+    };
+
     const notification = document.createElement('div');
-    notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.className = `fixed top-5 right-5 z-50 min-w-80 max-w-md bg-gradient-to-r ${colors[type]} text-white rounded-2xl shadow-2xl p-4 transform transition-all duration-300 translate-x-full`;
     notification.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="flex items-start gap-3">
+            <div class="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <i class="fas ${icons[type]}"></i>
+            </div>
+            <div class="flex-1">
+                <p class="font-semibold text-sm">${message}</p>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
     `;
     
     document.body.appendChild(notification);
     
+    // Animation d'entrée
     setTimeout(() => {
-        notification.remove();
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Suppression automatique
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
     }, 5000);
 }
 </script>
-
-<style>
-.form-floating > .form-control {
-    border-radius: 0.5rem;
-}
-
-.btn-lg {
-    border-radius: 0.5rem;
-    padding: 0.75rem 2rem;
-}
-
-.card {
-    border-radius: 1rem;
-    border: none;
-}
-
-.card-header {
-    border-radius: 1rem 1rem 0 0 !important;
-}
-
-/* Animation d'entrée */
-.card {
-    animation: slideInUp 0.5s ease-out;
-}
-
-@keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Styles pour les spécifications */
-.specification-row {
-    transition: all 0.3s ease;
-}
-
-.specification-row:hover {
-    background-color: rgba(255, 193, 7, 0.05);
-    border-radius: 0.5rem;
-    padding: 0.5rem;
-    margin: -0.5rem;
-}
-
-/* Styles pour la prévisualisation des images */
-.img-thumbnail {
-    transition: transform 0.2s ease;
-}
-
-.img-thumbnail:hover {
-    transform: scale(1.05);
-}
-
-/* Styles responsives */
-@media (max-width: 768px) {
-    .card-body {
-        padding: 1.5rem !important;
-    }
-    
-    .btn-lg {
-        padding: 0.5rem 1.5rem;
-        font-size: 1rem;
-    }
-}
-</style>
 @endsection 

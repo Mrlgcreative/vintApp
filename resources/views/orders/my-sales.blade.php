@@ -1,283 +1,286 @@
 @extends('app')
 
 @section('content')
-<div class="container py-4">
-    <!-- En-tête -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2 mb-0">
-            <i class="fas fa-store me-2 text-primary"></i>
-            Mes Ventes
-        </h1>
-        <span class="badge bg-primary rounded-pill fs-6">
-            {{ $orders->total() }} commande(s)
-        </span>
-    </div>
-
-    <!-- Statistiques rapides -->
-    @if($orders->count() > 0)
-        <div class="row g-3 mb-4">
-            <!-- En attente (à payer) -->
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-start border-warning border-4 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-warning text-uppercase fw-semibold small mb-1">En attente</h6>
-                                <h2 class="mb-0 fw-bold">{{ $orders->where('status', 'pending')->count() }}</h2>
-                                <p class="text-muted small mb-0">Paiement attendu</p>
-                            </div>
-                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-clock fa-2x text-warning"></i>
-                            </div>
-                        </div>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- En-tête avec gradient indigo -->
+        <div class="mb-8">
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold flex items-center gap-3">
+                            <i class="fas fa-store text-indigo-200"></i>
+                            Mes Ventes
+                        </h1>
+                        <p class="text-indigo-100 mt-2">Gérez vos commandes et suivez vos ventes</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- Payées (à expédier) -->
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-start border-primary border-4 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-primary text-uppercase fw-semibold small mb-1">À expédier</h6>
-                                <h2 class="mb-0 fw-bold">{{ $orders->where('status', 'confirmed')->count() }}</h2>
-                                <p class="text-muted small mb-0">Prêtes à envoyer</p>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-box fa-2x text-primary"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Expédiées -->
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-start border-info border-4 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-info text-uppercase fw-semibold small mb-1">En transit</h6>
-                                <h2 class="mb-0 fw-bold">{{ $orders->where('status', 'shipped')->count() }}</h2>
-                                <p class="text-muted small mb-0">En livraison</p>
-                            </div>
-                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-shipping-fast fa-2x text-info"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Livrées/Terminées -->
-            <div class="col-md-6 col-lg-3">
-                <div class="card border-start border-success border-4 shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-success text-uppercase fw-semibold small mb-1">Terminées</h6>
-                                <h2 class="mb-0 fw-bold">{{ $orders->whereIn('status', ['delivered', 'completed'])->count() }}</h2>
-                                <p class="text-muted small mb-0">Paiement distribué</p>
-                            </div>
-                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                <i class="fas fa-check-circle fa-2x text-success"></i>
-                            </div>
-                        </div>
+                    <div class="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2">
+                        <span class="text-lg font-semibold">
+                            {{ $orders->total() }} commande(s)
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
-    @endif
 
-    <!-- Filtres rapides -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <div class="d-flex flex-wrap gap-2">
-                <a href="{{ route('orders.my-sales') }}" 
-                   class="btn {{ !request('status') ? 'btn-primary' : 'btn-outline-secondary' }}">
-                    <i class="fas fa-list me-2"></i>
-                    Toutes ({{ $orders->total() }})
-                </a>
-                <a href="{{ route('orders.my-sales', ['status' => 'pending']) }}" 
-                   class="btn {{ request('status') === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
-                    <i class="fas fa-clock me-2"></i>
-                    En attente
-                </a>
-                <a href="{{ route('orders.my-sales', ['status' => 'confirmed']) }}" 
-                   class="btn {{ request('status') === 'confirmed' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    <i class="fas fa-box me-2"></i>
-                    À expédier
-                </a>
-                <a href="{{ route('orders.my-sales', ['status' => 'shipped']) }}" 
-                   class="btn {{ request('status') === 'shipped' ? 'btn-info' : 'btn-outline-info' }}">
-                    <i class="fas fa-shipping-fast me-2"></i>
-                    Expédiées
-                </a>
-                <a href="{{ route('orders.my-sales', ['status' => 'delivered,completed']) }}" 
-                   class="btn {{ in_array(request('status'), ['delivered', 'completed']) ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="fas fa-check-circle me-2"></i>
-                    Terminées
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Liste des commandes -->
-    <div class="card shadow-sm">
+        <!-- Statistiques rapides -->
         @if($orders->count() > 0)
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Commande</th>
-                            <th>Article</th>
-                            <th>Acheteur</th>
-                            <th>Montant</th>
-                            <th>Statut</th>
-                            <th>Date</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($orders as $order)
-                            <tr>
-                                <td>
-                                    <div class="fw-bold">#{{ $order->id }}</div>
-                                    <small class="text-muted">{{ $order->order_number }}</small>
-                                    <div><small class="text-muted">Qté: {{ $order->quantity }}</small></div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        @if($order->item && $order->item->images && count($order->item->images) > 0)
-                                            <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
-                                                 class="rounded me-3" 
-                                                 style="width: 50px; height: 50px; object-fit: cover;"
-                                                 alt="{{ $order->item->name }}">
-                                        @else
-                                            <div class="bg-light rounded me-3 d-flex align-items-center justify-content-center" 
-                                                 style="width: 50px; height: 50px;">
-                                                <i class="fas fa-image text-muted"></i>
-                                            </div>
-                                        @endif
-                                        <div>
-                                            <div class="fw-semibold">{{ Str::limit($order->item->name ?? 'Article supprimé', 30) }}</div>
-                                            <small class="text-muted">{{ $order->item->category->name ?? 'Catégorie inconnue' }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        @if($order->buyer && $order->buyer->avatar)
-                                            <img src="{{ $order->buyer->avatar_url }}" 
-                                                 class="rounded-circle me-2" 
-                                                 style="width: 35px; height: 35px; object-fit: cover;"
-                                                 alt="Avatar">
-                                        @else
-                                            <div class="bg-primary bg-opacity-10 rounded-circle me-2 d-flex align-items-center justify-content-center text-primary fw-semibold" 
-                                                 style="width: 35px; height: 35px; font-size: 0.75rem;">
-                                                {{ $order->buyer->initial ?? '?' }}
-                                            </div>
-                                        @endif
-                                        <div>
-                                            <div class="fw-semibold">{{ $order->buyer->name ?? 'Utilisateur inconnu' }}</div>
-                                            <small class="text-muted">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
-                                                {{ $order->shipping_city ?? 'Ville non spécifiée' }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="fw-bold">{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</div>
-                                    <small class="text-muted">{{ number_format($order->unit_price, 2) }} × {{ $order->quantity }}</small>
-                                </td>
-                                <td>
-                                    @php
-                                        $statusConfig = [
-                                            'pending' => ['class' => 'bg-warning', 'icon' => 'fa-clock'],
-                                            'confirmed' => ['class' => 'bg-primary', 'icon' => 'fa-check'],
-                                            'shipped' => ['class' => 'bg-info', 'icon' => 'fa-shipping-fast'],
-                                            'delivered' => ['class' => 'bg-success', 'icon' => 'fa-box-check'],
-                                            'completed' => ['class' => 'bg-success', 'icon' => 'fa-check-circle'],
-                                            'cancelled' => ['class' => 'bg-danger', 'icon' => 'fa-times-circle'],
-                                        ];
-                                        $config = $statusConfig[$order->status] ?? ['class' => 'bg-secondary', 'icon' => 'fa-question'];
-                                    @endphp
-                                    <span class="badge {{ $config['class'] }}">
-                                        <i class="fas {{ $config['icon'] }} me-1"></i>
-                                        {{ $order->status_text }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div>{{ $order->created_at->format('d/m/Y') }}</div>
-                                    <small class="text-muted">{{ $order->created_at->format('H:i') }}</small>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <!-- Voir détails -->
-                                        <a href="{{ route('orders.show', $order) }}" 
-                                           class="btn btn-outline-primary"
-                                           title="Voir détails">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        <!-- Expédier (si confirmée) -->
-                                        @if($order->status === 'confirmed')
-                                            <form method="POST" action="{{ route('orders.mark-shipped', $order) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" 
-                                                        onclick="return confirm('Marquer cette commande comme expédiée ?')"
-                                                        class="btn btn-outline-info"
-                                                        title="Expédier">
-                                                    <i class="fas fa-shipping-fast"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                        
-                                        <!-- Marquer livrée (si expédiée) -->
-                                        @if($order->status === 'shipped')
-                                            <form method="POST" action="{{ route('orders.mark-delivered', $order) }}" class="d-inline">
-                                                @csrf
-                                                <button type="submit" 
-                                                        onclick="return confirm('Marquer cette commande comme livrée ?')"
-                                                        class="btn btn-outline-success"
-                                                        title="Marquer livrée">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- En attente (à payer) -->
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-yellow-500">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-yellow-600 text-sm font-semibold uppercase tracking-wide mb-2">En attente</h3>
+                                <p class="text-3xl font-bold text-gray-900">{{ $orders->where('status', 'pending')->count() }}</p>
+                                <p class="text-gray-500 text-sm mt-1">Paiement attendu</p>
+                            </div>
+                            <div class="bg-yellow-100 rounded-full p-3">
+                                <i class="fas fa-clock text-yellow-600 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Pagination -->
-            @if($orders->hasPages())
-                <div class="card-footer">
-                    <div class="d-flex justify-content-center">
-                        {{ $orders->links() }}
+                <!-- Payées (à expédier) -->
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-blue-500">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-blue-600 text-sm font-semibold uppercase tracking-wide mb-2">À expédier</h3>
+                                <p class="text-3xl font-bold text-gray-900">{{ $orders->where('status', 'confirmed')->count() }}</p>
+                                <p class="text-gray-500 text-sm mt-1">Prêtes à envoyer</p>
+                            </div>
+                            <div class="bg-blue-100 rounded-full p-3">
+                                <i class="fas fa-box text-blue-600 text-2xl"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            @endif
-        @else
-            <div class="card-body text-center py-5">
-                <div class="mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle" style="width: 80px; height: 80px;">
-                        <i class="fas fa-store fa-3x text-muted"></i>
+
+                <!-- Expédiées -->
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-indigo-500">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-indigo-600 text-sm font-semibold uppercase tracking-wide mb-2">En transit</h3>
+                                <p class="text-3xl font-bold text-gray-900">{{ $orders->where('status', 'shipped')->count() }}</p>
+                                <p class="text-gray-500 text-sm mt-1">En livraison</p>
+                            </div>
+                            <div class="bg-indigo-100 rounded-full p-3">
+                                <i class="fas fa-shipping-fast text-indigo-600 text-2xl"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <h3 class="h4 mb-3">Aucune vente pour le moment</h3>
-                <p class="text-muted mb-4">Vous n'avez pas encore reçu de commandes pour vos articles.</p>
-                <a href="{{ route('items.create') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus me-2"></i>
-                    Vendre un article
-                </a>
+
+                <!-- Livrées/Terminées -->
+                <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-green-500">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-green-600 text-sm font-semibold uppercase tracking-wide mb-2">Terminées</h3>
+                                <p class="text-3xl font-bold text-gray-900">{{ $orders->whereIn('status', ['delivered', 'completed'])->count() }}</p>
+                                <p class="text-gray-500 text-sm mt-1">Paiement distribué</p>
+                            </div>
+                            <div class="bg-green-100 rounded-full p-3">
+                                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
+
+        <!-- Filtres rapides -->
+        <div class="bg-white rounded-xl shadow-lg mb-8">
+            <div class="p-6">
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('orders.my-sales') }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 {{ !request('status') ? 'bg-indigo-600 text-white shadow-lg' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        <i class="fas fa-list"></i>
+                        Toutes ({{ $orders->total() }})
+                    </a>
+                    <a href="{{ route('orders.my-sales', ['status' => 'pending']) }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 {{ request('status') === 'pending' ? 'bg-yellow-500 text-white shadow-lg' : 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100' }}">
+                        <i class="fas fa-clock"></i>
+                        En attente
+                    </a>
+                    <a href="{{ route('orders.my-sales', ['status' => 'confirmed']) }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 {{ request('status') === 'confirmed' ? 'bg-blue-500 text-white shadow-lg' : 'bg-blue-50 text-blue-700 hover:bg-blue-100' }}">
+                        <i class="fas fa-box"></i>
+                        À expédier
+                    </a>
+                    <a href="{{ route('orders.my-sales', ['status' => 'shipped']) }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 {{ request('status') === 'shipped' ? 'bg-indigo-500 text-white shadow-lg' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100' }}">
+                        <i class="fas fa-shipping-fast"></i>
+                        Expédiées
+                    </a>
+                    <a href="{{ route('orders.my-sales', ['status' => 'delivered,completed']) }}" 
+                       class="inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 {{ in_array(request('status'), ['delivered', 'completed']) ? 'bg-green-500 text-white shadow-lg' : 'bg-green-50 text-green-700 hover:bg-green-100' }}">
+                        <i class="fas fa-check-circle"></i>
+                        Terminées
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des commandes -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            @if($orders->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Commande</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Article</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Acheteur</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Montant</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach($orders as $order)
+                                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-gray-900">#{{ $order->id }}</div>
+                                        <div class="text-sm text-gray-500">{{ $order->order_number }}</div>
+                                        <div class="text-sm text-gray-500">Qté: {{ $order->quantity }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            @if($order->item && $order->item->images && count($order->item->images) > 0)
+                                                <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
+                                                     class="w-12 h-12 rounded-lg object-cover shadow-sm"
+                                                     alt="{{ $order->item->name }}"
+                                                     loading="lazy">
+                                            @else
+                                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                    <i class="fas fa-image text-gray-400"></i>
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <div class="font-semibold text-gray-900">{{ Str::limit($order->item->name ?? 'Article supprimé', 30) }}</div>
+                                                <div class="text-sm text-gray-500">{{ $order->item->category->name ?? 'Catégorie inconnue' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-3">
+                                            @if($order->buyer && $order->buyer->avatar)
+                                                <img src="{{ $order->buyer->avatar_url }}" 
+                                                     class="w-9 h-9 rounded-full object-cover"
+                                                     alt="Avatar"
+                                                     loading="lazy">
+                                            @else
+                                                <div class="w-9 h-9 bg-indigo-100 rounded-full flex items-center justify-content center text-indigo-600 font-semibold text-sm">
+                                                    {{ $order->buyer->initial ?? '?' }}
+                                                </div>
+                                            @endif
+                                            <div>
+                                                <div class="font-semibold text-gray-900">{{ $order->buyer->name ?? 'Utilisateur inconnu' }}</div>
+                                                <div class="text-sm text-gray-500 flex items-center gap-1">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    {{ $order->shipping_city ?? 'Ville non spécifiée' }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="font-bold text-gray-900">{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</div>
+                                        <div class="text-sm text-gray-500">{{ number_format($order->unit_price, 2) }} × {{ $order->quantity }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        @php
+                                            $statusConfig = [
+                                                'pending' => ['class' => 'bg-yellow-100 text-yellow-800', 'icon' => 'fa-clock'],
+                                                'confirmed' => ['class' => 'bg-blue-100 text-blue-800', 'icon' => 'fa-check'],
+                                                'shipped' => ['class' => 'bg-indigo-100 text-indigo-800', 'icon' => 'fa-shipping-fast'],
+                                                'delivered' => ['class' => 'bg-green-100 text-green-800', 'icon' => 'fa-box-check'],
+                                                'completed' => ['class' => 'bg-green-100 text-green-800', 'icon' => 'fa-check-circle'],
+                                                'cancelled' => ['class' => 'bg-red-100 text-red-800', 'icon' => 'fa-times-circle'],
+                                            ];
+                                            $config = $statusConfig[$order->status] ?? ['class' => 'bg-gray-100 text-gray-800', 'icon' => 'fa-question'];
+                                        @endphp
+                                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium {{ $config['class'] }}">
+                                            <i class="fas {{ $config['icon'] }}"></i>
+                                            {{ $order->status_text }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-gray-900">{{ $order->created_at->format('d/m/Y') }}</div>
+                                        <div class="text-sm text-gray-500">{{ $order->created_at->format('H:i') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center justify-center gap-2">
+                                            <!-- Voir détails -->
+                                            <a href="{{ route('orders.show', $order) }}" 
+                                               class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors duration-200"
+                                               title="Voir détails">
+                                                <i class="fas fa-eye text-sm"></i>
+                                            </a>
+                                            
+                                            <!-- Expédier (si confirmée) -->
+                                            @if($order->status === 'confirmed')
+                                                <form method="POST" action="{{ route('orders.mark-shipped', $order) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" 
+                                                            onclick="return confirm('Marquer cette commande comme expédiée ?')"
+                                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition-colors duration-200"
+                                                            title="Expédier">
+                                                        <i class="fas fa-shipping-fast text-sm"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                            
+                                            <!-- Marquer livrée (si expédiée) -->
+                                            @if($order->status === 'shipped')
+                                                <form method="POST" action="{{ route('orders.mark-delivered', $order) }}" class="inline">
+                                                    @csrf
+                                                    <button type="submit" 
+                                                            onclick="return confirm('Marquer cette commande comme livrée ?')"
+                                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-green-100 text-green-600 hover:bg-green-200 transition-colors duration-200"
+                                                            title="Marquer livrée">
+                                                        <i class="fas fa-check-circle text-sm"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if($orders->hasPages())
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <div class="flex justify-center">
+                            {{ $orders->links() }}
+                        </div>
+                    </div>
+                @endif
+            @else
+                <!-- État vide -->
+                <div class="text-center py-16">
+                    <div class="mb-6">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full">
+                            <i class="fas fa-store text-3xl text-gray-400"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucune vente pour le moment</h3>
+                    <p class="text-gray-500 mb-8 max-w-md mx-auto">Vous n'avez pas encore reçu de commandes pour vos articles.</p>
+                    <a href="{{ route('items.create') }}" 
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-plus"></i>
+                        Vendre un article
+                    </a>
+                </div>
+            @endif
+        </div>
     </div>
 </div>
 @endsection 

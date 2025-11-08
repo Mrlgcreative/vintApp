@@ -1,1543 +1,594 @@
 @extends('app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row g-4">
-        <!-- Galerie d'images verticale -->
-        <div class="col-lg-1 d-none d-lg-block">
-            @if($item->images && count($item->images) > 0)
-                <div class="d-flex flex-column align-items-center gap-3 product-thumbnails-wrapper">
-                    @foreach($item->images as $index => $image)
-                        <div class="thumbnail-container {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}">
-                            <img src="{{ Storage::url($image) }}" 
-                                 class="product-thumb" 
-                                 alt="Miniature {{ $index + 1 }}">
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-        <!-- Image principale -->
-        <div class="col-lg-5">
-            <div class="main-image-container">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+    <div class="container mx-auto px-4 py-8 lg:py-16">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+            <a href="{{ route('home') }}" class="hover:text-purple-600 transition-colors">Accueil</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <a href="{{ route('items.index') }}" class="hover:text-purple-600 transition-colors">Produits</a>
+            <i class="fas fa-chevron-right text-xs"></i>
+            <span class="text-gray-900 font-medium">{{ Str::limit($item->name, 30) }}</span>
+        </nav>
+
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+            <!-- Galerie d'images verticale -->
+            <div class="hidden xl:block xl:col-span-1">
                 @if($item->images && count($item->images) > 0)
-                    <img id="mainProductImg" 
-                         src="{{ Storage::url($item->images[0]) }}" 
-                         class="main-product-image" 
-                         alt="{{ $item->name }}">
-                    <div class="image-overlay">
-                        <i class="fas fa-search-plus"></i>
-                    </div>
-                @else
-                    <div class="no-image-placeholder">
-                        <i class="fas fa-image fa-4x"></i>
-                        <p class="mt-3">Aucune image disponible</p>
+                    <div class="sticky top-20 flex flex-col items-center gap-2">
+                        @foreach($item->images as $index => $image)
+                            <div class="thumbnail-item w-14 h-14 lg:w-16 lg:h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 cursor-pointer relative 
+                                {{ $index === 0 ? 'border-purple-600 shadow-lg shadow-purple-600/25 scale-105' : 'border-gray-200 hover:border-purple-300' }}"
+                                data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
+                                <img src="{{ Storage::url($image) }}" 
+                                     class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
+                                     alt="Miniature {{ $index + 1 }}">
+                                <div class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-purple-700/15 opacity-0 transition-opacity duration-300
+                                    {{ $index === 0 ? 'opacity-100' : 'hover:opacity-100' }}"></div>
+                            </div>
+                        @endforeach
                     </div>
                 @endif
             </div>
-        </div>
-        <!-- Card produit -->
-        <div class="col-lg-6">
-            <div class="product-details-card">
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="flex-grow-1">
-                        <h1 class="product-title">{{ $item->name }}</h1>
-                        <div class="badges-wrapper mt-3">
-                            <span class="custom-badge badge-category">
-                                <i class="fas fa-tag me-1"></i>
-                                {{ $item->category->name }}
-                            </span>
-                            @if($item->brand)
-                                <span class="custom-badge badge-brand">
-                                    <i class="fas fa-copyright me-1"></i>
-                                    {{ $item->brand->name }}
+
+            <!-- Images mobiles horizontales -->
+            <div class="xl:hidden mb-4">
+                @if($item->images && count($item->images) > 0)
+                    <div class="flex gap-2 overflow-x-auto pb-2">
+                        @foreach($item->images as $index => $image)
+                            <div class="thumbnail-item flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 cursor-pointer 
+                                {{ $index === 0 ? 'border-purple-600 shadow-lg shadow-purple-600/25' : 'border-gray-200' }}"
+                                data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
+                                <img src="{{ Storage::url($image) }}" 
+                                     class="w-full h-full object-cover transition-transform duration-300" 
+                                     alt="Miniature {{ $index + 1 }}">
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <!-- Image principale -->
+            <div class="xl:col-span-6 order-2 xl:order-1">
+                <div class="relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-purple-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                    @if($item->images && count($item->images) > 0)
+                        <img id="mainProductImg" 
+                             src="{{ Storage::url($item->images[0]) }}" 
+                             class="w-full h-64 sm:h-80 lg:h-[400px] xl:h-[500px] object-contain rounded-xl lg:rounded-2xl transition-all duration-300" 
+                             alt="{{ $item->name }}">
+                        <div class="absolute inset-4 lg:inset-6 bg-black/70 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300 cursor-zoom-in">
+                            <i class="fas fa-search-plus text-white text-3xl lg:text-5xl animate-pulse"></i>
+                        </div>
+                    @else
+                        <div class="h-64 sm:h-80 lg:h-[400px] xl:h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl lg:rounded-2xl text-gray-500">
+                            <i class="fas fa-image text-4xl lg:text-6xl mb-4"></i>
+                            <p class="text-base lg:text-lg font-medium">Aucune image disponible</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Card produit -->
+            <div class="xl:col-span-5 order-1 xl:order-2">
+                <div class="sticky top-4 lg:top-6 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl shadow-purple-600/10 transform transition-all duration-300 animate-fade-in border border-gray-100/50">
+                    <!-- En-tête avec titre et bouton favori -->
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex-1 pr-3 lg:pr-4">
+                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3 lg:mb-4">{{ $item->name }}</h1>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                    <i class="fas fa-tag mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
+                                    {{ $item->category->name }}
                                 </span>
-                            @endif
-                            <span class="custom-badge badge-condition-{{ $item->condition }}">
-                                <i class="fas fa-certificate me-1"></i>
-                                {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                                @if($item->brand)
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-indigo-50 to-indigo-100 text-indigo-600 border border-indigo-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                        <i class="fas fa-copyright mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
+                                        {{ $item->brand->name }}
+                                    </span>
+                                @endif
+                                @php
+                                    $conditionClass = match($item->condition) {
+                                        'new' => 'from-emerald-50 to-emerald-100 text-emerald-600 border-emerald-200/50',
+                                        'used', 'like_new' => 'from-amber-50 to-amber-100 text-amber-600 border-amber-200/50',
+                                        default => 'from-gray-50 to-gray-100 text-gray-600 border-gray-200/50'
+                                    };
+                                @endphp
+                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r {{ $conditionClass }} text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                    <i class="fas fa-certificate mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
+                                    {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                                </span>
+                            </div>
+                        </div>
+                        @auth
+                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-purple-200/50 bg-white flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
+                                data-item-id="{{ $item->id }}">
+                                <i class="fas fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
+                            </button>
+                        @endauth
+                    </div>
+
+                    <!-- Section prix -->
+                    <div class="bg-gradient-to-r from-purple-50/50 to-purple-100/50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-purple-200/30 mb-4 lg:mb-6">
+                        <div class="flex items-center justify-between flex-wrap gap-3 lg:gap-4">
+                            <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                                {{ $item->formatted_price }}
                             </span>
+                            <div class="flex items-center">
+                                @if($item->quantity > 0)
+                                    <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                    <span class="text-emerald-600 font-semibold text-sm lg:text-base">En stock</span>
+                                @else
+                                    <i class="fas fa-times-circle text-red-500 mr-2"></i>
+                                    <span class="text-red-600 font-semibold text-sm lg:text-base">Rupture de stock</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    @auth
-                        <button class="favorite-button" data-item-id="{{ $item->id }}">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    @endauth
-                </div>
-                
-                <div class="price-section mb-4">
-                    <div class="d-flex align-items-baseline gap-3">
-                        <span class="product-price">{{ $item->formatted_price }}</span>
-                        <div class="stock-badge">
-                            @if($item->quantity > 0) 
-                                <i class="fas fa-check-circle text-success me-1"></i>
-                                <span class="text-success fw-medium">En stock</span>
-                            @else 
-                                <i class="fas fa-times-circle text-danger me-1"></i>
-                                <span class="text-danger fw-medium">Rupture de stock</span>
+
+                    <!-- Métadonnées du produit -->
+                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-purple-200/20 mb-4 lg:mb-6">
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-eye text-white text-xs lg:text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Vues</p>
+                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->views }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-boxes text-white text-xs lg:text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Quantité</p>
+                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->quantity }}</p>
+                                </div>
+                            </div>
+
+                            @if($item->color)
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-palette text-white text-xs lg:text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Couleur</p>
+                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->color }}</p>
+                                </div>
+                            </div>
                             @endif
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="product-meta mb-4">
-                    <div class="row g-3">
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-eye meta-icon"></i>
-                                <div>
-                                    <small class="meta-label">Vues</small>
-                                    <div class="meta-value">{{ $item->views }}</div>
+
+                            @if($item->size)
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-ruler text-white text-xs lg:text-sm"></i>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-boxes meta-icon"></i>
                                 <div>
-                                    <small class="meta-label">Quantité</small>
-                                    <div class="meta-value">{{ $item->quantity }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        @if($item->color)
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-palette meta-icon"></i>
-                                <div>
-                                    <small class="meta-label">Couleur</small>
-                                    <div class="meta-value">{{ $item->color }}</div>
-                                </div>
-                            </div>
-                        </div>
-                        @endif
-                        @if($item->size)
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-ruler meta-icon"></i>
-                                <div>
-                                    <small class="meta-label">Taille</small>
-                                    <div class="meta-value">
-                                        <span class="size-badge">{{ $item->size }}</span>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Taille</p>
+                                    <div class="text-gray-900 font-bold text-sm lg:text-base">
+                                        <span class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-2 py-1 rounded text-xs font-semibold">
+                                            {{ $item->size }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        @endif
-                        @if($item->item_number)
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-barcode meta-icon"></i>
+                            @endif
+
+                            @if($item->item_number)
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-barcode text-white text-xs lg:text-sm"></i>
+                                </div>
                                 <div>
-                                    <small class="meta-label">N° Article</small>
-                                    <div class="meta-value">{{ $item->item_number }}</div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">N° Article</p>
+                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->item_number }}</p>
                                 </div>
                             </div>
-                        </div>
-                        @endif
-                        <div class="col-6 col-md-4">
-                            <div class="meta-item">
-                                <i class="fas fa-calendar-alt meta-icon"></i>
+                            @endif
+
+                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-calendar-alt text-white text-xs lg:text-sm"></i>
+                                </div>
                                 <div>
-                                    <small class="meta-label">Publié le</small>
-                                    <div class="meta-value">{{ $item->created_at->format('d/m/Y') }}</div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Publié le</p>
+                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->created_at->format('d/m/Y') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="cart-section mb-4">
-                    <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm">
-                        @csrf
-                        <div class="quantity-selector mb-3">
-                            <label class="form-label fw-medium">Quantité</label>
-                            <div class="input-group quantity-input-group">
-                                <button type="button" class="btn btn-quantity" onclick="decrementQuantity()">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="{{ $item->quantity }}" class="form-control text-center quantity-input">
-                                <button type="button" class="btn btn-quantity" onclick="incrementQuantity()">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-add-to-cart w-100" id="addToCartBtn">
-                            <i class="fas fa-shopping-cart me-2"></i>
-                            <span>Ajouter au panier</span>
-                        </button>
-                    </form>
-                </div>
-                
-                <div class="description-section mb-4">
-                    <h5 class="section-title">
-                        <i class="fas fa-align-left me-2"></i>
-                        Description
-                    </h5>
-                    <p class="description-text">{{ $item->description }}</p>
-                </div>
-                
-                @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
-                    <div class="specifications-section mb-4">
-                        <h5 class="section-title">
-                            <i class="fas fa-list-ul me-2"></i>
-                            Spécifications
-                        </h5>
-                        <div class="specifications-grid">
-                            @foreach($item->specifications as $key => $value)
-                                <div class="spec-item">
-                                    <span class="spec-key">{{ is_string($key) ? ucfirst($key) : '' }}</span>
-                                    <span class="spec-value">{{ is_string($value) ? $value : (is_array($value) ? json_encode($value) : '') }}</span>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-                
-                <div class="seller-section mb-4">
-                    <h5 class="section-title">
-                        <i class="fas fa-user-circle me-2"></i>
-                        Vendeur
-                    </h5>
-                    <div class="seller-card">
-                        <div class="d-flex align-items-center">
-                            <div class="seller-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="seller-name">{{ $item->user->name }}</div>
-                                <small class="seller-info">
-                                    <i class="fas fa-calendar me-1"></i>
-                                    Membre depuis {{ $item->user->created_at->format('M Y') }}
-                                </small>
-                            </div>
-                            <div class="seller-rating">
-                                <i class="fas fa-star text-warning"></i>
-                                <span class="ms-1">4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Réductions disponibles -->
-                @auth
-                    @if(Auth::id() !== $item->user_id)
-                        <div id="discountSection" class="discount-alert" style="display: none;">
-                            <div class="discount-content">
-                                <div class="discount-icon">
-                                    <i class="fas fa-tag"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="discount-title">Réduction disponible !</h6>
-                                    <div id="discountInfo" class="discount-details"></div>
+
+                    <!-- Section panier -->
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                        <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm">
+                            @csrf
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-semibold mb-2">Quantité</label>
+                                <div class="flex items-center max-w-xs">
+                                    <button type="button" onclick="decrementQuantity()" 
+                                        class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="{{ $item->quantity }}" 
+                                        class="flex-1 h-11 border-2 border-purple-200/50 text-center font-bold text-gray-900 text-lg focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300">
+                                    <button type="button" onclick="incrementQuantity()" 
+                                        class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
                                 </div>
                             </div>
-                            <button class="btn btn-apply-discount mt-3 w-100" onclick="applyDiscount()">
-                                <i class="fas fa-check me-2"></i>
-                                Appliquer la réduction
+                            <button type="submit" id="addToCartBtn" 
+                                class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group">
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+                                <i class="fas fa-shopping-cart mr-3"></i>
+                                <span>Ajouter au panier</span>
                             </button>
+                        </form>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="bg-gray-50 p-6 rounded-2xl border-l-4 border-purple-600 mb-6">
+                        <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                            <i class="fas fa-align-left text-purple-600 mr-3"></i>
+                            Description
+                        </h5>
+                        <p class="text-gray-600 leading-relaxed">{{ $item->description }}</p>
+                    </div>
+
+                    <!-- Spécifications -->
+                    @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                            <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                                <i class="fas fa-list-ul text-purple-600 mr-3"></i>
+                                Spécifications
+                            </h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                @foreach($item->specifications as $key => $value)
+                                    <div class="bg-white p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:shadow-md hover:translate-x-1">
+                                        <span class="font-semibold text-gray-600 text-sm">{{ is_string($key) ? ucfirst($key) : '' }}</span>
+                                        <span class="font-bold text-gray-900">{{ is_string($value) ? $value : (is_array($value) ? json_encode($value) : '') }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
-                @endauth
 
-                <div class="action-buttons">
+                    <!-- Vendeur -->
+                    <div class="bg-gradient-to-r from-purple-50/30 to-purple-100/30 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                        <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                            <i class="fas fa-user-circle text-purple-600 mr-3"></i>
+                            Vendeur
+                        </h5>
+                        <div class="bg-white p-5 rounded-xl transition-all duration-300 hover:shadow-lg">
+                            <div class="flex items-center">
+                                <div class="w-15 h-15 rounded-full bg-gradient-to-r from-purple-600 to-purple-700 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-lg font-bold text-gray-900 mb-1">{{ $item->user->name }}</div>
+                                    <small class="text-gray-500 text-sm">
+                                        <i class="fas fa-calendar mr-1"></i>
+                                        Membre depuis {{ $item->user->created_at->format('M Y') }}
+                                    </small>
+                                </div>
+                                <div class="flex items-center text-lg font-bold text-gray-900">
+                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                    <span>4.8</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Réductions disponibles -->
                     @auth
                         @if(Auth::id() !== $item->user_id)
-                            <!-- Bouton de contact avec demande de réduction -->
-                            <form id="contactForm" method="POST" action="{{ route('contact.seller', $item) }}">
-                                @csrf
-                                <button type="button" class="btn btn-discount-request mb-3 w-100" data-bs-toggle="modal" data-bs-target="#contactModal">
-                                    <i class="fas fa-percentage me-2"></i>
-                                    Demander une réduction
-                                </button>
-                            </form>
-                            
-                            <!-- Bouton contact simple -->
-                            <button class="btn btn-contact-seller w-100" onclick="contactSeller()">
-                                <i class="fas fa-envelope me-2"></i>
-                                Contacter le vendeur
-                            </button>
-                        @else
-                            <div class="owner-actions">
-                                <a href="{{ route('items.edit', $item) }}" class="btn btn-edit-item">
-                                    <i class="fas fa-edit me-2"></i>
-                                    Modifier
-                                </a>
-                                <button class="btn btn-delete-item" onclick="deleteItem()">
-                                    <i class="fas fa-trash me-2"></i>
-                                    Supprimer
+                            <div id="discountSection" class="hidden bg-gradient-to-r from-emerald-50 to-emerald-100 border-2 border-emerald-300/50 rounded-2xl p-6 mb-6 animate-fade-in">
+                                <div class="flex gap-4 mb-4">
+                                    <div class="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl flex-shrink-0">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h6 class="font-bold text-emerald-600 mb-2">Réduction disponible !</h6>
+                                        <div id="discountInfo" class="text-gray-600 text-sm"></div>
+                                    </div>
+                                </div>
+                                <button onclick="applyDiscount()" 
+                                    class="w-full bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-check mr-2"></i>
+                                    Appliquer la réduction
                                 </button>
                             </div>
                         @endif
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-login-required w-100">
-                            <i class="fas fa-sign-in-alt me-2"></i>
-                            Se connecter pour acheter
-                        </a>
                     @endauth
+
+                    <!-- Boutons d'action -->
+                    <div class="space-y-4">
+                        @auth
+                            @if(Auth::id() !== $item->user_id)
+                                <!-- Bouton demande de réduction -->
+                                <form id="contactForm" method="POST" action="{{ route('contact.seller', $item) }}">
+                                    @csrf
+                                    <button type="button" onclick="openModal('contactModal')"
+                                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3">
+                                        <i class="fas fa-percentage mr-3"></i>
+                                        Demander une réduction
+                                    </button>
+                                </form>
+                                
+                                <!-- Bouton contact vendeur -->
+                                <button onclick="contactSeller()" 
+                                    class="w-full bg-white text-purple-600 border-2 border-purple-600 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-purple-600 hover:text-white hover:-translate-y-1 hover:shadow-lg">
+                                    <i class="fas fa-envelope mr-3"></i>
+                                    Contacter le vendeur
+                                </button>
+                            @else
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <a href="{{ route('items.edit', $item) }}" 
+                                        class="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold py-4 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg inline-flex items-center justify-center">
+                                        <i class="fas fa-edit mr-3"></i>
+                                        Modifier
+                                    </a>
+                                    <button onclick="deleteItem()" 
+                                        class="bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                                        <i class="fas fa-trash mr-3"></i>
+                                        Supprimer
+                                    </button>
+                                </div>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" 
+                                class="block w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
+                                <i class="fas fa-sign-in-alt mr-3"></i>
+                                Se connecter pour acheter
+                            </a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Articles similaires -->
-    @if($similarItems->count() > 0)
-        <div class="similar-items-section mt-5">
-            <div class="section-header mb-4">
-                <h3 class="section-main-title">
-                    <i class="fas fa-heart me-2"></i>
-                    Vous aimerez aussi
-                </h3>
-                <p class="section-subtitle">Découvrez d'autres articles similaires</p>
-            </div>
-            <div class="row g-4">
-                @foreach($similarItems as $similarItem)
-                    <div class="col-6 col-md-4 col-lg-3">
-                        <div class="similar-item-card">
-                            <div class="similar-item-image-wrapper">
+
+        <!-- Articles similaires -->
+        @if($similarItems->count() > 0)
+            <div class="mt-12 lg:mt-20 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-purple-600/5">
+                <div class="text-center mb-6 lg:mb-8">
+                    <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                        <i class="fas fa-heart text-purple-600 mr-2 lg:mr-3"></i>
+                        Vous aimerez aussi
+                    </h3>
+                    <p class="text-gray-600 text-base lg:text-lg">Découvrez d'autres articles similaires</p>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                    @foreach($similarItems as $similarItem)
+                        <div class="bg-white rounded-xl lg:rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group">
+                            <div class="relative overflow-hidden h-32 sm:h-40 lg:h-48 bg-gray-100">
                                 @if($similarItem->images && count($similarItem->images) > 0)
                                     <img src="{{ Storage::url($similarItem->images[0]) }}" 
-                                         class="similar-item-image" 
-                                         alt="{{ $similarItem->name }}">
+                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
+                                         alt="{{ $similarItem->name }}"
+                                         loading="lazy">
                                 @else
-                                    <div class="similar-item-no-image">
+                                    <div class="w-full h-full flex items-center justify-center text-gray-400 text-2xl lg:text-4xl">
                                         <i class="fas fa-image"></i>
                                     </div>
                                 @endif
-                                <div class="similar-item-overlay">
-                                    <a href="{{ route('items.show', $similarItem) }}" class="btn-view-item">
+                                <div class="absolute inset-0 bg-purple-600/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <a href="{{ route('items.show', $similarItem) }}" 
+                                        class="w-8 h-8 lg:w-12 lg:h-12 bg-white text-purple-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="similar-item-body">
-                                <h6 class="similar-item-name">{{ Str::limit($similarItem->name, 35) }}</h6>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="similar-item-price">{{ $similarItem->formatted_price }}</span>
-                                    <a href="{{ route('items.show', $similarItem) }}" class="btn-quick-view">
-                                        Voir <i class="fas fa-arrow-right ms-1"></i>
+                            <div class="p-3 lg:p-5">
+                                <h6 class="font-bold text-gray-900 mb-2 lg:mb-3 min-h-[2rem] lg:min-h-[2.5rem] leading-tight text-sm lg:text-base">
+                                    {{ Str::limit($similarItem->name, 35) }}
+                                </h6>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-base lg:text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                                        {{ $similarItem->formatted_price }}
+                                    </span>
+                                    <a href="{{ route('items.show', $similarItem) }}" 
+                                        class="text-purple-600 font-semibold text-xs lg:text-sm transition-all duration-300 hover:text-purple-800 hover:translate-x-1">
+                                        Voir <i class="fas fa-arrow-right ml-1"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
 </div>
 
 <!-- Modal de demande de réduction -->
 @auth
     @if(Auth::id() !== $item->user_id)
-        <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content modern-modal">
-                    <div class="modal-header-modern">
-                        <div>
-                            <h5 class="modal-title-modern" id="contactModalLabel">
-                                <i class="fas fa-percentage me-2"></i>
-                                Demander une réduction
-                            </h5>
-                            <p class="modal-subtitle">Négociez directement avec le vendeur</p>
-                        </div>
-                        <button type="button" class="btn-close-modern" data-bs-dismiss="modal" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
+        <!-- Overlay Background -->
+        <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
+            <!-- Modal Container -->
+            <div class="bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6 lg:p-8 flex justify-between items-start">
+                    <div>
+                        <h5 class="text-xl lg:text-2xl font-bold mb-1" id="contactModalLabel">
+                            <i class="fas fa-percentage mr-2 lg:mr-3"></i>
+                            Demander une réduction
+                        </h5>
+                        <p class="text-purple-100 text-sm">Négociez directement avec le vendeur</p>
                     </div>
-                    <div class="modal-body p-4">
-                        <!-- Aperçu du produit -->
-                        <div class="product-preview-modal mb-4">
-                            <div class="row g-3 align-items-center">
-                                <div class="col-md-4">
-                                    @if($item->images && count($item->images) > 0)
-                                        <img src="{{ Storage::url($item->images[0]) }}" 
-                                             class="preview-image" 
-                                             alt="{{ $item->name }}">
-                                    @endif
-                                </div>
-                                <div class="col-md-8">
-                                    <h6 class="preview-title">{{ $item->name }}</h6>
-                                    <p class="preview-description">{{ Str::limit($item->description, 120) }}</p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="preview-price">{{ $item->formatted_price }}</span>
-                                        <span class="preview-category">
-                                            <i class="fas fa-tag me-1"></i>
-                                            {{ $item->category->name }}
-                                        </span>
-                                    </div>
+                    <button type="button" onclick="closeModal('contactModal')" 
+                        class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white/20 border-0 text-white flex items-center justify-center transition-all duration-300 hover:bg-white/30 hover:scale-110" 
+                        aria-label="Fermer">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="p-4 lg:p-6">
+                    <!-- Aperçu du produit -->
+                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                            <div>
+                                @if($item->images && count($item->images) > 0)
+                                    <img src="{{ Storage::url($item->images[0]) }}" 
+                                         class="w-full h-24 lg:h-32 object-cover rounded-lg lg:rounded-xl" 
+                                         alt="{{ $item->name }}"
+                                         loading="lazy">
+                                @endif
+                            </div>
+                            <div class="md:col-span-2">
+                                <h6 class="font-bold text-gray-900 mb-2 text-sm lg:text-base">{{ $item->name }}</h6>
+                                <p class="text-gray-600 text-xs lg:text-sm mb-4">{{ Str::limit($item->description, 120) }}</p>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                    <span class="text-lg lg:text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                                        {{ $item->formatted_price }}
+                                    </span>
+                                    <span class="bg-purple-100 text-purple-700 px-2 py-1 lg:px-3 lg:py-1 rounded-lg lg:rounded-xl text-xs lg:text-sm font-semibold w-fit">
+                                        <i class="fas fa-tag mr-1"></i>
+                                        {{ $item->category->name }}
+                                    </span>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Message personnalisé -->
-                        <div class="mb-4">
-                            <label for="customMessage" class="form-label-modern">
-                                <i class="fas fa-comment-dots me-2"></i>
-                                Votre message (optionnel)
-                            </label>
-                            <textarea name="custom_message" 
-                                      id="customMessage" 
-                                      class="form-control-modern" 
-                                      rows="4" 
-                                      placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
-                            <small class="form-text-muted">
-                                <i class="fas fa-info-circle me-1"></i>
-                                Un message automatique sera envoyé si vous laissez ce champ vide
-                            </small>
-                        </div>
-
-                        <!-- Informations sur le processus -->
-                        <div class="info-box">
-                            <div class="info-box-header">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                Comment ça fonctionne ?
-                            </div>
-                            <ul class="info-box-list">
-                                <li><i class="fas fa-check me-2"></i>Votre demande est envoyée instantanément au vendeur</li>
-                                <li><i class="fas fa-check me-2"></i>Le vendeur peut vous proposer une réduction personnalisée</li>
-                                <li><i class="fas fa-check me-2"></i>La réduction est appliquée automatiquement si acceptée</li>
-                                <li><i class="fas fa-check me-2"></i>Vous recevez une notification de la réponse</li>
-                            </ul>
-                        </div>
                     </div>
-                    <div class="modal-footer-modern">
-                        <button type="button" class="btn btn-modal-cancel" data-bs-dismiss="modal">
-                            <i class="fas fa-times me-2"></i>
-                            Annuler
-                        </button>
-                        <button type="button" class="btn btn-modal-submit" id="submitDiscountBtn" onclick="submitDiscountRequest()">
-                            <i class="fas fa-paper-plane me-2"></i>
-                            Envoyer la demande
-                        </button>
+
+                    <!-- Message personnalisé -->
+                    <div class="mb-6">
+                        <label for="customMessage" class="block font-semibold text-gray-900 mb-2 text-sm lg:text-base">
+                            <i class="fas fa-comment-dots text-purple-600 mr-2"></i>
+                            Votre message (optionnel)
+                        </label>
+                        <textarea name="custom_message" 
+                                  id="customMessage" 
+                                  rows="4" 
+                                  class="w-full border-2 border-purple-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none text-sm resize-none"
+                                  placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
+                        <small class="text-gray-500 text-xs lg:text-sm mt-2 block">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Un message automatique sera envoyé si vous laissez ce champ vide
+                        </small>
                     </div>
+
+                    <!-- Informations sur le processus -->
+                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-xl lg:rounded-2xl p-4 lg:p-6">
+                        <div class="font-bold text-blue-600 mb-4 flex items-center text-sm lg:text-base">
+                            <i class="fas fa-lightbulb mr-2"></i>
+                            Comment ça fonctionne ?
+                        </div>
+                        <ul class="space-y-2">
+                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                Votre demande est envoyée instantanément au vendeur
+                            </li>
+                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                Le vendeur peut vous proposer une réduction personnalisée
+                            </li>
+                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                La réduction est appliquée automatiquement si acceptée
+                            </li>
+                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                Vous recevez une notification de la réponse
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="bg-gray-50 p-4 lg:p-6 flex flex-col sm:flex-row gap-3 lg:gap-4">
+                    <button type="button" onclick="closeModal('contactModal')" 
+                        class="flex-1 bg-white text-gray-700 border-2 border-gray-300 font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:bg-gray-50 hover:-translate-y-0.5 text-sm lg:text-base">
+                        <i class="fas fa-times mr-2"></i>
+                        Annuler
+                    </button>
+                    <button type="button" id="submitDiscountBtn" onclick="submitDiscountRequest()" 
+                        class="flex-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm lg:text-base">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Envoyer la demande
+                    </button>
                 </div>
             </div>
         </div>
     @endif
 @endauth
 
-
-@push('styles')
-<style>
-/* ===== VARIABLES & BASE ===== */
-:root {
-    --primary-purple: #6A0DAD;
-    --primary-purple-dark: #4f0080;
-    --primary-purple-light: #8B0DC7;
-    --gradient-primary: linear-gradient(135deg, #6A0DAD 0%, #8B0DC7 100%);
-    --gradient-secondary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --success-color: #10b981;
-    --warning-color: #f59e0b;
-    --danger-color: #ef4444;
-    --text-dark: #1f2937;
-    --text-muted: #6b7280;
-    --bg-light: #f9fafb;
-    --border-color: rgba(106, 13, 173, 0.1);
-    --shadow-sm: 0 2px 8px rgba(106, 13, 173, 0.08);
-    --shadow-md: 0 4px 16px rgba(106, 13, 173, 0.12);
-    --shadow-lg: 0 8px 32px rgba(106, 13, 173, 0.16);
-    --shadow-xl: 0 12px 48px rgba(106, 13, 173, 0.2);
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 20px;
-    --radius-xl: 24px;
-    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body {
-    background: linear-gradient(to bottom, #f9fafb 0%, #ffffff 100%);
-    color: var(--text-dark);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInRight {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOutRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-}
-
-@keyframes shimmer {
-    0% { background-position: -1000px 0; }
-    100% { background-position: 1000px 0; }
-}
-
-/* ===== GALLERY THUMBNAILS ===== */
-.product-thumbnails-wrapper {
-    position: sticky;
-    top: 100px;
-}
-
-.thumbnail-container {
-    width: 70px;
-    height: 70px;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    border: 3px solid transparent;
-    transition: var(--transition);
-    cursor: pointer;
-    position: relative;
-}
-
-.thumbnail-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(106, 13, 173, 0.1), rgba(139, 13, 199, 0.1));
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.thumbnail-container:hover::before,
-.thumbnail-container.active::before {
-    opacity: 1;
-}
-
-.thumbnail-container.active {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.1);
-    transform: scale(1.05);
-}
-
-.thumbnail-container:hover {
-    transform: translateY(-4px) scale(1.05);
-    box-shadow: var(--shadow-md);
-}
-
-.product-thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition);
-}
-
-.thumbnail-container:hover .product-thumb {
-    transform: scale(1.1);
-}
-
-/* ===== MAIN IMAGE ===== */
-.main-image-container {
-    position: relative;
-    background: white;
-    border-radius: var(--radius-xl);
-    padding: 20px;
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.main-image-container:hover {
-    box-shadow: var(--shadow-xl);
-    transform: translateY(-5px);
-}
-
-.main-product-image {
-    width: 100%;
-    height: 480px;
-    object-fit: contain;
-    border-radius: var(--radius-lg);
-    transition: var(--transition);
-}
-
-.image-overlay {
-    position: absolute;
-    inset: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: var(--transition);
-    cursor: zoom-in;
-}
-
-.main-image-container:hover .image-overlay {
-    opacity: 1;
-}
-
-.image-overlay i {
-    color: white;
-    font-size: 3rem;
-    animation: pulse 2s infinite;
-}
-
-.no-image-placeholder {
-    height: 480px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-    border-radius: var(--radius-lg);
-    color: var(--text-muted);
-}
-
-/* ===== PRODUCT DETAILS CARD ===== */
-.product-details-card {
-    background: white;
-    border-radius: var(--radius-xl);
-    padding: 2rem;
-    box-shadow: var(--shadow-lg);
-    position: sticky;
-    top: 20px;
-    animation: fadeIn 0.6s ease-out;
-}
-
-.product-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-dark);
-    line-height: 1.2;
-    margin-bottom: 0;
-}
-
-.badges-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.custom-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.badge-category {
-    background: linear-gradient(135deg, rgba(106, 13, 173, 0.1), rgba(139, 13, 199, 0.15));
-    color: var(--primary-purple);
-    border: 1px solid rgba(106, 13, 173, 0.2);
-}
-
-.badge-brand {
-    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.15));
-    color: #6366f1;
-    border: 1px solid rgba(99, 102, 241, 0.2);
-}
-
-.badge-condition-new {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.15));
-    color: var(--success-color);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.badge-condition-used,
-.badge-condition-like_new {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.15));
-    color: var(--warning-color);
-    border: 1px solid rgba(245, 158, 11, 0.2);
-}
-
-.custom-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-sm);
-}
-
-/* ===== FAVORITE BUTTON ===== */
-.favorite-button {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 2px solid var(--border-color);
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-    flex-shrink: 0;
-}
-
-.favorite-button:hover {
-    background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
-    transform: scale(1.1);
-}
-
-.favorite-button i {
-    color: #ef4444;
-    font-size: 1.25rem;
-    transition: var(--transition);
-}
-
-.favorite-button:hover i {
-    transform: scale(1.2);
-}
-
-/* ===== PRICE SECTION ===== */
-.price-section {
-    background: linear-gradient(135deg, rgba(106, 13, 173, 0.05), rgba(139, 13, 199, 0.08));
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 2px solid rgba(106, 13, 173, 0.1);
-}
-
-.product-price {
-    font-size: 2.5rem;
-    font-weight: 900;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.stock-badge {
-    display: inline-flex;
-    align-items: center;
-    font-size: 0.95rem;
-}
-
-/* ===== PRODUCT META ===== */
-.product-meta {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: white;
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-}
-
-.meta-item:hover {
-    box-shadow: var(--shadow-sm);
-    transform: translateY(-2px);
-}
-
-.meta-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--gradient-primary);
-    color: white;
-    border-radius: var(--radius-sm);
-    font-size: 1rem;
-    flex-shrink: 0;
-}
-
-.meta-label {
-    color: var(--text-muted);
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.meta-value {
-    font-weight: 700;
-    color: var(--text-dark);
-    font-size: 1rem;
-}
-
-.size-badge {
-    background: var(--gradient-primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-}
-
-/* ===== CART SECTION ===== */
-.cart-section {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.quantity-input-group {
-    max-width: 180px;
-}
-
-.btn-quantity {
-    width: 45px;
-    height: 45px;
-    background: white;
-    border: 2px solid var(--border-color);
-    color: var(--primary-purple);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--transition);
-    font-weight: 600;
-}
-
-.btn-quantity:hover {
-    background: var(--primary-purple);
-    color: white;
-    border-color: var(--primary-purple);
-    transform: scale(1.05);
-}
-
-.quantity-input {
-    border: 2px solid var(--border-color);
-    font-weight: 700;
-    color: var(--text-dark);
-    font-size: 1.125rem;
-    height: 45px;
-}
-
-.quantity-input:focus {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.1);
-}
-
-.btn-add-to-cart {
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    font-size: 1.125rem;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-add-to-cart::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-    transition: left 0.5s;
-}
-
-.btn-add-to-cart:hover::before {
-    left: 100%;
-}
-
-.btn-add-to-cart:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* ===== SECTIONS ===== */
-.section-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-dark);
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.section-title i {
-    color: var(--primary-purple);
-}
-
-.description-section {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border-left: 4px solid var(--primary-purple);
-}
-
-.description-text {
-    color: var(--text-muted);
-    line-height: 1.7;
-    margin: 0;
-}
-
-/* ===== SPECIFICATIONS ===== */
-.specifications-section {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.specifications-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1rem;
-}
-
-.spec-item {
-    background: white;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: var(--transition);
-}
-
-.spec-item:hover {
-    box-shadow: var(--shadow-sm);
-    transform: translateX(5px);
-}
-
-.spec-key {
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
-.spec-value {
-    font-weight: 700;
-    color: var(--text-dark);
-}
-
-/* ===== SELLER SECTION ===== */
-.seller-section {
-    background: linear-gradient(135deg, rgba(106, 13, 173, 0.03), rgba(139, 13, 199, 0.05));
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
-}
-
-.seller-card {
-    background: white;
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-}
-
-.seller-card:hover {
-    box-shadow: var(--shadow-md);
-}
-
-.seller-avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: var(--gradient-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.seller-name {
-    font-weight: 700;
-    color: var(--text-dark);
-    font-size: 1.125rem;
-    margin-bottom: 0.25rem;
-}
-
-.seller-info {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-}
-
-.seller-rating {
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-    color: var(--text-dark);
-    font-size: 1.125rem;
-}
-
-/* ===== DISCOUNT ALERT ===== */
-.discount-alert {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.15));
-    border: 2px solid rgba(16, 185, 129, 0.3);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.discount-content {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.discount-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: var(--success-color);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.discount-title {
-    font-weight: 700;
-    color: var(--success-color);
-    margin-bottom: 0.5rem;
-}
-
-.discount-details {
-    color: var(--text-muted);
-    font-size: 0.9375rem;
-}
-
-.btn-apply-discount {
-    background: var(--success-color);
-    color: white;
-    border: none;
-    padding: 0.875rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-apply-discount:hover {
-    background: #059669;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-/* ===== ACTION BUTTONS ===== */
-.action-buttons {
-    display: grid;
-    gap: 1rem;
-}
-
-.btn-discount-request {
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-discount-request:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-.btn-contact-seller {
-    background: white;
-    color: var(--primary-purple);
-    border: 2px solid var(--primary-purple);
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-contact-seller:hover {
-    background: var(--primary-purple);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.owner-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.btn-edit-item {
-    background: linear-gradient(135deg, #f59e0b, #d97706);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    text-align: center;
-    text-decoration: none;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-edit-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    color: white;
-}
-
-.btn-delete-item {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    color: white;
-    border: none;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-delete-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-login-required {
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    padding: 1.25rem;
-    border-radius: var(--radius-md);
-    font-weight: 700;
-    font-size: 1.125rem;
-    text-decoration: none;
-    text-align: center;
-    transition: var(--transition);
-    display: block;
-}
-
-.btn-login-required:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-xl);
-    color: white;
-}
-
-/* ===== SIMILAR ITEMS ===== */
-.similar-items-section {
-    background: white;
-    padding: 3rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
-}
-
-.section-header {
-    text-align: center;
-}
-
-.section-main-title {
-    font-size: 2rem;
-    font-weight: 800;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-}
-
-.section-subtitle {
-    color: var(--text-muted);
-    font-size: 1.125rem;
-}
-
-.similar-item-card {
-    background: white;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    height: 100%;
-}
-
-.similar-item-card:hover {
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-8px);
-}
-
-.similar-item-image-wrapper {
-    position: relative;
-    overflow: hidden;
-    height: 200px;
-    background: var(--bg-light);
-}
-
-.similar-item-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition);
-}
-
-.similar-item-card:hover .similar-item-image {
-    transform: scale(1.1);
-}
-
-.similar-item-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(106, 13, 173, 0.8);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: var(--transition);
-}
-
-.similar-item-card:hover .similar-item-overlay {
-    opacity: 1;
-}
-
-.btn-view-item {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: white;
-    color: var(--primary-purple);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    transition: var(--transition);
-}
-
-.btn-view-item:hover {
-    transform: scale(1.2);
-}
-
-.similar-item-no-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    font-size: 3rem;
-}
-
-.similar-item-body {
-    padding: 1.25rem;
-}
-
-.similar-item-name {
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.75rem;
-    min-height: 2.5rem;
-}
-
-.similar-item-price {
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.25rem;
-}
-
-.btn-quick-view {
-    color: var(--primary-purple);
-    font-weight: 600;
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: var(--transition);
-}
-
-.btn-quick-view:hover {
-    color: var(--primary-purple-dark);
-    transform: translateX(5px);
-}
-
-/* ===== MODERN MODAL ===== */
-.modern-modal {
-    border: none;
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    box-shadow: var(--shadow-xl);
-}
-
-.modal-header-modern {
-    background: var(--gradient-primary);
-    color: white;
-    padding: 2rem;
-    border: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-}
-
-.modal-title-modern {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0;
-}
-
-.modal-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 0.9375rem;
-    margin-top: 0.25rem;
-    margin-bottom: 0;
-}
-
-.btn-close-modern {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-close-modern:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
-}
-
-.product-preview-modal {
-    background: var(--bg-light);
-    padding: 1.5rem;
-    border-radius: var(--radius-lg);
-}
-
-.preview-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: var(--radius-md);
-}
-
-.preview-title {
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-}
-
-.preview-description {
-    color: var(--text-muted);
-    font-size: 0.9375rem;
-    margin-bottom: 1rem;
-}
-
-.preview-price {
-    font-weight: 800;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    font-size: 1.5rem;
-}
-
-.preview-category {
-    background: rgba(106, 13, 173, 0.1);
-    color: var(--primary-purple);
-    padding: 0.5rem 1rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.875rem;
-    font-weight: 600;
-}
-
-.form-label-modern {
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: 0.5rem;
-}
-
-.form-control-modern {
-    border: 2px solid var(--border-color);
-    border-radius: var(--radius-md);
-    padding: 0.875rem;
-    transition: var(--transition);
-    font-size: 0.9375rem;
-}
-
-.form-control-modern:focus {
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.1);
-    outline: none;
-}
-
-.form-text-muted {
-    color: var(--text-muted);
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    display: block;
-}
-
-.info-box {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.08));
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-}
-
-.info-box-header {
-    font-weight: 700;
-    color: #3b82f6;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-}
-
-.info-box-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.info-box-list li {
-    padding: 0.5rem 0;
-    color: var(--text-muted);
-    display: flex;
-    align-items: flex-start;
-}
-
-.info-box-list li i {
-    color: #3b82f6;
-    margin-top: 0.25rem;
-}
-
-.modal-footer-modern {
-    border: none;
-    padding: 1.5rem 2rem;
-    background: var(--bg-light);
-    display: flex;
-    gap: 1rem;
-}
-
-.btn-modal-cancel {
-    flex: 1;
-    background: white;
-    color: var(--text-dark);
-    border: 2px solid var(--border-color);
-    padding: 0.875rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-modal-cancel:hover {
-    background: var(--bg-light);
-    transform: translateY(-2px);
-}
-
-.btn-modal-submit {
-    flex: 2;
-    background: var(--gradient-primary);
-    color: white;
-    border: none;
-    padding: 0.875rem;
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    transition: var(--transition);
-}
-
-.btn-modal-submit:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 991.98px) {
-    .product-details-card {
-        position: relative;
-        top: 0;
-    }
-    
-    .main-product-image {
-        height: 350px;
-    }
-    
-    .product-title {
-        font-size: 1.5rem;
-    }
-    
-    .product-price {
-        font-size: 2rem;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .main-product-image {
-        height: 280px;
-    }
-    
-    .product-details-card {
-        padding: 1.5rem;
-    }
-    
-    .product-title {
-        font-size: 1.25rem;
-    }
-    
-    .product-price {
-        font-size: 1.75rem;
-    }
-    
-    .similar-items-section {
-        padding: 2rem 1rem;
-    }
-    
-    .section-main-title {
-        font-size: 1.5rem;
-    }
-    
-    .owner-actions {
-        grid-template-columns: 1fr;
-    }
-    
-    .specifications-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 374.98px) {
-    .product-meta .row {
-        gap: 0.5rem;
-    }
-    
-    .meta-item {
-        padding: 0.5rem;
-    }
-}
-</style>
-@endpush
-
 <script>
-// ===== GALERIE D'IMAGES =====
-document.addEventListener('DOMContentLoaded', function() {
-    const thumbnails = document.querySelectorAll('.thumbnail-container');
-    const mainImage = document.getElementById('mainProductImg');
-    
-    if (thumbnails.length > 0 && mainImage) {
-        thumbnails.forEach(thumb => {
-            thumb.addEventListener('click', function() {
-                // Retirer la classe active de tous les thumbnails
-                thumbnails.forEach(t => t.classList.remove('active'));
-                
-                // Ajouter la classe active au thumbnail cliqué
-                this.classList.add('active');
-                
-                // Changer l'image principale avec animation
-                mainImage.style.opacity = '0';
-                setTimeout(() => {
-                    const img = this.querySelector('.product-thumb');
-                    mainImage.src = img.src;
-                    mainImage.style.opacity = '1';
-                }, 150);
-            });
-        });
+// ===== GESTION DU MODAL TAILWIND =====
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('opacity-0', 'invisible');
+        modal.classList.add('opacity-100', 'visible');
+        
+        const modalContent = modal.querySelector('.bg-white');
+        if (modalContent) {
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+        
+        // Empêcher le scroll du body
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('opacity-100', 'visible');
+        modal.classList.add('opacity-0', 'invisible');
+        
+        const modalContent = modal.querySelector('.bg-white');
+        if (modalContent) {
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+        }
+        
+        // Rétablir le scroll du body
+        document.body.style.overflow = '';
+    }
+}
+
+// Fermer le modal en cliquant en dehors
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('contactModal');
+    if (modal && e.target === modal) {
+        closeModal('contactModal');
     }
 });
+
+// Fermer le modal avec Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal('contactModal');
+    }
+});
+
+// ===== GALERIE D'IMAGES =====
+function changeMainImage(src, element) {
+    const mainImg = document.getElementById('mainProductImg');
+    const thumbnails = document.querySelectorAll('.thumbnail-item');
+    
+    // Retirer active de tous les thumbnails
+    thumbnails.forEach(thumb => {
+        thumb.classList.remove('border-purple-600', 'shadow-lg', 'shadow-purple-600/25', 'scale-105');
+        thumb.classList.add('border-transparent');
+    });
+    
+    // Ajouter active au thumbnail cliqué
+    element.classList.remove('border-transparent');
+    element.classList.add('border-purple-600', 'shadow-lg', 'shadow-purple-600/25', 'scale-105');
+    
+    // Changer l'image avec transition
+    mainImg.style.opacity = '0';
+    setTimeout(() => {
+        mainImg.src = src;
+        mainImg.style.opacity = '1';
+    }, 150);
+}
 
 // ===== GESTION DE LA QUANTITÉ =====
 function incrementQuantity() {
@@ -1582,7 +633,7 @@ function submitDiscountRequest() {
     
     // Désactiver le bouton et afficher l'état de chargement
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
     
     // Afficher une notification
     showNotification('Envoi de votre demande en cours...', 'info');
@@ -1625,26 +676,26 @@ function submitDiscountRequest() {
             
             info.innerHTML = `
                 <div class="mb-2">
-                    <strong class="d-block mb-1">Réduction de ${discount.discount_percentage}% !</strong>
-                    <small class="text-muted d-block">
-                        Prix original: <span class="text-decoration-line-through">${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(discount.original_price)}</span>
+                    <strong class="block mb-1">Réduction de ${discount.discount_percentage}% !</strong>
+                    <small class="text-gray-500 block">
+                        Prix original: <span class="line-through">${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(discount.original_price)}</span>
                     </small>
-                    <small class="d-block mt-1">
-                        <span class="fw-bold" style="color: var(--success-color);">
+                    <small class="block mt-1">
+                        <span class="font-bold text-emerald-600">
                             Nouveau prix: ${currencySymbol} ${formattedFinalPrice}
                         </span>
                     </small>
-                    <small class="text-muted d-block mt-1">
-                        Économie: <span class="fw-bold" style="color: var(--success-color);">${currencySymbol} ${formattedSavings}</span>
+                    <small class="text-gray-500 block mt-1">
+                        Économie: <span class="font-bold text-emerald-600">${currencySymbol} ${formattedSavings}</span>
                     </small>
-                    <small class="text-muted d-block mt-1">
-                        <i class="fas fa-clock me-1"></i>
+                    <small class="text-gray-500 block mt-1">
+                        <i class="fas fa-clock mr-1"></i>
                         Valable jusqu'au ${new Date(discount.expires_at).toLocaleDateString('fr-FR')}
                     </small>
                 </div>
             `;
             
-            section.style.display = 'block';
+            section.classList.remove('hidden');
             section.dataset.discountId = discount.id;
             
             updateAddToCartButton(true);
@@ -1667,23 +718,23 @@ function submitDiscountRequest() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const priceElement = document.querySelector('.product-price');
-                    if (priceElement) {
+                    const priceElement = document.querySelector('.bg-gradient-to-r.from-purple-600.to-purple-800.bg-clip-text.text-transparent');
+                    if (priceElement && priceElement.parentElement) {
                         const currencySymbol = '{{ $item->currency_symbol }}';
                         priceElement.parentElement.innerHTML = `
-                            <div class="d-flex align-items-baseline gap-3 flex-wrap">
-                                <span class="text-decoration-line-through text-muted" style="font-size: 1.5rem;">{{ $item->formatted_price }}</span>
-                                <span class="product-price" style="color: var(--success-color);">
+                            <div class="flex items-baseline justify-between flex-wrap gap-4">
+                                <span class="text-2xl lg:text-3xl line-through text-gray-400">{{ $item->formatted_price }}</span>
+                                <span class="text-4xl lg:text-5xl font-black text-emerald-600">
                                     ${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(data.final_price)}
                                 </span>
-                                <span class="badge" style="background: var(--success-color); font-size: 0.875rem;">
+                                <span class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">
                                     -${data.discount_percentage}%
                                 </span>
                             </div>
                         `;
                     }
                     
-                    section.style.display = 'none';
+                    section.classList.add('hidden');
                     updateAddToCartButton(true);
                     showNotification(data.message, 'success');
                 } else {
@@ -1728,7 +779,7 @@ function deleteItem() {
 }
 
 // ===== GESTION DES FAVORIS =====
-const favoriteBtn = document.querySelector('.favorite-button');
+const favoriteBtn = document.querySelector('.favorite-btn');
 if (favoriteBtn) {
     favoriteBtn.addEventListener('click', function(e) {
         e.preventDefault();
@@ -1749,13 +800,11 @@ if (favoriteBtn) {
                 if (data.is_favorite) {
                     icon.classList.remove('far');
                     icon.classList.add('fas');
-                    this.style.background = 'rgba(239, 68, 68, 0.1)';
-                    this.style.borderColor = '#ef4444';
+                    this.classList.add('bg-red-50', 'border-red-400');
                 } else {
                     icon.classList.remove('fas');
                     icon.classList.add('far');
-                    this.style.background = 'white';
-                    this.style.borderColor = 'var(--border-color)';
+                    this.classList.remove('bg-red-50', 'border-red-400');
                 }
                 showNotification(data.message, 'success');
             }
@@ -1770,7 +819,6 @@ if (favoriteBtn) {
 // ===== SYSTÈME DE NOTIFICATIONS =====
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = 'custom-notification';
     
     const iconMap = {
         success: 'check-circle',
@@ -1780,61 +828,27 @@ function showNotification(message, type = 'info') {
     };
     
     const colorMap = {
-        success: 'var(--success-color)',
-        danger: 'var(--danger-color)',
-        warning: 'var(--warning-color)',
-        info: '#3b82f6'
+        success: 'emerald',
+        danger: 'red',
+        warning: 'amber',
+        info: 'blue'
     };
     
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-        min-width: 320px;
-        max-width: 400px;
-        background: white;
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-xl);
-        padding: 1.25rem;
-        animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        border-left: 4px solid ${colorMap[type]};
-    `;
+    const color = colorMap[type];
+    
+    notification.className = `fixed top-5 right-5 z-50 min-w-80 max-w-md bg-white rounded-2xl shadow-2xl p-5 border-l-4 border-${color}-500 animate-slide-in-right`;
     
     notification.innerHTML = `
-        <div class="d-flex align-items-start gap-3">
-            <div style="
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                background: ${colorMap[type]}15;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-shrink: 0;
-            ">
-                <i class="fas fa-${iconMap[type]}" style="color: ${colorMap[type]}; font-size: 1.25rem;"></i>
+        <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-${color}-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-${iconMap[type]} text-${color}-600 text-lg"></i>
             </div>
-            <div class="flex-grow-1">
-                <p style="margin: 0; font-weight: 600; color: var(--text-dark); line-height: 1.5;">
-                    ${message}
-                </p>
+            <div class="flex-1">
+                <p class="font-semibold text-gray-900 leading-relaxed">${message}</p>
             </div>
-            <button onclick="this.parentElement.parentElement.remove()" style="
-                background: none;
-                border: none;
-                color: var(--text-muted);
-                cursor: pointer;
-                padding: 0;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                transition: var(--transition);
-            " onmouseover="this.style.background='var(--bg-light)'" onmouseout="this.style.background='none'">
-                <i class="fas fa-times"></i>
+            <button onclick="this.parentElement.parentElement.remove()" 
+                class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all duration-200">
+                <i class="fas fa-times text-sm"></i>
             </button>
         </div>
     `;
@@ -1843,7 +857,7 @@ function showNotification(message, type = 'info') {
     
     setTimeout(() => {
         if (notification.parentNode) {
-            notification.style.animation = 'slideOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            notification.classList.add('animate-slide-out-right');
             setTimeout(() => notification.remove(), 400);
         }
     }, 5000);
@@ -1854,27 +868,49 @@ function updateAddToCartButton(hasDiscount) {
     const addToCartBtn = document.getElementById('addToCartBtn');
     if (addToCartBtn && hasDiscount) {
         addToCartBtn.innerHTML = `
-            <i class="fas fa-shopping-cart me-2"></i>
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+            <i class="fas fa-shopping-cart mr-3"></i>
             <span>Ajouter avec réduction</span>
-            <i class="fas fa-tag ms-2"></i>
+            <i class="fas fa-tag ml-3"></i>
         `;
-        addToCartBtn.style.background = 'linear-gradient(135deg, var(--success-color), #059669)';
+        addToCartBtn.className = 'w-full bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group';
     }
 }
 
-// ===== SMOOTH SCROLL POUR LES ANCRES =====
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+// Animations CSS personnalisées via Tailwind
+document.head.insertAdjacentHTML('beforeend', `
+<style>
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-out-right {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+    animation: slide-in-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-out-right {
+    animation: slide-out-right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shadow-3xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+</style>
+`);
 </script>
-</script>
-@endsection 
+@endsection

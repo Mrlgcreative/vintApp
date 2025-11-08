@@ -9,6 +9,7 @@ use App\Models\UserPoints;
 use App\Models\PointTransaction;
 use App\Models\PointRedemption;
 use App\Models\PointConversionRate;
+use App\Models\Wallet;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -310,8 +311,41 @@ class AffiliateService
                 ];
             }
 
-            // Créer la demande de rachat
+            // Calculer le montant à créditer (après déduction des frais)
+            $calculation = $conversionRate->calculateCashAmount($points);
+            if (!$calculation['valid']) {
+                return [
+                    'success' => false,
+                    'error' => $calculation['error']
+                ];
+            }
+            
+            $baseAmount = $calculation['base_amount'];
+            $fees = $calculation['fees'];
+            $finalAmount = $calculation['final_amount'];
+
+            // Obtenir ou créer le wallet de l'utilisateur pour cette devise
+            $wallet = $user->wallets()->firstOrCreate([
+                'currency' => $currency,
+                'type' => Wallet::TYPE_MAIN
+            ], [
+                'balance' => 0,
+                'is_active' => true,
+                'commission_rate' => 0,
+                'status' => 'active'
+            ]);
+
+            // Créditer le wallet
+            $wallet->credit($finalAmount);
+
+            // Créer la demande de rachat comme historique (mais déjà traitée)
             $redemption = PointRedemption::createCashRedemption($user->id, $points, $currency);
+            $redemption->update([
+                'status' => 'completed',
+                'processed_at' => now(),
+                'cash_amount' => $finalAmount,
+                'notes' => "Conversion automatique - Crédit wallet {$currency}"
+            ]);
 
             DB::commit();
 

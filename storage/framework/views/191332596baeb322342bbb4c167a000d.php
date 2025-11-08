@@ -1,13 +1,13 @@
-@extends('app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumb -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('brands.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors duration-200">
+                    <a href="<?php echo e(route('brands.index')); ?>" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-indigo-600 transition-colors duration-200">
                         <i class="fas fa-tags mr-2"></i>
                         Marques
                     </a>
@@ -47,7 +47,7 @@
 
                 <div class="p-6">
                     <!-- Messages d'erreur -->
-                    @if ($errors->any())
+                    <?php if($errors->any()): ?>
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
@@ -57,31 +57,31 @@
                                     <h3 class="text-sm font-medium text-red-800">Des erreurs ont été détectées :</h3>
                                     <div class="mt-2 text-sm text-red-700">
                                         <ul class="list-disc list-inside space-y-1">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
+                                            <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <li><?php echo e($error); ?></li>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                    @if (session('error'))
+                    <?php if(session('error')): ?>
                         <div class="mb-6 bg-red-50 border border-red-200 rounded-xl p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-exclamation-circle text-red-400"></i>
                                 </div>
                                 <div class="ml-3">
-                                    <div class="text-sm text-red-700">{{ session('error') }}</div>
+                                    <div class="text-sm text-red-700"><?php echo e(session('error')); ?></div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
-                    <form action="{{ route('brands.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                        @csrf
+                    <form action="<?php echo e(route('brands.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                        <?php echo csrf_field(); ?>
 
                         <!-- Nom -->
                         <div>
@@ -91,17 +91,32 @@
                             <input type="text" 
                                    name="name" 
                                    id="name" 
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 @error('name') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
-                                   value="{{ old('name') }}" 
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" 
+                                   value="<?php echo e(old('name')); ?>" 
                                    required 
                                    maxlength="100"
                                    placeholder="Ex: Nike, Adidas, Apple...">
-                            @error('name')
+                            <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                 <p class="mt-2 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>
-                                    {{ $message }}
+                                    <?php echo e($message); ?>
+
                                 </p>
-                            @enderror
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         </div>
 
                         <!-- Description -->
@@ -114,7 +129,7 @@
                                       rows="3" 
                                       maxlength="255"
                                       class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 resize-none"
-                                      placeholder="Décrivez brièvement la marque...">{{ old('description') }}</textarea>
+                                      placeholder="Décrivez brièvement la marque..."><?php echo e(old('description')); ?></textarea>
                             <p class="mt-1 text-xs text-gray-500">Maximum 255 caractères</p>
                         </div>
 
@@ -131,7 +146,7 @@
                                        name="website" 
                                        id="website" 
                                        class="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200" 
-                                       value="{{ old('website') }}" 
+                                       value="<?php echo e(old('website')); ?>" 
                                        maxlength="255"
                                        placeholder="https://www.exemple.com">
                             </div>
@@ -161,11 +176,12 @@
                                     id="country" 
                                     class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
                                 <option value="">-- Sélectionner un pays --</option>
-                                @foreach($countries as $country)
-                                    <option value="{{ $country }}" {{ old('country') == $country ? 'selected' : '' }}>
-                                        {{ $country }}
+                                <?php $__currentLoopData = $countries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $country): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($country); ?>" <?php echo e(old('country') == $country ? 'selected' : ''); ?>>
+                                        <?php echo e($country); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -178,11 +194,12 @@
                                     id="type" 
                                     class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
                                 <option value="">-- Sélectionner un type --</option>
-                                @foreach($types as $type)
-                                    <option value="{{ $type }}" {{ old('type') == $type ? 'selected' : '' }}>
-                                        {{ $type }}
+                                <?php $__currentLoopData = $types; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($type); ?>" <?php echo e(old('type') == $type ? 'selected' : ''); ?>>
+                                        <?php echo e($type); ?>
+
                                     </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
 
@@ -202,14 +219,14 @@
                                        id="is_active" 
                                        name="is_active" 
                                        class="sr-only peer" 
-                                       {{ old('is_active', true) ? 'checked' : '' }}>
+                                       <?php echo e(old('is_active', true) ? 'checked' : ''); ?>>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
                             </label>
                         </div>
 
                         <!-- Boutons d'action -->
                         <div class="flex flex-col sm:flex-row sm:justify-end gap-3 pt-6 border-t border-gray-200">
-                            <a href="{{ route('brands.index') }}" 
+                            <a href="<?php echo e(route('brands.index')); ?>" 
                                class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
                                 <i class="fas fa-times mr-2"></i>
                                 Annuler
@@ -226,4 +243,5 @@
         </div>
     </div>
 </div>
-@endsection 
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/brands/create.blade.php ENDPATH**/ ?>

@@ -1,65 +1,84 @@
 @extends('app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row">
-        <div class="col-12">
-            <h2 class="mb-4"><i class="fas fa-shopping-cart me-2"></i>Finaliser votre commande</h2>
-        </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 flex items-center">
+            <i class="fas fa-shopping-cart mr-3 text-blue-600"></i>
+            Finaliser votre commande
+        </h2>
     </div>
 
     @if(empty($cart))
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle me-2"></i>Votre panier est vide.
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
+            <i class="fas fa-info-circle mr-3 text-blue-600"></i>
+            <span class="text-blue-800">Votre panier est vide.</span>
         </div>
     @else
-    <div class="row">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Colonne gauche : Formulaire de livraison -->
-        <div class="col-lg-7 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="fas fa-truck me-2"></i>Informations de livraison</h5>
+        <div class="lg:col-span-7">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-blue-600 text-white px-6 py-4">
+                    <h5 class="text-lg font-semibold flex items-center">
+                        <i class="fas fa-truck mr-3"></i>Informations de livraison
+                    </h5>
                 </div>
-                <div class="card-body p-4">
+                <div class="p-6">
                     <form id="deliveryForm">
                         @csrf
-                        <div class="row">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Nom complet -->
-                            <div class="col-md-6 mb-3">
-                                <label for="full_name" class="form-label">
-                                    <i class="fas fa-user me-1"></i>Nom complet <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="full_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-user mr-2"></i>Nom complet <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="full_name" name="full_name" 
-                                       value="{{ Auth::user()->name ?? '' }}" required>
-                                <div class="invalid-feedback">Veuillez entrer votre nom complet.</div>
+                                <input type="text" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                       id="full_name" 
+                                       name="full_name" 
+                                       value="{{ Auth::user()->name ?? '' }}" 
+                                       required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre nom complet.</div>
                             </div>
 
                             <!-- Téléphone -->
-                            <div class="col-md-6 mb-3">
-                                <label for="phone" class="form-label">
-                                    <i class="fas fa-phone me-1"></i>Téléphone <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-phone mr-2"></i>Téléphone <span class="text-red-500">*</span>
                                 </label>
-                                <input type="tel" class="form-control" id="phone" name="phone" 
-                                       placeholder="+243 800 000 000" required>
-                                <div class="invalid-feedback">Veuillez entrer un numéro de téléphone valide.</div>
+                                <input type="tel" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                       id="phone" 
+                                       name="phone" 
+                                       placeholder="+243 800 000 000" 
+                                       required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer un numéro de téléphone valide.</div>
                             </div>
 
                             <!-- Email -->
-                            <div class="col-md-6 mb-3">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-envelope me-1"></i>Email <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-envelope mr-2"></i>Email <span class="text-red-500">*</span>
                                 </label>
-                                <input type="email" class="form-control" id="email" name="email" 
-                                       value="{{ Auth::user()->email ?? '' }}" required>
-                                <div class="invalid-feedback">Veuillez entrer une adresse email valide.</div>
+                                <input type="email" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                       id="email" 
+                                       name="email" 
+                                       value="{{ Auth::user()->email ?? '' }}" 
+                                       required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer une adresse email valide.</div>
                             </div>
 
                             <!-- Ville -->
-                            <div class="col-md-6 mb-3">
-                                <label for="city" class="form-label">
-                                    <i class="fas fa-city me-1"></i>Ville <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="city" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-city mr-2"></i>Ville <span class="text-red-500">*</span>
                                 </label>
-                                <select class="form-select" id="city" name="city" required>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                        id="city" 
+                                        name="city" 
+                                        required>
                                     <option value="">Sélectionnez une ville</option>
                                     <option value="Kinshasa">Kinshasa</option>
                                     <option value="Lubumbashi">Lubumbashi</option>
@@ -70,107 +89,159 @@
                                     <option value="Kisangani">Kisangani</option>
                                     <option value="Autre">Autre ville</option>
                                 </select>
-                                <div class="invalid-feedback">Veuillez sélectionner une ville.</div>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez sélectionner une ville.</div>
                             </div>
 
                             <!-- Commune/Quartier -->
-                            <div class="col-md-6 mb-3">
-                                <label for="commune" class="form-label">
-                                    <i class="fas fa-map-marker-alt me-1"></i>Commune/Quartier <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="commune" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-map-marker-alt mr-2"></i>Commune/Quartier <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="commune" name="commune" 
-                                       placeholder="Ex: Gombe, Lemba, etc." required>
-                                <div class="invalid-feedback">Veuillez entrer votre commune ou quartier.</div>
+                                <input type="text" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                       id="commune" 
+                                       name="commune" 
+                                       placeholder="Ex: Gombe, Lemba, etc." 
+                                       required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre commune ou quartier.</div>
                             </div>
 
                             <!-- Adresse complète -->
-                            <div class="col-md-6 mb-3">
-                                <label for="address" class="form-label">
-                                    <i class="fas fa-home me-1"></i>Adresse complète <span class="text-danger">*</span>
+                            <div class="md:col-span-1">
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-home mr-2"></i>Adresse complète <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" class="form-control" id="address" name="address" 
-                                       placeholder="Avenue, numéro, bâtiment..." required>
-                                <div class="invalid-feedback">Veuillez entrer votre adresse complète.</div>
+                                <input type="text" 
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                       id="address" 
+                                       name="address" 
+                                       placeholder="Avenue, numéro, bâtiment..." 
+                                       required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre adresse complète.</div>
                             </div>
 
                             <!-- Position GPS (optionnelle) -->
-                            <div class="col-12 mb-3">
-                                <div class="card border-info">
-                                    <div class="card-header bg-info text-white">
-                                        <h6 class="mb-0">
-                                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <div class="md:col-span-2">
+                                <div class="bg-white border border-blue-200 rounded-lg overflow-hidden">
+                                    <div class="bg-blue-50 px-4 py-3 border-b border-blue-200">
+                                        <h6 class="text-sm font-semibold text-blue-800 flex items-center">
+                                            <i class="fas fa-map-marker-alt mr-2"></i>
                                             Position GPS (Optionnelle - pour un suivi précis)
                                         </h6>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <label for="latitude" class="form-label">
-                                                    <i class="fas fa-crosshairs me-1"></i>Latitude
+                                    <div class="p-4">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="latitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    <i class="fas fa-crosshairs mr-2"></i>Latitude
                                                 </label>
-                                                <input type="number" step="0.00000001" class="form-control" 
-                                                       id="latitude" name="latitude" placeholder="-4.325000">
-                                                <small class="text-muted">Ex: -4.325000 (Kinshasa)</small>
+                                                <input type="number" 
+                                                       step="0.00000001" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                                       id="latitude" 
+                                                       name="latitude" 
+                                                       placeholder="-4.325000">
+                                                <small class="text-gray-500 text-xs">Ex: -4.325000 (Kinshasa)</small>
                                             </div>
-                                            <div class="col-md-6">
-                                                <label for="longitude" class="form-label">
-                                                    <i class="fas fa-crosshairs me-1"></i>Longitude
+                                            <div>
+                                                <label for="longitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                                    <i class="fas fa-crosshairs mr-2"></i>Longitude
                                                 </label>
-                                                <input type="number" step="0.00000001" class="form-control" 
-                                                       id="longitude" name="longitude" placeholder="15.307778">
-                                                <small class="text-muted">Ex: 15.307778 (Kinshasa)</small>
+                                                <input type="number" 
+                                                       step="0.00000001" 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                                       id="longitude" 
+                                                       name="longitude" 
+                                                       placeholder="15.307778">
+                                                <small class="text-gray-500 text-xs">Ex: 15.307778 (Kinshasa)</small>
                                             </div>
                                         </div>
-                                        <div class="mt-3">
-                                            <button type="button" class="btn btn-outline-info btn-sm" id="getCurrentLocationBtn">
-                                                <i class="fas fa-location-arrow me-1"></i>
+                                        <div class="mt-4">
+                                            <button type="button" 
+                                                    class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium" 
+                                                    id="getCurrentLocationBtn">
+                                                <i class="fas fa-location-arrow mr-2"></i>
                                                 Utiliser ma position actuelle (GPS)
                                             </button>
-                                            <small class="text-muted d-block mt-1">
+                                            <p class="text-gray-500 text-xs mt-2">
                                                 Cela permettra un suivi de livraison plus précis sur la carte
-                                            </small>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Notes de livraison -->
-                            <div class="col-12 mb-3">
-                                <label for="notes" class="form-label">
-                                    <i class="fas fa-sticky-note me-1"></i>Instructions de livraison (optionnel)
+                            <div class="md:col-span-2">
+                                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-sticky-note mr-2"></i>Instructions de livraison (optionnel)
                                 </label>
-                                <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                          id="notes" 
+                                          name="notes" 
+                                          rows="3" 
                                           placeholder="Point de repère, instructions particulières..."></textarea>
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-check-circle me-2"></i>Confirmer les informations de livraison
+                        <button type="submit" 
+                                class="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
+                            <i class="fas fa-check-circle mr-2"></i>Confirmer les informations de livraison
                         </button>
                     </form>
 
                     <!-- Zone d'affichage des informations confirmées -->
-                    <div id="deliveryInfoConfirmed" class="mt-4 p-3 bg-light rounded" style="display: none;">
-                        <h6 class="text-success mb-3">
-                            <i class="fas fa-check-circle me-2"></i>Informations de livraison confirmées
+                    <div id="deliveryInfoConfirmed" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
+                        <h6 class="text-green-600 font-semibold mb-4 flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>Informations de livraison confirmées
                         </h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong><i class="fas fa-user me-2"></i>Nom :</strong> <span id="confirmed_name"></span></p>
-                                <p class="mb-2"><strong><i class="fas fa-phone me-2"></i>Téléphone :</strong> <span id="confirmed_phone"></span></p>
-                                <p class="mb-2"><strong><i class="fas fa-envelope me-2"></i>Email :</strong> <span id="confirmed_email"></span></p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2">
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-user mr-3 w-4"></i>
+                                    <strong>Nom :</strong> 
+                                    <span id="confirmed_name" class="ml-2"></span>
+                                </p>
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-phone mr-3 w-4"></i>
+                                    <strong>Téléphone :</strong> 
+                                    <span id="confirmed_phone" class="ml-2"></span>
+                                </p>
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-envelope mr-3 w-4"></i>
+                                    <strong>Email :</strong> 
+                                    <span id="confirmed_email" class="ml-2"></span>
+                                </p>
                             </div>
-                            <div class="col-md-6">
-                                <p class="mb-2"><strong><i class="fas fa-city me-2"></i>Ville :</strong> <span id="confirmed_city"></span></p>
-                                <p class="mb-2"><strong><i class="fas fa-map-marker-alt me-2"></i>Commune :</strong> <span id="confirmed_commune"></span></p>
-                                <p class="mb-2"><strong><i class="fas fa-home me-2"></i>Adresse :</strong> <span id="confirmed_address"></span></p>
+                            <div class="space-y-2">
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-city mr-3 w-4"></i>
+                                    <strong>Ville :</strong> 
+                                    <span id="confirmed_city" class="ml-2"></span>
+                                </p>
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-map-marker-alt mr-3 w-4"></i>
+                                    <strong>Commune :</strong> 
+                                    <span id="confirmed_commune" class="ml-2"></span>
+                                </p>
+                                <p class="flex items-center text-gray-700">
+                                    <i class="fas fa-home mr-3 w-4"></i>
+                                    <strong>Adresse :</strong> 
+                                    <span id="confirmed_address" class="ml-2"></span>
+                                </p>
                             </div>
-                            <div class="col-12" id="confirmed_notes_container" style="display: none;">
-                                <p class="mb-0"><strong><i class="fas fa-sticky-note me-2"></i>Instructions :</strong> <span id="confirmed_notes"></span></p>
+                            <div id="confirmed_notes_container" class="md:col-span-2 hidden">
+                                <p class="flex items-start text-gray-700">
+                                    <i class="fas fa-sticky-note mr-3 w-4 mt-1"></i>
+                                    <strong>Instructions :</strong> 
+                                    <span id="confirmed_notes" class="ml-2"></span>
+                                </p>
                             </div>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-primary mt-3" id="editDeliveryBtn">
-                            <i class="fas fa-edit me-1"></i>Modifier
+                        <button type="button" 
+                                class="mt-4 inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors text-sm" 
+                                id="editDeliveryBtn">
+                            <i class="fas fa-edit mr-2"></i>Modifier
                         </button>
                     </div>
                 </div>
@@ -178,77 +249,82 @@
         </div>
 
         <!-- Colonne droite : Récapitulatif de la commande -->
-        <div class="col-lg-5">
-            <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Récapitulatif</h5>
+        <div class="lg:col-span-5">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 sticky top-5">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-receipt mr-3"></i>Récapitulatif
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div class="table-responsive mb-3">
-                        <table class="table table-sm">
-                            <tbody>
-                                @foreach($cart as $item)
-                                    <tr>
-                                        <td class="align-middle" style="width: 60px;">
-                                            @if($item['image'])
-                                                <img src="{{ asset('storage/' . $item['image']) }}" 
-                                                     alt="{{ $item['name'] }}" 
-                                                     class="img-thumbnail" 
-                                                     style="width: 50px; height: 50px; object-fit: cover;">
-                                            @else
-                                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                                     style="width: 50px; height: 50px;">
-                                                    <i class="fas fa-image text-muted"></i>
-                                                </div>
-                                            @endif
-                                        </td>
-                                        <td class="align-middle">
-                                            <div class="fw-semibold">{{ $item['name'] }}</div>
-                                            <small class="text-muted">Qté: {{ $item['quantity'] }}</small>
-                                        </td>
-                                        <td class="align-middle text-end fw-bold">
-                                            {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <div class="p-6">
+                    <div class="space-y-4 mb-6">
+                        @foreach($cart as $item)
+                            <div class="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+                                <div class="flex-shrink-0">
+                                    @if($item['image'])
+                                        <img src="{{ asset('storage/' . $item['image']) }}" 
+                                             alt="{{ $item['name'] }}" 
+                                             class="w-16 h-16 object-cover rounded-lg border border-gray-200">
+                                    @else
+                                        <div class="w-16 h-16 bg-gray-200 flex items-center justify-content-center rounded-lg border border-gray-200">
+                                            <i class="fas fa-image text-gray-400"></i>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold text-gray-900 truncate">{{ $item['name'] }}</div>
+                                    <div class="text-sm text-gray-500">Qté: {{ $item['quantity'] }}</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="font-bold text-gray-900">
+                                        {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
 
-                    <hr>
-
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Sous-total :</span>
-                        <span class="fw-semibold">{{ number_format($subtotal, 2) }} {{ $item['currency'] ?? '' }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>
-                            Frais de livraison :
-                            <small class="text-muted">({{ $transportFeePercentage }}%)</small>
-                        </span>
-                        <span class="text-primary fw-semibold">+{{ number_format($transportFee, 2) }} {{ $item['currency'] ?? '' }}</span>
-                    </div>
-                    <hr>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span class="h5 mb-0">Total :</span>
-                        <span class="h5 mb-0 text-primary fw-bold">{{ number_format($total, 2) }} {{ $item['currency'] ?? '' }}</span>
+                    <div class="border-t border-gray-200 pt-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-700">Sous-total :</span>
+                            <span class="font-semibold text-gray-900">{{ number_format($subtotal, 2) }} {{ $item['currency'] ?? '' }}</span>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-700">
+                                Frais de livraison :
+                                <span class="text-sm text-gray-500">({{ $transportFeePercentage }}%)</span>
+                            </span>
+                            <span class="font-semibold text-blue-600">+{{ number_format($transportFee, 2) }} {{ $item['currency'] ?? '' }}</span>
+                        </div>
+                        <div class="border-t border-gray-200 pt-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xl font-semibold text-gray-900">Total :</span>
+                                <span class="text-xl font-bold text-blue-600">{{ number_format($total, 2) }} {{ $item['currency'] ?? '' }}</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Bouton de paiement (masqué par défaut) -->
-                    <div id="paymentButtonContainer" style="display: none;">
-                        <div class="alert alert-info mb-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <small>Vous serez redirigé vers la page de paiement sécurisé Mobile Money.</small>
+                    <div id="paymentButtonContainer" class="hidden mt-6">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-info-circle mr-3 text-blue-600"></i>
+                                <span class="text-blue-800 text-sm">Vous serez redirigé vers la page de paiement sécurisé Mobile Money.</span>
+                            </div>
                         </div>
-                        <a href="{{ route('cart.pay') }}" class="btn btn-success btn-lg w-100" id="paymentButton">
-                            <i class="fas fa-mobile-alt me-2"></i>Payer par Mobile Money
+                        <a href="{{ route('cart.pay') }}" 
+                           class="block w-full bg-green-600 text-white text-center py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg" 
+                           id="paymentButton">
+                            <i class="fas fa-mobile-alt mr-2"></i>Payer par Mobile Money
                         </a>
                     </div>
 
                     <!-- Message d'instruction (affiché par défaut) -->
-                    <div id="deliveryInstructionMessage" class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        Veuillez d'abord remplir vos informations de livraison ci-contre.
+                    <div id="deliveryInstructionMessage" class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i>
+                            <span class="text-yellow-800 text-sm">Veuillez d'abord remplir vos informations de livraison ci-contre.</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -256,26 +332,6 @@
     </div>
     @endif
 </div>
-
-@push('styles')
-<style>
-    .card {
-        transition: all 0.3s ease;
-    }
-    .form-control:focus, .form-select:focus {
-        border-color: #6f42c1;
-        box-shadow: 0 0 0 0.2rem rgba(111, 66, 193, 0.25);
-    }
-    .btn-primary {
-        background-color: #6f42c1;
-        border-color: #6f42c1;
-    }
-    .btn-primary:hover {
-        background-color: #5a32a3;
-        border-color: #5a32a3;
-    }
-</style>
-@endpush
 
 @push('scripts')
 <script>
@@ -297,19 +353,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if ("geolocation" in navigator) {
                 const originalText = this.innerHTML;
                 this.disabled = true;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Récupération de la position...';
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Récupération de la position...';
+                this.className = 'inline-flex items-center px-4 py-2 bg-gray-100 text-gray-500 border border-gray-300 rounded-lg cursor-not-allowed text-sm font-medium';
                 
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
                         document.getElementById('latitude').value = position.coords.latitude.toFixed(8);
                         document.getElementById('longitude').value = position.coords.longitude.toFixed(8);
                         
-                        getCurrentLocationBtn.innerHTML = '<i class="fas fa-check-circle me-1"></i>Position obtenue !';
-                        getCurrentLocationBtn.className = 'btn btn-success btn-sm';
+                        getCurrentLocationBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Position obtenue !';
+                        getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-green-100 text-green-700 border border-green-300 rounded-lg text-sm font-medium';
                         
                         setTimeout(() => {
                             getCurrentLocationBtn.innerHTML = originalText;
-                            getCurrentLocationBtn.className = 'btn btn-outline-info btn-sm';
+                            getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium';
                             getCurrentLocationBtn.disabled = false;
                         }, 2000);
                     },
@@ -331,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         showToast(errorMsg, 'error');
                         getCurrentLocationBtn.innerHTML = originalText;
+                        getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium';
                         getCurrentLocationBtn.disabled = false;
                     },
                     {
@@ -395,18 +453,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (data.notes) {
             document.getElementById('confirmed_notes').textContent = data.notes;
-            document.getElementById('confirmed_notes_container').style.display = 'block';
+            document.getElementById('confirmed_notes_container').classList.remove('hidden');
         } else {
-            document.getElementById('confirmed_notes_container').style.display = 'none';
+            document.getElementById('confirmed_notes_container').classList.add('hidden');
         }
 
         // Masquer le formulaire et afficher les infos confirmées
-        deliveryForm.style.display = 'none';
-        deliveryInfoConfirmed.style.display = 'block';
+        deliveryForm.classList.add('hidden');
+        deliveryInfoConfirmed.classList.remove('hidden');
 
         // Afficher le bouton de paiement
-        paymentButtonContainer.style.display = 'block';
-        deliveryInstructionMessage.style.display = 'none';
+        paymentButtonContainer.classList.remove('hidden');
+        deliveryInstructionMessage.classList.add('hidden');
     }
 
     // Gestion de la soumission du formulaire
@@ -438,7 +496,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = deliveryForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Enregistrement...';
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement...';
+        submitBtn.className = 'w-full mt-6 bg-gray-400 text-white py-3 px-6 rounded-lg cursor-not-allowed font-medium text-lg';
 
         // Déterminer si c'est une création ou une mise à jour
         const url = savedAddressId ? `/delivery-address/${savedAddressId}` : '/delivery-address';
@@ -466,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 showToast('Adresse de livraison enregistrée avec succès', 'success');
 
                 // Scroll vers le récapitulatif sur mobile
-                if (window.innerWidth < 992) {
+                if (window.innerWidth < 1024) {
                     document.getElementById('paymentButtonContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             } else {
@@ -480,15 +539,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
+            submitBtn.className = 'w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg';
         });
     });
 
     // Bouton pour modifier les informations
     editDeliveryBtn.addEventListener('click', function() {
-        deliveryForm.style.display = 'block';
-        deliveryInfoConfirmed.style.display = 'none';
-        paymentButtonContainer.style.display = 'none';
-        deliveryInstructionMessage.style.display = 'block';
+        deliveryForm.classList.remove('hidden');
+        deliveryInfoConfirmed.classList.add('hidden');
+        paymentButtonContainer.classList.add('hidden');
+        deliveryInstructionMessage.classList.remove('hidden');
         
         // Scroll vers le formulaire
         deliveryForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -496,12 +556,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fonction pour afficher un toast
     function showToast(message, type = 'success') {
+        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+        
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'} position-fixed`;
-        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-4 rounded-lg shadow-lg z-50 min-w-80 flex items-center`;
         toast.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>
-            ${message}
+            <i class="fas ${icon} mr-3"></i>
+            <span>${message}</span>
         `;
         document.body.appendChild(toast);
         

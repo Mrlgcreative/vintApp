@@ -1,530 +1,103 @@
-@push('styles')
-<style>
-/* ===== BARRE DE RECHERCHE & FILTRES - UI MODERNE ===== */
-
-/* Container principal */
-.search-wrapper-home {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 0.5rem;
-    display: flex;
-    gap: 0.875rem;
-    align-items: stretch;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 
-                0 1px 3px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(106, 13, 173, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.search-wrapper-home:hover {
-    box-shadow: 0 6px 28px rgba(106, 13, 173, 0.12), 
-                0 2px 6px rgba(0, 0, 0, 0.06);
-    border-color: rgba(106, 13, 173, 0.15);
-}
-
-/* Formulaire de recherche */
-.search-form-home {
-    flex: 1;
-    position: relative;
-}
-
-/* Champ de recherche */
-.search-input-home {
-    width: 100%;
-    padding: 0.875rem 130px 0.875rem 1.25rem;
-    border-radius: 12px;
-    border: 2px solid transparent;
-    background: #f8f9fa;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: #1f2937;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    letter-spacing: 0.01em;
-}
-
-.search-input-home::placeholder {
-    color: #9ca3af;
-    font-weight: 400;
-}
-
-.search-input-home:hover {
-    background: #ffffff;
-    border-color: rgba(106, 13, 173, 0.1);
-}
-
-.search-input-home:focus {
-    background: #ffffff;
-    border-color: #6A0DAD;
-    box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.08);
-    outline: none;
-}
-
-/* Bouton de recherche */
-.search-btn-home {
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 0.625rem 1.375rem;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    letter-spacing: 0.02em;
-    background: linear-gradient(135deg, #6A0DAD 0%, #8B0DC7 100%);
-    border: none;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 8px rgba(106, 13, 173, 0.25);
-}
-
-.search-btn-home:hover {
-    background: linear-gradient(135deg, #5a0b92 0%, #7209a8 100%);
-    transform: translateY(-50%) translateY(-1px);
-    box-shadow: 0 4px 14px rgba(106, 13, 173, 0.35);
-}
-
-.search-btn-home:active {
-    transform: translateY(-50%) translateY(0);
-    box-shadow: 0 2px 6px rgba(106, 13, 173, 0.3);
-}
-
-/* Bouton de filtre */
-.filter-btn-home {
-    padding: 0.875rem 1.5rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.9375rem;
-    white-space: nowrap;
-    letter-spacing: 0.02em;
-    background: #f8f9fa;
-    border: 2px solid transparent;
-    color: #6A0DAD;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    position: relative;
-    overflow: hidden;
-}
-
-.filter-btn-home::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(106, 13, 173, 0.1), rgba(139, 13, 199, 0.1));
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.filter-btn-home:hover {
-    background: #ffffff;
-    border-color: #6A0DAD;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(106, 13, 173, 0.15);
-}
-
-.filter-btn-home:hover::before {
-    opacity: 1;
-}
-
-.filter-btn-home:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(106, 13, 173, 0.1);
-}
-
-.filter-btn-home i {
-    font-size: 1rem;
-    position: relative;
-    z-index: 1;
-}
-
-.filter-btn-home span {
-    position: relative;
-    z-index: 1;
-}
-
-/* Classes utilitaires */
-.btn-purple {
-    background-color: #6A0DAD;
-    border-color: #6A0DAD;
-    color: white;
-}
-
-.btn-purple:hover {
-    background-color: #5a0b92;
-    border-color: #5a0b92;
-    color: white;
-}
-
-.btn-outline-purple {
-    background: transparent;
-    border-color: #6A0DAD;
-    color: #6A0DAD;
-}
-
-.btn-outline-purple:hover {
-    background: #6A0DAD;
-    border-color: #6A0DAD;
-    color: white;
-}
-
-/* Modal de filtres */
-.modal.fade .modal-dialog {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.modal.show .modal-dialog {
-    transform: none;
-}
-
-#filtersModal .modal-content {
-    border-radius: 20px;
-    border: 1px solid rgba(106, 13, 173, 0.1);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 
-                0 4px 16px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-}
-
-#filtersModal .modal-header {
-    background: linear-gradient(135deg, #6A0DAD 0%, #8B0DC7 100%);
-    color: white;
-    padding: 1.5rem 1.75rem;
-    border-bottom: none;
-}
-
-#filtersModal .modal-title {
-    font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: 0.02em;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-#filtersModal .btn-close {
-    filter: brightness(0) invert(1);
-    opacity: 0.8;
-    transition: opacity 0.2s ease;
-}
-
-#filtersModal .btn-close:hover {
-    opacity: 1;
-}
-
-#filtersModal .modal-body {
-    padding: 2rem 1.75rem;
-    background: #fafbfc;
-}
-
-#filtersModal label {
-    font-weight: 600;
-    font-size: 0.9375rem;
-    color: #1f2937;
-    margin-bottom: 0.625rem;
-    letter-spacing: 0.01em;
-    display: block;
-}
-
-#filtersModal .form-control,
-#filtersModal .form-select {
-    border-radius: 12px;
-    border: 2px solid #e5e7eb;
-    padding: 0.75rem 1rem;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: white;
-}
-
-#filtersModal .form-control:focus,
-#filtersModal .form-select:focus {
-    border-color: #6A0DAD;
-    box-shadow: 0 0 0 4px rgba(106, 13, 173, 0.08);
-    outline: none;
-}
-
-#filtersModal .modal-footer {
-    padding: 1.5rem 1.75rem;
-    background: white;
-    border-top: 1px solid #e5e7eb;
-}
-
-/* Responsive - Tablette */
-@media (max-width: 991.98px) {
-    .search-wrapper-home {
-        max-width: 100%;
-        margin: 0 1rem;
-    }
-}
-
-/* Responsive - Mobile */
-@media (max-width: 767.98px) {
-    .search-wrapper-home {
-        padding: 0.4rem;
-        gap: 0.5rem;
-        margin: 0 0.75rem;
-        border-radius: 14px;
-    }
-    
-    .search-input-home {
-        padding: 0.75rem 70px 0.75rem 1rem;
-        font-size: 0.875rem;
-        border-radius: 10px;
-    }
-    
-    .search-btn-home {
-        padding: 0.5rem 0.875rem;
-        right: 5px;
-        font-size: 0.8125rem;
-        border-radius: 8px;
-    }
-    
-    .filter-btn-home {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-        border-radius: 10px;
-        min-width: 48px;
-        justify-content: center;
-    }
-    
-    .filter-btn-home i {
-        font-size: 0.9375rem;
-    }
-    
-    #filtersModal .modal-dialog {
-        margin: 0.5rem;
-    }
-    
-    #filtersModal .modal-content {
-        border-radius: 16px;
-    }
-    
-    #filtersModal .modal-header,
-    #filtersModal .modal-body,
-    #filtersModal .modal-footer {
-        padding-left: 1.25rem;
-        padding-right: 1.25rem;
-    }
-    
-    #filtersModal .modal-title {
-        font-size: 1.125rem;
-    }
-    
-    #filtersModal .modal-footer .btn {
-        min-width: 100px;
-        padding: 0.625rem 1.25rem;
-        font-size: 0.875rem;
-    }
-}
-
-/* Responsive - Très petit mobile */
-@media (max-width: 374.98px) {
-    .search-wrapper-home {
-        gap: 0.375rem;
-        padding: 0.35rem;
-    }
-    
-    .search-input-home {
-        padding: 0.625rem 65px 0.625rem 0.875rem;
-        font-size: 0.8125rem;
-    }
-    
-    .search-btn-home {
-        padding: 0.4rem 0.75rem;
-        font-size: 0.75rem;
-    }
-    
-    .filter-btn-home {
-        padding: 0.625rem 0.875rem;
-        min-width: 44px;
-    }
-}
-
-/* ========================================
-   CARTES D'ARTICLES
-   ======================================== */
-
-@media (max-width: 768px) {
-    .row.g-4 > [class^="col-"],
-    .row.g-4 > [class*=" col-"] {
-        flex: 0 0 33.3333%;
-        max-width: 33.3333%;
-        padding-left: 3px;
-        padding-right: 3px;
-        margin-bottom: 8px;
-    }
-    .item-card {
-        margin-bottom: 1rem;
-        min-width: 0;
-        max-width: 100%;
-        height: 120px;
-        padding: 0.25rem 0.25rem 0.1rem 0.25rem;
-        border-radius: 8px;
-    }
-    .card-img-top, .item-card img {
-        height: 50px !important;
-        border-radius: 6px 6px 0 0;
-    }
-    .card-title {
-        font-size: 9px;
-        line-height: 1.1;
-        margin-bottom: 0.1rem;
-    }
-    .card-text {
-        font-size: 8px;
-        line-height: 1.1;
-        display: none;
-    }
-    .card-body {
-        padding: 0.3rem;
-    }
-    .badge {
-        font-size: 6px;
-        padding: 0.08em 0.3em;
-    }
-    .condition-badge {
-        font-size: 6px;
-        padding: 0.15em 0.4em;
-        border-radius: 6px;
-    }
-    .favorite-btn {
-        width: 20px;
-        height: 20px;
-        padding: 0;
-        font-size: 9px;
-        margin: 2px;
-    }
-    .btn-primary.w-100 {
-        font-size: 8px;
-        padding: 0.2rem 0.25rem;
-        margin-top: 0.2rem !important;
-    }
-    .btn-primary.w-100 i {
-        display: none;
-    }
-    .text-primary.fw-bold {
-        font-size: 9px;
-    }
-    .text-muted small, small.text-muted {
-        font-size: 7px;
-    }
-    .d-flex.justify-content-between.align-items-center {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 1px;
-    }
-    .d-flex.justify-content-between.align-items-center.mb-2 {
-        margin-bottom: 0.15rem !important;
-    }
-}
-</style>
-@endpush
-<!-- Toast notification Bootstrap -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11000">
-    <div id="mainToast" class="toast align-items-center text-bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body" id="mainToastBody">
-                Notification
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
-<script>
-function showNotification(message, type = 'primary') {
-        var toastEl = document.getElementById('mainToast');
-        var toastBody = document.getElementById('mainToastBody');
-        if (!toastEl || !toastBody) return;
-        toastBody.textContent = message;
-        toastEl.className = 'toast align-items-center text-bg-' + type + ' border-0';
-        var toast = bootstrap.Toast.getOrCreateInstance(toastEl);
-        toast.show();
-}
-</script>
 @extends('app')
 
 @section('content')
-<div class="container-fluid mt-4">
-    <!-- En-tête -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1>
-                    <i class="fas fa-box me-2"></i>
+<!-- Toast notification -->
+<div class="fixed bottom-4 right-4 z-50">
+    <div id="mainToast" class="hidden bg-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
+        <div id="mainToastBody" class="flex-1">Notification</div>
+        <button type="button" onclick="hideToast()" class="text-white hover:text-gray-200 ml-4">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<div class="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="mb-8">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                    <i class="fas fa-box mr-3 text-purple-600"></i>
                     Articles disponibles
                 </h1>
                 @auth
-                    <a href="{{ route('items.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus me-2"></i>
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>
                         Vendre un article
                     </a>
                 @endauth
             </div>
         </div>
-    </div>
 
-    <!-- Barre de recherche et filtres -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <section class="px-0">
-                <div class="search-wrapper-home">
-                    <form method="GET" action="{{ route('items.index') }}" class="search-form-home">
-                        <div class="position-relative">
+        <!-- Barre de recherche et filtres -->
+        <div class="mb-8">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex gap-4 p-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 hover:shadow-2xl transition-all duration-300">
+                    <!-- Formulaire de recherche -->
+                    <form method="GET" action="{{ route('items.index') }}" class="flex-1">
+                        <div class="relative">
                             <input type="search" 
                                    name="search" 
-                                   class="form-control search-input-home" 
+                                   class="w-full pl-5 pr-32 py-4 bg-gray-50 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
                                    placeholder="🔍 Rechercher un article..." 
                                    value="{{ request('search') }}"
                                    autocomplete="off">
-                            <button type="submit" class="btn btn-purple search-btn-home">
-                                <i class="fas fa-search"></i>
-                                <span class="d-none d-md-inline ms-2">Rechercher</span>
+                            <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                                <i class="fas fa-search mr-2"></i>
+                                <span class="hidden md:inline">Rechercher</span>
                             </button>
                         </div>
                     </form>
-                    <button type="button" class="btn btn-outline-purple filter-btn-home" onclick="toggleFiltersModal()">
-                        <i class="fas fa-filter"></i>
-                        <span class="d-none d-sm-inline ms-2">Filtres</span>
+                    
+                    <!-- Bouton filtres -->
+                    <button type="button" onclick="toggleFiltersModal()" class="flex items-center px-6 py-4 bg-gray-50 border-2 border-transparent text-purple-600 font-semibold rounded-xl hover:bg-white hover:border-purple-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-filter mr-2"></i>
+                        <span class="hidden sm:inline">Filtres</span>
                     </button>
                 </div>
-            </section>
+            </div>
 
             <!-- Modal de filtrage -->
-            <div id="filtersModal" class="modal fade" tabindex="-1" aria-labelledby="filtersModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="filtersModalLabel">
-                                <i class="fas fa-filter me-2 text-purple-600"></i>Filtres de recherche
-                            </h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div id="filtersModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeFiltersModal()"></div>
+                    
+                    <div class="inline-block align-middle bg-white rounded-2xl shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+                        <!-- En-tête du modal -->
+                        <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 rounded-t-2xl">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-xl font-bold text-white flex items-center">
+                                    <i class="fas fa-filter mr-3"></i>
+                                    Filtres de recherche
+                                </h3>
+                                <button type="button" onclick="closeFiltersModal()" class="text-white hover:text-gray-200 transition-colors">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="modal-body">
-                            <form method="GET" action="{{ route('items.index') }}" id="filterForm">
+
+                        <!-- Contenu du modal -->
+                        <div class="px-6 py-6 bg-gray-50">
+                            <form method="GET" action="{{ route('items.index') }}" id="filterForm" class="space-y-6">
                                 <!-- Recherche par mot-clé -->
-                                <div class="mb-3">
-                                    <label for="filterSearch" class="form-label fw-semibold">
-                                        <i class="fas fa-search me-1"></i>Mot-clé
+                                <div>
+                                    <label for="filterSearch" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-search mr-2 text-purple-600"></i>Mot-clé
                                     </label>
-                                    <input type="text" class="form-control" id="filterSearch" name="search" 
+                                    <input type="text" 
+                                           id="filterSearch" 
+                                           name="search" 
+                                           class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
                                            placeholder="Ex: iPhone, Nike, Vêtements..." 
                                            value="{{ request('search') }}">
                                 </div>
 
                                 <!-- Catégorie -->
-                                <div class="mb-3">
-                                    <label for="filterCategory" class="form-label fw-semibold">
-                                        <i class="fas fa-layer-group me-1"></i>Catégorie
+                                <div>
+                                    <label for="filterCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-layer-group mr-2 text-purple-600"></i>Catégorie
                                     </label>
-                                    <select class="form-select" id="filterCategory" name="category">
+                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
                                         <option value="">Toutes les catégories</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -535,11 +108,11 @@ function showNotification(message, type = 'primary') {
                                 </div>
 
                                 <!-- Marque -->
-                                <div class="mb-3">
-                                    <label for="filterBrand" class="form-label fw-semibold">
-                                        <i class="fas fa-tag me-1"></i>Marque
+                                <div>
+                                    <label for="filterBrand" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-tag mr-2 text-purple-600"></i>Marque
                                     </label>
-                                    <select class="form-select" id="filterBrand" name="brand">
+                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
                                         <option value="">Toutes les marques</option>
                                         @foreach($brands as $brand)
                                             <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
@@ -550,28 +123,34 @@ function showNotification(message, type = 'primary') {
                                 </div>
 
                                 <!-- Prix -->
-                                <div class="mb-3">
-                                    <label class="form-label fw-semibold">
-                                        <i class="fas fa-dollar-sign me-1"></i>Prix (USD)
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-dollar-sign mr-2 text-purple-600"></i>Prix (USD)
                                     </label>
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <input type="number" class="form-control" name="min_price" 
-                                                   placeholder="Min" value="{{ request('min_price') }}" min="0" step="0.01">
-                                        </div>
-                                        <div class="col-6">
-                                            <input type="number" class="form-control" name="max_price" 
-                                                   placeholder="Max" value="{{ request('max_price') }}" min="0" step="0.01">
-                                        </div>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <input type="number" 
+                                               name="min_price" 
+                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                               placeholder="Min" 
+                                               value="{{ request('min_price') }}" 
+                                               min="0" 
+                                               step="0.01">
+                                        <input type="number" 
+                                               name="max_price" 
+                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                               placeholder="Max" 
+                                               value="{{ request('max_price') }}" 
+                                               min="0" 
+                                               step="0.01">
                                     </div>
                                 </div>
 
                                 <!-- État -->
-                                <div class="mb-3">
-                                    <label for="filterCondition" class="form-label fw-semibold">
-                                        <i class="fas fa-star me-1"></i>État
+                                <div>
+                                    <label for="filterCondition" class="block text-sm font-semibold text-gray-700 mb-2">
+                                        <i class="fas fa-star mr-2 text-purple-600"></i>État
                                     </label>
-                                    <select class="form-select" id="filterCondition" name="condition">
+                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
                                         <option value="">Tous les états</option>
                                         <option value="new" {{ request('condition') == 'new' ? 'selected' : '' }}>🆕 Neuf</option>
                                         <option value="like_new" {{ request('condition') == 'like_new' ? 'selected' : '' }}>✨ Comme neuf</option>
@@ -582,128 +161,197 @@ function showNotification(message, type = 'primary') {
                                 </div>
                             </form>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">
-                                <i class="fas fa-undo me-1"></i>Réinitialiser
+
+                        <!-- Pied du modal -->
+                        <div class="px-6 py-4 bg-white border-t border-gray-200 rounded-b-2xl flex justify-end space-x-3">
+                            <button type="button" onclick="resetFilters()" class="px-6 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                                <i class="fas fa-undo mr-2"></i>Réinitialiser
                             </button>
-                            <button type="button" class="btn btn-purple" onclick="applyFilters()">
-                                <i class="fas fa-check me-1"></i>Appliquer
+                            <button type="button" onclick="applyFilters()" class="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                                <i class="fas fa-check mr-2"></i>Appliquer
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Résultats -->
-    <div class="row">
-        <div class="col-12">
-            @if($items->count() > 0)
-                <div class="row g-4">
-                    @foreach($items as $item)
-                        <div class="col-md-6 col-lg-4 col-xl-3">
-                            <div class="card h-100 item-card">
-                                <!-- Image -->
-                                <div class="position-relative">
-                                    @if($item->images && count($item->images) > 0)
-                                        <img src="{{ Storage::url($item->images[0]) }}" 
-                                             class="card-img-top" 
-                                             alt="{{ $item->name }}"
-                                             style="height: 200px; object-fit: cover;">
-                                    @else
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
-                                             style="height: 200px;">
-                                            <i class="fas fa-image fa-3x text-muted"></i>
-                                        </div>
-                                    @endif
-                                    
-                                    <!-- Badge condition -->
-                                    <span class="position-absolute top-0 start-0 m-2 badge condition-badge condition-{{ $item->condition }}">
-                                        {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+        <!-- Résultats -->
+        @if($items->count() > 0)
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="items-grid">
+                @foreach($items as $loop_index => $item)
+                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-300 border border-gray-100 overflow-hidden">
+                        <!-- Image -->
+                        <div class="relative">
+                            <a href="{{ route('items.show', $item) }}" class="block">
+                                @if($item->images && count($item->images) > 0)
+                                    <img src="{{ Storage::url($item->images[0]) }}" 
+                                         {{ $loop_index > 7 ? 'loading="lazy"' : '' }}
+                                         class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300" 
+                                         alt="{{ $item->name }}">
+                                @else
+                                    <div class="w-full h-48 bg-gray-100 flex items-center justify-content-center hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                                    </div>
+                                @endif
+                            </a>
+                            
+                            <!-- Badge condition -->
+                            <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-purple-600 rounded-lg shadow-md">
+                                {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                            </span>
+
+                            <!-- Bouton favori -->
+                            @auth
+                                <button class="absolute top-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 favorite-btn"
+                                        data-item-id="{{ $item->id }}">
+                                    <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
+                                </button>
+                            @endauth
+                        </div>
+
+                        <!-- Contenu -->
+                        <div class="p-5 flex flex-col h-full">
+                            <a href="{{ route('items.show', $item) }}" class="block hover:text-purple-600 transition-colors">
+                                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-purple-600">{{ Str::limit($item->name, 50) }}</h3>
+                            </a>
+                            
+                            <div class="flex flex-wrap gap-2 mb-3">
+                                <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg">{{ $item->category->name }}</span>
+                                @if($item->brand)
+                                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg">{{ $item->brand->name }}</span>
+                                @endif
+                            </div>
+
+                            <p class="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow">
+                                {{ Str::limit($item->description, 100) }}
+                            </p>
+
+                            <div class="mt-auto space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-xl font-bold text-purple-600">{{ $item->formatted_price }}</p>
+                                    <span class="text-xs text-gray-500 flex items-center">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        {{ $item->views }}
                                     </span>
-
-                                    <!-- Bouton favori -->
-                                    @auth
-                                        <button class="btn btn-sm btn-light position-absolute top-0 end-0 m-2 favorite-btn"
-                                                data-item-id="{{ $item->id }}">
-                                            <i class="fas fa-heart"></i>
-                                        </button>
-                                    @endauth
                                 </div>
 
-                                <!-- Contenu -->
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title">{{ Str::limit($item->name, 50) }}</h5>
-                                    
-                                    <div class="mb-2">
-                                        <span class="badge bg-primary">{{ $item->category->name }}</span>
-                                        @if($item->brand)
-                                            <span class="badge bg-secondary">{{ $item->brand->name }}</span>
-                                        @endif
-                                    </div>
-
-                                    <p class="card-text text-muted">
-                                        {{ Str::limit($item->description, 100) }}
-                                    </p>
-
-                                    <div class="mt-auto">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <p class="text-primary fw-bold">{{ $item->formatted_price }}</p>
-                                            <small class="text-muted">
-                                                <i class="fas fa-eye me-1"></i>
-                                                {{ $item->views }} vues
-                                            </small>
-                                        </div>
-
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">
-                                                <i class="fas fa-user me-1"></i>
-                                                {{ $item->user->name }}
-                                            </small>
-                                            <small class="text-muted">
-                                                {{ $item->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
-
-                                        <a href="{{ route('items.show', $item) }}" 
-                                           class="btn btn-primary w-100 mt-2">
-                                            <i class="fas fa-eye me-2"></i>
-                                            Voir détails
-                                        </a>
+                                <div class="text-xs text-gray-500 space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="flex items-center">
+                                            <i class="fas fa-user mr-1"></i>
+                                            {{ $item->user->name }}
+                                        </span>
+                                        <span>{{ $item->created_at->diffForHumans() }}</span>
                                     </div>
                                 </div>
+
+                                <a href="{{ route('items.show', $item) }}" 
+                                   class="block w-full text-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Voir détails
+                                </a>
                             </div>
                         </div>
-                    @endforeach
-                </div>
-
-                <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-center">
-                            {{ $items->appends(request()->query())->links() }}
-                        </div>
                     </div>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Aucun article trouvé</h4>
-                    <p class="text-muted">Essayez de modifier vos critères de recherche.</p>
-                    @auth
-                        <a href="{{ route('items.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i>
-                            Vendre votre premier article
-                        </a>
-                    @endauth
-                </div>
-            @endif
-        </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-12 flex justify-center">
+                {{ $items->appends(request()->query())->links() }}
+            </div>
+        @else
+            <div class="text-center py-16">
+                <i class="fas fa-search text-6xl text-gray-300 mb-6"></i>
+                <h4 class="text-2xl font-bold text-gray-600 mb-4">Aucun article trouvé</h4>
+                <p class="text-gray-500 mb-8">Essayez de modifier vos critères de recherche.</p>
+                @auth
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                        <i class="fas fa-plus mr-2"></i>
+                        Vendre votre premier article
+                    </a>
+                @endauth
+            </div>
+        @endif
     </div>
 </div>
 
 <script>
+// Système de toast notifications
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('mainToast');
+    const toastBody = document.getElementById('mainToastBody');
+    
+    if (!toast || !toastBody) return;
+    
+    // Configurer le message et le type
+    toastBody.textContent = message;
+    
+    // Changer les couleurs selon le type
+    toast.className = 'bg-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
+    if (type === 'success') {
+        toast.className = 'bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
+    } else if (type === 'danger') {
+        toast.className = 'bg-red-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
+    }
+    
+    // Afficher le toast
+    toast.classList.remove('hidden', 'translate-x-full');
+    toast.classList.add('translate-x-0');
+    
+    // Masquer automatiquement après 5 secondes
+    setTimeout(() => {
+        hideToast();
+    }, 5000);
+}
+
+function hideToast() {
+    const toast = document.getElementById('mainToast');
+    if (toast) {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 300);
+    }
+}
+
+// Gestion du modal de filtres
+function toggleFiltersModal() {
+    const modal = document.getElementById('filtersModal');
+    if (modal.classList.contains('hidden')) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    } else {
+        closeFiltersModal();
+    }
+}
+
+function closeFiltersModal() {
+    const modal = document.getElementById('filtersModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Réinitialiser tous les filtres
+function resetFilters() {
+    const form = document.getElementById('filterForm');
+    form.reset();
+    form.querySelectorAll('input, select').forEach(field => {
+        if (field.type === 'text' || field.type === 'search' || field.type === 'number') {
+            field.value = '';
+        } else if (field.tagName === 'SELECT') {
+            field.selectedIndex = 0;
+        }
+    });
+}
+
+// Appliquer les filtres
+function applyFilters() {
+    document.getElementById('filterForm').submit();
+}
+
+// Gestion des favoris et autres événements
 document.addEventListener('DOMContentLoaded', function() {
     // Gestion des favoris
     const favoriteBtns = document.querySelectorAll('.favorite-btn');
@@ -725,9 +373,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     const icon = this.querySelector('i');
                     if (data.is_favorite) {
-                        icon.classList.add('text-danger');
+                        icon.classList.remove('text-gray-400');
+                        icon.classList.add('text-red-500');
                     } else {
-                        icon.classList.remove('text-danger');
+                        icon.classList.remove('text-red-500');
+                        icon.classList.add('text-gray-400');
                     }
                     
                     showNotification(data.message, 'success');
@@ -739,104 +389,114 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
-});
 
-// Ouvrir le modal de filtres
-function toggleFiltersModal() {
-    const modal = new bootstrap.Modal(document.getElementById('filtersModal'));
-    modal.show();
-}
-
-// Réinitialiser tous les filtres
-function resetFilters() {
-    const form = document.getElementById('filterForm');
-    form.reset();
-    // Supprimer les valeurs des champs pour un reset complet
-    form.querySelectorAll('input, select').forEach(field => {
-        if (field.type === 'text' || field.type === 'search' || field.type === 'number') {
-            field.value = '';
-        } else if (field.tagName === 'SELECT') {
-            field.selectedIndex = 0;
+    // Fermer le modal avec Escape
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeFiltersModal();
         }
     });
-}
 
-// Appliquer les filtres (soumettre le formulaire)
-function applyFilters() {
-    document.getElementById('filterForm').submit();
-}
+    // Responsive mobile - 3 colonnes en mode compact
+    function adjustMobileLayout() {
+        const itemsGrid = document.getElementById('items-grid');
+        if (window.innerWidth <= 768 && itemsGrid) {
+            itemsGrid.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4');
+            itemsGrid.classList.add('grid-cols-3');
+            itemsGrid.style.gap = '0.5rem';
+            
+            // Ajuster les cartes pour le mobile
+            const cards = itemsGrid.querySelectorAll('.bg-white');
+            cards.forEach(card => {
+                // Réduire la hauteur de l'image
+                const img = card.querySelector('img, .w-full.h-48');
+                if (img) {
+                    img.style.height = '60px';
+                }
+                
+                // Réduire le padding
+                const cardBody = card.querySelector('.p-5');
+                if (cardBody) {
+                    cardBody.classList.remove('p-5');
+                    cardBody.classList.add('p-2');
+                }
+                
+                // Réduire la taille du titre
+                const title = card.querySelector('h3');
+                if (title) {
+                    title.classList.remove('text-lg');
+                    title.classList.add('text-xs');
+                    title.style.lineHeight = '1.1';
+                }
+                
+                // Masquer la description
+                const description = card.querySelector('.text-gray-600');
+                if (description) {
+                    description.style.display = 'none';
+                }
+                
+                // Réduire les badges
+                const badges = card.querySelectorAll('.px-2.py-1');
+                badges.forEach(badge => {
+                    badge.classList.remove('px-2', 'py-1');
+                    badge.classList.add('px-1', 'py-0.5', 'text-xs');
+                    badge.style.fontSize = '0.5rem';
+                });
+                
+                // Réduire le prix
+                const price = card.querySelector('.text-xl');
+                if (price) {
+                    price.classList.remove('text-xl');
+                    price.classList.add('text-xs');
+                }
+                
+                // Améliorer le bouton "Voir détails" pour mobile
+                const button = card.querySelector('.block.w-full');
+                if (button) {
+                    button.classList.remove('px-4', 'py-3');
+                    button.classList.add('px-3', 'py-2', 'text-sm', 'font-semibold');
+                    button.style.marginTop = '0.5rem';
+                    // Garder l'icône mais la rendre plus petite
+                    const buttonIcon = button.querySelector('i');
+                    if (buttonIcon) {
+                        buttonIcon.classList.add('text-xs');
+                    }
+                    // Changer le texte pour qu'il soit plus court
+                    const buttonText = button.textContent.trim();
+                    if (buttonText.includes('Voir détails')) {
+                        button.innerHTML = '<i class="fas fa-eye mr-1 text-xs"></i>Détails';
+                    }
+                }
+                
+                // Réduire les badges de condition
+                const conditionBadge = card.querySelector('.absolute.top-3');
+                if (conditionBadge) {
+                    conditionBadge.classList.remove('top-3', 'left-3', 'px-3', 'py-1');
+                    conditionBadge.classList.add('top-1', 'left-1', 'px-1', 'py-0.5', 'text-xs');
+                    conditionBadge.style.fontSize = '0.5rem';
+                }
+                
+                // Réduire le bouton favori
+                const favoriteBtn = card.querySelector('.w-10.h-10');
+                if (favoriteBtn) {
+                    favoriteBtn.classList.remove('w-10', 'h-10', 'top-3', 'right-3');
+                    favoriteBtn.classList.add('w-6', 'h-6', 'top-1', 'right-1');
+                }
+                
+                // Masquer les détails supplémentaires
+                const details = card.querySelector('.text-xs.text-gray-500');
+                if (details) {
+                    details.style.fontSize = '0.5rem';
+                }
+            });
+        }
+    }
+
+    // Appliquer le layout mobile au chargement
+    adjustMobileLayout();
+    
+    // Réappliquer lors du redimensionnement
+    window.addEventListener('resize', adjustMobileLayout);
+});
 </script>
-@endsection 
-
-@push('styles')
-<style>
-.item-card {
-    border-radius: 18px;
-    box-shadow: 0 4px 24px rgba(79,0,206,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
-    transition: transform 0.15s, box-shadow 0.15s;
-    border: none;
-}
-.item-card:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 8px 32px rgba(79,0,206,0.16), 0 2px 8px rgba(0,0,0,0.08);
-    border: 1.5px solid #4f00ce22;
-}
-.card-img-top, .item-card img {
-    border-radius: 18px 18px 0 0;
-}
-.condition-badge {
-    border-radius: 12px;
-    font-size: 0.85rem;
-    padding: 0.4em 0.9em;
-    background: #f5f5f5;
-    color: #4f00ce;
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(79,0,206,0.08);
-}
-.favorite-btn {
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(79,0,206,0.08);
-    transition: background 0.2s, color 0.2s;
-}
-.favorite-btn i {
-    color: #bbb;
-    transition: color 0.2s;
-}
-.favorite-btn:hover i, .favorite-btn.active i, .favorite-btn i.text-danger {
-    color: #e74c3c !important;
-}
-.card-title {
-    font-weight: 700;
-    color: #2d176a;
-}
-.card-text {
-    font-size: 0.97rem;
-}
-.btn-primary, .btn-primary:focus {
-    background: linear-gradient(90deg, #4f00ce 60%, #8f5cff 100%);
-    border: none;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-}
-.btn-primary:hover {
-    background: linear-gradient(90deg, #8f5cff 0%, #4f00ce 100%);
-}
-.badge.bg-primary {
-    background: #4f00ce !important;
-}
-.badge.bg-secondary {
-    background: #8f5cff !important;
-}
-@media (max-width: 768px) {
-    .item-card {
-        margin-bottom: 0.8rem;
-    }
-    .card-img-top, .item-card img {
-        height: 50px !important;
-    }
-    .card-body {
-        padding: 0.3rem;
-    }
-}
-</style>
-@endpush 
+@endsection

@@ -12,7 +12,52 @@ class AffiliateDashboard {
 
     init() {
         this.setupEventListeners();
+        this.setupModalEvents();
         this.loadDashboard();
+    }
+
+    setupModalEvents() {
+        // Close modal on backdrop click
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('fixed') && e.target.classList.contains('inset-0')) {
+                const modals = ['createCodeModal', 'shareModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal && !modal.classList.contains('hidden')) {
+                        this.closeModal(modalId);
+                    }
+                });
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modals = ['createCodeModal', 'shareModal'];
+                modals.forEach(modalId => {
+                    const modal = document.getElementById(modalId);
+                    if (modal && !modal.classList.contains('hidden')) {
+                        this.closeModal(modalId);
+                    }
+                });
+            }
+        });
+    }
+
+    openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+    }
+
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
     }
 
     setupEventListeners() {
@@ -111,17 +156,24 @@ class AffiliateDashboard {
     showSection(sectionName) {
         // Masquer toutes les sections
         document.querySelectorAll('.content-section').forEach(section => {
-            section.classList.add('d-none');
+            section.classList.add('hidden');
         });
 
         // Afficher la section sélectionnée
-        document.getElementById(`section-${sectionName}`)?.classList.remove('d-none');
+        document.getElementById(`section-${sectionName}`)?.classList.remove('hidden');
 
-        // Mettre à jour la navigation
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
+        // Mettre à jour la navigation - retirer les styles actifs
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.classList.remove('bg-blue-600', 'text-white');
+            link.classList.add('text-gray-700', 'hover:bg-gray-100');
         });
-        document.querySelector(`[data-section="${sectionName}"]`)?.classList.add('active');
+        
+        // Ajouter les styles actifs au lien sélectionné
+        const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
+        if (activeLink) {
+            activeLink.classList.remove('text-gray-700', 'hover:bg-gray-100');
+            activeLink.classList.add('bg-blue-600', 'text-white');
+        }
 
         this.currentSection = sectionName;
 
@@ -157,7 +209,7 @@ class AffiliateDashboard {
             this.showLoader('statsCards');
             
             // Essayer de charger les vraies données depuis l'API
-            const response = await fetch('/api/affiliate/dashboard', {
+            const response = await fetch('/affiliate/dashboard-data', {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -409,15 +461,32 @@ class AffiliateDashboard {
             return;
         }
 
+        if (parseFloat(points) < 100) {
+            this.showAlert('Le minimum est de 100 points', 'warning');
+            return;
+        }
+
         try {
-            const response = await fetch('/api/affiliate/convert-points', {
+            const response = await fetch('/affiliate/points/convert-cash', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    'X-Requested-With': 'XMLHttpRequest'
                 },
-                body: JSON.stringify({ points: parseFloat(points), currency })
+                credentials: 'same-origin',
+                body: JSON.stringify({ 
+                    points: parseFloat(points), 
+                    currency: currency
+                })
             });
+
+            if (!response.ok) {
+                const errorData = await response.text();
+                console.error('Erreur HTTP:', response.status, errorData);
+                throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+            }
 
             const data = await response.json();
 
@@ -427,11 +496,20 @@ class AffiliateDashboard {
                 document.getElementById('conversionPreview').innerHTML = '';
                 this.refreshAllData();
             } else {
-                this.showAlert(data.message, 'error');
+                this.showAlert(data.message || 'Erreur lors de la conversion', 'error');
             }
         } catch (error) {
             console.error('Erreur conversion:', error);
-            this.showAlert('Erreur lors de la conversion', 'error');
+            
+            if (error.message.includes('400')) {
+                this.showAlert('Données invalides. Vérifiez que vous avez assez de points.', 'error');
+            } else if (error.message.includes('401')) {
+                this.showAlert('Session expirée. Veuillez vous reconnecter.', 'error');
+            } else if (error.message.includes('422')) {
+                this.showAlert('Données de validation incorrectes.', 'error');
+            } else {
+                this.showAlert('Erreur de connexion. Veuillez réessayer.', 'error');
+            }
         }
     }
 
@@ -580,11 +658,8 @@ class AffiliateDashboard {
                 this.showAlert(`Code créé avec succès: <strong>${data.data.code}</strong>`, 'success');
                 document.getElementById('createCodeForm').reset();
                 
-                // Fermer le modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('createCodeModal'));
-                if (modal) {
-                    modal.hide();
-                }
+                // Fermer le modal avec Tailwind
+                this.closeModal('createCodeModal');
                 
                 // Recharger les codes et les statistiques
                 this.loadReferralCodes();
@@ -726,14 +801,14 @@ class AffiliateDashboard {
     renderReferralCodes(codes) {
         if (!codes.length) {
             document.getElementById('referralCodesList').innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-qr-code fa-3x text-muted mb-3"></i>
-                    <h5 class="text-muted">Aucun code de parrainage</h5>
-                    <p class="text-muted">Créez votre premier code de parrainage pour commencer à inviter vos amis !</p>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCodeModal">
-                        <i class="fas fa-plus"></i> Créer mon premier code
-                    </button>
-                </div>
+                    <div class="text-center py-5">
+                        <i class="fas fa-qr-code fa-3x text-gray-400 mb-3"></i>
+                        <h5 class="text-gray-600">Aucun code de parrainage</h5>
+                        <p class="text-gray-500">Créez votre premier code de parrainage pour commencer à inviter vos amis !</p>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onclick="window.affiliateDashboard.openModal('createCodeModal')">
+                            <i class="fas fa-plus mr-2"></i> Créer mon premier code
+                        </button>
+                    </div>
             `;
             return;
         }
@@ -940,8 +1015,7 @@ class AffiliateDashboard {
             document.getElementById('shareUrl').value = 
                 `${window.location.origin}/register?ref=${this.userData.user.referral_code}`;
             
-            const modal = new bootstrap.Modal(document.getElementById('shareModal'));
-            modal.show();
+            this.openModal('shareModal');
         }
     }
 
@@ -993,21 +1067,30 @@ class AffiliateDashboard {
     }
 
     showAlert(message, type = 'info') {
-        const alertClass = type === 'error' ? 'alert-danger' : `alert-${type}`;
+        const alertClass = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
+                          type === 'success' ? 'bg-green-100 border-green-500 text-green-700' :
+                          type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
+                          'bg-blue-100 border-blue-500 text-blue-700';
+        
         const alertHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="fixed top-4 right-4 z-50 ${alertClass} border-l-4 p-4 rounded shadow-lg max-w-md" role="alert">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        ${message}
+                    </div>
+                    <button type="button" class="ml-4 text-current hover:opacity-75" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
         `;
         
         // Insérer l'alerte en haut de la page
-        const container = document.querySelector('.container-fluid');
-        container.insertAdjacentHTML('afterbegin', alertHtml);
+        document.body.insertAdjacentHTML('afterbegin', alertHtml);
         
         // Auto-supprimer après 5 secondes
         setTimeout(() => {
-            const alert = container.querySelector('.alert');
+            const alert = document.querySelector('.fixed.top-4');
             if (alert) {
                 alert.remove();
             }
@@ -1033,6 +1116,36 @@ class AffiliateDashboard {
 }
 
 // Fonctions globales pour les événements
+function openModal(modalId) {
+    console.log('openModal appelée avec:', modalId);
+    if (window.affiliateDashboard) {
+        window.affiliateDashboard.openModal(modalId);
+    } else {
+        // Fallback si l'instance n'est pas encore créée
+        console.log('Instance affiliateDashboard non trouvée, utilisation du fallback');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+}
+
+function closeModal(modalId) {
+    console.log('closeModal appelée avec:', modalId);
+    if (window.affiliateDashboard) {
+        window.affiliateDashboard.closeModal(modalId);
+    } else {
+        // Fallback si l'instance n'est pas encore créée
+        console.log('Instance affiliateDashboard non trouvée, utilisation du fallback');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    }
+}
+
 function copyToClipboard(text) {
     const textToCopy = typeof text === 'string' && text.startsWith('#') ? 
         document.querySelector(text).value : text;
@@ -1078,19 +1191,80 @@ function shareCode(code, url) {
     document.getElementById('shareCode').value = code;
     document.getElementById('shareUrl').value = url;
     
-    const modal = new bootstrap.Modal(document.getElementById('shareModal'));
-    modal.show();
+    if (window.affiliateDashboard) {
+        window.affiliateDashboard.openModal('shareModal');
+    }
 }
 
 function generateCodeTitle() {
+    console.log('generateCodeTitle appelée');
     if (window.affiliateDashboard) {
         window.affiliateDashboard.generateCodeTitle();
+    } else {
+        // Fallback simple
+        const codeType = document.getElementById('codeType')?.value || 'general';
+        const currentDate = new Date();
+        const month = currentDate.toLocaleString('fr-FR', { month: 'short' });
+        const year = currentDate.getFullYear();
+        
+        const typeNames = {
+            'general': 'Général',
+            'limited': 'Limité', 
+            'premium': 'Premium',
+            'seasonal': 'Saisonnier'
+        };
+        
+        const randomSuffix = Math.floor(Math.random() * 900) + 100;
+        const title = `${typeNames[codeType]} ${month} ${year} #${randomSuffix}`;
+        
+        const titleInput = document.getElementById('codeTitle');
+        if (titleInput) {
+            titleInput.value = title;
+        }
     }
 }
 
 function updateCodePreview() {
+    console.log('updateCodePreview appelée');
     if (window.affiliateDashboard) {
         window.affiliateDashboard.updateCodePreview();
+    } else {
+        // Fallback simple
+        const titleInput = document.getElementById('codeTitle');
+        const typeSelect = document.getElementById('codeType');
+        const maxUsesInput = document.getElementById('codeMaxUses');
+        const expirySelect = document.getElementById('codeExpiry');
+        
+        const title = titleInput?.value || 'Code Parrainage #001';
+        const type = typeSelect?.value || 'general';
+        const maxUses = maxUsesInput?.value || '';
+        const expiry = expirySelect?.value || '';
+        
+        // Generate code based on title
+        const code = title.replace(/[^A-Z0-9]/g, '').substring(0, 10) || 'PARRAINS001';
+        
+        // Type display
+        const typeLabels = {
+            'general': 'Général',
+            'limited': 'Limité',
+            'premium': 'Premium',
+            'seasonal': 'Saisonnier'
+        };
+        
+        // Usage display
+        const usageText = maxUses ? `Max ${maxUses} utilisations` : 'Illimité';
+        
+        // Expiry display
+        const expiryText = expiry ? `${expiry} jours` : 'Permanent';
+        
+        // Update preview elements
+        const previewTitle = document.getElementById('previewTitle');
+        const previewCode = document.getElementById('previewCode');
+        const previewDetails = document.getElementById('previewDetails');
+        
+        if (previewTitle) previewTitle.textContent = title;
+        if (previewCode) previewCode.textContent = code;
+        if (previewDetails) previewDetails.textContent = `${typeLabels[type]} • ${usageText} • ${expiryText}`;
     }
 }
 
@@ -1108,5 +1282,7 @@ function editCode(codeId) {
 
 // Initialiser le dashboard quand le DOM est prêt
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initialisation du dashboard d\'affiliation...');
     window.affiliateDashboard = new AffiliateDashboard();
+    console.log('Dashboard d\'affiliation initialisé:', window.affiliateDashboard);
 });

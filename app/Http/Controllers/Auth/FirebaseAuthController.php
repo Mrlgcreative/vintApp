@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Services\FirebaseService;
 
@@ -199,10 +201,13 @@ class FirebaseAuthController extends Controller
                 'phone' => $request->phone ?? '',
                 'firebase_uid' => $firebaseUid,
                 'avatar' => $avatar,
-                'email_verified_at' => $emailVerified ? now() : null,
+                'email_verified_at' => null, // Forcer verification par code pour tous
                 'newsletter_subscribed' => $request->boolean('newsletter'),
                 'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
             ]);
+
+            // Générer et envoyer le code de vérification
+            $this->sendVerificationCode($user);
 
             // Appliquer le code de parrainage s'il est fourni
             $referralMessage = '';
@@ -223,14 +228,14 @@ class FirebaseAuthController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Inscription réussie !' . $referralMessage,
+                'message' => 'Inscription réussie ! Vérifiez votre email pour un code de vérification.' . $referralMessage,
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'avatar' => $user->avatar,
                 ],
-                'redirect' => route('home')
+                'redirect' => route('verification.code')
             ]);
 
         } catch (\Exception $e) {
@@ -331,5 +336,20 @@ class FirebaseAuthController extends Controller
         return response()->json([
             'authenticated' => false
         ]);
+    }
+
+    /**
+     * Envoyer le code de vérification par email
+     */
+    private function sendVerificationCode($user)
+    {
+        $code = $user->generateVerificationCode();
+        
+        try {
+            Mail::to($user->email)->send(new \App\Mail\VerificationCodeMail($user, $code));
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi email verification: ' . $e->getMessage());
+            // En cas d'erreur d'envoi, on peut quand même continuer
+        }
     }
 }

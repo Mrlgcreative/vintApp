@@ -1,11 +1,9 @@
-@extends('app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Accueil</a>
+            <a href="<?php echo e(route('home')); ?>" class="hover:text-blue-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <span class="text-gray-900 font-medium">Mes articles</span>
         </nav>
@@ -21,7 +19,7 @@
                     <p class="text-gray-600 mt-1">Gérez votre inventaire et vos ventes</p>
                 </div>
             </div>
-            <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1">
+            <a href="<?php echo e(route('items.create')); ?>" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1">
                 <i class="fas fa-plus mr-2"></i>
                 Vendre un article
             </a>
@@ -34,7 +32,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-blue-100 text-sm font-medium mb-2">Total</h3>
-                        <p class="text-3xl font-bold">{{ $items->total() }}</p>
+                        <p class="text-3xl font-bold"><?php echo e($items->total()); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-box text-xl"></i>
@@ -47,7 +45,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-emerald-100 text-sm font-medium mb-2">Actifs</h3>
-                        <p class="text-3xl font-bold">{{ $items->where('status', 'active')->count() }}</p>
+                        <p class="text-3xl font-bold"><?php echo e($items->where('status', 'active')->count()); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-check-circle text-xl"></i>
@@ -60,7 +58,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-amber-100 text-sm font-medium mb-2">Vendus</h3>
-                        <p class="text-3xl font-bold">{{ $items->where('status', 'sold')->count() }}</p>
+                        <p class="text-3xl font-bold"><?php echo e($items->where('status', 'sold')->count()); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-shopping-cart text-xl"></i>
@@ -73,7 +71,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-gray-100 text-sm font-medium mb-2">Inactifs</h3>
-                        <p class="text-3xl font-bold">{{ $items->where('status', 'inactive')->count() }}</p>
+                        <p class="text-3xl font-bold"><?php echo e($items->where('status', 'inactive')->count()); ?></p>
                     </div>
                     <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-pause-circle text-xl"></i>
@@ -84,7 +82,7 @@
 
         <!-- Liste des articles -->
         <div class="w-full">
-            @if($items->count() > 0)
+            <?php if($items->count() > 0): ?>
                 <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
                     <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
                         <div class="flex items-center">
@@ -111,130 +109,130 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($items as $item)
+                                    <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <tr class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-200">
                                             <td class="py-4 px-2">
-                                                @if($item->images && count($item->images) > 0)
-                                                    <img src="{{ Storage::url($item->images[0]) }}" 
-                                                         alt="{{ $item->name }}"
+                                                <?php if($item->images && count($item->images) > 0): ?>
+                                                    <img src="<?php echo e(Storage::url($item->images[0])); ?>" 
+                                                         alt="<?php echo e($item->name); ?>"
                                                          class="w-12 h-12 object-cover rounded-lg shadow-sm"
                                                          loading="lazy">
-                                                @else
+                                                <?php else: ?>
                                                     <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
                                                         <i class="fas fa-image text-gray-400"></i>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?>
                                             </td>
                                             <td class="py-4 px-2">
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">{{ Str::limit($item->name, 30) }}</p>
-                                                    <p class="text-sm text-gray-500">{{ $item->category->name }}</p>
+                                                    <p class="font-semibold text-gray-900"><?php echo e(Str::limit($item->name, 30)); ?></p>
+                                                    <p class="text-sm text-gray-500"><?php echo e($item->category->name); ?></p>
                                                 </div>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <span class="font-bold text-blue-600">{{ $item->formatted_price }}</span>
+                                                <span class="font-bold text-blue-600"><?php echo e($item->formatted_price); ?></span>
                                             </td>
                                             <td class="py-4 px-2">
                                                 <select class="px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
-                                                        data-item-id="{{ $item->id }}">
-                                                    <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
-                                                    <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
-                                                    <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
+                                                        data-item-id="<?php echo e($item->id); ?>">
+                                                    <option value="active" <?php echo e($item->status == 'active' ? 'selected' : ''); ?>>Actif</option>
+                                                    <option value="inactive" <?php echo e($item->status == 'inactive' ? 'selected' : ''); ?>>Inactif</option>
+                                                    <option value="sold" <?php echo e($item->status == 'sold' ? 'selected' : ''); ?>>Vendu</option>
                                                 </select>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm font-medium">{{ $item->views }}</span>
+                                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm font-medium"><?php echo e($item->views); ?></span>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <span class="text-sm text-gray-500">{{ $item->created_at->format('d/m/Y') }}</span>
+                                                <span class="text-sm text-gray-500"><?php echo e($item->created_at->format('d/m/Y')); ?></span>
                                             </td>
                                             <td class="py-4 px-2">
                                                 <div class="flex space-x-2">
-                                                    <a href="{{ route('items.show', $item) }}" 
+                                                    <a href="<?php echo e(route('items.show', $item)); ?>" 
                                                        class="w-8 h-8 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg flex items-center justify-center transition-all duration-300"
                                                        title="Voir">
                                                         <i class="fas fa-eye text-sm"></i>
                                                     </a>
-                                                    <a href="{{ route('items.edit', $item) }}" 
+                                                    <a href="<?php echo e(route('items.edit', $item)); ?>" 
                                                        class="w-8 h-8 bg-amber-100 hover:bg-amber-200 text-amber-600 rounded-lg flex items-center justify-center transition-all duration-300"
                                                        title="Modifier">
                                                         <i class="fas fa-edit text-sm"></i>
                                                     </a>
                                                     <button type="button" 
                                                             class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-all duration-300 delete-item" 
-                                                            data-item-id="{{ $item->id }}"
+                                                            data-item-id="<?php echo e($item->id); ?>"
                                                             title="Supprimer">
                                                         <i class="fas fa-trash text-sm"></i>
                                                     </button>
                                                 </div>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
 
                         <!-- Cards responsives pour mobile/tablette -->
                         <div class="lg:hidden space-y-4">
-                            @foreach($items as $item)
+                            <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
                                     <div class="flex items-start space-x-4">
                                         <!-- Image -->
                                         <div class="flex-shrink-0">
-                                            @if($item->images && count($item->images) > 0)
-                                                <img src="{{ Storage::url($item->images[0]) }}" 
-                                                     alt="{{ $item->name }}"
+                                            <?php if($item->images && count($item->images) > 0): ?>
+                                                <img src="<?php echo e(Storage::url($item->images[0])); ?>" 
+                                                     alt="<?php echo e($item->name); ?>"
                                                      class="w-16 h-16 object-cover rounded-lg shadow-sm"
                                                      loading="lazy">
-                                            @else
+                                            <?php else: ?>
                                                 <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
                                                     <i class="fas fa-image text-gray-400"></i>
                                                 </div>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                         
                                         <!-- Contenu -->
                                         <div class="flex-1 min-w-0">
                                             <div class="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <h3 class="font-semibold text-gray-900 truncate">{{ $item->name }}</h3>
-                                                    <p class="text-sm text-gray-500">{{ $item->category->name }}</p>
+                                                    <h3 class="font-semibold text-gray-900 truncate"><?php echo e($item->name); ?></h3>
+                                                    <p class="text-sm text-gray-500"><?php echo e($item->category->name); ?></p>
                                                 </div>
-                                                <span class="font-bold text-blue-600 text-lg">{{ $item->formatted_price }}</span>
+                                                <span class="font-bold text-blue-600 text-lg"><?php echo e($item->formatted_price); ?></span>
                                             </div>
                                             
                                             <div class="flex items-center justify-between mb-3">
                                                 <div class="flex items-center space-x-3">
-                                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">{{ $item->views }} vues</span>
-                                                    <span class="text-xs text-gray-500">{{ $item->created_at->format('d/m/Y') }}</span>
+                                                    <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium"><?php echo e($item->views); ?> vues</span>
+                                                    <span class="text-xs text-gray-500"><?php echo e($item->created_at->format('d/m/Y')); ?></span>
                                                 </div>
                                             </div>
                                             
                                             <!-- Statut -->
                                             <div class="mb-3">
                                                 <select class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
-                                                        data-item-id="{{ $item->id }}">
-                                                    <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
-                                                    <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
-                                                    <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
+                                                        data-item-id="<?php echo e($item->id); ?>">
+                                                    <option value="active" <?php echo e($item->status == 'active' ? 'selected' : ''); ?>>Actif</option>
+                                                    <option value="inactive" <?php echo e($item->status == 'inactive' ? 'selected' : ''); ?>>Inactif</option>
+                                                    <option value="sold" <?php echo e($item->status == 'sold' ? 'selected' : ''); ?>>Vendu</option>
                                                 </select>
                                             </div>
                                             
                                             <!-- Actions -->
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('items.show', $item) }}" 
+                                                <a href="<?php echo e(route('items.show', $item)); ?>" 
                                                    class="flex-1 bg-blue-100 hover:bg-blue-200 text-blue-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
                                                     <i class="fas fa-eye mr-2"></i>
                                                     Voir
                                                 </a>
-                                                <a href="{{ route('items.edit', $item) }}" 
+                                                <a href="<?php echo e(route('items.edit', $item)); ?>" 
                                                    class="flex-1 bg-amber-100 hover:bg-amber-200 text-amber-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
                                                     <i class="fas fa-edit mr-2"></i>
                                                     Modifier
                                                 </a>
                                                 <button type="button" 
                                                         class="flex-1 bg-red-100 hover:bg-red-200 text-red-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300 delete-item" 
-                                                        data-item-id="{{ $item->id }}">
+                                                        data-item-id="<?php echo e($item->id); ?>">
                                                     <i class="fas fa-trash mr-2"></i>
                                                     Supprimer
                                                 </button>
@@ -242,28 +240,29 @@
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
 
                         <!-- Pagination -->
                         <div class="flex justify-center mt-8">
-                            {{ $items->links() }}
+                            <?php echo e($items->links()); ?>
+
                         </div>
                     </div>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 p-12 text-center">
                     <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-box-open text-4xl text-gray-400"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">Vous n'avez pas encore d'articles</h3>
                     <p class="text-gray-600 mb-8">Commencez par vendre votre premier article !</p>
-                    <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center">
+                    <a href="<?php echo e(route('items.create')); ?>" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre mon premier article
                     </a>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -429,4 +428,5 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 </script>
-@endsection 
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/items/my-items.blade.php ENDPATH**/ ?>

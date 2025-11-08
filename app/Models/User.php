@@ -38,6 +38,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'firebase_uid',
         'fcm_token',
         'provider_data',
+        'verification_code',
+        'verification_code_expires_at',
     ];
 
     /**
@@ -62,6 +64,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'verification_code_expires_at' => 'datetime',
             'password' => 'hashed',
             'newsletter_subscribed' => 'boolean',
         ];
@@ -710,5 +713,52 @@ class User extends Authenticatable implements MustVerifyEmail
             'referred_by' => $this->referrer?->name,
             'referral_activated' => $this->referral_activated_at !== null,
         ];
+    }
+
+    /**
+     * Générer un code de vérification à 6 chiffres
+     */
+    public function generateVerificationCode(): string
+    {
+        $code = sprintf('%06d', random_int(100000, 999999));
+        
+        $this->update([
+            'verification_code' => $code,
+            'verification_code_expires_at' => now()->addMinutes(15), // Expire après 15 minutes
+        ]);
+
+        return $code;
+    }
+
+    /**
+     * Vérifier si le code de vérification est valide
+     */
+    public function isValidVerificationCode(string $code): bool
+    {
+        return $this->verification_code === $code 
+            && $this->verification_code_expires_at 
+            && $this->verification_code_expires_at->isFuture();
+    }
+
+    /**
+     * Marquer l'email comme vérifié et supprimer le code
+     */
+    public function markEmailAsVerifiedWithCode(): bool
+    {
+        $this->update([
+            'email_verified_at' => now(),
+            'verification_code' => null,
+            'verification_code_expires_at' => null,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Vérifier si le code de vérification a expiré
+     */
+    public function hasExpiredVerificationCode(): bool
+    {
+        return $this->verification_code_expires_at && $this->verification_code_expires_at->isPast();
     }
 }

@@ -55,7 +55,7 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // Routes de vérification d'email
+    // Routes de vérification d'email (ancien système avec lien)
     Route::get('verify-email', [EmailVerificationController::class, 'notice'])
         ->name('verification.notice');
 
@@ -66,6 +66,18 @@ Route::middleware('auth')->group(function () {
     Route::post('email/verification-notification', [EmailVerificationController::class, 'resend'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    // Routes de vérification par code (nouveau système)
+    Route::get('verify-code', [EmailVerificationController::class, 'showCodeForm'])
+        ->name('verification.code');
+
+    Route::post('verify-code', [EmailVerificationController::class, 'verifyCode'])
+        ->middleware('throttle:5,1')
+        ->name('verification.code.verify');
+
+    Route::post('verify-code/resend', [EmailVerificationController::class, 'resendCode'])
+        ->middleware('throttle:3,1')
+        ->name('verification.code.resend');
 
     // Routes de confirmation de mot de passe
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])

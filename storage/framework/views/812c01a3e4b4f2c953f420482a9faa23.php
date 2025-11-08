@@ -1,837 +1,579 @@
 
 
-<?php $__env->startPush('styles'); ?>
-<style>
-    .firebase-auth-form {
-        position: relative;
-    }
-    
-    .loading-overlay {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(4px);
-    }
-    
-    .pulse-dot {
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    
-    @keyframes pulse {
-        0%, 100% { transform: scale(0.8); opacity: 0.5; }
-        50% { transform: scale(1.2); opacity: 1; }
-    }
-    
-    .btn-firebase {
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn-firebase:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-    
-    .toast-notification {
-        animation: slideInRight 0.3s ease-out;
-    }
-    
-    @keyframes slideInRight {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-</style>
-<?php $__env->stopPush(); ?>
+<?php $__env->startSection('title', 'Connexion - VintApp'); ?>
 
 <?php $__env->startSection('content'); ?>
 
-<!-- Toast Notifications Container -->
-<div id="toast-container" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
+
+<!-- Toast Container -->
+<div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
 <!-- Loading Overlay -->
-<div id="loading-overlay" class="position-fixed top-0 start-0 w-100 h-100 loading-overlay d-none justify-content-center align-items-center" style="z-index: 9998;">
+<div id="loading-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden items-center justify-center">
     <div class="text-center">
-        <div class="d-flex justify-content-center mb-3">
-            <div class="pulse-dot bg-primary rounded-circle me-2" style="width: 12px; height: 12px;"></div>
-            <div class="pulse-dot bg-primary rounded-circle me-2" style="width: 12px; height: 12px; animation-delay: 0.2s;"></div>
-            <div class="pulse-dot bg-primary rounded-circle" style="width: 12px; height: 12px; animation-delay: 0.4s;"></div>
+        <div class="flex justify-center space-x-2 mb-4">
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse" style="animation-delay: 0.2s;"></div>
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></div>
         </div>
-        <p class="text-primary fw-medium">Connexion en cours...</p>
+        <p class="text-white font-medium">Connexion en cours...</p>
     </div>
 </div>
 
-<div class="container-fluid">
-    <div class="row justify-content-center align-items-center min-vh-100">
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-lg border-0 firebase-auth-form">
-                <div class="card-body p-5">
-                    <!-- Logo et titre -->
-                    <div class="text-center mb-4">
-                        <h1 class="h3 mb-3 fw-normal">
-                            <i class="fas fa-user-circle text-primary me-2"></i>
-                            Connexion
-                        </h1>
-                        <p class="text-muted">Connectez-vous à votre compte VintApp</p>
+<div class="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-lg">
+        <!-- Card Principal -->
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-700 animate-fade-in-up">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                </div>
+                
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Connexion</h1>
+                <p class="text-gray-600">Connectez-vous à votre compte VintApp</p>
+            </div>
+
+            <!-- Messages d'erreur/succès -->
+            <?php if($errors->any()): ?>
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div class="flex items-center text-red-800 mb-2">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                        <span class="font-medium">Erreur de connexion</span>
                     </div>
+                    <ul class="text-sm text-red-700 list-disc list-inside">
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
 
-                    <!-- Connexion Firebase avec Email/Password -->
-                    <div class="mb-4">
-                        <div class="form-floating mb-3">
-                            <input type="email" 
-                                   class="form-control" 
-                                   id="firebase-email" 
-                                   placeholder="nom@exemple.com" 
-                                   required>
-                            <label for="firebase-email">
-                                <i class="fas fa-envelope me-2"></i>
-                                Adresse email
-                            </label>
-                        </div>
-
-                        <div class="form-floating mb-3">
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="firebase-password" 
-                                   placeholder="Mot de passe" 
-                                   required>
-                            <label for="firebase-password">
-                                <i class="fas fa-lock me-2"></i>
-                                Mot de passe
-                            </label>
-                        </div>
-
-                        <!-- Se souvenir de moi -->
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="remember-me">
-                            <label class="form-check-label" for="remember-me">
-                                Se souvenir de moi
-                            </label>
-                        </div>
-
-                        <!-- Bouton Firebase Login -->
-                        <div class="d-grid mb-3">
-                            <button onclick="signInWithFirebaseEmail()" class="btn btn-primary btn-lg btn-firebase">
-                                <i class="fas fa-sign-in-alt me-2"></i>
-                                Se connecter
-                            </button>
-                        </div>
-
-                        <!-- Liens utiles -->
-                        <div class="text-center mb-4">
-                            <a href="#" onclick="showForgotPassword()" class="text-decoration-none">
-                                <i class="fas fa-key me-1"></i>
-                                Mot de passe oublié ?
-                            </a>
-                        </div>
+            <?php if(session('status')): ?>
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl">
+                    <div class="flex items-center text-green-800">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span class="text-sm font-medium"><?php echo e(session('status')); ?></span>
                     </div>
+                </div>
+            <?php endif; ?>
 
-                    <!-- Séparateur -->
-                    <div class="position-relative my-4">
-                        <hr class="m-0">
-                        <span class="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted small">OU</span>
+            <?php if(session('error')): ?>
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
+                    <div class="flex items-center text-red-800">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span class="text-sm font-medium"><?php echo e(session('error')); ?></span>
                     </div>
+                </div>
+            <?php endif; ?>
 
-                    <!-- Connexion avec Google Firebase -->
-                    <div class="d-grid mb-3">
-                        <button onclick="signInWithGoogle()" class="btn btn-light btn-lg border d-flex align-items-center justify-content-center btn-firebase" style="background-color: white;">
-                            <svg width="18" height="18" viewBox="0 0 18 18" class="me-2" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/>
-                                <path d="M9.003 18c2.43 0 4.467-.806 5.956-2.18L12.05 13.56c-.806.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.96v2.332C2.44 15.983 5.485 18 9.003 18z" fill="#34A853"/>
-                                <path d="M3.964 10.712c-.18-.54-.282-1.117-.282-1.71 0-.593.102-1.17.282-1.71V4.96H.957C.347 6.175 0 7.55 0 9.002c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-                                <path d="M9.003 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.426 0 9.002 0 5.485 0 2.44 2.017.96 4.958L3.967 7.29c.708-2.127 2.692-3.71 5.036-3.71z" fill="#EA4335"/>
+            <!-- Formulaire de connexion -->
+            <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-6">
+                <?php echo csrf_field(); ?>
+                
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        Adresse e-mail
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
                             </svg>
-                            <span style="color: #3c4043; font-weight: 500;">Google</span>
-                        </button>
-                    </div>
-
-                    <!-- Connexion avec Facebook Firebase -->
-                    <!-- <div class="d-grid mb-3">
-                        <button onclick="signInWithFacebook()" class="btn btn-primary btn-lg btn-firebase" style="background-color: #1877f2; border-color: #1877f2;">
-                            <i class="fab fa-facebook-f me-2"></i>
-                            Facebook
-                        </button>
-                    </div> -->
-
-                    <!-- Connexion avec Apple Firebase (masqué si non configuré) -->
-                    <!-- <div class="d-grid mb-3" id="apple-signin-container" style="display: none;">
-                        <button onclick="signInWithApple()" class="btn btn-dark btn-lg btn-firebase">
-                            <i class="fab fa-apple me-2"></i>
-                            Apple
-                        </button>
-                    </div> -->
-
-                    <!-- Message si Apple non configuré
-                    <div class="d-grid mb-3" id="apple-not-configured">
-                        <div class="alert alert-info d-flex align-items-center" role="alert">
-                            <i class="fab fa-apple me-2"></i>
-                            <div>
-                                <strong>Apple Sign-In</strong> nécessite un Apple Developer Account (99$/an).
-                                <a href="#" onclick="showAppleInfo()" class="alert-link">En savoir plus</a>
-                            </div>
                         </div>
-                    </div> -->
-
-                    <!-- Séparateur -->
-                    <hr class="my-4">
-
-                    <!-- Inscription -->
-                    <div class="text-center">
-                        <p class="mb-0">
-                            Pas encore de compte ? 
-                            <a href="<?php echo e(route('register')); ?>" class="text-decoration-none fw-bold">
-                                <i class="fas fa-user-plus me-1"></i>
-                                S'inscrire
-                            </a>
-                        </p>
+                        <input type="email" 
+                               id="email" 
+                               name="email" 
+                               required 
+                               value="<?php echo e(old('email')); ?>"
+                               autocomplete="email"
+                               class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 focus:border-red-500 focus:ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                               placeholder="votre@email.com">
                     </div>
+                    <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
 
-                    <!-- Fallback vers connexion Laravel classique -->
-                    <div class="text-center mt-3">
-                        <small class="text-muted">
-                            Problème de connexion ? 
-                            <a href="#" onclick="showClassicLogin()" class="text-decoration-none">
-                                Utiliser la connexion classique
-                            </a>
-                        </small>
+                <!-- Mot de passe -->
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        Mot de passe
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                        </div>
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               required
+                               autocomplete="current-password"
+                               class="w-full pl-10 pr-12 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 focus:border-red-500 focus:ring-red-100 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
+                               placeholder="Votre mot de passe">
+                        <button type="button" 
+                                onclick="togglePassword()" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg id="password-eye" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
+                </div>
+
+                <!-- Options -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               id="remember" 
+                               name="remember" 
+                               class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500 focus:ring-offset-0">
+                        <label for="remember" class="ml-2 text-sm text-gray-600">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+                    <a href="<?php echo e(route('password.request')); ?>" 
+                       class="text-sm text-green-600 hover:text-green-700 font-medium transition-colors">
+                        Mot de passe oublié ?
+                    </a>
+                </div>
+
+                <!-- Bouton principal -->
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-green-500/50">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                        Se connecter
+                    </span>
+                </button>
+            </form>
+
+            <!-- Séparateur -->
+            <div class="relative my-8">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="px-4 bg-white text-gray-500 font-medium">Ou continuer avec</span>
+                </div>
+            </div>
+
+            <!-- Boutons sociaux -->
+            <div class="space-y-3">
+                <!-- Google -->
+                <button onclick="signInWithGoogle()" 
+                        type="button"
+                        class="w-full flex items-center justify-center px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                        <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    <span class="text-gray-700 font-medium">Continuer avec Google</span>
+                </button>
+
+                <!-- Facebook -->
+                <button onclick="signInWithFacebook()" 
+                        type="button"
+                        class="w-full flex items-center justify-center px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                    <svg class="w-5 h-5 mr-3" fill="#1877F2" viewBox="0 0 24 24">
+                        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <span class="text-gray-700 font-medium">Continuer avec Facebook</span>
+                </button>
+
+                <!-- Apple (désactivé) -->
+                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                    <div class="flex items-center justify-center text-gray-400">
+                        <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.1.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24.009c6.624 0 11.99-5.367 11.99-11.988C24.007 5.367 18.641.001 12.017.001z"/>
+                        </svg>
+                        <span class="text-sm font-medium">Apple ID (bientôt disponible)</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Informations supplémentaires -->
-            <div class="text-center mt-4">
-                <small class="text-muted">
-                    <i class="fas fa-shield-alt me-1"></i>
-                    Vos données sont protégées et sécurisées
-                </small>
+            <!-- Liens footer -->
+            <div class="text-center mt-8 space-y-4">
+                <p class="text-sm text-gray-600">
+                    Pas encore de compte ?
+                    <a href="<?php echo e(route('register')); ?>" class="text-green-600 hover:text-green-700 font-medium transition-colors">
+                        Créez votre compte gratuitement
+                    </a>
+                </p>
+                
+                <p class="text-xs text-gray-500">
+                    Problème de connexion ? 
+                    <a href="#" class="text-green-600 hover:text-green-700 transition-colors">
+                        Consultez notre centre d'aide
+                    </a>
+                </p>
             </div>
+        </div>
+
+        <!-- Sécurité info -->
+        <div class="text-center mt-6">
+            <p class="text-sm text-gray-500 flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                Connexion sécurisée et protégée
+            </p>
         </div>
     </div>
 </div>
 
-<!-- Formulaire Laravel classique (caché par défaut) -->
-<div id="classic-login-modal" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Connexion classique</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="<?php echo e(route('login')); ?>">
-                    <?php echo csrf_field(); ?>
-                    <div class="form-floating mb-3">
-                        <input type="email" class="form-control <?php $__errorArgs = ['email'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                               name="email" value="<?php echo e(old('email')); ?>" required>
-                        <label>Email</label>
-                        <?php $__errorArgs = ['email'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control <?php $__errorArgs = ['password'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> is-invalid <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                               name="password" required>
-                        <label>Mot de passe</label>
-                        <?php $__errorArgs = ['password'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <div class="invalid-feedback"><?php echo e($message); ?></div>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Se connecter</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Firebase SDK et JavaScript -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { 
-    getAuth, 
-    signInWithEmailAndPassword,
-    signInWithPopup,
-    signInWithRedirect,
-    getRedirectResult,
-    GoogleAuthProvider,
-    FacebookAuthProvider,
-    OAuthProvider,
-    sendPasswordResetEmail,
-    onAuthStateChanged
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-import { 
-    getMessaging, 
-    getToken 
-} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js';
-
-// Configuration Firebase
-const firebaseConfig = {
-    apiKey: "<?php echo e(config('firebase.web_config.apiKey')); ?>",
-    authDomain: "<?php echo e(config('firebase.web_config.authDomain')); ?>",
-    projectId: "<?php echo e(config('firebase.web_config.projectId')); ?>",
-    storageBucket: "<?php echo e(config('firebase.web_config.storageBucket')); ?>",
-    messagingSenderId: "<?php echo e(config('firebase.web_config.messagingSenderId')); ?>",
-    appId: "<?php echo e(config('firebase.web_config.appId')); ?>"
-};
-
-// Debug configuration
-console.log('🔥 Configuration Firebase complète:', firebaseConfig);
-
-// Validation critique de la configuration
-const configProblems = [];
-if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY_HERE') {
-    configProblems.push('API Key invalide');
-}
-if (!firebaseConfig.appId || firebaseConfig.appId.includes('YOUR_APP_ID_HERE')) {
-    configProblems.push('APP ID manquant (YOUR_APP_ID_HERE)');
-}
-
-if (configProblems.length > 0) {
-    console.error('❌ ERREUR CONFIGURATION FIREBASE:', configProblems);
-    alert('ERREUR: Configuration Firebase incomplète\n\n' + configProblems.join('\n') + 
-          '\n\nVeuillez configurer Firebase dans votre Console Firebase.');
-}
-
-// Validation de la configuration
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-    console.error('Configuration Firebase incomplète!');
-    showToast('Configuration Firebase manquante. Contactez l\'administrateur.', 'error');
-}
-
-// Initialisation Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-let messaging = null;
-
-// Initialiser FCM si supporté
-try {
-    messaging = getMessaging(app);
-} catch (error) {
-    console.warn('FCM non supporté:', error);
-}
-
-// Providers
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({
-    prompt: 'select_account'
-});
-
-// Ajouter des scopes spécifiques pour Google
-googleProvider.addScope('email');
-googleProvider.addScope('profile');
-
-const facebookProvider = new FacebookAuthProvider();
-
-// Apple provider
-const appleProvider = new OAuthProvider('apple.com');
-appleProvider.addScope('email');
-appleProvider.addScope('name');
-appleProvider.setCustomParameters({
-    // Optionnel: forcer l'affichage de l'interface de connexion
-    locale: 'fr'
-});
-
-// Debug des providers
-console.log('🔧 Google Provider configuré:', {
-    providerId: googleProvider.providerId,
-    customParameters: googleProvider.customParameters
-});
-
-// Fonctions globales
-window.signInWithFirebaseEmail = async () => {
-    const email = document.getElementById('firebase-email').value.trim();
-    const password = document.getElementById('firebase-password').value;
-    
-    if (!email || !password) {
-        showToast('Veuillez remplir tous les champs', 'error');
-        return;
-    }
-    
-    if (!validateEmail(email)) {
-        showToast('Adresse email invalide', 'error');
-        return;
-    }
-    
+<script>
+// Fonctions globales pour Firebase et connexion
+window.signInWithGoogle = async function() {
     showLoading(true);
     
     try {
-        console.log('Tentative de connexion Firebase pour:', email);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        console.log('Connexion Firebase réussie:', userCredential.user);
-        await handleFirebaseAuth(userCredential.user);
-    } catch (error) {
-        console.error('Erreur Firebase complète:', error);
-        console.error('Code erreur:', error.code);
-        console.error('Message erreur:', error.message);
-        
-        let message = 'Erreur de connexion Firebase';
-        
-        switch (error.code) {
-            case 'auth/user-not-found':
-                message = 'Aucun compte Firebase trouvé avec cet email. Vous devez d\'abord créer un compte Firebase.';
-                break;
-            case 'auth/wrong-password':
-                message = 'Mot de passe Firebase incorrect';
-                break;
-            case 'auth/invalid-email':
-                message = 'Adresse email invalide';
-                break;
-            case 'auth/user-disabled':
-                message = 'Ce compte Firebase a été désactivé';
-                break;
-            case 'auth/too-many-requests':
-                message = 'Trop de tentatives. Réessayez plus tard';
-                break;
-            case 'auth/invalid-api-key':
-                message = 'Clé API Firebase invalide. Configuration incorrecte.';
-                break;
-            case 'auth/app-not-authorized':
-                message = 'Application non autorisée pour ce projet Firebase';
-                break;
-            default:
-                message = `Erreur Firebase: ${error.code} - ${error.message}`;
+        // Vérifier que Firebase est initialisé
+        if (!firebase.apps.length) {
+            throw new Error('Firebase n\'est pas initialisé');
         }
         
-        showToast(message, 'error');
-        showLoading(false);
-    }
-};
-
-window.signInWithGoogle = async () => {
-    console.log('🔍 Tentative de connexion Google...');
-    console.log('🔧 Configuration du provider Google:', googleProvider);
-    console.log('🔥 État de Firebase Auth:', {
-        currentUser: auth.currentUser,
-        config: {
-            apiKey: auth.config.apiKey.substring(0, 10) + '...',
-            authDomain: auth.config.authDomain,
-            projectId: auth.config.projectId
-        }
-    });
-    
-    // Vérification pré-connexion
-    if (!auth.config.apiKey || !auth.config.authDomain) {
-        showToast('Configuration Firebase incomplète', 'error');
-        return;
-    }
-    
-    showLoading(true);
-    
-    try {
-        console.log('🚀 Ouverture du popup Google Auth...');
-        let result;
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.addScope('email');
+        provider.addScope('profile');
         
-        try {
-            result = await signInWithPopup(auth, googleProvider);
-        } catch (popupError) {
-            if (popupError.code === 'auth/unauthorized-domain' || popupError.code === 'auth/popup-blocked') {
-                console.log('🔄 Pop-up échoué, essai avec redirect...');
-                await signInWithRedirect(auth, googleProvider);
-                return; // La redirection va gérer la suite
-            }
-            throw popupError; // Re-throw other errors
-        }
-        
-        console.log('✅ Connexion Google réussie:', result.user);
-        console.log('👤 Utilisateur:', {
-            uid: result.user.uid,
-            email: result.user.email,
-            displayName: result.user.displayName,
-            photoURL: result.user.photoURL
+        // Forcer la sélection de compte
+        provider.setCustomParameters({
+            prompt: 'select_account'
         });
         
-        await handleFirebaseAuth(result.user);
-    } catch (error) {
-        console.error('❌ Erreur Google Auth complète:', error);
-        console.error('📝 Code erreur:', error.code);
-        console.error('💬 Message erreur:', error.message);
-        console.error('🔗 Détails additionnels:', error.customData);
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
         
-        let message = 'Erreur de connexion Google';
-        
-        switch (error.code) {
-            case 'auth/popup-closed-by-user':
-                message = 'Connexion Google annulée par l\'utilisateur';
-                break;
-            case 'auth/popup-blocked':
-                message = 'Pop-up bloqué. Veuillez autoriser les pop-ups pour ce site';
-                break;
-            case 'auth/cancelled-popup-request':
-                message = 'Une autre demande de connexion est en cours';
-                break;
-            case 'auth/operation-not-allowed':
-                message = 'Connexion Google désactivée. Vérifiez la configuration Firebase';
-                break;
-            case 'auth/unauthorized-domain':
-                message = 'Domaine non autorisé pour Google Auth. Vérifiez les domaines autorisés dans Firebase';
-                break;
-            case 'auth/web-storage-unsupported':
-                message = 'Stockage web non supporté par ce navigateur';
-                break;
-            case 'auth/network-request-failed':
-                message = 'Erreur réseau. Vérifiez votre connexion internet';
-                break;
-            case 'auth/too-many-requests':
-                message = 'Trop de tentatives. Réessayez plus tard';
-                break;
-            default:
-                message = `Erreur Google Auth: ${error.code} - ${error.message}`;
+        if (!user) {
+            throw new Error('Aucune information utilisateur reçue');
         }
         
-        showToast(message, 'error');
-        showLoading(false);
-    }
-};
-
-window.signInWithFacebook = async () => {
-    showLoading(true);
-    
-    try {
-        const result = await signInWithPopup(auth, facebookProvider);
-        await handleFirebaseAuth(result.user);
-    } catch (error) {
-        console.error('Erreur Facebook Auth:', error);
+        console.log('Utilisateur Google connecté:', user);
         
-        let message = 'Erreur de connexion Facebook';
-        if (error.code === 'auth/popup-closed-by-user') {
-            message = 'Connexion annulée';
-        } else if (error.code === 'auth/account-exists-with-different-credential') {
-            message = 'Un compte existe déjà avec cet email via un autre service';
-        }
-        
-        showToast(message, 'error');
-        showLoading(false);
-    }
-};
-
-window.signInWithApple = async () => {
-    console.log('🍎 Tentative de connexion Apple...');
-    showLoading(true);
-    
-    try {
-        let result;
-        
-        try {
-            result = await signInWithPopup(auth, appleProvider);
-        } catch (popupError) {
-            if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/unauthorized-domain') {
-                console.log('🔄 Pop-up Apple échoué, essai avec redirect...');
-                await signInWithRedirect(auth, appleProvider);
-                return;
-            }
-            throw popupError;
-        }
-        
-        console.log('✅ Connexion Apple réussie:', result.user);
-        await handleFirebaseAuth(result.user);
-        
-    } catch (error) {
-        console.error('❌ Erreur Apple Auth:', error);
-        
-        let message = 'Erreur de connexion Apple';
-        
-        switch (error.code) {
-            case 'auth/popup-closed-by-user':
-                message = 'Connexion Apple annulée';
-                break;
-            case 'auth/operation-not-allowed':
-                message = 'Connexion Apple désactivée. Vérifiez la configuration Firebase';
-                break;
-            case 'auth/unauthorized-domain':
-                message = 'Domaine non autorisé pour Apple Auth';
-                break;
-            case 'auth/account-exists-with-different-credential':
-                message = 'Un compte existe déjà avec cet email via un autre service';
-                break;
-            default:
-                message = `Erreur Apple Auth: ${error.code} - ${error.message}`;
-        }
-        
-        showToast(message, 'error');
-        showLoading(false);
-    }
-};
-
-window.showAppleInfo = () => {
-    const message = `
-        <strong>Configuration Apple Sign-In :</strong><br><br>
-        
-        <strong>Prérequis :</strong><br>
-        • Apple Developer Account (99$/an)<br>
-        • Configuration App ID et Service ID<br>
-        • Clés privées Apple<br><br>
-        
-        <strong>Guide complet :</strong> Consultez APPLE_SIGNIN_COMPLETE_GUIDE.md<br><br>
-        
-        <strong>Alternatives gratuites :</strong><br>
-        • Google OAuth ✅<br>
-        • Facebook Login ✅<br>
-        • Email/Mot de passe ✅
-    `;
-    
-    showToast(message, 'info');
-};
-
-window.checkAppleAuthAvailability = async () => {
-    // Tenter de créer le provider Apple pour voir s'il est configuré
-    try {
-        // Test simple - si ça passe, Apple est potentiellement configuré
-        const testProvider = new OAuthProvider('apple.com');
-        
-        // Vérifier via une tentative de connexion factice (qui échouera mais nous dira si c'est configuré)
-        // Pour l'instant, on masque Apple par défaut
-        document.getElementById('apple-signin-container').style.display = 'none';
-        document.getElementById('apple-not-configured').style.display = 'block';
-        
-        console.log('🍎 Apple Auth: Non configuré (normal sans Apple Developer Account)');
-        
-    } catch (error) {
-        document.getElementById('apple-signin-container').style.display = 'none';
-        document.getElementById('apple-not-configured').style.display = 'block';
-        console.log('🍎 Apple Auth: Non disponible');
-    }
-};
-
-window.showForgotPassword = async () => {
-    const email = document.getElementById('firebase-email').value.trim();
-    
-    if (!email) {
-        showToast('Veuillez saisir votre email d\'abord', 'warning');
-        document.getElementById('firebase-email').focus();
-        return;
-    }
-    
-    if (!validateEmail(email)) {
-        showToast('Adresse email invalide', 'error');
-        return;
-    }
-    
-    try {
-        await sendPasswordResetEmail(auth, email);
-        showToast('Email de réinitialisation envoyé !', 'success');
-    } catch (error) {
-        console.error('Erreur reset password:', error);
-        showToast('Erreur lors de l\'envoi de l\'email', 'error');
-    }
-};
-
-window.showClassicLogin = () => {
-    const modal = new bootstrap.Modal(document.getElementById('classic-login-modal'));
-    modal.show();
-};
-
-// Gestion de l'authentification Firebase
-async function handleFirebaseAuth(user) {
-    try {
+        // Obtenir le token Firebase pour Laravel
         const idToken = await user.getIdToken();
         
-        // FCM désactivé pour optimiser les performances
-        let fcmToken = null; // Définir fcmToken comme null
-        
-        // Envoyer au serveur Laravel
+        // Envoyer les données à Laravel pour créer la session
         const response = await fetch('<?php echo e(route("firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 idToken: idToken,
-                fcmToken: fcmToken
+                name: user.displayName,
+                email: user.email,
+                provider: 'google',
+                firebase_uid: user.uid,
+                email_verified: user.emailVerified,
+                photo_url: user.photoURL
             })
         });
         
-        if (!response.ok) {
-            throw new Error('Erreur serveur: ' + response.status);
-        }
-        
         const data = await response.json();
         
-        console.log('Réponse serveur:', data);
-        
-        if (data.success) {
-            showToast('Connexion réussie ! Redirection...', 'success');
+        if (response.ok && data.success) {
+            showLoading(false);
+            showToast('Connexion Google réussie !', 'success');
             
-            // Sauvegarder le "se souvenir de moi" dans localStorage
-            const rememberMe = document.getElementById('remember-me').checked;
-            if (rememberMe) {
-                localStorage.setItem('firebase_remember_me', 'true');
-            }
-            
+            // Redirection vers la page d'accueil
             setTimeout(() => {
                 window.location.href = data.redirect || '<?php echo e(route("home")); ?>';
             }, 1500);
         } else {
-            console.error('Erreur serveur:', data);
-            throw new Error(data.message || 'Erreur de connexion côté serveur');
+            throw new Error(data.message || 'Erreur lors de la synchronisation avec le serveur');
         }
+        
     } catch (error) {
-        console.error('Erreur handleFirebaseAuth:', error);
-        showToast(error.message || 'Erreur lors de l\'authentification', 'error');
         showLoading(false);
+        console.error('Erreur détaillée lors de la connexion Google:', error);
+        
+        let errorMessage = 'Erreur lors de la connexion Google';
+        
+        switch (error.code) {
+            case 'auth/popup-closed-by-user':
+                errorMessage = 'Connexion annulée par l\'utilisateur';
+                break;
+            case 'auth/popup-blocked':
+                errorMessage = 'Popup bloqué par le navigateur. Autorisez les popups pour ce site.';
+                break;
+            case 'auth/account-exists-with-different-credential':
+                errorMessage = 'Un compte existe déjà avec cette adresse email';
+                break;
+            default:
+                errorMessage = `Erreur Google: ${error.message}`;
+        }
+        
+        showToast(errorMessage, 'error');
+    }
+};
+
+window.signInWithFacebook = async function() {
+    showLoading(true);
+    
+    try {
+        const provider = new firebase.auth.FacebookAuthProvider();
+        provider.addScope('email');
+        
+        const result = await firebase.auth().signInWithPopup(provider);
+        const user = result.user;
+        
+        showLoading(false);
+        showToast('Connexion Facebook réussie !', 'success');
+        
+        setTimeout(() => {
+            window.location.href = '<?php echo e(route("home")); ?>';
+        }, 1500);
+        
+    } catch (error) {
+        showLoading(false);
+        console.error('Erreur lors de la connexion Facebook:', error);
+        
+        let errorMessage = 'Erreur lors de la connexion Facebook';
+        if (error.code === 'auth/popup-closed-by-user') {
+            errorMessage = 'Connexion annulée par l\'utilisateur';
+        }
+        
+        showToast(errorMessage, 'error');
+    }
+};
+
+// Toggle password visibility
+function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('password-eye');
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+        `;
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        `;
     }
 }
 
-// Fonctions utilitaires
-function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
+// Gestion du loading
 function showLoading(show) {
     const overlay = document.getElementById('loading-overlay');
     if (show) {
-        overlay.classList.remove('d-none');
-        overlay.classList.add('d-flex');
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
     } else {
-        overlay.classList.add('d-none');
-        overlay.classList.remove('d-flex');
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
     }
 }
 
+// Système de toast
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     
-    const toastId = 'toast-' + Date.now();
-    const bgClass = {
-        success: 'bg-success',
-        error: 'bg-danger', 
-        warning: 'bg-warning',
-        info: 'bg-info'
-    }[type] || 'bg-info';
+    const colors = {
+        success: 'bg-green-500',
+        error: 'bg-red-500',
+        warning: 'bg-yellow-500',
+        info: 'bg-blue-500'
+    };
     
-    const icon = {
+    const icons = {
         success: '✅',
         error: '❌',
         warning: '⚠️',
         info: 'ℹ️'
-    }[type] || 'ℹ️';
+    };
     
-    const toastHTML = `
-        <div id="${toastId}" class="toast toast-notification ${bgClass} text-white" role="alert">
-            <div class="toast-header ${bgClass} text-white border-0">
-                <span class="me-2">${icon}</span>
-                <strong class="me-auto">VintApp</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
-            </div>
-            <div class="toast-body">
-                ${message}
-            </div>
-        </div>
+    const toastId = 'toast-' + Date.now();
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300`;
+    toast.innerHTML = `
+        <span>${icons[type]}</span>
+        <span class="font-medium">${message}</span>
+        <button onclick="document.getElementById('${toastId}').remove()" class="ml-4 hover:opacity-75">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
     `;
     
-    container.insertAdjacentHTML('beforeend', toastHTML);
+    container.appendChild(toast);
     
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, {
-        autohide: true,
-        delay: type === 'success' ? 3000 : 5000
-    });
+    // Animation d'entrée
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 100);
     
-    toast.show();
-    
-    // Nettoyer après fermeture
-    toastElement.addEventListener('hidden.bs.toast', () => {
-        toastElement.remove();
-    });
+    // Auto-remove après 5 secondes
+    setTimeout(() => {
+        if (document.getElementById(toastId)) {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => document.getElementById(toastId).remove(), 300);
+        }
+    }, 5000);
+}
+
+// Validation email
+function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 // Gestion des événements DOM
-document.addEventListener('DOMContentLoaded', async () => {
-    // Vérifier la disponibilité d'Apple Auth
-    checkAppleAuthAvailability();
+document.addEventListener('DOMContentLoaded', function() {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const form = document.querySelector('form');
     
-    // Vérifier s'il y a un résultat de redirection Google
-    try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-            console.log('✅ Connexion Google par redirect réussie:', result.user);
-            showLoading(true);
-            await handleFirebaseAuth(result.user);
-        }
-    } catch (error) {
-        console.error('❌ Erreur redirect result:', error);
-        if (error.code !== 'auth/no-auth-result') {
-            showToast(`Erreur de connexion Google: ${error.message}`, 'error');
-        }
-    }
-    
-    // Récupérer l'état "se souvenir de moi"
-    if (localStorage.getItem('firebase_remember_me') === 'true') {
-        document.getElementById('remember-me').checked = true;
-    }
-    
-    // Soumettre le formulaire avec Entrée
-    ['firebase-email', 'firebase-password'].forEach(id => {
-        document.getElementById(id).addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                signInWithFirebaseEmail();
-            }
-        });
-    });
-    
-    // Validation en temps réel de l'email
-    document.getElementById('firebase-email').addEventListener('blur', (e) => {
-        const email = e.target.value.trim();
+    // Validation email en temps réel
+    emailInput.addEventListener('blur', function() {
+        const email = this.value.trim();
         if (email && !validateEmail(email)) {
-            e.target.classList.add('is-invalid');
-            if (!e.target.nextElementSibling || !e.target.nextElementSibling.classList.contains('invalid-feedback')) {
-                const feedback = document.createElement('div');
-                feedback.className = 'invalid-feedback';
-                feedback.textContent = 'Adresse email invalide';
-                e.target.parentNode.appendChild(feedback);
-            }
+            this.classList.add('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
+            this.classList.remove('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
         } else {
-            e.target.classList.remove('is-invalid');
-            const feedback = e.target.parentNode.querySelector('.invalid-feedback');
-            if (feedback) feedback.remove();
+            this.classList.remove('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
+            this.classList.add('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
         }
     });
+    
+    // Gestion soumission formulaire
+    form.addEventListener('submit', function(e) {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        
+        if (!email || !password) {
+            e.preventDefault();
+            showToast('Veuillez remplir tous les champs requis.', 'error');
+            return;
+        }
+        
+        if (!validateEmail(email)) {
+            e.preventDefault();
+            showToast('Format d\'email invalide.', 'error');
+            emailInput.focus();
+            return;
+        }
+        
+        // Show loading state
+        showLoading(true);
+        const submitButton = form.querySelector('button[type="submit"]');
+        submitButton.disabled = true;
+        submitButton.innerHTML = `
+            <span class="flex items-center justify-center">
+                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Connexion...
+            </span>
+        `;
+    });
+    
+    // Auto-focus sur email
+    emailInput.focus();
+    
+    // Animation CSS pour fade-in-up
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+    `;
+    document.head.appendChild(style);
 });
 
-// Écouter les changements d'état d'authentification
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Utilisateur déjà connecté, vérifier avec le serveur
-        fetch('<?php echo e(route("firebase.check-auth")); ?>')
-            .then(response => response.json())
-            .then(data => {
-                if (data.authenticated) {
-                    showToast('Vous êtes déjà connecté', 'info');
-                    setTimeout(() => {
-                        window.location.href = '<?php echo e(route("home")); ?>';
-                    }, 1000);
-                }
-            })
-            .catch(console.error);
+// Configuration Firebase - Valeurs réelles du fichier .env
+const firebaseConfig = {
+    apiKey: "AIzaSyBe0WQbkZ0A3Cz9vKyQWsE-edxLfWrV1_E",
+    authDomain: "vintapp-e6fa7.firebaseapp.com",
+    projectId: "vintapp-e6fa7",
+    storageBucket: "vintapp-e6fa7.appspot.com",
+    messagingSenderId: "880178183981",
+    appId: "1:880178183981:web:395604645bd7d758a35da4"
+};
+
+// Initialiser Firebase avec vérification d'erreur
+try {
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase initialisé avec succès');
+    } else {
+        console.log('Firebase déjà initialisé');
     }
-});
+    
+    // Test de connexion
+    firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+            console.log('Utilisateur connecté:', user.email);
+        } else {
+            console.log('Aucun utilisateur connecté');
+        }
+    });
+    
+} catch (error) {
+    console.error('Erreur d\'initialisation Firebase:', error);
+    showToast('Erreur de configuration Firebase. Contactez l\'administrateur.', 'error');
+}
 </script>
 
-<?php $__env->stopSection(); ?> 
+<?php $__env->stopSection(); ?>
 <?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/auth/login.blade.php ENDPATH**/ ?>

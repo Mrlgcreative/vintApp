@@ -1,648 +1,715 @@
 @extends('app')
 
-@section('title', 'Paramètres')
+@section('title', 'Paramètres - VintApp')
+
+@section('meta_description', 'Gérez vos préférences, votre profil et les paramètres de votre compte VintApp.')
 
 @section('content')
-<div class="container py-4">
-    <!-- En-tête -->
-    <div class="mb-4">
-        <div class="d-flex align-items-center mb-2">
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-light me-3">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1 class="h3 mb-0">Paramètres</h1>
+<div class="min-h-screen bg-gray-50 py-6">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête avec navigation -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <button onclick="history.back()" class="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </button>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Paramètres</h1>
+                    <p class="text-gray-600 mt-1">Gérez vos préférences et votre compte</p>
+                </div>
+            </div>
         </div>
-        <p class="text-muted mb-0">Gérez vos préférences et votre compte</p>
-    </div>
 
-    <!-- Profil -->
-    <div class="card mb-3 shadow-sm border-0">
-        <div class="card-body">
-            <div class="d-flex align-items-center mb-3">
+        <!-- Profil utilisateur -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center space-x-4">
                 @if(Auth::user()->avatar)
-                    <img src="{{ Auth::user()->avatar }}" 
+                    @php
+                        $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
+                            ? Auth::user()->avatar 
+                            : asset('storage/' . Auth::user()->avatar);
+                    @endphp
+                    <img src="{{ $avatarUrl }}" 
                          alt="{{ Auth::user()->name }}" 
-                         class="rounded-circle me-3"
-                         style="width: 64px; height: 64px; object-fit: cover;">
+                         class="w-16 h-16 rounded-full object-cover border-4 border-purple-200"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-xl hidden">
+                        {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                    </div>
                 @else
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                         style="width: 64px; height: 64px; font-size: 1.5rem; font-weight: 600;">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-xl">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
                 <div>
-                    <h5 class="mb-1">{{ Auth::user()->name }}</h5>
-                    <p class="text-muted mb-0 small">{{ Auth::user()->email }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section : Mon compte -->
-    <div class="settings-section mb-4">
-        <h6 class="text-muted text-uppercase small fw-bold mb-3">
-            <i class="fas fa-user-circle me-2"></i>Mon compte
-        </h6>
-        
-        <div class="card shadow-sm border-0">
-            <div class="list-group list-group-flush">
-                <a href="{{ route('profile.edit') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
-                        <i class="fas fa-user-cog"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Modifier mon profil</div>
-                        <small class="text-muted">Informations personnelles, photo, etc.</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-                
-                <a href="{{ route('items.personalization') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-success bg-opacity-10 text-success me-3">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Personnalisation</div>
-                        <small class="text-muted">Préférences d'affichage et notifications</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <div class="list-group-item d-flex align-items-center py-3" id="theme-toggle-item" style="cursor: pointer;">
-                    <div class="settings-icon bg-warning bg-opacity-10 text-warning me-3">
-                        <i class="fas fa-adjust"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Thème d'affichage</div>
-                        <small class="text-muted">Clair, Sombre ou Automatique</small>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <span id="current-theme-label" class="badge bg-secondary me-2">Auto</span>
-                        <i class="fas fa-chevron-right text-muted"></i>
+                    <h2 class="text-xl font-semibold text-gray-900">{{ Auth::user()->name }}</h2>
+                    <p class="text-gray-600">{{ Auth::user()->email }}</p>
+                    <div class="flex items-center mt-2">
+                        <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                        <span class="text-sm text-green-600 font-medium">Compte actif</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Section : Navigation rapide -->
-    <div class="settings-section mb-4">
-        <h6 class="text-muted text-uppercase small fw-bold mb-3">
-            <i class="fas fa-compass me-2"></i>Navigation rapide
-        </h6>
-        
-        <div class="card shadow-sm border-0">
-            <div class="list-group list-group-flush">
-                <a href="{{ route('dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-info bg-opacity-10 text-info me-3">
-                        <i class="fas fa-tachometer-alt"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Dashboard</div>
-                        <small class="text-muted">Vue d'ensemble de votre activité</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('orders.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Mes commandes</div>
-                        <small class="text-muted">Historique de vos achats</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('orders.my-sales') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-success bg-opacity-10 text-success me-3">
-                        <i class="fas fa-dollar-sign"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Mes ventes</div>
-                        <small class="text-muted">Articles que vous avez vendus</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('items.my-items') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
-                        <i class="fas fa-box"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Mes articles</div>
-                        <small class="text-muted">Articles en vente</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('wallet.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-warning bg-opacity-10 text-warning me-3">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Mon portefeuille</div>
-                        <small class="text-muted">Solde et transactions</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('messages.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-info bg-opacity-10 text-info me-3">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Messages</div>
-                        <small class="text-muted">Conversations avec les vendeurs/acheteurs</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('affiliate.dashboard') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-gradient-primary text-white me-3" style="background: linear-gradient(45deg, #667eea, #764ba2);">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Affiliation <span class="badge bg-success ms-2">NOUVEAU</span></div>
-                        <small class="text-muted">Parrainez vos amis et gagnez des points</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section : Catalogue -->
-    <div class="settings-section mb-4">
-        <h6 class="text-muted text-uppercase small fw-bold mb-3">
-            <i class="fas fa-store me-2"></i>Catalogue
-        </h6>
-        
-        <div class="card shadow-sm border-0">
-            <div class="list-group list-group-flush">
-                <a href="{{ route('brands.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
-                        <i class="fas fa-tags"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Marques</div>
-                        <small class="text-muted">Explorer les marques disponibles</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('categories.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
-                        <i class="fas fa-layer-group"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Catégories</div>
-                        <small class="text-muted">Parcourir par catégorie</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="{{ route('items.index') }}" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-success bg-opacity-10 text-success me-3">
-                        <i class="fas fa-box-open"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Tous les articles</div>
-                        <small class="text-muted">Explorer le catalogue complet</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section : Aide & Support -->
-    <div class="settings-section mb-4">
-        <h6 class="text-muted text-uppercase small fw-bold mb-3">
-            <i class="fas fa-question-circle me-2"></i>Aide & Support
-        </h6>
-        
-        <div class="card shadow-sm border-0">
-            <div class="list-group list-group-flush">
-                <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-info bg-opacity-10 text-info me-3">
-                        <i class="fas fa-life-ring"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Centre d'aide</div>
-                        <small class="text-muted">FAQ et guides d'utilisation</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Nous contacter</div>
-                        <small class="text-muted">Envoyez-nous un message</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-
-                <a href="#" class="list-group-item list-group-item-action d-flex align-items-center py-3">
-                    <div class="settings-icon bg-warning bg-opacity-10 text-warning me-3">
-                        <i class="fas fa-file-contract"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Conditions d'utilisation</div>
-                        <small class="text-muted">CGU et politique de confidentialité</small>
-                    </div>
-                    <i class="fas fa-chevron-right text-muted"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section : Zone dangereuse -->
-    <div class="settings-section mb-4">
-        <h6 class="text-muted text-uppercase small fw-bold mb-3">
-            <i class="fas fa-exclamation-triangle me-2"></i>Zone dangereuse
-        </h6>
-        
-        <div class="card shadow-sm border-0 border-warning">
-            <div class="list-group list-group-flush">
-                <button type="button" class="list-group-item list-group-item-action d-flex align-items-center py-3 text-danger border-0 bg-transparent" onclick="showDeleteAccountModal()">
-                    <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
-                        <i class="fas fa-user-slash"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold">Supprimer mon compte</div>
-                        <small class="text-muted">Suppression définitive et irréversible</small>
-                    </div>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Section : Déconnexion -->
-    <div class="settings-section mb-5">
-        <div class="card shadow-sm border-0 border-danger">
-            <div class="list-group list-group-flush">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="list-group-item list-group-item-action d-flex align-items-center py-3 text-danger border-0 bg-transparent">
-                        <div class="settings-icon bg-danger bg-opacity-10 text-danger me-3">
-                            <i class="fas fa-sign-out-alt"></i>
+        <!-- Grille des sections -->
+        <div class="space-y-8">
+            <!-- Section : Mon compte -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-user-circle mr-3 text-purple-600"></i>
+                        Mon compte
+                    </h3>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <a href="{{ route('profile.edit') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-user-cog text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Modifier mon profil</h4>
+                                    <p class="text-sm text-gray-600">Informations personnelles, photo de profil</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold">Se déconnecter</div>
-                            <small class="text-muted">Déconnexion de votre compte</small>
+                    </a>
+
+                    <button onclick="openPersonalizationModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-cogs text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Personnalisation</h4>
+                                    <p class="text-sm text-gray-600">Préférences d'affichage et notifications</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
                         </div>
-                        <i class="fas fa-chevron-right"></i>
                     </button>
-                </form>
+
+                    <button onclick="openThemeModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-palette text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-900">Thème d'affichage</h4>
+                                    <p class="text-sm text-gray-600">Clair, Sombre ou Automatique</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span id="current-theme-badge" class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">Auto</span>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section : Navigation rapide -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-compass mr-3 text-purple-600"></i>
+                        Navigation rapide
+                    </h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                    <!-- Colonne 1 -->
+                    <div class="divide-y divide-gray-200">
+                        <a href="{{ route('dashboard') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Dashboard</h4>
+                                    <p class="text-sm text-gray-600">Vue d'ensemble</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('orders.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Mes commandes</h4>
+                                    <p class="text-sm text-gray-600">Historique d'achats</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('orders.my-sales') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Mes ventes</h4>
+                                    <p class="text-sm text-gray-600">Articles vendus</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Colonne 2 -->
+                    <div class="divide-y divide-gray-200">
+                        <a href="{{ route('items.my-items') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Mes articles</h4>
+                                    <p class="text-sm text-gray-600">Articles en vente</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('wallet.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Mon portefeuille</h4>
+                                    <p class="text-sm text-gray-600">Solde et transactions</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('messages.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Messages</h4>
+                                    <p class="text-sm text-gray-600">Conversations</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Affiliation (section spéciale) -->
+                <div class="border-t border-gray-200 bg-gradient-to-r from-purple-50 to-cyan-50">
+                    <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:from-purple-100 hover:to-cyan-100 transition-all group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-cyan-400 text-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                    <i class="fas fa-users text-lg"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center space-x-2">
+                                        <h4 class="font-semibold text-gray-900">Programme d'affiliation</h4>
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">NOUVEAU</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Parrainez vos amis et gagnez des récompenses</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section : Catalogue -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-store mr-3 text-purple-600"></i>
+                        Catalogue
+                    </h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                    <a href="{{ route('brands.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Marques</h4>
+                                <p class="text-sm text-gray-600">Explorer les marques</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('categories.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Catégories</h4>
+                                <p class="text-sm text-gray-600">Par catégorie</p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('items.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Tous les articles</h4>
+                                <p class="text-sm text-gray-600">Catalogue complet</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section : Aide & Support -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-question-circle mr-3 text-purple-600"></i>
+                        Aide & Support
+                    </h3>
+                </div>
+                <div class="divide-y divide-gray-200">
+                    <a href="{{ route('help.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-life-ring"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Centre d'aide</h4>
+                                    <p class="text-sm text-gray-600">FAQ et guides</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('help.index') }}#contact" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Nous contacter</h4>
+                                    <p class="text-sm text-gray-600">Envoyez-nous un message</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        </div>
+                    </a>
+
+                    <a href="{{ route('terms') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-file-contract"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Conditions d'utilisation</h4>
+                                    <p class="text-sm text-gray-600">CGU et politique de confidentialité</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Section : Actions du compte -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Déconnexion -->
+                <div class="bg-white rounded-xl shadow-sm border border-orange-200 overflow-hidden">
+                    <div class="px-6 py-4 bg-orange-50 border-b border-orange-200">
+                        <h3 class="text-lg font-semibold text-orange-900 flex items-center">
+                            <i class="fas fa-sign-out-alt mr-3 text-orange-600"></i>
+                            Déconnexion
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Se déconnecter</span>
+                            </button>
+                        </form>
+                        <p class="text-sm text-gray-600 mt-2 text-center">Déconnexion sécurisée de votre compte</p>
+                    </div>
+                </div>
+
+                <!-- Zone dangereuse -->
+                <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+                    <div class="px-6 py-4 bg-red-50 border-b border-red-200">
+                        <h3 class="text-lg font-semibold text-red-900 flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-3 text-red-600"></i>
+                            Zone dangereuse
+                        </h3>
+                    </div>
+                    <div class="p-6">
+                        <button onclick="openDeleteAccountModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2">
+                            <i class="fas fa-user-slash"></i>
+                            <span>Supprimer mon compte</span>
+                        </button>
+                        <p class="text-sm text-red-600 mt-2 text-center">Action irréversible</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Version et copyright -->
+            <div class="text-center py-8 text-gray-500">
+                <div class="flex items-center justify-center space-x-2 mb-2">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span class="font-medium">{{ config('app.name', 'VintApp') }} v1.0.0</span>
+                </div>
+                <p class="text-sm">© {{ date('Y') }} Tous droits réservés</p>
             </div>
         </div>
-    </div>
-
-    <!-- Version de l'application -->
-    <div class="text-center text-muted mb-5">
-        <small>
-            {{ config('app.name') }} v1.0.0<br>
-            © {{ date('Y') }} Tous droits réservés
-        </small>
     </div>
 </div>
 
 <!-- Modal de sélection du thème -->
-<div class="modal fade" id="themeModal" tabindex="-1" aria-labelledby="themeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="themeModalLabel">
-                    <i class="fas fa-adjust me-2"></i>Choisir un thème
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="themeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-palette mr-2 text-purple-600"></i>
+                    Choisir un thème
+                </h3>
+                <button onclick="closeThemeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="list-group">
-                    <button type="button" class="list-group-item list-group-item-action d-flex align-items-center theme-option" data-theme="light">
-                        <div class="settings-icon bg-warning bg-opacity-10 text-warning me-3">
-                            <i class="fas fa-sun"></i>
+        </div>
+        <div class="p-6">
+            <div class="space-y-3">
+                <button onclick="selectTheme('light')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="light">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Clair</h4>
+                                <p class="text-sm text-gray-600">Thème lumineux</p>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold">Clair</div>
-                            <small class="text-muted">Thème lumineux</small>
+                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                    </div>
+                </button>
+
+                <button onclick="selectTheme('dark')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="dark">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-gray-800 text-white rounded-lg flex items-center justify-center">
+                                <i class="fas fa-moon"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Sombre</h4>
+                                <p class="text-sm text-gray-600">Thème foncé</p>
+                            </div>
                         </div>
-                        <i class="fas fa-check text-success d-none theme-check"></i>
-                    </button>
-                    
-                    <button type="button" class="list-group-item list-group-item-action d-flex align-items-center theme-option" data-theme="dark">
-                        <div class="settings-icon bg-dark bg-opacity-10 text-dark me-3">
-                            <i class="fas fa-moon"></i>
+                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                    </div>
+                </button>
+
+                <button onclick="selectTheme('auto')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="auto">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Automatique</h4>
+                                <p class="text-sm text-gray-600">Suit les préférences système</p>
+                            </div>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold">Sombre</div>
-                            <small class="text-muted">Thème foncé</small>
+                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de personnalisation -->
+<div id="personalizationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                    <i class="fas fa-cogs mr-2 text-green-600"></i>
+                    Personnalisation
+                </h3>
+                <button onclick="closePersonalizationModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-6 space-y-6">
+            <!-- Notifications -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Notifications</h4>
+                <div class="space-y-3">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-bell text-blue-600"></i>
+                            <span class="text-gray-900">Notifications push</span>
                         </div>
-                        <i class="fas fa-check text-success d-none theme-check"></i>
-                    </button>
-                    
-                    <button type="button" class="list-group-item list-group-item-action d-flex align-items-center theme-option" data-theme="auto">
-                        <div class="settings-icon bg-primary bg-opacity-10 text-primary me-3">
-                            <i class="fas fa-magic"></i>
+                        <input type="checkbox" class="toggle-switch" checked>
+                    </label>
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-green-600"></i>
+                            <span class="text-gray-900">Notifications email</span>
                         </div>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold">Automatique</div>
-                            <small class="text-muted">Suit les préférences système</small>
-                        </div>
-                        <i class="fas fa-check text-success d-none theme-check"></i>
-                    </button>
+                        <input type="checkbox" class="toggle-switch" checked>
+                    </label>
                 </div>
+            </div>
+
+            <!-- Préférences d'affichage -->
+            <div>
+                <h4 class="font-semibold text-gray-900 mb-3">Affichage</h4>
+                <div class="space-y-3">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-eye text-purple-600"></i>
+                            <span class="text-gray-900">Mode compact</span>
+                        </div>
+                        <input type="checkbox" class="toggle-switch">
+                    </label>
+                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-images text-orange-600"></i>
+                            <span class="text-gray-900">Chargement automatique des images</span>
+                        </div>
+                        <input type="checkbox" class="toggle-switch" checked>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                <button onclick="closePersonalizationModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                    Annuler
+                </button>
+                <button class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                    Sauvegarder
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal de suppression du compte -->
-<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-danger">
-            <div class="modal-header bg-danger bg-opacity-10 border-danger">
-                <h5 class="modal-title text-danger" id="deleteAccountModalLabel">
-                    <i class="fas fa-exclamation-triangle me-2"></i>Supprimer définitivement mon compte
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="alert alert-danger" role="alert">
-                    <i class="fas fa-skull-crossbones me-2"></i>
+<div id="deleteAccountModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="px-6 py-4 bg-red-50 border-b border-red-200">
+            <h3 class="text-xl font-semibold text-red-900 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2 text-red-600"></i>
+                Supprimer définitivement mon compte
+            </h3>
+        </div>
+        <div class="p-6">
+            <div class="bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-skull-crossbones mr-2"></i>
                     <strong>ATTENTION !</strong> Cette action est <strong>IRRÉVERSIBLE</strong>
                 </div>
-                
-                <p class="mb-3">En supprimant votre compte, vous perdrez :</p>
-                <ul class="text-danger mb-4">
-                    <li><strong>Tous vos articles</strong> en vente</li>
-                    <li><strong>Votre historique</strong> de commandes</li>
-                    <li><strong>Vos messages</strong> et conversations</li>
-                    <li><strong>Votre portefeuille</strong> et son solde</li>
-                    <li><strong>Toutes vos données</strong> personnelles</li>
-                </ul>
-                
-                <div class="alert alert-warning">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Si vous avez des <strong>commandes en cours</strong> ou un <strong>solde dans votre portefeuille</strong>, veuillez les finaliser avant de supprimer votre compte.
-                </div>
+            </div>
 
-                <form id="deleteAccountForm" method="POST" action="{{ route('profile.destroy') }}">
-                    @csrf
-                    @method('DELETE')
-                    
-                    <div class="mb-3">
-                        <label for="delete_password" class="form-label fw-semibold">
+            <div class="mb-6">
+                <p class="text-gray-700 mb-3">En supprimant votre compte, vous perdrez :</p>
+                <ul class="space-y-2 text-red-600">
+                    <li class="flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Tous vos articles</strong> en vente
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Votre historique</strong> de commandes
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Vos messages</strong> et conversations
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Votre portefeuille</strong> et son solde
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        <strong>Toutes vos données</strong> personnelles
+                    </li>
+                </ul>
+            </div>
+
+            <div class="bg-yellow-100 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg mb-6">
+                <div class="flex items-start">
+                    <i class="fas fa-info-circle mr-2 mt-0.5"></i>
+                    <div>
+                        Si vous avez des <strong>commandes en cours</strong> ou un <strong>solde dans votre portefeuille</strong>, veuillez les finaliser avant de supprimer votre compte.
+                    </div>
+                </div>
+            </div>
+
+            <form id="deleteAccountForm" method="POST" action="{{ route('profile.destroy') }}">
+                @csrf
+                @method('DELETE')
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="delete_password" class="block text-sm font-medium text-gray-700 mb-2">
                             Pour confirmer, entrez votre mot de passe :
                         </label>
                         <input type="password" 
-                               class="form-control" 
                                id="delete_password" 
                                name="password" 
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                                placeholder="Votre mot de passe"
                                required
                                autocomplete="current-password">
-                        <small class="text-muted">Requis pour des raisons de sécurité</small>
                     </div>
                     
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" 
-                               class="form-check-input" 
-                               id="confirmDelete" 
-                               required>
-                        <label class="form-check-label" for="confirmDelete">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <input type="checkbox" id="confirmDelete" class="mt-1" required>
+                        <span class="text-sm text-gray-700">
                             Je comprends que cette action est définitive et irréversible
-                        </label>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer border-danger">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>Annuler
+                        </span>
+                    </label>
+                </div>
+            </form>
+
+            <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+                <button onclick="closeDeleteAccountModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                    Annuler
                 </button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteBtn" onclick="confirmDeleteAccount(event)">
-                    <i class="fas fa-trash-alt me-2"></i>Supprimer définitivement
+                <button onclick="confirmDeleteAccount()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Supprimer définitivement</span>
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-.settings-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-}
-
-.list-group-item {
-    border: none;
-    transition: all 0.2s ease;
-}
-
-.list-group-item:hover {
-    background-color: rgba(79, 0, 206, 0.05);
-    transform: translateX(4px);
-}
-
-.list-group-item:active {
-    background-color: rgba(79, 0, 206, 0.1);
-}
-
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.settings-section h6 {
-    letter-spacing: 0.5px;
-    padding-left: 4px;
-}
-
-/* Animation pour les icônes */
-.settings-icon i {
-    animation: none;
-}
-
-.list-group-item:hover .settings-icon i {
-    animation: pulse 0.6s ease-in-out;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-/* Style spécial pour l'affiliation */
-.affiliate-item {
-    position: relative;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-    border-left: 4px solid transparent;
-    border-image: linear-gradient(45deg, #667eea, #764ba2) 1;
-}
-
-.affiliate-item::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
-}
-
-.affiliate-item:hover::before {
-    opacity: 1;
-}
-
-.affiliate-item:hover {
-    transform: translateX(6px);
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
-    
-    .settings-icon {
-        width: 42px;
-        height: 42px;
-        font-size: 1.1rem;
-    }
-    
-    .list-group-item {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}
-
-/* Modal thème */
-.theme-option {
-    cursor: pointer;
-    padding: 1rem;
-    border-radius: 8px !important;
-    margin-bottom: 0.5rem;
-}
-
-.theme-option:hover {
-    background-color: rgba(79, 0, 206, 0.08);
-}
-
-.theme-option.active {
-    background-color: rgba(79, 0, 206, 0.1);
-    border-color: rgb(79, 0, 206);
-}
-
-.theme-option.active .theme-check {
-    display: inline-block !important;
-}
-</style>
+@endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Gestion du modal de thème
-    const themeToggleItem = document.getElementById('theme-toggle-item');
-    const themeModal = new bootstrap.Modal(document.getElementById('themeModal'));
-    const themeOptions = document.querySelectorAll('.theme-option');
-    const currentThemeLabel = document.getElementById('current-theme-label');
-    
-    // Ouvrir le modal
-    if (themeToggleItem) {
-        themeToggleItem.addEventListener('click', function() {
-            themeModal.show();
-            updateThemeSelection();
-        });
-    }
-    
-    // Gérer la sélection du thème
-    themeOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            const selectedTheme = this.getAttribute('data-theme');
-            applyTheme(selectedTheme);
-            localStorage.setItem('theme', selectedTheme);
-            
-            // Mettre à jour le label
-            updateThemeLabel(selectedTheme);
-            
-            // Sauvegarder sur le serveur si authentifié
-            if (window.isAuthenticated) {
-                fetch('/profile/theme', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    body: JSON.stringify({ theme_preference: selectedTheme })
-                });
-            }
-            
-            // Fermer le modal
-            themeModal.hide();
-        });
-    });
-    
-    // Mettre à jour la sélection dans le modal
-    function updateThemeSelection() {
-        const currentTheme = getPreferredTheme();
-        themeOptions.forEach(option => {
-            const check = option.querySelector('.theme-check');
-            if (option.getAttribute('data-theme') === currentTheme) {
-                option.classList.add('active');
-                check.classList.remove('d-none');
-            } else {
-                option.classList.remove('active');
-                check.classList.add('d-none');
-            }
-        });
-    }
-    
-    // Mettre à jour le label du thème
-    function updateThemeLabel(theme) {
-        const labels = {
-            'light': 'Clair',
-            'dark': 'Sombre',
-            'auto': 'Auto'
-        };
-        if (currentThemeLabel) {
-            currentThemeLabel.textContent = labels[theme] || 'Auto';
-        }
-    }
-    
-    // Initialiser le label au chargement
-    updateThemeLabel(getPreferredTheme());
+    // Initialiser le badge de thème
+    updateThemeBadge();
 });
 
 // ========================================
-// Fonctions de suppression de compte
+// Gestion du thème
 // ========================================
 
-let deleteAccountModal;
-
-function showDeleteAccountModal() {
-    if (!deleteAccountModal) {
-        deleteAccountModal = new bootstrap.Modal(document.getElementById('deleteAccountModal'));
-    }
-    deleteAccountModal.show();
+function openThemeModal() {
+    document.getElementById('themeModal').classList.remove('hidden');
+    updateThemeSelection();
 }
 
-function confirmDeleteAccount(event) {
+function closeThemeModal() {
+    document.getElementById('themeModal').classList.add('hidden');
+}
+
+function selectTheme(theme) {
+    applyTheme(theme);
+    localStorage.setItem('theme', theme);
+    updateThemeBadge();
+    
+    // Sauvegarder sur le serveur
+    if (window.isAuthenticated) {
+        fetch('/profile/theme', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ theme_preference: theme })
+        });
+    }
+    
+    closeThemeModal();
+}
+
+function updateThemeSelection() {
+    const currentTheme = getPreferredTheme();
+    const themeOptions = document.querySelectorAll('.theme-option');
+    
+    themeOptions.forEach(option => {
+        const check = option.querySelector('.theme-check');
+        if (option.getAttribute('data-theme') === currentTheme) {
+            option.classList.add('border-purple-500', 'bg-purple-50');
+            check.classList.remove('hidden');
+        } else {
+            option.classList.remove('border-purple-500', 'bg-purple-50');
+            check.classList.add('hidden');
+        }
+    });
+}
+
+function updateThemeBadge() {
+    const currentTheme = getPreferredTheme();
+    const badge = document.getElementById('current-theme-badge');
+    const labels = {
+        'light': 'Clair',
+        'dark': 'Sombre', 
+        'auto': 'Auto'
+    };
+    
+    if (badge) {
+        badge.textContent = labels[currentTheme] || 'Auto';
+    }
+}
+
+function getPreferredTheme() {
+    return localStorage.getItem('theme') || window.userTheme || 'auto';
+}
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+}
+
+// ========================================
+// Gestion de la personnalisation  
+// ========================================
+
+function openPersonalizationModal() {
+    document.getElementById('personalizationModal').classList.remove('hidden');
+}
+
+function closePersonalizationModal() {
+    document.getElementById('personalizationModal').classList.add('hidden');
+}
+
+// ========================================
+// Gestion de la suppression du compte
+// ========================================
+
+function openDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').classList.remove('hidden');
+}
+
+function closeDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').classList.add('hidden');
+    // Reset du formulaire
+    document.getElementById('deleteAccountForm').reset();
+}
+
+function confirmDeleteAccount() {
     const form = document.getElementById('deleteAccountForm');
     const password = document.getElementById('delete_password').value;
     const confirmCheckbox = document.getElementById('confirmDelete');
@@ -671,20 +738,144 @@ function confirmDeleteAccount(event) {
     );
     
     if (finalConfirm) {
-        // Désactiver le bouton pour éviter les doubles clics
-        const deleteBtn = event.target;
-        deleteBtn.disabled = true;
-        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Suppression en cours...';
-        
-        // Log pour debug
-        console.log('Soumission du formulaire de suppression...');
-        console.log('Form action:', form.action);
-        console.log('Form method:', form.method);
-        
-        // Soumettre le formulaire
         form.submit();
     }
 }
+
+// Fermer les modaux en cliquant à l'extérieur
+document.addEventListener('click', function(event) {
+    const modals = ['themeModal', 'personalizationModal', 'deleteAccountModal'];
+    
+    modals.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+});
+
+// Touches d'échappement pour fermer les modaux
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const modals = ['themeModal', 'personalizationModal', 'deleteAccountModal'];
+        modals.forEach(modalId => {
+            document.getElementById(modalId).classList.add('hidden');
+        });
+    }
+});
 </script>
 @endpush
-@endsection
+
+@push('styles')
+<style>
+/* Animations personnalisées */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.max-w-4xl {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Hover effects améliorés */
+.group:hover .group-hover\:scale-110 {
+    transform: scale(1.1);
+}
+
+.transition-transform {
+    transition: transform 0.2s ease;
+}
+
+/* Toggle switch custom */
+.toggle-switch {
+    appearance: none;
+    width: 3rem;
+    height: 1.5rem;
+    border-radius: 9999px;
+    background-color: #d1d5db;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.toggle-switch:checked {
+    background-color: #9333ea;
+}
+
+.toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+.toggle-switch:checked::after {
+    transform: translateX(1.5rem);
+}
+
+/* Effets de survol pour les cartes */
+.group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Transitions fluides */
+* {
+    transition: all 0.2s ease;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .grid-cols-1.md\:grid-cols-2 > *,
+    .grid-cols-1.md\:grid-cols-3 > * {
+        border-right: none !important;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    [data-theme="auto"] .bg-gray-50 {
+        background-color: #1f2937;
+    }
+    
+    [data-theme="auto"] .text-gray-900 {
+        color: #f9fafb;
+    }
+    
+    [data-theme="auto"] .bg-white {
+        background-color: #374151;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+</style>
+@endpush

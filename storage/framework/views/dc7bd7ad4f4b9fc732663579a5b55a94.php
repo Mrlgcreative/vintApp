@@ -2,85 +2,88 @@
 
 <?php $__env->startSection('content'); ?>
 <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
-<script>
-    // Contexte utilisateur pour JavaScript
-    window.user = <?php echo json_encode([
-        'id' => auth()->user()->id ?? 0, 'name' => auth()->user()->name ?? 'Utilisateur', 'referral_code' => auth()->user()->referral_code ?? 'REF001') ?>;
-</script>
-<div class="container-fluid">
-    <div class="row">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-6">
         <!-- Sidebar Navigation -->
-        <div class="col-md-3 col-lg-2">
-            <div class="card">
-                <div class="card-body p-2">
-                    <h6 class="card-title text-primary mb-3">
-                        <i class="fas fa-users"></i> Affiliation
-                    </h6>
-                    <nav class="nav flex-column">
-                        <a class="nav-link active" href="#dashboard" data-section="dashboard">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                        <a class="nav-link" href="#points" data-section="points">
-                            <i class="fas fa-coins"></i> Mes Points
-                        </a>
-                        <a class="nav-link" href="#referrals" data-section="referrals">
-                            <i class="fas fa-user-friends"></i> Parrainages
-                        </a>
-                        <a class="nav-link" href="#codes" data-section="codes">
-                            <i class="fas fa-qr-code"></i> Mes Codes
-                        </a>
-                        <a class="nav-link" href="#redemptions" data-section="redemptions">
-                            <i class="fas fa-exchange-alt"></i> Rachats
-                        </a>
-                        <a class="nav-link" href="#leaderboard" data-section="leaderboard">
-                            <i class="fas fa-trophy"></i> Classement
-                        </a>
-                    </nav>
-                </div>
+        <div class="lg:w-64 flex-shrink-0">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h6 class="text-lg font-semibold text-blue-600 mb-4 flex items-center">
+                    <i class="fas fa-users mr-2"></i> Affiliation
+                </h6>
+                <nav class="space-y-2">
+                    <a class="flex items-center px-3 py-2 rounded-lg bg-blue-600 text-white transition-colors" href="#dashboard" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt mr-3"></i> Dashboard
+                    </a>
+                    <a class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" href="#points" data-section="points">
+                        <i class="fas fa-coins mr-3"></i> Mes Points
+                    </a>
+                    <a class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" href="#referrals" data-section="referrals">
+                        <i class="fas fa-user-friends mr-3"></i> Parrainages
+                    </a>
+                    <a class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" href="#codes" data-section="codes">
+                        <i class="fas fa-qr-code mr-3"></i> Mes Codes
+                    </a>
+                    <a class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" href="#redemptions" data-section="redemptions">
+                        <i class="fas fa-exchange-alt mr-3"></i> Rachats
+                    </a>
+                    <a class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors" href="#leaderboard" data-section="leaderboard">
+                        <i class="fas fa-trophy mr-3"></i> Classement
+                    </a>
+                </nav>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="col-md-9 col-lg-10">
+        <div class="flex-1 min-w-0">
             <!-- Dashboard Section -->
             <div id="section-dashboard" class="content-section">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-tachometer-alt text-primary"></i> Dashboard Affiliation</h2>
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary btn-sm" id="shareReferralBtn">
-                            <i class="fas fa-share-alt"></i> Partager mon code
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-tachometer-alt text-blue-600 mr-3"></i> Dashboard Affiliation
+                    </h2>
+                    <div class="flex gap-3 mt-4 sm:mt-0">
+                        <button class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium" id="shareReferralBtn">
+                            <i class="fas fa-share-alt mr-2"></i> Partager mon code
                         </button>
-                        <button class="btn btn-success btn-sm" id="refreshDataBtn">
-                            <i class="fas fa-sync-alt"></i> Actualiser
+                        <button class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium" id="refreshDataBtn">
+                            <i class="fas fa-sync-alt mr-2"></i> Actualiser
+                        </button>
+                        <!-- Bouton de test pour les modales -->
+                        <button class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium" onclick="openModal('createCodeModal')">
+                            <i class="fas fa-plus mr-2"></i> Test Modal
                         </button>
                     </div>
                 </div>
 
                 <!-- Stats Cards -->
-                <div class="row mb-4" id="statsCards">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="statsCards">
                     <!-- Stats will be loaded here -->
                 </div>
 
                 <!-- Recent Activity -->
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-history"></i> Activité Récente</h5>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2">
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-history mr-2"></i> Activité Récente
+                                </h5>
                             </div>
-                            <div class="card-body">
-                                <div id="recentTransactions" class="list-group">
+                            <div class="p-6">
+                                <div id="recentTransactions" class="space-y-4">
                                     <!-- Recent transactions will be loaded here -->
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5><i class="fas fa-chart-line"></i> Progression</h5>
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                            <div class="px-6 py-4 border-b border-gray-200">
+                                <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                                    <i class="fas fa-chart-line mr-2"></i> Progression
+                                </h5>
                             </div>
-                            <div class="card-body text-center">
+                            <div class="p-6 text-center">
                                 <div id="levelProgress">
                                     <!-- Level progress will be loaded here -->
                                 </div>
@@ -91,97 +94,97 @@
             </div>
 
             <!-- Points Section -->
-            <div id="section-points" class="content-section d-none">
-                <h2><i class="fas fa-coins text-warning"></i> Gestion des Points</h2>
+            <div id="section-points" class="content-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-6">
+                    <i class="fas fa-coins text-yellow-500 mr-3"></i> Gestion des Points
+                </h2>
                 
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card border-success">
-                            <div class="card-header bg-success text-white">
-                                <h5><i class="fas fa-money-bill-wave"></i> Convertir en Argent</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="convertCashForm">
-                                    <div class="mb-3">
-                                        <label class="form-label">Points à convertir:</label>
-                                        <input type="number" class="form-control" id="cashPoints" min="100" step="1" required>
-                                        <small class="form-text text-muted">Minimum 100 points</small>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Devise:</label>
-                                        <select class="form-control" id="cashCurrency" required>
-                                            <option value="USD">USD - Dollar Américain</option>
-                                            <option value="CDF">CDF - Franc Congolais</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3" id="conversionPreview">
-                                        <!-- Conversion preview will appear here -->
-                                    </div>
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="fas fa-exchange-alt"></i> Convertir
-                                    </button>
-                                </form>
-                            </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-green-200">
+                        <div class="px-6 py-4 bg-green-600 text-white rounded-t-lg">
+                            <h5 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-money-bill-wave mr-2"></i> Convertir en Argent
+                            </h5>
+                        </div>
+                        <div class="p-6">
+                            <form id="convertCashForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Points à convertir:</label>
+                                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" id="cashPoints" min="100" step="1" required>
+                                    <p class="text-sm text-gray-500 mt-1">Minimum 100 points</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Devise:</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" id="cashCurrency" required>
+                                        <option value="USD">USD - Dollar Américain</option>
+                                        <option value="CDF">CDF - Franc Congolais</option>
+                                    </select>
+                                </div>
+                                <div id="conversionPreview">
+                                    <!-- Conversion preview will appear here -->
+                                </div>
+                                <button type="submit" class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium">
+                                    <i class="fas fa-exchange-alt mr-2"></i> Convertir
+                                </button>
+                            </form>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card border-info">
-                            <div class="card-header bg-info text-white">
-                                <h5><i class="fas fa-percentage"></i> Générer Code Réduction</h5>
-                            </div>
-                            <div class="card-body">
-                                <form id="generateDiscountForm">
-                                    <div class="mb-3">
-                                        <label class="form-label">Points à utiliser:</label>
-                                        <input type="number" class="form-control" id="discountPoints" min="100" max="5000" step="1" required>
-                                        <small class="form-text text-muted">100-5000 points (100 pts = 1% de réduction)</small>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="form-label">Durée de validité (jours):</label>
-                                        <select class="form-control" id="discountExpiry">
-                                            <option value="7">7 jours</option>
-                                            <option value="15">15 jours</option>
-                                            <option value="30" selected>30 jours</option>
-                                            <option value="60">60 jours</option>
-                                        </select>
-                                    </div>
-                                    <div class="mb-3" id="discountPreview">
-                                        <!-- Discount preview will appear here -->
-                                    </div>
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="fas fa-ticket-alt"></i> Générer Code
-                                    </button>
-                                </form>
-                            </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-blue-200">
+                        <div class="px-6 py-4 bg-blue-600 text-white rounded-t-lg">
+                            <h5 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-percentage mr-2"></i> Générer Code Réduction
+                            </h5>
+                        </div>
+                        <div class="p-6">
+                            <form id="generateDiscountForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Points à utiliser:</label>
+                                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="discountPoints" min="100" max="5000" step="1" required>
+                                    <p class="text-sm text-gray-500 mt-1">100-5000 points (100 pts = 1% de réduction)</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Durée de validité (jours):</label>
+                                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="discountExpiry">
+                                        <option value="7">7 jours</option>
+                                        <option value="15">15 jours</option>
+                                        <option value="30" selected>30 jours</option>
+                                        <option value="60">60 jours</option>
+                                    </select>
+                                </div>
+                                <div id="discountPreview">
+                                    <!-- Discount preview will appear here -->
+                                </div>
+                                <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                    <i class="fas fa-ticket-alt mr-2"></i> Générer Code
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
 
                 <!-- Points History -->
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-history"></i> Historique des Points</h5>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-history mr-2"></i> Historique des Points
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <select class="form-control" id="historyType">
-                                    <option value="all">Tous les types</option>
-                                    <option value="earn_referral">Parrainages</option>
-                                    <option value="earn_purchase">Achats</option>
-                                    <option value="earn_sale">Ventes</option>
-                                    <option value="redeem_cash">Conversions argent</option>
-                                    <option value="redeem_discount">Codes réduction</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <select class="form-control" id="historyPeriod">
-                                    <option value="all">Toute période</option>
-                                    <option value="today">Aujourd'hui</option>
-                                    <option value="this_week">Cette semaine</option>
-                                    <option value="this_month">Ce mois</option>
-                                </select>
-                            </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="historyType">
+                                <option value="all">Tous les types</option>
+                                <option value="earn_referral">Parrainages</option>
+                                <option value="earn_purchase">Achats</option>
+                                <option value="earn_sale">Ventes</option>
+                                <option value="redeem_cash">Conversions argent</option>
+                                <option value="redeem_discount">Codes réduction</option>
+                            </select>
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="historyPeriod">
+                                <option value="all">Toute période</option>
+                                <option value="today">Aujourd'hui</option>
+                                <option value="this_week">Cette semaine</option>
+                                <option value="this_month">Ce mois</option>
+                            </select>
                         </div>
                         <div id="pointsHistory">
                             <!-- Points history will be loaded here -->
@@ -191,14 +194,18 @@
             </div>
 
             <!-- Referrals Section -->
-            <div id="section-referrals" class="content-section d-none">
-                <h2><i class="fas fa-user-friends text-info"></i> Mes Parrainages</h2>
+            <div id="section-referrals" class="content-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-6">
+                    <i class="fas fa-user-friends text-blue-500 mr-3"></i> Mes Parrainages
+                </h2>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-list"></i> Liste des Parrainages</h5>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-list mr-2"></i> Liste des Parrainages
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="p-6">
                         <div id="referralsList">
                             <!-- Referrals list will be loaded here -->
                         </div>
@@ -207,79 +214,67 @@
             </div>
 
             <!-- Codes Section -->
-            <div id="section-codes" class="content-section d-none">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h2><i class="fas fa-qr-code text-secondary"></i> Mes Codes de Parrainage</h2>
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCodeModal">
-                        <i class="fas fa-plus"></i> Nouveau Code
+            <div id="section-codes" class="content-section hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                        <i class="fas fa-qr-code text-gray-600 mr-3"></i> Mes Codes de Parrainage
+                    </h2>
+                    <button class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium" onclick="openModal('createCodeModal')">
+                        <i class="fas fa-plus mr-2"></i> Nouveau Code
                     </button>
                 </div>
                 
                 <!-- Stats Cards for Codes -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card border-primary">
-                            <div class="card-body text-center">
-                                <div class="text-primary mb-2">
-                                    <i class="fas fa-qr-code fa-2x"></i>
-                                </div>
-                                <h4 class="card-title text-primary" id="totalCodes">0</h4>
-                                <p class="card-text text-muted">Codes Créés</p>
-                            </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-blue-200 p-6 text-center">
+                        <div class="text-blue-600 mb-3">
+                            <i class="fas fa-qr-code text-3xl"></i>
                         </div>
+                        <h4 class="text-2xl font-bold text-blue-600" id="totalCodes">0</h4>
+                        <p class="text-gray-600">Codes Créés</p>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card border-success">
-                            <div class="card-body text-center">
-                                <div class="text-success mb-2">
-                                    <i class="fas fa-check-circle fa-2x"></i>
-                                </div>
-                                <h4 class="card-title text-success" id="activeCodes">0</h4>
-                                <p class="card-text text-muted">Codes Actifs</p>
-                            </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-green-200 p-6 text-center">
+                        <div class="text-green-600 mb-3">
+                            <i class="fas fa-check-circle text-3xl"></i>
                         </div>
+                        <h4 class="text-2xl font-bold text-green-600" id="activeCodes">0</h4>
+                        <p class="text-gray-600">Codes Actifs</p>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card border-info">
-                            <div class="card-body text-center">
-                                <div class="text-info mb-2">
-                                    <i class="fas fa-users fa-2x"></i>
-                                </div>
-                                <h4 class="card-title text-info" id="totalUses">0</h4>
-                                <p class="card-text text-muted">Utilisations</p>
-                            </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-blue-200 p-6 text-center">
+                        <div class="text-blue-500 mb-3">
+                            <i class="fas fa-users text-3xl"></i>
                         </div>
+                        <h4 class="text-2xl font-bold text-blue-500" id="totalUses">0</h4>
+                        <p class="text-gray-600">Utilisations</p>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card border-warning">
-                            <div class="card-body text-center">
-                                <div class="text-warning mb-2">
-                                    <i class="fas fa-star fa-2x"></i>
-                                </div>
-                                <h4 class="card-title text-warning" id="bestPerforming">-</h4>
-                                <p class="card-text text-muted">Meilleur Code</p>
-                            </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-yellow-200 p-6 text-center">
+                        <div class="text-yellow-500 mb-3">
+                            <i class="fas fa-star text-3xl"></i>
                         </div>
+                        <h4 class="text-2xl font-bold text-yellow-500" id="bestPerforming">-</h4>
+                        <p class="text-gray-600">Meilleur Code</p>
                     </div>
                 </div>
 
                 <!-- Codes List -->
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0"><i class="fas fa-list"></i> Mes Codes Existants</h5>
-                        <div class="d-flex gap-2">
-                            <select class="form-select form-select-sm" id="codeStatusFilter">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                        <h5 class="text-lg font-semibold text-gray-900 flex items-center mb-4 sm:mb-0">
+                            <i class="fas fa-list mr-2"></i> Mes Codes Existants
+                        </h5>
+                        <div class="flex gap-3">
+                            <select class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" id="codeStatusFilter">
                                 <option value="all">Tous les statuts</option>
                                 <option value="active">Actifs</option>
                                 <option value="inactive">Inactifs</option>
                                 <option value="expired">Expirés</option>
                             </select>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="refreshCodesList()">
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors" onclick="refreshCodesList()">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="p-6">
                         <div id="referralCodesList">
                             <!-- Referral codes list will be loaded here -->
                         </div>
@@ -288,14 +283,18 @@
             </div>
 
             <!-- Redemptions Section -->
-            <div id="section-redemptions" class="content-section d-none">
-                <h2><i class="fas fa-exchange-alt text-danger"></i> Mes Rachats</h2>
+            <div id="section-redemptions" class="content-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-6">
+                    <i class="fas fa-exchange-alt text-red-600 mr-3"></i> Mes Rachats
+                </h2>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-list"></i> Historique des Rachats</h5>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-list mr-2"></i> Historique des Rachats
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="p-6">
                         <div id="redemptionsList">
                             <!-- Redemptions list will be loaded here -->
                         </div>
@@ -304,14 +303,18 @@
             </div>
 
             <!-- Leaderboard Section -->
-            <div id="section-leaderboard" class="content-section d-none">
-                <h2><i class="fas fa-trophy text-warning"></i> Classement</h2>
+            <div id="section-leaderboard" class="content-section hidden">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center mb-6">
+                    <i class="fas fa-trophy text-yellow-500 mr-3"></i> Classement
+                </h2>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h5><i class="fas fa-medal"></i> Top 50 des Parrains</h5>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h5 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <i class="fas fa-medal mr-2"></i> Top 50 des Parrains
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="p-6">
                         <div id="leaderboardList">
                             <!-- Leaderboard will be loaded here -->
                         </div>
@@ -323,337 +326,193 @@
 </div>
 
 <!-- Create Code Modal -->
-<div class="modal fade" id="createCodeModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-plus"></i> Créer un Nouveau Code de Parrainage</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="createCodeForm">
-                    <!-- Auto-generated title display -->
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" id="createCodeModal">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h5 class="text-xl font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-plus mr-2"></i> Créer un Nouveau Code de Parrainage
+            </h5>
+            <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeModal('createCodeModal')">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <form id="createCodeForm">
+                <!-- Auto-generated title display -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Titre du code (généré automatiquement):</label>
+                    <div class="flex">
+                        <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50" id="codeTitle" readonly>
+                        <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 hover:bg-gray-100 transition-colors" type="button" onclick="generateCodeTitle()">
+                            <i class="fas fa-refresh"></i> Regénérer
+                        </button>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-1">Le titre sera automatiquement généré lors de la création</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-1">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description (optionnelle):</label>
+                            <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeDescription" rows="3" maxlength="500" placeholder="Décrivez votre code de parrainage..."></textarea>
+                            <p class="text-sm text-gray-500 mt-1">Maximum 500 caractères</p>
+                        </div>
+                    </div>
+                    <div class="md:col-span-1">
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Type de code:</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeType" onchange="updateCodePreview()">
+                                <option value="general">Général</option>
+                                <option value="limited">Limité</option>
+                                <option value="premium">Premium</option>
+                                <option value="seasonal">Saisonnier</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Limite d'utilisation:</label>
+                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeMaxUses" min="1" max="10000" placeholder="Illimité">
+                            <p class="text-sm text-gray-500 mt-1">Laissez vide pour illimité</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Points bonus pour le filleul:</label>
+                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeBonusPoints" min="0" max="1000" step="10" placeholder="0">
+                            <p class="text-sm text-gray-500 mt-1">Points supplémentaires à l'inscription</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Date d'expiration:</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeExpiry">
+                                <option value="">Pas d'expiration</option>
+                                <option value="7">7 jours</option>
+                                <option value="30">30 jours</option>
+                                <option value="60">60 jours</option>
+                                <option value="90">90 jours</option>
+                                <option value="365">1 an</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Statut:</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeStatus">
+                                <option value="active">Actif</option>
+                                <option value="inactive">Inactif</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Code Preview -->
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
                     <div class="mb-3">
-                        <label class="form-label">Titre du code (généré automatiquement):</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="codeTitle" readonly>
-                            <button class="btn btn-outline-secondary" type="button" onclick="generateCodeTitle()">
-                                <i class="fas fa-refresh"></i> Regénérer
-                            </button>
-                        </div>
-                        <small class="form-text text-muted">Le titre sera automatiquement généré lors de la création</small>
+                        <h6 class="text-sm font-medium text-gray-700 flex items-center">
+                            <i class="fas fa-eye mr-2"></i> Aperçu du Code
+                        </h6>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Description (optionnelle):</label>
-                                <textarea class="form-control" id="codeDescription" rows="3" maxlength="500" placeholder="Décrivez votre code de parrainage..."></textarea>
-                                <small class="form-text text-muted">Maximum 500 caractères</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Type de code:</label>
-                                <select class="form-control" id="codeType" onchange="updateCodePreview()">
-                                    <option value="general">Général</option>
-                                    <option value="limited">Limité</option>
-                                    <option value="premium">Premium</option>
-                                    <option value="seasonal">Saisonnier</option>
-                                </select>
+                    <div id="codePreview" class="text-center">
+                        <div class="bg-white border-2 border-dashed border-blue-500 rounded-lg p-4">
+                            <h5 class="text-lg font-semibold text-gray-900 mb-2" id="previewTitle">Code Parrainage #001</h5>
+                            <div class="text-xl font-mono font-bold text-blue-600 uppercase tracking-wider mb-2" id="previewCode">PARRAINS001</div>
+                            <div>
+                                <small class="text-gray-500" id="previewDetails">Général • Illimité • Permanent</small>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Limite d'utilisation:</label>
-                                <input type="number" class="form-control" id="codeMaxUses" min="1" max="10000" placeholder="Illimité">
-                                <small class="form-text text-muted">Laissez vide pour illimité</small>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Points bonus pour le filleul:</label>
-                                <input type="number" class="form-control" id="codeBonusPoints" min="0" max="1000" step="10" placeholder="0">
-                                <small class="form-text text-muted">Points supplémentaires à l'inscription</small>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Date d'expiration:</label>
-                                <select class="form-control" id="codeExpiry">
-                                    <option value="">Pas d'expiration</option>
-                                    <option value="7">7 jours</option>
-                                    <option value="30">30 jours</option>
-                                    <option value="60">60 jours</option>
-                                    <option value="90">90 jours</option>
-                                    <option value="365">1 an</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label class="form-label">Statut:</label>
-                                <select class="form-control" id="codeStatus">
-                                    <option value="active">Actif</option>
-                                    <option value="inactive">Inactif</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Code Preview -->
-                    <div class="card bg-light mb-3">
-                        <div class="card-header">
-                            <h6 class="mb-0"><i class="fas fa-eye"></i> Aperçu du Code</h6>
-                        </div>
-                        <div class="card-body">
-                            <div id="codePreview" class="text-center">
-                                <div class="code-display p-3 border rounded bg-white">
-                                    <h5 id="previewTitle">Code Parrainage #001</h5>
-                                    <div class="code-value h4 text-primary font-monospace" id="previewCode">PARRAINS001</div>
-                                    <div class="code-details">
-                                        <small class="text-muted" id="previewDetails">Général • Illimité • Permanent</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Annuler
-                </button>
-                <button type="submit" form="createCodeForm" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Créer le Code
-                </button>
-            </div>
+                </div>
+            </form>
+        </div>
+        <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+            <button type="button" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors" onclick="closeModal('createCodeModal')">
+                <i class="fas fa-times mr-2"></i> Annuler
+            </button>
+            <button type="submit" form="createCodeForm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i> Créer le Code
+            </button>
         </div>
     </div>
 </div>
 
 <!-- Share Modal -->
-<div class="modal fade" id="shareModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"><i class="fas fa-share-alt"></i> Partager mon Code de Parrainage</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden" id="shareModal">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h5 class="text-xl font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-share-alt mr-2"></i> Partager mon Code de Parrainage
+            </h5>
+            <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeModal('shareModal')">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="p-6">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Mon code de parrainage:</label>
+                <div class="flex">
+                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50" id="shareCode" readonly>
+                    <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 hover:bg-gray-100 transition-colors" type="button" onclick="copyToClipboard('#shareCode')">
+                        <i class="fas fa-copy"></i> Copier
+                    </button>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Mon code de parrainage:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="shareCode" readonly>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('#shareCode')">
-                            <i class="fas fa-copy"></i> Copier
-                        </button>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Lien de parrainage:</label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="shareUrl" readonly>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyToClipboard('#shareUrl')">
-                            <i class="fas fa-copy"></i> Copier
-                        </button>
-                    </div>
-                </div>
-                <div class="d-grid gap-2">
-                    <button class="btn btn-primary" onclick="shareOnFacebook()">
-                        <i class="fab fa-facebook"></i> Partager sur Facebook
-                    </button>
-                    <button class="btn btn-info" onclick="shareOnTwitter()">
-                        <i class="fab fa-twitter"></i> Partager sur Twitter
-                    </button>
-                    <button class="btn btn-success" onclick="shareOnWhatsApp()">
-                        <i class="fab fa-whatsapp"></i> Partager sur WhatsApp
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lien de parrainage:</label>
+                <div class="flex">
+                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50" id="shareUrl" readonly>
+                    <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 hover:bg-gray-100 transition-colors" type="button" onclick="copyToClipboard('#shareUrl')">
+                        <i class="fas fa-copy"></i> Copier
                     </button>
                 </div>
+            </div>
+            <div class="space-y-3">
+                <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center" onclick="shareOnFacebook()">
+                    <i class="fab fa-facebook mr-2"></i> Partager sur Facebook
+                </button>
+                <button class="w-full bg-blue-400 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors flex items-center justify-center" onclick="shareOnTwitter()">
+                    <i class="fab fa-twitter mr-2"></i> Partager sur Twitter
+                </button>
+                <button class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center" onclick="shareOnWhatsApp()">
+                    <i class="fab fa-whatsapp mr-2"></i> Partager sur WhatsApp
+                </button>
             </div>
         </div>
     </div>
 </div>
 <?php $__env->stopSection(); ?>
 
-<?php $__env->startPush('styles'); ?>
-<style>
-.content-section {
-    min-height: 600px;
-}
-
-.nav-link {
-    color: #6c757d;
-    border-radius: 0.375rem;
-    margin-bottom: 2px;
-}
-
-.nav-link:hover {
-    background-color: #f8f9fa;
-    color: #0d6efd;
-}
-
-.nav-link.active {
-    background-color: #0d6efd;
-    color: white !important;
-}
-
-.card {
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    border: 1px solid rgba(0, 0, 0, 0.125);
-}
-
-.stats-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.stats-card .card-body {
-    text-align: center;
-    padding: 1.5rem;
-}
-
-.stats-number {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.progress-circle {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto;
-}
-
-.list-group-item {
-    border: none;
-    border-bottom: 1px solid #dee2e6;
-    padding: 1rem 0;
-}
-
-.list-group-item:last-child {
-    border-bottom: none;
-}
-
-.badge-points {
-    background-color: #28a745;
-    color: white;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-}
-
-.badge-level {
-    background: linear-gradient(45deg, #ffd700, #ffed4e);
-    color: #000;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
-    font-weight: bold;
-}
-
-.referral-code-card {
-    border: 2px dashed #0d6efd;
-    background-color: #f8f9ff;
-}
-
-.share-buttons .btn {
-    margin: 0.25rem;
-}
-
-/* Code Section Styles */
-.code-display {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border: 2px dashed #0d6efd !important;
-}
-
-.code-value {
-    letter-spacing: 2px;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.modal-lg {
-    max-width: 800px;
-}
-
-/* Stats cards hover effect */
-.card:hover {
-    transform: translateY(-2px);
-    transition: transform 0.2s ease-in-out;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-}
-
-/* Code type badges */
-.code-type-general { background-color: #6c757d; }
-.code-type-limited { background-color: #fd7e14; }
-.code-type-premium { background-color: #6f42c1; }
-.code-type-seasonal { background-color: #20c997; }
-
-/* Form enhancements */
-.form-select-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-}
-
-/* Code list enhancements */
-.code-card {
-    border-left: 4px solid #0d6efd;
-    margin-bottom: 1rem;
-    transition: all 0.2s ease-in-out;
-}
-
-.code-card:hover {
-    border-left-color: #0a58ca;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-}
-
-.code-stats {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.5rem;
-}
-
-.code-stat {
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
-.code-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-    .modal-lg {
-        max-width: 95%;
-        margin: 1rem auto;
-    }
-    
-    .code-stats {
-        flex-direction: column;
-        gap: 0.25rem;
-    }
-    
-    .code-actions {
-        flex-direction: column;
-    }
-    
-    .code-actions .btn {
-        font-size: 0.875rem;
-        padding: 0.375rem 0.75rem;
-    }
-}
-</style>
-<?php $__env->stopPush(); ?>
-
 <?php $__env->startPush('scripts'); ?>
 <script src="<?php echo e(asset('js/affiliate-dashboard.js')); ?>"></script>
+<script>
+// Test de debug pour vérifier que les fonctions sont bien disponibles
+console.log('Scripts chargés');
+console.log('openModal function exists:', typeof openModal);
+console.log('closeModal function exists:', typeof closeModal);
+
+// Test direct du click
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM chargé');
+    
+    // Test direct des modales
+    const testButton = document.querySelector('[onclick*="openModal"]');
+    if (testButton) {
+        console.log('Bouton trouvé:', testButton);
+    }
+    
+    // Test des éléments de modal
+    const createModal = document.getElementById('createCodeModal');
+    const shareModal = document.getElementById('shareModal');
+    console.log('Modal createCodeModal trouvée:', !!createModal);
+    console.log('Modal shareModal trouvée:', !!shareModal);
+});
+</script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/affiliate/dashboard.blade.php ENDPATH**/ ?>

@@ -21,164 +21,198 @@ if (typeof jsQR === 'undefined') {
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startSection('content'); ?>
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h2">
-                    <i class="fas fa-shopping-cart me-2"></i>
-                    Mes Commandes
-                </h1>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-success" onclick="showScanInstructions()">
-                        <i class="fas fa-qrcode me-2"></i>
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex items-center mb-4 lg:mb-0">
+                    <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mr-4">
+                        <i class="fas fa-shopping-cart text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">Mes Commandes</h1>
+                        <p class="text-gray-600 text-sm mt-1">Suivez vos achats et confirmez la réception</p>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" 
+                            onclick="showScanInstructions()"
+                            class="inline-flex items-center justify-center px-6 py-3 border border-emerald-300 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 hover:border-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200">
+                        <i class="fas fa-qrcode mr-2"></i>
                         Scanner QR Code
                     </button>
-                    <a href="<?php echo e(route('orders.my-sales')); ?>" class="btn btn-outline-primary">
-                        <i class="fas fa-store me-2"></i>
+                    <a href="<?php echo e(route('orders.my-sales')); ?>" 
+                       class="inline-flex items-center justify-center px-6 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                        <i class="fas fa-store mr-2"></i>
                         Mes Ventes
                     </a>
                 </div>
             </div>
+        </div>
 
-            <?php if($orders->count() > 0): ?>
-                <div class="row g-4">
-                    <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card h-100 order-card">
-                                <div class="card-header d-flex justify-content-between align-items-center">
-                                    <h6 class="mb-0"><?php echo e($order->order_number); ?></h6>
-                                    <span class="badge <?php echo e($order->status_badge_class); ?>">
-                                        <?php echo e($order->status_text); ?>
+        <?php if($orders->count() > 0): ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <?php $__currentLoopData = $orders; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $order): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <div class="bg-white rounded-2xl shadow-xl shadow-indigo-600/10 border border-gray-100/50 overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300">
+                        <!-- Header de la carte -->
+                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
+                            <div class="flex justify-between items-center">
+                                <h6 class="text-sm font-bold text-gray-900"><?php echo e($order->order_number); ?></h6>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold <?php echo e($order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'))); ?>">
+                                    <?php echo e($order->status_text); ?>
 
-                                    </span>
-                                </div>
-
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div class="col-4">
-                                            <?php if($order->item->images && count($order->item->images) > 0): ?>
-                                                <img src="<?php echo e(asset('storage/' . $order->item->images[0])); ?>" 
-                                                     class="img-thumbnail" 
-                                                     alt="<?php echo e($order->item->name); ?>"
-                                                     style="height: 80px; object-fit: cover;">
-                                            <?php else: ?>
-                                                <div class="bg-light d-flex align-items-center justify-content-center" 
-                                                     style="height: 80px;">
-                                                    <i class="fas fa-image text-muted"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="col-8">
-                                            <h6 class="card-title"><?php echo e(Str::limit($order->item->name, 40)); ?></h6>
-                                            <p class="text-muted mb-1">
-                                                <small>Quantité: <?php echo e($order->quantity); ?></small>
-                                            </p>
-                                            <p class="text-primary fw-bold mb-0">
-                                                <?php echo e($order->formatted_total_price); ?>
-
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="row mb-3">
-                                        <div class="col-6">
-                                            <small class="text-muted">Vendeur</small>
-                                            <div class="fw-bold"><?php echo e($order->item->user->name); ?></div>
-                                        </div>
-                                        <div class="col-6">
-                                            <small class="text-muted">Date</small>
-                                            <div class="fw-bold"><?php echo e($order->created_at->format('d/m/Y')); ?></div>
-                                        </div>
-                                    </div>
-
-                                    <?php if($order->deliveryAddress): ?>
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
-                                                Livraison
-                                            </small>
-                                            <div class="fw-bold"><?php echo e($order->deliveryAddress->city); ?></div>
-                                            <small class="text-muted"><?php echo e(Str::limit($order->deliveryAddress->address, 30)); ?></small>
-                                        </div>
-                                    <?php elseif($order->shipping_city && $order->shipping_city !== 'À définir'): ?>
-                                        <div class="mb-3">
-                                            <small class="text-muted">
-                                                <i class="fas fa-map-marker-alt me-1"></i>
-                                                Livraison
-                                            </small>
-                                            <div class="fw-bold"><?php echo e($order->shipping_city); ?></div>
-                                            <?php if($order->shipping_address && $order->shipping_address !== 'À définir'): ?>
-                                                <small class="text-muted"><?php echo e(Str::limit($order->shipping_address, 30)); ?></small>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endif; ?>
-
-                                    <div class="d-grid gap-2">
-                                        <a href="<?php echo e(route('orders.show', $order)); ?>" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye me-2"></i>
-                                            Voir détails
-                                        </a>
-                                        
-                                        <?php if($order->scan_token): ?>
-                                            <a href="<?php echo e(route('orders.scan', $order->scan_token)); ?>" class="btn btn-outline-primary btn-sm">
-                                                <i class="fas fa-qrcode me-2"></i>
-                                                Scanner / Confirmer réception
-                                            </a>
-                                        <?php endif; ?>
-                                        
-                                        <?php if($order->status === 'pending'): ?>
-                                            <button class="btn btn-danger btn-sm" 
-                                                    data-order-id="<?php echo e($order->id); ?>"
-                                                    onclick="cancelOrder(this.dataset.orderId)">
-                                                <i class="fas fa-times me-2"></i>
-                                                Annuler
-                                            </button>
-                                        <?php endif; ?>
-
-                                        <?php if(in_array($order->status, ['shipped', 'delivered']) && !$order->confirmed_by_buyer_at && !$order->scan_token): ?>
-                                            <button class="btn btn-success btn-sm" 
-                                                    data-order-id="<?php echo e($order->id); ?>"
-                                                    onclick="confirmDelivery(this.dataset.orderId)">
-                                                <i class="fas fa-check-circle me-2"></i>
-                                                Commande Reçue
-                                            </button>
-                                        <?php endif; ?>
-
-                                        <?php if($order->confirmed_by_buyer_at): ?>
-                                            <div class="alert alert-success mb-0 py-2" role="alert">
-                                                <i class="fas fa-check-circle me-1"></i>
-                                                <small>Réception confirmée le <?php echo e($order->confirmed_by_buyer_at->format('d/m/Y')); ?></small>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                                </span>
                             </div>
                         </div>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </div>
 
-                <!-- Pagination -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-center">
-                            <?php echo e($orders->links()); ?>
+                        <div class="p-6">
+                            <!-- Produit et détails -->
+                            <div class="flex space-x-4 mb-6">
+                                <div class="flex-shrink-0">
+                                    <?php if($order->item->images && count($order->item->images) > 0): ?>
+                                        <div class="w-20 h-20 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
+                                            <img src="<?php echo e(asset('storage/' . $order->item->images[0])); ?>" 
+                                                 class="w-full h-full object-cover" 
+                                                 alt="<?php echo e($order->item->name); ?>"
+                                                 loading="lazy">
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-200">
+                                            <i class="fas fa-image text-gray-400 text-xl"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h6 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2"><?php echo e(Str::limit($order->item->name, 40)); ?></h6>
+                                    <p class="text-sm text-gray-500 mb-1">
+                                        <span class="font-medium">Quantité:</span> <?php echo e($order->quantity); ?>
 
+                                    </p>
+                                    <p class="text-xl font-bold text-indigo-600">
+                                        <?php echo e($order->formatted_total_price); ?>
+
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Informations vendeur et date -->
+                            <div class="grid grid-cols-2 gap-4 mb-6">
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Vendeur</p>
+                                    <p class="font-semibold text-gray-900 text-sm"><?php echo e($order->item->user->name); ?></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Date</p>
+                                    <p class="font-semibold text-gray-900 text-sm"><?php echo e($order->created_at->format('d/m/Y')); ?></p>
+                                </div>
+                            </div>
+
+                            <!-- Adresse de livraison -->
+                            <?php if($order->deliveryAddress): ?>
+                                <div class="mb-6 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-map-marker-alt text-indigo-500 mr-2"></i>
+                                        <span class="text-xs text-indigo-700 font-medium">Livraison</span>
+                                    </div>
+                                    <p class="font-semibold text-indigo-900 text-sm"><?php echo e($order->deliveryAddress->city); ?></p>
+                                    <p class="text-xs text-indigo-600 mt-1"><?php echo e(Str::limit($order->deliveryAddress->address, 30)); ?></p>
+                                </div>
+                            <?php elseif($order->shipping_city && $order->shipping_city !== 'À définir'): ?>
+                                <div class="mb-6 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
+                                    <div class="flex items-center mb-2">
+                                        <i class="fas fa-map-marker-alt text-indigo-500 mr-2"></i>
+                                        <span class="text-xs text-indigo-700 font-medium">Livraison</span>
+                                    </div>
+                                    <p class="font-semibold text-indigo-900 text-sm"><?php echo e($order->shipping_city); ?></p>
+                                    <?php if($order->shipping_address && $order->shipping_address !== 'À définir'): ?>
+                                        <p class="text-xs text-indigo-600 mt-1"><?php echo e(Str::limit($order->shipping_address, 30)); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Actions -->
+                            <div class="space-y-3">
+                                <!-- Voir détails -->
+                                <a href="<?php echo e(route('orders.show', $order)); ?>" 
+                                   class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    Voir détails
+                                </a>
+                                
+                                <!-- Scanner QR -->
+                                <?php if($order->scan_token): ?>
+                                    <a href="<?php echo e(route('orders.scan', $order->scan_token)); ?>" 
+                                       class="w-full inline-flex items-center justify-center px-4 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                                        <i class="fas fa-qrcode mr-2"></i>
+                                        Scanner / Confirmer réception
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <!-- Annuler commande -->
+                                <?php if($order->status === 'pending'): ?>
+                                    <button class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl shadow-lg shadow-red-500/25 hover:from-red-600 hover:to-red-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-300" 
+                                            data-order-id="<?php echo e($order->id); ?>"
+                                            onclick="cancelOrder(this.dataset.orderId)">
+                                        <i class="fas fa-times mr-2"></i>
+                                        Annuler
+                                    </button>
+                                <?php endif; ?>
+
+                                <!-- Confirmer réception -->
+                                <?php if(in_array($order->status, ['shipped', 'delivered']) && !$order->confirmed_by_buyer_at && !$order->scan_token): ?>
+                                    <button class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300" 
+                                            data-order-id="<?php echo e($order->id); ?>"
+                                            onclick="confirmDelivery(this.dataset.orderId)">
+                                        <i class="fas fa-check-circle mr-2"></i>
+                                        Commande Reçue
+                                    </button>
+                                <?php endif; ?>
+
+                                <!-- Confirmation de réception -->
+                                <?php if($order->confirmed_by_buyer_at): ?>
+                                    <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-check-circle text-emerald-500 mr-2"></i>
+                                            <span class="text-sm text-emerald-800 font-medium">
+                                                Réception confirmée le <?php echo e($order->confirmed_by_buyer_at->format('d/m/Y')); ?>
+
+                                            </span>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-            <?php else: ?>
-                <div class="text-center py-5">
-                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">Aucune commande</h4>
-                    <p class="text-muted">Vous n'avez pas encore passé de commande.</p>
-                    <a href="<?php echo e(route('items.index')); ?>" class="btn btn-primary">
-                        <i class="fas fa-search me-2"></i>
-                        Découvrir des articles
-                    </a>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </div>
+
+            <!-- Pagination -->
+            <?php if($orders->hasPages()): ?>
+                <div class="mt-12 flex justify-center">
+                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+                        <?php echo e($orders->links()); ?>
+
+                    </div>
                 </div>
             <?php endif; ?>
-        </div>
+        <?php else: ?>
+            <!-- État vide -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-shopping-cart text-indigo-500 text-3xl"></i>
+                </div>
+                <h4 class="text-2xl font-bold text-gray-900 mb-3">Aucune commande</h4>
+                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                    Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande !
+                </p>
+                <a href="<?php echo e(route('items.index')); ?>" 
+                   class="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 hover:from-indigo-600 hover:to-indigo-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
+                    <i class="fas fa-search mr-2"></i>
+                    Découvrir des articles
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -270,73 +304,128 @@ async function checkCameraPermission() {
 function showScanInstructions() {
     // Créer le modal avec scanner intégré
     const modalHtml = `
-        <div class="modal fade" id="scanModal" tabindex="-1" aria-labelledby="scanModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header bg-success text-white">
-                        <h5 class="modal-title" id="scanModalLabel">
-                            <i class="fas fa-qrcode me-2"></i>
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="scanModal">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-6 rounded-t-2xl">
+                    <div class="flex justify-between items-center">
+                        <h5 class="text-xl font-bold flex items-center">
+                            <i class="fas fa-qrcode mr-3"></i>
                             Scanner un QR Code
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="stopScanner()"></button>
+                        <button type="button" 
+                                onclick="closeScanModal()" 
+                                class="text-white hover:text-gray-200 transition-colors duration-200">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
                     </div>
-                    <div class="modal-body">
-                        <div id="scanner-container" class="text-center">
-                            <div id="scanner-status" class="mb-3">
-                                <i class="fas fa-spinner fa-spin fa-2x text-success"></i>
-                                <p class="mt-2">Initialisation de la caméra...</p>
+                </div>
+                
+                <!-- Body -->
+                <div class="p-6">
+                    <div id="scanner-container" class="text-center">
+                        <div id="scanner-status" class="mb-6">
+                            <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i>
                             </div>
-                            <video id="qr-video" style="width: 100%; max-width: 500px; border-radius: 10px; display: none;"></video>
-                            <canvas id="qr-canvas" style="display: none;"></canvas>
+                            <p class="text-gray-700 font-medium">Initialisation de la caméra...</p>
                         </div>
-                        
-                        <div class="alert alert-info mt-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Instructions :</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>Autorisez l'accès à la caméra quand le navigateur vous le demande</li>
-                                <li>Pointez la caméra vers le QR code sur la facture</li>
-                                <li>La détection se fait automatiquement</li>
-                            </ul>
+                        <video id="qr-video" class="w-full max-w-md mx-auto rounded-xl shadow-lg hidden"></video>
+                        <canvas id="qr-canvas" class="hidden"></canvas>
+                    </div>
+                    
+                    <!-- Instructions -->
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-info-circle text-blue-500 text-lg"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-semibold text-blue-800 mb-2">Instructions :</h3>
+                                <ul class="text-sm text-blue-700 space-y-1">
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                        Autorisez l'accès à la caméra quand le navigateur vous le demande
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                        Pointez la caméra vers le QR code sur la facture
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="w-2 h-2 bg-blue-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                        La détection se fait automatiquement
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        
-                        <div id="scan-result" class="alert alert-success mt-3" style="display: none;">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <strong>QR Code détecté !</strong> Redirection en cours...
+                    </div>
+                    
+                    <!-- Success Message -->
+                    <div id="scan-result" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 mt-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-check-circle text-emerald-500 text-lg"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-semibold text-emerald-800">QR Code détecté !</h3>
+                                <p class="text-sm text-emerald-700 mt-1">Redirection en cours...</p>
+                            </div>
                         </div>
-                        
-                        <div id="scan-error" class="alert alert-danger mt-3" style="display: none;">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Erreur :</strong> <span id="error-message"></span>
-                            
-                            <div class="d-grid gap-2 mt-3">
-                                <button type="button" class="btn btn-warning" onclick="retryScanner()">
-                                    <i class="fas fa-redo me-2"></i>
+                    </div>
+                    
+                    <!-- Error Message -->
+                    <div id="scan-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 mt-6">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-exclamation-triangle text-red-500 text-lg"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-semibold text-red-800 mb-2">Erreur :</h3>
+                                <div id="error-message" class="text-sm text-red-700"></div>
+                                
+                                <button type="button" 
+                                        onclick="retryScanner()"
+                                        class="mt-4 w-full inline-flex items-center justify-center px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-200">
+                                    <i class="fas fa-redo mr-2"></i>
                                     Réessayer après avoir autorisé
                                 </button>
                             </div>
                         </div>
+                    </div>
+                    
+                    <!-- Alternative Options -->
+                    <div id="alternative-options" class="hidden">
+                        <div class="border-t border-gray-200 my-6"></div>
+                        <h6 class="text-center text-lg font-semibold text-gray-900 mb-4">Autres options de confirmation</h6>
                         
-                        <div id="alternative-options" style="display: none;">
-                            <hr>
-                            <h6 class="text-center mb-3">Autres options de confirmation</h6>
-                            
-                            <div class="alert alert-warning">
-                                <i class="fas fa-lightbulb me-2"></i>
-                                <strong>Astuce :</strong> Cliquez sur le bouton "Scanner / Confirmer réception" sur votre commande ci-dessous.
-                            </div>
-                            
-                            <div class="d-grid gap-2">
-                                <button type="button" class="btn btn-outline-primary" onclick="scrollToOrders()">
-                                    <i class="fas fa-list me-2"></i>
-                                    Voir mes commandes
-                                </button>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-lightbulb text-yellow-500 text-lg"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-semibold text-yellow-800">Astuce :</h3>
+                                    <p class="text-sm text-yellow-700 mt-1">Cliquez sur le bouton "Scanner / Confirmer réception" sur votre commande ci-dessous.</p>
+                                </div>
                             </div>
                         </div>
+                        
+                        <button type="button" 
+                                onclick="scrollToOrders()"
+                                class="w-full inline-flex items-center justify-center px-4 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                            <i class="fas fa-list mr-2"></i>
+                            Voir mes commandes
+                        </button>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="stopScanner()">Fermer</button>
-                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="bg-gray-50 px-6 py-4 rounded-b-2xl border-t border-gray-200">
+                    <button type="button" 
+                            onclick="closeScanModal()"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 bg-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                        Fermer
+                    </button>
                 </div>
             </div>
         </div>
@@ -348,13 +437,22 @@ function showScanInstructions() {
     }
     
     // Afficher le modal
-    const modal = new bootstrap.Modal(document.getElementById('scanModal'));
-    modal.show();
+    document.getElementById('scanModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
     
-    // Démarrer le scanner après l'ouverture du modal
-    document.getElementById('scanModal').addEventListener('shown.bs.modal', function() {
+    // Démarrer le scanner
+    setTimeout(() => {
         startQRScanner();
-    }, { once: true });
+    }, 100);
+}
+
+function closeScanModal() {
+    stopScanner();
+    const modal = document.getElementById('scanModal');
+    if (modal) {
+        modal.remove();
+    }
+    document.body.style.overflow = 'auto';
 }
 
 let videoStream = null;
@@ -371,8 +469,8 @@ function startQRScanner() {
     // VÉRIFICATION CRITIQUE : jsQR est-il chargé ?
     if (typeof jsQR === 'undefined') {
         console.error('❌ ERREUR CRITIQUE : jsQR n\'est pas chargé !');
-        statusDiv.style.display = 'none';
-        errorDiv.style.display = 'block';
+        statusDiv.classList.add('hidden');
+        errorDiv.classList.remove('hidden');
         document.getElementById('error-message').innerHTML = `
             <strong>Erreur de chargement de la bibliothèque jsQR</strong>
             <div class="mt-2">
@@ -384,7 +482,7 @@ function startQRScanner() {
                 </ol>
             </div>
         `;
-        document.getElementById('alternative-options').style.display = 'block';
+        document.getElementById('alternative-options').classList.remove('hidden');
         return;
     }
     
@@ -393,8 +491,8 @@ function startQRScanner() {
     // Vérifier l'API getUserMedia
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         console.error('❌ getUserMedia n\'est pas supporté');
-        statusDiv.style.display = 'none';
-        errorDiv.style.display = 'block';
+        statusDiv.classList.add('hidden');
+        errorDiv.classList.remove('hidden');
         document.getElementById('error-message').innerHTML = `
             <strong>Navigateur non compatible</strong>
             <div class="mt-2">
@@ -402,7 +500,7 @@ function startQRScanner() {
                 <p>Utilisez Chrome, Firefox, Safari ou Edge récent.</p>
             </div>
         `;
-        document.getElementById('alternative-options').style.display = 'block';
+        document.getElementById('alternative-options').classList.remove('hidden');
         return;
     }
     
@@ -421,8 +519,8 @@ function startQRScanner() {
         video.setAttribute('playsinline', true); // iOS
         video.play();
         
-        statusDiv.style.display = 'none';
-        video.style.display = 'block';
+        statusDiv.classList.add('hidden');
+        video.classList.remove('hidden');
         
         console.log('✅ Caméra activée, démarrage du scan...');
         console.log('📹 Résolution vidéo:', video.videoWidth + 'x' + video.videoHeight);
@@ -459,8 +557,8 @@ function startQRScanner() {
                     console.log('📍 Position:', code.location);
                     
                     stopScanner();
-                    resultDiv.style.display = 'block';
-                    resultDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i><strong>QR Code détecté !</strong><br><small>' + code.data + '</small>';
+                    resultDiv.classList.remove('hidden');
+                    resultDiv.innerHTML = '<div class="flex"><div class="flex-shrink-0"><i class="fas fa-check-circle text-emerald-500 text-lg"></i></div><div class="ml-3"><h3 class="text-sm font-semibold text-emerald-800">QR Code détecté !</h3><p class="text-sm text-emerald-700 mt-1">' + code.data + '</p></div></div>';
                     
                     // Rediriger vers l'URL du QR code
                     setTimeout(() => {
@@ -480,8 +578,8 @@ function startQRScanner() {
         console.error('Protocol:', window.location.protocol);
         console.error('Hostname:', window.location.hostname);
         
-        statusDiv.style.display = 'none';
-        errorDiv.style.display = 'block';
+        statusDiv.classList.add('hidden');
+        errorDiv.classList.remove('hidden');
         
         let errorMessage = '';
         let detailedInfo = '';
@@ -489,20 +587,20 @@ function startQRScanner() {
         if (err.name === 'NotAllowedError') {
             errorMessage = 'L\'accès à la caméra a été refusé.';
             detailedInfo = `
-                <div class="mt-3 p-3 bg-light rounded">
+                <div class="mt-3 p-3 bg-gray-50 rounded-lg">
                     <strong>Solutions possibles :</strong>
-                    <ol class="mb-0 mt-2">
+                    <ol class="mb-0 mt-2 space-y-1">
                         <li>Cliquez sur l'icône 🔒 ou ⓘ à gauche de l'URL dans la barre d'adresse</li>
                         <li>Cherchez "Caméra" dans les permissions</li>
                         <li>Changez en "Autoriser"</li>
                         <li>Rechargez la page (F5)</li>
                         <li>Cliquez à nouveau sur "Réessayer"</li>
                     </ol>
-                    <div class="alert alert-info mt-2 mb-0">
-                        <small><strong>Info de débogage :</strong><br>
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mt-2">
+                        <p class="text-xs text-blue-700"><strong>Info de débogage :</strong><br>
                         URL: ${window.location.href}<br>
                         Protocol: ${window.location.protocol}<br>
-                        Hostname: ${window.location.hostname}</small>
+                        Hostname: ${window.location.hostname}</p>
                     </div>
                 </div>
             `;
@@ -510,17 +608,17 @@ function startQRScanner() {
             errorMessage = 'Aucune caméra détectée sur votre appareil.';
         } else if (err.name === 'NotSupportedError' || err.name === 'TypeError') {
             errorMessage = 'Votre navigateur ne supporte pas l\'accès à la caméra.';
-            detailedInfo = '<div class="mt-2"><small>Utilisez Chrome, Firefox ou Safari récent.</small></div>';
+            detailedInfo = '<div class="mt-2"><p class="text-sm">Utilisez Chrome, Firefox ou Safari récent.</p></div>';
         } else if (err.name === 'NotReadableError' || err.name === 'AbortError') {
             errorMessage = 'La caméra est déjà utilisée par une autre application.';
-            detailedInfo = '<div class="mt-2"><small>Fermez les autres onglets/applications qui utilisent la caméra.</small></div>';
+            detailedInfo = '<div class="mt-2"><p class="text-sm">Fermez les autres onglets/applications qui utilisent la caméra.</p></div>';
         } else {
             errorMessage = 'Erreur inattendue: ' + err.message;
-            detailedInfo = '<div class="mt-2"><small>Type d\'erreur: ' + err.name + '</small></div>';
+            detailedInfo = '<div class="mt-2"><p class="text-sm">Type d\'erreur: ' + err.name + '</p></div>';
         }
         
         document.getElementById('error-message').innerHTML = errorMessage + detailedInfo;
-        document.getElementById('alternative-options').style.display = 'block';
+        document.getElementById('alternative-options').classList.remove('hidden');
     });
 }
 
@@ -540,10 +638,10 @@ function stopScanner() {
 
 function retryScanner() {
     // Réinitialiser l'affichage
-    document.getElementById('scan-error').style.display = 'none';
-    document.getElementById('alternative-options').style.display = 'none';
-    document.getElementById('scanner-status').style.display = 'block';
-    document.getElementById('scanner-status').innerHTML = '<i class="fas fa-spinner fa-spin fa-2x text-success"></i><p class="mt-2">Initialisation de la caméra...</p>';
+    document.getElementById('scan-error').classList.add('hidden');
+    document.getElementById('alternative-options').classList.add('hidden');
+    document.getElementById('scanner-status').classList.remove('hidden');
+    document.getElementById('scanner-status').innerHTML = '<div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i></div><p class="text-gray-700 font-medium">Initialisation de la caméra...</p>';
     
     // Réessayer après un court délai
     setTimeout(() => {
@@ -552,16 +650,13 @@ function retryScanner() {
 }
 
 function scrollToOrders() {
-    // Fermer le modal s'il existe
-    const modal = bootstrap.Modal.getInstance(document.getElementById('qrInfoModal'));
-    if (modal) {
-        modal.hide();
-    }
+    // Fermer le modal
+    closeScanModal();
     
     // Scroller vers le haut des commandes
     setTimeout(() => {
         window.scrollTo({
-            top: document.querySelector('.container-fluid').offsetTop,
+            top: 0,
             behavior: 'smooth'
         });
     }, 300);
