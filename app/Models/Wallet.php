@@ -16,6 +16,7 @@ class Wallet extends Model
         'balance',
         'is_active',
         'type',
+        'subtype',
         'commission_rate',
         'status',
         'verified_at',
@@ -39,6 +40,12 @@ class Wallet extends Model
     public const TYPE_MAIN = 'main';
     public const TYPE_PENDING = 'pending';
     public const TYPE_ENTERPRISE = 'enterprise';
+
+    // Sous-types de wallets entreprise
+    public const SUBTYPE_COMMISSION = 'commission';
+    public const SUBTYPE_TRANSPORT = 'transport';
+    public const SUBTYPE_BOOST = 'boost';
+    public const SUBTYPE_VERIFICATION = 'verification';
 
     /**
      * Relation avec l'utilisateur propriétaire du wallet.
@@ -156,6 +163,36 @@ class Wallet extends Model
         return static::enterprise()
             ->where('currency', $currency)
             ->first();
+    }
+
+    /**
+     * Obtenir un sous-wallet entreprise spécifique
+     */
+    public static function getEnterpriseSubWallet(string $subtype, string $currency = 'USD')
+    {
+        return static::enterprise()
+            ->where('currency', $currency)
+            ->where('subtype', $subtype)
+            ->first();
+    }
+
+    /**
+     * Obtenir tous les sous-wallets entreprise pour une devise
+     */
+    public static function getEnterpriseSubWallets(string $currency = 'USD')
+    {
+        return static::enterprise()
+            ->where('currency', $currency)
+            ->whereNotNull('subtype')
+            ->get();
+    }
+
+    /**
+     * Vérifier si c'est un sous-wallet entreprise spécifique
+     */
+    public function isEnterpriseSubtype(string $subtype): bool
+    {
+        return $this->isEnterprise() && $this->subtype === $subtype;
     }
 
     /**

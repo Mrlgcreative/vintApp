@@ -12,6 +12,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Setting;
 use App\Models\SupportChat;
+use App\Models\ProductAuthenticityCheck;
 use App\Services\SettingService;
 use App\Http\Middleware\MaintenanceMode;
 use Illuminate\Http\Request;
@@ -58,15 +59,16 @@ class AdminController extends Controller
                 ->sum('balance'),
             'total_wallet_balance' => Wallet::where('is_active', true)->sum('balance'),
             
-            // Wallets Entreprise (Commissions)
-            'enterprise_wallet_usd' => Wallet::where('type', 'enterprise')
-                ->where('currency', 'USD')
-                ->value('balance') ?? 0,
-            'enterprise_wallet_cdf' => Wallet::where('type', 'enterprise')
-                ->where('currency', 'CDF')
-                ->value('balance') ?? 0,
-            'enterprise_commission_rate' => Wallet::where('type', 'enterprise')
-                ->value('commission_rate') ?? 5.00,
+            // Nouveaux sous-wallets entreprise
+            'enterprise_commission_usd' => Wallet::getEnterpriseSubWallet('commission', 'USD')->balance ?? 0,
+            'enterprise_transport_usd' => Wallet::getEnterpriseSubWallet('transport', 'USD')->balance ?? 0,
+            'enterprise_boost_usd' => Wallet::getEnterpriseSubWallet('boost', 'USD')->balance ?? 0,
+            
+            // Statistiques de vérification d'authenticité
+            'total_verifications' => ProductAuthenticityCheck::count(),
+            'pending_verifications' => ProductAuthenticityCheck::whereIn('status', ['pending', 'expert_review'])->count(),
+            'completed_verifications' => ProductAuthenticityCheck::where('payment_completed', true)->count(),
+            'verification_revenue_usd' => ProductAuthenticityCheck::where('payment_completed', true)->sum('verification_fee') ?? 0,
             
             'total_orders' => Order::count(),
             'orders_today' => Order::whereDate('created_at', today())->count(),

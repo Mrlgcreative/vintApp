@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\LocalDeliveryController;
+use App\Http\Controllers\AuthenticityController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -42,8 +43,13 @@ Route::get('/', function() {
         if ($isAdmin) {
             return redirect()->route('admin.dashboard');
         }
+
+        // Vérification pour les experts
+        if ($user->isExpert()) {
+            return redirect()->route('expert.dashboard');
+        }
         
-        // Utilisateurs connectés non-admin → page d'accueil
+        // Utilisateurs connectés non-admin non-expert → page d'accueil
         return app(WelcomeController::class)->index();
     }
     
@@ -745,9 +751,60 @@ Route::get('/privacy', function() {
 Route::post('/auth/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('auth.firebase.login');
 Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
 
+// ==========================================
+// Routes de vérification d'authenticité
+// ==========================================
+Route::middleware(['auth'])->prefix('authenticity')->name('authenticity.')->group(function () {
+    // Dashboard des vérifications pour l'utilisateur
+    Route::get('/dashboard', [AuthenticityController::class, 'dashboard'])->name('dashboard');
+    
+    // Demande de vérification pour un produit
+    Route::get('/request/{item}', [AuthenticityController::class, 'requestForm'])->name('request');
+    Route::post('/request/{item}', [AuthenticityController::class, 'submit'])->name('submit');
+    
+    // Paiement de la vérification
+    Route::get('/payment/{check}', [AuthenticityController::class, 'payment'])->name('payment');
+    Route::post('/payment/{check}/confirm', [AuthenticityController::class, 'confirmPayment'])->name('payment.confirm');
+    
+    // Statut de vérification
+    Route::get('/status/{item}', [AuthenticityController::class, 'status'])->name('status');
+    
+    // API pour les experts (mise à jour du statut)
+    Route::post('/update-status/{check}', [AuthenticityController::class, 'updateStatus'])->name('update.status');
+});
+
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
 if (app()->environment(['local', 'testing'])) {
     require __DIR__.'/test-maintenance.php';
     require __DIR__.'/test-location.php'; // Test géolocalisation
     require __DIR__.'/test-location-simulate.php'; // Simulation IPs
 }
+
+// Route de test pour debug expert
+Route::get('/test-expert-view/{id}', function ($id) {
+    try {
+        $check = App\Models\ProductAuthenticityCheck::findOrFail($id);
+        
+        // Charger les relations comme dans le contrôleur
+        $check->load([
+            'item.category',
+            'item.brand', 
+            'item.user',
+            'vendor',
+            'verificationImages',
+            'auditLogs.performer'
+        ]);
+        
+        return view('expert.test-show', compact('check'));
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine()
+        ], 500);
+    }
+});
+
+// Routes des experts
+require __DIR__.'/expert.php';

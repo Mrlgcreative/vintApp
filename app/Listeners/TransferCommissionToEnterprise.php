@@ -35,13 +35,18 @@ class TransferCommissionToEnterprise implements ShouldQueue
             $sellerId = $event->sellerId;
             $currency = $event->currency;
 
-            // Récupérer le wallet entreprise pour cette devise
-            $enterpriseWallet = Wallet::where('type', 'enterprise')
-                ->where('currency', $currency)
-                ->whereNull('user_id')
-                ->first();
+            // Récupérer le sous-wallet entreprise pour les commissions
+            $commissionWallet = Wallet::getEnterpriseSubWallet('commission', $currency);
+            
+            // Si le sous-wallet commission n'existe pas, utiliser le wallet entreprise global en fallback
+            if (!$commissionWallet) {
+                $commissionWallet = Wallet::where('type', 'enterprise')
+                    ->where('currency', $currency)
+                    ->whereNull('user_id')
+                    ->first();
+            }
 
-            if (!$enterpriseWallet) {
+            if (!$commissionWallet) {
                 throw new \Exception("Wallet entreprise {$currency} introuvable");
             }
 
@@ -71,7 +76,7 @@ class TransferCommissionToEnterprise implements ShouldQueue
             }
 
             // Calculer la commission (ex: 5%)
-            $commissionRate = $enterpriseWallet->commission_rate;
+            $commissionRate = $commissionWallet->commission_rate ?? 5; // Taux par défaut de 5% si pas défini
             $commissionAmount = round(($amount * $commissionRate) / 100, 2);
             $sellerAmount = round($amount - $commissionAmount, 2);
 
@@ -80,8 +85,8 @@ class TransferCommissionToEnterprise implements ShouldQueue
             $pendingWallet->save();
 
             // 2. Créditer le wallet entreprise (commission)
-            $enterpriseWallet->balance += $commissionAmount;
-            $enterpriseWallet->save();
+            $commissionWallet->balance += $commissionAmount;
+            $commissionWallet->save();
 
             // 3. Créditer le wallet du vendeur (montant net)
             $sellerWallet->balance += $sellerAmount;
@@ -101,7 +106,7 @@ class TransferCommissionToEnterprise implements ShouldQueue
 
             // Transaction 2: Crédit entreprise (commission)
             WalletTransaction::create([
-                'wallet_id' => $enterpriseWallet->id,
+                'wallet_id' => $commissionWallet->id,
                 'type' => 'credit',
                 'amount' => $commissionAmount,
                 'currency' => $currency,

@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title') - Administration {{ $appName ?? 'VintApp' }}</title>
+    @php
+        $isExpert = auth()->check() && auth()->user()->isExpert();
+        $contextTitle = $isExpert ? 'Expert' : 'Administration';
+    @endphp
+    <title>@yield('title') - {{ $contextTitle }} {{ $appName ?? 'VintApp' }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
     
     <!-- CSS -->
@@ -138,6 +142,11 @@
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-sm leading-relaxed text-gray-900">
     <div class="flex min-h-screen">
+        @php
+            // Détecter si l'utilisateur est un expert
+            $isExpert = auth()->check() && auth()->user()->isExpert();
+        @endphp
+
         <!-- Sidebar -->
         <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-dark-800 to-dark-900 shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
             <div class="flex h-full flex-col">
@@ -156,144 +165,230 @@
 
                 <!-- Navigation -->
                 <nav class="flex-1 space-y-1 p-4 custom-scrollbar overflow-y-auto">
-                    <a href="{{ route('admin.dashboard') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.dashboard')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-tachometer-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Tableau de bord</span>
-                    </a>
+                    @if($isExpert)
+                        <!-- Menu Expert -->
+                        <a href="{{ route('expert.dashboard') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.dashboard*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-shield-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Dashboard Expert</span>
+                        </a>
 
-                    <a href="{{ route('admin.users.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Utilisateurs</span>
-                        @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                                {{ $pendingUsersCount }}
-                            </span>
-                        @endif
-                    </a>
+                        <a href="{{ route('expert.verifications.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-search w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Mes Vérifications</span>
+                            @php
+                                $pendingVerifications = \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())
+                                    ->where('status', 'expert_review')
+                                    ->count();
+                            @endphp
+                            @if($pendingVerifications > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
+                                    {{ $pendingVerifications }}
+                                </span>
+                            @endif
+                        </a>
 
-                    <!-- 🆕 Menu Utilisateurs Connectés -->
-                    <a href="{{ route('admin.users.online') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Utilisateurs Connectés</span>
-                        <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
-                    </a>
+                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_review']) }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">En attente d'examen</span>
+                            @if($pendingVerifications > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full animate-pulse">
+                                    {{ $pendingVerifications }}
+                                </span>
+                            @endif
+                        </a>
 
-                    <a href="{{ route('admin.transactions.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.transactions.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Transactions</span>
-                    </a>
+                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_approved']) }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-check-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Approuvées</span>
+                        </a>
 
-                    <a href="{{ route('admin.wallets.pending') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.wallets.pending')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Wallets en attente</span>
-                        @if(isset($pendingWalletsCount) && $pendingWalletsCount > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 bg-yellow-400 rounded-full">
-                                {{ $pendingWalletsCount }}
-                            </span>
-                        @endif
-                    </a>
+                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_rejected']) }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-times-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Rejetées</span>
+                        </a>
 
-                    <a href="{{ route('admin.orders.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Commandes</span>
-                    </a>
+                        <!-- Séparateur -->
+                        <div class="my-4 h-px bg-white/10"></div>
 
-                    <!-- 🆕 Menu Remboursements -->
-                    <a href="{{ route('admin.refunds.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.refunds.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-undo w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Remboursements</span>
-                        @php
-                            $pendingRefundsCount = \App\Models\Refund::where('status', 'pending')->count();
-                        @endphp
-                        @if($pendingRefundsCount > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full animate-pulse">
-                                {{ $pendingRefundsCount }}
-                            </span>
-                        @endif
-                    </a>
+                        <a href="{{ route('expert.profile') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.profile*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-user-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Mon Profil Expert</span>
+                        </a>
 
-                    <!-- 🆕 Menu Traçage GPS -->
-                    <a href="{{ route('admin.orders.tracking.list') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Traçage GPS</span>
-                        <span class="inline-flex items-center justify-center w-3 h-3 bg-purple-400 rounded-full animate-pulse shadow-lg shadow-purple-400/50"></span>
-                    </a>
+                        <!-- Statistiques rapides -->
+                        <div class="mt-6 rounded-xl bg-white/5 p-4">
+                            <h4 class="text-sm font-semibold text-white/80 mb-3">Statistiques</h4>
+                            @php
+                                $expertStats = [
+                                    'total' => \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())->count(),
+                                    'completed_today' => \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())
+                                        ->whereDate('expert_completed_at', today())->count(),
+                                    'approval_rate' => auth()->user()->expertProfile->approval_rate ?? 0
+                                ];
+                            @endphp
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between text-white/60">
+                                    <span>Total traité</span>
+                                    <span class="text-white font-medium">{{ $expertStats['total'] }}</span>
+                                </div>
+                                <div class="flex justify-between text-white/60">
+                                    <span>Aujourd'hui</span>
+                                    <span class="text-green-400 font-medium">{{ $expertStats['completed_today'] }}</span>
+                                </div>
+                                <div class="flex justify-between text-white/60">
+                                    <span>Taux succès</span>
+                                    <span class="text-blue-400 font-medium">{{ number_format($expertStats['approval_rate'], 1) }}%</span>
+                                </div>
+                            </div>
+                        </div>
 
-                    <a href="{{ route('admin.brands.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.brands.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-tags w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Marques</span>
-                    </a>
+                    @else
+                        <!-- Menu Admin -->
+                        <a href="{{ route('admin.dashboard') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.dashboard')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-tachometer-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Tableau de bord</span>
+                        </a>
 
-                    <a href="{{ route('admin.categories.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.categories.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-list w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Catégories</span>
-                    </a>
+                        <a href="{{ route('admin.users.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Utilisateurs</span>
+                            @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                    {{ $pendingUsersCount }}
+                                </span>
+                            @endif
+                        </a>
 
-                    <a href="{{ route('admin.support.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Support Client</span>
-                        @php
-                            $unassignedSupport = \App\Models\SupportChat::whereNull('admin_id')
-                                ->whereIn('status', ['open', 'in_progress'])->count();
-                        @endphp
-                        @if($unassignedSupport > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
-                                {{ $unassignedSupport }}
-                            </span>
-                        @endif
-                    </a>
+                        <!-- 🆕 Menu Utilisateurs Connectés -->
+                        <a href="{{ route('admin.users.online') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Utilisateurs Connectés</span>
+                            <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
+                        </a>
 
-                    <!-- 🎯 Menu Affiliation et Récompenses -->
-                    <a href="{{ route('admin.affiliate.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span class="flex-1">Affiliation</span>
-                        @php
-                            $topPerformersCount = \App\Models\User::whereHas('referrals', function($q) {
-                                $q->whereDate('created_at', '>=', now()->subDays(30));
-                            })->count();
-                        @endphp
-                        @if($topPerformersCount > 0)
-                            <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 bg-yellow-400 rounded-full">
-                                {{ $topPerformersCount }}
-                            </span>
-                        @endif
-                    </a>
+                        <a href="{{ route('admin.transactions.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.transactions.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Transactions</span>
+                        </a>
 
-                    <a href="{{ route('admin.reports') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Rapports</span>
-                    </a>
+                        <a href="{{ route('admin.wallets.pending') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.wallets.pending')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Wallets en attente</span>
+                            @if(isset($pendingWalletsCount) && $pendingWalletsCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 bg-yellow-400 rounded-full">
+                                    {{ $pendingWalletsCount }}
+                                </span>
+                            @endif
+                        </a>
 
-                    <a href="{{ route('admin.logs') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.logs')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Logs système</span>
-                    </a>
+                        <a href="{{ route('admin.orders.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Commandes</span>
+                        </a>
 
-                    <a href="{{ route('admin.settings.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Paramètres</span>
-                    </a>
+                        <!-- 🆕 Menu Remboursements -->
+                        <a href="{{ route('admin.refunds.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.refunds.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-undo w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Remboursements</span>
+                            @php
+                                $pendingRefundsCount = \App\Models\Refund::where('status', 'pending')->count();
+                            @endphp
+                            @if($pendingRefundsCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full animate-pulse">
+                                    {{ $pendingRefundsCount }}
+                                </span>
+                            @endif
+                        </a>
 
-                    <a href="{{ route('admin.locations.index') }}" 
-                       class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
-                        <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
-                        <span>Zones autorisées</span>
-                    </a>
+                        <!-- 🆕 Menu Traçage GPS -->
+                        <a href="{{ route('admin.orders.tracking.list') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Traçage GPS</span>
+                            <span class="inline-flex items-center justify-center w-3 h-3 bg-purple-400 rounded-full animate-pulse shadow-lg shadow-purple-400/50"></span>
+                        </a>
+
+                        <a href="{{ route('admin.brands.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.brands.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-tags w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Marques</span>
+                        </a>
+
+                        <a href="{{ route('admin.categories.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.categories.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-list w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Catégories</span>
+                        </a>
+
+                        <a href="{{ route('admin.support.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Support Client</span>
+                            @php
+                                $unassignedSupport = \App\Models\SupportChat::whereNull('admin_id')
+                                    ->whereIn('status', ['open', 'in_progress'])->count();
+                            @endphp
+                            @if($unassignedSupport > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
+                                    {{ $unassignedSupport }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <!-- 🎯 Menu Affiliation et Récompenses -->
+                        <a href="{{ route('admin.affiliate.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Affiliation</span>
+                            @php
+                                $topPerformersCount = \App\Models\User::whereHas('referrals', function($q) {
+                                    $q->whereDate('created_at', '>=', now()->subDays(30));
+                                })->count();
+                            @endphp
+                            @if($topPerformersCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 bg-yellow-400 rounded-full">
+                                    {{ $topPerformersCount }}
+                                </span>
+                            @endif
+                        </a>
+
+                        <a href="{{ route('admin.reports') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Rapports</span>
+                        </a>
+
+                        <a href="{{ route('admin.logs') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.logs')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Logs système</span>
+                        </a>
+
+                        <a href="{{ route('admin.settings.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Paramètres</span>
+                        </a>
+
+                        <a href="{{ route('admin.locations.index') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span>Zones autorisées</span>
+                        </a>
+                    @endif
                 </nav>
 
                 <!-- Footer -->
@@ -303,6 +398,12 @@
                         <i class="fas fa-arrow-left mr-2"></i>
                         Retour au site
                     </a>
+                    @if($isExpert)
+                        <!-- Actions spécifiques expert -->
+                        <div class="text-center text-xs text-white/50 py-2">
+                            Interface Expert VintApp
+                        </div>
+                    @endif
                     <form action="{{ route('logout') }}" method="POST" class="w-full">
                         @csrf
                         <button type="submit" 

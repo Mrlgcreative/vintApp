@@ -55,6 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class, // ✅ Notre middleware personnalisé
             'role' => \App\Http\Middleware\CheckRole::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'expert' => \App\Http\Middleware\IsExpert::class, // 🆕 Middleware expert
             'dynamic.config' => \App\Http\Middleware\DynamicConfigMiddleware::class,
             'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
             'preregistration' => \App\Http\Middleware\CheckPreregistrationMode::class,

@@ -785,4 +785,20 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->verification_code_expires_at && $this->verification_code_expires_at->isPast();
     }
+
+    /**
+     * Relation avec le profil expert
+     */
+    public function expertProfile()
+    {
+        return $this->hasOne(ExpertProfile::class);
+    }
+
+    /**
+     * Vérifier si l'utilisateur est un expert
+     */
+    public function isExpert(): bool
+    {
+        return $this->expertProfile && $this->expertProfile->is_active;
+    }
 }

@@ -104,14 +104,33 @@
         <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
     </div>
 
-    <!-- Carte Commissions USD (WalletEntreprise) -->
+    <!-- Carte Vérifications d'authenticité -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-2">Vérifications</div>
+                    <div class="text-2xl font-bold text-gray-900"><?php echo e($stats['total_verifications'] ?? 0); ?></div>
+                    <div class="text-xs text-gray-500 mt-1"><?php echo e($stats['pending_verifications'] ?? 0); ?> en attente</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-certificate text-2xl text-orange-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+    </div>
+
+    <!-- Carte Commissions USD (Sous-wallet Commission) -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Commissions USD</div>
-                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($stats['enterprise_wallet_usd'], 2)); ?></div>
-                    <div class="text-xs text-gray-500 mt-1">Taux: <?php echo e(number_format($stats['enterprise_commission_rate'], 1)); ?>%</div>
+                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($stats['enterprise_commission_usd'] ?? 0, 2)); ?></div>
+                    <div class="text-xs text-gray-500 mt-1">Sous-wallet commission</div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
@@ -122,24 +141,84 @@
         </div>
         <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
     </div>
+</div>
 
-    <!-- Carte Commissions CDF (WalletEntreprise) -->
+<!-- Nouveau panel pour les sous-wallets entreprise -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+    <!-- Sous-wallet Transport -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <div class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mb-2">Commissions CDF</div>
-                    <div class="text-2xl font-bold text-gray-900"><?php echo e(number_format($stats['enterprise_wallet_cdf'], 0, ',', ' ')); ?> FC</div>
-                    <div class="text-xs text-gray-500 mt-1">Franc Congolais</div>
+                    <div class="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-2">Transport</div>
+                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($stats['enterprise_transport_usd'] ?? 0, 2)); ?></div>
+                    <div class="text-xs text-gray-500 mt-1">Sous-wallet transport</div>
                 </div>
                 <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-hand-holding-usd text-2xl text-indigo-600"></i>
+                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-truck text-2xl text-cyan-600"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="h-1 bg-gradient-to-r from-indigo-500 to-indigo-600"></div>
+        <div class="h-1 bg-gradient-to-r from-cyan-500 to-cyan-600"></div>
+    </div>
+
+    <!-- Sous-wallet Boost -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-pink-600 uppercase tracking-wider mb-2">Boost</div>
+                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($stats['enterprise_boost_usd'] ?? 0, 2)); ?></div>
+                    <div class="text-xs text-gray-500 mt-1">Sous-wallet boost</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rocket text-2xl text-pink-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+    </div>
+
+    <!-- Revenus Vérifications -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Revenus Vérifications</div>
+                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($stats['verification_revenue_usd'] ?? 0, 2)); ?></div>
+                    <div class="text-xs text-gray-500 mt-1"><?php echo e($stats['completed_verifications'] ?? 0); ?> vérifications payées</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-2xl text-amber-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
+    </div>
+
+    <!-- Total Entreprise -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gradient-to-br from-gray-50 to-gray-100">
+        <div class="p-6">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <div class="text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Total Entreprise</div>
+                    <div class="text-2xl font-bold text-gray-900">$<?php echo e(number_format(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0), 2)); ?></div>
+                    <div class="text-xs text-gray-500 mt-1">Tous sous-wallets USD</div>
+                </div>
+                <div class="flex-shrink-0">
+                    <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-building text-2xl text-gray-700"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="h-1 bg-gradient-to-r from-gray-500 to-gray-700"></div>
     </div>
 </div>
 
@@ -197,6 +276,11 @@
                        class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                         <i class="fas fa-exchange-alt mr-2"></i>
                         Voir les transactions
+                    </a>
+                    <a href="#" 
+                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200">
+                        <i class="fas fa-certificate mr-2"></i>
+                        Vérifications d'authenticité
                     </a>
                 </div>
             </div>

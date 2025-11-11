@@ -577,19 +577,27 @@ class OrderController extends Controller
                         ]
                     );
                     
-                    // Créer ou récupérer le wallet enterprise pour la commission et transport
-                    $enterpriseWallet = \App\Models\Wallet::firstOrCreate(
-                        [
-                            'user_id' => null, // Wallet de la plateforme
-                            'type' => 'enterprise',
-                            'currency' => $order->currency
-                        ],
-                        [
-                            'balance' => 0,
-                            'status' => 'active',
-                            'is_active' => true
-                        ]
-                    );
+                    // Récupérer ou créer les sous-wallets entreprise
+                    $commissionWallet = \App\Models\Wallet::getEnterpriseSubWallet('commission', $order->currency);
+                    $transportWallet = \App\Models\Wallet::getEnterpriseSubWallet('transport', $order->currency);
+                    
+                    // Si les sous-wallets n'existent pas, créer un wallet entreprise global en fallback
+                    if (!$commissionWallet || !$transportWallet) {
+                        $enterpriseWallet = \App\Models\Wallet::firstOrCreate(
+                            [
+                                'user_id' => null,
+                                'type' => 'enterprise', 
+                                'currency' => $order->currency
+                            ],
+                            [
+                                'balance' => 0,
+                                'status' => 'active',
+                                'is_active' => true
+                            ]
+                        );
+                        $commissionWallet = $commissionWallet ?: $enterpriseWallet;
+                        $transportWallet = $transportWallet ?: $enterpriseWallet;
+                    }
                     
                     // Débiter le montant total du wallet pending
                     $sellerPendingWallet->decrement('balance', $totalAmount);
@@ -597,9 +605,9 @@ class OrderController extends Controller
                     // Créditer le montant du vendeur (après déductions) dans le wallet main
                     $sellerMainWallet->increment('balance', $sellerAmount);
                     
-                    // Créditer la commission + transport dans le wallet enterprise
-                    $platformAmount = $commissionAmount + $transportAmount;
-                    $enterpriseWallet->increment('balance', $platformAmount);
+                    // Créditer séparément dans les sous-wallets entreprise
+                    $commissionWallet->increment('balance', $commissionAmount);
+                    $transportWallet->increment('balance', $transportAmount);
                     
                     // Log pour traçabilité
                     Log::info("Distribution effectuée", [
@@ -609,11 +617,11 @@ class OrderController extends Controller
                         'seller_amount' => $sellerAmount,
                         'commission_amount' => $commissionAmount,
                         'transport_amount' => $transportAmount,
-                        'platform_amount' => $platformAmount,
                         'currency' => $order->currency,
                         'pending_balance' => $sellerPendingWallet->balance,
                         'main_balance' => $sellerMainWallet->balance,
-                        'enterprise_balance' => $enterpriseWallet->balance
+                        'commission_wallet_balance' => $commissionWallet->fresh()->balance,
+                        'transport_wallet_balance' => $transportWallet->fresh()->balance
                     ]);
                     
                     // Créer une transaction pour le vendeur
@@ -637,7 +645,7 @@ class OrderController extends Controller
                         'transaction_id' => 'COMMISSION-' . strtoupper(\Illuminate\Support\Str::random(12)),
                         'user_id' => 1, // Admin/Plateforme (à adapter si vous avez un autre ID admin)
                         'buyer_id' => $order->buyer_id, // L'acheteur qui a payé
-                        'wallet_id' => $enterpriseWallet->id,
+                        'wallet_id' => $commissionWallet->id,
                         'amount' => $commissionAmount,
                         'currency' => $order->currency,
                         'type' => 'deposit',
@@ -653,7 +661,7 @@ class OrderController extends Controller
                         'transaction_id' => 'TRANSPORT-' . strtoupper(\Illuminate\Support\Str::random(12)),
                         'user_id' => 1, // Admin/Plateforme (à adapter si vous avez un autre ID admin)
                         'buyer_id' => $order->buyer_id, // L'acheteur qui a payé
-                        'wallet_id' => $enterpriseWallet->id,
+                        'wallet_id' => $transportWallet->id,
                         'amount' => $transportAmount,
                         'currency' => $order->currency,
                         'type' => 'deposit',

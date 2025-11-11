@@ -16,6 +16,7 @@ class WalletTransaction extends Model
         'balance_after',
         'description',
         'reference',
+        'status',
     ];
 
     protected $casts = [

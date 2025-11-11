@@ -101,6 +101,28 @@
                                     <?php echo e(ucfirst(str_replace('_', ' ', $item->condition))); ?>
 
                                 </span>
+                                
+                                
+                                <?php if($item->isVerified()): ?>
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-green-50 to-emerald-100 text-green-700 border border-green-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                        <i class="fas fa-shield-alt mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
+                                        <?php if($item->authenticity_badge_type === 'expert_certified'): ?>
+                                            Certifié Expert
+                                        <?php else: ?>
+                                            Vérifié VintApp
+                                        <?php endif; ?>
+                                    </span>
+                                <?php elseif($item->authenticityCheck && $item->authenticityCheck->status === 'pending'): ?>
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-yellow-50 to-amber-100 text-yellow-700 border border-yellow-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                        <i class="fas fa-clock mr-1.5 lg:mr-2 text-xs lg:text-sm animate-pulse"></i>
+                                        Vérification en cours
+                                    </span>
+                                <?php elseif($item->canRequestVerification()): ?>
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 border border-blue-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                        <i class="fas fa-question-circle mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
+                                        Non vérifié
+                                    </span>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <?php if(auth()->guard()->check()): ?>
@@ -244,6 +266,69 @@
                             </button>
                         </form>
                     </div>
+
+                    
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if($item->user_id === auth()->id()): ?>
+                            <?php if($item->canRequestVerification()): ?>
+                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-200/50 mb-6">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-shield-alt text-blue-600 text-lg"></i>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="text-lg font-bold text-gray-900 mb-2">Authentifiez votre produit</h4>
+                                            <p class="text-gray-600 mb-4">
+                                                Obtenez le badge <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✓ Vérifié VintApp</span> 
+                                                pour rassurer les acheteurs et vendre plus rapidement.
+                                            </p>
+                                            <div class="flex flex-wrap gap-3">
+                                                <a href="<?php echo e(route('authenticity.request', $item)); ?>" 
+                                                   class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                                    <i class="fas fa-certificate mr-2"></i>
+                                                    Demander la vérification
+                                                </a>
+                                                <span class="text-sm text-gray-600 flex items-center">
+                                                    À partir de $<?php echo e(number_format(5.00, 2)); ?>
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php elseif($item->authenticityCheck): ?>
+                                <div class="bg-white border border-gray-200 p-6 rounded-2xl mb-6">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex items-start space-x-4">
+                                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                                <?php if($item->authenticityCheck->isApproved()): ?>
+                                                    <i class="fas fa-check-circle text-green-600 text-lg"></i>
+                                                <?php elseif($item->authenticityCheck->isRejected()): ?>
+                                                    <i class="fas fa-times-circle text-red-600 text-lg"></i>
+                                                <?php else: ?>
+                                                    <i class="fas fa-clock text-yellow-600 text-lg"></i>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-gray-900 mb-1">Vérification d'authenticité</h4>
+                                                <p class="text-gray-600 mb-2"><?php echo e($item->authenticityCheck->getStatusLabel()); ?></p>
+                                                <?php if($item->authenticityCheck->final_decision_at): ?>
+                                                    <p class="text-sm text-gray-500">
+                                                        Terminée le <?php echo e($item->authenticityCheck->final_decision_at->format('d/m/Y')); ?>
+
+                                                    </p>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <a href="<?php echo e(route('authenticity.status', $item)); ?>" 
+                                           class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                                            Voir détails →
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
 
                     <!-- Description -->
                     <div class="bg-gray-50 p-6 rounded-2xl border-l-4 border-purple-600 mb-6">
