@@ -52,7 +52,8 @@
                                     <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
                                         <img src="<?php echo e(asset('storage/' . $order->item->images[0])); ?>" 
                                              class="w-full h-64 object-cover" 
-                                             alt="<?php echo e($order->item->name); ?>">
+                                             alt="<?php echo e($order->item->name); ?>"
+                                             loading="lazy">
                                     </div>
                                 <?php else: ?>
                                     <div class="w-full max-w-sm h-64 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
@@ -259,7 +260,7 @@
                                         <div class="border-t border-gray-200 pt-3">
                                             <div class="flex justify-between items-center">
                                                 <span class="text-lg font-bold text-gray-900">Total:</span>
-                                                <span class="text-lg font-bold text-blue-600"><?php echo e($order->formatted_total_price); ?></span>
+                                                <span class="text-lg font-bold text-blue-600"><?php echo e($order->formatted_total_amount); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -432,6 +433,36 @@
                         </a>
 
                         
+                        <?php if($order->buyer_id === Auth::id() && $order->confirmed_by_buyer_at && !$order->refunds()->exists()): ?>
+                            <button onclick="openRefundModal()" 
+                                   class="w-full inline-flex items-center justify-center px-4 py-3 border border-red-300 text-red-700 font-semibold rounded-xl hover:bg-red-50 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
+                                <i class="fas fa-undo mr-2"></i>
+                                Demander un remboursement
+                            </button>
+                        <?php endif; ?>
+
+                        
+                        <?php if($order->refunds()->exists()): ?>
+                            <?php $refund = $order->refunds()->latest()->first(); ?>
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+                                <div class="flex">
+                                    <i class="fas fa-undo text-orange-500 mt-0.5 mr-3"></i>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-orange-800">Demande de remboursement</h4>
+                                        <p class="text-sm text-orange-700 mt-1">
+                                            Statut: <?php echo e($refund->status_display); ?>
+
+                                            <?php if($refund->status === 'negotiation'): ?>
+                                                <br>Contre-offre: <?php echo e($refund->formatted_counter_offer); ?>
+
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        
                         <?php if($order->status === 'pending'): ?>
                             <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
                                 <div class="flex">
@@ -579,7 +610,156 @@
     </div>
 </div>
 
+<!-- Modal de demande de remboursement -->
+<div id="refundModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-2xl bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-undo text-red-500 mr-2"></i>
+                Demande de remboursement
+            </h3>
+            
+            <form id="refundForm">
+                <?php echo csrf_field(); ?>
+                
+                <div class="mb-4">
+                    <label for="refundType" class="block text-sm font-medium text-gray-700 mb-2">Type de remboursement</label>
+                    <select id="refundType" name="refund_type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <option value="">Sélectionnez un type</option>
+                        <option value="full">Remboursement complet</option>
+                        <option value="partial">Remboursement partiel</option>
+                    </select>
+                </div>
+
+                <div class="mb-4" id="partialAmountDiv" style="display: none;">
+                    <label for="refundAmount" class="block text-sm font-medium text-gray-700 mb-2">Montant souhaité</label>
+                    <div class="relative">
+                        <input type="number" id="refundAmount" name="refund_amount" step="0.01" min="0" max="<?php echo e($order->total_amount); ?>"
+                               class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="refundReason" class="block text-sm font-medium text-gray-700 mb-2">Raison du remboursement</label>
+                    <textarea id="refundReason" name="reason" rows="4" required
+                              placeholder="Décrivez pourquoi vous demandez ce remboursement..."
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <label for="evidencePhotos" class="block text-sm font-medium text-gray-700 mb-2">Photos de preuves (optionnel)</label>
+                    <input type="file" id="evidencePhotos" name="evidence_photos[]" multiple accept="image/*"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    <p class="text-xs text-gray-500 mt-1">Vous pouvez joindre des photos pour appuyer votre demande</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeRefundModal()"
+                            class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200">
+                        Soumettre la demande
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
+// Fonctions pour gérer le modal de remboursement
+function openRefundModal() {
+    document.getElementById('refundModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeRefundModal() {
+    document.getElementById('refundModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    document.getElementById('refundForm').reset();
+    document.getElementById('partialAmountDiv').style.display = 'none';
+}
+
+// Gérer l'affichage du champ montant selon le type de remboursement
+document.getElementById('refundType').addEventListener('change', function() {
+    const partialDiv = document.getElementById('partialAmountDiv');
+    if (this.value === 'partial') {
+        partialDiv.style.display = 'block';
+        document.getElementById('refundAmount').required = true;
+    } else {
+        partialDiv.style.display = 'none';
+        document.getElementById('refundAmount').required = false;
+    }
+});
+
+// Fermer le modal en cliquant en dehors
+document.getElementById('refundModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeRefundModal();
+    }
+});
+
+// Soumission du formulaire de remboursement
+document.getElementById('refundForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    
+    // Ajouter le token CSRF au FormData
+    formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+    
+    // Debug: Afficher ce qui est envoyé
+    console.log('Données à envoyer:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+    
+    // Désactiver le bouton et afficher le chargement
+    submitButton.disabled = true;
+    submitButton.textContent = 'Traitement...';
+    
+    fetch('<?php echo e(route('refund.request', $order)); ?>', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.log('Error response body:', text);
+                throw new Error(`HTTP error! status: ${response.status} - ${text.substring(0, 200)}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert(data.message || 'Demande de remboursement soumise avec succès !');
+            closeRefundModal();
+            window.location.reload();
+        } else {
+            alert(data.error || 'Erreur lors de la soumission de la demande');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Une erreur est survenue lors de la soumission: ' + error.message);
+    })
+    .finally(() => {
+        // Réactiver le bouton
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    });
+});
+
+// Script pour confirmer la réception de la commande
 // Script pour confirmer la réception de la commande
 function confirmDelivery() {
     const note = prompt('Confirmez-vous avoir reçu votre commande ?\n\nVous pouvez ajouter un commentaire (optionnel) :');

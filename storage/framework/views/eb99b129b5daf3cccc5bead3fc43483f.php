@@ -217,13 +217,24 @@
                                         class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="<?php echo e($item->quantity); ?>" 
-                                        class="flex-1 h-11 border-2 border-purple-200/50 text-center font-bold text-gray-900 text-lg focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300">
+                                    <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="<?php echo e(max($item->quantity, 1)); ?>" 
+                                        class="flex-1 h-11 border-2 border-purple-200/50 text-center font-bold text-gray-900 text-lg focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" <?php echo e($item->quantity == 0 ? 'disabled' : ''); ?>>
                                     <button type="button" onclick="incrementQuantity()" 
                                         class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
+                                <?php if($item->quantity == 0): ?>
+                                    <p class="text-red-500 text-sm mt-2 font-medium">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i>
+                                        Article en rupture de stock
+                                    </p>
+                                <?php elseif($item->quantity <= 5): ?>
+                                    <p class="text-amber-500 text-sm mt-2 font-medium">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Attention : plus que <?php echo e($item->quantity); ?> en stock
+                                    </p>
+                                <?php endif; ?>
                             </div>
                             <button type="submit" id="addToCartBtn" 
                                 class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group">
@@ -282,7 +293,10 @@
                                 </div>
                                 <div class="flex items-center text-lg font-bold text-gray-900">
                                     <i class="fas fa-star text-yellow-400 mr-1"></i>
-                                    <span>4.8</span>
+                                    <span><?php echo e($averageRating > 0 ? $averageRating : 'Aucun avis'); ?></span>
+                                    <?php if($totalReviews > 0): ?>
+                                        <span class="text-sm text-gray-500 ml-2">(<?php echo e($totalReviews); ?> avis)</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -355,6 +369,89 @@
                 </div>
             </div>
         </div>
+
+        <!-- Section des commentaires et avis -->
+        <?php if($reviews->count() > 0 || $totalReviews > 0): ?>
+            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 lg:p-8 mb-8 lg:mb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">
+                        <i class="fas fa-star text-yellow-400 mr-3"></i>
+                        Avis clients
+                    </h2>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-gray-900">
+                            <?php echo e($averageRating > 0 ? $averageRating : '0'); ?>/5
+                        </div>
+                        <div class="text-sm text-gray-500"><?php echo e($totalReviews); ?> avis</div>
+                    </div>
+                </div>
+
+                <?php if($reviews->count() > 0): ?>
+                    <div class="space-y-6">
+                        <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <div class="border border-gray-100 rounded-2xl p-6 bg-gradient-to-br from-gray-50/50 to-white">
+                                <div class="flex items-start space-x-4">
+                                    <!-- Avatar utilisateur -->
+                                    <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center text-white font-semibold text-lg">
+                                            <?php echo e(strtoupper(substr($review->reviewer->name ?? 'U', 0, 1))); ?>
+
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Contenu du commentaire -->
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h4 class="font-semibold text-gray-900">
+                                                <?php echo e($review->reviewer->name ?? 'Utilisateur anonyme'); ?>
+
+                                            </h4>
+                                            <div class="flex items-center space-x-2">
+                                                <!-- Étoiles -->
+                                                <div class="flex items-center">
+                                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                                        <?php if($i <= $review->rating): ?>
+                                                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                                        <?php else: ?>
+                                                            <i class="far fa-star text-gray-300 text-sm"></i>
+                                                        <?php endif; ?>
+                                                    <?php endfor; ?>
+                                                </div>
+                                                <span class="text-sm text-gray-500">
+                                                    <?php echo e($review->created_at->diffForHumans()); ?>
+
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        <?php if($review->comment): ?>
+                                            <p class="text-gray-700 leading-relaxed"><?php echo e($review->comment); ?></p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    </div>
+
+                    <?php if($totalReviews > 2): ?>
+                        <div class="mt-6 text-center">
+                            <p class="text-gray-500 text-sm">
+                                Affichage de 2 avis sur <?php echo e($totalReviews); ?>
+
+                            </p>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <div class="text-center py-8">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comment-alt text-gray-400 text-xl"></i>
+                        </div>
+                        <p class="text-gray-500">Aucun commentaire pour le moment</p>
+                        <p class="text-sm text-gray-400 mt-2">Soyez le premier à donner votre avis après achat</p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
 
         <!-- Articles similaires -->
         <?php if($similarItems->count() > 0): ?>
@@ -604,9 +701,9 @@ function changeMainImage(src, element) {
 function incrementQuantity() {
     const input = document.getElementById('quantityInput');
     const max = parseInt(input.getAttribute('max'));
-    const currentValue = parseInt(input.value);
+    const currentValue = parseInt(input.value) || 1;
     
-    if (currentValue < max) {
+    if (currentValue < max && max > 0) {
         input.value = currentValue + 1;
     }
 }
@@ -614,9 +711,9 @@ function incrementQuantity() {
 function decrementQuantity() {
     const input = document.getElementById('quantityInput');
     const min = parseInt(input.getAttribute('min'));
-    const currentValue = parseInt(input.value);
+    const currentValue = parseInt(input.value) || 1;
     
-    if (currentValue > min) {
+    if (currentValue > min && currentValue > 0) {
         input.value = currentValue - 1;
     }
 }

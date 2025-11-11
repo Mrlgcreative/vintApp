@@ -3,43 +3,42 @@
 @section('title', 'Mon Profil - ' . config('app.name'))
 
 @section('content')
-<div class="container py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- En-tête du profil -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            @if($user->avatar)
-                                <img src="{{ asset('storage/' . $user->avatar) }}" 
-                                     alt="{{ $user->name }}" 
-                                     class="rounded-circle" 
-                                     style="width: 80px; height: 80px; object-fit: cover;">
-                            @else
-                                <div class="rounded-circle bg-gradient-to-r from-purple-600 to-cyan-400 d-flex align-items-center justify-content-center text-white" 
-                                     style="width: 80px; height: 80px; font-size: 2rem; font-weight: bold;">
-                                    {{ strtoupper(substr($user->name, 0, 2)) }}
-                                </div>
-                            @endif
-                        </div>
-                        <div class="col">
-                            <h1 class="h3 mb-2 fw-bold text-dark">{{ $user->name }}</h1>
-                            <p class="text-muted mb-1">
-                                <i class="fas fa-envelope me-1"></i>
+    <div class="mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200">
+            <div class="p-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    <div class="flex-shrink-0">
+                        @if($user->avatar)
+                            <img src="{{ asset('storage/' . $user->avatar) }}" 
+                                 alt="{{ $user->name }}" 
+                                 class="w-20 h-20 rounded-full object-cover ring-4 ring-purple-100">
+                        @else
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-purple-100">
+                                {{ strtoupper(substr($user->name, 0, 2)) }}
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ $user->name }}</h1>
+                        <div class="space-y-2 text-gray-600">
+                            <p class="flex items-center gap-2">
+                                <i class="fas fa-envelope text-purple-500"></i>
                                 {{ $user->email }}
                             </p>
-                            <p class="text-muted mb-0">
-                                <i class="fas fa-calendar-alt me-1"></i>
+                            <p class="flex items-center gap-2">
+                                <i class="fas fa-calendar-alt text-purple-500"></i>
                                 Membre depuis {{ $user->created_at->format('F Y') }}
                             </p>
                         </div>
-                        <div class="col-auto">
-                            <a href="{{ route('profile.edit') }}" class="btn btn-outline-primary">
-                                <i class="fas fa-edit me-1"></i>
-                                Modifier le profil
-                            </a>
-                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('profile.edit') }}" 
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors duration-200 font-medium">
+                            <i class="fas fa-edit"></i>
+                            Modifier le profil
+                        </a>
                     </div>
                 </div>
             </div>
@@ -47,152 +46,139 @@
     </div>
 
     <!-- Statistiques rapides -->
-    <div class="row mb-4">
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm text-center">
-                <div class="card-body">
-                    <i class="fas fa-box text-primary fa-2x mb-2"></i>
-                    <h4 class="fw-bold">{{ $stats['total_items'] }}</h4>
-                    <p class="text-muted mb-0">Articles publiés</p>
-                </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4">
+                <i class="fas fa-box text-purple-600 text-xl"></i>
             </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $stats['total_items'] }}</h3>
+            <p class="text-gray-600">Articles publiés</p>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm text-center">
-                <div class="card-body">
-                    <i class="fas fa-shopping-cart text-success fa-2x mb-2"></i>
-                    <h4 class="fw-bold">{{ $stats['total_orders'] }}</h4>
-                    <p class="text-muted mb-0">Commandes</p>
-                </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg mb-4">
+                <i class="fas fa-shopping-cart text-green-600 text-xl"></i>
             </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $stats['total_orders'] }}</h3>
+            <p class="text-gray-600">Commandes</p>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm text-center">
-                <div class="card-body">
-                    <i class="fas fa-euro-sign text-warning fa-2x mb-2"></i>
-                    <h4 class="fw-bold">{{ number_format($stats['total_revenue'], 2) }}€</h4>
-                    <p class="text-muted mb-0">Revenus totaux</p>
-                </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg mb-4">
+                <i class="fas fa-euro-sign text-yellow-600 text-xl"></i>
             </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($stats['total_revenue'], 2) }}€</h3>
+            <p class="text-gray-600">Revenus totaux</p>
         </div>
-        <div class="col-md-3 col-sm-6 mb-3">
-            <div class="card border-0 shadow-sm text-center">
-                <div class="card-body">
-                    <i class="fas fa-star text-info fa-2x mb-2"></i>
-                    <h4 class="fw-bold">{{ number_format($stats['average_rating'], 1) }}/5</h4>
-                    <p class="text-muted mb-0">Note moyenne</p>
-                </div>
+        
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-lg mb-4">
+                <i class="fas fa-star text-blue-600 text-xl"></i>
             </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ number_format($stats['average_rating'], 1) }}/5</h3>
+            <p class="text-gray-600">Note moyenne</p>
         </div>
     </div>
 
     <!-- Navigation des sections -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <h5 class="mb-0 fw-bold text-dark">
-                        <i class="fas fa-tachometer-alt me-2 text-primary"></i>
-                        Tableau de bord
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <!-- Articles -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-primary">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-box text-primary fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Mes Articles</h6>
-                                    <p class="text-muted small">
-                                        {{ $stats['active_items'] }} actifs · {{ $stats['sold_items'] }} vendus
-                                    </p>
-                                    <a href="{{ route('items.my-items') }}" class="btn btn-primary btn-sm">
-                                        Gérer mes articles
-                                    </a>
-                                </div>
-                            </div>
+    <div class="mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
+                    <i class="fas fa-tachometer-alt text-purple-600"></i>
+                    Tableau de bord
+                </h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Articles -->
+                    <div class="group bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-purple-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-box text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Mes Articles</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            {{ $stats['active_items'] }} actifs · {{ $stats['sold_items'] }} vendus
+                        </p>
+                        <a href="{{ route('items.my-items') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium">
+                            Gérer mes articles
+                        </a>
+                    </div>
 
-                        <!-- Commandes -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-success">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-shopping-cart text-success fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Mes Commandes</h6>
-                                    <p class="text-muted small">
-                                        {{ $stats['total_orders'] }} commandes passées
-                                    </p>
-                                    <a href="{{ route('orders.index') }}" class="btn btn-success btn-sm">
-                                        Voir mes commandes
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Commandes -->
+                    <div class="group bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-green-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-green-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-shopping-cart text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Mes Commandes</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            {{ $stats['total_orders'] }} commandes passées
+                        </p>
+                        <a href="{{ route('orders.index') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium">
+                            Voir mes commandes
+                        </a>
+                    </div>
 
-                        <!-- Messages -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-info">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-comments text-info fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Messages</h6>
-                                    <p class="text-muted small">
-                                        {{ $stats['unread_messages'] }} non lus
-                                    </p>
-                                    <a href="{{ route('messages.index') }}" class="btn btn-info btn-sm">
-                                        Voir mes messages
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Messages -->
+                    <div class="group bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-blue-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-comments text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Messages</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            {{ $stats['unread_messages'] }} non lus
+                        </p>
+                        <a href="{{ route('messages.index') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium">
+                            Voir mes messages
+                        </a>
+                    </div>
 
-                        <!-- Wallet -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-warning">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-wallet text-warning fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Wallet</h6>
-                                    <p class="text-muted small">
-                                        Gérez vos paiements
-                                    </p>
-                                    <a href="{{ route('wallet.index') }}" class="btn btn-warning btn-sm">
-                                        Accéder au wallet
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Wallet -->
+                    <div class="group bg-gradient-to-br from-yellow-50 to-yellow-100 border-2 border-yellow-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-yellow-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-yellow-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-wallet text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Wallet</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Gérez vos paiements
+                        </p>
+                        <a href="{{ route('wallet.index') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors duration-200 font-medium">
+                            Accéder au wallet
+                        </a>
+                    </div>
 
-                        <!-- Paramètres -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-secondary">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-cog text-secondary fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Paramètres</h6>
-                                    <p class="text-muted small">
-                                        Sécurité et préférences
-                                    </p>
-                                    <a href="{{ route('profile.edit') }}" class="btn btn-secondary btn-sm">
-                                        Configurer
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Paramètres -->
+                    <div class="group bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-gray-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-cog text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Paramètres</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Sécurité et préférences
+                        </p>
+                        <a href="{{ route('profile.edit') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 font-medium">
+                            Configurer
+                        </a>
+                    </div>
 
-                        <!-- Statistiques -->
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card border border-dark">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-chart-bar text-dark fa-3x mb-3"></i>
-                                    <h6 class="fw-bold">Statistiques</h6>
-                                    <p class="text-muted small">
-                                        Analyse détaillée
-                                    </p>
-                                    <a href="{{ route('profile.stats') }}" class="btn btn-dark btn-sm">
-                                        Voir les stats
-                                    </a>
-                                </div>
-                            </div>
+                    <!-- Statistiques -->
+                    <div class="group bg-gradient-to-br from-indigo-50 to-indigo-100 border-2 border-indigo-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-indigo-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                            <i class="fas fa-chart-bar text-2xl"></i>
                         </div>
+                        <h3 class="font-bold text-gray-900 mb-2">Statistiques</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Analyse détaillée
+                        </p>
+                        <a href="{{ route('profile.stats') }}" 
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium">
+                            Voir les stats
+                        </a>
                     </div>
                 </div>
             </div>
@@ -200,73 +186,74 @@
     </div>
 
     <!-- Activité récente -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white border-0">
-                    <h5 class="mb-0 fw-bold text-dark">
-                        <i class="fas fa-clock me-2 text-primary"></i>
-                        Activité récente
-                    </h5>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
+                <i class="fas fa-clock text-purple-600"></i>
+                Activité récente
+            </h2>
+        </div>
+        <div class="p-6 space-y-4">
+            @if($stats['unread_messages'] > 0)
+                <div class="flex items-start gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-800">
+                            Vous avez <strong class="text-blue-600">{{ $stats['unread_messages'] }}</strong> message(s) non lu(s).
+                        </p>
+                        <a href="{{ route('messages.index') }}" 
+                           class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium mt-1 hover:underline">
+                            Les consulter maintenant
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="card-body">
-                    @if($stats['unread_messages'] > 0)
-                        <div class="alert alert-info d-flex align-items-center" role="alert">
-                            <i class="fas fa-envelope me-2"></i>
-                            <div>
-                                Vous avez <strong>{{ $stats['unread_messages'] }}</strong> message(s) non lu(s).
-                                <a href="{{ route('messages.index') }}" class="alert-link">Les consulter maintenant</a>
-                            </div>
-                        </div>
-                    @endif
+            @endif
 
-                    @if($stats['active_items'] > 0)
-                        <div class="alert alert-success d-flex align-items-center" role="alert">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <div>
-                                Vous avez <strong>{{ $stats['active_items'] }}</strong> article(s) en ligne.
-                                <a href="{{ route('items.my-items') }}" class="alert-link">Les gérer</a>
-                            </div>
+            @if($stats['active_items'] > 0)
+                <div class="flex items-start gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-white"></i>
                         </div>
-                    @endif
-
-                    @if($stats['total_items'] === 0)
-                        <div class="alert alert-warning d-flex align-items-center" role="alert">
-                            <i class="fas fa-plus-circle me-2"></i>
-                            <div>
-                                Vous n'avez encore publié aucun article.
-                                <a href="{{ route('items.create') }}" class="alert-link">Publier votre premier article</a>
-                            </div>
-                        </div>
-                    @endif
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-800">
+                            Vous avez <strong class="text-green-600">{{ $stats['active_items'] }}</strong> article(s) en ligne.
+                        </p>
+                        <a href="{{ route('items.my-items') }}" 
+                           class="inline-flex items-center gap-1 text-green-600 hover:text-green-700 font-medium mt-1 hover:underline">
+                            Les gérer
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
+            @endif
+
+            @if($stats['total_items'] === 0)
+                <div class="flex items-start gap-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-yellow-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-plus-circle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-800">
+                            Vous n'avez encore publié aucun article.
+                        </p>
+                        <a href="{{ route('items.create') }}" 
+                           class="inline-flex items-center gap-1 text-yellow-600 hover:text-yellow-700 font-medium mt-1 hover:underline">
+                            Publier votre premier article
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
-
-<style>
-.card {
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-}
-
-.bg-gradient-to-r {
-    background: linear-gradient(to right, #9333ea, #22d3ee);
-}
-
-.from-purple-600 {
-    --tw-gradient-from: #9333ea;
-    --tw-gradient-to: rgba(147, 51, 234, 0);
-    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-
-.to-cyan-400 {
-    --tw-gradient-to: #22d3ee;
-}
-</style>
 @endsection

@@ -315,6 +315,8 @@ public function uploadAvatar(Request $request)
             'city' => 'required|string|max:255',
             'commune' => 'required|string|max:255',
             'address' => 'required|string|max:500',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'notes' => 'nullable|string|max:1000',
             'is_default' => 'boolean',
         ]);
@@ -339,6 +341,8 @@ public function uploadAvatar(Request $request)
             'city' => $request->city,
             'commune' => $request->commune,
             'address' => $request->address,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'notes' => $request->notes,
             'is_default' => $isDefault,
         ]);
@@ -399,6 +403,8 @@ public function uploadAvatar(Request $request)
             'city' => 'required|string|max:255',
             'commune' => 'required|string|max:255',
             'address' => 'required|string|max:500',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'notes' => 'nullable|string|max:1000',
             'is_default' => 'boolean',
         ]);
@@ -421,6 +427,8 @@ public function uploadAvatar(Request $request)
             'city' => $request->city,
             'commune' => $request->commune,
             'address' => $request->address,
+            'latitude' => $request->latitude,
+            'longitude' => $request->longitude,
             'notes' => $request->notes,
             'is_default' => $request->is_default ?? $deliveryAddress->is_default,
         ]);

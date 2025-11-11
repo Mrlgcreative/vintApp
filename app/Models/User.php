@@ -95,6 +95,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Relation avec toutes les commandes de l'utilisateur (acheteur + vendeur)
+     */
+    public function orders()
+    {
+        return $this->ordersAsBuyer();
+    }
+
+    /**
      * Relation avec les messages envoyés
      */
     public function sentMessages()
@@ -194,6 +202,22 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('is_active', true)
             ->where('last_activity', '>=', now()->subMinutes(5))
             ->orderBy('last_activity', 'desc');
+    }
+
+    /**
+     * Relation avec les livraisons locales en tant que vendeur
+     */
+    public function localDeliveriesAsSeller()
+    {
+        return $this->hasMany(LocalDelivery::class, 'seller_id');
+    }
+
+    /**
+     * Relation avec les livraisons locales en tant qu'acheteur
+     */
+    public function localDeliveriesAsBuyer()
+    {
+        return $this->hasMany(LocalDelivery::class, 'buyer_id');
     }
 
     /**

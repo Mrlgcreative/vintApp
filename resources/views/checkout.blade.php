@@ -229,6 +229,11 @@
                                     <strong>Adresse :</strong> 
                                     <span id="confirmed_address" class="ml-2"></span>
                                 </p>
+                                <p class="flex items-center text-gray-700" id="confirmed_gps_container" style="display: none;">
+                                    <i class="fas fa-crosshairs mr-3 w-4"></i>
+                                    <strong>GPS :</strong> 
+                                    <span id="confirmed_gps" class="ml-2 text-green-600"></span>
+                                </p>
                             </div>
                             <div id="confirmed_notes_container" class="md:col-span-2 hidden">
                                 <p class="flex items-start text-gray-700">
@@ -450,6 +455,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('confirmed_city').textContent = data.city;
         document.getElementById('confirmed_commune').textContent = data.commune;
         document.getElementById('confirmed_address').textContent = data.address;
+        
+        // Afficher les coordonnées GPS si disponibles
+        if (data.latitude && data.longitude) {
+            document.getElementById('confirmed_gps').textContent = `Lat: ${parseFloat(data.latitude).toFixed(6)}, Lng: ${parseFloat(data.longitude).toFixed(6)}`;
+            document.getElementById('confirmed_gps_container').style.display = 'flex';
+        } else {
+            document.getElementById('confirmed_gps_container').style.display = 'none';
+        }
         
         if (data.notes) {
             document.getElementById('confirmed_notes').textContent = data.notes;

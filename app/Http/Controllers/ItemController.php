@@ -181,6 +181,23 @@ class ItemController extends Controller
         // Charger les relations
         $item->load(['category', 'brand', 'user']);
         
+        // Récupérer les reviews approuvées pour cet item
+        $reviews = \App\Models\Review::where('item_id', $item->id)
+            ->where('status', 'approved')
+            ->with(['reviewer'])
+            ->orderBy('created_at', 'desc')
+            ->take(2) // Les 2 derniers commentaires
+            ->get();
+        
+        // Calculer la moyenne des ratings et le total
+        $reviewsStats = \App\Models\Review::where('item_id', $item->id)
+            ->where('status', 'approved')
+            ->selectRaw('COUNT(*) as total_reviews, AVG(rating) as average_rating')
+            ->first();
+        
+        $averageRating = $reviewsStats->average_rating ? round($reviewsStats->average_rating, 1) : 0;
+        $totalReviews = $reviewsStats->total_reviews ?? 0;
+        
         // Articles similaires
         $similarItems = Item::where('category_id', $item->category_id)
                            ->where('id', '!=', $item->id)
@@ -189,7 +206,7 @@ class ItemController extends Controller
                            ->limit(4)
                            ->get();
 
-        return view('items.show', compact('item', 'similarItems'));
+        return view('items.show', compact('item', 'similarItems', 'reviews', 'averageRating', 'totalReviews'));
     }
 
     /**

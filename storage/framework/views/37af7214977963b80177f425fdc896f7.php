@@ -42,6 +42,11 @@ if (typeof jsQR === 'undefined') {
                         <i class="fas fa-qrcode mr-2"></i>
                         Scanner QR Code
                     </button>
+                    <a href="<?php echo e(route('local-delivery.user', 'buyer')); ?>" 
+                       class="inline-flex items-center justify-center px-6 py-3 border border-orange-300 text-orange-700 font-semibold rounded-xl hover:bg-orange-50 hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200">
+                        <i class="fas fa-shipping-fast mr-2"></i>
+                        Livraisons Locales
+                    </a>
                     <a href="<?php echo e(route('orders.my-sales')); ?>" 
                        class="inline-flex items-center justify-center px-6 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
                         <i class="fas fa-store mr-2"></i>
@@ -139,6 +144,24 @@ if (typeof jsQR === 'undefined') {
                                     <i class="fas fa-eye mr-2"></i>
                                     Voir détails
                                 </a>
+                                
+                                <!-- Livraison locale -->
+                                <?php if(in_array($order->status, ['confirmed', 'shipped'])): ?>
+                                    <?php if($order->localDelivery): ?>
+                                        <a href="<?php echo e(route('local-delivery.show', $order->localDelivery)); ?>" 
+                                           class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/25 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-300">
+                                            <i class="fas fa-shipping-fast mr-2"></i>
+                                            Livraison <?php echo e(ucfirst(str_replace('_', ' ', $order->localDelivery->status))); ?>
+
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?php echo e(route('local-delivery.user', 'buyer')); ?>" 
+                                           class="w-full inline-flex items-center justify-center px-4 py-3 border border-orange-300 text-orange-700 font-semibold rounded-xl hover:bg-orange-50 hover:border-orange-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200">
+                                            <i class="fas fa-handshake mr-2"></i>
+                                            Livraison locale disponible
+                                        </a>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                                 
                                 <!-- Scanner QR -->
                                 <?php if($order->scan_token): ?>

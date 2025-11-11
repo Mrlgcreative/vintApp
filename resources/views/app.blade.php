@@ -99,7 +99,7 @@
                     </div>
                     
                     <!-- Boutons de connexion -->
-                    <div class="flex items-center space-x-2">
+                    <!-- <div class="flex items-center space-x-2">
                         <a href="{{ route('login') }}" class="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-full font-semibold text-sm transition-colors border border-purple-200 hover:border-purple-300">
                             <i class="fas fa-sign-in-alt mr-1"></i>
                             Se connecter
@@ -108,7 +108,7 @@
                             <i class="fas fa-user-plus mr-1"></i>
                             S'inscrire
                         </a>
-                    </div>
+                    </div> -->
                 @endauth
             </div>
         </div>
@@ -215,6 +215,9 @@
                                     </a>
                                     <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i class="fas fa-comments mr-2"></i> Messages
+                                    </a>
+                                    <a href="{{ route('admin.refunds.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-undo mr-2"></i> Remboursements
                                     </a>
                                     <div class="border-t my-1"></div>
                                     <form method="POST" action="{{ route('logout') }}">

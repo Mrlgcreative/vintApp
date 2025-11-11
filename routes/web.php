@@ -5,6 +5,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\LocalDeliveryController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
@@ -60,7 +61,7 @@ Route::get('/newsletter/track/open/{token}', [NewsletterController::class, 'trac
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
 // Routes de test supprimées
 Route::get('/test-create', function() {
@@ -175,6 +176,11 @@ Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])-
 // Routes pour les marques
 Route::resource('brands', App\Http\Controllers\BrandController::class);
 Route::resource('reviews', App\Http\Controllers\ReviewController::class);
+
+// Route pour la notation post-paiement
+Route::post('/reviews/post-payment', [App\Http\Controllers\ReviewController::class, 'storePostPayment'])
+    ->name('reviews.post-payment')
+    ->middleware('auth');
 
 // Routes d'administration
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:60,1'])->group(function () {
@@ -464,6 +470,16 @@ Route::middleware('auth')->prefix('support')->name('support.')->group(function (
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
+    // Page de test pour la simulation de paiement
+    Route::get('/test', function () {
+        return view('payments.test');
+    })->name('payments.test');
+    
+    // Page de simulation d'achat complet
+    Route::get('/simulate-purchase', function () {
+        return view('payments.simulate-purchase');
+    })->name('payments.simulate-purchase');
+    
     Route::post('/process', [PaymentController::class, 'processPayment'])->name('payments.process');
     Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash'])->name('payments.illicocash');
     Route::post('/orange-money', [PaymentController::class, 'payWithOrangeMoney'])->name('payments.orange_money');
@@ -482,6 +498,16 @@ Route::prefix('payments')->group(function () {
     // Pages de callback pour simulation
     Route::get('/success/{transaction_id}', [PaymentController::class, 'paymentSuccess'])->name('payments.success');
     Route::get('/error', [PaymentController::class, 'paymentError'])->name('payments.error');
+    
+    // Routes de remboursement
+    Route::post('/orders/{order}/refund/request', [PaymentController::class, 'requestRefund'])->name('refund.request');
+    Route::post('/refunds/{refund}/process', [PaymentController::class, 'processRefund'])->name('refund.process');
+});
+
+// Routes d'administration des remboursements
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/refunds', [App\Http\Controllers\Admin\RefundController::class, 'index'])->name('refunds.index');
+    Route::get('/refunds/{refund}', [App\Http\Controllers\Admin\RefundController::class, 'show'])->name('refunds.show');
 });
 
 // Routes pour le panier
@@ -504,6 +530,37 @@ Route::middleware(['auth'])->prefix('delivery-address')->name('delivery.')->grou
     Route::put('/{id}', [App\Http\Controllers\UserController::class, 'updateDeliveryAddress'])->name('update');
     Route::post('/{id}/set-default', [App\Http\Controllers\UserController::class, 'setDefaultDeliveryAddress'])->name('set-default');
     Route::delete('/{id}', [App\Http\Controllers\UserController::class, 'deleteDeliveryAddress'])->name('delete');
+});
+
+// Routes pour les livraisons locales
+Route::middleware(['auth'])->prefix('local-delivery')->name('local-delivery.')->group(function () {
+    // Afficher le formulaire de création
+    Route::get('/create', [LocalDeliveryController::class, 'create'])->name('create');
+    
+    // Proposer une livraison locale
+    Route::post('/propose', [LocalDeliveryController::class, 'proposeDelivery'])->name('propose');
+    
+    // API pour géocodage d'adresse
+    Route::post('/geocode', [LocalDeliveryController::class, 'geocodeAddress'])->name('geocode');
+    
+    // Accepter une livraison locale
+    Route::post('/{localDelivery}/accept', [LocalDeliveryController::class, 'acceptDelivery'])->name('accept');
+    
+    // Marquer comme en transit (vendeur uniquement)
+    Route::post('/{localDelivery}/in-transit', [LocalDeliveryController::class, 'markInTransit'])->name('in-transit');
+    
+    // Marquer comme livré (acheteur uniquement - avec code de vérification)
+    Route::post('/{localDelivery}/delivered', [LocalDeliveryController::class, 'markDelivered'])->name('delivered');
+    
+    // Annuler une livraison locale
+    Route::post('/{localDelivery}/cancel', [LocalDeliveryController::class, 'cancelDelivery'])->name('cancel');
+    
+    // Voir les détails d'une livraison locale
+    Route::get('/{localDelivery}', [LocalDeliveryController::class, 'show'])->name('show');
+    
+    // API pour récupérer les livraisons d'un utilisateur
+    Route::get('/user/{type}', [LocalDeliveryController::class, 'getUserDeliveries'])->name('user')
+        ->where('type', 'seller|buyer');
 });
 
 // Routes Taux de change (PUBLIC - pas d'auth nécessaire pour consulter le taux)

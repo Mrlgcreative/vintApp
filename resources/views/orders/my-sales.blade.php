@@ -23,6 +23,35 @@
             </div>
         </div>
 
+        <!-- Navigation rapide -->
+        <div class="mb-8">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-lg font-semibold text-gray-900 mb-2">Navigation rapide</h2>
+                        <p class="text-gray-600 text-sm">Accédez rapidement aux différentes sections</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="{{ route('local-delivery.create') }}" 
+                           class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-xl shadow-lg shadow-green-500/25 hover:from-green-600 hover:to-green-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-300">
+                            <i class="fas fa-plus mr-2"></i>
+                            Proposer Livraison
+                        </a>
+                        <a href="{{ route('local-delivery.user', 'seller') }}" 
+                           class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg shadow-orange-500/25 hover:from-orange-600 hover:to-orange-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-300">
+                            <i class="fas fa-shipping-fast mr-2"></i>
+                            Mes Livraisons
+                        </a>
+                        <a href="{{ route('orders.index') }}" 
+                           class="inline-flex items-center justify-center px-6 py-3 border border-indigo-300 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 hover:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Mes Achats
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Statistiques rapides -->
         @if($orders->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -221,6 +250,24 @@
                                                title="Voir détails">
                                                 <i class="fas fa-eye text-sm"></i>
                                             </a>
+                                            
+                                            <!-- Proposer livraison locale (si confirmée et pas de livraison locale) -->
+                                            @if(in_array($order->status, ['confirmed', 'shipped']) && !$order->localDelivery)
+                                                <a href="{{ route('local-delivery.create', ['order_id' => $order->id]) }}" 
+                                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 hover:bg-emerald-200 transition-colors duration-200"
+                                                   title="Proposer livraison locale">
+                                                    <i class="fas fa-handshake text-sm"></i>
+                                                </a>
+                                            @endif
+
+                                            <!-- Voir livraison locale existante -->
+                                            @if($order->localDelivery)
+                                                <a href="{{ route('local-delivery.show', $order->localDelivery) }}" 
+                                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 text-orange-600 hover:bg-orange-200 transition-colors duration-200"
+                                                   title="Voir livraison locale">
+                                                    <i class="fas fa-truck text-sm"></i>
+                                                </a>
+                                            @endif
                                             
                                             <!-- Expédier (si confirmée) -->
                                             @if($order->status === 'confirmed')

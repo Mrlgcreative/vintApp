@@ -92,6 +92,22 @@ class Order extends Model
     }
 
     /**
+     * Get the refunds for this order
+     */
+    public function refunds()
+    {
+        return $this->hasMany(Refund::class);
+    }
+
+    /**
+     * Get the local delivery for this order
+     */
+    public function localDelivery()
+    {
+        return $this->hasOne(LocalDelivery::class);
+    }
+
+    /**
      * Get the tracking information for this order
      */
     public function trackings()
