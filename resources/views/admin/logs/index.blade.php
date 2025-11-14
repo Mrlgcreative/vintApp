@@ -65,10 +65,10 @@
         <div class="flex items-center justify-between">
             <div>
                 <p class="text-sm font-medium text-gray-600">Taille du fichier</p>
-                <p class="text-3xl font-bold text-purple-600 mt-2">{{ number_format(($fileSize ?? 0) / 1024, 0) }} KB</p>
+                <p class="text-3xl font-bold text-primary-600 mt-2">{{ number_format(($fileSize ?? 0) / 1024, 0) }} KB</p>
             </div>
-            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <i class="fas fa-file-alt text-purple-600 text-xl"></i>
+            <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-file-alt text-primary-600 text-xl"></i>
             </div>
         </div>
     </div>

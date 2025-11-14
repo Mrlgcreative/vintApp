@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
         <!-- Header avec titre et bouton d'ajout -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-4">
                     <i class="fas fa-layer-group text-white text-xl"></i>
                 </div>
                 <div>
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
                 </div>
             </div>
             <a href="{{ route('categories.create') }}" 
-               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:from-purple-600 hover:to-purple-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                 <i class="fas fa-plus mr-2"></i>
                 Ajouter une catégorie
             </a>
@@ -64,11 +64,11 @@ use Illuminate\Support\Facades\Storage;
         @endif
 
         <!-- Tableau des catégories -->
-        <div class="bg-white rounded-2xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden">
             <!-- Header du tableau -->
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-list text-purple-500 mr-2"></i>
+                    <i class="fas fa-list text-primary-500 mr-2"></i>
                     Liste des catégories
                 </h3>
             </div>
@@ -88,7 +88,7 @@ use Illuminate\Support\Facades\Storage;
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @forelse($categories as $category)
-                            <tr class="hover:bg-purple-50 transition-colors duration-200">
+                            <tr class="hover:bg-primary-50 transition-colors duration-200">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
                                         @if($category->image && Storage::disk('public')->exists($category->image))
@@ -96,7 +96,7 @@ use Illuminate\Support\Facades\Storage;
                                                  alt="{{ $category->name }}" 
                                                  class="w-full h-full object-cover">
                                         @elseif($category->icon)
-                                            <i class="{{ $category->icon }} text-purple-500 text-xl"></i>
+                                            <i class="{{ $category->icon }} text-primary-500 text-xl"></i>
                                         @else
                                             <i class="fas fa-folder text-gray-400 text-xl"></i>
                                         @endif
@@ -136,7 +136,7 @@ use Illuminate\Support\Facades\Storage;
                                             <i class="fas fa-eye text-xs"></i>
                                         </a>
                                         <a href="{{ route('categories.edit', $category) }}" 
-                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 hover:text-purple-700 transition-colors duration-200"
+                                           class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 hover:text-primary-700 transition-colors duration-200"
                                            title="Modifier la catégorie">
                                             <i class="fas fa-edit text-xs"></i>
                                         </a>
@@ -165,7 +165,7 @@ use Illuminate\Support\Facades\Storage;
                                         <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune catégorie trouvée</h3>
                                         <p class="text-gray-600 text-sm mb-6">Commencez par créer votre première catégorie</p>
                                         <a href="{{ route('categories.create') }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200">
+                                           class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-200">
                                             <i class="fas fa-plus mr-2"></i>
                                             Créer la première catégorie
                                         </a>
@@ -180,7 +180,7 @@ use Illuminate\Support\Facades\Storage;
             <!-- Version Mobile : Cartes -->
             <div class="lg:hidden">
                 @forelse($categories as $category)
-                    <div class="border-b border-gray-200 last:border-b-0 p-6 hover:bg-purple-50 transition-colors duration-200">
+                    <div class="border-b border-gray-200 last:border-b-0 p-6 hover:bg-primary-50 transition-colors duration-200">
                         <div class="flex items-start space-x-4">
                             <!-- Image/Icône -->
                             <div class="flex-shrink-0">
@@ -190,7 +190,7 @@ use Illuminate\Support\Facades\Storage;
                                              alt="{{ $category->name }}" 
                                              class="w-full h-full object-cover">
                                     @elseif($category->icon)
-                                        <i class="{{ $category->icon }} text-purple-500 text-2xl"></i>
+                                        <i class="{{ $category->icon }} text-primary-500 text-2xl"></i>
                                     @else
                                         <i class="fas fa-folder text-gray-400 text-2xl"></i>
                                     @endif
@@ -232,7 +232,7 @@ use Illuminate\Support\Facades\Storage;
                                         Voir
                                     </a>
                                     <a href="{{ route('categories.edit', $category) }}" 
-                                       class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200">
+                                       class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-200">
                                         <i class="fas fa-edit mr-2"></i>
                                         Modifier
                                     </a>
@@ -261,7 +261,7 @@ use Illuminate\Support\Facades\Storage;
                             <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucune catégorie trouvée</h3>
                             <p class="text-gray-600 mb-8 max-w-sm">Commencez par créer votre première catégorie pour organiser vos produits</p>
                             <a href="{{ route('categories.create') }}" 
-                               class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl shadow-lg hover:bg-purple-700 hover:shadow-xl transition-all duration-300">
+                               class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-700 hover:shadow-xl transition-all duration-300">
                                 <i class="fas fa-plus mr-2"></i>
                                 Créer la première catégorie
                             </a>

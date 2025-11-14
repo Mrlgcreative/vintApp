@@ -35,9 +35,9 @@ function showNotification(message, type = 'primary') {
                 <input 
                     type="text" 
                     placeholder="Que recherchez-vous ?" 
-                    class="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-purple-600 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
+                    class="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
                 />
-                <button class="p-3 rounded-full bg-purple-100 text-purple-600 hover:bg-purple-200 transition-colors">
+                <button class="p-3 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-200 transition-colors">
                     <i class="fas fa-sliders-h"></i>
                 </button>
             </div>
@@ -61,7 +61,7 @@ function showNotification(message, type = 'primary') {
             <div class="carousel-inner rounded-2xl overflow-hidden shadow-lg">
                 @foreach($heroSlides as $index => $slide)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <div class="relative h-48 bg-gradient-to-r from-purple-600 to-cyan-400" 
+                        <div class="relative h-48 bg-gradient-to-r from-primary-600 to-cyan-400" 
                              style="background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('{{ Storage::url($slide->image_path) }}'); background-size: cover; background-position: center;">
                             <div class="absolute inset-0 flex items-center px-6">
                                 <div class="text-white max-w-md">
@@ -76,13 +76,13 @@ function showNotification(message, type = 'primary') {
                                     <div class="flex gap-3 flex-wrap">
                                         @if($slide->button_primary_text && $slide->button_primary_url)
                                             <a href="{{ $slide->button_primary_url }}" 
-                                               class="px-6 py-2.5 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-md">
+                                               class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-md">
                                                 {{ $slide->button_primary_text }}
                                             </a>
                                         @endif
                                         @if($slide->button_secondary_text && $slide->button_secondary_url)
                                             <a href="{{ $slide->button_secondary_url }}" 
-                                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-purple-600 transition-all">
+                                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-all">
                                                 {{ $slide->button_secondary_text }}
                                             </a>
                                         @endif
@@ -97,7 +97,7 @@ function showNotification(message, type = 'primary') {
     @else
         <!-- Fallback Hero Banner -->
         <div class="mx-4 my-6 rounded-2xl overflow-hidden shadow-lg">
-            <div class="relative h-48 bg-gradient-to-r from-purple-600 to-cyan-400" 
+            <div class="relative h-48 bg-gradient-to-r from-primary-600 to-cyan-400" 
                  style="background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('{{ $heroSettings['image'] ?? '' }}'); background-size: cover; background-position: center;">
                 <div class="absolute inset-0 flex items-center px-6">
                     <div class="text-white max-w-md">
@@ -110,17 +110,17 @@ function showNotification(message, type = 'primary') {
                         <div class="flex gap-3">
                             @auth
                                 <a href="{{ route('items.create') }}" 
-                                   class="px-6 py-2.5 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                                   class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
                                     <i class="fas fa-plus me-1"></i>{{ $heroSettings['button_primary'] ?? 'Vendre' }}
                                 </a>
                             @else
                                 <a href="{{ route('register') }}" 
-                                   class="px-6 py-2.5 bg-white text-purple-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                                   class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
                                     <i class="fas fa-user-plus me-1"></i>Commencer
                                 </a>
                             @endauth
                             <a href="{{ route('items.index') }}" 
-                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-purple-600 transition-all">
+                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-all">
                                 <i class="fas fa-search me-1"></i>{{ $heroSettings['button_secondary'] ?? 'Explorer' }}
                             </a>
                         </div>
@@ -138,9 +138,9 @@ function showNotification(message, type = 'primary') {
         <div class="grid grid-cols-4 gap-3">
             @foreach($categories as $category)
                 <a href="{{ route('items.index', ['category' => $category->id]) }}" 
-                   class="flex flex-col items-center p-3 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors">
+                   class="flex flex-col items-center p-3 bg-primary-50 rounded-xl hover:bg-primary-100 transition-colors">
                     <div class="text-2xl mb-2">
-                        <i class="fas fa-{{ $category->icon ?? 'tag' }} text-purple-600"></i>
+                        <i class="fas fa-{{ $category->icon ?? 'tag' }} text-primary-600"></i>
                     </div>
                     <span class="text-xs text-center font-medium text-gray-700">{{ $category->name }}</span>
                     <span class="text-xs text-gray-500">{{ $category->items_count ?? 0 }}</span>
@@ -152,16 +152,16 @@ function showNotification(message, type = 'primary') {
     <!-- Filtres -->
     <section class="px-4 py-2">
         <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            <button class="px-4 py-2 bg-purple-600 text-white rounded-full text-sm font-medium whitespace-nowrap">
+            <button class="px-4 py-2 bg-primary-600 text-white rounded-full text-sm font-medium whitespace-nowrap">
                 Tous
             </button>
-            <button class="px-4 py-2 border border-purple-600 text-purple-600 rounded-full text-sm font-medium hover:bg-purple-50 whitespace-nowrap">
+            <button class="px-4 py-2 border border-primary-600 text-primary-600 rounded-full text-sm font-medium hover:bg-primary-50 whitespace-nowrap">
                 Nouveautés
             </button>
-            <button class="px-4 py-2 border border-purple-600 text-purple-600 rounded-full text-sm font-medium hover:bg-purple-50 whitespace-nowrap">
+            <button class="px-4 py-2 border border-primary-600 text-primary-600 rounded-full text-sm font-medium hover:bg-primary-50 whitespace-nowrap">
                 Populaires
             </button>
-            <button class="px-4 py-2 border border-purple-600 text-purple-600 rounded-full text-sm font-medium hover:bg-purple-50 whitespace-nowrap">
+            <button class="px-4 py-2 border border-primary-600 text-primary-600 rounded-full text-sm font-medium hover:bg-primary-50 whitespace-nowrap">
                 Promotions
             </button>
         </div>
@@ -174,7 +174,7 @@ function showNotification(message, type = 'primary') {
                 Derniers articles
             </h2>
             <a href="{{ route('items.index') }}" 
-               class="text-sm text-purple-600 font-semibold hover:text-purple-700">
+               class="text-sm text-primary-600 font-semibold hover:text-primary-700">
                 Voir tout <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -183,7 +183,7 @@ function showNotification(message, type = 'primary') {
             @forelse($latestItems as $item)
                 <div class="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <!-- Image produit -->
-                    <div class="relative h-32 bg-gradient-to-br from-purple-200 to-cyan-200">
+                    <div class="relative h-32 bg-gradient-to-br from-primary-200 to-cyan-200">
                         @php
                             $imgPath = ($item->images && count($item->images) > 0) ? $item->images[0] : null;
                         @endphp
@@ -197,7 +197,7 @@ function showNotification(message, type = 'primary') {
                             </div>
                         @endif
                         <!-- Badge prix -->
-                        <div class="absolute top-2 right-2 px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-bold shadow-md">
+                        <div class="absolute top-2 right-2 px-3 py-1 bg-primary-600 text-white rounded-full text-sm font-bold shadow-md">
                             {{ number_format($item->price) }} {{ $item->currency }}
                         </div>
                     </div>
@@ -208,7 +208,7 @@ function showNotification(message, type = 'primary') {
                             {{ Str::limit($item->name, 40) }}
                         </h3>
                         <div class="flex items-center justify-between mt-2">
-                            <span class="px-2 py-1 bg-purple-100 text-purple-600 text-xs rounded-full">
+                            <span class="px-2 py-1 bg-primary-100 text-primary-600 text-xs rounded-full">
                                 {{ $item->condition }}
                             </span>
                             <button class="w-7 h-7 bg-cyan-400 text-white rounded-full flex items-center justify-center hover:bg-cyan-500 transition-colors">
@@ -228,12 +228,12 @@ function showNotification(message, type = 'primary') {
                     <p class="text-gray-500 mb-4">Soyez le premier à publier un article !</p>
                     @auth
                         <a href="{{ route('items.create') }}" 
-                           class="inline-block px-6 py-3 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors">
+                           class="inline-block px-6 py-3 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition-colors">
                             <i class="fas fa-plus me-2"></i>Publier un article
                         </a>
                     @else
                         <a href="{{ route('register') }}" 
-                           class="inline-block px-6 py-3 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-colors">
+                           class="inline-block px-6 py-3 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition-colors">
                             <i class="fas fa-user-plus me-2"></i>Rejoindre VintApp
                         </a>
                     @endauth

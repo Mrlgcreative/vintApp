@@ -274,7 +274,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-700">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-accent-100 text-accent-700">
                                 <i class="fas fa-heart text-xs"></i>
                                 {{ number_format($item->favorites_count) }}
                             </span>

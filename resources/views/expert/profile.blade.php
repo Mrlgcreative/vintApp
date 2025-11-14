@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 py-8">
     <!-- En-tête -->
-    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 mb-8 mx-4 lg:mx-8">
+    <div class="bg-gradient-to-r from-indigo-600 to-primary-600 rounded-2xl p-8 mb-8 mx-4 lg:mx-8">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div class="text-white">
                 <h1 class="text-3xl lg:text-4xl font-bold mb-3 flex items-center">
@@ -31,7 +31,7 @@
         <div class="lg:col-span-1">
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
                 <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 text-center border-b border-gray-200">
-                    <div class="w-32 h-32 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl text-white shadow-lg">
+                    <div class="w-32 h-32 bg-gradient-to-r from-indigo-600 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl text-white shadow-lg">
                         <i class="fas fa-user"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $expert->name }}</h3>
@@ -243,7 +243,7 @@
 
                     <div class="text-center mt-8">
                         <button type="submit" 
-                                class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                class="bg-gradient-to-r from-indigo-600 to-primary-600 hover:from-indigo-700 hover:to-primary-700 text-white px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
                             <i class="fas fa-save mr-2"></i>
                             Mettre à jour le profil
                         </button>

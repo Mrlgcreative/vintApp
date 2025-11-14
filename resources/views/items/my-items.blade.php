@@ -160,6 +160,21 @@
                                                        title="Modifier">
                                                         <i class="fas fa-edit text-sm"></i>
                                                     </a>
+                                                    @php
+                                                        $hasActiveBoost = $item->activeBoosts && $item->activeBoosts->count() > 0;
+                                                    @endphp
+                                                    @if(!$hasActiveBoost && $item->status === 'active')
+                                                        <a href="{{ route('boost.index') }}?item_id={{ $item->id }}" 
+                                                           class="w-8 h-8 bg-primary-100 hover:bg-primary-200 text-primary-600 rounded-lg flex items-center justify-center transition-all duration-300" 
+                                                           title="Booster cet article">
+                                                            <i class="fas fa-rocket text-sm"></i>
+                                                        </a>
+                                                    @else
+                                                        <div class="w-8 h-8 bg-gray-100 text-gray-400 rounded-lg flex items-center justify-center" 
+                                                             title="{{ $hasActiveBoost ? 'Article déjà boosté' : 'Article inactif' }}">
+                                                            <i class="fas fa-{{ $hasActiveBoost ? 'star' : 'pause' }} text-sm"></i>
+                                                        </div>
+                                                    @endif
                                                     <button type="button" 
                                                             class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-all duration-300 delete-item" 
                                                             data-item-id="{{ $item->id }}"
@@ -232,6 +247,16 @@
                                                     <i class="fas fa-edit mr-2"></i>
                                                     Modifier
                                                 </a>
+                                                @php
+                                                    $hasActiveBoost = $item->activeBoosts && $item->activeBoosts->count() > 0;
+                                                @endphp
+                                                @if(!$hasActiveBoost && $item->status === 'active')
+                                                    <a href="{{ route('boost.index') }}?item_id={{ $item->id }}" 
+                                                       class="flex-1 bg-primary-100 hover:bg-primary-200 text-primary-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
+                                                        <i class="fas fa-rocket mr-2"></i>
+                                                        Booster
+                                                    </a>
+                                                @endif
                                                 <button type="button" 
                                                         class="flex-1 bg-red-100 hover:bg-red-200 text-red-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300 delete-item" 
                                                         data-item-id="{{ $item->id }}">
@@ -428,5 +453,7 @@ function showNotification(message, type = 'info') {
         setTimeout(() => notification.remove(), 300);
     }, 5000);
 }
+
+
 </script>
 @endsection 

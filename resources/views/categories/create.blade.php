@@ -7,7 +7,7 @@
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('categories.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-purple-600 transition-colors duration-200">
+                    <a href="{{ route('categories.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors duration-200">
                         <i class="fas fa-layer-group mr-2"></i>
                         Catégories
                     </a>
@@ -15,7 +15,7 @@
                 <li>
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-sm font-medium text-purple-600">Ajouter une catégorie</span>
+                        <span class="text-sm font-medium text-primary-600">Ajouter une catégorie</span>
                     </div>
                 </li>
             </ol>
@@ -24,7 +24,7 @@
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center">
-                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mr-4">
                     <i class="fas fa-plus text-white text-xl"></i>
                 </div>
                 <div>
@@ -36,11 +36,11 @@
 
         <!-- Formulaire -->
         <div class="max-w-2xl mx-auto">
-            <div class="bg-white rounded-2xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden">
                 <!-- Header du formulaire -->
                 <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-edit text-purple-500 mr-2"></i>
+                        <i class="fas fa-edit text-primary-500 mr-2"></i>
                         Informations de la catégorie
                     </h3>
                 </div>
@@ -91,7 +91,7 @@
                             <input type="text" 
                                    name="name" 
                                    id="name" 
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('name') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('name') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
                                    value="{{ old('name') }}" 
                                    required 
                                    maxlength="100"
@@ -113,7 +113,7 @@
                                       id="description" 
                                       rows="3" 
                                       maxlength="500"
-                                      class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 resize-none @error('description') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror"
+                                      class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 resize-none @error('description') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror"
                                       placeholder="Description détaillée de la catégorie...">{{ old('description') }}</textarea>
                             <p class="mt-1 text-xs text-gray-500">Maximum 500 caractères</p>
                             @error('description')
@@ -131,21 +131,21 @@
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                        <i id="icon-preview" class="{{ old('icon', 'fas fa-folder') }} text-purple-600"></i>
+                                    <div class="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center">
+                                        <i id="icon-preview" class="{{ old('icon', 'fas fa-folder') }} text-primary-600"></i>
                                     </div>
                                 </div>
                                 <input type="text" 
                                        name="icon" 
                                        id="icon" 
-                                       class="block w-full pl-16 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('icon') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
+                                       class="block w-full pl-16 pr-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('icon') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
                                        value="{{ old('icon') }}" 
                                        placeholder="fas fa-tshirt"
                                        maxlength="50">
                             </div>
                             <p class="mt-1 text-xs text-gray-500">
                                 Utilisez les classes FontAwesome (ex: fas fa-tshirt, fas fa-laptop, fas fa-car)
-                                <a href="https://fontawesome.com/icons" target="_blank" class="text-purple-600 hover:text-purple-800 underline ml-1">
+                                <a href="https://fontawesome.com/icons" target="_blank" class="text-primary-600 hover:text-primary-800 underline ml-1">
                                     Voir la liste des icônes
                                 </a>
                             </p>
@@ -167,7 +167,7 @@
                                        name="image" 
                                        id="image" 
                                        accept="image/*"
-                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-colors duration-200 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 @error('image') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
+                                       class="block w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 transition-colors duration-200 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 @error('image') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
                             </div>
                             <p class="mt-1 text-xs text-gray-500">
                                 Formats acceptés : JPEG, PNG, JPG, GIF, SVG. Taille maximale : 2MB.
@@ -201,7 +201,7 @@
                             </label>
                             <select name="parent_id" 
                                     id="parent_id" 
-                                    class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('parent_id') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
+                                    class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('parent_id') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror">
                                 <option value="">-- Aucune (catégorie principale) --</option>
                                 @if(isset($parentCategories))
                                     @foreach($parentCategories as $parent)
@@ -231,7 +231,7 @@
                             <input type="number" 
                                    name="sort_order" 
                                    id="sort_order" 
-                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200 @error('sort_order') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
+                                   class="block w-full px-4 py-3 border border-gray-300 rounded-xl shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200 @error('sort_order') border-red-300 ring-red-500 focus:ring-red-500 focus:border-red-500 @enderror" 
                                    value="{{ old('sort_order', 0) }}" 
                                    min="0"
                                    placeholder="0">
@@ -249,7 +249,7 @@
                         <!-- Statut actif -->
                         <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
                             <div class="flex items-center">
-                                <i class="fas fa-toggle-on text-purple-500 mr-3"></i>
+                                <i class="fas fa-toggle-on text-primary-500 mr-3"></i>
                                 <div>
                                     <label for="is_active" class="text-sm font-semibold text-gray-700">
                                         Catégorie active
@@ -264,7 +264,7 @@
                                        value="1"
                                        class="sr-only peer" 
                                        {{ old('is_active', true) ? 'checked' : '' }}>
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                             </label>
                         </div>
 
@@ -276,7 +276,7 @@
                                 Annuler
                             </a>
                             <button type="submit" 
-                                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg shadow-purple-500/25 hover:from-purple-600 hover:to-purple-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300">
+                                    class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:from-primary-600 hover:to-primary-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300">
                                 <i class="fas fa-save mr-2"></i>
                                 Enregistrer
                             </button>
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Prévisualisation de l'icône
     iconInput.addEventListener('input', function() {
         const iconClass = this.value.trim() || 'fas fa-folder';
-        iconPreview.className = iconClass + ' text-purple-600';
+        iconPreview.className = iconClass + ' text-primary-600';
     });
     
     // Prévisualisation de l'image

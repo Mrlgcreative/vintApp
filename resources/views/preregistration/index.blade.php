@@ -60,7 +60,7 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen">
+<body class="bg-gradient-to-br from-indigo-500 via-primary-500 to-accent-500 min-h-screen">
     <!-- Background decorations -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
         <div class="absolute top-20 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-float"></div>
@@ -73,7 +73,7 @@
             <!-- Card principale -->
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up">
                 <!-- Header avec dégradé -->
-                <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 sm:px-8 lg:px-12 py-8 sm:py-12 text-white overflow-hidden">
+                <div class="relative bg-gradient-to-r from-indigo-600 via-primary-600 to-accent-600 px-6 sm:px-8 lg:px-12 py-8 sm:py-12 text-white overflow-hidden">
                     <!-- Decorative circles -->
                     <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
                     <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
@@ -165,24 +165,24 @@
 
                     <!-- Avantages -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div class="bg-gradient-to-br from-indigo-50 to-primary-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-indigo-500 to-primary-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                                 <i class="fas fa-bolt text-white text-xl sm:text-2xl"></i>
                             </div>
                             <h3 class="font-bold text-gray-900 mb-1 text-sm sm:text-base">Accès prioritaire</h3>
                             <p class="text-xs sm:text-sm text-gray-600">Soyez parmi les premiers utilisateurs</p>
                         </div>
                         
-                        <div class="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div class="bg-gradient-to-br from-accent-50 to-rose-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-accent-500 to-rose-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                                 <i class="fas fa-gift text-white text-xl sm:text-2xl"></i>
                             </div>
                             <h3 class="font-bold text-gray-900 mb-1 text-sm sm:text-base">Bonus exclusif</h3>
                             <p class="text-xs sm:text-sm text-gray-600">Crédits de bienvenue offerts</p>
                         </div>
                         
-                        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
-                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-3">
+                        <div class="bg-gradient-to-br from-primary-50 to-indigo-50 rounded-2xl p-4 sm:p-6 text-center transform hover:scale-105 transition-transform duration-300">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-primary-500 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-3">
                                 <i class="fas fa-bell text-white text-xl sm:text-2xl"></i>
                             </div>
                             <h3 class="font-bold text-gray-900 mb-1 text-sm sm:text-base">Infos en avant-première</h3>
@@ -378,7 +378,7 @@
 
                         <!-- Bouton submit -->
                         <button type="submit" 
-                                class="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 text-lg">
+                                class="w-full bg-gradient-to-r from-indigo-600 via-primary-600 to-accent-600 text-white font-bold py-4 px-6 rounded-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 text-lg">
                             <i class="fas fa-rocket mr-2"></i>
                             Rejoindre VintApp maintenant !
                         </button>

@@ -22,44 +22,79 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Item::with(['category', 'brand', 'user'])
+        // Récupérer les articles avec boost prioritaires
+        $boostedItemsQuery = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            ->whereHas('activeBoosts')
             ->where('status', 'active');
 
-        // Filtres
-        if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+        // Récupérer les articles réguliers (non-boostés)
+        $regularItemsQuery = Item::with(['category', 'brand', 'user'])
+            ->whereDoesntHave('activeBoosts')
+            ->where('status', 'active');
+
+        // Appliquer les filtres à toutes les requêtes
+        $queries = [$boostedItemsQuery, $regularItemsQuery];
+        
+        foreach ($queries as $query) {
+            // Filtres
+            if ($request->filled('category')) {
+                $query->where('category_id', $request->category);
+            }
+
+            if ($request->filled('brand')) {
+                $query->where('brand_id', $request->brand);
+            }
+
+            if ($request->filled('condition')) {
+                $query->where('condition', $request->condition);
+            }
+
+            if ($request->filled('min_price')) {
+                $query->where('price', '>=', $request->min_price);
+            }
+
+            if ($request->filled('max_price')) {
+                $query->where('price', '<=', $request->max_price);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
         }
 
-        if ($request->filled('brand')) {
-            $query->where('brand_id', $request->brand);
-        }
-
-        if ($request->filled('condition')) {
-            $query->where('condition', $request->condition);
-        }
-
-        if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
-        }
-
-        if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // Tri
+        // Tri et ordre des boosts d'abord
         $sort = $request->get('sort', 'created_at');
         $order = $request->get('order', 'desc');
-        $query->orderBy($sort, $order);
+        
+        $boostedItems = $boostedItemsQuery->orderBy($sort, $order)->get();
+        $regularItems = $regularItemsQuery->orderBy($sort, $order)->get();
+        
+        // Combiner les collections en priorisant les boostés
+        $allItems = $boostedItems->concat($regularItems);
+        
+        // Paginer manuellement
+        $perPage = 12;
+        $currentPage = $request->get('page', 1);
+        $total = $allItems->count();
+        $items = $allItems->forPage($currentPage, $perPage);
+        
+        // Créer un paginator personnalisé
+        $items = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items->values(), 
+            $total, 
+            $perPage, 
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'pageName' => 'page',
+            ]
+        );
+        $items->appends($request->query());
 
-        $items = $query->paginate(12);
         $categories = Category::where('is_active', true)->get();
         $brands = Brand::where('is_active', true)->get();
 
@@ -380,33 +415,66 @@ class ItemController extends Controller
         $maxPrice = $request->get('max_price');
         $condition = $request->get('condition');
 
-        $items = Item::with(['category', 'brand', 'user'])
+        // Prioriser les articles boostés dans les résultats de recherche
+        $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            ->whereHas('activeBoosts')
             ->where('status', 'active');
 
-        if ($query) {
-            $items->where(function($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%");
-            });
+        $regularItems = Item::with(['category', 'brand', 'user'])
+            ->whereDoesntHave('activeBoosts')
+            ->where('status', 'active');
+
+        $queries = [$boostedItems, $regularItems];
+        
+        foreach ($queries as $items) {
+            if ($query) {
+                $items->where(function($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('description', 'like', "%{$query}%");
+                });
+            }
+
+            if ($category) {
+                $items->where('category_id', $category);
+            }
+
+            if ($minPrice) {
+                $items->where('price', '>=', $minPrice);
+            }
+
+            if ($maxPrice) {
+                $items->where('price', '<=', $maxPrice);
+            }
+
+            if ($condition) {
+                $items->where('condition', $condition);
+            }
         }
 
-        if ($category) {
-            $items->where('category_id', $category);
-        }
-
-        if ($minPrice) {
-            $items->where('price', '>=', $minPrice);
-        }
-
-        if ($maxPrice) {
-            $items->where('price', '<=', $maxPrice);
-        }
-
-        if ($condition) {
-            $items->where('condition', $condition);
-        }
-
-        $items = $items->orderBy('created_at', 'desc')->paginate(12);
+        $boostedResults = $boostedItems->orderBy('created_at', 'desc')->get();
+        $regularResults = $regularItems->orderBy('created_at', 'desc')->get();
+        
+        $allResults = $boostedResults->concat($regularResults);
+        
+        // Paginer manuellement
+        $perPage = 12;
+        $currentPage = $request->get('page', 1);
+        $total = $allResults->count();
+        $items = $allResults->forPage($currentPage, $perPage);
+        
+        // Créer un paginator personnalisé
+        $items = new \Illuminate\Pagination\LengthAwarePaginator(
+            $items->values(), 
+            $total, 
+            $perPage, 
+            $currentPage,
+            [
+                'path' => $request->url(),
+                'pageName' => 'page',
+            ]
+        );
+        $items->appends($request->query());
+        
         $categories = Category::where('is_active', true)->get();
 
         return view('items.search', compact('items', 'categories', 'query'));

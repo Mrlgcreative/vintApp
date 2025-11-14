@@ -78,6 +78,24 @@ class Item extends Model
         return $this->hasMany(Order::class);
     }
 
+    public function boosts()
+    {
+        return $this->hasMany(ProductBoost::class);
+    }
+
+    public function activeBoosts()
+    {
+        return $this->boosts()->active();
+    }
+
+    public function currentBoosts()
+    {
+        return $this->boosts()
+            ->where('status', 'active')
+            ->where('starts_at', '<=', now())
+            ->where('expires_at', '>', now());
+    }
+
     public function reviews()
     {
         return $this->hasMany(Review::class);
@@ -198,5 +216,118 @@ class Item extends Model
         return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     ' . $badgeIcon . ' ' . $badgeText . '
                 </span>';
+    }
+
+    // Méthodes pour les boosts
+    public function isBoosted(): bool
+    {
+        return $this->activeBoosts()->exists();
+    }
+
+    public function getActiveBoostTypes(): array
+    {
+        return $this->activeBoosts()->pluck('boost_type')->toArray();
+    }
+
+    public function hasBoostType($type): bool
+    {
+        return $this->activeBoosts()->where('boost_type', $type)->exists();
+    }
+
+    public function getBoostPriority(): int
+    {
+        return ProductBoost::getBoostPriority($this->id);
+    }
+
+    public function getBadgesHtml(): string
+    {
+        $html = '';
+        
+        // Badge authenticité d'abord
+        $html .= $this->getAuthenticityBadgeHtml();
+        
+        // Ensuite les badges de boost
+        $activeBoosts = $this->activeBoosts;
+        
+        foreach ($activeBoosts as $boost) {
+            $boostType = $boost->boostType;
+            if (!$boostType) continue;
+            
+            $config = $boostType->visual_config;
+            $classes = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-1 ';
+            $classes .= $config['badge_color'] ?? 'bg-blue-500 text-white';
+            
+            if ($config['pulse_animation'] ?? false) {
+                $classes .= ' animate-pulse';
+            }
+            
+            $icon = $boostType->icon ? '<i class="' . $boostType->icon . ' mr-1"></i>' : '';
+            $text = $config['badge_text'] ?? strtoupper($boost->boost_type);
+            
+            $html .= '<span class="' . $classes . '">' . $icon . $text . '</span>';
+        }
+        
+        return $html;
+    }
+
+    public function getBoostStyles(): string
+    {
+        $styles = [];
+        $activeBoosts = $this->activeBoosts;
+        
+        foreach ($activeBoosts as $boost) {
+            $boostType = $boost->boostType;
+            if (!$boostType) continue;
+            
+            $config = $boostType->visual_config;
+            
+            if ($config['border_color'] ?? false) {
+                $styles[] = 'border: ' . ($config['border_width'] ?? '1px') . ' solid ' . $config['border_color'];
+            }
+            
+            if ($config['shadow_effect'] ?? false) {
+                $styles[] = 'box-shadow: ' . $config['shadow_effect'];
+            }
+            
+            if ($config['glow_effect'] ?? false) {
+                $styles[] = 'box-shadow: 0 0 10px rgba(59, 130, 246, 0.5)';
+            }
+        }
+        
+        return implode('; ', $styles);
+    }
+
+    public function canBeBoostWith($boostType): bool
+    {
+        $type = BoostType::where('name', $boostType)->first();
+        return $type ? $type->canApplyToItem($this->id) : false;
+    }
+
+    // Scope pour les items boostés
+    public function scopeBoosted($query)
+    {
+        return $query->whereHas('activeBoosts');
+    }
+
+    public function scopeOrderByBoostPriority($query)
+    {
+        return $query->leftJoin('product_boosts', function($join) {
+            $join->on('items.id', '=', 'product_boosts.item_id')
+                 ->where('product_boosts.status', '=', 'active')
+                 ->where('product_boosts.starts_at', '<=', now())
+                 ->where('product_boosts.expires_at', '>', now());
+        })
+        ->selectRaw('items.*, COALESCE(
+            CASE product_boosts.boost_type
+                WHEN "spotlight" THEN 1000
+                WHEN "premium" THEN 500  
+                WHEN "top" THEN 300
+                WHEN "featured" THEN 200
+                WHEN "urgent" THEN 100
+                ELSE 0
+            END, 0
+        ) as boost_priority')
+        ->orderByDesc('boost_priority')
+        ->groupBy('items.id');
     }
 }

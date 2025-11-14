@@ -16,16 +16,44 @@ class WelcomeController extends Controller
             $q->where('status', 'active');
         }])->where('is_active', true)->orderBy('sort_order')->get();
 
-        $latestItems = \App\Models\Item::with(['category', 'brand', 'user'])
+        // Récupérer les articles avec boost Spotlight spécifiquement
+        $spotlightItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            ->whereHas('activeBoosts', function($query) {
+                $query->whereHas('boostType', function($subQuery) {
+                    $subQuery->where('name', 'spotlight');
+                })
+                ->where('status', 'active')
+                ->where('expires_at', '>', now());
+            })
             ->where('status', 'active')
             ->orderBy('created_at', 'desc')
-            ->limit(12)
+            ->limit(6)
             ->get();
+
+        // Récupérer les articles avec boost prioritaires (tous types)
+        $boostedItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            ->whereHas('activeBoosts')
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->limit(8)
+            ->get();
+
+        // Récupérer les articles récents (non-boostés)
+        $regularItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            ->whereDoesntHave('activeBoosts')
+            ->where('status', 'active')
+            ->orderBy('created_at', 'desc')
+            ->limit(8)
+            ->get();
+
+        // Combiner les articles en priorisant les boostés
+        $latestItems = $boostedItems->concat($regularItems)->take(12);
 
         $stats = [
             'users' => \App\Models\User::count(),
             'items' => \App\Models\Item::where('status', 'active')->count(),
             'categories' => \App\Models\Category::where('is_active', true)->count(),
+            'boosted_items' => \App\Models\Item::whereHas('activeBoosts')->where('status', 'active')->count(),
         ];
 
         // Récupérer les slides du carrousel actives
@@ -40,6 +68,6 @@ class WelcomeController extends Controller
             'button_secondary' => Setting::get('hero_button_secondary_text', 'Parcourir'),
         ];
 
-        return view('home', compact('categories', 'latestItems', 'stats', 'heroSlides', 'heroSettings'));
+        return view('home', compact('categories', 'latestItems', 'stats', 'heroSlides', 'heroSettings', 'boostedItems', 'spotlightItems'));
     }
 } 

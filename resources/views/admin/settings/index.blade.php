@@ -48,6 +48,27 @@
                 </button>
             </div>
         </div>
+
+        <!-- Navigation par onglets -->
+        <div class="border-b border-gray-200 bg-gray-50">
+            <nav class="flex space-x-4 px-4 sm:px-6" aria-label="Paramètres">
+                <a href="{{ route('admin.settings.index') }}" 
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-blue-500 text-sm font-medium text-blue-600 whitespace-nowrap">
+                    <i class="fas fa-sliders-h mr-2"></i>
+                    Général
+                </a>
+                <a href="{{ route('admin.settings.colors') }}" 
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                    <i class="fas fa-palette mr-2"></i>
+                    Couleurs
+                </a>
+                <a href="{{ route('admin.settings.preregistration') }}" 
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                    <i class="fas fa-user-clock mr-2"></i>
+                    Préinscription
+                </a>
+            </nav>
+        </div>
         
         <div class="p-4 sm:p-6">
             <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-4 sm:space-y-6">
@@ -274,10 +295,10 @@
                 
                 <!-- Section Pré-inscription -->
                 <div class="border-t border-gray-200 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                                <i class="fas fa-user-plus mr-3 text-purple-600"></i>
+                                <i class="fas fa-user-plus mr-3 text-primary-600"></i>
                                 Mode Pré-inscription
                             </h3>
                             <p class="text-sm text-gray-600 mt-1">
@@ -363,7 +384,7 @@
                             <!-- Actions rapides -->
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('admin.settings.preregistration') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-cog mr-2"></i>
                                     Configurer
                                 </a>
@@ -409,10 +430,10 @@
                 
                 <!-- Section Carrousel Hero (Page d'Accueil) -->
                 <div class="border-t border-gray-200 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                                <i class="fas fa-images text-purple-600 mr-3"></i>
+                                <i class="fas fa-images text-primary-600 mr-3"></i>
                                 Carrousel Hero - Page d'Accueil
                             </h3>
                             <p class="text-sm text-gray-600 mt-1">
@@ -420,12 +441,12 @@
                             </p>
                         </div>
                         
-                        <div class="bg-white rounded-lg border border-purple-200 p-6">
+                        <div class="bg-white rounded-lg border border-primary-200 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-sliders-h text-2xl text-purple-600"></i>
+                                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-sliders-h text-2xl text-primary-600"></i>
                                         </div>
                                     </div>
                                     <div>
@@ -442,7 +463,7 @@
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Réordonnancement par glisser-déposer</li>
                                         </ul>
                                         <a href="{{ route('admin.settings.hero-slides.index') }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
                                             <i class="fas fa-cog mr-2"></i>
                                             Gérer les Slides du Carrousel
                                         </a>
@@ -508,10 +529,10 @@
                 
                 <!-- Section Wallet Entreprise (Commissions) -->
                 <div class="border-t border-gray-200 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                                <i class="fas fa-building text-purple-600 mr-3"></i>
+                                <i class="fas fa-building text-primary-600 mr-3"></i>
                                 Wallet Entreprise - Commissions de la Plateforme
                             </h3>
                             <p class="text-sm text-gray-600 mt-1">
@@ -521,11 +542,11 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Wallet USD -->
-                            <div class="bg-white rounded-lg border border-purple-200 p-6">
+                            <div class="bg-white rounded-lg border border-primary-200 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                                            <i class="fas fa-dollar-sign text-2xl text-purple-600"></i>
+                                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-dollar-sign text-2xl text-primary-600"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-semibold text-gray-700 uppercase">Wallet USD</h4>
@@ -538,7 +559,7 @@
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-600">Solde actuel</span>
-                                            <span class="text-2xl font-bold text-purple-600">
+                                            <span class="text-2xl font-bold text-primary-600">
                                                 ${{ number_format($enterpriseWallets['usd']->balance, 2) }}
                                             </span>
                                         </div>
@@ -604,10 +625,10 @@
                         </div>
                         
                         <!-- Informations sur les commissions -->
-                        <div class="mt-6 bg-white rounded-lg border border-purple-200 p-4">
+                        <div class="mt-6 bg-white rounded-lg border border-primary-200 p-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
-                                    <i class="fas fa-info-circle text-purple-600 text-xl"></i>
+                                    <i class="fas fa-info-circle text-primary-600 text-xl"></i>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <h5 class="text-sm font-semibold text-gray-900 mb-2">
@@ -638,7 +659,7 @@
                         <!-- Boutons d'action -->
                         <div class="mt-6 flex flex-wrap gap-3">
                             <a href="{{ route('admin.wallets.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                 <i class="fas fa-wallet mr-2"></i>
                                 Voir tous les wallets
                             </a>

@@ -128,18 +128,18 @@
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <div class="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-2">Commissions USD</div>
+                    <div class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Commissions USD</div>
                     <div class="text-2xl font-bold text-gray-900">${{ number_format($stats['enterprise_commission_usd'] ?? 0, 2) }}</div>
                     <div class="text-xs text-gray-500 mt-1">Sous-wallet commission</div>
                 </div>
                 <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-percentage text-2xl text-purple-600"></i>
+                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-percentage text-2xl text-primary-600"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="h-1 bg-gradient-to-r from-purple-500 to-purple-600"></div>
+        <div class="h-1 bg-gradient-to-r from-primary-500 to-primary-600"></div>
     </div>
 </div>
 
@@ -169,18 +169,18 @@
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <div class="text-xs font-semibold text-pink-600 uppercase tracking-wider mb-2">Boost</div>
+                    <div class="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">Boost</div>
                     <div class="text-2xl font-bold text-gray-900">${{ number_format($stats['enterprise_boost_usd'] ?? 0, 2) }}</div>
                     <div class="text-xs text-gray-500 mt-1">Sous-wallet boost</div>
                 </div>
                 <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-rocket text-2xl text-pink-600"></i>
+                    <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-rocket text-2xl text-accent-600"></i>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="h-1 bg-gradient-to-r from-pink-500 to-pink-600"></div>
+        <div class="h-1 bg-gradient-to-r from-accent-500 to-accent-600"></div>
     </div>
 
     <!-- Revenus Vérifications -->

@@ -104,8 +104,8 @@
                 <p class="text-sm font-medium text-gray-600">Ouverts</p>
                 <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($stats['total_emails_opened']) }}</h3>
             </div>
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100">
-                <i class="fas fa-envelope-open text-xl text-purple-600"></i>
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
+                <i class="fas fa-envelope-open text-xl text-primary-600"></i>
             </div>
         </div>
     </div>

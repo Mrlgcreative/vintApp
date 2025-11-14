@@ -17,9 +17,9 @@ class AddCameraPermissions
     {
         $response = $next($request);
         
-        // Ajouter les en-têtes de permissions pour la caméra
-        $response->headers->set('Permissions-Policy', 'camera=(self)');
-        $response->headers->set('Feature-Policy', 'camera *');
+    // Ajouter l'en-tête Permissions-Policy pour la caméra (Permissions-Policy remplace Feature-Policy)
+    // Ne plus définir l'ancien en-tête 'Feature-Policy' — les navigateurs modernes utilisent 'Permissions-Policy'.
+    $response->headers->set('Permissions-Policy', 'camera=(self)');
         
         return $response;
     }

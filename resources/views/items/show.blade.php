@@ -1,13 +1,13 @@
 @extends('app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
     <div class="container mx-auto px-4 py-8 lg:py-16">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-purple-600 transition-colors">Accueil</a>
+            <a href="{{ route('home') }}" class="hover:text-primary-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <a href="{{ route('items.index') }}" class="hover:text-purple-600 transition-colors">Produits</a>
+            <a href="{{ route('items.index') }}" class="hover:text-primary-600 transition-colors">Produits</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <span class="text-gray-900 font-medium">{{ Str::limit($item->name, 30) }}</span>
         </nav>
@@ -19,12 +19,12 @@
                     <div class="sticky top-20 flex flex-col items-center gap-2">
                         @foreach($item->images as $index => $image)
                             <div class="thumbnail-item w-14 h-14 lg:w-16 lg:h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 cursor-pointer relative 
-                                {{ $index === 0 ? 'border-purple-600 shadow-lg shadow-purple-600/25 scale-105' : 'border-gray-200 hover:border-purple-300' }}"
+                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25 scale-105' : 'border-gray-200 hover:border-primary-300' }}"
                                 data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
                                 <img src="{{ Storage::url($image) }}" 
                                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
                                      alt="Miniature {{ $index + 1 }}">
-                                <div class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-purple-700/15 opacity-0 transition-opacity duration-300
+                                <div class="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-primary-700/15 opacity-0 transition-opacity duration-300
                                     {{ $index === 0 ? 'opacity-100' : 'hover:opacity-100' }}"></div>
                             </div>
                         @endforeach
@@ -38,7 +38,7 @@
                     <div class="flex gap-2 overflow-x-auto pb-2">
                         @foreach($item->images as $index => $image)
                             <div class="thumbnail-item flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 cursor-pointer 
-                                {{ $index === 0 ? 'border-purple-600 shadow-lg shadow-purple-600/25' : 'border-gray-200' }}"
+                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25' : 'border-gray-200' }}"
                                 data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
                                 <img src="{{ Storage::url($image) }}" 
                                      class="w-full h-full object-cover transition-transform duration-300" 
@@ -51,7 +51,7 @@
 
             <!-- Image principale -->
             <div class="xl:col-span-6 order-2 xl:order-1">
-                <div class="relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-purple-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <div class="relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-primary-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     @if($item->images && count($item->images) > 0)
                         <img id="mainProductImg" 
                              src="{{ Storage::url($item->images[0]) }}" 
@@ -71,13 +71,13 @@
 
             <!-- Card produit -->
             <div class="xl:col-span-5 order-1 xl:order-2">
-                <div class="sticky top-4 lg:top-6 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl shadow-purple-600/10 transform transition-all duration-300 animate-fade-in border border-gray-100/50">
+                <div class="sticky top-4 lg:top-6 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl shadow-primary-600/10 transform transition-all duration-300 animate-fade-in border border-gray-100/50">
                     <!-- En-tête avec titre et bouton favori -->
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex-1 pr-3 lg:pr-4">
                             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3 lg:mb-4">{{ $item->name }}</h1>
                             <div class="flex flex-wrap gap-2">
-                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary-700 border border-primary-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                     <i class="fas fa-tag mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
                                     {{ $item->category->name }}
                                 </span>
@@ -123,7 +123,7 @@
                             </div>
                         </div>
                         @auth
-                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-purple-200/50 bg-white flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
+                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
                                 data-item-id="{{ $item->id }}">
                                 <i class="fas fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
                             </button>
@@ -131,9 +131,9 @@
                     </div>
 
                     <!-- Section prix -->
-                    <div class="bg-gradient-to-r from-purple-50/50 to-purple-100/50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-purple-200/30 mb-4 lg:mb-6">
+                    <div class="bg-gradient-to-r from-primary-50/50 to-primary-100/50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-primary-200/30 mb-4 lg:mb-6">
                         <div class="flex items-center justify-between flex-wrap gap-3 lg:gap-4">
-                            <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent">
+                            <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
                                 {{ $item->formatted_price }}
                             </span>
                             <div class="flex items-center">
@@ -149,10 +149,10 @@
                     </div>
 
                     <!-- Métadonnées du produit -->
-                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-purple-200/20 mb-4 lg:mb-6">
+                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-primary-200/20 mb-4 lg:mb-6">
                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-eye text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
@@ -162,7 +162,7 @@
                             </div>
                             
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-boxes text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
@@ -173,7 +173,7 @@
 
                             @if($item->color)
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-palette text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
@@ -185,13 +185,13 @@
 
                             @if($item->size)
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-ruler text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Taille</p>
                                     <div class="text-gray-900 font-bold text-sm lg:text-base">
-                                        <span class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-2 py-1 rounded text-xs font-semibold">
+                                        <span class="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-2 py-1 rounded text-xs font-semibold">
                                             {{ $item->size }}
                                         </span>
                                     </div>
@@ -201,7 +201,7 @@
 
                             @if($item->item_number)
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-barcode text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
@@ -212,7 +212,7 @@
                             @endif
 
                             <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-purple-600 to-purple-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-calendar-alt text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
@@ -224,20 +224,20 @@
                     </div>
 
                     <!-- Section panier -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-primary-200/20 mb-6">
                         <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm">
                             @csrf
                             <div class="mb-4">
                                 <label class="block text-gray-700 font-semibold mb-2">Quantité</label>
                                 <div class="flex items-center max-w-xs">
                                     <button type="button" onclick="decrementQuantity()" 
-                                        class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                     <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="{{ max($item->quantity, 1) }}" 
-                                        class="flex-1 h-11 border-2 border-purple-200/50 text-center font-bold text-gray-900 text-lg focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" {{ $item->quantity == 0 ? 'disabled' : '' }}>
+                                        class="flex-1 h-11 border-2 border-primary-200/50 text-center font-bold text-gray-900 text-lg focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" {{ $item->quantity == 0 ? 'disabled' : '' }}>
                                     <button type="button" onclick="incrementQuantity()" 
-                                        class="w-11 h-11 bg-white border-2 border-purple-200/50 text-purple-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
@@ -254,7 +254,7 @@
                                 @endif
                             </div>
                             <button type="submit" id="addToCartBtn" 
-                                class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group">
+                                class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group">
                                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                                 <i class="fas fa-shopping-cart mr-3"></i>
                                 <span>Ajouter au panier</span>
@@ -324,9 +324,9 @@
                     @endauth
 
                     <!-- Description -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border-l-4 border-purple-600 mb-6">
+                    <div class="bg-gray-50 p-6 rounded-2xl border-l-4 border-primary-600 mb-6">
                         <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
-                            <i class="fas fa-align-left text-purple-600 mr-3"></i>
+                            <i class="fas fa-align-left text-primary-600 mr-3"></i>
                             Description
                         </h5>
                         <p class="text-gray-600 leading-relaxed">{{ $item->description }}</p>
@@ -334,9 +334,9 @@
 
                     <!-- Spécifications -->
                     @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
-                        <div class="bg-gray-50 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                        <div class="bg-gray-50 p-6 rounded-2xl border border-primary-200/20 mb-6">
                             <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
-                                <i class="fas fa-list-ul text-purple-600 mr-3"></i>
+                                <i class="fas fa-list-ul text-primary-600 mr-3"></i>
                                 Spécifications
                             </h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -351,14 +351,14 @@
                     @endif
 
                     <!-- Vendeur -->
-                    <div class="bg-gradient-to-r from-purple-50/30 to-purple-100/30 p-6 rounded-2xl border border-purple-200/20 mb-6">
+                    <div class="bg-gradient-to-r from-primary-50/30 to-primary-100/30 p-6 rounded-2xl border border-primary-200/20 mb-6">
                         <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
-                            <i class="fas fa-user-circle text-purple-600 mr-3"></i>
+                            <i class="fas fa-user-circle text-primary-600 mr-3"></i>
                             Vendeur
                         </h5>
                         <div class="bg-white p-5 rounded-xl transition-all duration-300 hover:shadow-lg">
                             <div class="flex items-center">
-                                <div class="w-15 h-15 rounded-full bg-gradient-to-r from-purple-600 to-purple-700 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
+                                <div class="w-15 h-15 rounded-full bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="flex-1">
@@ -409,7 +409,7 @@
                                 <form id="contactForm" method="POST" action="{{ route('contact.seller', $item) }}">
                                     @csrf
                                     <button type="button" onclick="openModal('contactModal')"
-                                        class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3">
+                                        class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3">
                                         <i class="fas fa-percentage mr-3"></i>
                                         Demander une réduction
                                     </button>
@@ -417,7 +417,7 @@
                                 
                                 <!-- Bouton contact vendeur -->
                                 <button onclick="contactSeller()" 
-                                    class="w-full bg-white text-purple-600 border-2 border-purple-600 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-purple-600 hover:text-white hover:-translate-y-1 hover:shadow-lg">
+                                    class="w-full bg-white text-primary-600 border-2 border-primary-600 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-primary-600 hover:text-white hover:-translate-y-1 hover:shadow-lg">
                                     <i class="fas fa-envelope mr-3"></i>
                                     Contacter le vendeur
                                 </button>
@@ -437,7 +437,7 @@
                             @endif
                         @else
                             <a href="{{ route('login') }}" 
-                                class="block w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
+                                class="block w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
                                 <i class="fas fa-sign-in-alt mr-3"></i>
                                 Se connecter pour acheter
                             </a>
@@ -470,7 +470,7 @@
                                 <div class="flex items-start space-x-4">
                                     <!-- Avatar utilisateur -->
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-700 flex items-center justify-center text-white font-semibold text-lg">
+                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-semibold text-lg">
                                             {{ strtoupper(substr($review->reviewer->name ?? 'U', 0, 1)) }}
                                         </div>
                                     </div>
@@ -528,10 +528,10 @@
 
         <!-- Articles similaires -->
         @if($similarItems->count() > 0)
-            <div class="mt-12 lg:mt-20 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-purple-600/5">
+            <div class="mt-12 lg:mt-20 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-primary-600/5">
                 <div class="text-center mb-6 lg:mb-8">
                     <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                        <i class="fas fa-heart text-purple-600 mr-2 lg:mr-3"></i>
+                        <i class="fas fa-heart text-primary-600 mr-2 lg:mr-3"></i>
                         Vous aimerez aussi
                     </h3>
                     <p class="text-gray-600 text-base lg:text-lg">Découvrez d'autres articles similaires</p>
@@ -550,9 +550,9 @@
                                         <i class="fas fa-image"></i>
                                     </div>
                                 @endif
-                                <div class="absolute inset-0 bg-purple-600/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                <div class="absolute inset-0 bg-primary-600/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                                     <a href="{{ route('items.show', $similarItem) }}" 
-                                        class="w-8 h-8 lg:w-12 lg:h-12 bg-white text-purple-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
+                                        class="w-8 h-8 lg:w-12 lg:h-12 bg-white text-primary-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
@@ -562,11 +562,11 @@
                                     {{ Str::limit($similarItem->name, 35) }}
                                 </h6>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-base lg:text-xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                                    <span class="text-base lg:text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                                         {{ $similarItem->formatted_price }}
                                     </span>
                                     <a href="{{ route('items.show', $similarItem) }}" 
-                                        class="text-purple-600 font-semibold text-xs lg:text-sm transition-all duration-300 hover:text-purple-800 hover:translate-x-1">
+                                        class="text-primary-600 font-semibold text-xs lg:text-sm transition-all duration-300 hover:text-primary-800 hover:translate-x-1">
                                         Voir <i class="fas fa-arrow-right ml-1"></i>
                                     </a>
                                 </div>
@@ -587,13 +587,13 @@
             <!-- Modal Container -->
             <div class="bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
                 <!-- Header -->
-                <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6 lg:p-8 flex justify-between items-start">
+                <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 lg:p-8 flex justify-between items-start">
                     <div>
                         <h5 class="text-xl lg:text-2xl font-bold mb-1" id="contactModalLabel">
                             <i class="fas fa-percentage mr-2 lg:mr-3"></i>
                             Demander une réduction
                         </h5>
-                        <p class="text-purple-100 text-sm">Négociez directement avec le vendeur</p>
+                        <p class="text-primary-100 text-sm">Négociez directement avec le vendeur</p>
                     </div>
                     <button type="button" onclick="closeModal('contactModal')" 
                         class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white/20 border-0 text-white flex items-center justify-center transition-all duration-300 hover:bg-white/30 hover:scale-110" 
@@ -618,10 +618,10 @@
                                 <h6 class="font-bold text-gray-900 mb-2 text-sm lg:text-base">{{ $item->name }}</h6>
                                 <p class="text-gray-600 text-xs lg:text-sm mb-4">{{ Str::limit($item->description, 120) }}</p>
                                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                                    <span class="text-lg lg:text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                                    <span class="text-lg lg:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                                         {{ $item->formatted_price }}
                                     </span>
-                                    <span class="bg-purple-100 text-purple-700 px-2 py-1 lg:px-3 lg:py-1 rounded-lg lg:rounded-xl text-xs lg:text-sm font-semibold w-fit">
+                                    <span class="bg-primary-100 text-primary-700 px-2 py-1 lg:px-3 lg:py-1 rounded-lg lg:rounded-xl text-xs lg:text-sm font-semibold w-fit">
                                         <i class="fas fa-tag mr-1"></i>
                                         {{ $item->category->name }}
                                     </span>
@@ -633,13 +633,13 @@
                     <!-- Message personnalisé -->
                     <div class="mb-6">
                         <label for="customMessage" class="block font-semibold text-gray-900 mb-2 text-sm lg:text-base">
-                            <i class="fas fa-comment-dots text-purple-600 mr-2"></i>
+                            <i class="fas fa-comment-dots text-primary-600 mr-2"></i>
                             Votre message (optionnel)
                         </label>
                         <textarea name="custom_message" 
                                   id="customMessage" 
                                   rows="4" 
-                                  class="w-full border-2 border-purple-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none text-sm resize-none"
+                                  class="w-full border-2 border-primary-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none text-sm resize-none"
                                   placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
                         <small class="text-gray-500 text-xs lg:text-sm mt-2 block">
                             <i class="fas fa-info-circle mr-1"></i>
@@ -682,7 +682,7 @@
                         Annuler
                     </button>
                     <button type="button" id="submitDiscountBtn" onclick="submitDiscountRequest()" 
-                        class="flex-2 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm lg:text-base">
+                        class="flex-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg text-sm lg:text-base">
                         <i class="fas fa-paper-plane mr-2"></i>
                         Envoyer la demande
                     </button>
@@ -750,13 +750,13 @@ function changeMainImage(src, element) {
     
     // Retirer active de tous les thumbnails
     thumbnails.forEach(thumb => {
-        thumb.classList.remove('border-purple-600', 'shadow-lg', 'shadow-purple-600/25', 'scale-105');
+        thumb.classList.remove('border-primary-600', 'shadow-lg', 'shadow-primary-600/25', 'scale-105');
         thumb.classList.add('border-transparent');
     });
     
     // Ajouter active au thumbnail cliqué
     element.classList.remove('border-transparent');
-    element.classList.add('border-purple-600', 'shadow-lg', 'shadow-purple-600/25', 'scale-105');
+    element.classList.add('border-primary-600', 'shadow-lg', 'shadow-primary-600/25', 'scale-105');
     
     // Changer l'image avec transition
     mainImg.style.opacity = '0';
@@ -894,7 +894,7 @@ function submitDiscountRequest() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const priceElement = document.querySelector('.bg-gradient-to-r.from-purple-600.to-purple-800.bg-clip-text.text-transparent');
+                    const priceElement = document.querySelector('.bg-gradient-to-r.from-primary-600.to-primary-800.bg-clip-text.text-transparent');
                     if (priceElement && priceElement.parentElement) {
                         const currencySymbol = '{{ $item->currency_symbol }}';
                         priceElement.parentElement.innerHTML = `

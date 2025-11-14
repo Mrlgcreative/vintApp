@@ -164,8 +164,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [App\Http\Controllers\MessageController::class, 'getNotifications'])->name('notifications.get');
     Route::post('/notifications/{id}/read', [App\Http\Controllers\MessageController::class, 'markNotificationAsRead'])->name('notifications.read');
     
-    // Routes pour les réductions
-    Route::post('/discounts/apply', [App\Http\Controllers\MessageController::class, 'applyDiscount'])->name('discounts.apply');
+    // Routes pour les réductions (MessageController)
+    Route::post('/discounts/apply-message', [App\Http\Controllers\MessageController::class, 'applyDiscount'])->name('discounts.apply-message');
     Route::get('/discounts/rates', [App\Http\Controllers\MessageController::class, 'getPredefinedDiscountRates'])->name('discounts.rates');
     Route::get('/discounts/requests', [App\Http\Controllers\MessageController::class, 'getDiscountRequests'])->name('discounts.requests');
 });
@@ -219,17 +219,31 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/{user}/export', [App\Http\Controllers\Admin\AdminController::class, 'userExport'])->name('export');
     });
 
+    // Gestion des experts
+    Route::prefix('experts')->name('experts.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'experts'])->name('index');
+        Route::get('/candidates', [App\Http\Controllers\Admin\AdminController::class, 'expertCandidates'])->name('candidates');
+        Route::post('/designate/{user}', [App\Http\Controllers\Admin\AdminController::class, 'designateExpert'])->name('designate');
+        Route::get('/{expert}', [App\Http\Controllers\Admin\AdminController::class, 'expertShow'])->name('show');
+        Route::get('/{expert}/edit', [App\Http\Controllers\Admin\AdminController::class, 'expertEdit'])->name('edit');
+        Route::put('/{expert}', [App\Http\Controllers\Admin\AdminController::class, 'expertUpdate'])->name('update');
+        Route::post('/{expert}/toggle-status', [App\Http\Controllers\Admin\AdminController::class, 'expertToggleStatus'])->name('toggle-status');
+        Route::delete('/{expert}/revoke', [App\Http\Controllers\Admin\AdminController::class, 'expertRevoke'])->name('revoke');
+    });
+
     // Gestion des wallets
     Route::prefix('wallets')->name('wallets.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('index');
         Route::post('/', [App\Http\Controllers\Admin\WalletController::class, 'store'])->name('store');
+        
+        // Routes pour les wallets utilisateurs (ancienne gestion) - AVANT les routes avec paramètres !
+        Route::get('/pending', [App\Http\Controllers\Admin\AdminController::class, 'pendingWallets'])->name('pending');
+        
         Route::get('/{wallet}', [App\Http\Controllers\Admin\WalletController::class, 'show'])->name('show');
         Route::get('/{wallet}/transactions', [App\Http\Controllers\Admin\WalletController::class, 'transactions'])->name('transactions');
         Route::post('/{wallet}/withdraw', [App\Http\Controllers\Admin\WalletController::class, 'withdraw'])->name('withdraw');
         Route::post('/add-commission', [App\Http\Controllers\Admin\WalletController::class, 'addCommission'])->name('add-commission');
         
-        // Routes pour les wallets utilisateurs (ancienne gestion)
-        Route::get('/pending', [App\Http\Controllers\Admin\AdminController::class, 'pendingWallets'])->name('pending');
         Route::post('/{wallet}/approve', [App\Http\Controllers\Admin\AdminController::class, 'approveWallet'])->name('approve');
         Route::post('/{wallet}/reject', [App\Http\Controllers\Admin\AdminController::class, 'rejectWallet'])->name('reject');
         Route::post('/bulk-approve', [App\Http\Controllers\Admin\AdminController::class, 'bulkApproveWallets'])->name('bulk-approve');
@@ -314,9 +328,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'settings'])->name('index');
         Route::put('/update', [App\Http\Controllers\Admin\AdminController::class, 'settingsUpdate'])->name('update');
         
-        // Paramètres de pré-inscription
+        // Paramètres de préinscription
         Route::get('/preregistration', [App\Http\Controllers\Admin\AdminController::class, 'preregistrationSettings'])->name('preregistration');
         Route::put('/preregistration', [App\Http\Controllers\Admin\AdminController::class, 'updatePreregistrationSettings'])->name('preregistration.update');
+        
+        // Paramètres des couleurs
+        Route::get('/colors', [App\Http\Controllers\Admin\ColorSettingsController::class, 'index'])->name('colors');
+        Route::post('/colors', [App\Http\Controllers\Admin\ColorSettingsController::class, 'update'])->name('colors.update');
+        Route::post('/colors/preview/{palette}', [App\Http\Controllers\Admin\ColorSettingsController::class, 'preview'])->name('colors.preview');
+        Route::post('/colors/custom', [App\Http\Controllers\Admin\ColorSettingsController::class, 'createCustom'])->name('colors.custom');
+        Route::delete('/colors/custom/{palette}', [App\Http\Controllers\Admin\ColorSettingsController::class, 'deleteCustom'])->name('colors.custom.delete');
+        Route::get('/colors/export', [App\Http\Controllers\Admin\ColorSettingsController::class, 'export'])->name('colors.export');
+        Route::post('/colors/import', [App\Http\Controllers\Admin\ColorSettingsController::class, 'import'])->name('colors.import');
+        Route::get('/colors/test', function () {
+            return view('admin.colors.test');
+        })->name('colors.test');
+        Route::get('/colors/debug', function () {
+            return view('admin.debug.colors');
+        })->name('colors.debug');
         Route::post('/preregistration/toggle', [App\Http\Controllers\Admin\AdminController::class, 'togglePreregistration'])->name('preregistration.toggle');
         
         // Anciennes routes (à garder pour compatibilité)
@@ -804,6 +833,34 @@ Route::get('/test-expert-view/{id}', function ($id) {
             'line' => $e->getLine()
         ], 500);
     }
+});
+
+
+// Routes du système de boost pour les vendeurs
+Route::middleware('auth')->prefix('boost')->name('boost.')->group(function () {
+    // Afficher tous les types de boost disponibles
+    Route::get('/', [App\Http\Controllers\BoostController::class, 'index'])->name('index');
+    
+    // Afficher les détails d'un type de boost spécifique
+    Route::get('/type/{boostType}', [App\Http\Controllers\BoostController::class, 'show'])->name('show');
+    
+    // Calculer le prix d'un boost pour un produit
+    Route::post('/calculate-price', [App\Http\Controllers\BoostController::class, 'calculatePrice'])->name('calculate-price');
+    
+    // Récupérer les produits de l'utilisateur pour le boost
+    Route::get('/user-items', [App\Http\Controllers\BoostController::class, 'getUserItems'])->name('user-items');
+    
+    // Récupérer les durées disponibles pour un type de boost
+    Route::get('/durations/{boostType}', [App\Http\Controllers\BoostController::class, 'getDurations'])->name('durations');
+    
+    // Acheter un boost pour un produit
+    Route::post('/purchase', [App\Http\Controllers\BoostController::class, 'purchase'])->name('purchase');
+    
+    // Annuler un boost actif
+    Route::post('/cancel/{productBoost}', [App\Http\Controllers\BoostController::class, 'cancel'])->name('cancel');
+    
+    // Dashboard des boosts du vendeur (statistiques et gestion)
+    Route::get('/dashboard', [App\Http\Controllers\BoostController::class, 'dashboard'])->name('dashboard');
 });
 
 // Routes des experts

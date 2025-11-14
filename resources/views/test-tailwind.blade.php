@@ -14,7 +14,7 @@
                 <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-200">
                     Bouton Vert
                 </button>
-                <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-200">
+                <button class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded transition duration-200">
                     Bouton Violet
                 </button>
             </div>
@@ -22,7 +22,7 @@
 
         <!-- Grid Test -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-gradient-to-br from-blue-400 to-purple-500 text-white p-6 rounded-xl shadow-lg">
+            <div class="bg-gradient-to-br from-blue-400 to-primary-500 text-white p-6 rounded-xl shadow-lg">
                 <h3 class="text-xl font-semibold mb-2">Card 1</h3>
                 <p>Test du gradient et des effets</p>
             </div>
@@ -30,7 +30,7 @@
                 <h3 class="text-xl font-semibold mb-2">Card 2</h3>
                 <p>Test du responsive design</p>
             </div>
-            <div class="bg-gradient-to-br from-purple-400 to-pink-500 text-white p-6 rounded-xl shadow-lg">
+            <div class="bg-gradient-to-br from-primary-400 to-accent-500 text-white p-6 rounded-xl shadow-lg">
                 <h3 class="text-xl font-semibold mb-2">Card 3</h3>
                 <p>Test des transitions</p>
             </div>

@@ -4,18 +4,18 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête de la catégorie -->
-        <div class="bg-white rounded-2xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden mb-8">
+        <div class="bg-white rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
             <div class="p-6 lg:p-8">
                 <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-6">
                     <!-- Informations de la catégorie -->
                     <div class="flex items-start space-x-4">
                         <!-- Icône -->
                         <div class="flex-shrink-0">
-                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                            <div class="w-16 h-16 lg:w-20 lg:h-20 bg-gradient-to-r from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
                                 @if($category->icon)
-                                    <i class="{{ $category->icon }} text-purple-600 text-3xl lg:text-4xl"></i>
+                                    <i class="{{ $category->icon }} text-primary-600 text-3xl lg:text-4xl"></i>
                                 @else
-                                    <i class="fas fa-folder text-purple-600 text-3xl lg:text-4xl"></i>
+                                    <i class="fas fa-folder text-primary-600 text-3xl lg:text-4xl"></i>
                                 @endif
                             </div>
                         </div>
@@ -67,7 +67,7 @@
                     <div class="flex-shrink-0">
                         <div class="relative inline-block text-left" x-data="{ open: false }">
                             <button @click="open = !open" 
-                                    class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors duration-200">
+                                    class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
                                 <i class="fas fa-cog mr-2"></i>
                                 Actions
                                 <i class="fas fa-chevron-down ml-2 transition-transform duration-200" :class="{ 'rotate-180': open }"></i>
@@ -84,7 +84,7 @@
                                  class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-200 z-10">
                                 <div class="py-2">
                                     <a href="{{ route('categories.edit', $category) }}" 
-                                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors duration-200">
+                                       class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200">
                                         <i class="fas fa-edit mr-3"></i>
                                         Modifier la catégorie
                                     </a>
@@ -114,23 +114,23 @@
 
         <!-- Sous-catégories -->
         @if(isset($subcategories) && $subcategories->count() > 0)
-        <div class="bg-white rounded-2xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden mb-8">
+        <div class="bg-white rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-sitemap text-purple-500 mr-2"></i>
+                    <i class="fas fa-sitemap text-primary-500 mr-2"></i>
                     Sous-catégories
                 </h3>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($subcategories as $subcategory)
-                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center hover:shadow-lg hover:bg-purple-50 transition-all duration-300">
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6 text-center hover:shadow-lg hover:bg-primary-50 transition-all duration-300">
                         <!-- Icône -->
-                        <div class="w-12 h-12 bg-gradient-to-r from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary-100 to-primary-200 rounded-xl flex items-center justify-center mx-auto mb-4">
                             @if($subcategory->icon)
-                                <i class="{{ $subcategory->icon }} text-purple-600 text-xl"></i>
+                                <i class="{{ $subcategory->icon }} text-primary-600 text-xl"></i>
                             @else
-                                <i class="fas fa-folder text-purple-600 text-xl"></i>
+                                <i class="fas fa-folder text-primary-600 text-xl"></i>
                             @endif
                         </div>
                         
@@ -150,7 +150,7 @@
                         <!-- Bouton -->
                         <div>
                             <a href="{{ route('categories.show', $subcategory) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-200">
                                 Voir la catégorie
                             </a>
                         </div>
@@ -162,14 +162,14 @@
         @endif
 
         <!-- Articles de cette catégorie -->
-        <div class="bg-white rounded-2xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden mb-8">
+        <div class="bg-white rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
             <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-box text-purple-500 mr-2"></i>
+                    <i class="fas fa-box text-primary-500 mr-2"></i>
                     Articles de cette catégorie
                 </h3>
                 <a href="{{ route('items.create', ['category' => $category->id]) }}" 
-                   class="inline-flex items-center px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors duration-200">
+                   class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors duration-200">
                     <i class="fas fa-plus mr-2"></i>
                     Ajouter un article
                 </a>
@@ -192,7 +192,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @foreach($items as $item)
-                            <tr class="hover:bg-purple-50 transition-colors duration-200">
+                            <tr class="hover:bg-primary-50 transition-colors duration-200">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
                                         @if($item->images)
@@ -251,7 +251,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right">
                                     <a href="{{ route('items.show', $item) }}" 
-                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 hover:text-purple-700 transition-colors duration-200"
+                                       class="inline-flex items-center px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 hover:text-primary-700 transition-colors duration-200"
                                        title="Voir l'article">
                                         <i class="fas fa-eye text-xs"></i>
                                     </a>
@@ -265,7 +265,7 @@
                 <!-- Version Mobile : Cartes -->
                 <div class="lg:hidden">
                     @foreach($items as $item)
-                    <div class="border-b border-gray-200 last:border-b-0 p-6 hover:bg-purple-50 transition-colors duration-200">
+                    <div class="border-b border-gray-200 last:border-b-0 p-6 hover:bg-primary-50 transition-colors duration-200">
                         <div class="flex items-start space-x-4">
                             <!-- Image -->
                             <div class="flex-shrink-0">
@@ -323,7 +323,7 @@
                                 <div class="text-gray-600 text-sm mb-3">Vendeur : {{ $item->user->name ?? 'Inconnu' }}</div>
                                 
                                 <a href="{{ route('items.show', $item) }}" 
-                                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-purple-600 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors duration-200">
                                     <i class="fas fa-eye mr-2"></i>
                                     Voir l'article
                                 </a>
@@ -349,7 +349,7 @@
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucun article dans cette catégorie</h3>
                         <p class="text-gray-600 mb-8 max-w-sm">Commencez par ajouter votre premier article dans cette catégorie</p>
                         <a href="{{ route('items.create', ['category' => $category->id]) }}" 
-                           class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl shadow-lg hover:bg-purple-700 hover:shadow-xl transition-all duration-300">
+                           class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-xl shadow-lg hover:bg-primary-700 hover:shadow-xl transition-all duration-300">
                             <i class="fas fa-plus mr-2"></i>
                             Ajouter le premier article
                         </a>

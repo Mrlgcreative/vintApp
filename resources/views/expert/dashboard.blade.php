@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 p-6">
     <!-- En-tête avec gradient -->
-    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-8 text-white mb-8 shadow-lg">
+    <div class="bg-gradient-to-r from-indigo-500 to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
         <h1 class="text-3xl font-bold mb-2">
             <i class="fas fa-tachometer-alt mr-3"></i>
             Dashboard Expert
@@ -55,8 +55,8 @@
 
         <div class="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
             <div class="flex items-center">
-                <div class="p-3 bg-purple-100 rounded-full">
-                    <i class="fas fa-percentage text-purple-600 text-xl"></i>
+                <div class="p-3 bg-primary-100 rounded-full">
+                    <i class="fas fa-percentage text-primary-600 text-xl"></i>
                 </div>
                 <div class="ml-4">
                     <p class="text-gray-500 text-sm font-medium">Taux d'approbation</p>
@@ -164,7 +164,7 @@
             <!-- Profil expert -->
             <div class="bg-white rounded-xl shadow-md p-6">
                 <div class="flex items-center mb-4">
-                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-primary-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="ml-4">

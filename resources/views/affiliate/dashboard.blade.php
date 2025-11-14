@@ -49,7 +49,7 @@
                             <i class="fas fa-sync-alt mr-2"></i> Actualiser
                         </button>
                         <!-- Bouton de test pour les modales -->
-                        <button class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium" onclick="openModal('createCodeModal')">
+                        <button class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium" onclick="openModal('createCodeModal')">
                             <i class="fas fa-plus mr-2"></i> Test Modal
                         </button>
                     </div>

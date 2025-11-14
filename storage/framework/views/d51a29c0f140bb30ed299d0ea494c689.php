@@ -50,14 +50,14 @@
                                 ?>
                                 <img src="<?php echo e($avatarUrl); ?>" 
                                      alt="<?php echo e(Auth::user()->name); ?>" 
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-purple-200"
+                                     class="w-10 h-10 rounded-full object-cover border-2 border-primary-200"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-sm hidden">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 items-center justify-center text-white font-bold text-sm hidden">
                                     <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
                                 </div>
                             <?php else: ?>
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 flex items-center justify-center text-white font-bold text-sm">
                                     <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
                                 </div>
@@ -83,7 +83,7 @@
                         <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors">
                             <i class="fas fa-shopping-cart text-gray-700 text-lg"></i>
                             <?php if(session('cart') && count(session('cart')) > 0): ?>
-                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
                                     <?php echo e(count(session('cart'))); ?>
 
                                 </span>
@@ -94,7 +94,7 @@
                     <!-- Logo pour utilisateur non connecté -->
                     <div class="flex items-center space-x-3">
                         <a href="<?php echo e(url('/')); ?>" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-sm">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 flex items-center justify-center text-white font-bold text-sm">
                                 <i class="fas fa-home"></i>
                             </div>
                             <span class="font-semibold text-gray-800 text-sm sm:text-base"><?php echo e(config('app.name', 'VintApp')); ?></span>
@@ -103,11 +103,11 @@
                     
                     <!-- Boutons de connexion -->
                     <!-- <div class="flex items-center space-x-2">
-                        <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-full font-semibold text-sm transition-colors border border-purple-200 hover:border-purple-300">
+                        <a href="<?php echo e(route('login')); ?>" class="px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-sm transition-colors border border-primary-200 hover:border-primary-300">
                             <i class="fas fa-sign-in-alt mr-1"></i>
                             Se connecter
                         </a>
-                        <a href="<?php echo e(route('register')); ?>" class="px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 rounded-full font-semibold text-sm transition-colors">
+                        <a href="<?php echo e(route('register')); ?>" class="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-full font-semibold text-sm transition-colors">
                             <i class="fas fa-user-plus mr-1"></i>
                             S'inscrire
                         </a>
@@ -117,7 +117,7 @@
         </div>
 
         <!-- Navigation principale (desktop seulement) -->
-        <nav class="bg-purple-600 hidden lg:block">
+        <nav class="bg-primary hidden lg:block">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center justify-between h-16">
                     <!-- Logo et navigation gauche -->
@@ -148,39 +148,39 @@
                         
                         <!-- Navigation links -->
                         <div class="flex items-center space-x-6">
-                            <a href="<?php echo e(route('dashboard')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('dashboard') ? 'bg-purple-700' : ''); ?>">
+                            <a href="<?php echo e(route('dashboard')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('dashboard') ? 'bg-primary-700' : ''); ?>">
                                 <i class="fas fa-tachometer-alt mr-1"></i>
                                 Dashboard
                             </a>
-                            <a href="<?php echo e(route('items.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('items.index') ? 'bg-purple-700' : ''); ?>">
+                            <a href="<?php echo e(route('items.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('items.index') ? 'bg-primary-700' : ''); ?>">
                                 <i class="fas fa-box mr-1"></i>
                                 Articles
                             </a>
-                            <a href="<?php echo e(route('categories.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('categories.*') ? 'bg-purple-700' : ''); ?>">
+                            <a href="<?php echo e(route('categories.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('categories.*') ? 'bg-primary-700' : ''); ?>">
                                 <i class="fas fa-layer-group mr-1"></i>
                                 Catégories
                             </a>
-                            <a href="<?php echo e(route('brands.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('brands.*') ? 'bg-purple-700' : ''); ?>">
+                            <a href="<?php echo e(route('brands.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('brands.*') ? 'bg-primary-700' : ''); ?>">
                                 <i class="fas fa-tags mr-1"></i>
                                 Marques
                             </a>
                             
                             <?php if(auth()->guard()->check()): ?>
-                                <a href="<?php echo e(route('items.my-items')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('items.my-items') ? 'bg-purple-700' : ''); ?>">
+                                <a href="<?php echo e(route('items.my-items')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('items.my-items') ? 'bg-primary-700' : ''); ?>">
                                     <i class="fas fa-list mr-1"></i>
                                     Mes Articles
                                 </a>
-                                <a href="<?php echo e(route('orders.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('orders.index') ? 'bg-purple-700' : ''); ?>">
+                                <a href="<?php echo e(route('orders.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('orders.index') ? 'bg-primary-700' : ''); ?>">
                                     <i class="fas fa-shopping-cart mr-1"></i>
                                     Commandes
                                 </a>
-                                <a href="<?php echo e(route('wallet.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('wallet.*') ? 'bg-purple-700' : ''); ?>">
+                                <a href="<?php echo e(route('wallet.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('wallet.*') ? 'bg-primary-700' : ''); ?>">
                                     <i class="fas fa-wallet mr-1"></i>
                                     Wallet
                                 </a>
                             <?php endif; ?>
                             
-                            <a href="<?php echo e(route('help.index')); ?>" class="text-white hover:text-purple-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('help.*') ? 'bg-purple-700' : ''); ?>">
+                            <a href="<?php echo e(route('help.index')); ?>" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors <?php echo e(request()->routeIs('help.*') ? 'bg-primary-700' : ''); ?>">
                                 <i class="fas fa-question-circle mr-1"></i>
                                 Aide
                             </a>
@@ -198,7 +198,7 @@
                                        value="<?php echo e(request('q')); ?>"
                                        class="w-80 px-4 py-2 pl-10 pr-4 text-sm bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent">
                                 <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
-                                <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-purple-500 text-white rounded-full hover:bg-purple-600 transition-colors">
+                                <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors">
                                     <i class="fas fa-search text-xs"></i>
                                 </button>
                             </div>
@@ -207,11 +207,11 @@
                         <?php if(auth()->guard()->check()): ?>
                             <!-- Menu utilisateur -->
                             <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="flex items-center space-x-2 text-white hover:text-purple-200 transition-colors">
+                                <button @click="open = !open" class="flex items-center space-x-2 text-white hover:text-primary-200 transition-colors">
                                     <?php if(Auth::user()->avatar): ?>
                                         <img src="<?php echo e($avatarUrl); ?>" alt="<?php echo e(Auth::user()->name); ?>" class="w-8 h-8 rounded-full object-cover">
                                     <?php else: ?>
-                                        <div class="w-8 h-8 rounded-full bg-purple-700 flex items-center justify-center text-white font-bold text-xs">
+                                        <div class="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center text-white font-bold text-xs">
                                             <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
                                         </div>
@@ -245,10 +245,10 @@
                             </div>
                         <?php else: ?>
                             <div class="flex items-center space-x-2">
-                                <a href="<?php echo e(route('login')); ?>" class="text-white hover:text-purple-200 px-3 py-2 text-sm font-medium">
+                                <a href="<?php echo e(route('login')); ?>" class="text-white hover:text-primary-200 px-3 py-2 text-sm font-medium">
                                     <i class="fas fa-sign-in-alt mr-1"></i> Connexion
                                 </a>
-                                <a href="<?php echo e(route('register')); ?>" class="bg-white text-purple-600 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                                <a href="<?php echo e(route('register')); ?>" class="bg-white text-primary-600 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">
                                     <i class="fas fa-user-plus mr-1"></i> S'inscrire
                                 </a>
                             </div>
@@ -264,7 +264,7 @@
         <nav class="bg-gray-100 py-2 hidden lg:block">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center space-x-2 text-sm">
-                    <a href="<?php echo e(url('/')); ?>" class="text-purple-600 hover:text-purple-800">
+                    <a href="<?php echo e(url('/')); ?>" class="text-primary-600 hover:text-primary-800">
                         <i class="fas fa-home mr-1"></i> Accueil
                     </a>
                     <?php if(request()->routeIs('dashboard')): ?>
@@ -272,21 +272,21 @@
                         <span class="text-gray-600">Dashboard</span>
                     <?php elseif(request()->routeIs('categories.*')): ?>
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="<?php echo e(route('categories.index')); ?>" class="text-purple-600 hover:text-purple-800">Catégories</a>
+                        <a href="<?php echo e(route('categories.index')); ?>" class="text-primary-600 hover:text-primary-800">Catégories</a>
                         <?php if(request()->routeIs('categories.show')): ?>
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                             <span class="text-gray-600"><?php echo e($category->name ?? 'Détails'); ?></span>
                         <?php endif; ?>
                     <?php elseif(request()->routeIs('brands.*')): ?>
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="<?php echo e(route('brands.index')); ?>" class="text-purple-600 hover:text-purple-800">Marques</a>
+                        <a href="<?php echo e(route('brands.index')); ?>" class="text-primary-600 hover:text-primary-800">Marques</a>
                         <?php if(request()->routeIs('brands.show')): ?>
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                             <span class="text-gray-600"><?php echo e($brand->name ?? 'Détails'); ?></span>
                         <?php endif; ?>
                     <?php elseif(request()->routeIs('items.*')): ?>
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="<?php echo e(route('items.index')); ?>" class="text-purple-600 hover:text-purple-800">Articles</a>
+                        <a href="<?php echo e(route('items.index')); ?>" class="text-primary-600 hover:text-primary-800">Articles</a>
                         <?php if(request()->routeIs('items.show')): ?>
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                             <span class="text-gray-600"><?php echo e($item->name ?? 'Détails'); ?></span>
@@ -392,9 +392,9 @@
                         <form id="newsletterForm" class="flex gap-2">
                             <?php echo csrf_field(); ?>
                             <input type="email" id="newsletterEmail" 
-                                   class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                                   class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                                    placeholder="Votre email" required>
-                            <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">
+                            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </form>
@@ -415,33 +415,33 @@
     <!-- Navigation mobile (bottom) -->
     <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
         <div class="grid grid-cols-5 h-16">
-            <a href="<?php echo e(url('/')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 <?php echo e(request()->is('/') ? 'text-purple-600' : ''); ?>">
+            <a href="<?php echo e(url('/')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 <?php echo e(request()->is('/') ? 'text-primary-600' : ''); ?>">
                 <i class="fas fa-home text-lg"></i>
                 <span class="text-xs mt-1">Accueil</span>
             </a>
-            <a href="<?php echo e(route('items.create')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 <?php echo e(request()->routeIs('items.create') ? 'text-purple-600' : ''); ?>">
+            <a href="<?php echo e(route('items.create')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 <?php echo e(request()->routeIs('items.create') ? 'text-primary-600' : ''); ?>">
                 <i class="fas fa-plus-circle text-lg"></i>
                 <span class="text-xs mt-1">Vendre</span>
             </a>
-            <a href="<?php echo e(route('items.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 <?php echo e(request()->routeIs('items.index') ? 'text-purple-600' : ''); ?>">
+            <a href="<?php echo e(route('items.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 <?php echo e(request()->routeIs('items.index') ? 'text-primary-600' : ''); ?>">
                 <i class="fas fa-box text-lg"></i>
                 <span class="text-xs mt-1">Articles</span>
             </a>
             <?php if(auth()->guard()->check()): ?>
-                <a href="<?php echo e(route('wallet.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 <?php echo e(request()->routeIs('wallet.*') ? 'text-purple-600' : ''); ?>">
+                <a href="<?php echo e(route('wallet.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 <?php echo e(request()->routeIs('wallet.*') ? 'text-primary-600' : ''); ?>">
                     <i class="fas fa-wallet text-lg"></i>
                     <span class="text-xs mt-1">Wallet</span>
                 </a>
-                <a href="<?php echo e(route('settings.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600 <?php echo e(request()->routeIs('settings.*') ? 'text-purple-600' : ''); ?>">
+                <a href="<?php echo e(route('settings.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 <?php echo e(request()->routeIs('settings.*') ? 'text-primary-600' : ''); ?>">
                     <i class="fas fa-cog text-lg"></i>
                     <span class="text-xs mt-1">Profil</span>
                 </a>
             <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600">
+                <a href="<?php echo e(route('login')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600">
                     <i class="fas fa-sign-in-alt text-lg"></i>
                     <span class="text-xs mt-1">Connexion</span>
                 </a>
-                <a href="<?php echo e(route('register')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-purple-600">
+                <a href="<?php echo e(route('register')); ?>" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600">
                     <i class="fas fa-user-plus text-lg"></i>
                     <span class="text-xs mt-1">S'inscrire</span>
                 </a>
@@ -517,7 +517,7 @@
                         <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" 
                              onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
                             <div class="flex items-start space-x-3">
-                                <i class="fas ${getNotificationIcon(notification.type)} text-purple-600 mt-1"></i>
+                                <i class="fas ${getNotificationIcon(notification.type)} text-primary-600 mt-1"></i>
                                 <div class="flex-1">
                                     <div class="font-semibold text-gray-800 text-sm">${notification.title}</div>
                                     <div class="text-gray-600 text-xs mt-1">${notification.message}</div>

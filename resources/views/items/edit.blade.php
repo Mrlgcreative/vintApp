@@ -276,7 +276,7 @@
                         <!-- Nouvelles images -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
-                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <div class="w-8 h-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-plus"></i>
                                 </div>
                                 <h2 class="text-xl font-bold text-gray-900">Ajouter de nouvelles images</h2>

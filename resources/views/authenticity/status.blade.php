@@ -204,7 +204,7 @@
                                 @if($check->expert_completed_at)
                                     <p class="text-sm text-gray-600">Terminé le {{ $check->expert_completed_at->format('d/m/Y à H:i') }}</p>
                                     @if($check->expert)
-                                        <p class="text-sm text-purple-600">Expert: {{ $check->expert->name }}</p>
+                                        <p class="text-sm text-primary-600">Expert: {{ $check->expert->name }}</p>
                                     @endif
                                 @elseif($check->expert_assigned_at)
                                     <p class="text-sm text-blue-600">En cours d'examen par un expert</p>

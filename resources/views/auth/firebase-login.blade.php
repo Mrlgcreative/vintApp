@@ -114,7 +114,7 @@
             
             <!-- Mode Selection -->
             <div class="flex bg-white/10 rounded-xl p-1 mb-8">
-                <button onclick="switchMode('login')" id="login-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-purple-600">
+                <button onclick="switchMode('login')" id="login-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600">
                     Connexion
                 </button>
                 <button onclick="switchMode('register')" id="register-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white">
@@ -279,11 +279,11 @@ window.switchMode = (mode) => {
     
     // Mise à jour des onglets
     document.getElementById('login-tab').className = mode === 'login' 
-        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-purple-600'
+        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600'
         : 'flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white';
     
     document.getElementById('register-tab').className = mode === 'register' 
-        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-purple-600'
+        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600'
         : 'flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white';
     
     // Affichage des formulaires

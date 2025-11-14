@@ -72,7 +72,7 @@
                 <i class="fas fa-images mr-2 sm:mr-3 text-gray-600 text-base sm:text-xl"></i>
                 Carrousel Hero - Page d'Accueil
             </h1>
-            <button onclick="showAddModal()" class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+            <button onclick="showAddModal()" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                 <i class="fas fa-plus mr-2"></i>
                 Ajouter une Slide
             </button>
@@ -82,7 +82,7 @@
             <!-- Aperçu du carrousel -->
             <div class="mb-6 bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900 mb-3">
-                    <i class="fas fa-eye mr-2 text-purple-600"></i>
+                    <i class="fas fa-eye mr-2 text-primary-600"></i>
                     Aperçu du Carrousel
                 </h3>
                 @if($slides->where('is_active', true)->count() > 0)
@@ -169,7 +169,7 @@
             <!-- Liste des slides -->
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-list mr-2 text-purple-600"></i>
+                    <i class="fas fa-list mr-2 text-primary-600"></i>
                     Toutes les Slides ({{ $slides->count() }})
                 </h3>
 
@@ -224,7 +224,7 @@
                                         @if($slide->button_primary_text || $slide->button_secondary_text)
                                             <div class="flex flex-wrap gap-2 mb-3">
                                                 @if($slide->button_primary_text)
-                                                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-primary-100 text-primary-800">
                                                         <i class="fas fa-link mr-1"></i>{{ $slide->button_primary_text }}
                                                     </span>
                                                 @endif
@@ -268,7 +268,7 @@
                         <i class="fas fa-images fa-4x text-gray-400 mb-4"></i>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune slide</h3>
                         <p class="text-gray-600 mb-4">Commencez par ajouter votre première slide pour le carrousel hero.</p>
-                        <button onclick="showAddModal()" class="inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                        <button onclick="showAddModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                             <i class="fas fa-plus mr-2"></i>
                             Ajouter une Slide
                         </button>
@@ -285,7 +285,7 @@
         <div class="mt-3">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-image mr-2 text-purple-600"></i>
+                    <i class="fas fa-image mr-2 text-primary-600"></i>
                     <span id="modalTitle">Ajouter une Slide</span>
                 </h3>
                 <button onclick="hideModal()" class="text-gray-400 hover:text-gray-600">
@@ -303,7 +303,7 @@
                         Titre <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="title" id="slideTitle" required 
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                            placeholder="Ex: Bienvenue sur VintApp">
                 </div>
                 
@@ -313,7 +313,7 @@
                         Sous-titre
                     </label>
                     <textarea name="subtitle" id="slideSubtitle" rows="2"
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                               placeholder="Description courte..."></textarea>
                 </div>
                 
@@ -323,7 +323,7 @@
                         Image <span class="text-red-500" id="imageRequired">*</span>
                     </label>
                     <input type="file" name="image" id="slideImage" accept="image/*"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                            onchange="previewImage(this)">
                     <p class="text-xs text-gray-500 mt-1">Formats: JPG, PNG, GIF - Max 5MB - Recommandé: 1920x1080px (PNG haute résolution)</p>
                     <div id="imagePreview" class="mt-3 hidden">
@@ -341,7 +341,7 @@
                                class="h-10 w-20 border border-gray-300 rounded cursor-pointer">
                         <input type="text" id="backgroundColorHex" value="#6A0DAD" 
                                pattern="^#[0-9A-Fa-f]{6}$"
-                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="#6A0DAD">
                     </div>
                     <p class="text-xs text-gray-500 mt-1">Choisissez la couleur de fond du carrousel</p>
@@ -354,7 +354,7 @@
                             Position du texte <span class="text-red-500">*</span>
                         </label>
                         <select name="text_position" id="textPosition" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="left">À gauche</option>
                             <option value="center">Au centre</option>
                             <option value="right">À droite</option>
@@ -365,7 +365,7 @@
                             Position de l'image <span class="text-red-500">*</span>
                         </label>
                         <select name="image_position" id="imagePosition" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="right">À droite</option>
                             <option value="left">À gauche</option>
                         </select>
@@ -378,7 +378,7 @@
                         Taille de l'image <span class="text-red-500">*</span>
                     </label>
                     <select name="image_size" id="imageSize" required
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="small">Petite (250px)</option>
                         <option value="medium" selected>Moyenne (350px)</option>
                         <option value="large">Grande (450px)</option>
@@ -395,7 +395,7 @@
                     <div class="flex items-center gap-3">
                         <input type="number" name="display_duration" id="displayDuration" 
                                min="3" max="15" step="1" value="6" required
-                               class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-center">
+                               class="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center">
                         <span class="text-sm text-gray-600 font-medium">secondes</span>
                         <input type="range" id="durationRange" 
                                min="3" max="15" step="1" value="6"
@@ -411,7 +411,7 @@
                             Texte Bouton Principal
                         </label>
                         <input type="text" name="button_primary_text" id="buttonPrimaryText"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="Ex: Commencer">
                     </div>
                     <div>
@@ -419,7 +419,7 @@
                             URL Bouton Principal
                         </label>
                         <input type="text" name="button_primary_url" id="buttonPrimaryUrl"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="/register">
                     </div>
                 </div>
@@ -431,7 +431,7 @@
                             Texte Bouton Secondaire
                         </label>
                         <input type="text" name="button_secondary_text" id="buttonSecondaryText"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="Ex: Explorer">
                     </div>
                     <div>
@@ -439,7 +439,7 @@
                             URL Bouton Secondaire
                         </label>
                         <input type="text" name="button_secondary_url" id="buttonSecondaryUrl"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="/items">
                     </div>
                 </div>
@@ -447,7 +447,7 @@
                 <!-- Statut -->
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="slideIsActive" value="1" checked
-                           class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded">
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
                     <label for="slideIsActive" class="ml-2 block text-sm text-gray-700">
                         Activer cette slide immédiatement
                     </label>
@@ -460,7 +460,7 @@
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg shadow-sm transition-colors">
+                            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors">
                         <i class="fas fa-save mr-2"></i>
                         <span id="submitButtonText">Ajouter</span>
                     </button>

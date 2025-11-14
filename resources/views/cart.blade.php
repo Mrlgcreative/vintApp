@@ -59,7 +59,7 @@
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 mb-8">
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
-                    <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-primary-600 rounded-xl flex items-center justify-center">
                         <span class="text-white text-xl">🛒</span>
                     </div>
                     Mon panier

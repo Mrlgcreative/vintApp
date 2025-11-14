@@ -12,13 +12,24 @@
     <link rel="icon" type="image/x-icon" href="<?php echo e(asset($appFavicon ?? '/favicon.ico')); ?>">
     
     <!-- CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     
     <!-- Custom Admin Styles -->
     <link href="<?php echo e(asset('css/admin-components.css')); ?>" rel="stylesheet">
+    
+    <!-- CSS Dynamique VintApp avec Couleurs Actives -->
+    <?php if(isset($customCSSUrl) && $customCSSUrl): ?>
+        <link href="<?php echo e($customCSSUrl); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
+    <?php endif; ?>
+    
+    <!-- Variables CSS Dynamiques de Secours -->
+    <style>
+        <?php echo $activePaletteCSS ?? ''; ?>
+
+    </style>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,68 +39,7 @@
     <!-- Custom Page Styles -->
     <?php echo $__env->yieldPushContent('styles'); ?>
     
-    <!-- Tailwind Config -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'fade-in': 'fadeIn 0.6s ease-out',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    },
-                    fontFamily: {
-                        'sans': ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: {
-                            50: '#f0f4ff',
-                            100: '#e5edff',
-                            200: '#d0ddff',
-                            300: '#adc0ff',
-                            400: '#8499ff',
-                            500: '#6366f1',
-                            600: '#5855eb',
-                            700: '#4c44d8',
-                            800: '#3e37af',
-                            900: '#36318a',
-                        },
-                        dark: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a',
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.3s ease-in-out',
-                        'slide-in-right': 'slideInRight 0.3s ease-out',
-                        'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        slideInRight: {
-                            '0%': { transform: 'translateX(30px)', opacity: '0' },
-                            '100%': { transform: 'translateX(0)', opacity: '1' }
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+
     
     <!-- Styles complémentaires pour les composants -->
     <style>
@@ -290,6 +240,23 @@
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
                         </a>
 
+                        <!-- 🎯 Menu Gestion des Experts -->
+                        <a href="<?php echo e(route('admin.experts.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.experts.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                            <i class="fas fa-user-graduate w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Experts</span>
+                            <?php
+                                $totalExperts = \App\Models\ExpertProfile::count();
+                                $activeExperts = \App\Models\ExpertProfile::where('is_active', true)->count();
+                            ?>
+                            <?php if($totalExperts > 0): ?>
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-primary-500 rounded-full">
+                                    <?php echo e($activeExperts); ?>/<?php echo e($totalExperts); ?>
+
+                                </span>
+                            <?php endif; ?>
+                        </a>
+
                         <a href="<?php echo e(route('admin.transactions.index')); ?>" 
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.transactions.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
@@ -335,7 +302,7 @@
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.tracking*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Traçage GPS</span>
-                            <span class="inline-flex items-center justify-center w-3 h-3 bg-purple-400 rounded-full animate-pulse shadow-lg shadow-purple-400/50"></span>
+                            <span class="inline-flex items-center justify-center w-3 h-3 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
                         <a href="<?php echo e(route('admin.brands.index')); ?>" 
@@ -774,6 +741,13 @@
                 return;
             }
 
+            // Vérifier si on a un token CSRF (indicateur d'authentification)
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+            if (!csrfToken) {
+                console.warn('⚠️ Pas de token CSRF - utilisateur possiblement non authentifié');
+                return;
+            }
+
             $.get('/admin/notifications', function(data) {
                 const badge = document.getElementById('notification-badge');
                 
@@ -809,10 +783,16 @@
                 if (container) {
                     container.innerHTML = notificationsHtml;
                 }
-            }).fail(function() {
-                // En cas d'erreur, masquer le badge
+            }).fail(function(xhr, status, error) {
+                // En cas d'erreur, masquer le badge et logger l'erreur
+                console.warn('⚠️ Erreur lors du chargement des notifications:', status, error);
                 const badge = document.getElementById('notification-badge');
                 if (badge) badge.classList.add('hidden');
+                
+                // Si 401/403, ne pas retry automatiquement (problème d'auth)
+                if (xhr.status === 401 || xhr.status === 403) {
+                    console.warn('🚫 Problème d\'authentification pour les notifications');
+                }
             });
         }
 

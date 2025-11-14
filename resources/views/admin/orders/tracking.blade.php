@@ -97,7 +97,7 @@
 <div class="space-y-6">
     <!-- En-tête avec actions -->
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-medium">
+        <a href="{{ route('admin.orders.show', $order->id) }}" class="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Retour aux détails
         </a>
         
@@ -105,7 +105,7 @@
             <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                 <i class="fas fa-file-invoice mr-2"></i> Voir Facture
             </a>
-            <button type="button" onclick="openUpdateTrackingModal()" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            <button type="button" onclick="openUpdateTrackingModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
                 <i class="fas fa-map-marker-alt mr-2"></i> Mettre à jour Position
             </button>
         </div>
@@ -119,8 +119,8 @@
                     <p class="text-sm text-gray-600 mb-1">Numéro de commande</p>
                     <p class="text-lg font-bold text-gray-900">{{ $order->order_number }}</p>
                 </div>
-                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                    <i class="fas fa-hashtag text-purple-600 text-xl"></i>
+                <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-hashtag text-primary-600 text-xl"></i>
                 </div>
             </div>
         </div>
@@ -151,7 +151,7 @@
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Distance restante</p>
                     @if($currentTracking && $currentTracking->distance_to_customer)
-                        <p class="text-lg font-bold text-purple-600">{{ $currentTracking->distance_to_customer }} km</p>
+                        <p class="text-lg font-bold text-primary-600">{{ $currentTracking->distance_to_customer }} km</p>
                     @else
                         <p class="text-lg font-bold text-gray-400">-</p>
                     @endif
@@ -185,7 +185,7 @@
     <div class="bg-white rounded-xl shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-xl font-bold text-gray-900">
-                <i class="fas fa-map-marked-alt text-purple-600 mr-2"></i>
+                <i class="fas fa-map-marked-alt text-primary-600 mr-2"></i>
                 Carte de Suivi GPS
             </h3>
             @if($currentTracking && $currentTracking->distance_to_customer)
@@ -199,13 +199,13 @@
         <div id="tracking-map"></div>
         
         <!-- Affichage de la distance -->
-        <div id="distanceInfo" class="mt-4 bg-gradient-to-r from-purple-50 to-blue-50 border-l-4 border-purple-500 rounded-lg p-4" style="display: none;">
+        <div id="distanceInfo" class="mt-4 bg-gradient-to-r from-primary-50 to-blue-50 border-l-4 border-primary-500 rounded-lg p-4" style="display: none;">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
-                    <i class="fas fa-route text-purple-600 text-2xl mr-3"></i>
+                    <i class="fas fa-route text-primary-600 text-2xl mr-3"></i>
                     <div>
                         <p class="text-sm text-gray-600">Distance entre livreur et client</p>
-                        <p class="text-2xl font-bold text-purple-700" id="distanceValue">- km</p>
+                        <p class="text-2xl font-bold text-primary-700" id="distanceValue">- km</p>
                     </div>
                 </div>
                 <div class="text-right">
@@ -286,7 +286,7 @@
     <!-- Historique de traçage -->
     <div class="bg-white rounded-xl shadow-lg p-6">
         <h3 class="text-xl font-bold text-gray-900 mb-6">
-            <i class="fas fa-history text-purple-600 mr-2"></i>
+            <i class="fas fa-history text-primary-600 mr-2"></i>
             Historique de Suivi
         </h3>
         
@@ -329,7 +329,7 @@
                             @endif
                             
                             @if($tracking->tracking_code)
-                                <p class="text-xs text-purple-600 mt-2">
+                                <p class="text-xs text-primary-600 mt-2">
                                     <i class="fas fa-barcode mr-1"></i>
                                     Code de suivi: <strong>{{ $tracking->tracking_code }}</strong>
                                 </p>
@@ -342,7 +342,7 @@
             <div class="text-center py-12">
                 <i class="fas fa-exclamation-circle text-gray-300 text-5xl mb-4"></i>
                 <p class="text-gray-500 text-lg">Aucun historique de suivi disponible</p>
-                <button onclick="openUpdateTrackingModal()" class="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                <button onclick="openUpdateTrackingModal()" class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
                     <i class="fas fa-plus mr-2"></i> Ajouter une position
                 </button>
             </div>
@@ -353,7 +353,7 @@
 <!-- Modal pour mettre à jour le tracking -->
 <div id="updateTrackingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-4 rounded-t-2xl">
+        <div class="bg-gradient-to-r from-primary-600 to-primary-800 px-6 py-4 rounded-t-2xl">
             <h3 class="text-xl font-bold text-white">
                 <i class="fas fa-map-marker-alt mr-2"></i>
                 Mettre à jour la Position de Suivi
@@ -366,7 +366,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Statut *</label>
-                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                         <option value="pending">En attente</option>
                         <option value="picked_up">Collecté</option>
                         <option value="in_transit">En transit</option>
@@ -379,7 +379,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Transporteur</label>
-                    <input type="text" name="carrier" placeholder="Ex: DHL, FedEx, Local..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <input type="text" name="carrier" placeholder="Ex: DHL, FedEx, Local..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                 </div>
             </div>
 
@@ -393,22 +393,22 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
-                    <input type="number" step="0.00000001" name="latitude" id="modal_latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" onchange="calculateModalDistance()">
+                    <input type="number" step="0.00000001" name="latitude" id="modal_latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
-                    <input type="number" step="0.00000001" name="longitude" id="modal_longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500" onchange="calculateModalDistance()">
+                    <input type="number" step="0.00000001" name="longitude" id="modal_longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
                 </div>
             </div>
 
             <!-- Affichage de la distance calculée dans le modal -->
-            <div id="modalDistanceInfo" class="mb-4 bg-purple-50 border-l-4 border-purple-500 rounded-lg p-3" style="display: none;">
+            <div id="modalDistanceInfo" class="mb-4 bg-primary-50 border-l-4 border-primary-500 rounded-lg p-3" style="display: none;">
                 <div class="flex items-center">
-                    <i class="fas fa-route text-purple-600 text-xl mr-3"></i>
+                    <i class="fas fa-route text-primary-600 text-xl mr-3"></i>
                     <div>
                         <p class="text-xs text-gray-600">Distance jusqu'au client</p>
-                        <p class="text-lg font-bold text-purple-700" id="modalDistanceValue">- km</p>
+                        <p class="text-lg font-bold text-primary-700" id="modalDistanceValue">- km</p>
                     </div>
                     <div class="ml-auto text-right">
                         <p class="text-xs text-gray-600">Temps estimé</p>
@@ -419,20 +419,20 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Adresse Actuelle</label>
-                <input type="text" name="address" placeholder="Ex: Avenue de la Libération, Gombe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                <input type="text" name="address" placeholder="Ex: Avenue de la Libération, Gombe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
-                    <input type="text" name="city" placeholder="Kinshasa" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                    <input type="text" name="city" placeholder="Kinshasa" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Code de Suivi</label>
                     <div class="flex gap-2">
-                        <input type="text" id="tracking_code" name="tracking_code" placeholder="Ex: TRACK123456" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-purple-500">
-                        <button type="button" onclick="generateTrackingCode()" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition whitespace-nowrap">
+                        <input type="text" id="tracking_code" name="tracking_code" placeholder="Ex: TRACK123456" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary-500">
+                        <button type="button" onclick="generateTrackingCode()" class="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition whitespace-nowrap">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
@@ -442,12 +442,12 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea name="description" rows="3" placeholder="Décrivez l'état actuel de la livraison..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"></textarea>
+                <textarea name="description" rows="3" placeholder="Décrivez l'état actuel de la livraison..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
             </div>
 
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Livraison Estimée</label>
-                <input type="datetime-local" name="estimated_delivery" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+                <input type="datetime-local" name="estimated_delivery" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
@@ -542,7 +542,7 @@
                 <button type="button" onclick="closeUpdateTrackingModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
                     Annuler
                 </button>
-                <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
                     <i class="fas fa-save mr-2"></i> Enregistrer
                 </button>
             </div>

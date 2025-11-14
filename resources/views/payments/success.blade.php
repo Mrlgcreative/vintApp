@@ -25,8 +25,8 @@
                 
                 @if(isset($transaction))
                     <!-- Montant en grand -->
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 mb-8 animate-fade-in">
-                        <div class="text-4xl font-bold text-purple-600 mb-2">
+                    <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-6 mb-8 animate-fade-in">
+                        <div class="text-4xl font-bold text-primary-600 mb-2">
                             {{ number_format($transaction->amount, 2) }} {{ $transaction->currency ?? 'USD' }}
                         </div>
                         @if(isset($transaction->currency))
@@ -57,7 +57,7 @@
                         <div class="space-y-3">
                             <div class="flex justify-between py-2 border-b border-gray-200">
                                 <span class="text-gray-600">ID Transaction</span>
-                                <span class="font-medium text-purple-600">{{ $transaction->transaction_id }}</span>
+                                <span class="font-medium text-primary-600">{{ $transaction->transaction_id }}</span>
                             </div>
                             <div class="flex justify-between py-2 border-b border-gray-200">
                                 <span class="text-gray-600">Opérateur</span>
@@ -97,7 +97,7 @@
                 
                 <!-- Boutons d'action -->
                 <div class="space-y-3">
-                    <a href="{{ route('dashboard') }}" class="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200">
+                    <a href="{{ route('dashboard') }}" class="w-full inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-primary-600 hover:bg-primary-700 transition-colors duration-200">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
@@ -177,7 +177,7 @@
                         <div class="flex-1">
                             <h4 class="text-lg font-semibold text-gray-900 mb-1">{{ $order->item ? $order->item->name : 'Article' }}</h4>
                             <p class="text-gray-600 text-sm mb-2">Vendeur: {{ $order->seller ? $order->seller->name : 'Vendeur' }}</p>
-                            <p class="text-purple-600 font-medium">{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</p>
+                            <p class="text-primary-600 font-medium">{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</p>
                         </div>
                     </div>
 
@@ -202,10 +202,10 @@
                         <!-- Commentaire optionnel -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Commentaire (optionnel)</label>
-                            <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors duration-200" placeholder="Partagez votre expérience avec ce vendeur..."></textarea>
+                            <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200" placeholder="Partagez votre expérience avec ce vendeur..."></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white font-medium py-2.5 px-4 rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-medium py-2.5 px-4 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
                             <span class="submit-text">Envoyer la note</span>
                             <span class="loading-text hidden">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24">

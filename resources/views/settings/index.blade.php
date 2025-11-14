@@ -31,13 +31,13 @@
                     @endphp
                     <img src="{{ $avatarUrl }}" 
                          alt="{{ Auth::user()->name }}" 
-                         class="w-16 h-16 rounded-full object-cover border-4 border-purple-200"
+                         class="w-16 h-16 rounded-full object-cover border-4 border-primary-200"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 items-center justify-center text-white font-bold text-xl hidden">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 items-center justify-center text-white font-bold text-xl hidden">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                 @else
-                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white font-bold text-xl">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 flex items-center justify-center text-white font-bold text-xl">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
                 @endif
@@ -58,7 +58,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-user-circle mr-3 text-purple-600"></i>
+                        <i class="fas fa-user-circle mr-3 text-primary-600"></i>
                         Mon compte
                     </h3>
                 </div>
@@ -117,7 +117,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-compass mr-3 text-purple-600"></i>
+                        <i class="fas fa-compass mr-3 text-primary-600"></i>
                         Navigation rapide
                     </h3>
                 </div>
@@ -165,7 +165,7 @@
                     <div class="divide-y divide-gray-200">
                         <a href="{{ route('items.my-items') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
                             <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-box"></i>
                                 </div>
                                 <div>
@@ -202,11 +202,11 @@
                 </div>
 
                 <!-- Affiliation (section spéciale) -->
-                <div class="border-t border-gray-200 bg-gradient-to-r from-purple-50 to-cyan-50">
-                    <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:from-purple-100 hover:to-cyan-100 transition-all group">
+                <div class="border-t border-gray-200 bg-gradient-to-r from-primary-50 to-cyan-50">
+                    <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:from-primary-100 hover:to-cyan-100 transition-all group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-cyan-400 text-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
+                                <div class="w-12 h-12 bg-gradient-to-r from-primary-600 to-cyan-400 text-white rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
                                     <i class="fas fa-users text-lg"></i>
                                 </div>
                                 <div>
@@ -227,7 +227,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-store mr-3 text-purple-600"></i>
+                        <i class="fas fa-store mr-3 text-primary-600"></i>
                         Catalogue
                     </h3>
                 </div>
@@ -274,7 +274,7 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                        <i class="fas fa-question-circle mr-3 text-purple-600"></i>
+                        <i class="fas fa-question-circle mr-3 text-primary-600"></i>
                         Aide & Support
                     </h3>
                 </div>
@@ -297,7 +297,7 @@
                     <a href="{{ route('help.index') }}#contact" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <div>
@@ -384,7 +384,7 @@
         <div class="px-6 py-4 border-b border-gray-200">
             <div class="flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-gray-900 flex items-center">
-                    <i class="fas fa-palette mr-2 text-purple-600"></i>
+                    <i class="fas fa-palette mr-2 text-primary-600"></i>
                     Choisir un thème
                 </h3>
                 <button onclick="closeThemeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
@@ -394,7 +394,7 @@
         </div>
         <div class="p-6">
             <div class="space-y-3">
-                <button onclick="selectTheme('light')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="light">
+                <button onclick="selectTheme('light')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="light">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
@@ -409,7 +409,7 @@
                     </div>
                 </button>
 
-                <button onclick="selectTheme('dark')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="dark">
+                <button onclick="selectTheme('dark')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="dark">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-gray-800 text-white rounded-lg flex items-center justify-center">
@@ -424,10 +424,10 @@
                     </div>
                 </button>
 
-                <button onclick="selectTheme('auto')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-purple-300 transition-colors text-left" data-theme="auto">
+                <button onclick="selectTheme('auto')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="auto">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-magic"></i>
                             </div>
                             <div>
@@ -485,7 +485,7 @@
                 <div class="space-y-3">
                     <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
                         <div class="flex items-center space-x-3">
-                            <i class="fas fa-eye text-purple-600"></i>
+                            <i class="fas fa-eye text-primary-600"></i>
                             <span class="text-gray-900">Mode compact</span>
                         </div>
                         <input type="checkbox" class="toggle-switch">
@@ -652,10 +652,10 @@ function updateThemeSelection() {
     themeOptions.forEach(option => {
         const check = option.querySelector('.theme-check');
         if (option.getAttribute('data-theme') === currentTheme) {
-            option.classList.add('border-purple-500', 'bg-purple-50');
+            option.classList.add('border-primary-500', 'bg-primary-50');
             check.classList.remove('hidden');
         } else {
-            option.classList.remove('border-purple-500', 'bg-purple-50');
+            option.classList.remove('border-primary-500', 'bg-primary-50');
             check.classList.add('hidden');
         }
     });

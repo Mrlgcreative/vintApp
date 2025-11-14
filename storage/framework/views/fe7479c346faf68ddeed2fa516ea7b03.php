@@ -1,5 +1,3 @@
-﻿
-
 <?php $__env->startSection('title', 'VintApp - Fashion Vintage'); ?>
 
 <?php $__env->startPush('styles'); ?>
@@ -46,12 +44,12 @@
     }
     
     .card-hover {
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.3s ease;
     }
     
     .card-hover:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
     
     .image-wrapper {
@@ -59,12 +57,16 @@
         position: relative;
     }
     
-    .image-zoom {
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    .product-image {
+        transition: transform 0.3s ease;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
     }
     
-    .card-hover:hover .image-zoom {
-        transform: scale(1.08);
+    .card-hover:hover .product-image {
+        transform: scale(1.05);
     }
     
     .category-item {
@@ -130,6 +132,36 @@
         0% { width: 0%; }
         100% { width: 100%; }
     }
+    
+    /* Boost Effects */
+    @keyframes boostGlow {
+        0%, 100% { box-shadow: 0 0 20px rgba(var(--primary-600-rgb), 0.4); }
+        50% { box-shadow: 0 0 40px rgba(var(--primary-600-rgb), 0.8), 0 0 60px rgba(var(--primary-600-rgb), 0.4); }
+    }
+    
+    @keyframes boostPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.9; }
+    }
+    
+    @keyframes boostShimmer {
+        0% { background-position: -200px 0; }
+        100% { background-position: calc(200px + 100%) 0; }
+    }
+    
+    .boost-shimmer {
+        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+        background-size: 200px 100%;
+        animation: boostShimmer 2s infinite;
+    }
+    
+    .boost-glow {
+        animation: boostGlow 3s ease-in-out infinite;
+    }
+    
+    .boost-float {
+        animation: boostPulse 4s ease-in-out infinite;
+    }
 </style>
 <?php $__env->stopPush(); ?>
 
@@ -160,7 +192,7 @@
                                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full min-h-[600px]">
                                         
                                         <?php if($slide->image_position === 'left'): ?>
-                                            <!-- Image à gauche -->
+                                            <!-- Image � gauche -->
                                             <div class="order-1 lg:order-1 flex justify-center items-center">
                                                 <div class="w-full max-w-lg">
                                                     <img src="<?php echo e(Storage::url($slide->image_path)); ?>" 
@@ -170,7 +202,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- Texte à droite -->
+                                            <!-- Texte � droite -->
                                             <div class="order-2 lg:order-2 text-<?php echo e($slide->text_position ?? 'left'); ?>">
                                                 <?php if($slide->subtitle): ?>
                                                     <p class="text-white/90 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
@@ -213,7 +245,7 @@
                                                 </div>
                                             </div>
                                         <?php else: ?>
-                                            <!-- Texte à gauche -->
+                                            <!-- Texte � gauche -->
                                             <div class="order-2 lg:order-1 text-<?php echo e($slide->text_position ?? 'left'); ?>">
                                                 <?php if($slide->subtitle): ?>
                                                     <p class="text-white/90 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
@@ -256,7 +288,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <!-- Image à droite -->
+                                            <!-- Image � droite -->
                                             <div class="order-1 lg:order-2 flex justify-center items-center">
                                                 <div class="w-full max-w-lg">
                                                     <img src="<?php echo e(Storage::url($slide->image_path)); ?>" 
@@ -311,19 +343,19 @@
             </div>
         <?php else: ?>
             <!-- Fallback Hero -->
-            <div class="relative h-full bg-gradient-to-br from-purple-900 via-pink-800 to-blue-900 flex items-center justify-center">
+            <div class="relative h-full bg-gradient-to-br from-primary-900 via-accent-800 to-secondary-900 flex items-center justify-center">
                 <!-- Animated Background -->
                 <div class="absolute inset-0 opacity-20">
-                    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, #8b5cf6 2px, transparent 0), radial-gradient(circle at 75% 75%, #ec4899 2px, transparent 0); background-size: 100px 100px; animation: float 20s ease-in-out infinite;"></div>
+                    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, var(--primary-600) 2px, transparent 0), radial-gradient(circle at 75% 75%, var(--accent-400) 2px, transparent 0); background-size: 100px 100px; animation: float 20s ease-in-out infinite;"></div>
                 </div>
                 
                 <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <p class="text-purple-300 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
-                        Découvrez Notre
+                    <p class="text-primary-300 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
+                        D�couvrez Notre
                     </p>
                     
                     <h1 class="font-display text-5xl sm:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight animate-slide-up">
-                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-blue-300">
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 via-accent-300 to-secondary-300">
                             Vintage
                         </span>
                         <span class="block">
@@ -332,7 +364,7 @@
                     </h1>
                     
                     <p class="text-xl sm:text-2xl text-gray-200 mb-8 leading-relaxed animate-fade-in max-w-2xl mx-auto">
-                        Pièces authentiques et uniques sélectionnées avec passion
+                        Pi�ces authentiques et uniques s�lectionn�es avec passion
                     </p>
                     
                     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
@@ -349,11 +381,11 @@
                     <div class="flex justify-center gap-12 mt-12 animate-fade-in">
                         <div class="text-center">
                             <div class="text-3xl font-bold text-white">2,5K+</div>
-                            <div class="text-sm text-purple-200">Articles</div>
+                            <div class="text-sm text-primary-200">Articles</div>
                         </div>
                         <div class="text-center">
                             <div class="text-3xl font-bold text-white">1,2K+</div>
-                            <div class="text-sm text-purple-200">Clients</div>
+                            <div class="text-sm text-primary-200">Clients</div>
                         </div>
                     </div>
                 </div>
@@ -374,14 +406,14 @@
                     <input type="search" 
                            name="q" 
                            value="<?php echo e(request('q')); ?>" 
-                           placeholder="Rechercher des pièces vintage..." 
-                           class="w-full h-16 pl-14 pr-6 rounded-2xl bg-gray-50 border-0 focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all text-base font-medium placeholder:text-gray-400" />
+                           placeholder="Rechercher des pi�ces vintage..." 
+                           class="w-full h-16 pl-14 pr-6 rounded-2xl bg-gray-50 border-0 focus:bg-white focus:ring-4 focus:ring-primary-100 focus:outline-none transition-all text-base font-medium placeholder:text-gray-400" />
                 </div>
                 
                 <div class="flex gap-3">
                     <button type="button" 
                             onclick="toggleFiltersModal()" 
-                            class="h-16 px-6 rounded-2xl border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 text-gray-700 hover:text-purple-700 transition-all flex items-center gap-2 font-medium group">
+                            class="h-16 px-6 rounded-2xl border-2 border-gray-200 hover:border-primary-300 hover:bg-primary-50 text-gray-700 hover:text-primary-700 transition-all flex items-center gap-2 font-medium group">
                         <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                         </svg>
@@ -389,7 +421,7 @@
                     </button>
                     
                     <button type="submit" 
-                            class="h-16 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-purple-500/30 transform hover:scale-105">
+                            class="h-16 px-8 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-2xl font-bold hover:from-primary-700 hover:to-accent-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-primary-500/30 transform hover:scale-105">
                         <span class="hidden sm:inline">Rechercher</span>
                         <svg class="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -400,79 +432,408 @@
         </div>
     </section>
 
-    <!-- Section Catégories - Optimisée -->
+    <!-- Section Cat�gories - Optimis�e -->
     <section class="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- En-tête Section -->
+            <!-- En-t�te Section -->
             <div class="mb-12">
                 <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                    Catégories
+                    Cat�gories
                 </h2>
             </div>
 
-            <!-- Grille Catégories -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 lg:gap-6">
-                <?php
-                    $icons = ['👗', '👔', '👠', '👜', '⌚', '💍', '🕶️', '🎒', '👟', '🧥'];
-                    $colors = [
-                        'from-purple-100 to-purple-200 border-purple-200',
-                        'from-pink-100 to-pink-200 border-pink-200',
-                        'from-blue-100 to-blue-200 border-blue-200',
-                        'from-green-100 to-green-200 border-green-200',
-                        'from-yellow-100 to-yellow-200 border-yellow-200',
-                        'from-red-100 to-red-200 border-red-200',
-                        'from-indigo-100 to-indigo-200 border-indigo-200',
-                        'from-teal-100 to-teal-200 border-teal-200',
-                        'from-orange-100 to-orange-200 border-orange-200',
-                        'from-cyan-100 to-cyan-200 border-cyan-200'
-                    ];
-                ?>
-                <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" 
-                       class="group relative bg-white hover:bg-gradient-to-br <?php echo e($colors[$index % count($colors)]); ?> border-2 border-transparent hover:border-opacity-50 rounded-2xl lg:rounded-3xl p-6 lg:p-8 text-center transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-2">
+            <!-- Conteneur Cat�gories - D�filement Horizontal sur tous les �crans -->
+            <div class="relative">
+                <!-- D�filement Horizontal Universel -->
+                <div class="flex overflow-x-auto scrollbar-hide gap-4 lg:gap-6 pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
+                    <?php
+                        $icons = ['👔', '👗', '👟', '👜', '⌚', '🕶️', '🧥', '👠', '🎒', '💍'];
+                        $colors = [
+                            'from-primary-100 to-primary-200 border-primary-200',
+                            'from-accent-100 to-accent-200 border-accent-200',
+                            'from-secondary-100 to-secondary-200 border-secondary-200',
+                            'from-green-100 to-green-200 border-green-200',
+                            'from-yellow-100 to-yellow-200 border-yellow-200',
+                            'from-red-100 to-red-200 border-red-200',
+                            'from-indigo-100 to-indigo-200 border-indigo-200',
+                            'from-teal-100 to-teal-200 border-teal-200',
+                            'from-orange-100 to-orange-200 border-orange-200',
+                            'from-cyan-100 to-cyan-200 border-cyan-200'
+                        ];
+                    ?>
+                    <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" 
+                           class="group relative bg-white hover:bg-gradient-to-br <?php echo e($colors[$index % count($colors)]); ?> border-2 border-transparent hover:border-opacity-50 rounded-2xl lg:rounded-3xl p-4 lg:p-8 text-center transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-2 flex-shrink-0 w-32 lg:w-40"
+                           style="scroll-snap-align: start;">
+                            
+                            <!-- Ic�ne -->
+                            <div class="text-3xl lg:text-5xl xl:text-6xl mb-3 lg:mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 filter drop-shadow-sm">
+                                <?php echo e($icons[$index % count($icons)]); ?>
+
+                            </div>
+                            
+                            <!-- Texte -->
+                            <div class="space-y-1">
+                                <h3 class="font-bold text-xs lg:text-sm xl:text-base text-gray-900 group-hover:text-gray-800 leading-tight">
+                                    <?php echo e($category->name); ?>
+
+                                </h3>
+                                <p class="text-xs lg:text-sm text-gray-500 group-hover:text-gray-600">
+                                    <?php echo e($category->items_count ?? rand(15, 150)); ?> <span class="hidden lg:inline">articles</span>
+                                </p>
+                            </div>
+                            
+                            <!-- Indicateur hover -->
+                            <div class="absolute top-2 lg:top-3 right-2 lg:right-3 w-5 lg:w-6 h-5 lg:h-6 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center transform scale-75 group-hover:scale-100">
+                                <svg class="w-2 lg:w-3 h-2 lg:h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
+                        </a>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                        <div class="text-center py-16 w-full">
+                            <div class="text-6xl lg:text-8xl mb-4 lg:mb-6">📦</div>
+                            <h3 class="text-lg lg:text-xl font-semibold text-gray-600 mb-2">Catégories à venir</h3>
+                            <p class="text-gray-400">Nos cat�gories seront bient�t disponibles</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Navigation Arrows - Visible sur desktop uniquement -->
+                <div class="hidden lg:block">
+                    <button id="categoriesPrev" 
+                            class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <button id="categoriesNext" 
+                            class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
                         
-                        <!-- Icône -->
+                        <!-- Ic�ne -->
                         <div class="text-4xl lg:text-6xl mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 filter drop-shadow-sm">
                             <?php echo e($icons[$index % count($icons)]); ?>
 
                         </div>
-                        
-                        <!-- Texte -->
-                        <div class="space-y-1">
-                            <h3 class="font-bold text-sm lg:text-base text-gray-900 group-hover:text-gray-800">
-                                <?php echo e($category->name); ?>
 
-                            </h3>
-                            <p class="text-xs lg:text-sm text-gray-500 group-hover:text-gray-600">
-                                <?php echo e($category->items_count ?? rand(15, 150)); ?> articles
-                            </p>
-                        </div>
-                        
-                        <!-- Indicateur hover -->
-                        <div class="absolute top-3 right-3 w-6 h-6 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center transform scale-75 group-hover:scale-100">
-                            <svg class="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-                    </a>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <div class="col-span-full text-center py-16">
-                        <div class="text-8xl mb-6">📂</div>
-                        <h3 class="text-xl font-semibold text-gray-600 mb-2">Catégories à venir</h3>
-                        <p class="text-gray-400">Nos catégories seront bientôt disponibles</p>
+        </div>
+    </section>
+
+    <!-- CSS et JavaScript pour les cat�gories horizontales -->
+    <style>
+        .scrollbar-hide {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .scrollbar-hide::-webkit-scrollbar { 
+            display: none;  /* Safari and Chrome */
+        }
+        
+        .categories-scroll {
+            scroll-behavior: smooth;
+        }
+    </style>
+
+    <script>
+        // Navigation des cat�gories
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoriesContainer = document.querySelector('.flex.overflow-x-auto.scrollbar-hide');
+            const prevBtn = document.getElementById('categoriesPrev');
+            const nextBtn = document.getElementById('categoriesNext');
+            
+            if (categoriesContainer && prevBtn && nextBtn) {
+                const scrollAmount = 200; // Pixels � faire d�filer
+                
+                prevBtn.addEventListener('click', () => {
+                    categoriesContainer.scrollBy({
+                        left: -scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    categoriesContainer.scrollBy({
+                        left: scrollAmount,
+                        behavior: 'smooth'
+                    });
+                });
+                
+                // Masquer/afficher les boutons selon la position de d�filement
+                function updateNavigationButtons() {
+                    const isAtStart = categoriesContainer.scrollLeft <= 0;
+                    const isAtEnd = categoriesContainer.scrollLeft >= 
+                        (categoriesContainer.scrollWidth - categoriesContainer.clientWidth - 10);
+                    
+                    prevBtn.style.opacity = isAtStart ? '0.3' : '0.8';
+                    nextBtn.style.opacity = isAtEnd ? '0.3' : '0.8';
+                    
+                    prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+                    nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+                }
+                
+                // Mettre � jour les boutons au chargement et au d�filement
+                categoriesContainer.addEventListener('scroll', updateNavigationButtons);
+                window.addEventListener('resize', updateNavigationButtons);
+                updateNavigationButtons();
+            }
+        });
+    </script>
+
+    <!-- Section Produits Spotlight - Carrousel Sp�cial -->
+    <?php if(isset($spotlightItems) && $spotlightItems->count() > 0): ?>
+    <section class="py-16 lg:py-20 bg-gradient-to-br from-primary-50 via-white to-accent-50 relative overflow-hidden">
+        <!-- Background Decorations -->
+        <div class="absolute inset-0">
+            <div class="absolute top-10 left-10 w-32 h-32 bg-primary-200 rounded-full opacity-20 blur-xl"></div>
+            <div class="absolute bottom-10 right-10 w-40 h-40 bg-accent-200 rounded-full opacity-20 blur-xl"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full opacity-10 blur-3xl"></div>
+        </div>
+
+        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <!-- En-t�te Section -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-2xl mb-6 shadow-xl">
+                    <i class="fas fa-lightbulb text-2xl"></i>
+                </div>
+                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                    ⭐ Produits en Spotlight
+                </h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Découvrez les articles mis en avant spécialement pour vous dans notre carrousel exclusif
+                </p>
+            </div>
+
+            <!-- Carrousel Spotlight -->
+            <div class="relative">
+                <div id="spotlightCarousel" class="overflow-hidden">
+                    <div class="flex transition-transform duration-500 ease-in-out" id="spotlightSlider">
+                        <?php $__currentLoopData = $spotlightItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
+                                $images = $item->images ?? [];
+                                $firstImage = count($images) > 0 ? $images[0] : null;
+                                $activeBoost = $item->activeBoosts->first();
+                            ?>
+                            <div class="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-3">
+                                <article class="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-primary-200 hover:border-primary-400">
+                                    <!-- Badge Spotlight -->
+                                    <div class="absolute top-4 left-4 z-20">
+                                        <div class="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-accent-600 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
+                                            <i class="fas fa-lightbulb animate-pulse"></i>
+                                            <span>Spotlight</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Expiration Badge -->
+                                    <?php if($activeBoost && $activeBoost->expires_at): ?>
+                                        <div class="absolute top-4 right-4 z-20">
+                                            <div class="bg-white/90 backdrop-blur-sm text-primary-800 px-3 py-1 rounded-full text-xs font-semibold">
+                                                Expire dans <?php echo e($activeBoost->expires_at->diffForHumans(null, true)); ?>
+
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <!-- Image Container -->
+                                    <div class="aspect-[3/4] bg-gradient-to-br from-primary-100 to-accent-100 relative overflow-hidden">
+                                        <?php if($firstImage && Storage::disk('public')->exists($firstImage)): ?>
+                                            <img src="<?php echo e(Storage::url($firstImage)); ?>" 
+                                                 alt="<?php echo e($item->name); ?>"
+                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                        <?php else: ?>
+                                            <div class="w-full h-full flex items-center justify-center">
+                                                <i class="fas fa-image text-6xl text-primary-300"></i>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <!-- Overlay Gradient -->
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        
+                                        <!-- Action Buttons -->
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div class="flex gap-3">
+                                                <a href="<?php echo e(route('items.show', $item)); ?>" 
+                                                   class="w-12 h-12 bg-white text-primary-600 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition-colors">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button type="button" 
+                                                        onclick="toggleFavorite(<?php echo e($item->id); ?>)" 
+                                                        class="w-12 h-12 bg-white text-accent-500 rounded-full flex items-center justify-center shadow-lg hover:bg-accent-500 hover:text-white transition-colors">
+                                                    <i class="fas fa-heart"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Product Info -->
+                                    <div class="p-6">
+                                        <div class="mb-3">
+                                            <h3 class="font-semibold text-lg text-gray-900 mb-2 line-clamp-2">
+                                                <?php echo e($item->name); ?>
+
+                                            </h3>
+                                            <p class="text-primary-600 text-sm font-medium">
+                                                <?php echo e($item->category->name ?? 'Uncategorized'); ?>
+
+                                            </p>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex flex-col">
+                                                <span class="text-2xl font-bold text-gray-900">
+                                                    <?php echo e(number_format($item->price, 0, ',', ' ')); ?> <?php echo e($item->currency ?? 'CDF'); ?>
+
+                                                </span>
+                                                <span class="text-sm text-gray-500">
+                                                    <?php echo e($item->condition ?? 'Bon �tat'); ?>
+
+                                                </span>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-xs text-gray-400">
+                                                    <?php echo e($item->created_at->diffForHumans()); ?>
+
+                                                </div>
+                                                <?php if($item->user): ?>
+                                                    <div class="text-xs text-primary-600 font-medium">
+                                                        <?php echo e($item->user->name); ?>
+
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                <?php endif; ?>
+                </div>
+
+                <!-- Navigation Controls -->
+                <button id="spotlightPrev" 
+                        class="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-300 z-10 opacity-80 hover:opacity-100">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                
+                <button id="spotlightNext" 
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white shadow-xl rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-300 z-10 opacity-80 hover:opacity-100">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+
+                <!-- Indicators -->
+                <div class="flex justify-center mt-8 space-x-2" id="spotlightIndicators">
+                    <?php for($i = 0; $i < ceil($spotlightItems->count() / 4); $i++): ?>
+                        <button class="w-3 h-3 rounded-full transition-all duration-300 spotlight-indicator <?php echo e($i === 0 ? 'bg-primary-600' : 'bg-gray-300'); ?>" 
+                                data-slide="<?php echo e($i); ?>"></button>
+                    <?php endfor; ?>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <div class="text-center mt-12">
+                <a href="<?php echo e(route('items.index')); ?>?boost=spotlight" 
+                   class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-full font-bold text-lg hover:from-primary-700 hover:to-accent-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Voir tous les produits Spotlight</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
     </section>
 
-    <!-- Section Produits Vedettes - Optimisée -->
+    <script>
+        // Carrousel Spotlight JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const slider = document.getElementById('spotlightSlider');
+            const prevBtn = document.getElementById('spotlightPrev');
+            const nextBtn = document.getElementById('spotlightNext');
+            const indicators = document.querySelectorAll('.spotlight-indicator');
+            
+            let currentSlide = 0;
+            const itemsPerSlide = window.innerWidth >= 1280 ? 4 : (window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 640 ? 2 : 1));
+            const totalSlides = Math.ceil(<?php echo e($spotlightItems->count()); ?> / itemsPerSlide);
+            
+            function updateSlider() {
+                const offset = -currentSlide * (100 / itemsPerSlide);
+                slider.style.transform = `translateX(${offset}%)`;
+                
+                // Update indicators
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle('bg-primary-600', index === currentSlide);
+                    indicator.classList.toggle('bg-gray-300', index !== currentSlide);
+                });
+            }
+            
+            function nextSlide() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlider();
+            }
+            
+            function prevSlide() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlider();
+            }
+            
+            // Event listeners
+            nextBtn?.addEventListener('click', nextSlide);
+            prevBtn?.addEventListener('click', prevSlide);
+            
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    updateSlider();
+                });
+            });
+            
+            // Auto-play
+            setInterval(nextSlide, 5000);
+            
+            // Responsive handling
+            window.addEventListener('resize', () => {
+                const newItemsPerSlide = window.innerWidth >= 1280 ? 4 : (window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 640 ? 2 : 1));
+                if (newItemsPerSlide !== itemsPerSlide) {
+                    location.reload(); // Simple solution for responsive changes
+                }
+            });
+        });
+        
+        // Favorite toggle function
+        function toggleFavorite(itemId) {
+            <?php if(auth()->guard()->check()): ?>
+                fetch(`/items/${itemId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show notification or update UI
+                        console.log(data.message);
+                    }
+                });
+            <?php else: ?>
+                window.location.href = "<?php echo e(route('login')); ?>";
+            <?php endif; ?>
+        }
+    </script>
+    <?php endif; ?>
+
+    <!-- Section Produits Vedettes - Optimis�e -->
     <section id="collection" class="py-20 lg:py-32 bg-white">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- En-tête Section -->
+            <!-- En-t�te Section -->
             <div class="mb-12">
                 <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900">
-                    Articles Récents
+                    Articles R�cents
                 </h2>
             </div>
 
@@ -480,22 +841,32 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
                 <?php $__empty_1 = true; $__currentLoopData = $latestItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                     <?php
-                        $firstImage = is_string($item->images) ? json_decode($item->images, true)[0] ?? null : ($item->images[0] ?? null);
+                        $images = $item->images ?? [];
+                        $firstImage = count($images) > 0 ? $images[0] : null;
                         $isNew = $item->created_at->gt(now()->subDays(7));
-                        $isFeatured = rand(0, 3) === 0;
+                        
+                        // Utiliser la m�me logique que le carrousel Spotlight
+                        $activeBoost = $item->activeBoosts->first();
+                        $isBoosted = $activeBoost !== null;
+                        $boostType = $activeBoost?->boostType;
                     ?>
-                    <article class="group relative bg-white rounded-3xl overflow-hidden card-hover border-2 border-gray-100 hover:border-purple-200 transition-all duration-300">
+                    <article class="group relative bg-white rounded-3xl overflow-hidden card-hover border-2 <?php echo e($isBoosted ? 'border-primary-300 ring-2 ring-primary-100 shadow-lg shadow-primary-500/20' : 'border-gray-100 hover:border-primary-200'); ?> transition-all duration-300">
                         <!-- Image Container -->
-                        <div class="image-wrapper aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                        <div class="image-wrapper aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
                             <?php if($firstImage && Storage::disk('public')->exists($firstImage)): ?>
                                 <img src="<?php echo e(Storage::url($firstImage)); ?>" 
                                      alt="<?php echo e($item->name); ?>" 
-                                     class="w-full h-full object-cover image-zoom" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                                      loading="lazy" />
                             <?php else: ?>
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-pink-100">
-                                    <span class="text-6xl text-gray-400 filter drop-shadow-sm">📷</span>
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100">
+                                    <span class="text-6xl text-gray-400 filter drop-shadow-sm">??</span>
                                 </div>
+                            <?php endif; ?>
+                            
+                            <!-- Boost Glow Effect -->
+                            <?php if($isBoosted): ?>
+                                <div class="absolute inset-0 bg-gradient-to-tr from-primary-400/20 via-transparent to-transparent pointer-events-none"></div>
                             <?php endif; ?>
                             
                             <!-- Overlay Actions -->
@@ -521,21 +892,26 @@
                             
                             <!-- Badges -->
                             <div class="absolute top-4 left-4 flex flex-col gap-2">
+                                <?php if($isBoosted): ?>
+                                    <div class="relative">
+                                        <span class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                                            <i class="fas fa-star"></i>
+                                            <?php echo e($boostType?->name ?? 'BOOST'); ?>
+
+                                        </span>
+                                        <div class="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 rounded-full animate-ping opacity-75"></div>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if($isNew): ?>
                                     <span class="px-3 py-1 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
                                         NOUVEAU
                                     </span>
                                 <?php endif; ?>
-                                <?php if($isFeatured): ?>
-                                    <span class="px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold rounded-full shadow-lg">
-                                        ⭐ VEDETTE
-                                    </span>
-                                <?php endif; ?>
                             </div>
                             
-                            <!-- Prix -->
+                            <!-- Prix avec effet boost -->
                             <div class="absolute top-4 right-4">
-                                <span class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm font-bold shadow-lg">
+                                <span class="px-4 py-2 <?php echo e($isBoosted ? 'bg-gradient-to-r from-primary-600 to-primary-700 shadow-lg shadow-primary-500/50 animate-pulse' : 'bg-gray-900'); ?> text-white rounded-full text-sm font-bold shadow-lg">
                                     <?php echo e($item->formatted_price); ?>
 
                                 </span>
@@ -543,24 +919,33 @@
                         </div>
                         
                         <!-- Contenu -->
-                        <div class="p-5 lg:p-6">
+                        <div class="p-5 lg:p-6 <?php echo e($isBoosted ? 'bg-gradient-to-b from-white to-primary-50/30' : ''); ?>">
                             <div class="space-y-3">
-                                <h3 class="font-bold text-base lg:text-lg text-gray-900 line-clamp-2 min-h-[3rem] leading-tight">
+                                <h3 class="font-bold text-base lg:text-lg <?php echo e($isBoosted ? 'text-primary-900' : 'text-gray-900'); ?> line-clamp-2 min-h-[3rem] leading-tight">
                                     <?php echo e($item->name); ?>
 
                                 </h3>
                                 
                                 <div class="flex items-center justify-between">
-                                    <span class="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-xs font-semibold">
+                                    <span class="px-3 py-1 bg-gradient-to-r <?php echo e($isBoosted ? 'from-primary-100 to-primary-200 text-primary-800' : 'from-primary-100 to-accent-100 text-primary-700'); ?> rounded-full text-xs font-semibold">
                                         <?php echo e($item->condition ?? 'Excellent'); ?>
 
                                     </span>
                                     
                                     <div class="flex items-center gap-1 text-xs text-gray-500">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        <span><?php echo e($item->created_at->diffForHumans()); ?></span>
+                                        <?php if($isBoosted): ?>
+                                            <div class="flex items-center gap-1 text-primary-600 font-medium">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                </svg>
+                                                <span>Boost�</span>
+                                            </div>
+                                        <?php else: ?>
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span><?php echo e($item->created_at->diffForHumans()); ?></span>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -571,7 +956,7 @@
                     </article>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <div class="col-span-full text-center py-20">
-                        <div class="text-6xl mb-4">🛍️</div>
+                        <div class="text-6xl mb-4">???</div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Aucun article</h3>
                         <a href="<?php echo e(route('items.create') ?? '#'); ?>" 
                            class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-all">
@@ -605,7 +990,7 @@
                     </svg>
                 </div>
                 <h3 class="font-semibold mb-2">Free Shipping</h3>
-                <p class="text-sm text-gray-500">On orders over €50</p>
+                <p class="text-sm text-gray-500">On orders over �50</p>
             </div>
             <div class="text-center">
                 <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">

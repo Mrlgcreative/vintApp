@@ -26,7 +26,7 @@
                 <span class="xs:hidden">Ville</span>
             </button>
             <button onclick="openModal('addRegionModal')" 
-                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+                    class="inline-flex items-center justify-center px-3 sm:px-4 py-2 text-sm bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>
                 <span class="hidden xs:inline">Ajouter une région</span>
                 <span class="xs:hidden">Région</span>
@@ -160,7 +160,7 @@
                 </h2>
                 <p class="text-xs sm:text-sm text-gray-600 mt-1">
                     <span id="map-city-count" class="font-semibold text-primary-600">{{ $stats['total_cities'] }}</span> villes dans 
-                    <span id="map-country-count" class="font-semibold text-purple-600">{{ $stats['countries_count'] }}</span> pays
+                    <span id="map-country-count" class="font-semibold text-primary-600">{{ $stats['countries_count'] }}</span> pays
                 </p>
             </div>
             <div class="flex flex-wrap gap-2">
@@ -177,7 +177,7 @@
                     <i class="fas fa-sync-alt"></i> <span class="hidden xs:inline">Actualiser</span>
                 </button>
                 <button onclick="showMapHelp()" 
-                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors text-xs sm:text-sm font-medium"
+                        class="px-2 sm:px-3 py-1.5 sm:py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors text-xs sm:text-sm font-medium"
                         title="Aide & Raccourcis">
                     <i class="fas fa-question-circle"></i>
                 </button>
@@ -265,25 +265,25 @@
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-purple-200">
+        <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg sm:rounded-xl p-3 sm:p-4 lg:p-6 border border-primary-200">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div class="flex-1">
-                    <p class="text-xs sm:text-sm font-medium text-purple-600">Régions Totales</p>
-                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-900 mt-0.5 sm:mt-1">{{ $stats['total_regions'] }}</p>
+                    <p class="text-xs sm:text-sm font-medium text-primary-600">Régions Totales</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mt-0.5 sm:mt-1">{{ $stats['total_regions'] }}</p>
                 </div>
-                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-purple-500 rounded-lg flex items-center justify-center shrink-0">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-primary-500 rounded-lg flex items-center justify-center shrink-0">
                     <i class="fas fa-map text-white text-sm sm:text-base lg:text-xl"></i>
                 </div>
             </div>
         </div>
 
-        <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl p-6 border border-pink-200">
+        <div class="bg-gradient-to-br from-accent-50 to-accent-100 rounded-xl p-6 border border-accent-200">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-pink-600">Régions Actives</p>
-                    <p class="text-3xl font-bold text-pink-900 mt-1">{{ $stats['active_regions'] }}</p>
+                    <p class="text-sm font-medium text-accent-600">Régions Actives</p>
+                    <p class="text-3xl font-bold text-accent-900 mt-1">{{ $stats['active_regions'] }}</p>
                 </div>
-                <div class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center">
+                <div class="w-12 h-12 bg-accent-500 rounded-lg flex items-center justify-center">
                     <i class="fas fa-check-double text-white text-xl"></i>
                 </div>
             </div>
@@ -571,7 +571,7 @@
                     <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucune région enregistrée</h3>
                     <p class="text-gray-600 mb-4">Commencez par ajouter les régions autorisées</p>
                     <button onclick="openModal('addRegionModal')" 
-                            class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition-colors">
+                            class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors">
                         <i class="fas fa-plus mr-2"></i>
                         Ajouter une région
                     </button>
@@ -761,7 +761,7 @@
         <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
             <div class="mb-4">
                 <h3 class="text-lg font-semibold text-gray-900">
-                    <i class="fas fa-map text-purple-600 mr-2"></i>
+                    <i class="fas fa-map text-primary-600 mr-2"></i>
                     Ajouter une nouvelle région
                 </h3>
             </div>
@@ -772,14 +772,14 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nom de la région <span class="text-red-500">*</span></label>
                     <input type="text" name="name" required 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                            placeholder="Ex: Haut-Katanga">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Pays <span class="text-red-500">*</span></label>
                     <select name="country" required 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                         <option value="Congo (RDC)" selected>Congo (RDC)</option>
                         <option value="Congo (Brazzaville)">Congo (Brazzaville)</option>
                         <option value="Autre">Autre</option>
@@ -789,20 +789,20 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Code unique</label>
                     <input type="text" name="region_code" 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                            placeholder="Ex: HK-01">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
                     <textarea name="description" rows="3" 
-                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                               placeholder="Informations complémentaires..."></textarea>
                 </div>
                 
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" value="1" checked 
-                           class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500">
+                           class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
                     <label class="ml-2 text-sm text-gray-700">Activer immédiatement</label>
                 </div>
                 
@@ -812,7 +812,7 @@
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                         <i class="fas fa-check mr-2"></i>
                         Ajouter
                     </button>
@@ -1549,7 +1549,7 @@ function showMapHelp() {
     const helpHTML = `
         <div style="max-width: 500px;">
             <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #1f2937;">
-                <i class="fas fa-info-circle text-purple-600"></i>
+                <i class="fas fa-info-circle text-primary-600"></i>
                 Guide d'utilisation de la carte
             </h3>
             

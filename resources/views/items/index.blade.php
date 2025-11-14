@@ -3,7 +3,7 @@
 @section('content')
 <!-- Toast notification -->
 <div class="fixed bottom-4 right-4 z-50">
-    <div id="mainToast" class="hidden bg-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
+    <div id="mainToast" class="hidden bg-primary-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
         <div id="mainToastBody" class="flex-1">Notification</div>
         <button type="button" onclick="hideToast()" class="text-white hover:text-gray-200 ml-4">
             <i class="fas fa-times"></i>
@@ -11,17 +11,17 @@
     </div>
 </div>
 
-<div class="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 class="text-3xl font-bold text-gray-900 flex items-center">
-                    <i class="fas fa-box mr-3 text-purple-600"></i>
+                    <i class="fas fa-box mr-3 text-primary-600"></i>
                     Articles disponibles
                 </h1>
                 @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre un article
                     </a>
@@ -32,17 +32,17 @@
         <!-- Barre de recherche et filtres -->
         <div class="mb-8">
             <div class="max-w-3xl mx-auto">
-                <div class="flex gap-4 p-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-purple-100 hover:shadow-2xl transition-all duration-300">
+                <div class="flex gap-4 p-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-primary-100 hover:shadow-2xl transition-all duration-300">
                     <!-- Formulaire de recherche -->
                     <form method="GET" action="{{ route('items.index') }}" class="flex-1">
                         <div class="relative">
                             <input type="search" 
                                    name="search" 
-                                   class="w-full pl-5 pr-32 py-4 bg-gray-50 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                   class="w-full pl-5 pr-32 py-4 bg-gray-50 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                    placeholder="🔍 Rechercher un article..." 
                                    value="{{ request('search') }}"
                                    autocomplete="off">
-                            <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                            <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
                                 <i class="fas fa-search mr-2"></i>
                                 <span class="hidden md:inline">Rechercher</span>
                             </button>
@@ -50,7 +50,7 @@
                     </form>
                     
                     <!-- Bouton filtres -->
-                    <button type="button" onclick="toggleFiltersModal()" class="flex items-center px-6 py-4 bg-gray-50 border-2 border-transparent text-purple-600 font-semibold rounded-xl hover:bg-white hover:border-purple-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <button type="button" onclick="toggleFiltersModal()" class="flex items-center px-6 py-4 bg-gray-50 border-2 border-transparent text-primary-600 font-semibold rounded-xl hover:bg-white hover:border-primary-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-filter mr-2"></i>
                         <span class="hidden sm:inline">Filtres</span>
                     </button>
@@ -64,7 +64,7 @@
                     
                     <div class="inline-block align-middle bg-white rounded-2xl shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
                         <!-- En-tête du modal -->
-                        <div class="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 rounded-t-2xl">
+                        <div class="bg-gradient-to-r from-primary-600 to-accent-600 px-6 py-4 rounded-t-2xl">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-xl font-bold text-white flex items-center">
                                     <i class="fas fa-filter mr-3"></i>
@@ -82,12 +82,12 @@
                                 <!-- Recherche par mot-clé -->
                                 <div>
                                     <label for="filterSearch" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-search mr-2 text-purple-600"></i>Mot-clé
+                                        <i class="fas fa-search mr-2 text-primary-600"></i>Mot-clé
                                     </label>
                                     <input type="text" 
                                            id="filterSearch" 
                                            name="search" 
-                                           class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                           class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                            placeholder="Ex: iPhone, Nike, Vêtements..." 
                                            value="{{ request('search') }}">
                                 </div>
@@ -95,9 +95,9 @@
                                 <!-- Catégorie -->
                                 <div>
                                     <label for="filterCategory" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-layer-group mr-2 text-purple-600"></i>Catégorie
+                                        <i class="fas fa-layer-group mr-2 text-primary-600"></i>Catégorie
                                     </label>
-                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
+                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les catégories</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -110,9 +110,9 @@
                                 <!-- Marque -->
                                 <div>
                                     <label for="filterBrand" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-tag mr-2 text-purple-600"></i>Marque
+                                        <i class="fas fa-tag mr-2 text-primary-600"></i>Marque
                                     </label>
-                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
+                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les marques</option>
                                         @foreach($brands as $brand)
                                             <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
@@ -125,19 +125,19 @@
                                 <!-- Prix -->
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-dollar-sign mr-2 text-purple-600"></i>Prix (USD)
+                                        <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>Prix (USD)
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <input type="number" 
                                                name="min_price" 
-                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Min" 
                                                value="{{ request('min_price') }}" 
                                                min="0" 
                                                step="0.01">
                                         <input type="number" 
                                                name="max_price" 
-                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300" 
+                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Max" 
                                                value="{{ request('max_price') }}" 
                                                min="0" 
@@ -148,9 +148,9 @@
                                 <!-- État -->
                                 <div>
                                     <label for="filterCondition" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-star mr-2 text-purple-600"></i>État
+                                        <i class="fas fa-star mr-2 text-primary-600"></i>État
                                     </label>
-                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-purple-600 focus:ring-4 focus:ring-purple-100 transition-all duration-300">
+                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Tous les états</option>
                                         <option value="new" {{ request('condition') == 'new' ? 'selected' : '' }}>🆕 Neuf</option>
                                         <option value="like_new" {{ request('condition') == 'like_new' ? 'selected' : '' }}>✨ Comme neuf</option>
@@ -167,7 +167,7 @@
                             <button type="button" onclick="resetFilters()" class="px-6 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
                                 <i class="fas fa-undo mr-2"></i>Réinitialiser
                             </button>
-                            <button type="button" onclick="applyFilters()" class="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                            <button type="button" onclick="applyFilters()" class="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
                                 <i class="fas fa-check mr-2"></i>Appliquer
                             </button>
                         </div>
@@ -178,58 +178,99 @@
 
         <!-- Résultats -->
         @if($items->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="items-grid">
+            <div class="grid grid-cols-2 gap-4" id="items-grid">
                 @foreach($items as $loop_index => $item)
-                    <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-2 hover:scale-105 transition-all duration-300 border border-gray-100 overflow-hidden">
+                    @php
+                        $firstImage = is_string($item->images) ? json_decode($item->images, true)[0] ?? null : ($item->images[0] ?? null);
+                        $isNew = $item->created_at->gt(now()->subDays(7));
+                        
+                        // Vérifier si l'item a un boost actif
+                        $activeBoost = $item->activeBoosts->first();
+                        $isBoosted = $activeBoost !== null;
+                        $boostType = $activeBoost?->boostType;
+                    @endphp
+                    <div class="group relative bg-white rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 transition-all duration-300 border border-gray-100 overflow-hidden {{ $isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-200 shadow-' . ($boostType?->color ?? 'primary') . '-500/20' : '' }}">
                         <!-- Image -->
                         <div class="relative">
+                            @if($isBoosted)
+                                <div class="absolute inset-0 bg-gradient-to-tr from-{{ $boostType?->color ?? 'primary' }}-400/10 to-transparent pointer-events-none z-0"></div>
+                            @endif
+                            
                             <a href="{{ route('items.show', $item) }}" class="block">
                                 @if($item->images && count($item->images) > 0)
                                     <img src="{{ Storage::url($item->images[0]) }}" 
                                          {{ $loop_index > 7 ? 'loading="lazy"' : '' }}
-                                         class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300" 
+                                         class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 {{ $isBoosted ? 'filter brightness-105' : '' }}" 
                                          alt="{{ $item->name }}">
                                 @else
-                                    <div class="w-full h-48 bg-gray-100 flex items-center justify-content-center hover:bg-gray-200 transition-colors">
-                                        <i class="fas fa-image text-4xl text-gray-400"></i>
+                                    <div class="w-full h-32 bg-gray-100 flex items-center justify-content-center hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-image text-2xl text-gray-400"></i>
                                     </div>
                                 @endif
                             </a>
                             
-                            <!-- Badge condition -->
-                            <span class="absolute top-3 left-3 px-3 py-1 text-xs font-semibold bg-white/90 backdrop-blur-sm text-purple-600 rounded-lg shadow-md">
-                                {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
-                            </span>
-
-                            <!-- Bouton favori -->
-                            @auth
-                                <button class="absolute top-3 right-3 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 favorite-btn"
-                                        data-item-id="{{ $item->id }}">
-                                    <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors"></i>
-                                </button>
-                            @endauth
-                        </div>
-
-                        <!-- Contenu -->
-                        <div class="p-5 flex flex-col h-full">
-                            <a href="{{ route('items.show', $item) }}" class="block hover:text-purple-600 transition-colors">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2 line-clamp-2 hover:text-purple-600">{{ Str::limit($item->name, 50) }}</h3>
-                            </a>
-                            
-                            <div class="flex flex-wrap gap-2 mb-3">
-                                <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-lg">{{ $item->category->name }}</span>
-                                @if($item->brand)
-                                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-700 rounded-lg">{{ $item->brand->name }}</span>
+                            <!-- Badges -->
+                            <div class="absolute top-2 left-2 flex flex-col gap-1 z-20">
+                                @if($isBoosted)
+                                    <div class="relative">
+                                        <span class="px-2 py-0.5 bg-gradient-to-r from-{{ $boostType?->color ?? 'primary' }}-500 to-{{ $boostType?->color ?? 'primary' }}-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                                            <i class="{{ $boostType?->icon ?? 'fas fa-star' }} text-xs"></i>
+                                            {{ $boostType?->name ?? 'BOOST' }}
+                                        </span>
+                                        <div class="absolute inset-0 bg-gradient-to-r from-{{ $boostType?->color ?? 'primary' }}-400 to-{{ $boostType?->color ?? 'primary' }}-500 rounded-full animate-ping opacity-75"></div>
+                                    </div>
+                                @endif
+                                @if($isNew)
+                                    <span class="px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
+                                        NOUVEAU
+                                    </span>
+                                @else
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-white/90 backdrop-blur-sm text-primary-600 rounded shadow-md">
+                                        {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                                    </span>
                                 @endif
                             </div>
 
-                            <p class="text-gray-600 text-sm mb-4 line-clamp-3 flex-grow">
-                                {{ Str::limit($item->description, 100) }}
+                            <!-- Prix avec effet boost -->
+                            <div class="absolute top-2 right-2 z-20">
+                                @auth
+                                    <div class="flex flex-col gap-1 items-end">
+                                        <span class="px-2 py-1 {{ $isBoosted ? 'bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-gray-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-xs font-bold shadow-lg">
+                                            {{ $item->formatted_price }}
+                                        </span>
+                                        <button class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 favorite-btn"
+                                                data-item-id="{{ $item->id }}">
+                                            <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-xs"></i>
+                                        </button>
+                                    </div>
+                                @else
+                                    <span class="px-2 py-1 {{ $isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-xs font-bold shadow-lg">
+                                        {{ $item->formatted_price }}
+                                    </span>
+                                @endauth
+                            </div>
+                        </div>
+
+                        <!-- Contenu -->
+                        <div class="p-3 flex flex-col h-full {{ $isBoosted ? 'bg-gradient-to-b from-white to-' . ($boostType?->color ?? 'primary') . '-50/30' : '' }}">
+                            <a href="{{ route('items.show', $item) }}" class="block hover:text-primary-600 transition-colors">
+                                <h3 class="text-sm font-bold text-gray-900 mb-2 line-clamp-2 hover:text-primary-600 {{ $isBoosted ? 'text-' . ($boostType?->color ?? 'primary') . '-900' : '' }}">{{ Str::limit($item->name, 40) }}</h3>
+                            </a>
+                            
+                            <div class="flex flex-wrap gap-1 mb-2">
+                                <span class="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded">{{ $item->category->name }}</span>
+                                @if($item->brand)
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded">{{ $item->brand->name }}</span>
+                                @endif
+                            </div>
+
+                            <p class="text-gray-600 text-xs mb-3 line-clamp-2 flex-grow">
+                                {{ Str::limit($item->description, 60) }}
                             </p>
 
-                            <div class="mt-auto space-y-3">
+                            <div class="mt-auto space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <p class="text-xl font-bold text-purple-600">{{ $item->formatted_price }}</p>
+                                    <p class="text-lg font-bold text-primary-600">{{ $item->formatted_price }}</p>
                                     <span class="text-xs text-gray-500 flex items-center">
                                         <i class="fas fa-eye mr-1"></i>
                                         {{ $item->views }}
@@ -247,9 +288,9 @@
                                 </div>
 
                                 <a href="{{ route('items.show', $item) }}" 
-                                   class="block w-full text-center px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
-                                    <i class="fas fa-eye mr-2"></i>
-                                    Voir détails
+                                   class="block w-full text-center px-3 py-2 text-sm {{ $isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/40' : 'bg-gradient-to-r from-primary-600 to-accent-600' }} text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                                    <i class="fas fa-eye mr-1"></i>
+                                    {{ $isBoosted ? 'Voir ✨' : 'Voir' }}
                                 </a>
                             </div>
                         </div>
@@ -267,7 +308,7 @@
                 <h4 class="text-2xl font-bold text-gray-600 mb-4">Aucun article trouvé</h4>
                 <p class="text-gray-500 mb-8">Essayez de modifier vos critères de recherche.</p>
                 @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre votre premier article
                     </a>
@@ -289,7 +330,7 @@ function showNotification(message, type = 'success') {
     toastBody.textContent = message;
     
     // Changer les couleurs selon le type
-    toast.className = 'bg-purple-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
+    toast.className = 'bg-primary-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
     if (type === 'success') {
         toast.className = 'bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform transition-transform duration-300';
     } else if (type === 'danger') {
@@ -397,34 +438,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Responsive mobile - 3 colonnes en mode compact
+    // Responsive mobile - 2 colonnes en mode compact
     function adjustMobileLayout() {
         const itemsGrid = document.getElementById('items-grid');
         if (window.innerWidth <= 768 && itemsGrid) {
             itemsGrid.classList.remove('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4');
-            itemsGrid.classList.add('grid-cols-3');
+            itemsGrid.classList.add('grid-cols-2');
             itemsGrid.style.gap = '0.5rem';
             
             // Ajuster les cartes pour le mobile
             const cards = itemsGrid.querySelectorAll('.bg-white');
             cards.forEach(card => {
                 // Réduire la hauteur de l'image
-                const img = card.querySelector('img, .w-full.h-48');
+                const img = card.querySelector('img, .w-full.h-32');
                 if (img) {
-                    img.style.height = '60px';
+                    img.style.height = '80px';
                 }
                 
                 // Réduire le padding
-                const cardBody = card.querySelector('.p-5');
+                const cardBody = card.querySelector('.p-3');
                 if (cardBody) {
-                    cardBody.classList.remove('p-5');
+                    cardBody.classList.remove('p-3');
                     cardBody.classList.add('p-2');
                 }
                 
                 // Réduire la taille du titre
                 const title = card.querySelector('h3');
                 if (title) {
-                    title.classList.remove('text-lg');
+                    title.classList.remove('text-sm');
                     title.classList.add('text-xs');
                     title.style.lineHeight = '1.1';
                 }
@@ -436,18 +477,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Réduire les badges
-                const badges = card.querySelectorAll('.px-2.py-1');
+                const badges = card.querySelectorAll('.px-2');
                 badges.forEach(badge => {
-                    badge.classList.remove('px-2', 'py-1');
-                    badge.classList.add('px-1', 'py-0.5', 'text-xs');
+                    badge.classList.remove('px-2');
+                    badge.classList.add('px-1');
                     badge.style.fontSize = '0.5rem';
                 });
                 
                 // Réduire le prix
-                const price = card.querySelector('.text-xl');
+                const price = card.querySelector('.text-lg');
                 if (price) {
-                    price.classList.remove('text-xl');
-                    price.classList.add('text-xs');
+                    price.classList.remove('text-lg');
+                    price.classList.add('text-sm');
                 }
                 
                 // Améliorer le bouton "Voir détails" pour mobile

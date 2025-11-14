@@ -11,9 +11,9 @@ class ExpertProfile extends Model
 {
     use HasFactory;
 
-    const LEVEL_BRONZE = 'bronze';
-    const LEVEL_SILVER = 'silver';
-    const LEVEL_GOLD = 'gold';
+    const LEVEL_JUNIOR = 'junior';
+    const LEVEL_SENIOR = 'senior';
+    const LEVEL_MASTER = 'master';
 
     protected $fillable = [
         'user_id',
@@ -58,19 +58,19 @@ class ExpertProfile extends Model
     public function getLevelBadgeClass(): string
     {
         return match($this->certification_level) {
-            self::LEVEL_BRONZE => 'bg-orange-100 text-orange-800',
-            self::LEVEL_SILVER => 'bg-gray-100 text-gray-800',
-            self::LEVEL_GOLD => 'bg-yellow-100 text-yellow-800',
-            default => 'bg-blue-100 text-blue-800'
+            self::LEVEL_JUNIOR => 'bg-green-100 text-green-800',
+            self::LEVEL_SENIOR => 'bg-blue-100 text-blue-800', 
+            self::LEVEL_MASTER => 'bg-purple-100 text-purple-800',
+            default => 'bg-gray-100 text-gray-800'
         };
     }
 
     public function getLevelIcon(): string
     {
         return match($this->certification_level) {
-            self::LEVEL_BRONZE => '🥉',
-            self::LEVEL_SILVER => '🥈',
-            self::LEVEL_GOLD => '🥇',
+            self::LEVEL_JUNIOR => '🔰',
+            self::LEVEL_SENIOR => '⭐',
+            self::LEVEL_MASTER => '👑',
             default => '👤'
         };
     }
@@ -78,13 +78,15 @@ class ExpertProfile extends Model
     public function getSpecialtiesText(): string
     {
         $specialtiesMap = [
-            'mode_luxe' => 'Mode Luxe',
+            'mode_luxe' => 'Mode & Luxe',
             'electronique' => 'Électronique',
             'bijoux' => 'Bijoux',
             'montres' => 'Montres',
             'sacs_maroquinerie' => 'Sacs & Maroquinerie',
-            'chaussures' => 'Chaussures',
-            'art' => 'Art & Objets de Collection'
+            'vetements-femmes' => 'Vêtements Femmes',
+            'vetements-hommes' => 'Vêtements Hommes',
+            'vareuse' => 'Vareuse',
+            'general' => 'Généraliste'
         ];
 
         $formatted = [];

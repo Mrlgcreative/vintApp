@@ -23,7 +23,7 @@
                             bg-yellow-100 text-yellow-800
                             @break
                         @case('delivered')
-                            bg-purple-100 text-purple-800
+                            bg-primary-100 text-primary-800
                             @break
                         @case('cancelled')
                             bg-red-100 text-red-800
@@ -144,7 +144,7 @@
                             <input type="text" name="delivery_code" id="delivery_code" required 
                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
-                        <button type="submit" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-md">
+                        <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-md">
                             <i class="fas fa-check-circle mr-2"></i>Confirmer la réception
                         </button>
                     </form>
@@ -208,7 +208,7 @@
 
                 @if($localDelivery->actual_delivery_time)
                 <div class="flex items-center space-x-3">
-                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-primary-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">Livraison effectuée</p>
                         <p class="text-sm text-gray-600">{{ $localDelivery->actual_delivery_time->format('d/m/Y à H:i') }}</p>

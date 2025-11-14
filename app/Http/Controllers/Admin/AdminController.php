@@ -2902,6 +2902,376 @@ class AdminController extends Controller
     }
 
     // =============================================
+    // GESTION DES EXPERTS
+    // =============================================
+
+    /**
+     * Afficher la liste des experts
+     */
+    public function experts()
+    {
+        $experts = \App\Models\ExpertProfile::with(['user'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        // Statistiques des experts
+        $stats = [
+            'total_experts' => \App\Models\ExpertProfile::count(),
+            'active_experts' => \App\Models\ExpertProfile::where('is_active', true)->count(),
+            'total_verifications' => \App\Models\ProductAuthenticityCheck::whereNotNull('expert_id')->count(),
+            'pending_verifications' => \App\Models\ProductAuthenticityCheck::where('status', 'expert_review')->count(),
+        ];
+
+        return view('admin.experts.index', compact('experts', 'stats'));
+    }
+
+    /**
+     * Afficher la liste des utilisateurs pouvant devenir experts
+     */
+    public function expertCandidates()
+    {
+        $minOrders = request('min_orders', 0); // Changé de 1 à 0 pour voir tous les candidats
+        $verifiedOnly = request('verified_only');
+        $search = request('search');
+
+        $query = User::whereDoesntHave('expertProfile');
+        // Retirer la contrainte de vérification obligatoire pour inclure tous les utilisateurs
+        // ->whereNotNull('email_verified_at');
+
+        // Ajouter les relations pour calculer les statistiques
+        $query->withCount(['orders as orders_count'])
+            ->with(['orders' => function($q) {
+                $q->select('buyer_id', 'seller_id', 'status', 'created_at');
+            }]);
+
+        // Critères de base recommandés
+        if ($minOrders > 0) {
+            $query->having('orders_count', '>=', $minOrders);
+        }
+
+        // Filtre de recherche
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtrer par utilisateurs vérifiés uniquement
+        if ($verifiedOnly) {
+            $query->whereNotNull('email_verified_at');
+        }
+
+        // Ajouter les statistiques calculées
+        $candidates = $query->orderBy('name')
+            ->paginate(20)
+            ->through(function ($user) {
+                // Calculer le taux de satisfaction (exemple basique)
+                $totalOrders = $user->orders_count ?? 0;
+                if ($totalOrders > 0) {
+                    // Simuler un taux de satisfaction basé sur les commandes réussies
+                    $successfulOrders = $user->orders()->where('status', 'completed')->count();
+                    $user->satisfaction_rate = $totalOrders > 0 ? ($successfulOrders / $totalOrders) * 100 : 0;
+                } else {
+                    $user->satisfaction_rate = 0;
+                }
+                
+                // Ajouter la dernière activité (si pas déjà présente)
+                if (!isset($user->last_activity)) {
+                    $user->last_activity = $user->updated_at;
+                }
+                
+                return $user;
+            });
+
+        return view('admin.experts.candidates', compact('candidates'));
+    }
+
+    /**
+     * Désigner un utilisateur comme expert
+     */
+    public function designateExpert(Request $request, User $user)
+    {
+        $request->validate([
+            'specialties' => 'required|array|min:1',
+            'specialties.*' => 'required|string|in:mode_luxe,electronique,bijoux,montres,sacs_maroquinerie,vetements-femmes,vetements-hommes,vareuse,general',
+            'certification_level' => 'required|string|in:junior,senior,master',
+            'bio' => 'nullable|string|max:500'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Vérifier que l'utilisateur n'est pas déjà expert
+            if ($user->expertProfile) {
+                return redirect()->back()->with('error', 'Cet utilisateur est déjà expert.');
+            }
+
+            // Créer le profil expert
+            $expertProfile = \App\Models\ExpertProfile::create([
+                'user_id' => $user->id,
+                'specialties' => $request->specialties,
+                'certification_level' => $request->certification_level,
+                'bio' => $request->bio,
+                'is_active' => true,
+                'verification_count' => 0,
+                'approval_rate' => 0,
+            ]);
+
+            // Assigner le rôle expert si pas déjà présent
+            $expertRole = \App\Models\Role::where('slug', 'expert')->first();
+            if ($expertRole && !$user->roles->contains($expertRole)) {
+                $user->roles()->attach($expertRole);
+            }
+
+            DB::commit();
+
+            Log::info("Utilisateur désigné comme expert", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'specialties' => $request->specialties,
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->route('admin.experts.index')
+                ->with('success', "{$user->name} a été désigné comme expert avec succès.");
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erreur lors de la désignation d'expert", [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->back()->with('error', 'Une erreur est survenue.');
+        }
+    }
+
+    /**
+     * Afficher le détail d'un expert
+     */
+    public function expertShow(\App\Models\ExpertProfile $expert)
+    {
+        $expert->load(['user', 'verifications.item', 'verifications.vendor']);
+
+        // Statistiques détaillées
+        $stats = [
+            'total_verifications' => $expert->verifications()->count(),
+            'pending_verifications' => $expert->verifications()
+                ->where('status', \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_REVIEW)
+                ->count(),
+            'completed_verifications' => $expert->verifications()
+                ->whereIn('status', [
+                    \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_APPROVED,
+                    \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_REJECTED
+                ])->count(),
+            'approved_verifications' => $expert->verifications()
+                ->where('status', \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_APPROVED)
+                ->count(),
+            'avg_review_time' => $this->calculateExpertAverageReviewTime($expert->user_id),
+            'this_month_verifications' => $expert->verifications()
+                ->whereMonth('created_at', now()->month)
+                ->count(),
+        ];
+
+        // Dernières vérifications
+        $recentVerifications = $expert->verifications()
+            ->with(['item', 'vendor'])
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('admin.experts.show', compact('expert', 'stats', 'recentVerifications'));
+    }
+
+    /**
+     * Modifier un expert
+     */
+    public function expertEdit(\App\Models\ExpertProfile $expert)
+    {
+        $expert->load('user');
+        
+        $specialtyOptions = [
+            'mode_luxe' => 'Mode Luxe',
+            'electronique' => 'Électronique',
+            'bijoux' => 'Bijoux',
+            'montres' => 'Montres',
+            'sacs_maroquinerie' => 'Sacs & Maroquinerie',
+            'vetements-femmes' => 'Vêtements Femmes',
+            'vetements-hommes' => 'Vêtements Hommes',
+            'vareuse' => 'Vareuse',
+            'general' => 'Généraliste'
+        ];
+
+        return view('admin.experts.edit', compact('expert', 'specialtyOptions'));
+    }
+
+    /**
+     * Mettre à jour un expert
+     */
+    public function expertUpdate(Request $request, \App\Models\ExpertProfile $expert)
+    {
+        $request->validate([
+            'specialties' => 'required|array|min:1',
+            'specialties.*' => 'required|string|in:mode_luxe,electronique,bijoux,montres,sacs_maroquinerie,vetements-femmes,vetements-hommes,vareuse,general',
+            'certification_level' => 'required|string|in:junior,senior,master',
+            'bio' => 'nullable|string|max:500',
+            'is_active' => 'boolean'
+        ]);
+
+        try {
+            $expert->update([
+                'specialties' => $request->specialties,
+                'certification_level' => $request->certification_level,
+                'bio' => $request->bio,
+                'is_active' => $request->has('is_active'),
+            ]);
+
+            Log::info("Profil expert mis à jour", [
+                'expert_id' => $expert->id,
+                'user_id' => $expert->user_id,
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->route('admin.experts.show', $expert)
+                ->with('success', 'Profil expert mis à jour avec succès.');
+
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de la mise à jour de l'expert", [
+                'expert_id' => $expert->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return redirect()->back()->with('error', 'Une erreur est survenue.');
+        }
+    }
+
+    /**
+     * Activer/Désactiver un expert
+     */
+    public function expertToggleStatus(\App\Models\ExpertProfile $expert)
+    {
+        try {
+            $expert->update(['is_active' => !$expert->is_active]);
+            
+            $status = $expert->is_active ? 'activé' : 'désactivé';
+            
+            Log::info("Statut expert modifié", [
+                'expert_id' => $expert->id,
+                'user_id' => $expert->user_id,
+                'new_status' => $expert->is_active,
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Expert {$status} avec succès.",
+                'status' => $expert->is_active
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Erreur lors du changement de statut expert", [
+                'expert_id' => $expert->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Révoquer le statut d'expert
+     */
+    public function expertRevoke(\App\Models\ExpertProfile $expert)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Vérifier qu'il n'y a pas de vérifications en cours
+            $pendingVerifications = \App\Models\ProductAuthenticityCheck::where('expert_id', $expert->user_id)
+                ->where('status', \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_REVIEW)
+                ->count();
+
+            if ($pendingVerifications > 0) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Impossible de révoquer le statut : {$pendingVerifications} vérification(s) en cours."
+                ], 400);
+            }
+
+            $userName = $expert->user->name;
+
+            // Retirer le rôle expert
+            $expertRole = \App\Models\Role::where('slug', 'expert')->first();
+            if ($expertRole) {
+                $expert->user->roles()->detach($expertRole);
+            }
+
+            // Supprimer le profil expert
+            $expert->delete();
+
+            DB::commit();
+
+            Log::info("Statut expert révoqué", [
+                'user_id' => $expert->user_id,
+                'user_name' => $userName,
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => "Le statut d'expert de {$userName} a été révoqué.",
+                'redirect_url' => route('admin.experts.index')
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erreur lors de la révocation d'expert", [
+                'expert_id' => $expert->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la révocation du statut d\'expert.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Calculer le temps moyen de révision d'un expert
+     */
+    private function calculateExpertAverageReviewTime($expertId)
+    {
+        $completedChecks = \App\Models\ProductAuthenticityCheck::where('expert_id', $expertId)
+            ->whereIn('status', [
+                \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_APPROVED,
+                \App\Models\ProductAuthenticityCheck::STATUS_EXPERT_REJECTED
+            ])
+            ->whereNotNull('expert_assigned_at')
+            ->whereNotNull('expert_completed_at')
+            ->get();
+
+        if ($completedChecks->isEmpty()) {
+            return 0;
+        }
+
+        $totalMinutes = $completedChecks->sum(function ($check) {
+            return $check->expert_assigned_at->diffInMinutes($check->expert_completed_at);
+        });
+
+        return round($totalMinutes / $completedChecks->count(), 1);
+    }
+
+    // =============================================
     // UTILISATEURS CONNECTÉS EN TEMPS RÉEL
     // =============================================
 

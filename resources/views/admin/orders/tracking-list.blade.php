@@ -1,8 +1,8 @@
-ï»¿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'TraÃ§age GPS des commandes')
+@section('title', 'Traçage GPS des commandes')
 
-@section('page-title', 'TraÃ§age GPS des commandes')
+@section('page-title', 'Traçage GPS des commandes')
 
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
@@ -24,8 +24,8 @@
     @if($trackedOrders->isEmpty())
         <div class="bg-white rounded-xl shadow-lg p-12 text-center">
             <i class="fas fa-map-marker-alt text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune commande tracÃ©e</h3>
-            <p class="text-gray-500 mb-6">Les commandes avec traÃ§age GPS apparaÃ®tront ici.</p>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune commande tracée</h3>
+            <p class="text-gray-500 mb-6">Les commandes avec traçage GPS apparaîtront ici.</p>
             <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                 <i class="fas fa-shopping-cart mr-2"></i>Voir toutes les commandes
             </a>
@@ -41,7 +41,7 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Vendeur</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Position</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">DerniÃ¨re mise Ã  jour</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Dernière mise à jour</th>
                             <th class="px-6 py-4 text-right text-xs font-semibold text-white uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -76,7 +76,7 @@
                                             {{ $tracking->status_text }}
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Non dÃ©fini</span>
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Non défini</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -88,7 +88,7 @@
                                             @endif
                                         </div>
                                     @else
-                                        <span class="text-gray-400 text-sm">Position non dÃ©finie</span>
+                                        <span class="text-gray-400 text-sm">Position non définie</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -100,14 +100,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end gap-2">
-                                        <a href="{{ route('admin.orders.tracking', $order) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                        <a href="{{ route('admin.orders.tracking', $order) }}" class="inline-flex items-center px-3 py-1.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                                             <i class="fas fa-map-marked-alt mr-1.5"></i>Carte
                                         </a>
                                         <a href="{{ route('admin.orders.invoice', $order) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                             <i class="fas fa-file-invoice mr-1.5"></i>Facture
                                         </a>
                                         <a href="{{ route('admin.orders.show', $order) }}" class="inline-flex items-center px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                                            <i class="fas fa-eye mr-1.5"></i>DÃ©tails
+                                            <i class="fas fa-eye mr-1.5"></i>Détails
                                         </a>
                                     </div>
                                 </td>
@@ -125,7 +125,7 @@
                     <i class="fas fa-boxes text-3xl text-blue-600"></i>
                     <span class="text-2xl font-bold text-blue-900">{{ $trackedOrders->count() }}</span>
                 </div>
-                <p class="text-sm text-blue-700 font-medium">Total tracÃ©es</p>
+                <p class="text-sm text-blue-700 font-medium">Total tracées</p>
             </div>
 
             <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
@@ -144,12 +144,12 @@
                 <p class="text-sm text-orange-700 font-medium">En livraison</p>
             </div>
 
-            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6">
+            <div class="bg-gradient-to-br from-primary-50 to-primary-100 rounded-xl p-6">
                 <div class="flex items-center justify-between mb-2">
-                    <i class="fas fa-check-circle text-3xl text-purple-600"></i>
-                    <span class="text-2xl font-bold text-purple-900">{{ $trackedOrders->where('latestTracking.status', 'delivered')->count() }}</span>
+                    <i class="fas fa-check-circle text-3xl text-primary-600"></i>
+                    <span class="text-2xl font-bold text-primary-900">{{ $trackedOrders->where('latestTracking.status', 'delivered')->count() }}</span>
                 </div>
-                <p class="text-sm text-purple-700 font-medium">LivrÃ©es</p>
+                <p class="text-sm text-primary-700 font-medium">Livrées</p>
             </div>
         </div>
     @endif

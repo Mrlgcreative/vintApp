@@ -171,7 +171,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600 mb-1">Sur tablette</p>
-                    <p class="text-3xl font-bold text-purple-600" id="stat-tablet">{{ $stats['by_device']['tablet'] }}</p>
+                    <p class="text-3xl font-bold text-primary-600" id="stat-tablet">{{ $stats['by_device']['tablet'] }}</p>
                 </div>
                 <div class="stat-icon" style="background: #E9D5FF; color: #6B21A8;">
                     <i class="fas fa-tablet-alt"></i>
@@ -198,19 +198,19 @@
             <div class="flex-1 min-w-[250px]">
                 <div class="relative">
                     <input type="text" id="searchInput" placeholder="Rechercher par nom ou email..." 
-                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
             
-            <select id="deviceFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
+            <select id="deviceFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                 <option value="">Tous les appareils</option>
                 <option value="mobile">Mobile</option>
                 <option value="tablet">Tablette</option>
                 <option value="desktop">Ordinateur</option>
             </select>
             
-            <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+            <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
                 <i class="fas fa-sync-alt mr-2"></i> Actualiser
             </button>
         </div>
@@ -220,7 +220,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-bold text-gray-900">
-                <i class="fas fa-user-check text-purple-600 mr-2"></i>
+                <i class="fas fa-user-check text-primary-600 mr-2"></i>
                 Liste des Utilisateurs Actifs
                 <span class="text-sm font-normal text-gray-500 ml-2" id="userCount">({{ $onlineUsers->count() }} en ligne)</span>
             </h3>
@@ -285,7 +285,7 @@
                                     </span>
                                     
                                     <button onclick="viewUserDetails({{ $user->id }})" 
-                                        class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                        class="text-xs text-primary-600 hover:text-primary-700 font-medium">
                                         <i class="fas fa-eye mr-1"></i>
                                         Détails
                                     </button>
@@ -461,7 +461,7 @@ function updateUsersList(users) {
                             </span>
                             
                             <button onclick="viewUserDetails(${user.id})" 
-                                class="text-xs text-purple-600 hover:text-purple-700 font-medium">
+                                class="text-xs text-primary-600 hover:text-primary-700 font-medium">
                                 <i class="fas fa-eye mr-1"></i>
                                 Détails
                             </button>

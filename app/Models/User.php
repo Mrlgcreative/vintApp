@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'provider_data',
         'verification_code',
         'verification_code_expires_at',
+        'wallet_balance',
     ];
 
     /**
@@ -800,5 +801,21 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isExpert(): bool
     {
         return $this->expertProfile && $this->expertProfile->is_active;
+    }
+
+    /**
+     * Relation avec les boosts de produits
+     */
+    public function productBoosts()
+    {
+        return $this->hasMany(ProductBoost::class);
+    }
+
+    /**
+     * Boosts actifs de l'utilisateur
+     */
+    public function activeBoosts()
+    {
+        return $this->productBoosts()->where('status', 'active');
     }
 }

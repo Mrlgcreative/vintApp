@@ -5,7 +5,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <!-- En-tête avec gradient indigo -->
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
+            <div class="bg-gradient-to-r from-indigo-600 to-primary-600 rounded-2xl shadow-xl p-6 text-white">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 class="text-3xl font-bold flex items-center gap-3">
@@ -321,7 +321,7 @@
                     <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucune vente pour le moment</h3>
                     <p class="text-gray-500 mb-8 max-w-md mx-auto">Vous n'avez pas encore reçu de commandes pour vos articles.</p>
                     <a href="{{ route('items.create') }}" 
-                       class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                       class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-primary-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
                         <i class="fas fa-plus"></i>
                         Vendre un article
                     </a>

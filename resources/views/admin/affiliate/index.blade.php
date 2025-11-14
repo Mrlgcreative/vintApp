@@ -65,10 +65,10 @@
         </div>
 
         <!-- Total Points -->
-        <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <div class="bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow duration-300">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-purple-100 text-sm font-medium">Points Distribués</p>
+                    <p class="text-primary-100 text-sm font-medium">Points Distribués</p>
                     <p class="text-3xl font-bold" id="totalPoints">-</p>
                 </div>
                 <div class="bg-white bg-opacity-20 rounded-lg p-3">
@@ -187,7 +187,7 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             <div class="p-6 border-b border-gray-200">
                 <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                    <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
                     Répartition par Niveau
@@ -338,12 +338,12 @@
                     </div>
 
                     <!-- Badge Section -->
-                    <div id="badgeSection" class="reward-section hidden bg-purple-50 rounded-lg p-4">
-                        <h4 class="font-medium text-purple-900 mb-3">Badge Spécial</h4>
+                    <div id="badgeSection" class="reward-section hidden bg-primary-50 rounded-lg p-4">
+                        <h4 class="font-medium text-primary-900 mb-3">Badge Spécial</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Type de badge</label>
-                                <select id="badgeName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                <select id="badgeName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="top_referrer">Top Parrain</option>
                                     <option value="super_ambassador">Super Ambassadeur</option>
                                     <option value="loyalty_champion">Champion de Fidélité</option>
@@ -352,7 +352,7 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Durée de validité</label>
-                                <select id="badgeDuration" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+                                <select id="badgeDuration" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="permanent">Permanent</option>
                                     <option value="30">30 jours</option>
                                     <option value="90">90 jours</option>
@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 1: 'bg-blue-100 text-blue-800',
                 2: 'bg-green-100 text-green-800', 
                 3: 'bg-yellow-100 text-yellow-800',
-                4: 'bg-purple-100 text-purple-800',
+                4: 'bg-primary-100 text-primary-800',
                 5: 'bg-red-100 text-red-800'
             };
             
@@ -625,7 +625,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center">
-                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold mr-3">
+                            <div class="h-10 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-primary-600 flex items-center justify-center text-white font-semibold mr-3">
                                 ${referrer.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
@@ -642,7 +642,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td class="px-6 py-4 text-center font-bold text-lg text-indigo-600">
                         ${referrer.referrals_count || 0}
                     </td>
-                    <td class="px-6 py-4 text-center font-semibold text-purple-600">
+                    <td class="px-6 py-4 text-center font-semibold text-primary-600">
                         ${referrer.total_points || 0}
                     </td>
                     <td class="px-6 py-4 text-center text-sm text-gray-500">

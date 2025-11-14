@@ -5,7 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 p-6">
     <!-- En-tête -->
-    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl p-8 text-white mb-8 shadow-lg">
+    <div class="bg-gradient-to-r from-indigo-500 to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
         <h1 class="text-3xl font-bold mb-2">
             <i class="fas fa-tasks mr-3"></i>
             Mes Vérifications

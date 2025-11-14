@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Images Produits Boostés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Test Images Produits Boostés</h1>
+        
+        <!-- Produit Boosté - New Balance -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-2 border-purple-300 ring-2 ring-purple-100">
+                <!-- Image Container -->
+                <div class="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                    <img src="/storage/items/1761564651_7V3hVjFEDa.jpg" 
+                         alt="New Balance" 
+                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                         onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-red-100\'><span class=\'text-red-500\'>❌ Image non trouvée</span></div>'" />
+                    
+                    <!-- Boost Glow Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-400/20 via-transparent to-transparent pointer-events-none"></div>
+                    
+                    <!-- Badge Boost -->
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                            <i class="fas fa-star">⭐</i>
+                            SPOTLIGHT
+                        </span>
+                    </div>
+                    
+                    <!-- Prix -->
+                    <div class="absolute top-4 right-4">
+                        <span class="px-4 py-2 bg-gradient-to-r from-purple-600 to-purple-700 shadow-lg shadow-purple-500/50 animate-pulse text-white rounded-full text-sm font-bold">
+                            250 USD
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Contenu -->
+                <div class="p-6 bg-gradient-to-b from-white to-purple-50/30">
+                    <h3 class="font-bold text-lg text-purple-900 mb-2">New Balance (Boosté)</h3>
+                    <p class="text-sm text-gray-600">Produit avec boost Spotlight actif</p>
+                </div>
+            </div>
+            
+            <!-- Produit Boosté - iPhone -->
+            <div class="bg-white rounded-3xl overflow-hidden shadow-xl border-2 border-purple-300 ring-2 ring-purple-100">
+                <!-- Image Container -->
+                <div class="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                    <img src="/storage/items/1758545223_Eble78AkRk.jpg" 
+                         alt="iPhone 14 Pro Max" 
+                         class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                         onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-red-100\'><span class=\'text-red-500\'>❌ Image non trouvée</span></div>'" />
+                    
+                    <!-- Boost Glow Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-tr from-purple-400/20 via-transparent to-transparent pointer-events-none"></div>
+                    
+                    <!-- Badge Boost -->
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                            <i class="fas fa-star">⭐</i>
+                            FEATURED
+                        </span>
+                    </div>
+                    
+                    <!-- Prix -->
+                    <div class="absolute top-4 right-4">
+                        <span class="px-4 py-2 bg-gradient-to-r from-yellow-600 to-yellow-700 shadow-lg shadow-yellow-500/50 animate-pulse text-white rounded-full text-sm font-bold">
+                            1200 USD
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Contenu -->
+                <div class="p-6 bg-gradient-to-b from-white to-yellow-50/30">
+                    <h3 class="font-bold text-lg text-yellow-900 mb-2">iPhone 14 Pro Max (Boosté)</h3>
+                    <p class="text-sm text-gray-600">Produit avec boost Featured actif</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Produit Normal pour comparaison -->
+        <div class="bg-white rounded-3xl overflow-hidden shadow-lg border-2 border-gray-100 max-w-md">
+            <div class="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                <img src="/storage/items/1761844283_BN5ALAyOCM.jpg" 
+                     alt="Produit Normal" 
+                     class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                     onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center bg-red-100\'><span class=\'text-red-500\'>❌ Image non trouvée</span></div>'" />
+            </div>
+            <div class="p-6">
+                <h3 class="font-bold text-lg text-gray-900 mb-2">Produit Normal (Non-boosté)</h3>
+                <p class="text-sm text-gray-600">Produit sans boost pour comparaison</p>
+            </div>
+        </div>
+        
+        <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+            <h2 class="font-bold text-blue-900 mb-2">Instructions de Test :</h2>
+            <ul class="text-sm text-blue-800 space-y-1">
+                <li>• Les images doivent se charger correctement</li>
+                <li>• Les produits boostés doivent avoir des effets visuels spéciaux</li>
+                <li>• Si une image ne se charge pas, un message d'erreur s'affiche</li>
+                <li>• Vérifiez la console du navigateur pour d'autres erreurs</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

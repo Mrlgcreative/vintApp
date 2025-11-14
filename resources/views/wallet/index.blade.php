@@ -144,7 +144,7 @@
         <!-- Carte de conversion de devises -->
         <div class="mb-8">
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                <div class="bg-gradient-to-r from-blue-600 to-primary-600 p-6 text-white">
                     <h2 class="text-xl font-bold flex items-center gap-2 mb-2">
                         <i class="fas fa-exchange-alt"></i>
                         Convertir entre devises (USD ⇄ CDF)
@@ -280,7 +280,7 @@
                         <!-- Bouton de conversion -->
                         <div class="mt-6">
                             <button type="submit" 
-                                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg" 
+                                    class="w-full bg-gradient-to-r from-blue-600 to-primary-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-blue-700 hover:to-primary-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg" 
                                     id="convertBtn">
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Convertir maintenant
@@ -452,7 +452,7 @@
                                     } elseif (str_contains(strtolower($transaction->description), 'parrainage')) {
                                         $source = '🤝 Argent Parrainage';
                                         $icon = 'fas fa-users';
-                                        $badgeClass = 'bg-purple-100 text-purple-800';
+                                        $badgeClass = 'bg-primary-100 text-primary-800';
                                     } elseif (str_contains(strtolower($transaction->description), 'conversion')) {
                                         $source = '🔄 Conversion de Devise';
                                         $icon = 'fas fa-exchange-alt';
@@ -544,11 +544,11 @@
                                         <p class="text-sm text-blue-700">Gagnez des commissions sur les ventes</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200">
+                                <div class="bg-gradient-to-br from-primary-50 to-primary-100 p-4 rounded-lg border border-primary-200">
                                     <div class="text-center">
-                                        <i class="fas fa-users text-2xl text-purple-600 mb-2"></i>
-                                        <h5 class="font-semibold text-purple-800">Parrainage</h5>
-                                        <p class="text-sm text-purple-700">Bonus de parrainage d'amis</p>
+                                        <i class="fas fa-users text-2xl text-primary-600 mb-2"></i>
+                                        <h5 class="font-semibold text-primary-800">Parrainage</h5>
+                                        <p class="text-sm text-primary-700">Bonus de parrainage d'amis</p>
                                     </div>
                                 </div>
                                 <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">

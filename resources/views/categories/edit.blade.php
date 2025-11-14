@@ -376,10 +376,10 @@ use Illuminate\Support\Facades\Storage;
 
                         <!-- Catégorie parente actuelle -->
                         @if($category->parent)
-                        <div class="flex items-center justify-between p-4 bg-purple-50 rounded-xl">
+                        <div class="flex items-center justify-between p-4 bg-primary-50 rounded-xl">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-level-up-alt text-purple-600"></i>
+                                <div class="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-level-up-alt text-primary-600"></i>
                                 </div>
                                 <div>
                                     <p class="text-sm font-semibold text-gray-900">Catégorie parente</p>

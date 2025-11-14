@@ -7,17 +7,17 @@
 <!-- Toast Container -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-<div class="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 flex items-center justify-center p-4">
+<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <!-- Card principale -->
         <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/50">
             <!-- Header avec icône -->
-            <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-center py-8">
+            <div class="bg-gradient-to-r from-primary-600 to-accent-600 text-white text-center py-8">
                 <div class="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full mb-4 w-20 h-20">
                     <i class="fas fa-shield-check text-4xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold mb-2">Code de vérification</h1>
-                <p class="text-purple-100 text-sm">Saisissez le code envoyé à votre email</p>
+                <p class="text-primary-100 text-sm">Saisissez le code envoyé à votre email</p>
             </div>
 
             <!-- Contenu -->
@@ -77,7 +77,7 @@
                             name="verification_code"
                             maxlength="6"
                             pattern="[0-9]{6}"
-                            class="w-full text-center text-2xl font-bold tracking-widest bg-white border-2 border-gray-200 rounded-xl py-4 px-6 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 @error('verification_code') border-red-500 @enderror"
+                            class="w-full text-center text-2xl font-bold tracking-widest bg-white border-2 border-gray-200 rounded-xl py-4 px-6 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-300 @error('verification_code') border-red-500 @enderror"
                             placeholder="000000"
                             required
                             autocomplete="off"
@@ -93,7 +93,7 @@
 
                     <button 
                         type="submit" 
-                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:ring-4 focus:ring-purple-200"
+                        class="w-full bg-gradient-to-r from-primary-600 to-accent-600 text-white font-bold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 focus:ring-4 focus:ring-primary-200"
                     >
                         <i class="fas fa-check mr-2"></i>
                         Vérifier le code
@@ -144,7 +144,7 @@
         <div class="text-center mt-6">
             <p class="text-sm text-gray-600">
                 Problème avec la vérification ? 
-                <a href="mailto:{{ config('mail.from.address') }}" class="text-purple-600 hover:text-purple-800 font-medium">
+                <a href="mailto:{{ config('mail.from.address') }}" class="text-primary-600 hover:text-primary-800 font-medium">
                     Contactez le support
                 </a>
             </p>

@@ -13,9 +13,9 @@
                         @if($user->avatar)
                             <img src="{{ asset('storage/' . $user->avatar) }}" 
                                  alt="{{ $user->name }}" 
-                                 class="w-20 h-20 rounded-full object-cover ring-4 ring-purple-100">
+                                 class="w-20 h-20 rounded-full object-cover ring-4 ring-primary-100">
                         @else
-                            <div class="w-20 h-20 rounded-full bg-gradient-to-r from-purple-600 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-purple-100">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-primary-100">
                                 {{ strtoupper(substr($user->name, 0, 2)) }}
                             </div>
                         @endif
@@ -24,18 +24,18 @@
                         <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ $user->name }}</h1>
                         <div class="space-y-2 text-gray-600">
                             <p class="flex items-center gap-2">
-                                <i class="fas fa-envelope text-purple-500"></i>
+                                <i class="fas fa-envelope text-primary-500"></i>
                                 {{ $user->email }}
                             </p>
                             <p class="flex items-center gap-2">
-                                <i class="fas fa-calendar-alt text-purple-500"></i>
+                                <i class="fas fa-calendar-alt text-primary-500"></i>
                                 Membre depuis {{ $user->created_at->format('F Y') }}
                             </p>
                         </div>
                     </div>
                     <div class="flex-shrink-0">
                         <a href="{{ route('profile.edit') }}" 
-                           class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-purple-600 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors duration-200 font-medium">
+                           class="inline-flex items-center gap-2 px-6 py-3 bg-white border-2 border-primary-600 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors duration-200 font-medium">
                             <i class="fas fa-edit"></i>
                             Modifier le profil
                         </a>
@@ -48,8 +48,8 @@
     <!-- Statistiques rapides -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center hover:shadow-md hover:-translate-y-1 transition-all duration-200">
-            <div class="inline-flex items-center justify-center w-12 h-12 bg-purple-100 rounded-lg mb-4">
-                <i class="fas fa-box text-purple-600 text-xl"></i>
+            <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-lg mb-4">
+                <i class="fas fa-box text-primary-600 text-xl"></i>
             </div>
             <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $stats['total_items'] }}</h3>
             <p class="text-gray-600">Articles publiés</p>
@@ -85,15 +85,15 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200">
             <div class="px-6 py-4 border-b border-gray-200">
                 <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
-                    <i class="fas fa-tachometer-alt text-purple-600"></i>
+                    <i class="fas fa-tachometer-alt text-primary-600"></i>
                     Tableau de bord
                 </h2>
             </div>
             <div class="p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Articles -->
-                    <div class="group bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-purple-300">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                    <div class="group bg-gradient-to-br from-primary-50 to-primary-100 border-2 border-primary-200 rounded-xl p-6 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-200 hover:border-primary-300">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-600 text-white rounded-xl mb-4 group-hover:scale-110 transition-transform duration-200">
                             <i class="fas fa-box text-2xl"></i>
                         </div>
                         <h3 class="font-bold text-gray-900 mb-2">Mes Articles</h3>
@@ -101,7 +101,7 @@
                             {{ $stats['active_items'] }} actifs · {{ $stats['sold_items'] }} vendus
                         </p>
                         <a href="{{ route('items.my-items') }}" 
-                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 font-medium">
+                           class="inline-flex items-center justify-center w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 font-medium">
                             Gérer mes articles
                         </a>
                     </div>
@@ -189,7 +189,7 @@
     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
         <div class="px-6 py-4 border-b border-gray-200">
             <h2 class="text-xl font-bold text-gray-900 flex items-center gap-3">
-                <i class="fas fa-clock text-purple-600"></i>
+                <i class="fas fa-clock text-primary-600"></i>
                 Activité récente
             </h2>
         </div>

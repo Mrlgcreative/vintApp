@@ -12,7 +12,7 @@
     <!-- 🆕 Boutons d'actions rapides -->
     <div class="flex gap-3">
         <a href="{{ route('admin.orders.tracking', $order->id) }}" 
-            class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition shadow-md hover:shadow-lg">
+            class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition shadow-md hover:shadow-lg">
             <i class="fas fa-map-marked-alt mr-2"></i> Traçage GPS
         </a>
         <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank"
@@ -49,7 +49,7 @@
                                 $statusColors = [
                                     'pending' => 'bg-yellow-100 text-yellow-800',
                                     'confirmed' => 'bg-blue-100 text-blue-800',
-                                    'shipped' => 'bg-purple-100 text-purple-800',
+                                    'shipped' => 'bg-primary-100 text-primary-800',
                                     'delivered' => 'bg-green-100 text-green-800',
                                     'cancelled' => 'bg-red-100 text-red-800',
                                 ];
@@ -113,7 +113,7 @@
                             </span>
                             @endif
                             @if($order->item->brand)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                                 <i class="fas fa-copyright mr-1"></i> {{ $order->item->brand->name }}
                             </span>
                             @endif

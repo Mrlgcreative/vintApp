@@ -190,7 +190,7 @@
 @section('content')
 <div class="page-wrapper min-h-screen py-8">
     <div class="content-wrapper mx-8 my-8 p-12 max-w-7xl mx-auto">
-        <h1 class="text-5xl font-bold text-center mb-12 bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent animate-fade-in">
+        <h1 class="text-5xl font-bold text-center mb-12 bg-gradient-to-r from-indigo-600 to-primary-600 bg-clip-text text-transparent animate-fade-in">
             💼 Gestion des Portefeuilles Entreprise
         </h1>
 
@@ -467,7 +467,7 @@
 <!-- Modal Créer Wallet -->
 <div id="createWalletModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
-        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-6 rounded-t-2xl">
+        <div class="bg-gradient-to-r from-indigo-600 to-primary-600 text-white p-6 rounded-t-2xl">
             <div class="flex justify-between items-center">
                 <h5 class="text-xl font-bold flex items-center">
                     <i class="fas fa-plus mr-3"></i>
@@ -509,7 +509,7 @@
                 <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('createWalletModal')">
                     Annuler
                 </button>
-                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 flex items-center">
+                <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-primary-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-primary-700 transition-all duration-200 transform hover:scale-105 flex items-center">
                     <i class="fas fa-save mr-2"></i>
                     Créer Portefeuille
                 </button>

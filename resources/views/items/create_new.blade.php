@@ -1,28 +1,28 @@
 @extends('app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50/30 py-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-purple-600 transition-colors">Accueil</a>
+            <a href="{{ route('home') }}" class="hover:text-primary-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <a href="{{ route('items.index') }}" class="hover:text-purple-600 transition-colors">Produits</a>
+            <a href="{{ route('items.index') }}" class="hover:text-primary-600 transition-colors">Produits</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <span class="text-gray-900 font-medium">Vendre un article</span>
         </nav>
 
         <div class="max-w-4xl mx-auto">
             <!-- Header Card -->
-            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-purple-600/10 border border-gray-100/50 overflow-hidden mb-8">
-                <div class="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-6 lg:p-8">
+            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
+                <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 lg:p-8">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                             <i class="fas fa-plus text-xl"></i>
                         </div>
                         <div>
                             <h1 class="text-2xl lg:text-3xl font-bold">Vendre un article</h1>
-                            <p class="text-purple-100 mt-1">Créez votre annonce en quelques étapes</p>
+                            <p class="text-primary-100 mt-1">Créez votre annonce en quelques étapes</p>
                         </div>
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                         <!-- Informations de base -->
                         <div class="space-y-6">
                             <div class="flex items-center mb-6">
-                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <div class="w-8 h-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-info-circle"></i>
                                 </div>
                                 <h2 class="text-xl font-bold text-gray-900">Informations de base</h2>
@@ -46,11 +46,11 @@
                                 <!-- Nom de l'article -->
                                 <div class="lg:col-span-2">
                                     <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-tag text-purple-600 mr-2"></i>
+                                        <i class="fas fa-tag text-primary-600 mr-2"></i>
                                         Nom de l'article *
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('name') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('name') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="name" 
                                            name="name" 
                                            value="{{ old('name') }}" 
@@ -67,11 +67,11 @@
                                 <!-- Prix -->
                                 <div>
                                     <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-dollar-sign text-purple-600 mr-2"></i>
+                                        <i class="fas fa-dollar-sign text-primary-600 mr-2"></i>
                                         Prix *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('price') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('price') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="price" 
                                            name="price" 
                                            value="{{ old('price') }}" 
@@ -91,10 +91,10 @@
                             <!-- Description -->
                             <div>
                                 <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    <i class="fas fa-align-left text-purple-600 mr-2"></i>
+                                    <i class="fas fa-align-left text-primary-600 mr-2"></i>
                                     Description détaillée *
                                 </label>
-                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 resize-none @error('description') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 resize-none @error('description') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                           id="description" 
                                           name="description" 
                                           rows="4"
@@ -127,11 +127,11 @@
                                 <!-- Couleur -->
                                 <div>
                                     <label for="color" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-palette text-purple-600 mr-2"></i>
+                                        <i class="fas fa-palette text-primary-600 mr-2"></i>
                                         Couleur
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('color') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('color') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="color" 
                                            name="color" 
                                            value="{{ old('color') }}" 
@@ -147,10 +147,10 @@
                                 <!-- Taille -->
                                 <div>
                                     <label for="size" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-ruler text-purple-600 mr-2"></i>
+                                        <i class="fas fa-ruler text-primary-600 mr-2"></i>
                                         Taille
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('size') border-red-500 ring-4 ring-red-500/20 @enderror"
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('size') border-red-500 ring-4 ring-red-500/20 @enderror"
                                             id="size"
                                             name="size">
                                         <option value="">Choisir une taille</option>
@@ -173,11 +173,11 @@
                                 <!-- Numéro d'article -->
                                 <div>
                                     <label for="item_number" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-hashtag text-purple-600 mr-2"></i>
+                                        <i class="fas fa-hashtag text-primary-600 mr-2"></i>
                                         Numéro d'article
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('item_number') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('item_number') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="item_number" 
                                            name="item_number" 
                                            value="{{ old('item_number') }}" 
@@ -196,10 +196,10 @@
                                 <!-- Catégorie -->
                                 <div>
                                     <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-folder text-purple-600 mr-2"></i>
+                                        <i class="fas fa-folder text-primary-600 mr-2"></i>
                                         Catégorie *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('category_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('category_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="category_id" 
                                             name="category_id" 
                                             required>
@@ -222,10 +222,10 @@
                                 <!-- Marque -->
                                 <div>
                                     <label for="brand_id" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-trademark text-purple-600 mr-2"></i>
+                                        <i class="fas fa-trademark text-primary-600 mr-2"></i>
                                         Marque
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('brand_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('brand_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="brand_id" 
                                             name="brand_id">
                                         <option value="">Choisir une marque (optionnel)</option>
@@ -250,10 +250,10 @@
                                 <!-- Devise -->
                                 <div>
                                     <label for="currency" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-money-bill text-purple-600 mr-2"></i>
+                                        <i class="fas fa-money-bill text-primary-600 mr-2"></i>
                                         Devise *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('currency') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('currency') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="currency" 
                                             name="currency" 
                                             required>
@@ -272,10 +272,10 @@
                                 <!-- État -->
                                 <div>
                                     <label for="condition" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-star text-purple-600 mr-2"></i>
+                                        <i class="fas fa-star text-primary-600 mr-2"></i>
                                         État de l'article *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('condition') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('condition') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="condition" 
                                             name="condition" 
                                             required>
@@ -297,11 +297,11 @@
                                 <!-- Quantité -->
                                 <div>
                                     <label for="quantity" class="block text-sm font-semibold text-gray-700 mb-2">
-                                        <i class="fas fa-boxes text-purple-600 mr-2"></i>
+                                        <i class="fas fa-boxes text-primary-600 mr-2"></i>
                                         Quantité disponible *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('quantity') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('quantity') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="quantity" 
                                            name="quantity" 
                                            value="{{ old('quantity', 1) }}" 
@@ -328,12 +328,12 @@
 
                             <div>
                                 <label for="images" class="block text-sm font-semibold text-gray-700 mb-2">
-                                    <i class="fas fa-upload text-purple-600 mr-2"></i>
+                                    <i class="fas fa-upload text-primary-600 mr-2"></i>
                                     Sélectionner des images
                                 </label>
                                 <div class="relative">
                                     <input type="file" 
-                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300 @error('images.*') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('images.*') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="images" 
                                            name="images[]" 
                                            multiple 
@@ -377,14 +377,14 @@
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                                         <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                                                name="specifications[key][]" 
                                                placeholder="Ex: Couleur, Matériau">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                                         <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                                                name="specifications[value][]" 
                                                placeholder="Ex: Rouge, Coton">
                                     </div>
@@ -396,7 +396,7 @@
                                 </div>
                             </div>
                             
-                            <button type="button" class="bg-purple-100 hover:bg-purple-200 text-purple-600 px-6 py-3 rounded-xl transition-all duration-300 font-semibold" id="addSpecification">
+                            <button type="button" class="bg-primary-100 hover:bg-primary-200 text-primary-600 px-6 py-3 rounded-xl transition-all duration-300 font-semibold" id="addSpecification">
                                 <i class="fas fa-plus mr-2"></i>
                                 Ajouter une spécification
                             </button>
@@ -408,7 +408,7 @@
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Annuler
                             </a>
-                            <button type="submit" class="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white px-8 py-3 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1">
+                            <button type="submit" class="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white px-8 py-3 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1">
                                 <i class="fas fa-check mr-2"></i>
                                 Publier l'article
                             </button>
@@ -491,14 +491,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                        name="specifications[key][]" 
                        placeholder="Ex: Couleur, Matériau">
             </div>
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-600 focus:ring-4 focus:ring-purple-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                        name="specifications[value][]" 
                        placeholder="Ex: Rouge, Coton">
             </div>
@@ -561,11 +561,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputs = document.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         input.addEventListener('focus', function() {
-            this.parentElement.classList.add('ring-2', 'ring-purple-500/20');
+            this.parentElement.classList.add('ring-2', 'ring-primary-500/20');
         });
         
         input.addEventListener('blur', function() {
-            this.parentElement.classList.remove('ring-2', 'ring-purple-500/20');
+            this.parentElement.classList.remove('ring-2', 'ring-primary-500/20');
         });
     });
 });

@@ -273,3 +273,72 @@ if (!function_exists('allowed_file_types')) {
         return array_map('trim', explode(',', $types));
     }
 }
+
+// =================================
+// Helpers pour le système de couleurs VintApp
+// =================================
+
+use App\Helpers\ColorSystemHelper;
+
+if (!function_exists('color_palette')) {
+    /**
+     * Récupère la palette de couleurs active
+     */
+    function color_palette($color = null)
+    {
+        $palette = ColorSystemHelper::getActivePalette();
+        
+        if ($color) {
+            return "var(--color-{$color})";
+        }
+        
+        return $palette;
+    }
+}
+
+if (!function_exists('theme_color')) {
+    /**
+     * Génère un style inline avec une couleur thématique
+     */
+    function theme_color($property, $color, $variant = null)
+    {
+        $colorVar = $variant ? "{$color}-{$variant}" : $color;
+        
+        switch ($property) {
+            case 'bg':
+                return "style=\"background-color: var(--color-{$colorVar})\"";
+            case 'text':
+                return "style=\"color: var(--color-{$colorVar})\"";
+            case 'border':
+                return "style=\"border-color: var(--color-{$colorVar})\"";
+            default:
+                return "style=\"{$property}: var(--color-{$colorVar})\"";
+        }
+    }
+}
+
+if (!function_exists('dynamic_class')) {
+    /**
+     * Génère des classes Tailwind dynamiques basées sur la palette
+     */
+    function dynamic_class($type, $color, $variant = null)
+    {
+        // Les classes Tailwind utilisent directement nos couleurs définies
+        $suffix = $variant ? "-{$variant}" : '';
+        
+        switch ($type) {
+            case 'bg':
+                return "bg-{$color}{$suffix}";
+            case 'text':
+                return "text-{$color}{$suffix}";
+            case 'border':
+                return "border-{$color}{$suffix}";
+            case 'hover-bg':
+                return "hover:bg-{$color}{$suffix}";
+            case 'hover-text':
+                return "hover:text-{$color}{$suffix}";
+            default:
+                return '';
+        }
+    }
+}

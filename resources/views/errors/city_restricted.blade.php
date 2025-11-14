@@ -82,7 +82,7 @@
             <!-- Card principale -->
             <div class="bg-white rounded-3xl shadow-2xl overflow-hidden card-hover">
                 <!-- Header avec icône -->
-                <div class="relative bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 px-6 py-12 sm:px-12 sm:py-16 overflow-hidden">
+                <div class="relative bg-gradient-to-r from-indigo-600 via-primary-600 to-accent-600 px-6 py-12 sm:px-12 sm:py-16 overflow-hidden">
                     <!-- Cercles décoratifs -->
                     <div class="absolute top-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
                     <div class="absolute bottom-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full translate-x-1/2 translate-y-1/2"></div>
@@ -108,14 +108,14 @@
                     <div class="text-center space-y-4">
                         <p class="text-lg sm:text-xl text-gray-700 leading-relaxed max-w-3xl mx-auto">
                             Nous déployons progressivement notre plateforme pour garantir 
-                            <span class="font-semibold text-purple-600">la meilleure expérience</span> possible à chaque utilisateur.
+                            <span class="font-semibold text-primary-600">la meilleure expérience</span> possible à chaque utilisateur.
                         </p>
                     </div>
 
                     <!-- Raisons de la restriction -->
-                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 sm:p-8">
+                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl p-6 sm:p-8">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800 mb-6 flex items-center justify-center sm:justify-start">
-                            <i class="fas fa-info-circle text-purple-600 mr-3"></i>
+                            <i class="fas fa-info-circle text-primary-600 mr-3"></i>
                             Pourquoi cette restriction ?
                         </h2>
                         
@@ -145,7 +145,7 @@
                             </div>
 
                             <div class="flex items-start space-x-4 bg-white rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
-                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                                <div class="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-lg">
                                     <i class="fas fa-vial text-white"></i>
                                 </div>
                                 <div class="flex-1">
@@ -215,7 +215,7 @@
                             </a>
                             
                             <a href="mailto:support@vintapp.com" 
-                               class="bg-white border-2 border-gray-300 text-gray-700 hover:border-purple-500 hover:text-purple-600 px-6 sm:px-8 py-4 rounded-xl font-semibold text-base sm:text-lg inline-flex items-center justify-center space-x-2 transition-all flex-1 sm:flex-initial">
+                               class="bg-white border-2 border-gray-300 text-gray-700 hover:border-primary-500 hover:text-primary-600 px-6 sm:px-8 py-4 rounded-xl font-semibold text-base sm:text-lg inline-flex items-center justify-center space-x-2 transition-all flex-1 sm:flex-initial">
                                 <i class="fas fa-headset"></i>
                                 <span>Nous contacter</span>
                             </a>
@@ -232,7 +232,7 @@
                                 <a href="#" class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg hover:shadow-xl" title="Facebook">
                                     <i class="fab fa-facebook-f text-lg"></i>
                                 </a>
-                                <a href="#" class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg hover:shadow-xl" title="Instagram">
+                                <a href="#" class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-accent-500 to-rose-600 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg hover:shadow-xl" title="Instagram">
                                     <i class="fab fa-instagram text-lg"></i>
                                 </a>
                                 <a href="#" class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center text-white hover:scale-110 transition-transform shadow-lg hover:shadow-xl" title="Twitter">
@@ -243,7 +243,7 @@
                                 </a>
                             </div>
                             <p class="text-gray-500 text-sm">
-                                © 2025 <span class="font-semibold text-purple-600">VintApp</span>. Tous droits réservés.
+                                © 2025 <span class="font-semibold text-primary-600">VintApp</span>. Tous droits réservés.
                             </p>
                         </div>
                     </div>

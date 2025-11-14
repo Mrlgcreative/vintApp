@@ -363,7 +363,7 @@
     <section class="px-3 px-md-4 py-4 py-md-6">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h4 fw-bold text-gray-800 mb-0">
-                <i class="fas fa-layer-group text-purple-600 me-2"></i>
+                <i class="fas fa-layer-group text-primary-600 me-2"></i>
                 Catégories populaires
             </h2>
         </div>
@@ -375,7 +375,7 @@
                        style="background: linear-gradient(135deg, #f3e8ff 0%, #e0f2fe 100%);">
                         <div class="card-body text-center p-3">
                             <div class="fs-2 mb-2">
-                                <i class="fas fa-{{ $category->icon ?? 'tag' }} text-purple-600"></i>
+                                <i class="fas fa-{{ $category->icon ?? 'tag' }} text-primary-600"></i>
                             </div>
                             <h6 class="card-title mb-1 text-gray-800 fw-semibold" style="font-size: 0.9rem;">
                                 {{ $category->name }}
@@ -410,7 +410,7 @@
     <section class="px-3 px-md-4 py-4 py-md-6">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="h4 fw-bold text-gray-800 mb-0">
-                <i class="fas fa-box text-purple-600 me-2"></i>
+                <i class="fas fa-box text-primary-600 me-2"></i>
                 Derniers articles
             </h2>
             <a href="{{ route('items.index') }}" 
@@ -439,7 +439,7 @@
                             @endif
                             <!-- Badge prix -->
                             <div class="position-absolute top-0 end-0 m-2">
-                                <span class="badge bg-purple-600 text-white rounded-pill px-3 py-2 shadow-sm fw-bold">
+                                <span class="badge bg-primary-600 text-white rounded-pill px-3 py-2 shadow-sm fw-bold">
                                     {{ number_format($item->price) }} {{ $item->currency }}
                                 </span>
                             </div>
@@ -452,7 +452,7 @@
                                 {{ $item->name }}
                             </h6>
                             <div class="d-flex align-items-center justify-content-between mt-2">
-                                <span class="badge bg-purple-100 text-purple-600 rounded-pill px-2 py-1" style="font-size: 0.75rem;">
+                                <span class="badge bg-primary-100 text-primary-600 rounded-pill px-2 py-1" style="font-size: 0.75rem;">
                                     {{ $item->condition }}
                                 </span>
                                 <button class="btn btn-sm btn-cyan rounded-circle p-0 d-flex align-items-center justify-content-center" 
@@ -529,15 +529,15 @@
     color: white;
 }
 
-.text-purple-600 {
+.text-primary-600 {
     color: #6A0DAD !important;
 }
 
-.bg-purple-600 {
+.bg-primary-600 {
     background-color: #6A0DAD !important;
 }
 
-.bg-purple-100 {
+.bg-primary-100 {
     background-color: #f3e8ff !important;
 }
 

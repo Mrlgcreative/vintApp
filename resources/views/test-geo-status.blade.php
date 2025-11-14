@@ -21,9 +21,9 @@
                 <p class="text-green-900">{{ app()->environment() }}</p>
             </div>
 
-            <div class="bg-purple-50 border-l-4 border-purple-500 p-4">
-                <h2 class="font-semibold text-purple-800">Restriction géographique</h2>
-                <p class="text-purple-900">
+            <div class="bg-primary-50 border-l-4 border-primary-500 p-4">
+                <h2 class="font-semibold text-primary-800">Restriction géographique</h2>
+                <p class="text-primary-900">
                     {{ config('app.disable_geo_restriction') ? '❌ DÉSACTIVÉE' : '✅ ACTIVÉE' }}
                 </p>
             </div>

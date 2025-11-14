@@ -95,9 +95,9 @@
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div class="p-4 bg-purple-50 rounded-xl border border-purple-100">
-                                        <p class="text-xs text-purple-600 font-medium mb-1">Vendeur</p>
-                                        <p class="font-bold text-purple-900">{{ $order->item->user->name }}</p>
+                                    <div class="p-4 bg-primary-50 rounded-xl border border-primary-100">
+                                        <p class="text-xs text-primary-600 font-medium mb-1">Vendeur</p>
+                                        <p class="font-bold text-primary-900">{{ $order->item->user->name }}</p>
                                     </div>
                                     <div class="p-4 bg-indigo-50 rounded-xl border border-indigo-100">
                                         <p class="text-xs text-indigo-600 font-medium mb-1">Acheteur</p>
@@ -122,7 +122,7 @@
                                     @if($order->deliveryAddress)
                                         <div class="space-y-4">
                                             <div class="flex items-start">
-                                                <i class="fas fa-user text-purple-500 mt-1 mr-3"></i>
+                                                <i class="fas fa-user text-primary-500 mt-1 mr-3"></i>
                                                 <div>
                                                     <p class="font-semibold text-gray-900">Destinataire</p>
                                                     <p class="text-gray-700">{{ $order->deliveryAddress->full_name }}</p>
@@ -277,7 +277,7 @@
                         <!-- Historique des statuts -->
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-                                <i class="fas fa-history text-purple-500 mr-2"></i>
+                                <i class="fas fa-history text-primary-500 mr-2"></i>
                                 Historique
                             </h3>
                             <div class="relative">

@@ -396,7 +396,7 @@
                     <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t-2 border-gray-100">
                         <div class="text-center p-4 bg-gray-50 rounded-lg">
                             <div class="text-xs text-gray-500 font-semibold mb-2">TOTAL</div>
-                            <div class="text-3xl font-bold text-purple-600">
+                            <div class="text-3xl font-bold text-primary-600">
                                 {{ array_sum($chartData['data']) }}
                             </div>
                             <div class="text-xs text-gray-400 mt-1">ventes</div>

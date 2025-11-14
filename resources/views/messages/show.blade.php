@@ -5,7 +5,7 @@
 @section('content')
 <div class="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden z-50 pb-16 md:pb-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 10px);">
     <!-- En-tête style WhatsApp -->
-    <div class="bg-purple-600 text-white shadow-lg">
+    <div class="bg-primary-600 text-white shadow-lg">
         <div class="flex items-center px-4 py-3 gap-3">
             <a href="{{ route('messages.index') }}" class="text-white hover:bg-white hover:bg-opacity-10 p-2 rounded-full transition-colors">
                 <i class="fas fa-arrow-left text-xl"></i>
@@ -17,7 +17,7 @@
                              alt="{{ $otherUser->name }}" 
                              class="w-10 h-10 rounded-full object-cover">
                     @else
-                        <div class="w-10 h-10 rounded-full bg-purple-700 flex items-center justify-center text-white font-semibold">
+                        <div class="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center text-white font-semibold">
                             {{ strtoupper(substr($otherUser->name, 0, 1)) }}
                         </div>
                     @endif
@@ -67,9 +67,9 @@
                 @endif
                 <div class="flex-1">
                     <span class="font-semibold text-gray-900 block">{{ $item->name }}</span>
-                    <span class="text-purple-600 font-bold">{{ $item->formatted_price }}</span>
+                    <span class="text-primary-600 font-bold">{{ $item->formatted_price }}</span>
                 </div>
-                <a href="{{ route('items.show', $item) }}" class="text-purple-600 hover:text-purple-700 p-2">
+                <a href="{{ route('items.show', $item) }}" class="text-primary-600 hover:text-primary-700 p-2">
                     <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
@@ -92,36 +92,36 @@
                     <div class="border-t border-green-200 pt-4">
                         <div class="bg-white rounded-lg p-3 mb-4 border border-gray-200 flex justify-between items-center">
                             <span class="text-gray-600 font-medium">Prix actuel:</span>
-                            <span class="text-purple-600 font-bold text-lg">{{ $item->formatted_price }}</span>
+                            <span class="text-primary-600 font-bold text-lg">{{ $item->formatted_price }}</span>
                         </div>
                         
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="5">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="5">
                                 <div class="font-bold text-lg mb-1">5%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.95, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.05, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="10">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="10">
                                 <div class="font-bold text-lg mb-1">10%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.90, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.10, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="15">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="15">
                                 <div class="font-bold text-lg mb-1">15%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.85, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.15, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="20">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="20">
                                 <div class="font-bold text-lg mb-1">20%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.80, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.20, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="25">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="25">
                                 <div class="font-bold text-lg mb-1">25%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.75, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.25, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-purple-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="30">
+                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="30">
                                 <div class="font-bold text-lg mb-1">30%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.70, 2) }}</div>
                                 <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.30, 2) }}</div>
@@ -129,13 +129,13 @@
                         </div>
                         
                         <div class="space-y-3">
-                            <div class="bg-white rounded-lg p-3 border border-purple-600 hidden" id="selectedDiscountInfo">
+                            <div class="bg-white rounded-lg p-3 border border-primary-600 hidden" id="selectedDiscountInfo">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-purple-600 selected-rate"></span>
+                                    <span class="font-semibold text-primary-600 selected-rate"></span>
                                     <span class="font-bold text-green-600 text-lg selected-price"></span>
                                 </div>
                             </div>
-                            <button class="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2" id="applyDiscountBtn" disabled>
+                            <button class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2" id="applyDiscountBtn" disabled>
                                 <i class="fas fa-check"></i>
                                 Appliquer la réduction
                             </button>
@@ -152,7 +152,7 @@
             @if($messages->count() > 0)
                 @foreach($messages as $message)
                     <div class="mb-2 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-purple-100' : 'bg-white' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br' : 'rounded-bl' }} px-3 py-2 shadow-sm animate-fade-in">
+                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-100' : 'bg-white' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br' : 'rounded-bl' }} px-3 py-2 shadow-sm animate-fade-in">
                             @if($message->subject)
                                 <div class="bg-black bg-opacity-10 rounded-xl px-2 py-1 mb-2 text-sm font-semibold flex items-center gap-1">
                                     <i class="fas fa-tag"></i>
@@ -176,7 +176,7 @@
                                     @else
                                         <a href="{{ Storage::url($message->attachment) }}" 
                                            target="_blank" 
-                                           class="flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-purple-600 hover:bg-opacity-10 transition-colors">
+                                           class="flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-primary-600 hover:bg-opacity-10 transition-colors">
                                             <i class="fas fa-paperclip"></i>
                                             <span class="text-sm">Fichier joint</span>
                                         </a>
@@ -218,7 +218,7 @@
             <input type="hidden" name="recipient_id" value="{{ $otherUser->id }}">
             
             <div class="flex items-end gap-2 bg-white rounded-3xl px-3 py-2 shadow-sm">
-                <button type="button" class="text-gray-500 hover:text-purple-600 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="document.getElementById('attachmentInput').click()">
+                <button type="button" class="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="document.getElementById('attachmentInput').click()">
                     <i class="fas fa-paperclip text-xl"></i>
                 </button>
                 
@@ -236,13 +236,13 @@
                            accept="image/*,.pdf,.doc,.docx">
                 </div>
                 
-                <button type="submit" class="bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 hover:scale-105 transition-all min-w-10 h-10 flex items-center justify-center">
+                <button type="submit" class="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 hover:scale-105 transition-all min-w-10 h-10 flex items-center justify-center">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
             
             <div id="attachmentPreview" class="mt-2 hidden">
-                <div class="bg-purple-100 border border-purple-600 rounded-lg p-3 flex items-center gap-2 text-purple-700">
+                <div class="bg-primary-100 border border-primary-600 rounded-lg p-3 flex items-center gap-2 text-primary-700">
                     <i class="fas fa-paperclip"></i>
                     <span id="attachmentName" class="text-sm flex-1"></span>
                     <button type="button" onclick="removeAttachment()" class="text-red-500 hover:text-red-700 hover:bg-red-100 p-1 rounded-full transition-colors">
@@ -300,7 +300,7 @@ main.min-vh-100 {
 
 /* Style pour les options de réduction sélectionnées */
 .rate-option.selected {
-    @apply border-purple-600 bg-purple-600 text-white shadow-lg;
+    @apply border-primary-600 bg-primary-600 text-white shadow-lg;
 }
 
 .rate-option.selected .text-green-600 {
@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContainer.className = `mb-2 flex ${isAuthor ? 'justify-end' : 'justify-start'}`;
         
         const messageBubble = document.createElement('div');
-        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-purple-100' : 'bg-white'} rounded-2xl ${isAuthor ? 'rounded-br' : 'rounded-bl'} px-3 py-2 shadow-sm animate-fade-in`;
+        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-100' : 'bg-white'} rounded-2xl ${isAuthor ? 'rounded-br' : 'rounded-bl'} px-3 py-2 shadow-sm animate-fade-in`;
         
         // Contenu du message
         if (message.content) {
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 const link = document.createElement('a');
                 link.href = message.attachment;
-                link.className = 'flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-purple-600 hover:bg-opacity-10 transition-colors';
+                link.className = 'flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-primary-600 hover:bg-opacity-10 transition-colors';
                 link.innerHTML = `<i class="fas fa-paperclip"></i><span class="text-sm">Fichier joint</span>`;
                 attachmentDiv.appendChild(link);
             }
