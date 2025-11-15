@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Vérification Email - VintApp')
 
@@ -10,10 +10,10 @@
 <div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md">
         <!-- Card principale -->
-        <div class="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+        <div class="bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden border border-white/50">
             <!-- Header avec icône -->
             <div class="bg-gradient-to-r from-primary-600 to-accent-600 text-white text-center py-8">
-                <div class="inline-flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full mb-4 w-20 h-20">
+                <div class="inline-flex items-center justify-center bg-white dark:bg-gray-800/20 backdrop-blur-sm rounded-full mb-4 w-20 h-20">
                     <i class="fas fa-shield-check text-4xl"></i>
                 </div>
                 <h1 class="text-2xl font-bold mb-2">Code de vérification</h1>
@@ -56,10 +56,10 @@
                 @endif
 
                 <!-- Email utilisateur -->
-                <div class="bg-gray-50 rounded-xl p-4 mb-6 text-center">
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 mb-6 text-center">
                     <div class="flex items-center justify-center">
-                        <i class="fas fa-envelope text-gray-500 mr-2"></i>
-                        <span class="font-semibold text-gray-800">{{ Auth::user()->email }}</span>
+                        <i class="fas fa-envelope text-gray-500 dark:text-gray-400 mr-2"></i>
+                        <span class="font-semibold text-gray-800 dark:text-gray-100">{{ Auth::user()->email }}</span>
                     </div>
                 </div>
 
@@ -68,7 +68,7 @@
                     @csrf
                     
                     <div>
-                        <label for="verification_code" class="block text-sm font-semibold text-gray-700 mb-3">
+                        <label for="verification_code" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
                             Code de vérification (6 chiffres)
                         </label>
                         <input 
@@ -77,7 +77,7 @@
                             name="verification_code"
                             maxlength="6"
                             pattern="[0-9]{6}"
-                            class="w-full text-center text-2xl font-bold tracking-widest bg-white border-2 border-gray-200 rounded-xl py-4 px-6 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-300 @error('verification_code') border-red-500 @enderror"
+                            class="w-full text-center text-2xl font-bold tracking-widest bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl py-4 px-6 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all duration-300 @error('verification_code') border-red-500 @enderror"
                             placeholder="000000"
                             required
                             autocomplete="off"
@@ -107,7 +107,7 @@
                         @csrf
                         <button 
                             type="submit" 
-                            class="w-full bg-white border-2 border-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-300"
+                            class="w-full bg-white dark:bg-gray-800 border-2 border-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl hover:bg-gray-50 dark:bg-gray-900 hover:border-gray-300 dark:border-gray-600 transition-all duration-300"
                         >
                             <i class="fas fa-redo mr-2"></i>
                             Renvoyer le code
@@ -119,7 +119,7 @@
                         @csrf
                         <button 
                             type="submit" 
-                            class="w-full text-gray-500 hover:text-gray-700 text-sm py-2 transition-colors duration-300"
+                            class="w-full text-gray-500 hover:text-gray-700 dark:text-gray-200 text-sm py-2 transition-colors duration-300"
                         >
                             <i class="fas fa-sign-out-alt mr-1"></i>
                             Se déconnecter
@@ -128,7 +128,7 @@
                 </div>
 
                 <!-- Informations -->
-                <div class="mt-8 text-center text-sm text-gray-500">
+                <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
                     <p class="mb-2">
                         <i class="fas fa-clock mr-1"></i>
                         Le code expire dans 15 minutes
@@ -142,7 +142,7 @@
 
         <!-- Aide supplémentaire -->
         <div class="text-center mt-6">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
                 Problème avec la vérification ? 
                 <a href="mailto:{{ config('mail.from.address') }}" class="text-primary-600 hover:text-primary-800 font-medium">
                     Contactez le support

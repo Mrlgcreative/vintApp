@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @push('styles')
 <style>
@@ -56,7 +56,7 @@
     <div class="max-w-6xl mx-auto px-4">
         
         <!-- En-tête du panier -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200/60 p-6 mb-8">
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
                     <div class="w-12 h-12 bg-gradient-to-br from-violet-500 to-primary-600 rounded-xl flex items-center justify-center">
@@ -74,7 +74,7 @@
 
         @if(empty($cart))
             <!-- Panier vide -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200/60 p-12 text-center">
                 <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span class="text-4xl text-slate-400">🛒</span>
                 </div>
@@ -103,7 +103,7 @@
             </div>
 
             <!-- Articles du panier - Version Desktop -->
-            <div class="hidden lg:block bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
+            <div class="hidden lg:block bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
                 <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
                     <div class="grid grid-cols-12 gap-4 text-sm font-semibold text-slate-600 uppercase tracking-wide">
                         <div class="col-span-5">Article</div>
@@ -200,7 +200,7 @@
                 @php $total = 0; @endphp
                 @foreach($cart as $item)
                     @php $total += $item['price'] * $item['quantity']; @endphp
-                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-4 cart-item-hover">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200/60 p-4 cart-item-hover">
                         <div class="flex gap-4">
                             <div class="w-20 h-20 bg-slate-100 rounded-xl overflow-hidden flex-shrink-0">
                                 @if($item['image'])
@@ -271,7 +271,7 @@
             </div>
 
             <!-- Résumé et checkout -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200/60 p-6">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div class="space-y-2">
                         <div class="flex items-center justify-between text-lg">

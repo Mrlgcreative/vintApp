@@ -1,10 +1,10 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Créer un utilisateur')
 @section('page-title', 'Nouvel utilisateur')
 
 @section('page-actions')
-<a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+<a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 dark:bg-gray-700 transition-colors duration-200">
     <i class="fas fa-arrow-left mr-2"></i>Retour à la liste
 </a>
 @endsection

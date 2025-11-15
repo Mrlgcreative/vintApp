@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Paramètres Système')
 
@@ -28,10 +28,10 @@
         </div>
     @endif
 
-    <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">
-                <i class="fas fa-cogs mr-2 sm:mr-3 text-gray-600 text-base sm:text-xl"></i>
+    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+                <i class="fas fa-cogs mr-2 sm:mr-3 text-gray-600 dark:text-gray-300 text-base sm:text-xl"></i>
                 <span class="hidden sm:inline">Paramètres Système</span>
                 <span class="sm:hidden">Paramètres</span>
             </h1>
@@ -50,7 +50,7 @@
         </div>
 
         <!-- Navigation par onglets -->
-        <div class="border-b border-gray-200 bg-gray-50">
+        <div class="border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
             <nav class="flex space-x-4 px-4 sm:px-6" aria-label="Paramètres">
                 <a href="{{ route('admin.settings.index') }}" 
                    class="inline-flex items-center px-3 py-2 border-b-2 border-blue-500 text-sm font-medium text-blue-600 whitespace-nowrap">
@@ -58,12 +58,12 @@
                     Général
                 </a>
                 <a href="{{ route('admin.settings.colors') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
                     <i class="fas fa-palette mr-2"></i>
                     Couleurs
                 </a>
                 <a href="{{ route('admin.settings.preregistration') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
                     <i class="fas fa-user-clock mr-2"></i>
                     Préinscription
                 </a>
@@ -78,17 +78,17 @@
                     @if(isset($settings) && (is_array($settings) ? count($settings) : $settings->count()) > 0)
                         @foreach($categories as $category)
                             @if(isset($settings[$category]))
-                                <div class="bg-gray-50 rounded-lg sm:rounded-xl border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
                                     <div class="mb-4 sm:mb-6">
-                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
-                                            <i class="fas fa-cog mr-2 sm:mr-3 text-gray-600 text-sm sm:text-base"></i>
+                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                                            <i class="fas fa-cog mr-2 sm:mr-3 text-gray-600 dark:text-gray-300 text-sm sm:text-base"></i>
                                             {{ ucfirst($category) }}
                                         </h3>
                                     </div>
                                     <div class="space-y-3 sm:space-y-4">
                                         @foreach($settings[$category] as $setting)
                                             <div class="space-y-2">
-                                                <label class="block text-sm font-medium text-gray-700">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
                                                     {{ $setting->label }}
                                                     @if($setting->description)
                                                         <i class="fas fa-info-circle text-gray-400 ml-1 cursor-help" 
@@ -101,24 +101,24 @@
                                                     <div class="mb-3">
                                                         <img src="{{ asset($setting->value) }}" 
                                                              alt="Logo actuel" 
-                                                             class="h-16 w-32 object-contain border border-gray-200 rounded-lg p-2 bg-white shadow-sm"
+                                                             class="h-16 w-32 object-contain border border-gray-200 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-sm"
                                                              id="logo-preview">
                                                     </div>
                                                     <input type="file" 
-                                                           class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                                           class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                                            name="logo_file"
                                                            accept="image/*"
                                                            onchange="previewLogo(this)">
                                                     <input type="hidden" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
-                                                    <p class="text-xs text-gray-500 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
                                                             @elseif($setting->type === 'json' || $setting->type === 'array')
-                                                    <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
+                                                    <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
                                                               name="settings[{{ $setting->key }}]"
                                                               rows="5"
                                                               data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
-                                                    <p class="text-xs text-gray-500 mt-1">Format JSON</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format JSON</p>
                                                 @elseif($setting->type === 'boolean')
                                                     <div class="flex items-center space-x-3">
                                                         <!-- Hidden input pour s'assurer que la valeur false est envoyée -->
@@ -130,22 +130,22 @@
                                                                    id="{{ $setting->key }}"
                                                                    value="1"
                                                                    {{ $setting->value ? 'checked' : '' }}>
-                                                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                            <span class="ml-3 text-sm font-medium text-gray-700" id="{{ $setting->key }}_label">
+                                                            <div class="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                            <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200" id="{{ $setting->key }}_label">
                                                                 {{ $setting->value ? 'Activé' : 'Désactivé' }}
                                                             </span>
                                                         </label>
                                                     </div>
                                                 @elseif($setting->type === 'integer')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="1"
                                                            data-original-value="{{ $setting->value }}">
                                                 @elseif($setting->type === 'float')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="0.01"
@@ -153,19 +153,19 @@
                                                 @else
                                                     @if(str_contains($setting->key, 'email'))
                                                         <input type="email" 
-                                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @elseif(str_contains($setting->key, 'phone'))
                                                         <input type="tel" 
-                                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @else
                                                         <input type="text" 
-                                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
@@ -189,29 +189,29 @@
                 </div>
                 
                 <!-- Section Mode Maintenance -->
-                <div class="border-t border-gray-200 pt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-tools mr-3 text-orange-600"></i>
                                 Mode Maintenance
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Contrôlez l'accès au site pour effectuer des maintenances ou des mises à jour.
                             </p>
                         </div>
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full {{ $maintenanceStatus ? 'bg-red-100' : 'bg-green-100' }}">
                                         <i class="fas {{ $maintenanceStatus ? 'fa-exclamation-triangle text-red-600' : 'fa-check-circle text-green-600' }} text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900">
+                                        <p class="font-medium text-gray-900 dark:text-white">
                                             Statut : {{ $maintenanceStatus ? 'Mode maintenance ACTIVÉ' : 'Site en ligne' }}
                                         </p>
-                                        <p class="text-sm text-gray-500">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $maintenanceStatus ? 'Le site affiche la page de maintenance aux visiteurs' : 'Le site est accessible normalement' }}
                                         </p>
                                     </div>
@@ -240,29 +240,29 @@
                 </div>
                 
                 <!-- Section Restrictions Géographiques -->
-                <div class="border-t border-gray-200 pt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-map-marked-alt mr-3 text-blue-600"></i>
                                 Restrictions Géographiques
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Contrôlez si les vendeurs doivent respecter les zones géographiques autorisées pour publier leurs articles.
                             </p>
                         </div>
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full" id="location-status-icon">
                                         <i class="fas fa-map-marker-alt text-blue-600 text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900" id="location-status-text">
+                                        <p class="font-medium text-gray-900 dark:text-white" id="location-status-text">
                                             Chargement...
                                         </p>
-                                        <p class="text-sm text-gray-500" id="location-status-description">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400" id="location-status-description">
                                             Récupération du statut en cours...
                                         </p>
                                     </div>
@@ -294,14 +294,14 @@
                 </div>
                 
                 <!-- Section Pré-inscription -->
-                <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-user-plus mr-3 text-primary-600"></i>
                                 Mode Pré-inscription
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 <strong>⚠️ ATTENTION :</strong> Quand activé, toute l'application devient inaccessible aux visiteurs (comme le mode maintenance) et redirige vers la page de pré-inscription. Seuls les admins connectés peuvent accéder à l'application.
                             </p>
                         </div>
@@ -313,16 +313,16 @@
                         @endphp
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-200">
+                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100' : 'bg-red-100' }}">
                                         <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600' }} text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900">
+                                        <p class="font-medium text-gray-900 dark:text-white">
                                             Statut : {{ $preregEnabled ? 'MODE PRÉ-INSCRIPTION ACTIF' : 'MODE NORMAL' }}
                                         </p>
-                                        <p class="text-sm text-gray-500">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ $preregEnabled ? '🔒 Application verrouillée - Seule la pré-inscription est accessible' : '✅ Application accessible normalement' }}
                                         </p>
                                     </div>
@@ -338,11 +338,11 @@
                             
                             <!-- Statistiques -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600">Total inscriptions</p>
-                                            <p class="text-2xl font-bold text-gray-900">{{ $preregCount }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300">Total inscriptions</p>
+                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregCount }}</p>
                                         </div>
                                         <div class="p-3 bg-blue-100 rounded-lg">
                                             <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -350,11 +350,11 @@
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600">Limite configurée</p>
-                                            <p class="text-2xl font-bold text-gray-900">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300">Limite configurée</p>
+                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
                                         </div>
                                         <div class="p-3 bg-yellow-100 rounded-lg">
                                             <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
@@ -362,11 +362,11 @@
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white rounded-lg border border-gray-200 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600">Places restantes</p>
-                                            <p class="text-2xl font-bold text-gray-900">
+                                            <p class="text-sm text-gray-600 dark:text-gray-300">Places restantes</p>
+                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                                 @if($preregLimit > 0)
                                                     {{ max(0, $preregLimit - $preregCount) }}
                                                 @else
@@ -429,19 +429,19 @@
                 </div>
                 
                 <!-- Section Carrousel Hero (Page d'Accueil) -->
-                <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-images text-primary-600 mr-3"></i>
                                 Carrousel Hero - Page d'Accueil
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Gérez les images et le contenu du carrousel sur la page d'accueil
                             </p>
                         </div>
                         
-                        <div class="bg-white rounded-lg border border-primary-200 p-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
@@ -450,12 +450,12 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 class="text-base font-semibold text-gray-900 mb-2">Gestion des Slides</h4>
-                                        <p class="text-sm text-gray-600 mb-4">
+                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Gestion des Slides</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                             Ajoutez, modifiez ou supprimez les slides du carrousel principal. <br>
                                             Vous pouvez également réordonner les slides par glisser-déposer.
                                         </p>
-                                        <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 mb-4">
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Titre et sous-titre personnalisables</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>2 boutons d'action configurables</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Images haute résolution (recommandé 1920x600px)</li>
@@ -475,19 +475,19 @@
                 </div>
                 
                 <!-- Section Newsletter -->
-                <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-envelope text-blue-600 mr-3"></i>
                                 Newsletter
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Gérez vos abonnés et envoyez des newsletters automatiques
                             </p>
                         </div>
                         
-                        <div class="bg-white rounded-lg border border-blue-200 p-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
@@ -496,11 +496,11 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 class="text-base font-semibold text-gray-900 mb-2">Gestion de la Newsletter</h4>
-                                        <p class="text-sm text-gray-600 mb-4">
+                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Gestion de la Newsletter</h4>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
                                             Gérez vos abonnés, consultez les statistiques et envoyez des newsletters personnalisées.
                                         </p>
-                                        <ul class="text-sm text-gray-600 space-y-1 mb-4">
+                                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 mb-4">
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Liste complète des abonnés avec statistiques</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Emails automatiques de bienvenue</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Notifications des nouveaux articles</li>
@@ -528,29 +528,29 @@
                 </div>
                 
                 <!-- Section Wallet Entreprise (Commissions) -->
-                <div class="border-t border-gray-200 pt-6 mt-6">
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
                     <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                                 <i class="fas fa-building text-primary-600 mr-3"></i>
                                 Wallet Entreprise - Commissions de la Plateforme
                             </h3>
-                            <p class="text-sm text-gray-600 mt-1">
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Gestion des commissions collectées sur chaque vente ({{ $enterpriseWallets['commission_rate'] }}% par défaut)
                             </p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Wallet USD -->
-                            <div class="bg-white rounded-lg border border-primary-200 p-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
                                             <i class="fas fa-dollar-sign text-2xl text-primary-600"></i>
                                         </div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-gray-700 uppercase">Wallet USD</h4>
-                                            <p class="text-xs text-gray-500">Commissions en dollars</p>
+                                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet USD</h4>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Commissions en dollars</p>
                                         </div>
                                     </div>
                                 </div>
@@ -558,17 +558,17 @@
                                 @if($enterpriseWallets['usd'])
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600">Solde actuel</span>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Solde actuel</span>
                                             <span class="text-2xl font-bold text-primary-600">
                                                 ${{ number_format($enterpriseWallets['usd']->balance, 2) }}
                                             </span>
                                         </div>
-                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                                            <span class="text-xs text-gray-500">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['usd']->id }}</span>
+                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID Wallet</span>
+                                            <span class="text-xs font-mono text-gray-700 dark:text-gray-200">#{{ $enterpriseWallets['usd']->id }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-gray-500">Statut</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 {{ $enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
@@ -577,21 +577,21 @@
                                 @else
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                                        <p class="text-sm text-gray-600">Wallet USD non créé</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Wallet USD non créé</p>
                                     </div>
                                 @endif
                             </div>
                             
                             <!-- Wallet CDF -->
-                            <div class="bg-white rounded-lg border border-indigo-200 p-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-indigo-200 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
                                         <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
                                             <i class="fas fa-coins text-2xl text-indigo-600"></i>
                                         </div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-gray-700 uppercase">Wallet CDF</h4>
-                                            <p class="text-xs text-gray-500">Commissions en francs</p>
+                                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet CDF</h4>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Commissions en francs</p>
                                         </div>
                                     </div>
                                 </div>
@@ -599,17 +599,17 @@
                                 @if($enterpriseWallets['cdf'])
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600">Solde actuel</span>
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">Solde actuel</span>
                                             <span class="text-2xl font-bold text-indigo-600">
                                                 {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
                                             </span>
                                         </div>
-                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200">
-                                            <span class="text-xs text-gray-500">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700">#{{ $enterpriseWallets['cdf']->id }}</span>
+                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID Wallet</span>
+                                            <span class="text-xs font-mono text-gray-700 dark:text-gray-200">#{{ $enterpriseWallets['cdf']->id }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-gray-500">Statut</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 {{ $enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
@@ -618,23 +618,23 @@
                                 @else
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                                        <p class="text-sm text-gray-600">Wallet CDF non créé</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Wallet CDF non créé</p>
                                     </div>
                                 @endif
                             </div>
                         </div>
                         
                         <!-- Informations sur les commissions -->
-                        <div class="mt-6 bg-white rounded-lg border border-primary-200 p-4">
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-info-circle text-primary-600 text-xl"></i>
                                 </div>
                                 <div class="ml-3 flex-1">
-                                    <h5 class="text-sm font-semibold text-gray-900 mb-2">
+                                    <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">
                                         Comment fonctionnent les commissions ?
                                     </h5>
-                                    <ul class="text-xs text-gray-600 space-y-1">
+                                    <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
                                         <li class="flex items-start">
                                             <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
                                             <span>Sur chaque vente confirmée, {{ $enterpriseWallets['commission_rate'] }}% est prélevé automatiquement</span>
@@ -672,7 +672,7 @@
                     </div>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-gray-200">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                     <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                         <i class="fas fa-save mr-2"></i>
                         Enregistrer les modifications
@@ -1337,15 +1337,15 @@ function updateLocationRestrictionsUI(enabled) {
 
 <!-- Modal pour activer le mode maintenance -->
 <div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 px-4">
-    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-full max-w-md sm:w-96 shadow-lg rounded-xl bg-white">
+    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-full max-w-md sm:w-96 shadow-lg rounded-xl bg-white dark:bg-gray-800">
         <div class="mt-2 sm:mt-3">
             <div class="flex items-center justify-between mb-3 sm:mb-4">
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 flex items-center">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-tools mr-2 text-orange-600 text-sm sm:text-base"></i>
                     <span class="hidden sm:inline">Activer le Mode Maintenance</span>
                     <span class="sm:hidden">Mode Maintenance</span>
                 </h3>
-                <button onclick="hideMaintenanceModal()" class="text-gray-400 hover:text-gray-600">
+                <button onclick="hideMaintenanceModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300">
                     <i class="fas fa-times text-lg sm:text-xl"></i>
                 </button>
             </div>
@@ -1353,22 +1353,22 @@ function updateLocationRestrictionsUI(enabled) {
             <form id="maintenanceForm" onsubmit="event.preventDefault(); enableMaintenance();">
                 <div class="space-y-3 sm:space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 sm:mb-2">
                             Message personnalisé
                         </label>
                         <textarea name="message" 
-                                  class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                  class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                   rows="3" 
                                   placeholder="Nous effectuons actuellement des travaux de maintenance..."></textarea>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1 sm:mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 sm:mb-2">
                             Temps estimé (optionnel)
                         </label>
                         <input type="text" 
                                name="estimated_time" 
-                               class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                placeholder="Ex: 2 heures, 30 minutes...">
                     </div>
                 </div>
@@ -1376,7 +1376,7 @@ function updateLocationRestrictionsUI(enabled) {
                 <div class="flex flex-col xs:flex-row items-center justify-end pt-4 sm:pt-6 space-y-2 xs:space-y-0 xs:space-x-3">
                     <button type="button" 
                             onclick="hideMaintenanceModal()" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-300 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit" 

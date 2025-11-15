@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Rapports')
 @section('page-title', 'Rapports et Statistiques')
@@ -6,11 +6,11 @@
 @section('content')
 <!-- Filtres de période -->
 <div class="mb-8">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <form method="GET" action="{{ route('admin.reports') }}" class="flex flex-wrap items-center gap-4">
             <label class="flex items-center gap-2">
-                <span class="text-sm font-medium text-gray-700">Période :</span>
-                <select name="period" onchange="this.form.submit()" class="rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm">
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Période :</span>
+                <select name="period" onchange="this.form.submit()" class="rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-sm">
                     <option value="7" {{ $period == 7 ? 'selected' : '' }}>7 derniers jours</option>
                     <option value="30" {{ $period == 30 ? 'selected' : '' }}>30 derniers jours</option>
                     <option value="90" {{ $period == 90 ? 'selected' : '' }}>90 derniers jours</option>
@@ -23,7 +23,7 @@
 
 <!-- Rapport Revenus -->
 <div class="mb-8">
-    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <i class="fas fa-dollar-sign text-green-600"></i>
         Revenus
     </h3>
@@ -38,17 +38,17 @@
                 <div class="text-3xl font-bold">${{ number_format($reports['revenue']['total'], 2) }}</div>
                 <div class="text-xs opacity-80 mt-1">Sur {{ $period }} jours</div>
             </div>
-            <div class="h-1 bg-white opacity-20"></div>
+            <div class="h-1 bg-white dark:bg-gray-800 opacity-20"></div>
         </div>
 
         <!-- Nombre de transactions -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Transactions</div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($reports['revenue']['count']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">Transactions complétées</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Transactions</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($reports['revenue']['count']) }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Transactions complétées</div>
                     </div>
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -60,13 +60,13 @@
         </div>
 
         <!-- Revenu moyen -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Revenu moyen</div>
-                        <div class="text-2xl font-bold text-gray-900">${{ number_format($reports['revenue']['average'], 2) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">Par transaction</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Revenu moyen</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($reports['revenue']['average'], 2) }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Par transaction</div>
                     </div>
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -81,7 +81,7 @@
 
 <!-- Rapport Utilisateurs -->
 <div class="mb-8">
-    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <i class="fas fa-users text-primary-600"></i>
         Utilisateurs
     </h3>
@@ -96,17 +96,17 @@
                 <div class="text-3xl font-bold">{{ number_format($reports['users']['new_users']) }}</div>
                 <div class="text-xs opacity-80 mt-1">Sur {{ $period }} jours</div>
             </div>
-            <div class="h-1 bg-white opacity-20"></div>
+            <div class="h-1 bg-white dark:bg-gray-800 opacity-20"></div>
         </div>
 
         <!-- Utilisateurs actifs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Utilisateurs actifs</div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($reports['users']['active_users']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">Actifs récemment</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Utilisateurs actifs</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($reports['users']['active_users']) }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Actifs récemment</div>
                     </div>
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -118,13 +118,13 @@
         </div>
 
         <!-- Total utilisateurs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Total</div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($reports['users']['total_users']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">Tous les utilisateurs</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Total</div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($reports['users']['total_users']) }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tous les utilisateurs</div>
                     </div>
                     <div class="flex-shrink-0">
                         <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -139,7 +139,7 @@
 
 <!-- Rapport Transactions -->
 <div class="mb-8">
-    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <i class="fas fa-receipt text-blue-600"></i>
         Transactions
     </h3>
@@ -154,17 +154,17 @@
                 <div class="text-3xl font-bold">{{ number_format($reports['transactions']['total']) }}</div>
                 <div class="text-xs opacity-80 mt-1">Toutes les transactions</div>
             </div>
-            <div class="h-1 bg-white opacity-20"></div>
+            <div class="h-1 bg-white dark:bg-gray-800 opacity-20"></div>
         </div>
 
         <!-- Transactions complétées -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Complétées</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Complétées</div>
                         <div class="text-2xl font-bold text-green-600">{{ number_format($reports['transactions']['completed']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             @if($reports['transactions']['total'] > 0)
                                 {{ number_format(($reports['transactions']['completed'] / $reports['transactions']['total']) * 100, 1) }}% du total
                             @else
@@ -182,13 +182,13 @@
         </div>
 
         <!-- Transactions en attente -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">En attente</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">En attente</div>
                         <div class="text-2xl font-bold text-yellow-600">{{ number_format($reports['transactions']['pending']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             @if($reports['transactions']['total'] > 0)
                                 {{ number_format(($reports['transactions']['pending'] / $reports['transactions']['total']) * 100, 1) }}% du total
                             @else
@@ -206,13 +206,13 @@
         </div>
 
         <!-- Transactions échouées -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg">
             <div class="p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
-                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Échouées</div>
+                        <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Échouées</div>
                         <div class="text-2xl font-bold text-red-600">{{ number_format($reports['transactions']['failed']) }}</div>
-                        <div class="text-xs text-gray-500 mt-1">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                             @if($reports['transactions']['total'] > 0)
                                 {{ number_format(($reports['transactions']['failed'] / $reports['transactions']['total']) * 100, 1) }}% du total
                             @else
@@ -233,28 +233,28 @@
 
 <!-- Articles populaires -->
 <div class="mb-8">
-    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <i class="fas fa-fire text-orange-600"></i>
         Articles les plus populaires
     </h3>
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
         @if($reports['popular_items']->count() > 0)
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">#</th>
-                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Article</th>
-                        <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Favoris</th>
-                        <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Commandes</th>
-                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Prix</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Article</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Favoris</th>
+                        <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Commandes</th>
+                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider">Prix</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                     @foreach($reports['popular_items'] as $index => $item)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center justify-center w-8 h-8 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 text-gray-600' : ($index === 2 ? 'bg-orange-100 text-orange-600' : 'bg-gray-50 text-gray-500')) }} font-bold text-sm">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-full {{ $index === 0 ? 'bg-yellow-100 text-yellow-600' : ($index === 1 ? 'bg-gray-100 dark:bg-gray-800 text-gray-600' : ($index === 2 ? 'bg-orange-100 text-orange-600' : 'bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400')) }} font-bold text-sm">
                                 {{ $index + 1 }}
                             </div>
                         </td>
@@ -263,13 +263,13 @@
                                 @if(!empty($item->images) && is_array($item->images))
                                 <img src="{{ Storage::url($item->images[0]) }}" alt="{{ $item->name }}" class="w-12 h-12 rounded-lg object-cover">
                                 @else
-                                <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                                     <i class="fas fa-image text-gray-400"></i>
                                 </div>
                                 @endif
                                 <div>
-                                    <div class="font-medium text-gray-900">{{ $item->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $item->category->name ?? 'N/A' }}</div>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ $item->name }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category->name ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </td>
@@ -286,7 +286,7 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <span class="font-semibold text-gray-900">${{ number_format($item->price, 2) }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">${{ number_format($item->price, 2) }}</span>
                         </td>
                     </tr>
                     @endforeach
@@ -296,7 +296,7 @@
         @else
         <div class="p-12 text-center">
             <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
-            <p class="text-gray-500 font-medium">Aucun article populaire pour cette période</p>
+            <p class="text-gray-500 dark:text-gray-400 font-medium">Aucun article populaire pour cette période</p>
         </div>
         @endif
     </div>

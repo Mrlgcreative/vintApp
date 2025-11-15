@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @push('styles')
 <style>
@@ -86,9 +86,9 @@
 <div id="loading-overlay" class="fixed inset-0 loading-overlay z-50 hidden items-center justify-center">
     <div class="text-center">
         <div class="flex space-x-2 justify-center mb-4">
-            <div class="w-3 h-3 bg-white rounded-full pulse-dot"></div>
-            <div class="w-3 h-3 bg-white rounded-full pulse-dot" style="animation-delay: 0.2s;"></div>
-            <div class="w-3 h-3 bg-white rounded-full pulse-dot" style="animation-delay: 0.4s;"></div>
+            <div class="w-3 h-3 bg-white dark:bg-gray-800 rounded-full pulse-dot"></div>
+            <div class="w-3 h-3 bg-white dark:bg-gray-800 rounded-full pulse-dot" style="animation-delay: 0.2s;"></div>
+            <div class="w-3 h-3 bg-white dark:bg-gray-800 rounded-full pulse-dot" style="animation-delay: 0.4s;"></div>
         </div>
         <p class="text-white text-lg font-medium">Connexion en cours...</p>
     </div>
@@ -102,7 +102,7 @@
         
         <!-- Logo VintApp -->
         <div class="text-center mb-8">
-            <div class="w-20 h-20 bg-white rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-2xl">
+            <div class="w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-2xl">
                 <span class="text-3xl">🛒</span>
             </div>
             <h1 class="text-4xl font-bold text-white mb-2">VintApp</h1>
@@ -113,8 +113,8 @@
         <div class="glass-effect rounded-2xl p-8 shadow-2xl">
             
             <!-- Mode Selection -->
-            <div class="flex bg-white/10 rounded-xl p-1 mb-8">
-                <button onclick="switchMode('login')" id="login-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600">
+            <div class="flex bg-white dark:bg-gray-800/10 rounded-xl p-1 mb-8">
+                <button onclick="switchMode('login')" id="login-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white dark:bg-gray-800 text-primary-600">
                     Connexion
                 </button>
                 <button onclick="switchMode('register')" id="register-tab" class="flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white">
@@ -139,15 +139,15 @@
                                    class="w-full px-4 py-3 input-glass rounded-xl text-white placeholder-white/60 focus:outline-none transition-all">
                         </div>
                         
-                        <button onclick="signInWithEmail('login')" class="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-xl font-semibold transition-all">
+                        <button onclick="signInWithEmail('login')" class="w-full py-3 bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 border border-white/30 text-white rounded-xl font-semibold transition-all">
                             Se connecter
                         </button>
                     </div>
 
                     <div class="flex items-center my-6">
-                        <div class="flex-1 h-px bg-white/30"></div>
+                        <div class="flex-1 h-px bg-white dark:bg-gray-800/30"></div>
                         <span class="px-4 text-white/70 text-sm">ou continuer avec</span>
-                        <div class="flex-1 h-px bg-white/30"></div>
+                        <div class="flex-1 h-px bg-white dark:bg-gray-800/30"></div>
                     </div>
                 </div>
 
@@ -172,15 +172,15 @@
                                    class="w-full px-4 py-3 input-glass rounded-xl text-white placeholder-white/60 focus:outline-none transition-all">
                         </div>
                         
-                        <button onclick="signInWithEmail('register')" class="w-full py-3 bg-white/20 hover:bg-white/30 border border-white/30 text-white rounded-xl font-semibold transition-all">
+                        <button onclick="signInWithEmail('register')" class="w-full py-3 bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 border border-white/30 text-white rounded-xl font-semibold transition-all">
                             Créer le compte
                         </button>
                     </div>
 
                     <div class="flex items-center my-6">
-                        <div class="flex-1 h-px bg-white/30"></div>
+                        <div class="flex-1 h-px bg-white dark:bg-gray-800/30"></div>
                         <span class="px-4 text-white/70 text-sm">ou continuer avec</span>
-                        <div class="flex-1 h-px bg-white/30"></div>
+                        <div class="flex-1 h-px bg-white dark:bg-gray-800/30"></div>
                     </div>
                 </div>
 
@@ -279,11 +279,11 @@ window.switchMode = (mode) => {
     
     // Mise à jour des onglets
     document.getElementById('login-tab').className = mode === 'login' 
-        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600'
+        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white dark:bg-gray-800 text-primary-600'
         : 'flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white';
     
     document.getElementById('register-tab').className = mode === 'register' 
-        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white text-primary-600'
+        ? 'flex-1 py-3 text-center rounded-lg font-semibold transition-all bg-white dark:bg-gray-800 text-primary-600'
         : 'flex-1 py-3 text-center rounded-lg font-semibold transition-all text-white/80 hover:text-white';
     
     // Affichage des formulaires

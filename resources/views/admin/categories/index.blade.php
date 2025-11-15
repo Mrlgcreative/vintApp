@@ -6,19 +6,19 @@
 @section('page-actions')
 <div class="flex flex-wrap gap-3">
     <div class="relative">
-        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200" 
+        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
                 type="button" onclick="toggleDropdown('filter-dropdown')">
             <i class="fas fa-filter mr-2"></i>Filtrer
             <i class="fas fa-chevron-down ml-1"></i>
         </button>
-        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
              id="filter-dropdown">
             <div class="py-1">
-                <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Toutes</a>
-                <a href="{{ route('admin.categories.index', ['parent' => 'null']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Principales</a>
-                <a href="{{ route('admin.categories.index', ['has_children' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Avec sous-catégories</a>
-                <a href="{{ route('admin.categories.index', ['status' => 'active']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Actives</a>
-                <a href="{{ route('admin.categories.index', ['featured' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">En vedette</a>
+                <a href="{{ route('admin.categories.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Toutes</a>
+                <a href="{{ route('admin.categories.index', ['parent' => 'null']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Principales</a>
+                <a href="{{ route('admin.categories.index', ['has_children' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Avec sous-catégories</a>
+                <a href="{{ route('admin.categories.index', ['status' => 'active']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Actives</a>
+                <a href="{{ route('admin.categories.index', ['featured' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">En vedette</a>
             </div>
         </div>
     </div>
@@ -31,13 +31,13 @@
 
 @section('content')
 <!-- Liste des catégories -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-    <div class="p-4 md:p-6 border-b border-gray-200">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
-                <h5 class="text-lg md:text-xl font-bold text-gray-900 mb-1">Liste des catégories</h5>
+                <h5 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1">Liste des catégories</h5>
                 @if(isset($categories))
-                    <p class="text-xs md:text-sm text-gray-500">{{ $categories->count() }} catégorie(s) trouvée(s)</p>
+                    <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">{{ $categories->count() }} catégorie(s) trouvée(s)</p>
                 @endif
             </div>
         </div>
@@ -47,23 +47,23 @@
             <!-- Version Desktop - Table -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Catégorie</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Parent</th>
-                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Produits</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Catégorie</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Parent</th>
+                            <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Produits</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @foreach($categories as $category)
-                        <tr class="hover:bg-gray-50 transition-colors {{ !$category->is_active ? 'opacity-60' : '' }}">
+                        <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors {{ !$category->is_active ? 'opacity-60' : '' }}">
                             <td class="px-6 py-4">
                                 <div class="flex items-center gap-3">
                                     @if($category->image)
                                         <img src="{{ $category->image_url }}" 
-                                             class="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                             class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
                                              alt="{{ $category->name }}">
                                     @else
                                         <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
@@ -71,9 +71,9 @@
                                         </div>
                                     @endif
                                     <div>
-                                        <div class="font-semibold text-gray-900">{{ $category->name }}</div>
+                                        <div class="font-semibold text-gray-900 dark:text-white">{{ $category->name }}</div>
                                         @if($category->slug)
-                                            <div class="text-xs text-gray-500">{{ $category->slug }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $category->slug }}</div>
                                         @endif
                                         @if($category->description)
                                             <div class="text-xs text-gray-400 mt-0.5">{{ Str::limit($category->description, 40) }}</div>
@@ -85,7 +85,7 @@
                                 @if($category->parent)
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-level-up-alt text-gray-400 text-xs"></i>
-                                        <span class="text-sm text-gray-700">{{ $category->parent->name }}</span>
+                                        <span class="text-sm text-gray-700 dark:text-gray-200">{{ $category->parent->name }}</span>
                                     </div>
                                 @else
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -97,7 +97,7 @@
                                 <div class="flex flex-col items-center">
                                     <div class="flex items-center">
                                         <strong class="text-primary-600 text-lg">{{ $category->items_count ?? 0 }}</strong>
-                                        <span class="text-xs text-gray-500 ml-1">articles</span>
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">articles</span>
                                     </div>
                                     @if(($category->children_count ?? 0) > 0)
                                         <div class="text-xs text-gray-400 mt-1">
@@ -108,7 +108,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700' }}">
                                         <span class="w-1.5 h-1.5 rounded-full {{ $category->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1.5"></span>
                                         {{ $category->is_active ? 'Active' : 'Inactive' }}
                                     </span>
@@ -127,19 +127,19 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <div class="relative">
-                                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors" 
+                                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 dark:bg-gray-900 transition-colors" 
                                                 type="button" 
                                                 onclick="toggleDropdown('actions-{{ $category->id }}')">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+                                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
                                              id="actions-{{ $category->id }}">
                                             <div class="py-1">
-                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleCategoryStatus('{{ $category->id }}')">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleCategoryStatus('{{ $category->id }}')">
                                                     <i class="fas fa-{{ $category->is_active ? 'pause' : 'play' }} mr-2 text-{{ $category->is_active ? 'warning' : 'success' }}"></i>
                                                     {{ $category->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
-                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleCategoryFeatured({{ $category->id }})">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleCategoryFeatured({{ $category->id }})">
                                                     <i class="fas fa-star mr-2 text-yellow-500"></i>
                                                     {{ $category->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
                                                 </button>
@@ -161,13 +161,13 @@
             <!-- Version Mobile/Tablet - Cartes -->
             <div class="lg:hidden">
                 @foreach($categories as $category)
-                <div class="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors {{ !$category->is_active ? 'opacity-60' : '' }}">
+                <div class="border-b border-gray-200 p-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors {{ !$category->is_active ? 'opacity-60' : '' }}">
                     <div class="flex gap-3">
                         <!-- Logo -->
                         <div class="flex-shrink-0">
                             @if($category->image)
                                 <img src="{{ $category->image_url }}" 
-                                     class="w-16 h-16 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                     class="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
                                      alt="{{ $category->name }}">
                             @else
                                 <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
@@ -181,28 +181,28 @@
                             <!-- En-tête avec nom et actions -->
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex-1 min-w-0">
-                                    <h6 class="font-semibold text-gray-900 truncate">{{ $category->name }}</h6>
+                                    <h6 class="font-semibold text-gray-900 dark:text-white truncate">{{ $category->name }}</h6>
                                     @if($category->parent)
-                                        <p class="text-xs text-gray-500"><i class="fas fa-level-up-alt mr-1"></i>{{ $category->parent->name }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-level-up-alt mr-1"></i>{{ $category->parent->name }}</p>
                                     @endif
                                 </div>
                                 
                                 <!-- Menu dropdown actions mobile -->
                                 <div class="relative">
-                                    <button class="text-gray-400 hover:text-gray-600 p-1" onclick="toggleMobileDropdown({{ $category->id }})">
+                                    <button class="text-gray-400 hover:text-gray-600 dark:text-gray-300 p-1" onclick="toggleMobileDropdown({{ $category->id }})">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
                                          id="mobile-dropdown-{{ $category->id }}">
                                         <div class="py-1">
-                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="editCategory({{ $category->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="editCategory({{ $category->id }})">
                                                 <i class="fas fa-edit w-4"></i> Modifier
                                             </button>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleCategoryStatus({{ $category->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleCategoryStatus({{ $category->id }})">
                                                 <i class="fas {{ $category->is_active ? 'fa-pause' : 'fa-play' }} w-4"></i>
                                                 {{ $category->is_active ? 'Désactiver' : 'Activer' }}
                                             </button>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleCategoryFeatured({{ $category->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleCategoryFeatured({{ $category->id }})">
                                                 <i class="fas fa-star w-4"></i>
                                                 {{ $category->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
                                             </button>
@@ -222,7 +222,7 @@
                             
                             <!-- Badges et infos -->
                             <div class="flex flex-wrap gap-2 mb-2">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100' }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $category->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1"></span>
                                     {{ $category->is_active ? 'Active' : 'Inactive' }}
                                 </span>
@@ -241,7 +241,7 @@
                             </div>
                             
                             <!-- Statistiques -->
-                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                                 <span>
                                     <i class="fas fa-box text-gray-400"></i>
                                     {{ $category->items_count ?? 0 }} articles
@@ -263,8 +263,8 @@
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
                     <i class="fas fa-folder text-3xl text-primary-600"></i>
                 </div>
-                <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune catégorie enregistrée</h5>
-                <p class="text-gray-500 mb-4">Commencez par ajouter des catégories pour organiser vos articles.</p>
+                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune catégorie enregistrée</h5>
+                <p class="text-gray-500 dark:text-gray-400 mb-4">Commencez par ajouter des catégories pour organiser vos articles.</p>
                 <button onclick="openModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                     <i class="fas fa-plus mr-2"></i>Ajouter une catégorie
                 </button>
@@ -275,10 +275,10 @@
 
 <div id="categoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6 w-full max-w-md">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">Nouvelle Catégorie</h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Nouvelle Catégorie</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -287,21 +287,21 @@
                 <input type="hidden" id="categoryId">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                             Nom <span class="text-red-500">*</span>
                         </label>
                         <input type="text" id="name" name="name" required 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Description</label>
                         <textarea id="description" name="description" rows="3" 
-                                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
+                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie parente</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Catégorie parente</label>
                         <select id="parent_id" name="parent_id" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                             <option value="">Aucune (catégorie principale)</option>
                             @if(isset($categories))
                                 @foreach($categories->whereNull('parent_id') as $cat)
@@ -311,27 +311,27 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Image</label>
                         <input type="file" id="image" name="image" accept="image/*"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                        <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Taille max: 2MB</p>
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format: JPG, PNG. Taille max: 2MB</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="is_active" name="is_active" checked 
-                                   class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                            <span class="ml-2 text-sm text-gray-700">Active</span>
+                                   class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
+                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-200">Active</span>
                         </label>
                         <label class="flex items-center cursor-pointer">
                             <input type="checkbox" id="is_featured" name="is_featured" 
-                                   class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
-                            <span class="ml-2 text-sm text-gray-700">En vedette</span>
+                                   class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
+                            <span class="ml-2 text-sm text-gray-700 dark:text-gray-200">En vedette</span>
                         </label>
                     </div>
                 </div>
                 <div class="flex gap-3 mt-6">
                     <button type="button" onclick="closeModal()" 
-                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors">
                         <i class="fas fa-times mr-2"></i>Annuler
                     </button>
                     <button type="submit" 

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Utilisateurs Connectés')
 @section('page-title', 'Utilisateurs Connectés en Temps Réel')
@@ -132,7 +132,7 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <div class="online-indicator"></div>
-            <span class="text-sm text-gray-600">Mise à jour automatique toutes les 10 secondes</span>
+            <span class="text-sm text-gray-600 dark:text-gray-300">Mise à jour automatique toutes les 10 secondes</span>
         </div>
         
         <div class="refresh-indicator" id="refreshIndicator">
@@ -146,8 +146,8 @@
         <div class="stat-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Total connectés</p>
-                    <p class="text-3xl font-bold text-gray-900" id="stat-total">{{ $stats['total_online'] }}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Total connectés</p>
+                    <p class="text-3xl font-bold text-gray-900 dark:text-white" id="stat-total">{{ $stats['total_online'] }}</p>
                 </div>
                 <div class="stat-icon" style="background: linear-gradient(135deg, #6A0DAD 0%, #8B0DC7 100%); color: white;">
                     <i class="fas fa-users"></i>
@@ -158,7 +158,7 @@
         <div class="stat-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Sur mobile</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Sur mobile</p>
                     <p class="text-3xl font-bold text-blue-600" id="stat-mobile">{{ $stats['by_device']['mobile'] }}</p>
                 </div>
                 <div class="stat-icon" style="background: #DBEAFE; color: #1E40AF;">
@@ -170,7 +170,7 @@
         <div class="stat-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Sur tablette</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Sur tablette</p>
                     <p class="text-3xl font-bold text-primary-600" id="stat-tablet">{{ $stats['by_device']['tablet'] }}</p>
                 </div>
                 <div class="stat-icon" style="background: #E9D5FF; color: #6B21A8;">
@@ -182,7 +182,7 @@
         <div class="stat-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Sur ordinateur</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Sur ordinateur</p>
                     <p class="text-3xl font-bold text-green-600" id="stat-desktop">{{ $stats['by_device']['desktop'] }}</p>
                 </div>
                 <div class="stat-icon" style="background: #D1FAE5; color: #065F46;">
@@ -193,17 +193,17 @@
     </div>
 
     <!-- Filtres -->
-    <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 border border-gray-200 dark:border-gray-700">
         <div class="flex flex-wrap items-center gap-4">
             <div class="flex-1 min-w-[250px]">
                 <div class="relative">
                     <input type="text" id="searchInput" placeholder="Rechercher par nom ou email..." 
-                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        class="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                 </div>
             </div>
             
-            <select id="deviceFilter" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+            <select id="deviceFilter" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                 <option value="">Tous les appareils</option>
                 <option value="mobile">Mobile</option>
                 <option value="tablet">Tablette</option>
@@ -217,12 +217,12 @@
     </div>
 
     <!-- Liste des utilisateurs connectés -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-bold text-gray-900">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white">
                 <i class="fas fa-user-check text-primary-600 mr-2"></i>
                 Liste des Utilisateurs Actifs
-                <span class="text-sm font-normal text-gray-500 ml-2" id="userCount">({{ $onlineUsers->count() }} en ligne)</span>
+                <span class="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2" id="userCount">({{ $onlineUsers->count() }} en ligne)</span>
             </h3>
         </div>
         
@@ -245,8 +245,8 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-start justify-between mb-1">
                                     <div class="flex-1 min-w-0">
-                                        <h4 class="font-semibold text-gray-900 truncate">{{ $user->name }}</h4>
-                                        <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
+                                        <h4 class="font-semibold text-gray-900 dark:text-white truncate">{{ $user->name }}</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
                                     </div>
                                 </div>
                                 
@@ -257,7 +257,7 @@
                                     </span>
                                     
                                     @if($session->browser)
-                                        <span class="text-xs text-gray-600">
+                                        <span class="text-xs text-gray-600 dark:text-gray-300">
                                             <i class="fab {{ $session->browser_icon }} mr-1"></i>
                                             {{ $session->browser }}
                                         </span>
@@ -265,13 +265,13 @@
                                 </div>
                                 
                                 <div class="mt-2 flex items-center justify-between text-xs">
-                                    <span class="text-gray-500">
+                                    <span class="text-gray-500 dark:text-gray-400">
                                         <i class="fas fa-clock mr-1"></i>
                                         {{ $session->last_activity_text }}
                                     </span>
                                     
                                     @if($session->location_text !== 'Localisation inconnue')
-                                        <span class="text-gray-500">
+                                        <span class="text-gray-500 dark:text-gray-400">
                                             <i class="fas fa-map-marker-alt mr-1"></i>
                                             {{ $session->location_text }}
                                         </span>
@@ -279,7 +279,7 @@
                                 </div>
                                 
                                 <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                                    <span class="text-xs text-gray-500">
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
                                         <i class="fas fa-network-wired mr-1"></i>
                                         {{ $session->ip_address }}
                                     </span>
@@ -296,7 +296,7 @@
                 @empty
                     <div class="col-span-full text-center py-12">
                         <i class="fas fa-user-slash text-gray-300 text-5xl mb-4"></i>
-                        <p class="text-gray-500 text-lg">Aucun utilisateur connecté pour le moment</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-lg">Aucun utilisateur connecté pour le moment</p>
                     </div>
                 @endforelse
             </div>
@@ -395,7 +395,7 @@ function updateUsersList(users) {
         grid.innerHTML = `
             <div class="col-span-full text-center py-12">
                 <i class="fas fa-user-slash text-gray-300 text-5xl mb-4"></i>
-                <p class="text-gray-500 text-lg">Aucun utilisateur connecté pour le moment</p>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">Aucun utilisateur connecté pour le moment</p>
             </div>
         `;
         return;
@@ -421,8 +421,8 @@ function updateUsersList(users) {
                     <div class="flex-1 min-w-0">
                         <div class="flex items-start justify-between mb-1">
                             <div class="flex-1 min-w-0">
-                                <h4 class="font-semibold text-gray-900 truncate">${user.name}</h4>
-                                <p class="text-xs text-gray-500 truncate">${user.email}</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white truncate">${user.name}</h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${user.email}</p>
                             </div>
                         </div>
                         
@@ -433,7 +433,7 @@ function updateUsersList(users) {
                             </span>
                             
                             ${userData.browser ? `
-                                <span class="text-xs text-gray-600">
+                                <span class="text-xs text-gray-600 dark:text-gray-300">
                                     <i class="fab ${browserIcon} mr-1"></i>
                                     ${userData.browser}
                                 </span>
@@ -441,13 +441,13 @@ function updateUsersList(users) {
                         </div>
                         
                         <div class="mt-2 flex items-center justify-between text-xs">
-                            <span class="text-gray-500">
+                            <span class="text-gray-500 dark:text-gray-400">
                                 <i class="fas fa-clock mr-1"></i>
                                 ${userData.last_activity}
                             </span>
                             
                             ${userData.location !== 'Localisation inconnue' ? `
-                                <span class="text-gray-500">
+                                <span class="text-gray-500 dark:text-gray-400">
                                     <i class="fas fa-map-marker-alt mr-1"></i>
                                     ${userData.location}
                                 </span>
@@ -455,7 +455,7 @@ function updateUsersList(users) {
                         </div>
                         
                         <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
-                            <span class="text-xs text-gray-500">
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
                                 <i class="fas fa-network-wired mr-1"></i>
                                 ${userData.ip_address}
                             </span>

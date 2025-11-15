@@ -12,9 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Vérifier si la colonne existe déjà
+        if (!Schema::hasColumn('expert_profiles', 'certification_level')) {
+            return; // Skip si la colonne n'existe pas
+        }
+
         // D'abord ajouter une nouvelle colonne temporaire
         Schema::table('expert_profiles', function (Blueprint $table) {
-            $table->enum('new_certification_level', ['junior', 'senior', 'master'])->default('junior')->after('certification_level');
+            $table->enum('new_certification_level', ['junior', 'senior', 'master'])->nullable()->after('certification_level');
         });
 
         // Convertir les données existantes
@@ -27,14 +32,18 @@ return new class extends Migration
             END")
         ]);
 
-        // Supprimer l'ancienne colonne et renommer la nouvelle
+        // Supprimer l'ancienne colonne
         Schema::table('expert_profiles', function (Blueprint $table) {
             $table->dropColumn('certification_level');
         });
 
+        // Renommer et rendre non-nullable
         Schema::table('expert_profiles', function (Blueprint $table) {
             $table->renameColumn('new_certification_level', 'certification_level');
         });
+        
+        // Mettre à jour pour enlever les null et définir la valeur par défaut
+        DB::statement("ALTER TABLE expert_profiles MODIFY certification_level ENUM('junior', 'senior', 'master') NOT NULL DEFAULT 'junior'");
     }
 
     /**

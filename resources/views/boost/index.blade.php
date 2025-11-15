@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Booster vos Produits')
 
@@ -6,8 +6,8 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
         <div class="mb-4 lg:mb-0">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Booster vos Produits</h1>
-            <p class="text-gray-600">Augmentez la visibilité de vos produits et boostez vos ventes</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Booster vos Produits</h1>
+            <p class="text-gray-600 dark:text-gray-300">Augmentez la visibilité de vos produits et boostez vos ventes</p>
             @if(request()->has('item_id'))
                 @php
                     $preselectedItem = \App\Models\Item::find(request('item_id'));
@@ -56,7 +56,7 @@
     <!-- Types de boost disponibles -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($boostTypes as $boostType)
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 boost-card flex flex-col" data-boost-type="{{ $boostType->id }}">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 boost-card flex flex-col" data-boost-type="{{ $boostType->id }}">
             <div class="p-6 text-white relative" style="background: {{ $boostType->color ?? '#3B82F6' }};">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xl font-bold mb-0 flex items-center">
@@ -71,7 +71,7 @@
                 </div>
             </div>
             <div class="p-6 flex-grow flex flex-col">
-                <p class="text-gray-600 mb-4">{{ $boostType->description }}</p>
+                <p class="text-gray-600 dark:text-gray-300 mb-4">{{ $boostType->description }}</p>
                     
                 <!-- Prix -->
                 <div class="mb-4">
@@ -82,8 +82,8 @@
                         $currencySymbol = $userCurrency === 'USD' ? '$' : 'CDF';
                     @endphp
                     <div class="flex justify-between items-center mb-2">
-                        <span class="text-gray-500 text-sm">Prix de base:</span>
-                        <span class="text-lg font-semibold text-gray-900">
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">Prix de base:</span>
+                        <span class="text-lg font-semibold text-gray-900 dark:text-white">
                             @if($userCurrency === 'USD')
                                 ${{ number_format($price, 2) }}
                             @else
@@ -93,8 +93,8 @@
                     </div>
                     @if($boostType->price_per_day > 0)
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-500 text-sm">Par jour:</span>
-                        <span class="text-sm text-gray-700">+{{ number_format($boostType->price_per_day, 0, ',', ' ') }} {{ $currencySymbol }}</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">Par jour:</span>
+                        <span class="text-sm text-gray-700 dark:text-gray-200">+{{ number_format($boostType->price_per_day, 0, ',', ' ') }} {{ $currencySymbol }}</span>
                     </div>
                     @endif
                 </div>
@@ -102,20 +102,20 @@
                 <!-- Durée -->
                 <div class="mb-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-500 text-sm">Durée:</span>
-                        <span class="text-gray-900">{{ $boostType->min_duration }} - {{ $boostType->max_duration }} jours</span>
+                        <span class="text-gray-500 dark:text-gray-400 text-sm">Durée:</span>
+                        <span class="text-gray-900 dark:text-white">{{ $boostType->min_duration }} - {{ $boostType->max_duration }} jours</span>
                     </div>
                 </div>
 
                 <!-- Avantages -->
                 @if($boostType->benefits)
                 <div class="mb-4">
-                    <h6 class="text-gray-500 text-sm font-medium mb-3">Avantages:</h6>
+                    <h6 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-3">Avantages:</h6>
                     <ul class="space-y-2">
                         @foreach(json_decode($boostType->benefits, true) as $benefit)
                         <li class="flex items-start">
                             <i class="fas fa-check text-green-500 mr-2 mt-0.5 text-sm"></i>
-                            <span class="text-sm text-gray-700">{{ $benefit }}</span>
+                            <span class="text-sm text-gray-700 dark:text-gray-200">{{ $benefit }}</span>
                         </li>
                         @endforeach
                     </ul>
@@ -133,10 +133,10 @@
     </div>
     @empty
     <div class="col-span-full">
-        <div class="text-center py-12 bg-gray-50 rounded-lg">
+        <div class="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
             <i class="fas fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
-            <h4 class="text-xl font-medium text-gray-600 mb-2">Aucun type de boost disponible</h4>
-            <p class="text-gray-500">Veuillez contacter l'administrateur.</p>
+            <h4 class="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">Aucun type de boost disponible</h4>
+            <p class="text-gray-500 dark:text-gray-400">Veuillez contacter l'administrateur.</p>
         </div>
     </div>
     @endforelse
@@ -147,13 +147,13 @@
 <div id="productSelectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-hidden="true">
     <div class="flex items-center justify-center min-h-screen px-4">
         <div class="fixed inset-0 bg-black bg-opacity-25 transition-opacity modal-overlay"></div>
-        <div class="bg-white rounded-lg max-w-2xl w-full mx-auto shadow-xl transform transition-all modal-content">
+        <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full mx-auto shadow-xl transform transition-all modal-content">
             <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-box mr-2 text-blue-600"></i>Choisissez le produit à booster
                 </h3>
-                <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors close-modal">
+                <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors close-modal">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -170,22 +170,22 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Durée (jours)</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="boostDuration" name="duration" required>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Durée (jours)</label>
+                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="boostDuration" name="duration" required>
                                 <!-- Options dynamiques -->
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Prix total</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Prix total</label>
                             <div class="flex">
-                                <input type="text" id="totalPrice" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50" readonly>
-                                <span class="px-3 py-2 bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg text-sm text-gray-700">CDF</span>
+                                <input type="text" id="totalPrice" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" readonly>
+                                <span class="px-3 py-2 bg-gray-100 dark:bg-gray-800 border border-l-0 border-gray-300 rounded-r-lg text-sm text-gray-700 dark:text-gray-200">CDF</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="flex justify-end space-x-3">
-                        <button type="button" class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors close-modal">Annuler</button>
+                        <button type="button" class="px-4 py-2 text-gray-700 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 rounded-lg transition-colors close-modal">Annuler</button>
                         <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center">
                             <i class="fas fa-credit-card mr-2"></i>Acheter le boost
                         </button>
@@ -196,7 +196,7 @@
                 <div id="productsList">
                     <div class="text-center py-8">
                         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        <p class="text-gray-500 mt-2">Chargement...</p>
+                        <p class="text-gray-500 dark:text-gray-400 mt-2">Chargement...</p>
                     </div>
                 </div>
             </div>
@@ -267,7 +267,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function showNotification(message, type = 'info') {
         // Créer l'élément de notification
         const notification = document.createElement('div');
-        notification.className = `fixed top-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border-l-4 transform transition-all duration-500 translate-x-full`;
+        notification.className = `fixed top-4 right-4 z-50 max-w-sm w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border-l-4 transform transition-all duration-500 translate-x-full`;
         
         // Couleurs selon le type
         const colors = {
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <p class="text-sm font-medium">${message}</p>
                 </div>
                 <div class="ml-4 flex-shrink-0">
-                    <button class="inline-flex text-gray-400 hover:text-gray-600" onclick="this.parentElement.parentElement.parentElement.remove()">
+                    <button class="inline-flex text-gray-400 hover:text-gray-600 dark:text-gray-300" onclick="this.parentElement.parentElement.parentElement.remove()">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
         productsList.innerHTML = `
             <div class="text-center py-8">
                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p class="text-gray-500 mt-2">Chargement...</p>
+                <p class="text-gray-500 dark:text-gray-400 mt-2">Chargement...</p>
             </div>
         `;
 
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success && data.items.length > 0) {
-                let html = `<h6 class="text-lg font-semibold text-gray-900 mb-4">Sélectionnez un produit:</h6><div class="space-y-2">`;
+                let html = `<h6 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sélectionnez un produit:</h6><div class="space-y-2">`;
                 
                 data.items.forEach(item => {
                     const imageUrl = item.images && item.images.length > 0 
@@ -423,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function() {
                              data-item-id="${item.id}" ${disabledAttr}>
                             <img src="${imageUrl}" alt="${item.title}" class="w-16 h-16 object-cover rounded-lg mr-3">
                             <div class="flex-1">
-                                <h6 class="font-medium text-gray-900">${item.title}</h6>
-                                <p class="text-sm text-gray-500">Prix: ${new Intl.NumberFormat('fr-FR').format(item.price)} CDF</p>
+                                <h6 class="font-medium text-gray-900 dark:text-white">${item.title}</h6>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Prix: ${new Intl.NumberFormat('fr-FR').format(item.price)} CDF</p>
                                 ${boostInfo}
                             </div>
                             <div class="flex items-center">
@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
                 
-                html += `</div><p class="text-sm text-gray-500 mt-4">Cliquez sur un produit pour le sélectionner</p>`;
+                html += `</div><p class="text-sm text-gray-500 dark:text-gray-400 mt-4">Cliquez sur un produit pour le sélectionner</p>`;
                 productsList.innerHTML = html;
                 
                 // Ajouter les événements de sélection de produit
@@ -454,8 +454,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 productsList.innerHTML = `
                     <div class="text-center py-12">
                         <i class="fas fa-box-open text-5xl text-gray-400 mb-4"></i>
-                        <h5 class="text-xl font-medium text-gray-600 mb-2">Aucun produit disponible pour le boost</h5>
-                        <p class="text-gray-500 mb-4">Vous n'avez pas de produits actifs dans votre catalogue. Ajoutez des produits pour pouvoir les booster.</p>
+                        <h5 class="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">Aucun produit disponible pour le boost</h5>
+                        <p class="text-gray-500 dark:text-gray-400 mb-4">Vous n'avez pas de produits actifs dans votre catalogue. Ajoutez des produits pour pouvoir les booster.</p>
                         <a href="/items/create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg inline-flex items-center">
                             <i class="fas fa-plus mr-2"></i>Ajouter un produit
                         </a>
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             productsList.innerHTML = `
                 <div class="text-center py-8">
                     <i class="fas fa-exclamation-triangle text-red-500 text-2xl mb-2"></i>
-                    <p class="text-gray-500 mb-3">Erreur lors du chargement des produits</p>
+                    <p class="text-gray-500 dark:text-gray-400 mb-3">Erreur lors du chargement des produits</p>
                     <button class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm hover:bg-blue-200" onclick="loadUserProducts()">Réessayer</button>
                 </div>
             `;

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des Wallets')
 @section('page-title', 'Gestion des Wallets Entreprise')
@@ -237,8 +237,8 @@
         <!-- Portefeuilles Entreprise -->
         <div class="mb-12 animate-fade-in">
             <div class="main-card">
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 flex justify-between items-center">
-                    <h5 class="text-xl font-semibold text-gray-800 flex items-center">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h5 class="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
                         <i class="fas fa-building mr-3"></i>
                         Portefeuilles Entreprise VintApp
                     </h5>
@@ -279,7 +279,7 @@
                                             <small class="text-white opacity-80">Solde disponible</small>
                                         </div>
 
-                                        <div class="bg-white bg-opacity-10 rounded-xl p-4 mb-6 backdrop-blur-sm">
+                                        <div class="bg-white dark:bg-gray-800 bg-opacity-10 rounded-xl p-4 mb-6 backdrop-blur-sm">
                                             <div class="grid grid-cols-2 gap-4 text-center text-white">
                                                 <div>
                                                     <div class="text-xl font-semibold mb-1">{{ $wallet->total_transactions ?? 0 }}</div>
@@ -299,12 +299,12 @@
                                         </div>
 
                                         <div class="flex gap-3">
-                                            <button class="flex-1 px-4 py-3 bg-white bg-opacity-10 text-white border-2 border-white border-opacity-30 rounded-lg font-semibold uppercase tracking-wide text-sm transition-all duration-300 hover:bg-opacity-20 hover:border-opacity-50 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center" 
+                                            <button class="flex-1 px-4 py-3 bg-white dark:bg-gray-800 bg-opacity-10 text-white border-2 border-white border-opacity-30 rounded-lg font-semibold uppercase tracking-wide text-sm transition-all duration-300 hover:bg-opacity-20 hover:border-opacity-50 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center" 
                                                     onclick="openCommissionModal('{{ $wallet->id ?? '' }}')">
                                                 <i class="fas fa-plus-circle mr-2"></i>
                                                 Ajouter
                                             </button>
-                                            <button class="flex-1 px-4 py-3 bg-white text-gray-800 border-2 border-white rounded-lg font-semibold uppercase tracking-wide text-sm transition-all duration-300 hover:bg-gray-50 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center" 
+                                            <button class="flex-1 px-4 py-3 bg-white dark:bg-gray-800 text-gray-800 border-2 border-white rounded-lg font-semibold uppercase tracking-wide text-sm transition-all duration-300 hover:bg-gray-50 dark:bg-gray-900 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center" 
                                                     onclick="openWithdrawModal('{{ $wallet->id ?? '' }}')">
                                                 <i class="fas fa-arrow-down mr-2"></i>
                                                 Retirer
@@ -317,8 +317,8 @@
                     @else
                         <div class="empty-state text-center py-16 px-8">
                             <i class="fas fa-wallet text-6xl text-gray-400 mb-6 opacity-60"></i>
-                            <h5 class="text-gray-600 font-semibold text-xl mb-4">Aucun Portefeuille Entreprise</h5>
-                            <p class="text-gray-500 mb-8 max-w-md mx-auto">Créez votre premier portefeuille entreprise pour commencer à gérer les commissions et les finances de VintApp.</p>
+                            <h5 class="text-gray-600 dark:text-gray-300 font-semibold text-xl mb-4">Aucun Portefeuille Entreprise</h5>
+                            <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Créez votre premier portefeuille entreprise pour commencer à gérer les commissions et les finances de VintApp.</p>
                             <button class="btn-modern btn-primary-modern flex items-center mx-auto" onclick="openModal('createWalletModal')">
                                 <i class="fas fa-plus mr-2"></i>
                                 Créer Premier Portefeuille
@@ -333,8 +333,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12 animate-fade-in">
             <div class="lg:col-span-2">
                 <div class="main-card">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200">
-                        <h5 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
+                        <h5 class="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
                             <i class="fas fa-chart-area mr-3"></i>
                             Évolution des Commissions (30 derniers jours)
                         </h5>
@@ -348,8 +348,8 @@
             </div>
             <div>
                 <div class="main-card h-full">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200">
-                        <h5 class="text-xl font-semibold text-gray-800 flex items-center">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
+                        <h5 class="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
                             <i class="fas fa-chart-pie mr-3"></i>
                             Répartition par Devise
                         </h5>
@@ -366,8 +366,8 @@
         <!-- Dernières Transactions Entreprise -->
         <div class="animate-fade-in">
             <div class="main-card">
-                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 flex justify-between items-center">
-                    <h5 class="text-xl font-semibold text-gray-800 flex items-center">
+                <div class="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h5 class="text-xl font-semibold text-gray-800 dark:text-gray-100 flex items-center">
                         <i class="fas fa-history mr-3"></i>
                         Dernières Transactions Entreprise
                     </h5>
@@ -466,7 +466,7 @@
 
 <!-- Modal Créer Wallet -->
 <div id="createWalletModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto">
         <div class="bg-gradient-to-r from-indigo-600 to-primary-600 text-white p-6 rounded-t-2xl">
             <div class="flex justify-between items-center">
                 <h5 class="text-xl font-bold flex items-center">
@@ -481,32 +481,32 @@
             <div class="p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
-                        <label for="currency" class="block text-sm font-bold text-gray-700 mb-2">Devise *</label>
-                        <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="currency" id="currency" required>
+                        <label for="currency" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Devise *</label>
+                        <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="currency" id="currency" required>
                             <option value="">🌍 Sélectionner une devise</option>
                             <option value="USD">💵 USD (Dollar Américain)</option>
                             <option value="CDF">🇨🇩 CDF (Franc Congolais)</option>
                         </select>
-                        <small class="text-gray-500 text-sm mt-1 block">Choisissez la devise principale du portefeuille</small>
+                        <small class="text-gray-500 dark:text-gray-400 text-sm mt-1 block">Choisissez la devise principale du portefeuille</small>
                     </div>
                     
                     <div>
-                        <label for="commission_rate" class="block text-sm font-bold text-gray-700 mb-2">Taux de Commission (%)</label>
-                        <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="commission_rate" id="commission_rate" 
+                        <label for="commission_rate" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Taux de Commission (%)</label>
+                        <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="commission_rate" id="commission_rate" 
                                value="5.00" step="0.01" min="0" max="100" placeholder="Ex: 5.00">
-                        <small class="text-gray-500 text-sm mt-1 block">Pourcentage de commission sur les transactions</small>
+                        <small class="text-gray-500 dark:text-gray-400 text-sm mt-1 block">Pourcentage de commission sur les transactions</small>
                     </div>
                 </div>
                 
                 <div class="mb-6">
-                    <label for="initial_balance" class="block text-sm font-bold text-gray-700 mb-2">Solde Initial</label>
-                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="initial_balance" id="initial_balance" 
+                    <label for="initial_balance" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Solde Initial</label>
+                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="initial_balance" id="initial_balance" 
                            value="0.00" step="0.01" min="0" placeholder="0.00">
-                    <small class="text-gray-500 text-sm mt-1 block">Solde initial du wallet (optionnel)</small>
+                    <small class="text-gray-500 dark:text-gray-400 text-sm mt-1 block">Solde initial du wallet (optionnel)</small>
                 </div>
             </div>
-            <div class="bg-gray-50 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
-                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('createWalletModal')">
+            <div class="bg-gray-50 dark:bg-gray-900 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
+                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('createWalletModal')">
                     Annuler
                 </button>
                 <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-primary-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-primary-700 transition-all duration-200 transform hover:scale-105 flex items-center">
@@ -520,7 +520,7 @@
 
 <!-- Modal Ajouter Commission -->
 <div id="addCommissionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full">
         <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-t-2xl">
             <div class="flex justify-between items-center">
                 <h5 class="text-xl font-bold flex items-center">
@@ -534,19 +534,19 @@
             @csrf
             <div class="p-8">
                 <div class="mb-6">
-                    <label for="amount" class="block text-sm font-bold text-gray-700 mb-2">Montant *</label>
-                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="amount" id="commissionAmount" 
+                    <label for="amount" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Montant *</label>
+                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="amount" id="commissionAmount" 
                            step="0.01" min="0.01" required placeholder="Entrez le montant">
                 </div>
                 
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-bold text-gray-700 mb-2">Description</label>
-                    <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="description" id="commissionDescription" 
+                    <label for="description" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                    <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="description" id="commissionDescription" 
                               rows="3" placeholder="Description de la commission (optionnel)"></textarea>
                 </div>
             </div>
-            <div class="bg-gray-50 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
-                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('addCommissionModal')">
+            <div class="bg-gray-50 dark:bg-gray-900 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
+                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('addCommissionModal')">
                     Annuler
                 </button>
                 <button type="submit" class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:scale-105 flex items-center">
@@ -560,7 +560,7 @@
 
 <!-- Modal Retirer Fonds -->
 <div id="withdrawModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full">
         <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-t-2xl">
             <div class="flex justify-between items-center">
                 <h5 class="text-xl font-bold flex items-center">
@@ -574,19 +574,19 @@
             @csrf
             <div class="p-8">
                 <div class="mb-6">
-                    <label for="amount" class="block text-sm font-bold text-gray-700 mb-2">Montant *</label>
-                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="amount" id="withdrawAmount" 
+                    <label for="amount" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Montant *</label>
+                    <input type="number" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="amount" id="withdrawAmount" 
                            step="0.01" min="0.01" required placeholder="Entrez le montant à retirer">
                 </div>
                 
                 <div class="mb-6">
-                    <label for="description" class="block text-sm font-bold text-gray-700 mb-2">Description</label>
-                    <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 bg-gray-50 focus:bg-white" name="description" id="withdrawDescription" 
+                    <label for="description" class="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                    <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 transition-all duration-200 bg-gray-50 dark:bg-gray-900 focus:bg-white dark:bg-gray-800" name="description" id="withdrawDescription" 
                               rows="3" placeholder="Raison du retrait (optionnel)"></textarea>
                 </div>
             </div>
-            <div class="bg-gray-50 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
-                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('withdrawModal')">
+            <div class="bg-gray-50 dark:bg-gray-900 px-8 py-4 rounded-b-2xl flex justify-end space-x-4">
+                <button type="button" class="px-6 py-3 bg-gray-300 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200" onclick="closeModal('withdrawModal')">
                     Annuler
                 </button>
                 <button type="submit" class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 flex items-center">

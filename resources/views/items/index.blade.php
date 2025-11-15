@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <!-- Toast notification -->
@@ -16,7 +16,7 @@
         <!-- En-tête -->
         <div class="mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-box mr-3 text-primary-600"></i>
                     Articles disponibles
                 </h1>
@@ -32,13 +32,13 @@
         <!-- Barre de recherche et filtres -->
         <div class="mb-8">
             <div class="max-w-3xl mx-auto">
-                <div class="flex gap-4 p-2 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-primary-100 hover:shadow-2xl transition-all duration-300">
+                <div class="flex gap-4 p-2 bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl shadow-xl border border-primary-100 hover:shadow-2xl transition-all duration-300">
                     <!-- Formulaire de recherche -->
                     <form method="GET" action="{{ route('items.index') }}" class="flex-1">
                         <div class="relative">
                             <input type="search" 
                                    name="search" 
-                                   class="w-full pl-5 pr-32 py-4 bg-gray-50 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
+                                   class="w-full pl-5 pr-32 py-4 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white dark:bg-gray-800 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                    placeholder="🔍 Rechercher un article..." 
                                    value="{{ request('search') }}"
                                    autocomplete="off">
@@ -50,7 +50,7 @@
                     </form>
                     
                     <!-- Bouton filtres -->
-                    <button type="button" onclick="toggleFiltersModal()" class="flex items-center px-6 py-4 bg-gray-50 border-2 border-transparent text-primary-600 font-semibold rounded-xl hover:bg-white hover:border-primary-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                    <button type="button" onclick="toggleFiltersModal()" class="flex items-center px-6 py-4 bg-gray-50 dark:bg-gray-900 border-2 border-transparent text-primary-600 font-semibold rounded-xl hover:bg-white dark:bg-gray-800 hover:border-primary-600 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-filter mr-2"></i>
                         <span class="hidden sm:inline">Filtres</span>
                     </button>
@@ -62,7 +62,7 @@
                 <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                     <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onclick="closeFiltersModal()"></div>
                     
-                    <div class="inline-block align-middle bg-white rounded-2xl shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+                    <div class="inline-block align-middle bg-white dark:bg-gray-800 rounded-2xl shadow-2xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
                         <!-- En-tête du modal -->
                         <div class="bg-gradient-to-r from-primary-600 to-accent-600 px-6 py-4 rounded-t-2xl">
                             <div class="flex items-center justify-between">
@@ -77,27 +77,27 @@
                         </div>
 
                         <!-- Contenu du modal -->
-                        <div class="px-6 py-6 bg-gray-50">
+                        <div class="px-6 py-6 bg-gray-50 dark:bg-gray-900">
                             <form method="GET" action="{{ route('items.index') }}" id="filterForm" class="space-y-6">
                                 <!-- Recherche par mot-clé -->
                                 <div>
-                                    <label for="filterSearch" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="filterSearch" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-search mr-2 text-primary-600"></i>Mot-clé
                                     </label>
                                     <input type="text" 
                                            id="filterSearch" 
                                            name="search" 
-                                           class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
+                                           class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                            placeholder="Ex: iPhone, Nike, Vêtements..." 
                                            value="{{ request('search') }}">
                                 </div>
 
                                 <!-- Catégorie -->
                                 <div>
-                                    <label for="filterCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="filterCategory" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-layer-group mr-2 text-primary-600"></i>Catégorie
                                     </label>
-                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
+                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les catégories</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -109,10 +109,10 @@
 
                                 <!-- Marque -->
                                 <div>
-                                    <label for="filterBrand" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="filterBrand" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-tag mr-2 text-primary-600"></i>Marque
                                     </label>
-                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
+                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les marques</option>
                                         @foreach($brands as $brand)
                                             <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
@@ -124,20 +124,20 @@
 
                                 <!-- Prix -->
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-dollar-sign mr-2 text-primary-600"></i>Prix (USD)
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <input type="number" 
                                                name="min_price" 
-                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
+                                               class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Min" 
                                                value="{{ request('min_price') }}" 
                                                min="0" 
                                                step="0.01">
                                         <input type="number" 
                                                name="max_price" 
-                                               class="px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
+                                               class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Max" 
                                                value="{{ request('max_price') }}" 
                                                min="0" 
@@ -147,10 +147,10 @@
 
                                 <!-- État -->
                                 <div>
-                                    <label for="filterCondition" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="filterCondition" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-star mr-2 text-primary-600"></i>État
                                     </label>
-                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
+                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Tous les états</option>
                                         <option value="new" {{ request('condition') == 'new' ? 'selected' : '' }}>🆕 Neuf</option>
                                         <option value="like_new" {{ request('condition') == 'like_new' ? 'selected' : '' }}>✨ Comme neuf</option>
@@ -163,8 +163,8 @@
                         </div>
 
                         <!-- Pied du modal -->
-                        <div class="px-6 py-4 bg-white border-t border-gray-200 rounded-b-2xl flex justify-end space-x-3">
-                            <button type="button" onclick="resetFilters()" class="px-6 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors duration-200">
+                        <div class="px-6 py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 rounded-b-2xl flex justify-end space-x-3">
+                            <button type="button" onclick="resetFilters()" class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 font-medium rounded-lg hover:bg-gray-200 dark:bg-gray-700 transition-colors duration-200">
                                 <i class="fas fa-undo mr-2"></i>Réinitialiser
                             </button>
                             <button type="button" onclick="applyFilters()" class="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
@@ -189,7 +189,7 @@
                         $isBoosted = $activeBoost !== null;
                         $boostType = $activeBoost?->boostType;
                     @endphp
-                    <div class="group relative bg-white rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 transition-all duration-300 border border-gray-100 overflow-hidden {{ $isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-200 shadow-' . ($boostType?->color ?? 'primary') . '-500/20' : '' }}">
+                    <div class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 transition-all duration-300 border border-gray-100 overflow-hidden {{ $isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-200 shadow-' . ($boostType?->color ?? 'primary') . '-500/20' : '' }}">
                         <!-- Image -->
                         <div class="relative">
                             @if($isBoosted)
@@ -203,7 +203,7 @@
                                          class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 {{ $isBoosted ? 'filter brightness-105' : '' }}" 
                                          alt="{{ $item->name }}">
                                 @else
-                                    <div class="w-full h-32 bg-gray-100 flex items-center justify-content-center hover:bg-gray-200 transition-colors">
+                                    <div class="w-full h-32 bg-gray-100 dark:bg-gray-800 flex items-center justify-content-center hover:bg-gray-200 dark:bg-gray-700 transition-colors">
                                         <i class="fas fa-image text-2xl text-gray-400"></i>
                                     </div>
                                 @endif
@@ -225,7 +225,7 @@
                                         NOUVEAU
                                     </span>
                                 @else
-                                    <span class="px-2 py-0.5 text-xs font-semibold bg-white/90 backdrop-blur-sm text-primary-600 rounded shadow-md">
+                                    <span class="px-2 py-0.5 text-xs font-semibold bg-white dark:bg-gray-800/90 backdrop-blur-sm text-primary-600 rounded shadow-md">
                                         {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
                                     </span>
                                 @endif
@@ -238,7 +238,7 @@
                                         <span class="px-2 py-1 {{ $isBoosted ? 'bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-gray-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-xs font-bold shadow-lg">
                                             {{ $item->formatted_price }}
                                         </span>
-                                        <button class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white hover:shadow-lg transition-all duration-200 favorite-btn"
+                                        <button class="w-8 h-8 bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white dark:bg-gray-800 hover:shadow-lg transition-all duration-200 favorite-btn"
                                                 data-item-id="{{ $item->id }}">
                                             <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-xs"></i>
                                         </button>
@@ -254,30 +254,30 @@
                         <!-- Contenu -->
                         <div class="p-3 flex flex-col h-full {{ $isBoosted ? 'bg-gradient-to-b from-white to-' . ($boostType?->color ?? 'primary') . '-50/30' : '' }}">
                             <a href="{{ route('items.show', $item) }}" class="block hover:text-primary-600 transition-colors">
-                                <h3 class="text-sm font-bold text-gray-900 mb-2 line-clamp-2 hover:text-primary-600 {{ $isBoosted ? 'text-' . ($boostType?->color ?? 'primary') . '-900' : '' }}">{{ Str::limit($item->name, 40) }}</h3>
+                                <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-primary-600 {{ $isBoosted ? 'text-' . ($boostType?->color ?? 'primary') . '-900' : '' }}">{{ Str::limit($item->name, 40) }}</h3>
                             </a>
                             
                             <div class="flex flex-wrap gap-1 mb-2">
                                 <span class="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded">{{ $item->category->name }}</span>
                                 @if($item->brand)
-                                    <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-700 rounded">{{ $item->brand->name }}</span>
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded">{{ $item->brand->name }}</span>
                                 @endif
                             </div>
 
-                            <p class="text-gray-600 text-xs mb-3 line-clamp-2 flex-grow">
+                            <p class="text-gray-600 dark:text-gray-300 text-xs mb-3 line-clamp-2 flex-grow">
                                 {{ Str::limit($item->description, 60) }}
                             </p>
 
                             <div class="mt-auto space-y-2">
                                 <div class="flex justify-between items-center">
                                     <p class="text-lg font-bold text-primary-600">{{ $item->formatted_price }}</p>
-                                    <span class="text-xs text-gray-500 flex items-center">
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                                         <i class="fas fa-eye mr-1"></i>
                                         {{ $item->views }}
                                     </span>
                                 </div>
 
-                                <div class="text-xs text-gray-500 space-y-1">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                                     <div class="flex items-center justify-between">
                                         <span class="flex items-center">
                                             <i class="fas fa-user mr-1"></i>
@@ -305,8 +305,8 @@
         @else
             <div class="text-center py-16">
                 <i class="fas fa-search text-6xl text-gray-300 mb-6"></i>
-                <h4 class="text-2xl font-bold text-gray-600 mb-4">Aucun article trouvé</h4>
-                <p class="text-gray-500 mb-8">Essayez de modifier vos critères de recherche.</p>
+                <h4 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-4">Aucun article trouvé</h4>
+                <p class="text-gray-500 dark:text-gray-400 mb-8">Essayez de modifier vos critères de recherche.</p>
                 @auth
                     <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-plus mr-2"></i>
@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
             itemsGrid.style.gap = '0.5rem';
             
             // Ajuster les cartes pour le mobile
-            const cards = itemsGrid.querySelectorAll('.bg-white');
+            const cards = itemsGrid.querySelectorAll('.bg-white dark:bg-gray-800');
             cards.forEach(card => {
                 // Réduire la hauteur de l'image
                 const img = card.querySelector('img, .w-full.h-32');
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Masquer la description
-                const description = card.querySelector('.text-gray-600');
+                const description = card.querySelector('.text-gray-600 dark:text-gray-300');
                 if (description) {
                     description.style.display = 'none';
                 }
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 // Masquer les détails supplémentaires
-                const details = card.querySelector('.text-xs.text-gray-500');
+                const details = card.querySelector('.text-xs.text-gray-500 dark:text-gray-400');
                 if (details) {
                     details.style.fontSize = '0.5rem';
                 }

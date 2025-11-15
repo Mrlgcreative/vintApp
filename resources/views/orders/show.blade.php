@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
@@ -7,7 +7,7 @@
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{{ route('orders.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors duration-200">
+                    <a href="{{ route('orders.index') }}" class="inline-flex items-center text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-blue-600 transition-colors duration-200">
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Mes Commandes
                     </a>
@@ -24,12 +24,12 @@
         <div class="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <!-- Contenu principal -->
             <div class="xl:col-span-3">
-                <div class="bg-white rounded-2xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
                     <!-- Header -->
                     <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6">
                         <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                             <div class="flex items-center mb-4 md:mb-0">
-                                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center mr-4">
                                     <i class="fas fa-shopping-cart text-white text-xl"></i>
                                 </div>
                                 <div>
@@ -37,7 +37,7 @@
                                     <p class="text-blue-100 text-sm">Détails complets de votre commande</p>
                                 </div>
                             </div>
-                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold {{ $order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }} border border-white/20">
+                            <span class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-semibold {{ $order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100')) }} border border-white/20">
                                 {{ $order->status_text }}
                             </span>
                         </div>
@@ -48,22 +48,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="flex justify-center">
                                 @if($order->item->images && count($order->item->images) > 0)
-                                    <div class="w-full max-w-sm bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+                                    <div class="w-full max-w-sm bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                                         <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
                                              class="w-full h-64 object-cover" 
                                              alt="{{ $order->item->name }}"
                                              loading="lazy">
                                     </div>
                                 @else
-                                    <div class="w-full max-w-sm h-64 bg-gray-50 rounded-2xl flex items-center justify-center border border-gray-200">
+                                    <div class="w-full max-w-sm h-64 bg-gray-50 dark:bg-gray-900 rounded-2xl flex items-center justify-center border border-gray-200 dark:border-gray-700">
                                         <i class="fas fa-image text-gray-400 text-4xl"></i>
                                     </div>
                                 @endif
                             </div>
                             <div class="space-y-6">
                                 <div>
-                                    <h2 class="text-2xl font-bold text-gray-900 mb-3">{{ $order->item->name }}</h2>
-                                    <p class="text-gray-600 leading-relaxed">{{ $order->item->description }}</p>
+                                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">{{ $order->item->name }}</h2>
+                                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ $order->item->description }}</p>
                                 </div>
                                 
                                 <div class="grid grid-cols-2 gap-4">
@@ -82,7 +82,7 @@
                                         {{ $order->item->category->name }}
                                     </span>
                                     @if($order->item->brand)
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
                                             {{ $order->item->brand->name }}
                                         </span>
                                     @endif
@@ -108,13 +108,13 @@
                         </div>
 
                         <!-- Separator -->
-                        <div class="border-t border-gray-200"></div>
+                        <div class="border-t border-gray-200 dark:border-gray-700"></div>
 
                         <!-- Informations de livraison et paiement -->
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             <!-- Adresse de livraison -->
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                                     <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
                                     Adresse de livraison
                                 </h3>
@@ -124,8 +124,8 @@
                                             <div class="flex items-start">
                                                 <i class="fas fa-user text-primary-500 mt-1 mr-3"></i>
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">Destinataire</p>
-                                                    <p class="text-gray-700">{{ $order->deliveryAddress->full_name }}</p>
+                                                    <p class="font-semibold text-gray-900 dark:text-white">Destinataire</p>
+                                                    <p class="text-gray-700 dark:text-gray-200">{{ $order->deliveryAddress->full_name }}</p>
                                                 </div>
                                             </div>
 
@@ -133,7 +133,7 @@
                                                 <div class="flex items-start">
                                                     <i class="fas fa-envelope text-blue-500 mt-1 mr-3"></i>
                                                     <div>
-                                                        <p class="font-semibold text-gray-900">Email</p>
+                                                        <p class="font-semibold text-gray-900 dark:text-white">Email</p>
                                                         <a href="mailto:{{ $order->deliveryAddress->email }}" 
                                                            class="text-blue-600 hover:text-blue-800 transition-colors duration-200">
                                                             {{ $order->deliveryAddress->email }}
@@ -145,7 +145,7 @@
                                             <div class="flex items-start">
                                                 <i class="fas fa-phone text-emerald-500 mt-1 mr-3"></i>
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">Téléphone</p>
+                                                    <p class="font-semibold text-gray-900 dark:text-white">Téléphone</p>
                                                     <a href="tel:{{ $order->deliveryAddress->phone }}" 
                                                        class="text-emerald-600 hover:text-emerald-800 transition-colors duration-200">
                                                         {{ $order->deliveryAddress->phone }}
@@ -156,16 +156,16 @@
                                             <div class="flex items-start">
                                                 <i class="fas fa-city text-indigo-500 mt-1 mr-3"></i>
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">Ville / Commune</p>
-                                                    <p class="text-gray-700">{{ $order->deliveryAddress->city }}, {{ $order->deliveryAddress->commune }}</p>
+                                                    <p class="font-semibold text-gray-900 dark:text-white">Ville / Commune</p>
+                                                    <p class="text-gray-700 dark:text-gray-200">{{ $order->deliveryAddress->city }}, {{ $order->deliveryAddress->commune }}</p>
                                                 </div>
                                             </div>
 
                                             <div class="flex items-start">
                                                 <i class="fas fa-home text-blue-500 mt-1 mr-3"></i>
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">Adresse complète</p>
-                                                    <p class="text-gray-600">{{ $order->deliveryAddress->address }}</p>
+                                                    <p class="font-semibold text-gray-900 dark:text-white">Adresse complète</p>
+                                                    <p class="text-gray-600 dark:text-gray-300">{{ $order->deliveryAddress->address }}</p>
                                                 </div>
                                             </div>
 
@@ -187,8 +187,8 @@
                                                 <div class="flex items-start">
                                                     <i class="fas fa-city text-indigo-500 mt-1 mr-3"></i>
                                                     <div>
-                                                        <p class="font-semibold text-gray-900">Ville</p>
-                                                        <p class="text-gray-700">{{ $order->shipping_city }}</p>
+                                                        <p class="font-semibold text-gray-900 dark:text-white">Ville</p>
+                                                        <p class="text-gray-700 dark:text-gray-200">{{ $order->shipping_city }}</p>
                                                     </div>
                                                 </div>
                                             @endif
@@ -197,7 +197,7 @@
                                                 <div class="flex items-start">
                                                     <i class="fas fa-phone text-emerald-500 mt-1 mr-3"></i>
                                                     <div>
-                                                        <p class="font-semibold text-gray-900">Téléphone</p>
+                                                        <p class="font-semibold text-gray-900 dark:text-white">Téléphone</p>
                                                         <a href="tel:{{ $order->shipping_phone }}" 
                                                            class="text-emerald-600 hover:text-emerald-800 transition-colors duration-200">
                                                             {{ $order->shipping_phone }}
@@ -210,8 +210,8 @@
                                                 <div class="flex items-start">
                                                     <i class="fas fa-home text-blue-500 mt-1 mr-3"></i>
                                                     <div>
-                                                        <p class="font-semibold text-gray-900">Adresse complète</p>
-                                                        <p class="text-gray-600">{{ $order->shipping_address }}</p>
+                                                        <p class="font-semibold text-gray-900 dark:text-white">Adresse complète</p>
+                                                        <p class="text-gray-600 dark:text-gray-300">{{ $order->shipping_address }}</p>
                                                     </div>
                                                 </div>
                                             @endif
@@ -236,23 +236,23 @@
 
                             <!-- Détails du paiement -->
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                                     <i class="fas fa-money-bill text-emerald-500 mr-2"></i>
                                     Détails du paiement
                                 </h3>
-                                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-6 shadow-sm">
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-600">Prix unitaire:</span>
-                                            <span class="font-semibold text-gray-900">{{ $order->formatted_unit_price }}</span>
+                                            <span class="text-gray-600 dark:text-gray-300">Prix unitaire:</span>
+                                            <span class="font-semibold text-gray-900 dark:text-white">{{ $order->formatted_unit_price }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-gray-600">Quantité:</span>
-                                            <span class="font-semibold text-gray-900">{{ $order->quantity }}</span>
+                                            <span class="text-gray-600 dark:text-gray-300">Quantité:</span>
+                                            <span class="font-semibold text-gray-900 dark:text-white">{{ $order->quantity }}</span>
                                         </div>
-                                        <div class="border-t border-gray-200 pt-3">
+                                        <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                                             <div class="flex justify-between items-center">
-                                                <span class="text-lg font-bold text-gray-900">Total:</span>
+                                                <span class="text-lg font-bold text-gray-900 dark:text-white">Total:</span>
                                                 <span class="text-lg font-bold text-blue-600">{{ $order->formatted_total_amount }}</span>
                                             </div>
                                         </div>
@@ -264,33 +264,33 @@
                         <!-- Notes -->
                         @if($order->notes)
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                                     <i class="fas fa-sticky-note text-yellow-500 mr-2"></i>
                                     Notes
                                 </h3>
                                 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
-                                    <p class="text-gray-800">{{ $order->notes }}</p>
+                                    <p class="text-gray-800 dark:text-gray-100">{{ $order->notes }}</p>
                                 </div>
                             </div>
                         @endif
 
                         <!-- Historique des statuts -->
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6 flex items-center">
                                 <i class="fas fa-history text-primary-500 mr-2"></i>
                                 Historique
                             </h3>
                             <div class="relative">
                                 <!-- Timeline line -->
-                                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
                                 
                                 <div class="space-y-6">
                                     <!-- Commande créée -->
                                     <div class="relative flex items-start">
                                         <div class="absolute left-4 w-4 h-4 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
                                         <div class="ml-12">
-                                            <h4 class="text-sm font-semibold text-gray-900">Commande créée</h4>
-                                            <p class="text-sm text-gray-600">{{ $order->created_at->format('d/m/Y H:i') }}</p>
+                                            <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Commande créée</h4>
+                                            <p class="text-sm text-gray-600 dark:text-gray-300">{{ $order->created_at->format('d/m/Y H:i') }}</p>
                                         </div>
                                     </div>
                                     
@@ -298,8 +298,8 @@
                                         <div class="relative flex items-start">
                                             <div class="absolute left-4 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow-sm"></div>
                                             <div class="ml-12">
-                                                <h4 class="text-sm font-semibold text-gray-900">Paiement confirmé</h4>
-                                                <p class="text-sm text-gray-600">{{ $order->paid_at->format('d/m/Y H:i') }}</p>
+                                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Paiement confirmé</h4>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ $order->paid_at->format('d/m/Y H:i') }}</p>
                                             </div>
                                         </div>
                                     @endif
@@ -308,8 +308,8 @@
                                         <div class="relative flex items-start">
                                             <div class="absolute left-4 w-4 h-4 bg-indigo-500 rounded-full border-4 border-white shadow-sm"></div>
                                             <div class="ml-12">
-                                                <h4 class="text-sm font-semibold text-gray-900">Expédiée</h4>
-                                                <p class="text-sm text-gray-600">{{ $order->shipped_at->format('d/m/Y H:i') }}</p>
+                                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Expédiée</h4>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ $order->shipped_at->format('d/m/Y H:i') }}</p>
                                             </div>
                                         </div>
                                     @endif
@@ -318,8 +318,8 @@
                                         <div class="relative flex items-start">
                                             <div class="absolute left-4 w-4 h-4 bg-emerald-500 rounded-full border-4 border-white shadow-sm"></div>
                                             <div class="ml-12">
-                                                <h4 class="text-sm font-semibold text-gray-900">Livrée</h4>
-                                                <p class="text-sm text-gray-600">{{ $order->delivered_at->format('d/m/Y H:i') }}</p>
+                                                <h4 class="text-sm font-semibold text-gray-900 dark:text-white">Livrée</h4>
+                                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ $order->delivered_at->format('d/m/Y H:i') }}</p>
                                             </div>
                                         </div>
                                     @endif
@@ -328,9 +328,9 @@
                         </div>
 
                         <!-- Actions principales -->
-                        <div class="flex flex-col sm:flex-row sm:justify-between gap-4 pt-6 border-t border-gray-200">
+                        <div class="flex flex-col sm:flex-row sm:justify-between gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                             <a href="{{ route('orders.index') }}" 
-                               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
+                               class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 dark:bg-gray-900 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Retour aux commandes
                             </a>
@@ -396,10 +396,10 @@
             <!-- Sidebar -->
             <div class="xl:col-span-1 space-y-6">
                 <!-- Actions rapides -->
-                <div class="bg-white rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-cogs text-gray-500 mr-2"></i>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-cogs text-gray-500 dark:text-gray-400 mr-2"></i>
                             Actions rapides
                         </h3>
                     </div>
@@ -566,30 +566,30 @@
                 </div>
 
                 <!-- Informations supplémentaires -->
-                <div class="bg-white rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-                            <i class="fas fa-info-circle text-gray-500 mr-2"></i>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-gray-600/10 border border-gray-100/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <i class="fas fa-info-circle text-gray-500 dark:text-gray-400 mr-2"></i>
                             Informations
                         </h3>
                     </div>
                     <div class="p-6 space-y-3">
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Numéro:</span>
-                            <span class="text-sm font-semibold text-gray-900">{{ $order->order_number }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-300">Numéro:</span>
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->order_number }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Créée le:</span>
-                            <span class="text-sm font-semibold text-gray-900">{{ $order->created_at->format('d/m/Y') }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-300">Créée le:</span>
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->created_at->format('d/m/Y') }}</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Devise:</span>
-                            <span class="text-sm font-semibold text-gray-900">{{ $order->currency }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-300">Devise:</span>
+                            <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->currency }}</span>
                         </div>
                         @if($order->updated_at !== $order->created_at)
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Modifiée le:</span>
-                                <span class="text-sm font-semibold text-gray-900">{{ $order->updated_at->format('d/m/Y') }}</span>
+                                <span class="text-sm text-gray-600 dark:text-gray-300">Modifiée le:</span>
+                                <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ $order->updated_at->format('d/m/Y') }}</span>
                             </div>
                         @endif
                     </div>
@@ -601,9 +601,9 @@
 
 <!-- Modal de demande de remboursement -->
 <div id="refundModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-2xl bg-white">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-2xl bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
                 <i class="fas fa-undo text-red-500 mr-2"></i>
                 Demande de remboursement
             </h3>
@@ -612,8 +612,8 @@
                 @csrf
                 
                 <div class="mb-4">
-                    <label for="refundType" class="block text-sm font-medium text-gray-700 mb-2">Type de remboursement</label>
-                    <select id="refundType" name="refund_type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    <label for="refundType" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type de remboursement</label>
+                    <select id="refundType" name="refund_type" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
                         <option value="">Sélectionnez un type</option>
                         <option value="full">Remboursement complet</option>
                         <option value="partial">Remboursement partiel</option>
@@ -621,31 +621,31 @@
                 </div>
 
                 <div class="mb-4" id="partialAmountDiv" style="display: none;">
-                    <label for="refundAmount" class="block text-sm font-medium text-gray-700 mb-2">Montant souhaité</label>
+                    <label for="refundAmount" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Montant souhaité</label>
                     <div class="relative">
                         <input type="number" id="refundAmount" name="refund_amount" step="0.01" min="0" max="{{ $order->total_amount }}"
-                               class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                        <span class="absolute left-3 top-2 text-gray-500">$</span>
+                               class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                        <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
                     </div>
                 </div>
 
                 <div class="mb-4">
-                    <label for="refundReason" class="block text-sm font-medium text-gray-700 mb-2">Raison du remboursement</label>
+                    <label for="refundReason" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Raison du remboursement</label>
                     <textarea id="refundReason" name="reason" rows="4" required
                               placeholder="Décrivez pourquoi vous demandez ce remboursement..."
-                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"></textarea>
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"></textarea>
                 </div>
 
                 <div class="mb-6">
-                    <label for="evidencePhotos" class="block text-sm font-medium text-gray-700 mb-2">Photos de preuves (optionnel)</label>
+                    <label for="evidencePhotos" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Photos de preuves (optionnel)</label>
                     <input type="file" id="evidencePhotos" name="evidence_photos[]" multiple accept="image/*"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
-                    <p class="text-xs text-gray-500 mt-1">Vous pouvez joindre des photos pour appuyer votre demande</p>
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Vous pouvez joindre des photos pour appuyer votre demande</p>
                 </div>
 
                 <div class="flex gap-3">
                     <button type="button" onclick="closeRefundModal()"
-                            class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit"

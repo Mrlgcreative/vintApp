@@ -1,11 +1,11 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
-                <div class="card-header bg-white border-bottom-0">
+                <div class="card-header bg-white dark:bg-gray-800 border-bottom-0">
                     <h4 class="mb-0 fw-bold"><i class="fas fa-edit me-2"></i>Modifier l'avis</h4>
                 </div>
                 <div class="card-body">

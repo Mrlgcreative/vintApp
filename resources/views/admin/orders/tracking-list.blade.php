@@ -1,12 +1,12 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
-@section('title', 'Traçage GPS des commandes')
+@section('title', 'Traï¿½age GPS des commandes')
 
-@section('page-title', 'Traçage GPS des commandes')
+@section('page-title', 'Traï¿½age GPS des commandes')
 
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
-    <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+    <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
         <i class="fas fa-arrow-left mr-2"></i>Toutes les commandes
     </a>
     <button onclick="refreshTracking()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
@@ -22,16 +22,16 @@
     @endphp
 
     @if($trackedOrders->isEmpty())
-        <div class="bg-white rounded-xl shadow-lg p-12 text-center">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center">
             <i class="fas fa-map-marker-alt text-6xl text-gray-300 mb-4"></i>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune commande tracée</h3>
-            <p class="text-gray-500 mb-6">Les commandes avec traçage GPS apparaîtront ici.</p>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Aucune commande tracï¿½e</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-6">Les commandes avec traï¿½age GPS apparaï¿½tront ici.</p>
             <a href="{{ route('admin.orders.index') }}" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                 <i class="fas fa-shopping-cart mr-2"></i>Voir toutes les commandes
             </a>
         </div>
     @else
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gradient-to-r from-primary-500 to-primary-600">
@@ -41,32 +41,32 @@
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Vendeur</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Statut</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Position</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Dernière mise à jour</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-white uppercase tracking-wider">Derniï¿½re mise ï¿½ jour</th>
                             <th class="px-6 py-4 text-right text-xs font-semibold text-white uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                         @foreach($trackedOrders as $order)
                             @php
                                 $tracking = $order->latestTracking;
                             @endphp
-                            <tr class="hover:bg-gray-50 transition-colors">
+                            <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <i class="fas fa-hashtag text-gray-400 mr-2"></i>
-                                        <span class="font-semibold text-gray-900">{{ $order->order_number }}</span>
+                                        <span class="font-semibold text-gray-900 dark:text-white">{{ $order->order_number }}</span>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm">
-                                        <div class="font-medium text-gray-900">{{ $order->buyer->name }}</div>
-                                        <div class="text-gray-500">{{ $order->buyer->email }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-white">{{ $order->buyer->name }}</div>
+                                        <div class="text-gray-500 dark:text-gray-400">{{ $order->buyer->email }}</div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm">
-                                        <div class="font-medium text-gray-900">{{ $order->seller->name }}</div>
-                                        <div class="text-gray-500">{{ $order->seller->email }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-white">{{ $order->seller->name }}</div>
+                                        <div class="text-gray-500 dark:text-gray-400">{{ $order->seller->email }}</div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -76,22 +76,22 @@
                                             {{ $tracking->status_text }}
                                         </span>
                                     @else
-                                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Non défini</span>
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">Non dï¿½fini</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if($tracking && $tracking->latitude && $tracking->longitude)
                                         <div class="text-sm">
-                                            <div class="text-gray-900">{{ number_format($tracking->latitude, 6) }}, {{ number_format($tracking->longitude, 6) }}</div>
+                                            <div class="text-gray-900 dark:text-white">{{ number_format($tracking->latitude, 6) }}, {{ number_format($tracking->longitude, 6) }}</div>
                                             @if($tracking->address)
-                                                <div class="text-gray-500 text-xs">{{ Str::limit($tracking->address, 30) }}</div>
+                                                <div class="text-gray-500 dark:text-gray-400 text-xs">{{ Str::limit($tracking->address, 30) }}</div>
                                             @endif
                                         </div>
                                     @else
-                                        <span class="text-gray-400 text-sm">Position non définie</span>
+                                        <span class="text-gray-400 text-sm">Position non dï¿½finie</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     @if($tracking)
                                         {{ $tracking->formatted_tracked_at }}
                                     @else
@@ -107,7 +107,7 @@
                                             <i class="fas fa-file-invoice mr-1.5"></i>Facture
                                         </a>
                                         <a href="{{ route('admin.orders.show', $order) }}" class="inline-flex items-center px-3 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
-                                            <i class="fas fa-eye mr-1.5"></i>Détails
+                                            <i class="fas fa-eye mr-1.5"></i>Dï¿½tails
                                         </a>
                                     </div>
                                 </td>
@@ -125,7 +125,7 @@
                     <i class="fas fa-boxes text-3xl text-blue-600"></i>
                     <span class="text-2xl font-bold text-blue-900">{{ $trackedOrders->count() }}</span>
                 </div>
-                <p class="text-sm text-blue-700 font-medium">Total tracées</p>
+                <p class="text-sm text-blue-700 font-medium">Total tracï¿½es</p>
             </div>
 
             <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6">
@@ -149,7 +149,7 @@
                     <i class="fas fa-check-circle text-3xl text-primary-600"></i>
                     <span class="text-2xl font-bold text-primary-900">{{ $trackedOrders->where('latestTracking.status', 'delivered')->count() }}</span>
                 </div>
-                <p class="text-sm text-primary-700 font-medium">Livrées</p>
+                <p class="text-sm text-primary-700 font-medium">Livrï¿½es</p>
             </div>
         </div>
     @endif

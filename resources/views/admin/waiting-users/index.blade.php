@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des pré-inscriptions')
 
@@ -460,7 +460,7 @@
 
     <!-- Liste des utilisateurs -->
     <div class="card shadow-sm">
-        <div class="card-header bg-white">
+        <div class="card-header bg-white dark:bg-gray-800">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
                     <i class="fas fa-list me-2"></i>Liste des pré-inscriptions ({{ $waitingUsers->total() }})
@@ -563,7 +563,7 @@
         </div>
         
         @if($waitingUsers->hasPages())
-            <div class="card-footer bg-white">
+            <div class="card-footer bg-white dark:bg-gray-800">
                 {{ $waitingUsers->links() }}
             </div>
         @endif

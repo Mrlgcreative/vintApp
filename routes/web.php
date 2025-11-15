@@ -336,6 +336,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         Route::get('/colors', [App\Http\Controllers\Admin\ColorSettingsController::class, 'index'])->name('colors');
         Route::post('/colors', [App\Http\Controllers\Admin\ColorSettingsController::class, 'update'])->name('colors.update');
         Route::post('/colors/preview/{palette}', [App\Http\Controllers\Admin\ColorSettingsController::class, 'preview'])->name('colors.preview');
+        Route::get('/colors/custom', [App\Http\Controllers\Admin\ColorSettingsController::class, 'getCustomPalettes'])->name('colors.custom.list');
         Route::post('/colors/custom', [App\Http\Controllers\Admin\ColorSettingsController::class, 'createCustom'])->name('colors.custom');
         Route::delete('/colors/custom/{palette}', [App\Http\Controllers\Admin\ColorSettingsController::class, 'deleteCustom'])->name('colors.custom.delete');
         Route::get('/colors/export', [App\Http\Controllers\Admin\ColorSettingsController::class, 'export'])->name('colors.export');

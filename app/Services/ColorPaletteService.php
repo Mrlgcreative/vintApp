@@ -72,7 +72,13 @@ class ColorPaletteService
             return true;
         }
 
-        // Vérifier dans les palettes personnalisées
+        // Vérifier dans les palettes personnalisées du cache
+        $customPalettes = Cache::get('vintapp_custom_palettes', []);
+        if (isset($customPalettes[$paletteName])) {
+            return true;
+        }
+
+        // Vérifier dans les palettes personnalisées de la base de données
         try {
             $customPalette = \App\Models\Setting::where('key', "custom_palette_{$paletteName}")->first();
             return $customPalette && $customPalette->value;

@@ -1,19 +1,19 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des commandes')
 
 @section('content')
 <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-bold text-gray-900">Gestion des commandes</h1>
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestion des commandes</h1>
 </div>
 
 <!-- Filtres -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
     <div class="p-6">
         <form method="GET" class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <div>
-                <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="status" name="status">
+                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
+                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="status" name="status">
                     <option value="">Tous les statuts</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
                     <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Confirmé</option>
@@ -24,18 +24,18 @@
             </div>
             
             <div>
-                <label for="date_from" class="block text-sm font-medium text-gray-700 mb-2">Date début</label>
-                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="date_from" name="date_from" value="{{ request('date_from') }}">
+                <label for="date_from" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date début</label>
+                <input type="date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="date_from" name="date_from" value="{{ request('date_from') }}">
             </div>
             
             <div>
-                <label for="date_to" class="block text-sm font-medium text-gray-700 mb-2">Date fin</label>
-                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="date_to" name="date_to" value="{{ request('date_to') }}">
+                <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date fin</label>
+                <input type="date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="date_to" name="date_to" value="{{ request('date_to') }}">
             </div>
             
             <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
-                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="search" name="search" 
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Recherche</label>
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" id="search" name="search" 
                        placeholder="ID commande, utilisateur..." value="{{ request('search') }}">
             </div>
             
@@ -52,13 +52,13 @@
 </div>
 
 <!-- Liste des commandes -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-    <div class="bg-gray-50 border-b border-gray-200 px-6 py-4">
-        <h3 class="text-lg font-semibold text-gray-900">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
             <i class="fas fa-shopping-cart text-primary-600 mr-2"></i>
             Liste des commandes 
             @if(isset($orders))
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 ml-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 ml-2">
                     {{ $orders->total() ?? 0 }} total
                 </span>
             @endif
@@ -68,23 +68,23 @@
         @if(isset($orders) && $orders->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acheteur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendeur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acheteur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendeur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Article</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Montant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                         @foreach($orders as $order)
-                        <tr class="hover:bg-gray-50 transition-colors duration-150">
+                        <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-sm font-bold text-gray-900">#{{ $order->id }}</span>
+                                <span class="text-sm font-bold text-gray-900 dark:text-white">#{{ $order->id }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($order->buyer)
@@ -97,8 +97,8 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $order->buyer->name }}</div>
-                                            <div class="text-xs text-gray-500">{{ $order->buyer->email }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $order->buyer->name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->buyer->email }}</div>
                                         </div>
                                     </div>
                                 @else
@@ -116,8 +116,8 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $order->seller->name }}</div>
-                                            <div class="text-xs text-gray-500">{{ $order->seller->email }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $order->seller->name }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->seller->email }}</div>
                                         </div>
                                     </div>
                                 @else
@@ -132,8 +132,8 @@
                                                  class="w-10 h-10 rounded-lg mr-3 object-cover" alt="Article">
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ Str::limit($order->item->title, 30) }}</div>
-                                            <div class="text-xs text-gray-500">{{ $order->item->brand->name ?? 'Sans marque' }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ Str::limit($order->item->title, 30) }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $order->item->brand->name ?? 'Sans marque' }}</div>
                                         </div>
                                     </div>
                                 @else
@@ -141,7 +141,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="text-sm font-bold text-gray-900">{{ number_format($order->total_amount ?? 0, 2) }} {{ $order->currency ?? 'USD' }}</span>
+                                <span class="text-sm font-bold text-gray-900 dark:text-white">{{ number_format($order->total_amount ?? 0, 2) }} {{ $order->currency ?? 'USD' }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php
@@ -160,11 +160,11 @@
                                         'cancelled' => 'Annulé'
                                     ];
                                 @endphp
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusClasses[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusClasses[$order->status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100' }}">
                                     {{ $statusLabels[$order->status] ?? $order->status }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 <div>{{ $order->created_at->format('d/m/Y H:i') }}</div>
                                 <div class="text-xs text-gray-400">{{ $order->created_at->diffForHumans() }}</div>
                             </td>
@@ -197,18 +197,18 @@
             
         @else
             <div class="text-center py-12">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
                     <i class="fas fa-shopping-cart text-3xl text-gray-400"></i>
                 </div>
-                <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune commande trouvée</h5>
-                <p class="text-gray-500">Il n'y a aucune commande correspondant à vos critères.</p>
+                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune commande trouvée</h5>
+                <p class="text-gray-500 dark:text-gray-400">Il n'y a aucune commande correspondant à vos critères.</p>
             </div>
         @endif
     </div>
     
     <!-- Pagination -->
     @if(isset($orders) && $orders->hasPages())
-        <div class="border-t border-gray-200 px-6 py-4">
+        <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
             {{ $orders->appends(request()->query())->links() }}
         </div>
     @endif

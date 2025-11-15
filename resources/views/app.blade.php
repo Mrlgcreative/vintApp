@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -29,12 +29,27 @@
     <script>
         window.userTheme = "{{ addslashes(Auth::user()?->theme_preference ?? '') }}";
         window.isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+        
+        // Fonction pour appliquer le thème
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Gérer la classe dark pour Tailwind
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+            
+            console.log('Thème appliqué:', theme);
+        }
     </script>
 </head>
-<body class="font-sans antialiased bg-gray-50 min-h-screen">
+<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 min-h-screen transition-colors duration-200">
     
     <!-- Header avec barre de profil -->
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <!-- Barre de profil supérieure -->
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
@@ -60,15 +75,15 @@
                                     {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                                 </div>
                             @endif
-                            <span class="font-semibold text-gray-800 text-sm sm:text-base">{{ Auth::user()->name }}</span>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base">{{ Auth::user()->name }}</span>
                         </a>
                     </div>
                     
                     <!-- Actions utilisateur connecté -->
                     <div class="flex items-center space-x-2">
                         <!-- Notifications -->
-                        <button class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors" onclick="toggleNotifications()">
-                            <i class="fas fa-bell text-gray-700 text-lg"></i>
+                        <button class="relative p-2.5 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors" onclick="toggleNotifications()">
+                            <i class="fas fa-bell text-gray-700 dark:text-gray-200 text-lg"></i>
                             @php
                                 $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
                             @endphp
@@ -78,8 +93,8 @@
                         </button>
                         
                         <!-- Panier -->
-                        <a href="{{ route('cart.index') }}" class="relative p-2.5 hover:bg-gray-100 rounded-full transition-colors">
-                            <i class="fas fa-shopping-cart text-gray-700 text-lg"></i>
+                        <a href="{{ route('cart.index') }}" class="relative p-2.5 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
+                            <i class="fas fa-shopping-cart text-gray-700 dark:text-gray-200 text-lg"></i>
                             @if(session('cart') && count(session('cart')) > 0)
                                 <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
                                     {{ count(session('cart')) }}
@@ -94,7 +109,7 @@
                             <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 flex items-center justify-center text-white font-bold text-sm">
                                 <i class="fas fa-home"></i>
                             </div>
-                            <span class="font-semibold text-gray-800 text-sm sm:text-base">{{ config('app.name', 'VintApp') }}</span>
+                            <span class="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base">{{ config('app.name', 'VintApp') }}</span>
                         </a>
                     </div>
                     
@@ -182,7 +197,7 @@
                                        name="q" 
                                        placeholder="Rechercher un article..." 
                                        value="{{ request('q') }}"
-                                       class="w-80 px-4 py-2 pl-10 pr-4 text-sm bg-white border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent">
+                                       class="w-80 px-4 py-2 pl-10 pr-4 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent">
                                 <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
                                 <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors">
                                     <i class="fas fa-search text-xs"></i>
@@ -205,24 +220,24 @@
                                 </button>
                                 
                                 <!-- Dropdown menu -->
-                                <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-50">
-                                    <div class="px-4 py-2 text-xs text-gray-500 border-b">Profil & Paramètres</div>
-                                    <a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                                    <div class="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 border-b">Profil & Paramètres</div>
+                                    <a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                         <i class="fas fa-user mr-2"></i> Mon Profil
                                     </a>
-                                    <a href="{{ route('settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{{ route('settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                         <i class="fas fa-cog mr-2"></i> Paramètres
                                     </a>
-                                    <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                         <i class="fas fa-comments mr-2"></i> Messages
                                     </a>
-                                    <a href="{{ route('admin.refunds.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{{ route('admin.refunds.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                         <i class="fas fa-undo mr-2"></i> Remboursements
                                     </a>
                                     <div class="border-t my-1"></div>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:bg-gray-800">
                                             <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
                                         </button>
                                     </form>
@@ -233,7 +248,7 @@
                                 <a href="{{ route('login') }}" class="text-white hover:text-primary-200 px-3 py-2 text-sm font-medium">
                                     <i class="fas fa-sign-in-alt mr-1"></i> Connexion
                                 </a>
-                                <a href="{{ route('register') }}" class="bg-white text-primary-600 hover:bg-gray-100 px-4 py-2 rounded-full text-sm font-medium transition-colors">
+                                <a href="{{ route('register') }}" class="bg-white dark:bg-gray-800 text-primary-600 hover:bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-sm font-medium transition-colors">
                                     <i class="fas fa-user-plus mr-1"></i> S'inscrire
                                 </a>
                             </div>
@@ -246,7 +261,7 @@
 
     <!-- Fil d'Ariane -->
     @if(!request()->routeIs('welcome'))
-        <nav class="bg-gray-100 py-2 hidden lg:block">
+        <nav class="bg-gray-100 dark:bg-gray-800 py-2 hidden lg:block">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center space-x-2 text-sm">
                     <a href="{{ url('/') }}" class="text-primary-600 hover:text-primary-800">
@@ -254,34 +269,34 @@
                     </a>
                     @if(request()->routeIs('dashboard'))
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-gray-600">Dashboard</span>
+                        <span class="text-gray-600 dark:text-gray-300">Dashboard</span>
                     @elseif(request()->routeIs('categories.*'))
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                         <a href="{{ route('categories.index') }}" class="text-primary-600 hover:text-primary-800">Catégories</a>
                         @if(request()->routeIs('categories.show'))
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600">{{ $category->name ?? 'Détails' }}</span>
+                            <span class="text-gray-600 dark:text-gray-300">{{ $category->name ?? 'Détails' }}</span>
                         @endif
                     @elseif(request()->routeIs('brands.*'))
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                         <a href="{{ route('brands.index') }}" class="text-primary-600 hover:text-primary-800">Marques</a>
                         @if(request()->routeIs('brands.show'))
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600">{{ $brand->name ?? 'Détails' }}</span>
+                            <span class="text-gray-600 dark:text-gray-300">{{ $brand->name ?? 'Détails' }}</span>
                         @endif
                     @elseif(request()->routeIs('items.*'))
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
                         <a href="{{ route('items.index') }}" class="text-primary-600 hover:text-primary-800">Articles</a>
                         @if(request()->routeIs('items.show'))
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600">{{ $item->name ?? 'Détails' }}</span>
+                            <span class="text-gray-600 dark:text-gray-300">{{ $item->name ?? 'Détails' }}</span>
                         @elseif(request()->routeIs('items.my-items'))
                             <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600">Mes articles</span>
+                            <span class="text-gray-600 dark:text-gray-300">Mes articles</span>
                         @endif
                     @elseif(request()->routeIs('wallet.*'))
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-gray-600">Wallet</span>
+                        <span class="text-gray-600 dark:text-gray-300">Wallet</span>
                     @endif
                 </div>
             </div>
@@ -385,35 +400,35 @@
     @endif
 
     <!-- Navigation mobile (bottom) -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
         <div class="grid grid-cols-5 h-16">
-            <a href="{{ url('/') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 {{ request()->is('/') ? 'text-primary-600' : '' }}">
+            <a href="{{ url('/') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 {{ request()->is('/') ? 'text-primary-600' : '' }}">
                 <i class="fas fa-home text-lg"></i>
                 <span class="text-xs mt-1">Accueil</span>
             </a>
-            <a href="{{ route('items.create') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 {{ request()->routeIs('items.create') ? 'text-primary-600' : '' }}">
+            <a href="{{ route('items.create') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 {{ request()->routeIs('items.create') ? 'text-primary-600' : '' }}">
                 <i class="fas fa-plus-circle text-lg"></i>
                 <span class="text-xs mt-1">Vendre</span>
             </a>
-            <a href="{{ route('items.index') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 {{ request()->routeIs('items.index') ? 'text-primary-600' : '' }}">
+            <a href="{{ route('items.index') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 {{ request()->routeIs('items.index') ? 'text-primary-600' : '' }}">
                 <i class="fas fa-box text-lg"></i>
                 <span class="text-xs mt-1">Articles</span>
             </a>
             @auth
-                <a href="{{ route('wallet.index') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 {{ request()->routeIs('wallet.*') ? 'text-primary-600' : '' }}">
+                <a href="{{ route('wallet.index') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 {{ request()->routeIs('wallet.*') ? 'text-primary-600' : '' }}">
                     <i class="fas fa-wallet text-lg"></i>
                     <span class="text-xs mt-1">Wallet</span>
                 </a>
-                <a href="{{ route('settings.index') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600 {{ request()->routeIs('settings.*') ? 'text-primary-600' : '' }}">
+                <a href="{{ route('settings.index') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 {{ request()->routeIs('settings.*') ? 'text-primary-600' : '' }}">
                     <i class="fas fa-cog text-lg"></i>
                     <span class="text-xs mt-1">Profil</span>
                 </a>
             @else
-                <a href="{{ route('login') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600">
+                <a href="{{ route('login') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600">
                     <i class="fas fa-sign-in-alt text-lg"></i>
                     <span class="text-xs mt-1">Connexion</span>
                 </a>
-                <a href="{{ route('register') }}" class="flex flex-col items-center justify-center text-gray-500 hover:text-primary-600">
+                <a href="{{ route('register') }}" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600">
                     <i class="fas fa-user-plus text-lg"></i>
                     <span class="text-xs mt-1">S'inscrire</span>
                 </a>
@@ -445,16 +460,16 @@
             
             const panel = document.createElement('div');
             panel.id = 'notifications-panel';
-            panel.className = 'fixed top-20 right-4 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-y-auto';
+            panel.className = 'fixed top-20 right-4 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto';
             panel.innerHTML = `
-                <div class="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <h3 class="font-semibold text-gray-800">Notifications</h3>
-                    <button onclick="this.closest('#notifications-panel').remove()" class="text-gray-400 hover:text-gray-600">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                    <h3 class="font-semibold text-gray-800 dark:text-gray-100">Notifications</h3>
+                    <button onclick="this.closest('#notifications-panel').remove()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
                 <div class="p-4" id="notifications-content">
-                    <p class="text-gray-500 text-sm text-center">Chargement...</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm text-center">Chargement...</p>
                 </div>
             `;
             
@@ -481,18 +496,18 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.notifications.length === 0) {
-                        content.innerHTML = '<p class="text-gray-500 text-sm text-center">Aucune notification</p>';
+                        content.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm text-center">Aucune notification</p>';
                         return;
                     }
                     
                     content.innerHTML = data.notifications.map(notification => `
-                        <div class="p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer" 
+                        <div class="p-3 border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer" 
                              onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
                             <div class="flex items-start space-x-3">
                                 <i class="fas ${getNotificationIcon(notification.type)} text-primary-600 mt-1"></i>
                                 <div class="flex-1">
-                                    <div class="font-semibold text-gray-800 text-sm">${notification.title}</div>
-                                    <div class="text-gray-600 text-xs mt-1">${notification.message}</div>
+                                    <div class="font-semibold text-gray-800 dark:text-gray-100 text-sm">${notification.title}</div>
+                                    <div class="text-gray-600 dark:text-gray-300 text-xs mt-1">${notification.message}</div>
                                     <div class="text-gray-400 text-xs mt-1">${formatDate(notification.created_at)}</div>
                                 </div>
                                 ${!notification.read_at ? '<div class="w-2 h-2 bg-red-500 rounded-full"></div>' : ''}
@@ -543,7 +558,7 @@
         function loadNotifications() {
             const content = document.getElementById('notifications-content');
             if (content) {
-                content.innerHTML = '<p class="text-gray-500 text-sm text-center">Connectez-vous pour voir vos notifications</p>';
+                content.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm text-center">Connectez-vous pour voir vos notifications</p>';
             }
         }
         @endauth
@@ -580,6 +595,13 @@
         function applyTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
+            
+            // Gérer la classe dark pour Tailwind
+            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
         }
 
         function getPreferredTheme() {
@@ -589,7 +611,15 @@
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 VintApp chargé avec Tailwind CSS');
-            applyTheme(getPreferredTheme());
+            const theme = getPreferredTheme();
+            applyTheme(theme);
+            
+            // Écouter les changements de préférences système pour le mode auto
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (getPreferredTheme() === 'auto') {
+                    applyTheme('auto');
+                }
+            });
         });
     </script>
 </body>

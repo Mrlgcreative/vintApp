@@ -1,4 +1,4 @@
-    @extends('app')
+﻿    @extends('app')
 
 @section('title', 'Historique des transactions - ' . $wallet->currency)
 
@@ -88,7 +88,7 @@
 
             <!-- Liste des transactions -->
             <div class="card border-0 shadow">
-                <div class="card-header bg-white border-0">
+                <div class="card-header bg-white dark:bg-gray-800 border-0">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
                             <i class="fas fa-list me-2"></i>

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Transactions')
 
@@ -7,7 +7,7 @@
 @section('page-actions')
 <div class="flex gap-3">
     <button type="button" onclick="exportTransactions()" 
-            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
+            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
         <i class="fas fa-download mr-2"></i>Exporter
     </button>
     <button type="button" onclick="toggleFilterModal()" 
@@ -27,16 +27,16 @@
         
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
             <div class="sm:flex sm:items-start">
                 <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4">
                         Filtrer les transactions
                     </h3>
                     <form action="{{ route('admin.transactions.index') }}" method="GET" class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                            <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
+                            <select name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 <option value="">Tous</option>
                                 <option value="pending" @if(request('status') == 'pending') selected @endif>En attente</option>
                                 <option value="completed" @if(request('status') == 'completed') selected @endif>Complété</option>
@@ -45,8 +45,8 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Méthode de paiement</label>
-                            <select name="payment_method" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Méthode de paiement</label>
+                            <select name="payment_method" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                                 <option value="">Toutes</option>
                                 <option value="wallet" @if(request('payment_method') == 'wallet') selected @endif>Wallet</option>
                                 <option value="airtel_money" @if(request('payment_method') == 'airtel_money') selected @endif>Airtel Money</option>
@@ -58,16 +58,16 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date début</label>
-                            <input type="date" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('start_date') }}">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date début</label>
+                            <input type="date" name="start_date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('start_date') }}">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date fin</label>
-                            <input type="date" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('end_date') }}">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date fin</label>
+                            <input type="date" name="end_date" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" value="{{ request('end_date') }}">
                         </div>
                     </div>
                         <div class="flex justify-end space-x-3 mt-6">
-                            <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" onclick="toggleFilterModal()">Fermer</button>
+                            <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:bg-gray-900 transition-colors" onclick="toggleFilterModal()">Fermer</button>
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">Appliquer</button>
                         </div>
                     </form>
@@ -78,25 +78,25 @@
 </div>
 
 <!-- Tableau des transactions -->
-<div class="bg-white rounded-lg shadow-sm border border-gray-200">
+<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
     <div class="p-6">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méthode</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Utilisateur</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Montant</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Méthode</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                     @forelse ($transactions as $transaction)
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $transaction->id }}</td>
+                        <tr class="hover:bg-gray-50 dark:bg-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $transaction->id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     @if($transaction->user->avatar)
@@ -106,17 +106,17 @@
                                             <span class="text-white text-sm font-medium">{{ $transaction->user->initial }}</span>
                                         </div>
                                     @endif
-                                    <div class="text-sm font-medium text-gray-900">{{ $transaction->user->name }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $transaction->user->name }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
                                     {{ number_format($transaction->amount, 2) }}
-                                    <span class="text-xs text-gray-500">{{ $transaction->currency }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ $transaction->currency }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex items-center text-sm text-gray-900">
+                                <div class="flex items-center text-sm text-gray-900 dark:text-white">
                                     @switch($transaction->payment_method)
                                         @case('wallet')
                                             <i class="fas fa-wallet text-blue-500 mr-2"></i>
@@ -131,7 +131,7 @@
                                             <i class="fas fa-mobile-alt text-green-500 mr-2"></i>
                                             @break
                                         @default
-                                            <i class="fas fa-money-bill-wave text-gray-500 mr-2"></i>
+                                            <i class="fas fa-money-bill-wave text-gray-500 dark:text-gray-400 mr-2"></i>
                                     @endswitch
                                     {{ ucfirst(str_replace('_', ' ', $transaction->payment_method)) }}
                                 </div>
@@ -140,11 +140,11 @@
                                 <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
                                     {{ $transaction->status === 'completed' ? 'bg-green-100 text-green-800' : 
                                        ($transaction->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
-                                       ($transaction->status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')) }}">
+                                       ($transaction->status === 'failed' ? 'bg-red-100 text-red-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100')) }}">
                                     {{ ucfirst($transaction->status) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {{ $transaction->created_at->format('d/m/Y H:i') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -171,7 +171,7 @@
                     @empty
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
-                                <div class="text-gray-500">
+                                <div class="text-gray-500 dark:text-gray-400">
                                     <i class="fas fa-inbox text-4xl mb-4 text-gray-400"></i>
                                     <p class="text-lg font-medium">Aucune transaction trouvée</p>
                                 </div>
@@ -182,8 +182,8 @@
             </table>
         </div>
 
-        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
-            <div class="text-sm text-gray-700">
+        <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div class="text-sm text-gray-700 dark:text-gray-200">
                 Affichage de {{ $transactions->firstItem() ?? 0 }}-{{ $transactions->lastItem() ?? 0 }} sur {{ $transactions->total() }} transactions
             </div>
             <div class="pagination-wrapper">

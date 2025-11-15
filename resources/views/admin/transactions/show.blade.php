@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Détails de la transaction')
 
@@ -11,7 +11,7 @@
         </a>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
         <!-- Informations principales -->
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -84,7 +84,7 @@
         </div>
 
         <!-- Statut et actions -->
-        <div class="p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="p-6 bg-gray-50 dark:bg-gray-900 dark:bg-gray-900">
             <div class="flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Statut actuel</h3>
@@ -93,7 +93,7 @@
                             'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100',
                             'completed' => 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100',
                             'failed' => 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100',
-                            'refunded' => 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
+                            'refunded' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
                         ];
                         $statusLabels = [
                             'pending' => 'En attente',

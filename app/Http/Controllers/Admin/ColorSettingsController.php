@@ -133,6 +133,26 @@ class ColorSettingsController extends Controller
     }
 
     /**
+     * Récupérer les palettes personnalisées
+     */
+    public function getCustomPalettes()
+    {
+        try {
+            $customPalettes = Cache::get('vintapp_custom_palettes', []);
+            
+            return response()->json([
+                'success' => true,
+                'palettes' => $customPalettes
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Créer une palette personnalisée
      */
     public function createCustom(Request $request)

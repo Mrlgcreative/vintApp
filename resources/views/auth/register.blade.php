@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Inscription - VintApp')
 
@@ -27,7 +27,7 @@
 <div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 flex items-center justify-center p-4">
     <div class="w-full max-w-lg">
         <!-- Card Principal -->
-        <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-700 animate-fade-in-up">
+        <div class="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-700 animate-fade-in-up">
             <!-- Header -->
             <div class="text-center mb-8">
                 <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -36,15 +36,15 @@
                     </svg>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">Inscription</h1>
-                <p class="text-gray-600">Créez votre compte VintApp</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Inscription</h1>
+                <p class="text-gray-600 dark:text-gray-300">Créez votre compte VintApp</p>
             </div>
 
             <!-- Formulaire d'inscription -->
             <div class="space-y-6">
                 <!-- Nom complet -->
                 <div>
-                    <label for="firebase-name" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-name" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
@@ -53,13 +53,13 @@
                     <input type="text" 
                            id="firebase-name" 
                            required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
                            placeholder="Votre nom complet">
                 </div>
 
                 <!-- Email -->
                 <div>
-                    <label for="firebase-email" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-email" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
                         </svg>
@@ -68,13 +68,13 @@
                     <input type="email" 
                            id="firebase-email" 
                            required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
                            placeholder="nom@exemple.com">
                 </div>
 
                 <!-- Téléphone -->
                 <div>
-                    <label for="firebase-phone" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                         </svg>
@@ -82,13 +82,13 @@
                     </label>
                     <input type="tel" 
                            id="firebase-phone"
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
                            placeholder="+243 89 612 345 67">
                 </div>
 
                 <!-- Code de parrainage -->
                 <div>
-                    <label for="firebase-referral-code" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-referral-code" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
                         </svg>
@@ -97,9 +97,9 @@
                     <input type="text" 
                            id="firebase-referral-code"
                            value="{{ session('referral_code', '') }}"
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300 uppercase"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300 uppercase"
                            placeholder="CODE123">
-                    <p class="text-xs text-gray-500 mt-1 flex items-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center">
                         <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -109,7 +109,7 @@
 
                 <!-- Mot de passe -->
                 <div>
-                    <label for="firebase-password" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-password" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
@@ -118,9 +118,9 @@
                     <input type="password" 
                            id="firebase-password" 
                            required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
                            placeholder="Minimum 12 caractères avec chiffres et symboles">
-                    <div id="password-strength" class="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <div id="password-strength" class="mt-2 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                         <div id="password-strength-bar" class="h-full transition-all duration-300 rounded-full"></div>
                     </div>
                     
@@ -128,26 +128,26 @@
                     <div class="mt-3 space-y-2">
                         <div class="flex items-center text-xs">
                             <div id="length-check" class="w-3 h-3 rounded-full bg-gray-300 mr-2"></div>
-                            <span class="text-gray-600">Au moins 12 caractères</span>
+                            <span class="text-gray-600 dark:text-gray-300">Au moins 12 caractères</span>
                         </div>
                         <div class="flex items-center text-xs">
                             <div id="number-check" class="w-3 h-3 rounded-full bg-gray-300 mr-2"></div>
-                            <span class="text-gray-600">Au moins 1 chiffre</span>
+                            <span class="text-gray-600 dark:text-gray-300">Au moins 1 chiffre</span>
                         </div>
                         <div class="flex items-center text-xs">
                             <div id="symbol-check" class="w-3 h-3 rounded-full bg-gray-300 mr-2"></div>
-                            <span class="text-gray-600">Au moins 2 symboles (!@#$%^&*)</span>
+                            <span class="text-gray-600 dark:text-gray-300">Au moins 2 symboles (!@#$%^&*)</span>
                         </div>
                         <div class="flex items-center text-xs">
                             <div id="case-check" class="w-3 h-3 rounded-full bg-gray-300 mr-2"></div>
-                            <span class="text-gray-600">Majuscules et minuscules</span>
+                            <span class="text-gray-600 dark:text-gray-300">Majuscules et minuscules</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Confirmation mot de passe -->
                 <div>
-                    <label for="firebase-password-confirm" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="firebase-password-confirm" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
@@ -156,7 +156,7 @@
                     <input type="password" 
                            id="firebase-password-confirm" 
                            required
-                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
+                           class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300"
                            placeholder="Répétez votre mot de passe">
                 </div>
 
@@ -166,8 +166,8 @@
                         <input type="checkbox" 
                                id="firebase-terms" 
                                required
-                               class="w-5 h-5 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2 mt-0.5">
-                        <span class="text-sm text-gray-700">
+                               class="w-5 h-5 text-green-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 focus:ring-2 mt-0.5">
+                        <span class="text-sm text-gray-700 dark:text-gray-200">
                             J'accepte les 
                             <button type="button" onclick="showTermsModal()" class="text-green-600 hover:text-green-800 underline">
                                 conditions d'utilisation
@@ -182,8 +182,8 @@
                     <label class="flex items-start space-x-3">
                         <input type="checkbox" 
                                id="firebase-newsletter"
-                               class="w-5 h-5 text-green-600 border-2 border-gray-300 rounded focus:ring-green-500 focus:ring-2 mt-0.5">
-                        <span class="text-sm text-gray-700">
+                               class="w-5 h-5 text-green-600 border-2 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500 focus:ring-2 mt-0.5">
+                        <span class="text-sm text-gray-700 dark:text-gray-200">
                             Je souhaite recevoir les newsletters et offres spéciales
                         </span>
                     </label>
@@ -202,10 +202,10 @@
             <!-- Séparateur -->
             <div class="relative my-8">
                 <div class="absolute inset-0 flex items-center">
-                    <div class="w-full border-t border-gray-300"></div>
+                    <div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
                 </div>
                 <div class="relative flex justify-center text-sm">
-                    <span class="px-4 bg-white text-gray-500 font-medium">OU</span>
+                    <span class="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">OU</span>
                 </div>
             </div>
 
@@ -213,14 +213,14 @@
             <div class="space-y-3">
                 <!-- Google -->
                 <button onclick="signUpWithGoogle()" 
-                        class="w-full flex items-center justify-center px-4 py-3 border-2 border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
+                        class="w-full flex items-center justify-center px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-300 dark:border-gray-600 hover:shadow-md transform hover:-translate-y-1 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-300">
                     <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24">
                         <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#fbbc05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                         <path fill="#ea4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                     </svg>
-                    <span class="text-gray-700 font-medium">Continuer avec Google</span>
+                    <span class="text-gray-700 dark:text-gray-200 font-medium">Continuer avec Google</span>
                 </button>
 
                 <!-- Facebook -->
@@ -233,14 +233,14 @@
                 </button>
 
                 <!-- Apple (désactivé) -->
-                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div class="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center space-x-3">
                         <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                         </svg>
                         <div>
-                            <p class="text-sm font-medium text-gray-700">Apple Sign-In</p>
-                            <p class="text-xs text-gray-500">Nécessite un compte développeur Apple (99$/an)</p>
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-200">Apple Sign-In</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Nécessite un compte développeur Apple (99$/an)</p>
                         </div>
                     </div>
                 </div>
@@ -248,14 +248,14 @@
 
             <!-- Liens footer -->
             <div class="text-center mt-8 space-y-4">
-                <p class="text-sm text-gray-600">
+                <p class="text-sm text-gray-600 dark:text-gray-300">
                     Déjà un compte ? 
                     <a href="{{ route('login') }}" class="text-green-600 hover:text-green-800 font-semibold underline">
                         Se connecter
                     </a>
                 </p>
                 
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                     Problème d'inscription ? 
                     <button onclick="showClassicRegister()" class="text-green-600 hover:text-green-800 underline">
                         Utiliser le formulaire classique
@@ -266,7 +266,7 @@
 
         <!-- Sécurité info -->
         <div class="text-center mt-6">
-            <p class="text-sm text-gray-500 flex items-center justify-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center justify-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                 </svg>
@@ -278,16 +278,16 @@
 
 <!-- Modal Conditions d'utilisation -->
 <div id="terms-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-bold text-gray-900">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
                     Conditions d'utilisation
                 </h3>
-                <button onclick="hideTermsModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <button onclick="hideTermsModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -296,23 +296,23 @@
         </div>
         <div class="p-6 space-y-4">
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">1. Acceptation des conditions</h4>
-                <p class="text-gray-600 text-sm">En utilisant VintApp, vous acceptez d'être lié par ces conditions d'utilisation.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">1. Acceptation des conditions</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">En utilisant VintApp, vous acceptez d'être lié par ces conditions d'utilisation.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">2. Utilisation du service</h4>
-                <p class="text-gray-600 text-sm">Vous vous engagez à utiliser le service de manière légale et éthique.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">2. Utilisation du service</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Vous vous engagez à utiliser le service de manière légale et éthique.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">3. Responsabilités</h4>
-                <p class="text-gray-600 text-sm">Vous êtes responsable du contenu que vous publiez et des transactions que vous effectuez.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">3. Responsabilités</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Vous êtes responsable du contenu que vous publiez et des transactions que vous effectuez.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">4. Confidentialité</h4>
-                <p class="text-gray-600 text-sm">Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">4. Confidentialité</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Nous nous engageons à protéger vos données personnelles conformément à notre politique de confidentialité.</p>
             </div>
         </div>
-        <div class="p-6 border-t border-gray-200">
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
             <button onclick="hideTermsModal()" class="w-full bg-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors">
                 Fermer
             </button>
@@ -322,16 +322,16 @@
 
 <!-- Modal Politique de confidentialité -->
 <div id="privacy-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-bold text-gray-900">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                     </svg>
                     Politique de confidentialité
                 </h3>
-                <button onclick="hidePrivacyModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <button onclick="hidePrivacyModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -340,23 +340,23 @@
         </div>
         <div class="p-6 space-y-4">
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">1. Collecte des données</h4>
-                <p class="text-gray-600 text-sm">Nous collectons uniquement les données nécessaires au fonctionnement du service.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">1. Collecte des données</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Nous collectons uniquement les données nécessaires au fonctionnement du service.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">2. Utilisation des données</h4>
-                <p class="text-gray-600 text-sm">Vos données sont utilisées pour améliorer votre expérience et sécuriser le service.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">2. Utilisation des données</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Vos données sont utilisées pour améliorer votre expérience et sécuriser le service.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">3. Protection des données</h4>
-                <p class="text-gray-600 text-sm">Nous mettons en place des mesures de sécurité appropriées pour protéger vos données.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">3. Protection des données</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Nous mettons en place des mesures de sécurité appropriées pour protéger vos données.</p>
             </div>
             <div>
-                <h4 class="font-semibold text-gray-900 mb-2">4. Vos droits</h4>
-                <p class="text-gray-600 text-sm">Vous avez le droit d'accéder, de modifier et de supprimer vos données personnelles.</p>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-2">4. Vos droits</h4>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Vous avez le droit d'accéder, de modifier et de supprimer vos données personnelles.</p>
             </div>
         </div>
-        <div class="p-6 border-t border-gray-200">
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
             <button onclick="hidePrivacyModal()" class="w-full bg-gray-900 text-white py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors">
                 Fermer
             </button>
@@ -366,11 +366,11 @@
 
 <!-- Modal Formulaire Classique -->
 <div id="classic-register-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
-        <div class="p-6 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-bold text-gray-900">Inscription classique</h3>
-                <button onclick="hideClassicRegister()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Inscription classique</h3>
+                <button onclick="hideClassicRegister()" class="w-8 h-8 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -382,17 +382,17 @@
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom complet</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nom complet</label>
                         <input type="text" name="name" value="{{ old('name') }}" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
                         @error('name')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
                         <input type="email" name="email" value="{{ old('email') }}" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
                         @error('email')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -400,26 +400,26 @@
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Téléphone</label>
                     <input type="tel" name="phone" value="{{ old('phone') }}" required
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
                     @error('phone')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
-                    <textarea name="address" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500" rows="3">{{ old('address') }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Adresse</label>
+                    <textarea name="address" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500" rows="3">{{ old('address') }}</textarea>
                     @error('address')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Code de parrainage (optionnel)</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Code de parrainage (optionnel)</label>
                     <input type="text" name="referral_code" value="{{ old('referral_code') }}"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500 uppercase">
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500 uppercase">
                     @error('referral_code')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror
@@ -427,23 +427,23 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mot de passe</label>
                         <input type="password" name="password" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
                         @error('password')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Confirmer mot de passe</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Confirmer mot de passe</label>
                         <input type="password" name="password_confirmation" required
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
                     </div>
                 </div>
                 
                 <div class="flex items-center space-x-2">
-                    <input type="checkbox" name="terms" required class="w-4 h-4 text-green-600 border-gray-300 rounded">
-                    <label class="text-sm text-gray-700">J'accepte les conditions d'utilisation</label>
+                    <input type="checkbox" name="terms" required class="w-4 h-4 text-green-600 border-gray-300 dark:border-gray-600 rounded">
+                    <label class="text-sm text-gray-700 dark:text-gray-200">J'accepte les conditions d'utilisation</label>
                 </div>
                 
                 <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors">
@@ -927,9 +927,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (email && !validateEmail(email)) {
             this.classList.add('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
             this.classList.remove('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
+            this.classList.remove('dark:border-gray-700');
         } else {
             this.classList.remove('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
             this.classList.add('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
+            this.classList.add('dark:border-gray-700');
         }
     });
     
@@ -946,9 +948,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (confirm && password !== confirm) {
             this.classList.add('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
             this.classList.remove('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
+            this.classList.remove('dark:border-gray-700');
         } else {
             this.classList.remove('border-red-400', 'focus:border-red-500', 'focus:ring-red-100');
             this.classList.add('border-gray-200', 'focus:border-green-500', 'focus:ring-green-100');
+            this.classList.add('dark:border-gray-700');
         }
     });
     

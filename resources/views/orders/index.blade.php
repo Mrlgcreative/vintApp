@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @push('scripts')
 <!-- jsQR Library pour scanner QR codes -->
@@ -31,8 +31,8 @@ if (typeof jsQR === 'undefined') {
                         <i class="fas fa-shopping-cart text-white text-xl"></i>
                     </div>
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Mes Commandes</h1>
-                        <p class="text-gray-600 text-sm mt-1">Suivez vos achats et confirmez la réception</p>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mes Commandes</h1>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mt-1">Suivez vos achats et confirmez la réception</p>
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-3">
@@ -59,12 +59,12 @@ if (typeof jsQR === 'undefined') {
         @if($orders->count() > 0)
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($orders as $order)
-                    <div class="bg-white rounded-2xl shadow-xl shadow-indigo-600/10 border border-gray-100/50 overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-indigo-600/10 border border-gray-100/50 overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300">
                         <!-- Header de la carte -->
-                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 px-6 py-4">
+                        <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                             <div class="flex justify-between items-center">
-                                <h6 class="text-sm font-bold text-gray-900">{{ $order->order_number }}</h6>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800')) }}">
+                                <h6 class="text-sm font-bold text-gray-900 dark:text-white">{{ $order->order_number }}</h6>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $order->status_badge_class === 'bg-success' ? 'bg-emerald-100 text-emerald-800' : ($order->status_badge_class === 'bg-warning' ? 'bg-yellow-100 text-yellow-800' : ($order->status_badge_class === 'bg-info' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100')) }}">
                                     {{ $order->status_text }}
                                 </span>
                             </div>
@@ -75,21 +75,21 @@ if (typeof jsQR === 'undefined') {
                             <div class="flex space-x-4 mb-6">
                                 <div class="flex-shrink-0">
                                     @if($order->item->images && count($order->item->images) > 0)
-                                        <div class="w-20 h-20 bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden">
+                                        <div class="w-20 h-20 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden">
                                             <img src="{{ asset('storage/' . $order->item->images[0]) }}" 
                                                  class="w-full h-full object-cover" 
                                                  alt="{{ $order->item->name }}"
                                                  loading="lazy">
                                         </div>
                                     @else
-                                        <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center border border-gray-200">
+                                        <div class="w-20 h-20 bg-gray-50 dark:bg-gray-900 rounded-xl flex items-center justify-center border border-gray-200 dark:border-gray-700">
                                             <i class="fas fa-image text-gray-400 text-xl"></i>
                                         </div>
                                     @endif
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <h6 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{{ Str::limit($order->item->name, 40) }}</h6>
-                                    <p class="text-sm text-gray-500 mb-1">
+                                    <h6 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">{{ Str::limit($order->item->name, 40) }}</h6>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">
                                         <span class="font-medium">Quantité:</span> {{ $order->quantity }}
                                     </p>
                                     <p class="text-xl font-bold text-indigo-600">
@@ -101,12 +101,12 @@ if (typeof jsQR === 'undefined') {
                             <!-- Informations vendeur et date -->
                             <div class="grid grid-cols-2 gap-4 mb-6">
                                 <div>
-                                    <p class="text-xs text-gray-500 mb-1">Vendeur</p>
-                                    <p class="font-semibold text-gray-900 text-sm">{{ $order->item->user->name }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Vendeur</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white text-sm">{{ $order->item->user->name }}</p>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 mb-1">Date</p>
-                                    <p class="font-semibold text-gray-900 text-sm">{{ $order->created_at->format('d/m/Y') }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Date</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white text-sm">{{ $order->created_at->format('d/m/Y') }}</p>
                                 </div>
                             </div>
 
@@ -208,7 +208,7 @@ if (typeof jsQR === 'undefined') {
             <!-- Pagination -->
             @if($orders->hasPages())
                 <div class="mt-12 flex justify-center">
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-4">
                         {{ $orders->links() }}
                     </div>
                 </div>
@@ -219,8 +219,8 @@ if (typeof jsQR === 'undefined') {
                 <div class="w-24 h-24 bg-gradient-to-r from-indigo-100 to-indigo-200 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="fas fa-shopping-cart text-indigo-500 text-3xl"></i>
                 </div>
-                <h4 class="text-2xl font-bold text-gray-900 mb-3">Aucune commande</h4>
-                <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Aucune commande</h4>
+                <p class="text-gray-600 dark:text-gray-300 mb-8 max-w-md mx-auto">
                     Vous n'avez pas encore passé de commande. Découvrez nos produits et passez votre première commande !
                 </p>
                 <a href="{{ route('items.index') }}" 
@@ -322,7 +322,7 @@ function showScanInstructions() {
     // Créer le modal avec scanner intégré
     const modalHtml = `
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" id="scanModal">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-6 rounded-t-2xl">
                     <div class="flex justify-between items-center">
@@ -345,7 +345,7 @@ function showScanInstructions() {
                             <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i>
                             </div>
-                            <p class="text-gray-700 font-medium">Initialisation de la caméra...</p>
+                            <p class="text-gray-700 dark:text-gray-200 font-medium">Initialisation de la caméra...</p>
                         </div>
                         <video id="qr-video" class="w-full max-w-md mx-auto rounded-xl shadow-lg hidden"></video>
                         <canvas id="qr-canvas" class="hidden"></canvas>
@@ -412,8 +412,8 @@ function showScanInstructions() {
                     
                     <!-- Alternative Options -->
                     <div id="alternative-options" class="hidden">
-                        <div class="border-t border-gray-200 my-6"></div>
-                        <h6 class="text-center text-lg font-semibold text-gray-900 mb-4">Autres options de confirmation</h6>
+                        <div class="border-t border-gray-200 dark:border-gray-700 my-6"></div>
+                        <h6 class="text-center text-lg font-semibold text-gray-900 dark:text-white mb-4">Autres options de confirmation</h6>
                         
                         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-4">
                             <div class="flex">
@@ -437,7 +437,7 @@ function showScanInstructions() {
                 </div>
                 
                 <!-- Footer -->
-                <div class="bg-gray-50 px-6 py-4 rounded-b-2xl border-t border-gray-200">
+                <div class="bg-gray-50 dark:bg-gray-900 px-6 py-4 rounded-b-2xl border-t border-gray-200 dark:border-gray-700">
                     <button type="button" 
                             onclick="closeScanModal()"
                             class="w-full inline-flex items-center justify-center px-4 py-3 bg-gray-600 text-white font-semibold rounded-xl hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
@@ -604,7 +604,7 @@ function startQRScanner() {
         if (err.name === 'NotAllowedError') {
             errorMessage = 'L\'accès à la caméra a été refusé.';
             detailedInfo = `
-                <div class="mt-3 p-3 bg-gray-50 rounded-lg">
+                <div class="mt-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                     <strong>Solutions possibles :</strong>
                     <ol class="mb-0 mt-2 space-y-1">
                         <li>Cliquez sur l'icône 🔒 ou ⓘ à gauche de l'URL dans la barre d'adresse</li>
@@ -658,7 +658,7 @@ function retryScanner() {
     document.getElementById('scan-error').classList.add('hidden');
     document.getElementById('alternative-options').classList.add('hidden');
     document.getElementById('scanner-status').classList.remove('hidden');
-    document.getElementById('scanner-status').innerHTML = '<div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i></div><p class="text-gray-700 font-medium">Initialisation de la caméra...</p>';
+    document.getElementById('scanner-status').innerHTML = '<div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-spinner fa-spin text-emerald-500 text-2xl"></i></div><p class="text-gray-700 dark:text-gray-200 font-medium">Initialisation de la caméra...</p>';
     
     // Réessayer après un court délai
     setTimeout(() => {

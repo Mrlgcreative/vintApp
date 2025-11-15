@@ -1,4 +1,4 @@
-
+﻿
 
 <?php $__env->startSection('title', 'Paramètres des Couleurs'); ?>
 
@@ -28,9 +28,9 @@
         </div>
     <?php endif; ?>
 
-    <div class="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">
+    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
                 <i class="fas fa-palette mr-2 sm:mr-3 text-purple-600 text-base sm:text-xl"></i>
                 <span class="hidden sm:inline">Paramètres des Couleurs</span>
                 <span class="sm:hidden">Couleurs</span>
@@ -50,10 +50,10 @@
         </div>
 
         <!-- Navigation par onglets -->
-        <div class="border-b border-gray-200 bg-gray-50">
+        <div class="border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
             <nav class="flex space-x-4 px-4 sm:px-6" aria-label="Paramètres">
                 <a href="<?php echo e(route('admin.settings.index')); ?>" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
                     <i class="fas fa-sliders-h mr-2"></i>
                     Général
                 </a>
@@ -63,7 +63,7 @@
                     Couleurs
                 </a>
                 <a href="<?php echo e(route('admin.settings.preregistration')); ?>" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap">
+                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
                     <i class="fas fa-user-clock mr-2"></i>
                     Préinscription
                 </a>
@@ -72,8 +72,8 @@
 
         <div class="space-y-6 p-4 sm:p-6">
             <!-- Aperçu en direct -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     <i class="fas fa-eye mr-2 text-blue-600"></i>
                     Aperçu en Direct
                 </h3>
@@ -81,9 +81,9 @@
                     <?php $__currentLoopData = $currentColors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colorName => $colorValue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <?php if($colorName !== 'name'): ?>
                             <div class="text-center">
-                                <div class="w-16 h-16 rounded-lg border border-gray-200 shadow-sm mx-auto mb-2"
+                                <div class="w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mx-auto mb-2"
                                      style="background-color: <?php echo e($colorValue); ?>"></div>
-                                <span class="text-xs text-gray-600 capitalize"><?php echo e($colorName); ?></span>
+                                <span class="text-xs text-gray-600 dark:text-gray-300 capitalize"><?php echo e($colorName); ?></span>
                                 <div class="text-xs text-gray-400 font-mono"><?php echo e($colorValue); ?></div>
                             </div>
                         <?php endif; ?>
@@ -92,8 +92,8 @@
             </div>
 
             <!-- Sélecteur de palette -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <i class="fas fa-swatchbook text-blue-600"></i>
                     Choisir une Palette
                 </h3>
@@ -101,19 +101,19 @@
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="paletteGrid">
                         <?php $__currentLoopData = config('colors.palettes'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $paletteKey => $palette): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="palette-card cursor-pointer group border-2 rounded-lg p-4 transition-all hover:shadow-md <?php echo e(($activePaletteName ?? 'default') === $paletteKey ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'); ?>"
+                            <div class="palette-card cursor-pointer group border-2 rounded-lg p-4 transition-all hover:shadow-md <?php echo e(($activePaletteName ?? 'default') === $paletteKey ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600'); ?>"
                                  data-palette="<?php echo e($paletteKey); ?>"
                                  onclick="changePalette('<?php echo e($paletteKey); ?>')">
                                 <!-- Nom de la palette -->
-                                <h4 class="text-sm font-medium text-gray-900 mb-3"><?php echo e($palette['name']); ?></h4>
+                                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3"><?php echo e($palette['name']); ?></h4>
                                 
                                 <!-- Aperçu des couleurs -->
                                 <div class="flex gap-1 mb-3">
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200" style="background-color: <?php echo e($palette['primary']); ?>"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200" style="background-color: <?php echo e($palette['secondary']); ?>"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200" style="background-color: <?php echo e($palette['success']); ?>"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200" style="background-color: <?php echo e($palette['danger']); ?>"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200" style="background-color: <?php echo e($palette['accent']); ?>"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: <?php echo e($palette['primary']); ?>"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: <?php echo e($palette['secondary']); ?>"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: <?php echo e($palette['success']); ?>"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: <?php echo e($palette['danger']); ?>"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: <?php echo e($palette['accent']); ?>"></div>
                                 </div>
                                 
                                 <!-- Badge active -->
@@ -126,7 +126,7 @@
                     </div>
                     
                     <div class="flex justify-end pt-4">
-                        <div id="processingMessage" class="hidden text-sm text-gray-600 flex items-center gap-2">
+                        <div id="processingMessage" class="hidden text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
                             <i class="fas fa-spinner fa-spin"></i>
                             <span>Application de la palette en cours...</span>
                         </div>
@@ -135,9 +135,9 @@
             </div>
 
             <!-- Palette personnalisée -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                         <i class="fas fa-brush text-purple-600"></i>
                         Créer une Palette Personnalisée
                     </h3>
@@ -153,19 +153,19 @@
                         <?php echo csrf_field(); ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="palette_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                <label for="palette_name" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                     Nom de la palette
                                 </label>
                                 <input type="text" name="name" id="palette_name" 
                                        placeholder="Ex: Ma palette"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4">
                             <?php $__currentLoopData = ['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'accent']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colorName): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="text-center">
-                                    <label for="color_<?php echo e($colorName); ?>" class="block text-sm font-medium text-gray-700 mb-1 capitalize">
+                                    <label for="color_<?php echo e($colorName); ?>" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 capitalize">
                                         <?php echo e($colorName); ?>
 
                                     </label>
@@ -173,14 +173,14 @@
                                            name="<?php echo e($colorName); ?>" 
                                            id="color_<?php echo e($colorName); ?>"
                                            value="<?php echo e($currentColors[$colorName] ?? '#000000'); ?>"
-                                           class="w-full h-12 border border-gray-300 rounded cursor-pointer">
+                                           class="w-full h-12 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
                                 </div>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
 
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="toggleCustomPalette()"
-                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                                 Annuler
                             </button>
                             <button type="submit"
@@ -194,7 +194,7 @@
 
                 <!-- Palettes personnalisées existantes -->
                 <div class="mt-6">
-                    <h4 class="font-medium text-gray-900 mb-3">Palettes Personnalisées</h4>
+                    <h4 class="font-medium text-gray-900 dark:text-white mb-3">Palettes Personnalisées</h4>
                     <div id="customPalettesList" class="space-y-2">
                         <!-- Les palettes personnalisées seront chargées ici via JavaScript -->
                     </div>
@@ -202,45 +202,45 @@
             </div>
 
             <!-- Paramètres avancés -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <i class="fas fa-cog text-gray-600"></i>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <i class="fas fa-cog text-gray-600 dark:text-gray-300"></i>
                     Paramètres Avancés
                 </h3>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <h4 class="font-medium text-gray-900 mb-3">Mode Sombre</h4>
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-3">Mode Sombre</h4>
                         <div class="space-y-2">
                             <label class="flex items-center">
                                 <input type="checkbox" id="darkModeToggle" class="w-4 h-4 text-blue-600">
-                                <span class="ml-2 text-sm text-gray-700">Activer le mode sombre</span>
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-200">Activer le mode sombre</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" id="autoDarkMode" class="w-4 h-4 text-blue-600">
-                                <span class="ml-2 text-sm text-gray-700">Basculement automatique (19h-7h)</span>
+                                <span class="ml-2 text-sm text-gray-700 dark:text-gray-200">Basculement automatique (19h-7h)</span>
                             </label>
                         </div>
                     </div>
                     
                     <div>
-                        <h4 class="font-medium text-gray-900 mb-3">Couleurs par Rôle</h4>
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-3">Couleurs par Rôle</h4>
                         <div class="space-y-2">
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Admin</span>
-                                <div class="w-6 h-6 rounded-full border border-gray-300" style="background-color: #DC2626"></div>
+                                <span class="text-sm text-gray-700 dark:text-gray-200">Admin</span>
+                                <div class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600" style="background-color: #DC2626"></div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Expert</span>
-                                <div class="w-6 h-6 rounded-full border border-gray-300" style="background-color: #7C3AED"></div>
+                                <span class="text-sm text-gray-700 dark:text-gray-200">Expert</span>
+                                <div class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600" style="background-color: #7C3AED"></div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Vendeur</span>
-                                <div class="w-6 h-6 rounded-full border border-gray-300" style="background-color: #059669"></div>
+                                <span class="text-sm text-gray-700 dark:text-gray-200">Vendeur</span>
+                                <div class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600" style="background-color: #059669"></div>
                             </div>
                             <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Acheteur</span>
-                                <div class="w-6 h-6 rounded-full border border-gray-300" style="background-color: #2563EB"></div>
+                                <span class="text-sm text-gray-700 dark:text-gray-200">Acheteur</span>
+                                <div class="w-6 h-6 rounded-full border border-gray-300 dark:border-gray-600" style="background-color: #2563EB"></div>
                             </div>
                         </div>
                     </div>
@@ -252,23 +252,23 @@
 
 <!-- Modal d'import -->
 <div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-10 mx-auto p-5 border max-w-md shadow-lg rounded-lg bg-white">
+    <div class="relative top-10 mx-auto p-5 border max-w-md shadow-lg rounded-lg bg-white dark:bg-gray-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Importer Configuration</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Importer Configuration</h3>
             
             <form action="<?php echo e(route('admin.settings.colors.import')); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
                 <div class="mb-4">
-                    <label for="config_file" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="config_file" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Fichier de configuration (JSON)
                     </label>
                     <input type="file" name="config_file" id="config_file" accept=".json"
-                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeImportModal()"
-                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
                         Annuler
                     </button>
                     <button type="submit"
@@ -299,7 +299,80 @@ function closeImportModal() {
 // Charger les palettes personnalisées
 function loadCustomPalettes() {
     const container = document.getElementById('customPalettesList');
-    container.innerHTML = '<p class="text-sm text-gray-500">Aucune palette personnalisée trouvée.</p>';
+    container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Chargement...</p>';
+    
+    fetch('<?php echo e(route("admin.settings.colors.custom.list")); ?>', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.palettes && Object.keys(data.palettes).length > 0) {
+            let html = '';
+            Object.entries(data.palettes).forEach(([key, palette]) => {
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center gap-3">
+                            <div class="flex gap-1">
+                                ${['primary', 'secondary', 'accent'].map(color => 
+                                    `<div class="w-6 h-6 rounded" style="background-color: ${palette[color]}"></div>`
+                                ).join('')}
+                            </div>
+                            <span class="font-medium text-gray-900 dark:text-white">${palette.name}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="changePalette('${key}')" 
+                                    class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                Appliquer
+                            </button>
+                            <button onclick="deleteCustomPalette('${key}')" 
+                                    class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Aucune palette personnalisée trouvée.</p>';
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        container.innerHTML = '<p class="text-sm text-red-500">Erreur lors du chargement des palettes.</p>';
+    });
+}
+
+// Supprimer une palette personnalisée
+function deleteCustomPalette(paletteKey) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette palette ?')) {
+        return;
+    }
+    
+    fetch(`/admin/settings/colors/custom/${paletteKey}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast('success', data.message);
+            loadCustomPalettes();
+        } else {
+            showToast('error', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        showToast('error', 'Erreur lors de la suppression.');
+    });
 }
 
 // Fonction pour changer de palette avec AJAX
@@ -377,6 +450,7 @@ function updateActivePalette(newPalette) {
     document.querySelectorAll('.palette-card').forEach(card => {
         card.classList.remove('border-blue-500', 'bg-blue-50');
         card.classList.add('border-gray-200');
+        card.classList.add('dark:border-gray-700');
         card.querySelector('.active-badge').classList.add('hidden');
     });
 
@@ -384,6 +458,7 @@ function updateActivePalette(newPalette) {
     const activeCard = document.querySelector(`[data-palette="${newPalette}"]`);
     if (activeCard) {
         activeCard.classList.remove('border-gray-200');
+        activeCard.classList.remove('dark:border-gray-700');
         activeCard.classList.add('border-blue-500', 'bg-blue-50');
         activeCard.querySelector('.active-badge').classList.remove('hidden');
     }

@@ -1,11 +1,11 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page-title', 'Newsletter')
 
 @section('content')
 <!-- En-tête -->
 <div class="mb-6 flex items-center justify-between">
-    <h2 class="text-2xl font-bold text-gray-900">
+    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
         <i class="fas fa-envelope mr-3 text-primary-600"></i>
         Gestion de la Newsletter
     </h2>
@@ -46,11 +46,11 @@
 <!-- Statistiques -->
 <div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
     <!-- Total -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Total</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['total'] }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Total</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
                 <i class="fas fa-users text-xl text-blue-600"></i>
@@ -59,11 +59,11 @@
     </div>
 
     <!-- Actifs -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Actifs</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['active'] }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Actifs</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['active'] }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                 <i class="fas fa-user-check text-xl text-green-600"></i>
@@ -72,11 +72,11 @@
     </div>
 
     <!-- Vérifiés -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Vérifiés</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ $stats['verified'] }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Vérifiés</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ $stats['verified'] }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-100">
                 <i class="fas fa-envelope-circle-check text-xl text-cyan-600"></i>
@@ -85,11 +85,11 @@
     </div>
 
     <!-- Emails envoyés -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Envoyés</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($stats['total_emails_sent']) }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Envoyés</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_emails_sent']) }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100">
                 <i class="fas fa-paper-plane text-xl text-orange-600"></i>
@@ -98,11 +98,11 @@
     </div>
 
     <!-- Ouverts -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Ouverts</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($stats['total_emails_opened']) }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Ouverts</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_emails_opened']) }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100">
                 <i class="fas fa-envelope-open text-xl text-primary-600"></i>
@@ -111,11 +111,11 @@
     </div>
 
     <!-- Clics -->
-    <div class="group overflow-hidden rounded-xl bg-white p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div class="group overflow-hidden rounded-xl bg-white dark:bg-gray-800 p-6 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Clics</p>
-                <h3 class="mt-2 text-3xl font-bold text-gray-900">{{ number_format($stats['total_clicks']) }}</h3>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Clics</p>
+                <h3 class="mt-2 text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_clicks']) }}</h3>
             </div>
             <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
                 <i class="fas fa-mouse-pointer text-xl text-red-600"></i>
@@ -125,7 +125,7 @@
 </div>
 
 <!-- Liste des abonnés -->
-<div class="overflow-hidden rounded-xl bg-white shadow-md">
+<div class="overflow-hidden rounded-xl bg-white dark:bg-gray-800 shadow-md">
     <div class="bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4">
         <h3 class="text-lg font-semibold text-white">
             <i class="fas fa-list mr-2"></i>
@@ -152,28 +152,28 @@
     
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">#</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Email</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Nom</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Statut</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Vérifié</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Préférences</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Statistiques</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Inscription</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700">Actions</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">#</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Nom</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Vérifié</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Préférences</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Statistiques</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Inscription</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-200">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody class="divide-y divide-gray-200 bg-white dark:bg-gray-800">
                 @forelse($subscribers as $subscriber)
-                    <tr class="transition-colors hover:bg-gray-50">
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{{ $subscriber->id }}</td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                    <tr class="transition-colors hover:bg-gray-50 dark:bg-gray-900">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900 dark:text-white">{{ $subscriber->id }}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900 dark:text-white">
                             <i class="fas fa-envelope mr-2 text-gray-400"></i>
                             {{ $subscriber->email }}
                         </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700">{{ $subscriber->name ?? '-' }}</td>
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700 dark:text-gray-200">{{ $subscriber->name ?? '-' }}</td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm">
                             @if($subscriber->is_active)
                                 <span class="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">Actif</span>
@@ -201,14 +201,14 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-xs text-gray-600">
+                        <td class="whitespace-nowrap px-6 py-4 text-xs text-gray-600 dark:text-gray-300">
                             <div class="space-y-1">
                                 <div><span class="font-medium">Envoyés:</span> {{ $subscriber->emails_sent }}</div>
                                 <div><span class="font-medium">Ouverts:</span> {{ $subscriber->emails_opened }}</div>
                                 <div><span class="font-medium">Clics:</span> {{ $subscriber->emails_clicked }}</div>
                             </div>
                         </td>
-                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600 dark:text-gray-300">
                             {{ $subscriber->created_at->format('d/m/Y') }}
                         </td>
                         <td class="whitespace-nowrap px-6 py-4 text-sm">
@@ -230,7 +230,7 @@
                     <tr>
                         <td colspan="9" class="py-12 text-center">
                             <i class="fas fa-inbox mb-4 text-5xl text-gray-300"></i>
-                            <p class="text-gray-500">Aucun abonné pour le moment</p>
+                            <p class="text-gray-500 dark:text-gray-400">Aucun abonné pour le moment</p>
                         </td>
                     </tr>
                 @endforelse
@@ -239,7 +239,7 @@
     </div>
 
     <!-- Pagination -->
-    <div class="border-t border-gray-200 bg-gray-50 px-6 py-4">
+    <div class="border-t border-gray-200 bg-gray-50 dark:bg-gray-900 px-6 py-4">
         {{ $subscribers->links() }}
     </div>
 </div>

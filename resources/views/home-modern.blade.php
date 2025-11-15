@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <!-- Toast notification Bootstrap -->
@@ -26,16 +26,16 @@ function showNotification(message, type = 'primary') {
 </script>
 
 <!-- Container principal avec Tailwind -->
-<div class="min-h-screen bg-white pb-20">
+<div class="min-h-screen bg-white dark:bg-gray-800 pb-20">
   
     <!-- Barre de recherche avec filtre -->
-    <div class="sticky top-0 z-40 bg-white shadow-sm">
+    <div class="sticky top-0 z-40 bg-white dark:bg-gray-800 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center gap-3">
                 <input 
                     type="text" 
                     placeholder="Que recherchez-vous ?" 
-                    class="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
+                    class="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 focus:border-primary-600 focus:ring-2 focus:ring-primary-200 outline-none transition-all"
                 />
                 <button class="p-3 rounded-full bg-primary-100 text-primary-600 hover:bg-primary-200 transition-colors">
                     <i class="fas fa-sliders-h"></i>
@@ -76,13 +76,13 @@ function showNotification(message, type = 'primary') {
                                     <div class="flex gap-3 flex-wrap">
                                         @if($slide->button_primary_text && $slide->button_primary_url)
                                             <a href="{{ $slide->button_primary_url }}" 
-                                               class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors shadow-md">
+                                               class="px-6 py-2.5 bg-white dark:bg-gray-800 text-primary-600 rounded-full font-semibold hover:bg-gray-100 dark:bg-gray-800 transition-colors shadow-md">
                                                 {{ $slide->button_primary_text }}
                                             </a>
                                         @endif
                                         @if($slide->button_secondary_text && $slide->button_secondary_url)
                                             <a href="{{ $slide->button_secondary_url }}" 
-                                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-all">
+                                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white dark:bg-gray-800 hover:text-primary-600 transition-all">
                                                 {{ $slide->button_secondary_text }}
                                             </a>
                                         @endif
@@ -110,17 +110,17 @@ function showNotification(message, type = 'primary') {
                         <div class="flex gap-3">
                             @auth
                                 <a href="{{ route('items.create') }}" 
-                                   class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                                   class="px-6 py-2.5 bg-white dark:bg-gray-800 text-primary-600 rounded-full font-semibold hover:bg-gray-100 dark:bg-gray-800 transition-colors">
                                     <i class="fas fa-plus me-1"></i>{{ $heroSettings['button_primary'] ?? 'Vendre' }}
                                 </a>
                             @else
                                 <a href="{{ route('register') }}" 
-                                   class="px-6 py-2.5 bg-white text-primary-600 rounded-full font-semibold hover:bg-gray-100 transition-colors">
+                                   class="px-6 py-2.5 bg-white dark:bg-gray-800 text-primary-600 rounded-full font-semibold hover:bg-gray-100 dark:bg-gray-800 transition-colors">
                                     <i class="fas fa-user-plus me-1"></i>Commencer
                                 </a>
                             @endauth
                             <a href="{{ route('items.index') }}" 
-                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white hover:text-primary-600 transition-all">
+                               class="px-6 py-2.5 border-2 border-white text-white rounded-full font-semibold hover:bg-white dark:bg-gray-800 hover:text-primary-600 transition-all">
                                 <i class="fas fa-search me-1"></i>{{ $heroSettings['button_secondary'] ?? 'Explorer' }}
                             </a>
                         </div>
@@ -132,7 +132,7 @@ function showNotification(message, type = 'primary') {
 
     <!-- Catégories populaires -->
     <section class="px-4 py-6">
-        <h2 class="text-xl font-bold mb-4 text-gray-800">
+        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">
             Catégories populaires
         </h2>
         <div class="grid grid-cols-4 gap-3">
@@ -142,8 +142,8 @@ function showNotification(message, type = 'primary') {
                     <div class="text-2xl mb-2">
                         <i class="fas fa-{{ $category->icon ?? 'tag' }} text-primary-600"></i>
                     </div>
-                    <span class="text-xs text-center font-medium text-gray-700">{{ $category->name }}</span>
-                    <span class="text-xs text-gray-500">{{ $category->items_count ?? 0 }}</span>
+                    <span class="text-xs text-center font-medium text-gray-700 dark:text-gray-200">{{ $category->name }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ $category->items_count ?? 0 }}</span>
                 </a>
             @endforeach
         </div>
@@ -170,7 +170,7 @@ function showNotification(message, type = 'primary') {
     <!-- Articles populaires -->
     <section class="px-4 py-6">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-gray-800">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
                 Derniers articles
             </h2>
             <a href="{{ route('items.index') }}" 
@@ -181,7 +181,7 @@ function showNotification(message, type = 'primary') {
         
         <div class="grid grid-cols-2 gap-4">
             @forelse($latestItems as $item)
-                <div class="bg-gray-50 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow">
                     <!-- Image produit -->
                     <div class="relative h-32 bg-gradient-to-br from-primary-200 to-cyan-200">
                         @php
@@ -204,7 +204,7 @@ function showNotification(message, type = 'primary') {
                     
                     <!-- Info produit -->
                     <div class="p-3">
-                        <h3 class="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
+                        <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1 line-clamp-2">
                             {{ Str::limit($item->name, 40) }}
                         </h3>
                         <div class="flex items-center justify-between mt-2">
@@ -215,7 +215,7 @@ function showNotification(message, type = 'primary') {
                                 <i class="fas fa-plus text-sm"></i>
                             </button>
                         </div>
-                        <small class="text-xs text-gray-500 block mt-2">
+                        <small class="text-xs text-gray-500 dark:text-gray-400 block mt-2">
                             {{ $item->created_at->diffForHumans() }}
                         </small>
                     </div>
@@ -224,8 +224,8 @@ function showNotification(message, type = 'primary') {
             @empty
                 <div class="col-span-2 text-center py-12">
                     <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
-                    <h4 class="text-lg font-semibold text-gray-600 mb-2">Aucun article disponible</h4>
-                    <p class="text-gray-500 mb-4">Soyez le premier à publier un article !</p>
+                    <h4 class="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">Aucun article disponible</h4>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">Soyez le premier à publier un article !</p>
                     @auth
                         <a href="{{ route('items.create') }}" 
                            class="inline-block px-6 py-3 bg-primary-600 text-white rounded-full font-semibold hover:bg-primary-700 transition-colors">

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des Experts')
 
@@ -7,13 +7,13 @@
     <!-- Statistiques rapides -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Total Experts -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-blue-600 uppercase tracking-wide">
                         Total Experts
                     </p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_experts'] }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_experts'] }}</p>
                 </div>
                 <div class="p-3 bg-blue-100 rounded-full">
                     <i class="fas fa-users text-blue-600 text-xl"></i>
@@ -22,13 +22,13 @@
         </div>
 
         <!-- Experts Actifs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-green-600 uppercase tracking-wide">
                         Experts Actifs
                     </p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['active_experts'] }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['active_experts'] }}</p>
                 </div>
                 <div class="p-3 bg-green-100 rounded-full">
                     <i class="fas fa-user-check text-green-600 text-xl"></i>
@@ -37,13 +37,13 @@
         </div>
 
         <!-- Vérifications Totales -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-primary-600 uppercase tracking-wide">
                         Vérifications Totales
                     </p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_verifications'] }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_verifications'] }}</p>
                 </div>
                 <div class="p-3 bg-primary-100 rounded-full">
                     <i class="fas fa-certificate text-primary-600 text-xl"></i>
@@ -52,13 +52,13 @@
         </div>
 
         <!-- En Attente -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs font-semibold text-orange-600 uppercase tracking-wide">
                         En Attente
                     </p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['pending_verifications'] }}</p>
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_verifications'] }}</p>
                 </div>
                 <div class="p-3 bg-orange-100 rounded-full">
                     <i class="fas fa-clock text-orange-600 text-xl"></i>
@@ -70,11 +70,11 @@
     <!-- En-tête avec actions -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                 <i class="fas fa-user-graduate text-blue-600"></i>
                 Gestion des Experts
             </h1>
-            <p class="text-gray-600 mt-1">Gérer les experts en vérification d'authenticité</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Gérer les experts en vérification d'authenticité</p>
         </div>
         <div class="flex gap-3">
             <a href="{{ route('admin.experts.candidates') }}" 
@@ -83,7 +83,7 @@
                 Désigner un Expert
             </a>
             <button onclick="toggleStats()" 
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                    class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                 <i class="fas fa-chart-bar"></i>
                 Statistiques
             </button>
@@ -131,11 +131,11 @@
     @endif
 
     <!-- Filtres et recherche -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">Filtres de recherche</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filtres de recherche</h3>
             <button onclick="toggleFilters()" 
-                    class="text-gray-500 hover:text-gray-700 transition-colors">
+                    class="text-gray-500 hover:text-gray-700 dark:text-gray-200 transition-colors">
                 <i class="fas fa-filter"></i>
             </button>
         </div>
@@ -143,16 +143,16 @@
             <form method="GET" action="{{ route('admin.experts.index') }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                        <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Rechercher</label>
                         <input type="text" id="search" name="search" 
                                value="{{ request('search') }}" 
                                placeholder="Nom ou email..."
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Statut</label>
                         <select id="status" name="status" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Tous</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
                             <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactif</option>
@@ -160,9 +160,9 @@
                         </select>
                     </div>
                     <div>
-                        <label for="specialization" class="block text-sm font-medium text-gray-700 mb-1">Spécialisation</label>
+                        <label for="specialization" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Spécialisation</label>
                         <select id="specialization" name="specialization" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Toutes</option>
                             <option value="luxury" {{ request('specialization') === 'luxury' ? 'selected' : '' }}>Luxe</option>
                             <option value="sneakers" {{ request('specialization') === 'sneakers' ? 'selected' : '' }}>Sneakers</option>
@@ -171,23 +171,23 @@
                         </select>
                     </div>
                     <div>
-                        <label for="sort" class="block text-sm font-medium text-gray-700 mb-1">Trier par</label>
+                        <label for="sort" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Trier par</label>
                         <select id="sort" name="sort" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nom</option>
                             <option value="created_at" {{ request('sort') === 'created_at' ? 'selected' : '' }}>Date d'ajout</option>
                             <option value="verifications_count" {{ request('sort') === 'verifications_count' ? 'selected' : '' }}>Nb vérifications</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">&nbsp;</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">&nbsp;</label>
                         <div class="flex gap-2">
                             <button type="submit" 
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                                 <i class="fas fa-search"></i> Filtrer
                             </button>
                             <a href="{{ route('admin.experts.index') }}" 
-                               class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+                               class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                                 <i class="fas fa-undo"></i> Reset
                             </a>
                         </div>
@@ -198,9 +198,9 @@
     </div>
 
     <!-- Liste des experts -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                 <i class="fas fa-list text-blue-600"></i>
                 Liste des Experts ({{ $experts->total() }})
             </h3>
@@ -210,26 +210,37 @@
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b border-gray-200">
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Expert</th>
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Spécialisations</th>
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700">Niveau</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700">Vérifications</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700">Taux d'approbation</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700">Statut</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700">Actions</th>
+                            <tr class="border-b border-gray-200 dark:border-gray-700">
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Expert</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Spécialisations</th>
+                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Niveau</th>
+                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Vérifications</th>
+                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Taux d'approbation</th>
+                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Statut</th>
+                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($experts as $expert)
-                                <tr class="border-b border-gray-100 hover:bg-gray-50">
+                                <tr class="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900">
                                     <td class="py-4 px-4">
                                         <div class="flex items-center gap-3">
                                             <div class="w-10 h-10 flex-shrink-0">
                                                 @if($expert->user->avatar)
-                                                    <img src="{{ Storage::url($expert->user->avatar) }}" 
+                                                    @php
+                                                        $avatarUrl = filter_var($expert->user->avatar, FILTER_VALIDATE_URL) 
+                                                            ? $expert->user->avatar 
+                                                            : Storage::url($expert->user->avatar);
+                                                    @endphp
+                                                    <img src="{{ $avatarUrl }}" 
                                                          class="w-10 h-10 rounded-full object-cover" 
-                                                         alt="{{ $expert->user->name }}">
+                                                         alt="{{ $expert->user->name }}"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="w-10 h-10 bg-blue-600 rounded-full hidden items-center justify-center">
+                                                        <span class="text-white font-bold text-sm">
+                                                            {{ strtoupper(substr($expert->user->name, 0, 1)) }}
+                                                        </span>
+                                                    </div>
                                                 @else
                                                     <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
                                                         <span class="text-white font-bold text-sm">
@@ -239,8 +250,8 @@
                                                 @endif
                                             </div>
                                             <div>
-                                                <div class="font-semibold text-gray-900">{{ $expert->user->name }}</div>
-                                                <div class="text-sm text-gray-500">{{ $expert->user->email }}</div>
+                                                <div class="font-semibold text-gray-900 dark:text-white">{{ $expert->user->name }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $expert->user->email }}</div>
                                             </div>
                                         </div>
                                     </td>
@@ -261,19 +272,19 @@
                                         <span class="px-2 py-1 text-xs font-medium rounded-full
                                             @if($expert->certification_level === 'master') bg-green-100 text-green-800
                                             @elseif($expert->certification_level === 'senior') bg-blue-100 text-blue-800
-                                            @else bg-gray-100 text-gray-800
+                                            @else bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100
                                             @endif">
                                             {{ ucfirst($expert->certification_level) }}
                                         </span>
                                     </td>
                                     <td class="py-4 px-4 text-center">
-                                        <div class="font-bold text-gray-900">{{ $expert->verification_count }}</div>
-                                        <div class="text-xs text-gray-500">vérifications</div>
+                                        <div class="font-bold text-gray-900 dark:text-white">{{ $expert->verification_count }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">vérifications</div>
                                     </td>
                                     <td class="py-4 px-4 text-center">
                                         @if($expert->approval_rate > 0)
                                             <div class="font-bold text-green-600">{{ number_format($expert->approval_rate, 1) }}%</div>
-                                            <div class="w-full bg-gray-200 rounded-full h-1 mt-1">
+                                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1">
                                                 <div class="bg-green-600 h-1 rounded-full" 
                                                      style="width: {{ $expert->approval_rate }}%"></div>
                                             </div>
@@ -288,8 +299,8 @@
                                                    data-expert-id="{{ $expert->id }}"
                                                    {{ $expert->is_active ? 'checked' : '' }}
                                                    onchange="toggleExpertStatus({{ $expert->id }})">
-                                            <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                            <span class="ml-2 text-sm text-gray-600">
+                                            <div class="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">
                                                 {{ $expert->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
                                         </label>
@@ -322,7 +333,7 @@
 
                 <!-- Pagination -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-                    <div class="text-sm text-gray-600">
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
                         Affichage de {{ $experts->firstItem() ?? 0 }} à {{ $experts->lastItem() ?? 0 }} 
                         sur {{ $experts->total() }} experts
                     </div>
@@ -333,8 +344,8 @@
             @else
                 <div class="text-center py-12">
                     <i class="fas fa-user-graduate text-gray-400 text-6xl mb-4"></i>
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Aucun expert désigné</h3>
-                    <p class="text-gray-600 mb-6">Commencez par désigner des utilisateurs comme experts.</p>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun expert désigné</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Commencez par désigner des utilisateurs comme experts.</p>
                     <a href="{{ route('admin.experts.candidates') }}" 
                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
                         <i class="fas fa-user-plus"></i>

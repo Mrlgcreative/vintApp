@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="container py-4">
@@ -54,7 +54,7 @@
         <!-- Contenu principal -->
         <div class="col-lg-9">
             <div class="card shadow-sm">
-                <div class="card-header bg-white">
+                <div class="card-header bg-white dark:bg-gray-800">
                     <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button" role="tab">

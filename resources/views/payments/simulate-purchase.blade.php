@@ -1,9 +1,9 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="bg-green-600 text-white px-6 py-4 text-center">
                 <h4 class="text-xl font-semibold flex items-center justify-center">
                     <i class="fas fa-shopping-cart mr-3"></i>Test d'Achat avec Paiement Simulé
@@ -11,29 +11,29 @@
             </div>
             <div class="p-6">
                 <div class="mb-6">
-                    <h5 class="text-lg font-semibold text-gray-900 mb-4">Simulation d'achat</h5>
-                    <p class="text-gray-600 mb-4">
+                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Simulation d'achat</h5>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
                         Cette page simule un achat complet avec paiement mobile money. 
                         Les données sont créées automatiquement pour les tests.
                     </p>
                     
                     <div id="cart-simulation" class="space-y-3 mb-6">
-                        <h6 class="font-medium text-gray-900">Articles simulés dans le panier :</h6>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <h6 class="font-medium text-gray-900 dark:text-white">Articles simulés dans le panier :</h6>
+                        <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-900">Article Test 1 x 1</span>
-                                <span class="font-semibold text-gray-900">15.00 USD</span>
+                                <span class="text-gray-900 dark:text-white">Article Test 1 x 1</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">15.00 USD</span>
                             </div>
                         </div>
-                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                        <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-900">Article Test 2 x 2</span>
-                                <span class="font-semibold text-gray-900">30.00 USD</span>
+                                <span class="text-gray-900 dark:text-white">Article Test 2 x 2</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">30.00 USD</span>
                             </div>
                         </div>
-                        <div class="border-t border-gray-200 pt-4">
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-xl font-semibold text-gray-900">Total simulé :</span>
+                                <span class="text-xl font-semibold text-gray-900 dark:text-white">Total simulé :</span>
                                 <span class="text-xl font-bold text-green-600">45.00 USD</span>
                             </div>
                         </div>
@@ -44,8 +44,8 @@
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label for="test-buyer" class="block text-sm font-medium text-gray-700 mb-2">Utilisateur test</label>
-                            <select id="test-buyer" name="buyer_id" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <label for="test-buyer" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Utilisateur test</label>
+                            <select id="test-buyer" name="buyer_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="">Choisir un utilisateur</option>
                                 @foreach(App\Models\User::take(10)->get() as $user)
                                     <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
@@ -54,10 +54,10 @@
                         </div>
                         
                         <div>
-                            <label for="test-phone" class="block text-sm font-medium text-gray-700 mb-2">Numéro Mobile Money</label>
+                            <label for="test-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Numéro Mobile Money</label>
                             <div class="flex">
-                                <span class="inline-flex items-center px-3 py-2 bg-gray-50 border border-r-0 border-gray-300 rounded-l-lg text-sm font-medium text-gray-700">+243</span>
-                                <select id="test-phone" name="phone" required class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <span class="inline-flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-r-0 border-gray-300 rounded-l-lg text-sm font-medium text-gray-700 dark:text-gray-200">+243</span>
+                                <select id="test-phone" name="phone" required class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     <option value="850123456">850123456 (Orange Money)</option>
                                     <option value="810987654">810987654 (M-Pesa)</option>
                                     <option value="970456789">970456789 (Airtel Money)</option>
@@ -69,14 +69,14 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label for="test-amount" class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
+                            <label for="test-amount" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Montant</label>
                             <input type="number" id="test-amount" name="amount" value="45.00" step="0.01" min="1" required 
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="test-currency" class="block text-sm font-medium text-gray-700 mb-2">Devise</label>
-                            <select id="test-currency" name="currency" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <label for="test-currency" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Devise</label>
+                            <select id="test-currency" name="currency" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 <option value="USD">USD - Dollar Américain</option>
                                 <option value="CDF">CDF - Franc Congolais</option>
                             </select>
@@ -84,9 +84,9 @@
                     </div>
                     
                     <div class="mb-6">
-                        <label for="test-purpose" class="block text-sm font-medium text-gray-700 mb-2">Objet du paiement</label>
+                        <label for="test-purpose" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Objet du paiement</label>
                         <input type="text" id="test-purpose" name="purpose" value="Test d'achat simulé - VintApp" required 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
                     </div>
                     
                     <button type="submit" id="test-submit-btn" 

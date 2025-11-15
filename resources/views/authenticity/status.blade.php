@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Statut de vérification')
 
@@ -6,7 +6,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
         <!-- En-tête avec statut -->
-        <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-start space-x-4">
                     @if(count($item->images) > 0)
@@ -14,14 +14,14 @@
                              alt="{{ $item->name }}" 
                              class="w-20 h-20 object-cover rounded-lg">
                     @else
-                        <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                             <span class="text-gray-400 text-xs">Pas d'image</span>
                         </div>
                     @endif
                     
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ $item->name }}</h1>
-                        <p class="text-gray-600 mb-2">{{ $item->brand->name ?? 'Marque non spécifiée' }} • {{ $item->category->name ?? 'Catégorie' }}</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">{{ $item->name }}</h1>
+                        <p class="text-gray-600 dark:text-gray-300 mb-2">{{ $item->brand->name ?? 'Marque non spécifiée' }} • {{ $item->category->name ?? 'Catégorie' }}</p>
                         <p class="text-lg font-semibold text-indigo-600">{{ $item->formatted_price }}</p>
                         
                         @if($item->isVerified())
@@ -36,7 +36,7 @@
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $check->getStatusBadgeClass() }}">
                         {{ $check->getStatusLabel() }}
                     </span>
-                    <p class="text-sm text-gray-500 mt-1">Demande #{{ $check->id }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Demande #{{ $check->id }}</p>
                 </div>
             </div>
         </div>
@@ -80,9 +80,9 @@
                 </div>
                 
                 @if($check->expert_notes)
-                    <div class="mt-4 bg-white rounded-lg p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Notes de l'expert :</h4>
-                        <p class="text-gray-700 text-sm">{{ $check->expert_notes }}</p>
+                    <div class="mt-4 bg-white dark:bg-gray-800 rounded-lg p-4">
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Notes de l'expert :</h4>
+                        <p class="text-gray-700 dark:text-gray-200 text-sm">{{ $check->expert_notes }}</p>
                     </div>
                 @endif
             </div>
@@ -113,12 +113,12 @@
         @endif
 
         <!-- Progression -->
-        <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Progression de la vérification</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Progression de la vérification</h3>
             
             <div class="relative">
                 <!-- Ligne de progression -->
-                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
                 
                 <!-- Étapes -->
                 <div class="space-y-6">
@@ -130,8 +130,8 @@
                             </svg>
                         </div>
                         <div class="ml-4">
-                            <h4 class="font-medium text-gray-900">Demande soumise</h4>
-                            <p class="text-sm text-gray-600">{{ $check->submitted_at ? $check->submitted_at->format('d/m/Y à H:i') : 'En attente' }}</p>
+                            <h4 class="font-medium text-gray-900 dark:text-white">Demande soumise</h4>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">{{ $check->submitted_at ? $check->submitted_at->format('d/m/Y à H:i') : 'En attente' }}</p>
                             @if($check->payment_completed)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
                                     Paiement confirmé
@@ -156,16 +156,16 @@
                                 </svg>
                             </div>
                         @else
-                            <div class="relative z-10 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                            <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
                         @endif
                         <div class="ml-4">
-                            <h4 class="font-medium text-gray-900">Analyse par IA</h4>
+                            <h4 class="font-medium text-gray-900 dark:text-white">Analyse par IA</h4>
                             @if($check->ai_completed_at)
-                                <p class="text-sm text-gray-600">Terminée le {{ $check->ai_completed_at->format('d/m/Y à H:i') }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Terminée le {{ $check->ai_completed_at->format('d/m/Y à H:i') }}</p>
                                 @if($check->ai_confidence_score)
                                     <p class="text-sm text-blue-600">Score de confiance: {{ $check->ai_confidence_score }}%</p>
                                 @endif
@@ -193,23 +193,23 @@
                                     </svg>
                                 </div>
                             @else
-                                <div class="relative z-10 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                                     <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
                                 </div>
                             @endif
                             <div class="ml-4">
-                                <h4 class="font-medium text-gray-900">Examen par expert</h4>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Examen par expert</h4>
                                 @if($check->expert_completed_at)
-                                    <p class="text-sm text-gray-600">Terminé le {{ $check->expert_completed_at->format('d/m/Y à H:i') }}</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Terminé le {{ $check->expert_completed_at->format('d/m/Y à H:i') }}</p>
                                     @if($check->expert)
                                         <p class="text-sm text-primary-600">Expert: {{ $check->expert->name }}</p>
                                     @endif
                                 @elseif($check->expert_assigned_at)
                                     <p class="text-sm text-blue-600">En cours d'examen par un expert</p>
                                     @if($check->expert)
-                                        <p class="text-sm text-gray-600">Expert assigné: {{ $check->expert->name }}</p>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Expert assigné: {{ $check->expert->name }}</p>
                                     @endif
                                 @else
                                     <p class="text-sm text-gray-400">En attente d'assignation</p>
@@ -235,16 +235,16 @@
                                 </div>
                             @endif
                         @else
-                            <div class="relative z-10 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                            <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
                                 <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                 </svg>
                             </div>
                         @endif
                         <div class="ml-4">
-                            <h4 class="font-medium text-gray-900">Décision finale</h4>
+                            <h4 class="font-medium text-gray-900 dark:text-white">Décision finale</h4>
                             @if($check->final_decision_at)
-                                <p class="text-sm text-gray-600">{{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
                                 @if($check->isApproved())
                                     <p class="text-sm text-green-600">✓ Produit authentifié</p>
                                 @else
@@ -261,8 +261,8 @@
 
         <!-- Images soumises -->
         @if($check->verificationImages->count() > 0)
-            <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Images soumises pour vérification</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Images soumises pour vérification</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @foreach($check->verificationImages as $image)
                         <div class="relative group">
@@ -284,7 +284,7 @@
         <!-- Actions -->
         <div class="flex items-center justify-between">
             <a href="{{ route('items.show', $item) }}" 
-               class="text-gray-600 hover:text-gray-800 font-medium">
+               class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 font-medium">
                 ← Retour au produit
             </a>
             
@@ -297,7 +297,7 @@
                 @endif
                 
                 <a href="{{ route('authenticity.dashboard') }}" 
-                   class="bg-gray-100 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200">
+                   class="bg-gray-100 dark:bg-gray-800 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 dark:bg-gray-700">
                     Mes vérifications
                 </a>
             </div>

@@ -1,11 +1,11 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Créer une marque')
 @section('page-title', 'Créer une marque')
 
 @section('page-actions')
 <div class="flex gap-2">
-    <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base bg-white border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+    <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center px-3 sm:px-4 py-2 text-sm sm:text-base bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors">
         <i class="fas fa-arrow-left mr-2"></i>
         <span class="hidden sm:inline">Retour à la liste</span>
         <span class="sm:hidden">Retour</span>
@@ -21,9 +21,9 @@
         <!-- Colonne principale -->
         <div class="lg:col-span-2 space-y-6">
             <!-- Informations principales -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center mr-3">
                             <i class="fas fa-info-circle text-primary-600"></i>
                         </div>
@@ -33,7 +33,7 @@
                 <div class="p-6 space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Nom de la marque <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
@@ -43,7 +43,7 @@
                                 <input type="text" 
                                        name="name" 
                                        id="name" 
-                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('name') border-red-500 @enderror" 
+                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('name') border-red-500 @enderror" 
                                        value="{{ old('name') }}" 
                                        placeholder="Ex: Nike, Adidas..."
                                        required>
@@ -56,7 +56,7 @@
                         </div>
                         
                         <div>
-                            <label for="slug" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="slug" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Slug <span class="text-gray-400 text-xs">(généré automatiquement)</span>
                             </label>
                             <div class="relative">
@@ -66,11 +66,11 @@
                                 <input type="text" 
                                        name="slug" 
                                        id="slug" 
-                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('slug') border-red-500 @enderror" 
+                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('slug') border-red-500 @enderror" 
                                        value="{{ old('slug') }}" 
                                        readonly>
                             </div>
-                            <p class="mt-1 text-xs text-gray-500">URL conviviale générée à partir du nom</p>
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">URL conviviale générée à partir du nom</p>
                             @error('slug')
                                 <p class="mt-1 text-sm text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
@@ -80,15 +80,15 @@
                     </div>
                     
                     <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Description
                         </label>
                         <textarea name="description" 
                                   id="description" 
-                                  class="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('description') border-red-500 @enderror" 
+                                  class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('description') border-red-500 @enderror" 
                                   rows="4"
                                   placeholder="Décrivez cette marque...">{{ old('description') }}</textarea>
-                        <p class="mt-1 text-xs text-gray-500 flex items-center justify-between">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-between">
                             <span>Description optionnelle de la marque</span>
                             <span id="charCount" class="text-gray-400">0/500</span>
                         </p>
@@ -101,7 +101,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Site web
                             </label>
                             <div class="relative">
@@ -111,7 +111,7 @@
                                 <input type="url" 
                                        name="website" 
                                        id="website" 
-                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('website') border-red-500 @enderror" 
+                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('website') border-red-500 @enderror" 
                                        value="{{ old('website') }}" 
                                        placeholder="https://example.com">
                             </div>
@@ -123,7 +123,7 @@
                         </div>
                         
                         <div>
-                            <label for="country" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="country" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Pays d'origine
                             </label>
                             <div class="relative">
@@ -133,7 +133,7 @@
                                 <input type="text" 
                                        name="country" 
                                        id="country" 
-                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('country') border-red-500 @enderror" 
+                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('country') border-red-500 @enderror" 
                                        value="{{ old('country') }}"
                                        placeholder="Ex: FR, US, IT...">
                             </div>
@@ -147,7 +147,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label for="founded_year" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="founded_year" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Année de création
                             </label>
                             <div class="relative">
@@ -157,7 +157,7 @@
                                 <input type="number" 
                                        name="founded_year" 
                                        id="founded_year" 
-                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('founded_year') border-red-500 @enderror" 
+                                       class="w-full pl-10 pr-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors @error('founded_year') border-red-500 @enderror" 
                                        value="{{ old('founded_year') }}" 
                                        min="1800" 
                                        max="{{ date('Y') }}"
@@ -171,7 +171,7 @@
                         </div>
                         
                         <div>
-                            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Catégorie
                             </label>
                             <div class="relative">
@@ -180,7 +180,7 @@
                                 </div>
                                 <select name="category" 
                                         id="category" 
-                                        class="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors appearance-none @error('category') border-red-500 @enderror">
+                                        class="w-full pl-10 pr-10 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors appearance-none @error('category') border-red-500 @enderror">
                                     <option value="">Sélectionner une catégorie</option>
                                     <option value="luxury" {{ old('category') == 'luxury' ? 'selected' : '' }}>🌟 Luxe</option>
                                     <option value="streetwear" {{ old('category') == 'streetwear' ? 'selected' : '' }}>👟 Streetwear</option>
@@ -207,9 +207,9 @@
         <!-- Sidebar -->
         <div class="space-y-6">
             <!-- Logo -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
                             <i class="fas fa-image text-blue-600"></i>
                         </div>
@@ -218,7 +218,7 @@
                 </div>
                 <div class="p-6">
                     <div class="mb-4">
-                        <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="logo" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Logo de la marque
                         </label>
                         <div class="relative">
@@ -228,12 +228,12 @@
                                    class="hidden" 
                                    accept="image/*">
                             <div id="logo-upload-area" 
-                                 class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-all"
+                                 class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-primary-500 hover:bg-primary-50 transition-all"
                                  onclick="document.getElementById('logo').click()">
                                 <div id="logo-placeholder">
                                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                                    <p class="text-sm text-gray-600 font-medium">Cliquez pour télécharger</p>
-                                    <p class="text-xs text-gray-500 mt-1">JPG, PNG, SVG (max 2MB)</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 font-medium">Cliquez pour télécharger</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">JPG, PNG, SVG (max 2MB)</p>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +245,7 @@
                     </div>
                     
                     <div id="logo-preview" class="hidden">
-                        <div class="relative rounded-lg overflow-hidden border border-gray-200">
+                        <div class="relative rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                             <img id="logo-preview-img" src="" class="w-full h-auto">
                             <button type="button" 
                                     onclick="clearLogo()"
@@ -253,15 +253,15 @@
                                 <i class="fas fa-times"></i>
                             </button>
                         </div>
-                        <p class="text-xs text-gray-500 text-center mt-2">Prévisualisation du logo</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">Prévisualisation du logo</p>
                     </div>
                 </div>
             </div>
             
             <!-- Paramètres -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-                <div class="p-6 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
                             <i class="fas fa-cog text-green-600"></i>
                         </div>
@@ -276,11 +276,11 @@
                                    id="is_active" 
                                    value="1" 
                                    {{ old('is_active', true) ? 'checked' : '' }}
-                                   class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                   class="w-4 h-4 text-primary-600 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                         </div>
                         <div class="ml-3">
-                            <label for="is_active" class="font-medium text-gray-900 text-sm">Marque active</label>
-                            <p class="text-xs text-gray-500 mt-0.5">Les marques inactives n'apparaissent pas sur le site</p>
+                            <label for="is_active" class="font-medium text-gray-900 dark:text-white text-sm">Marque active</label>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Les marques inactives n'apparaissent pas sur le site</p>
                         </div>
                     </div>
                     
@@ -291,16 +291,16 @@
                                    id="is_featured" 
                                    value="1" 
                                    {{ old('is_featured') ? 'checked' : '' }}
-                                   class="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500">
+                                   class="w-4 h-4 text-yellow-600 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500">
                         </div>
                         <div class="ml-3">
-                            <label for="is_featured" class="font-medium text-gray-900 text-sm flex items-center">
+                            <label for="is_featured" class="font-medium text-gray-900 dark:text-white text-sm flex items-center">
                                 Marque en vedette
                                 <span class="ml-1.5 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">
                                     <i class="fas fa-star mr-1"></i>Vedette
                                 </span>
                             </label>
-                            <p class="text-xs text-gray-500 mt-0.5">Apparaît dans la section marques vedettes</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Apparaît dans la section marques vedettes</p>
                         </div>
                     </div>
                 </div>
@@ -324,8 +324,8 @@
     </div>
     
     <!-- Actions -->
-    <div class="mt-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-        <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 bg-white hover:bg-gray-50 transition-colors">
+    <div class="mt-6 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm sm:text-base text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 transition-colors">
             <i class="fas fa-times mr-2"></i>Annuler
         </a>
         <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 bg-primary-600 border border-transparent rounded-lg font-medium text-sm sm:text-base text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">

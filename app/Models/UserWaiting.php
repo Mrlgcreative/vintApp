@@ -21,6 +21,7 @@ class UserWaiting extends Model
         'country',
         'message',
         'reasons',
+        'firebase_uid',
         'confirmation_token',
         'password_setup_token',
         'password_setup_token_expires_at',

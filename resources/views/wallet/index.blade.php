@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Mon Portefeuille')
 
@@ -16,7 +16,7 @@
                         </h1>
                         <p class="text-emerald-100 mt-2">Gérez vos finances en toute simplicité</p>
                     </div>
-                    <button class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-2 hover:bg-white/30 transition-all duration-200" onclick="refreshBalances()">
+                    <button class="bg-white dark:bg-gray-800/20 backdrop-blur-sm rounded-lg px-4 py-2 hover:bg-white dark:bg-gray-800/30 transition-all duration-200" onclick="refreshBalances()">
                         <i class="fas fa-sync-alt mr-2"></i>
                         Actualiser
                     </button>
@@ -27,7 +27,7 @@
         <!-- Cartes des soldes -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Wallet USD -->
-            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-6">
                         <div>
@@ -35,27 +35,27 @@
                                 <i class="fas fa-dollar-sign"></i>
                                 Dollar Américain
                             </h2>
-                            <p class="text-gray-500 text-sm">USD</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">USD</p>
                         </div>
                         <div class="relative">
-                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" 
+                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 transition-colors duration-200" 
                                     onclick="toggleDropdown('usd-dropdown')">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <div id="usd-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div id="usd-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
                                 <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900 first:rounded-t-lg">
                                     <i class="fas fa-plus text-green-500"></i>
                                     Ajouter des fonds
                                 </a>
                                 <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900">
                                     <i class="fas fa-minus text-red-500"></i>
                                     Retirer des fonds
                                 </a>
-                                <hr class="border-gray-200">
+                                <hr class="border-gray-200 dark:border-gray-700">
                                 <a href="{{ route('wallet.transactions', $usdWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 last:rounded-b-lg">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900 last:rounded-b-lg">
                                     <i class="fas fa-history text-blue-500"></i>
                                     Voir l'historique
                                 </a>
@@ -67,7 +67,7 @@
                         <p class="text-4xl font-bold text-green-600 mb-2" id="usd-balance">
                             ${{ number_format($usdWallet->balance, 2, '.', ',') }}
                         </p>
-                        <p class="text-gray-500">Solde disponible</p>
+                        <p class="text-gray-500 dark:text-gray-400">Solde disponible</p>
                     </div>
                     
                     <div class="flex gap-3">
@@ -84,7 +84,7 @@
             </div>
 
             <!-- Wallet CDF -->
-            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
                 <div class="p-6">
                     <div class="flex justify-between items-start mb-6">
                         <div>
@@ -92,27 +92,27 @@
                                 <i class="fas fa-coins"></i>
                                 Franc Congolais
                             </h2>
-                            <p class="text-gray-500 text-sm">CDF</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">CDF</p>
                         </div>
                         <div class="relative">
-                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200" 
+                            <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:bg-gray-700 transition-colors duration-200" 
                                     onclick="toggleDropdown('cdf-dropdown')">
                                 <i class="fas fa-ellipsis-v"></i>
                             </button>
-                            <div id="cdf-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                            <div id="cdf-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
                                 <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900 first:rounded-t-lg">
                                     <i class="fas fa-plus text-green-500"></i>
                                     Ajouter des fonds
                                 </a>
                                 <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900">
                                     <i class="fas fa-minus text-red-500"></i>
                                     Retirer des fonds
                                 </a>
-                                <hr class="border-gray-200">
+                                <hr class="border-gray-200 dark:border-gray-700">
                                 <a href="{{ route('wallet.transactions', $cdfWallet) }}" 
-                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 last:rounded-b-lg">
+                                   class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 dark:bg-gray-900 last:rounded-b-lg">
                                     <i class="fas fa-history text-blue-500"></i>
                                     Voir l'historique
                                 </a>
@@ -124,7 +124,7 @@
                         <p class="text-4xl font-bold text-yellow-600 mb-2" id="cdf-balance">
                             {{ number_format($cdfWallet->balance, 2, ',', ' ') }} FC
                         </p>
-                        <p class="text-gray-500">Solde disponible</p>
+                        <p class="text-gray-500 dark:text-gray-400">Solde disponible</p>
                     </div>
                     
                     <div class="flex gap-3">
@@ -143,7 +143,7 @@
 
         <!-- Carte de conversion de devises -->
         <div class="mb-8">
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-600 to-primary-600 p-6 text-white">
                     <h2 class="text-xl font-bold flex items-center gap-2 mb-2">
                         <i class="fas fa-exchange-alt"></i>
@@ -173,8 +173,8 @@
                         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                             <!-- Source -->
                             <div class="lg:col-span-5">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">De</label>
-                                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">De</label>
+                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
                                         id="fromWallet" name="from_wallet_id" required>
                                     <option value="{{ $usdWallet->id }}" data-currency="USD">
                                         USD - ${{ number_format($usdWallet->balance, 2) }}
@@ -185,17 +185,17 @@
                                 </select>
                                 <div class="flex">
                                     <input type="number" 
-                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           class="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
                                            id="fromAmount" 
                                            name="amount" 
                                            placeholder="0.00" 
                                            step="0.01" 
                                            min="0.01" 
                                            required>
-                                    <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 font-medium" 
+                                    <span class="inline-flex items-center px-4 bg-gray-50 dark:bg-gray-900 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 dark:text-gray-200 font-medium" 
                                           id="fromCurrency">USD</span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                     Solde disponible: <span id="fromBalance">${{ number_format($usdWallet->balance, 2) }}</span>
                                 </p>
                             </div>
@@ -211,8 +211,8 @@
 
                             <!-- Destination -->
                             <div class="lg:col-span-5">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Vers</label>
-                                <select class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Vers</label>
+                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
                                         id="toWallet" name="to_wallet_id" required>
                                     <option value="{{ $cdfWallet->id }}" data-currency="CDF">
                                         CDF - {{ number_format($cdfWallet->balance, 2) }} FC
@@ -223,14 +223,14 @@
                                 </select>
                                 <div class="flex">
                                     <input type="text" 
-                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg bg-gray-50" 
+                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" 
                                            id="toAmount" 
                                            placeholder="0.00" 
                                            readonly>
-                                    <span class="inline-flex items-center px-4 bg-gray-50 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 font-medium" 
+                                    <span class="inline-flex items-center px-4 bg-gray-50 dark:bg-gray-900 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 dark:text-gray-200 font-medium" 
                                           id="toCurrency">CDF</span>
                                 </div>
-                                <p class="text-sm text-gray-500 mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                     Solde actuel: <span id="toBalance">{{ number_format($cdfWallet->balance, 2) }} FC</span>
                                 </p>
                             </div>
@@ -243,7 +243,7 @@
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-2">
                                             <i class="fas fa-info-circle text-blue-600"></i>
-                                            <span class="text-gray-700">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
+                                            <span class="text-gray-700 dark:text-gray-200">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
                                             <span id="rateSource" class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium hidden">
                                                 Temps réel
                                             </span>
@@ -252,11 +252,11 @@
                                             </span>
                                         </div>
                                         <div class="flex flex-wrap gap-4">
-                                            <small class="text-gray-600 flex items-center gap-1">
+                                            <small class="text-gray-600 dark:text-gray-300 flex items-center gap-1">
                                                 <i class="fas fa-arrow-right"></i>
                                                 <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
                                             </small>
-                                            <small class="text-gray-600 flex items-center gap-1">
+                                            <small class="text-gray-600 dark:text-gray-300 flex items-center gap-1">
                                                 <i class="fas fa-arrow-left"></i>
                                                 <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
                                             </small>
@@ -269,7 +269,7 @@
                                             <i class="fas fa-sync-alt" id="refreshIcon"></i>
                                             Actualiser
                                         </button>
-                                        <small class="text-gray-500 hidden lg:block">
+                                        <small class="text-gray-500 dark:text-gray-400 hidden lg:block">
                                             Mis à jour: <span id="lastUpdate">À l'instant</span>
                                         </small>
                                     </div>
@@ -289,27 +289,27 @@
 
                         <!-- Exemples de conversion -->
                         <div class="mt-6">
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <p class="text-sm text-gray-600 mb-3 flex items-center gap-2">
+                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
                                     <i class="fas fa-calculator"></i>
                                     <strong>Exemples de conversion :</strong>
                                 </p>
                                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-                                    <div class="bg-white p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 mb-1">$1 USD =</p>
-                                        <p class="text-sm font-semibold text-gray-900" id="example1">2,650 FC</p>
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">$1 USD =</p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example1">2,650 FC</p>
                                     </div>
-                                    <div class="bg-white p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 mb-1">$10 USD =</p>
-                                        <p class="text-sm font-semibold text-gray-900" id="example2">26,500 FC</p>
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">$10 USD =</p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example2">26,500 FC</p>
                                     </div>
-                                    <div class="bg-white p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 mb-1">10,000 FC =</p>
-                                        <p class="text-sm font-semibold text-gray-900" id="example3">$3.77</p>
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">10,000 FC =</p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example3">$3.77</p>
                                     </div>
-                                    <div class="bg-white p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 mb-1">50,000 FC =</p>
-                                        <p class="text-sm font-semibold text-gray-900" id="example4">$18.87</p>
+                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">50,000 FC =</p>
+                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example4">$18.87</p>
                                     </div>
                                 </div>
                             </div>
@@ -323,16 +323,16 @@
         </div>
 
         <!-- Transactions récentes -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h2 class="text-xl font-bold flex items-center gap-2">
                         <i class="fas fa-history text-blue-500"></i>
                         Transactions récentes
                     </h2>
                     <div class="flex items-center gap-3">
-                        <small class="text-gray-500">{{ $recentTransactions->total() }} transaction(s)</small>
-                        <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full text-xs">
+                        <small class="text-gray-500 dark:text-gray-400">{{ $recentTransactions->total() }} transaction(s)</small>
+                        <span class="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full text-xs">
                             Page {{ $recentTransactions->currentPage() }}/{{ $recentTransactions->lastPage() }}
                         </span>
                     </div>
@@ -368,24 +368,24 @@
                     <!-- Version Desktop/Tablet - Tableau -->
                     <div class="hidden sm:block overflow-x-auto">
                         <table class="w-full">
-                            <thead class="bg-gray-50 border-b border-gray-200 sticky top-0">
+                            <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Type</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-1/2">Description</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Montant</th>
-                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider hidden lg:table-cell">Devise</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider hidden xl:table-cell">Solde après</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/2">Description</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Montant</th>
+                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">Devise</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider hidden xl:table-cell">Solde après</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-200">
                                 @foreach($recentTransactions as $transaction)
-                                    <tr class="hover:bg-gray-50 transition-colors duration-200">
+                                    <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900">
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
                                                 {{ $transaction->created_at->format('d/m/Y') }}
                                             </div>
-                                            <div class="text-xs text-gray-500">
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $transaction->created_at->format('H:i') }}
                                             </div>
                                         </td>
@@ -395,7 +395,7 @@
                                                     'credit' => ['class' => 'bg-green-100 text-green-800', 'icon' => 'fa-plus'],
                                                     'debit' => ['class' => 'bg-red-100 text-red-800', 'icon' => 'fa-minus'],
                                                 ];
-                                                $config = $typeConfig[$transaction->type] ?? ['class' => 'bg-gray-100 text-gray-800', 'icon' => 'fa-circle'];
+                                                $config = $typeConfig[$transaction->type] ?? ['class' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100', 'icon' => 'fa-circle'];
                                             @endphp
                                             <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
                                                 <i class="fas {{ $config['icon'] }}"></i>
@@ -403,9 +403,9 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900">{{ $transaction->description }}</div>
+                                            <div class="text-sm text-gray-900 dark:text-white">{{ $transaction->description }}</div>
                                             @if($transaction->reference)
-                                                <div class="text-xs text-gray-500 mt-1">Réf: {{ $transaction->reference }}</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Réf: {{ $transaction->reference }}</div>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-right">
@@ -420,7 +420,7 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 text-right hidden xl:table-cell">
-                                            <div class="text-sm text-gray-900">
+                                            <div class="text-sm text-gray-900 dark:text-white">
                                                 {{ number_format($transaction->balance_after, 2) }} {{ $transaction->wallet->currency }}
                                             </div>
                                         </td>
@@ -437,7 +437,7 @@
                                 @php
                                     $source = '';
                                     $icon = 'fas fa-circle';
-                                    $badgeClass = 'bg-gray-100 text-gray-800';
+                                    $badgeClass = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100';
                                     
                                     if (str_contains(strtolower($transaction->description), 'vente')) {
                                         if (str_contains($transaction->description, 'commission')) {
@@ -464,18 +464,18 @@
                                     } else {
                                         $source = '💳 Transaction Générale';
                                         $icon = 'fas fa-credit-card';
-                                        $badgeClass = 'bg-gray-100 text-gray-800';
+                                        $badgeClass = 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100';
                                     }
                                 @endphp
                                 
-                                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 transaction-card">
+                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-200 transaction-card">
                                     <div class="flex items-start justify-between mb-3">
                                         <div class="flex items-center gap-3">
                                             <div class="w-10 h-10 rounded-full {{ $transaction->type === 'credit' ? 'bg-green-100' : 'bg-red-100' }} flex items-center justify-center">
                                                 <i class="{{ $icon }} {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}"></i>
                                             </div>
                                             <div>
-                                                <h6 class="font-semibold text-gray-900 text-sm">{{ $source }}</h6>
+                                                <h6 class="font-semibold text-gray-900 dark:text-white text-sm">{{ $source }}</h6>
                                                 <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium {{ $badgeClass }}">
                                                     {{ $transaction->wallet->currency }}
                                                 </span>
@@ -485,15 +485,15 @@
                                             <div class="text-lg font-bold {{ $transaction->type === 'credit' ? 'text-green-600' : 'text-red-600' }}">
                                                 {{ $transaction->type === 'credit' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }}
                                             </div>
-                                            <div class="text-xs text-gray-500">
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
                                                 {{ $transaction->created_at->format('d/m/Y H:i') }}
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-700 mb-2">{{ $transaction->description }}</p>
+                                        <p class="text-sm text-gray-700 dark:text-gray-200 mb-2">{{ $transaction->description }}</p>
                                         @if($transaction->reference)
-                                            <p class="text-xs text-gray-500">Réf: {{ $transaction->reference }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Réf: {{ $transaction->reference }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -503,9 +503,9 @@
                     
                     <!-- Pagination -->
                     @if($recentTransactions->hasPages())
-                        <div class="flex flex-col sm:flex-row justify-between items-center p-6 bg-gray-50 border-t border-gray-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-center p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
                             <div class="flex items-center mb-4 sm:mb-0">
-                                <small class="text-gray-600">
+                                <small class="text-gray-600 dark:text-gray-300">
                                     Affichage de {{ $recentTransactions->firstItem() }} à {{ $recentTransactions->lastItem() }} 
                                     sur {{ $recentTransactions->total() }} transactions
                                 </small>
@@ -519,16 +519,16 @@
                     <!-- État vide -->
                     <div class="text-center py-16">
                         <div class="mb-6">
-                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 rounded-full">
+                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full">
                                 <i class="fas fa-receipt text-3xl text-gray-400"></i>
                             </div>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-3">Aucune transaction</h3>
-                        <p class="text-gray-500 mb-8 max-w-md mx-auto">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Aucune transaction</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
                         
                         <!-- Sources d'argent possibles -->
                         <div class="mb-8">
-                            <h4 class="text-lg font-medium text-gray-700 mb-6">💡 Comment recevoir de l'argent dans votre portefeuille :</h4>
+                            <h4 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-6">💡 Comment recevoir de l'argent dans votre portefeuille :</h4>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
                                 <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
                                     <div class="text-center">
@@ -996,13 +996,13 @@ function filterTransactions(type) {
     // Reset all buttons
     buttons.forEach(btn => {
         btn.classList.remove('bg-gray-800', 'text-white');
-        btn.classList.add('bg-gray-50', 'text-gray-700');
+        btn.classList.add('bg-gray-50 dark:bg-gray-900', 'text-gray-700 dark:text-gray-200');
     });
     
     // Set active button
     const activeButton = document.getElementById('filter' + type.charAt(0).toUpperCase() + type.slice(1));
     if (activeButton) {
-        activeButton.classList.remove('bg-gray-50', 'text-gray-700');
+        activeButton.classList.remove('bg-gray-50 dark:bg-gray-900', 'text-gray-700 dark:text-gray-200');
         activeButton.classList.add('bg-gray-800', 'text-white');
     }
     

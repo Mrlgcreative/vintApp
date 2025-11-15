@@ -45,8 +45,10 @@ class PreRegistrationController extends Controller
         $enabled = Setting::get('preregistration_enabled', true);
         
         if (!$enabled) {
-            return redirect()->route('preregistration.index')
-                ->with('error', 'Les pré-inscriptions sont actuellement fermées.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Les pré-inscriptions sont actuellement fermées.'
+            ], 403);
         }
 
         // Vérifier la limite
@@ -54,8 +56,10 @@ class PreRegistrationController extends Controller
         if ($limit > 0) {
             $currentCount = UserWaiting::count();
             if ($currentCount >= $limit) {
-                return redirect()->route('preregistration.index')
-                    ->with('error', 'Le nombre maximum de pré-inscriptions a été atteint.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Le nombre maximum de pré-inscriptions a été atteint.'
+                ], 403);
             }
         }
 
@@ -69,19 +73,24 @@ class PreRegistrationController extends Controller
                 ? ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15']
                 : ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15'],
             'country' => ['required', 'string', 'max:100'],
-            'message' => ['nullable', 'string', 'max:1000'],
+            'reasons' => ['nullable', 'array'],
+            'reasons.*' => ['string', 'max:255'],
+            'firebase_uid' => ['required', 'string', 'max:128'],
         ];
 
         $validator = Validator::make($request->all(), $rules, [
             'email.unique' => 'Cette adresse email est déjà enregistrée.',
             'phone.regex' => 'Format de téléphone invalide. Ex: 0812345678 ou +243812345678',
             'phone.required' => 'Le numéro de téléphone est obligatoire.',
+            'firebase_uid.required' => 'L\'identifiant Firebase est requis.',
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         try {
@@ -91,27 +100,38 @@ class PreRegistrationController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'country' => $request->country,
-                'message' => $request->message,
+                'message' => $request->reasons ? implode(', ', $request->reasons) : null,
+                'firebase_uid' => $request->firebase_uid,
                 'confirmation_token' => UserWaiting::generateUniqueToken(),
                 'status' => 'pending',
+                'confirmed_at' => now(), // Auto-confirmé car Firebase valide l'email
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // Envoyer l'email de confirmation
-            $userWaiting->sendConfirmationEmail();
+            // Envoyer l'email de bienvenue avec les identifiants
+            // TODO: Implémenter l'envoi d'email avec le mot de passe temporaire
+            // $userWaiting->sendWelcomeEmail();
 
-            Log::info("Nouvelle pré-inscription: {$userWaiting->email}");
+            Log::info("Nouvelle pré-inscription Firebase: {$userWaiting->email} (UID: {$request->firebase_uid})");
 
-            return redirect()->route('preregistration.success')
-                ->with('success', 'Merci pour votre inscription ! Vérifiez votre email pour confirmer.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Inscription réussie !',
+                'data' => [
+                    'id' => $userWaiting->id,
+                    'name' => $userWaiting->name,
+                    'email' => $userWaiting->email
+                ]
+            ], 201);
 
         } catch (\Exception $e) {
-            Log::error("Erreur lors de la pré-inscription: {$e->getMessage()}");
+            Log::error("Erreur lors de la pré-inscription Firebase: {$e->getMessage()}");
 
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Une erreur est survenue. Veuillez réessayer.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de l\'enregistrement.'
+            ], 500);
         }
     }
 

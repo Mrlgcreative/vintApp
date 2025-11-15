@@ -164,15 +164,41 @@
 
 
 
+/* Dark Mode Variables - Applied when [data-theme="dark"] */
+[data-theme="dark"] {
+  /* Inverser les couleurs de fond */
+  --color-light: #1F2937;
+  --color-dark: #F8FAFC;
+  
+  /* Couleurs de fond dark mode */
+  --bg-primary: #111827;
+  --bg-secondary: #1F2937;
+  --bg-tertiary: #374151;
+  
+  /* Couleurs de texte dark mode */
+  --text-primary: #F9FAFB;
+  --text-secondary: #E5E7EB;
+  --text-muted: #9CA3AF;
+}
 
-
-
-
-
-
-
-
-
+/* Auto mode - suit les préférences système */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    /* Inverser les couleurs de fond */
+    --color-light: #1F2937;
+    --color-dark: #F8FAFC;
+    
+    /* Couleurs de fond dark mode */
+    --bg-primary: #111827;
+    --bg-secondary: #1F2937;
+    --bg-tertiary: #374151;
+    
+    /* Couleurs de texte dark mode */
+    --text-primary: #F9FAFB;
+    --text-secondary: #E5E7EB;
+    --text-muted: #9CA3AF;
+  }
+}
 
 /* Classes utilitaires VintApp pour compatibilité */
 @layer components {
@@ -429,6 +455,20 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

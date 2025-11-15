@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 dark:bg-gray-800">
     <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full space-y-8">
             <div>
-                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
                     Test Simulation Paiement
                 </h2>
-                <p class="mt-2 text-center text-sm text-gray-600">
+                <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
                     Testez le système de paiement mobile simulé
                 </p>
             </div>
@@ -24,8 +24,8 @@
                 @csrf
                 <div class="rounded-md shadow-sm space-y-4">
                     <div>
-                        <label for="buyer_id" class="block text-sm font-medium text-gray-700">ID Utilisateur</label>
-                        <select id="buyer_id" name="buyer_id" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="buyer_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">ID Utilisateur</label>
+                        <select id="buyer_id" name="buyer_id" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="">Choisir un utilisateur</option>
                             @foreach(App\Models\User::all() as $user)
                                 <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->email }})</option>
@@ -34,23 +34,23 @@
                     </div>
                     
                     <div>
-                        <label for="amount" class="block text-sm font-medium text-gray-700">Montant</label>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Montant</label>
                         <input id="amount" name="amount" type="number" step="0.01" min="1" required 
-                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                placeholder="100.00" value="10.00">
                     </div>
                     
                     <div>
-                        <label for="currency" class="block text-sm font-medium text-gray-700">Devise</label>
-                        <select id="currency" name="currency" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="currency" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Devise</label>
+                        <select id="currency" name="currency" required class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="USD">USD - Dollar Américain</option>
                             <option value="CDF">CDF - Franc Congolais</option>
                         </select>
                     </div>
                     
                     <div>
-                        <label for="provider" class="block text-sm font-medium text-gray-700">Opérateur</label>
-                        <select id="provider" name="provider" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <label for="provider" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Opérateur</label>
+                        <select id="provider" name="provider" class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                             <option value="orange_money">Orange Money</option>
                             <option value="airtel_money">Airtel Money</option>
                             <option value="mpesa">M-Pesa</option>
@@ -60,16 +60,16 @@
                     </div>
                     
                     <div>
-                        <label for="phone" class="block text-sm font-medium text-gray-700">Numéro de téléphone</label>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Numéro de téléphone</label>
                         <input id="phone" name="phone" type="text" 
-                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                placeholder="891234567" pattern="[0-9]{9}">
                     </div>
                     
                     <div>
-                        <label for="purpose" class="block text-sm font-medium text-gray-700">Objet du paiement</label>
+                        <label for="purpose" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Objet du paiement</label>
                         <input id="purpose" name="purpose" type="text" required
-                               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                               class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                placeholder="Test de paiement simulé" value="Test de paiement simulé">
                     </div>
                 </div>

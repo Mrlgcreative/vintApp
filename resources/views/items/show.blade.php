@@ -1,15 +1,15 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
     <div class="container mx-auto px-4 py-8 lg:py-16">
         <!-- Breadcrumb -->
-        <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">
             <a href="{{ route('home') }}" class="hover:text-primary-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <a href="{{ route('items.index') }}" class="hover:text-primary-600 transition-colors">Produits</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-gray-900 font-medium">{{ Str::limit($item->name, 30) }}</span>
+            <span class="text-gray-900 dark:text-white font-medium">{{ Str::limit($item->name, 30) }}</span>
         </nav>
 
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
@@ -19,7 +19,7 @@
                     <div class="sticky top-20 flex flex-col items-center gap-2">
                         @foreach($item->images as $index => $image)
                             <div class="thumbnail-item w-14 h-14 lg:w-16 lg:h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 cursor-pointer relative 
-                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25 scale-105' : 'border-gray-200 hover:border-primary-300' }}"
+                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-primary-300' }}"
                                 data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
                                 <img src="{{ Storage::url($image) }}" 
                                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
@@ -38,7 +38,7 @@
                     <div class="flex gap-2 overflow-x-auto pb-2">
                         @foreach($item->images as $index => $image)
                             <div class="thumbnail-item flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 cursor-pointer 
-                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25' : 'border-gray-200' }}"
+                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25' : 'border-gray-200 dark:border-gray-700' }}"
                                 data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
                                 <img src="{{ Storage::url($image) }}" 
                                      class="w-full h-full object-cover transition-transform duration-300" 
@@ -51,7 +51,7 @@
 
             <!-- Image principale -->
             <div class="xl:col-span-6 order-2 xl:order-1">
-                <div class="relative bg-white rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-primary-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                <div class="relative bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-primary-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     @if($item->images && count($item->images) > 0)
                         <img id="mainProductImg" 
                              src="{{ Storage::url($item->images[0]) }}" 
@@ -61,7 +61,7 @@
                             <i class="fas fa-search-plus text-white text-3xl lg:text-5xl animate-pulse"></i>
                         </div>
                     @else
-                        <div class="h-64 sm:h-80 lg:h-[400px] xl:h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl lg:rounded-2xl text-gray-500">
+                        <div class="h-64 sm:h-80 lg:h-[400px] xl:h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl lg:rounded-2xl text-gray-500 dark:text-gray-400">
                             <i class="fas fa-image text-4xl lg:text-6xl mb-4"></i>
                             <p class="text-base lg:text-lg font-medium">Aucune image disponible</p>
                         </div>
@@ -71,11 +71,11 @@
 
             <!-- Card produit -->
             <div class="xl:col-span-5 order-1 xl:order-2">
-                <div class="sticky top-4 lg:top-6 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl shadow-primary-600/10 transform transition-all duration-300 animate-fade-in border border-gray-100/50">
+                <div class="sticky top-4 lg:top-6 bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-6 lg:p-8 shadow-xl shadow-primary-600/10 transform transition-all duration-300 animate-fade-in border border-gray-100/50">
                     <!-- En-tête avec titre et bouton favori -->
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex-1 pr-3 lg:pr-4">
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 leading-tight mb-3 lg:mb-4">{{ $item->name }}</h1>
+                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-3 lg:mb-4">{{ $item->name }}</h1>
                             <div class="flex flex-wrap gap-2">
                                 <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary-700 border border-primary-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                     <i class="fas fa-tag mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
@@ -91,7 +91,7 @@
                                     $conditionClass = match($item->condition) {
                                         'new' => 'from-emerald-50 to-emerald-100 text-emerald-600 border-emerald-200/50',
                                         'used', 'like_new' => 'from-amber-50 to-amber-100 text-amber-600 border-amber-200/50',
-                                        default => 'from-gray-50 to-gray-100 text-gray-600 border-gray-200/50'
+                                        default => 'from-gray-50 to-gray-100 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700/50'
                                     };
                                 @endphp
                                 <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r {{ $conditionClass }} text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
@@ -123,7 +123,7 @@
                             </div>
                         </div>
                         @auth
-                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
+                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white dark:bg-gray-800 flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
                                 data-item-id="{{ $item->id }}">
                                 <i class="fas fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
                             </button>
@@ -149,48 +149,48 @@
                     </div>
 
                     <!-- Métadonnées du produit -->
-                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-primary-200/20 mb-4 lg:mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-primary-200/20 mb-4 lg:mb-6">
                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-eye text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Vues</p>
-                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->views }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Vues</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->views }}</p>
                                 </div>
                             </div>
                             
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-boxes text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Quantité</p>
-                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->quantity }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Quantité</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->quantity }}</p>
                                 </div>
                             </div>
 
                             @if($item->color)
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-palette text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Couleur</p>
-                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->color }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Couleur</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->color }}</p>
                                 </div>
                             </div>
                             @endif
 
                             @if($item->size)
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-ruler text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Taille</p>
-                                    <div class="text-gray-900 font-bold text-sm lg:text-base">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Taille</p>
+                                    <div class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">
                                         <span class="bg-gradient-to-r from-primary-600 to-primary-700 text-white px-2 py-1 rounded text-xs font-semibold">
                                             {{ $item->size }}
                                         </span>
@@ -200,44 +200,44 @@
                             @endif
 
                             @if($item->item_number)
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-barcode text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">N° Article</p>
-                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->item_number }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">N° Article</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->item_number }}</p>
                                 </div>
                             </div>
                             @endif
 
-                            <div class="bg-white p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+                            <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary-600 to-primary-700 rounded-md lg:rounded-lg flex items-center justify-center flex-shrink-0">
                                     <i class="fas fa-calendar-alt text-white text-xs lg:text-sm"></i>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-gray-500 uppercase tracking-wider font-medium">Publié le</p>
-                                    <p class="text-gray-900 font-bold text-sm lg:text-base">{{ $item->created_at->format('d/m/Y') }}</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Publié le</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->created_at->format('d/m/Y') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Section panier -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-primary-200/20 mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-primary-200/20 mb-6">
                         <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm">
                             @csrf
                             <div class="mb-4">
-                                <label class="block text-gray-700 font-semibold mb-2">Quantité</label>
+                                <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Quantité</label>
                                 <div class="flex items-center max-w-xs">
                                     <button type="button" onclick="decrementQuantity()" 
-                                        class="w-11 h-11 bg-white border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
                                         <i class="fas fa-minus"></i>
                                     </button>
                                     <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="{{ max($item->quantity, 1) }}" 
-                                        class="flex-1 h-11 border-2 border-primary-200/50 text-center font-bold text-gray-900 text-lg focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" {{ $item->quantity == 0 ? 'disabled' : '' }}>
+                                        class="flex-1 h-11 border-2 border-primary-200/50 text-center font-bold text-gray-900 dark:text-white text-lg focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" {{ $item->quantity == 0 ? 'disabled' : '' }}>
                                     <button type="button" onclick="incrementQuantity()" 
-                                        class="w-11 h-11 bg-white border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-primary-200/50 text-primary-600 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary-600 hover:text-white hover:border-primary-600 hover:scale-105">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
@@ -272,8 +272,8 @@
                                             <i class="fas fa-shield-alt text-blue-600 text-lg"></i>
                                         </div>
                                         <div class="flex-1">
-                                            <h4 class="text-lg font-bold text-gray-900 mb-2">Authentifiez votre produit</h4>
-                                            <p class="text-gray-600 mb-4">
+                                            <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Authentifiez votre produit</h4>
+                                            <p class="text-gray-600 dark:text-gray-300 mb-4">
                                                 Obtenez le badge <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✓ Vérifié VintApp</span> 
                                                 pour rassurer les acheteurs et vendre plus rapidement.
                                             </p>
@@ -283,7 +283,7 @@
                                                     <i class="fas fa-certificate mr-2"></i>
                                                     Demander la vérification
                                                 </a>
-                                                <span class="text-sm text-gray-600 flex items-center">
+                                                <span class="text-sm text-gray-600 dark:text-gray-300 flex items-center">
                                                     À partir de ${{ number_format(5.00, 2) }}
                                                 </span>
                                             </div>
@@ -291,10 +291,10 @@
                                     </div>
                                 </div>
                             @elseif($item->authenticityCheck)
-                                <div class="bg-white border border-gray-200 p-6 rounded-2xl mb-6">
+                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 rounded-2xl mb-6">
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-start space-x-4">
-                                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
                                                 @if($item->authenticityCheck->isApproved())
                                                     <i class="fas fa-check-circle text-green-600 text-lg"></i>
                                                 @elseif($item->authenticityCheck->isRejected())
@@ -304,10 +304,10 @@
                                                 @endif
                                             </div>
                                             <div>
-                                                <h4 class="text-lg font-bold text-gray-900 mb-1">Vérification d'authenticité</h4>
-                                                <p class="text-gray-600 mb-2">{{ $item->authenticityCheck->getStatusLabel() }}</p>
+                                                <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Vérification d'authenticité</h4>
+                                                <p class="text-gray-600 dark:text-gray-300 mb-2">{{ $item->authenticityCheck->getStatusLabel() }}</p>
                                                 @if($item->authenticityCheck->final_decision_at)
-                                                    <p class="text-sm text-gray-500">
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">
                                                         Terminée le {{ $item->authenticityCheck->final_decision_at->format('d/m/Y') }}
                                                     </p>
                                                 @endif
@@ -324,26 +324,26 @@
                     @endauth
 
                     <!-- Description -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border-l-4 border-primary-600 mb-6">
-                        <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border-l-4 border-primary-600 mb-6">
+                        <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
                             <i class="fas fa-align-left text-primary-600 mr-3"></i>
                             Description
                         </h5>
-                        <p class="text-gray-600 leading-relaxed">{{ $item->description }}</p>
+                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ $item->description }}</p>
                     </div>
 
                     <!-- Spécifications -->
                     @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
-                        <div class="bg-gray-50 p-6 rounded-2xl border border-primary-200/20 mb-6">
-                            <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                        <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-primary-200/20 mb-6">
+                            <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
                                 <i class="fas fa-list-ul text-primary-600 mr-3"></i>
                                 Spécifications
                             </h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 @foreach($item->specifications as $key => $value)
-                                    <div class="bg-white p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:shadow-md hover:translate-x-1">
-                                        <span class="font-semibold text-gray-600 text-sm">{{ is_string($key) ? ucfirst($key) : '' }}</span>
-                                        <span class="font-bold text-gray-900">{{ is_string($value) ? $value : (is_array($value) ? json_encode($value) : '') }}</span>
+                                    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:shadow-md hover:translate-x-1">
+                                        <span class="font-semibold text-gray-600 dark:text-gray-300 text-sm">{{ is_string($key) ? ucfirst($key) : '' }}</span>
+                                        <span class="font-bold text-gray-900 dark:text-white">{{ is_string($value) ? $value : (is_array($value) ? json_encode($value) : '') }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -352,27 +352,27 @@
 
                     <!-- Vendeur -->
                     <div class="bg-gradient-to-r from-primary-50/30 to-primary-100/30 p-6 rounded-2xl border border-primary-200/20 mb-6">
-                        <h5 class="text-lg font-bold text-gray-900 flex items-center mb-4">
+                        <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
                             <i class="fas fa-user-circle text-primary-600 mr-3"></i>
                             Vendeur
                         </h5>
-                        <div class="bg-white p-5 rounded-xl transition-all duration-300 hover:shadow-lg">
+                        <div class="bg-white dark:bg-gray-800 p-5 rounded-xl transition-all duration-300 hover:shadow-lg">
                             <div class="flex items-center">
                                 <div class="w-15 h-15 rounded-full bg-gradient-to-r from-primary-600 to-primary-700 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="flex-1">
-                                    <div class="text-lg font-bold text-gray-900 mb-1">{{ $item->user->name }}</div>
-                                    <small class="text-gray-500 text-sm">
+                                    <div class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ $item->user->name }}</div>
+                                    <small class="text-gray-500 dark:text-gray-400 text-sm">
                                         <i class="fas fa-calendar mr-1"></i>
                                         Membre depuis {{ $item->user->created_at->format('M Y') }}
                                     </small>
                                 </div>
-                                <div class="flex items-center text-lg font-bold text-gray-900">
+                                <div class="flex items-center text-lg font-bold text-gray-900 dark:text-white">
                                     <i class="fas fa-star text-yellow-400 mr-1"></i>
                                     <span>{{ $averageRating > 0 ? $averageRating : 'Aucun avis' }}</span>
                                     @if($totalReviews > 0)
-                                        <span class="text-sm text-gray-500 ml-2">({{ $totalReviews }} avis)</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">({{ $totalReviews }} avis)</span>
                                     @endif
                                 </div>
                             </div>
@@ -389,7 +389,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <h6 class="font-bold text-emerald-600 mb-2">Réduction disponible !</h6>
-                                        <div id="discountInfo" class="text-gray-600 text-sm"></div>
+                                        <div id="discountInfo" class="text-gray-600 dark:text-gray-300 text-sm"></div>
                                     </div>
                                 </div>
                                 <button onclick="applyDiscount()" 
@@ -417,7 +417,7 @@
                                 
                                 <!-- Bouton contact vendeur -->
                                 <button onclick="contactSeller()" 
-                                    class="w-full bg-white text-primary-600 border-2 border-primary-600 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-primary-600 hover:text-white hover:-translate-y-1 hover:shadow-lg">
+                                    class="w-full bg-white dark:bg-gray-800 text-primary-600 border-2 border-primary-600 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-primary-600 hover:text-white hover:-translate-y-1 hover:shadow-lg">
                                     <i class="fas fa-envelope mr-3"></i>
                                     Contacter le vendeur
                                 </button>
@@ -449,17 +449,17 @@
 
         <!-- Section des commentaires et avis -->
         @if($reviews->count() > 0 || $totalReviews > 0)
-            <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 lg:p-8 mb-8 lg:mb-12">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 p-6 lg:p-8 mb-8 lg:mb-12">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
                         <i class="fas fa-star text-yellow-400 mr-3"></i>
                         Avis clients
                     </h2>
                     <div class="text-right">
-                        <div class="text-2xl font-bold text-gray-900">
+                        <div class="text-2xl font-bold text-gray-900 dark:text-white">
                             {{ $averageRating > 0 ? $averageRating : '0' }}/5
                         </div>
-                        <div class="text-sm text-gray-500">{{ $totalReviews }} avis</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ $totalReviews }} avis</div>
                     </div>
                 </div>
 
@@ -478,7 +478,7 @@
                                     <!-- Contenu du commentaire -->
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-3">
-                                            <h4 class="font-semibold text-gray-900">
+                                            <h4 class="font-semibold text-gray-900 dark:text-white">
                                                 {{ $review->reviewer->name ?? 'Utilisateur anonyme' }}
                                             </h4>
                                             <div class="flex items-center space-x-2">
@@ -492,14 +492,14 @@
                                                         @endif
                                                     @endfor
                                                 </div>
-                                                <span class="text-sm text-gray-500">
+                                                <span class="text-sm text-gray-500 dark:text-gray-400">
                                                     {{ $review->created_at->diffForHumans() }}
                                                 </span>
                                             </div>
                                         </div>
                                         
                                         @if($review->comment)
-                                            <p class="text-gray-700 leading-relaxed">{{ $review->comment }}</p>
+                                            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">{{ $review->comment }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -509,17 +509,17 @@
 
                     @if($totalReviews > 2)
                         <div class="mt-6 text-center">
-                            <p class="text-gray-500 text-sm">
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">
                                 Affichage de 2 avis sur {{ $totalReviews }}
                             </p>
                         </div>
                     @endif
                 @else
                     <div class="text-center py-8">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-comment-alt text-gray-400 text-xl"></i>
                         </div>
-                        <p class="text-gray-500">Aucun commentaire pour le moment</p>
+                        <p class="text-gray-500 dark:text-gray-400">Aucun commentaire pour le moment</p>
                         <p class="text-sm text-gray-400 mt-2">Soyez le premier à donner votre avis après achat</p>
                     </div>
                 @endif
@@ -528,18 +528,18 @@
 
         <!-- Articles similaires -->
         @if($similarItems->count() > 0)
-            <div class="mt-12 lg:mt-20 bg-white rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-primary-600/5">
+            <div class="mt-12 lg:mt-20 bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-primary-600/5">
                 <div class="text-center mb-6 lg:mb-8">
-                    <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                    <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                         <i class="fas fa-heart text-primary-600 mr-2 lg:mr-3"></i>
                         Vous aimerez aussi
                     </h3>
-                    <p class="text-gray-600 text-base lg:text-lg">Découvrez d'autres articles similaires</p>
+                    <p class="text-gray-600 dark:text-gray-300 text-base lg:text-lg">Découvrez d'autres articles similaires</p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
                     @foreach($similarItems as $similarItem)
-                        <div class="bg-white rounded-xl lg:rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group">
-                            <div class="relative overflow-hidden h-32 sm:h-40 lg:h-48 bg-gray-100">
+                        <div class="bg-white dark:bg-gray-800 rounded-xl lg:rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group">
+                            <div class="relative overflow-hidden h-32 sm:h-40 lg:h-48 bg-gray-100 dark:bg-gray-800">
                                 @if($similarItem->images && count($similarItem->images) > 0)
                                     <img src="{{ Storage::url($similarItem->images[0]) }}" 
                                          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
@@ -552,13 +552,13 @@
                                 @endif
                                 <div class="absolute inset-0 bg-primary-600/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                                     <a href="{{ route('items.show', $similarItem) }}" 
-                                        class="w-8 h-8 lg:w-12 lg:h-12 bg-white text-primary-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
+                                        class="w-8 h-8 lg:w-12 lg:h-12 bg-white dark:bg-gray-800 text-primary-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </div>
                             </div>
                             <div class="p-3 lg:p-5">
-                                <h6 class="font-bold text-gray-900 mb-2 lg:mb-3 min-h-[2rem] lg:min-h-[2.5rem] leading-tight text-sm lg:text-base">
+                                <h6 class="font-bold text-gray-900 dark:text-white mb-2 lg:mb-3 min-h-[2rem] lg:min-h-[2.5rem] leading-tight text-sm lg:text-base">
                                     {{ Str::limit($similarItem->name, 35) }}
                                 </h6>
                                 <div class="flex justify-between items-center">
@@ -585,7 +585,7 @@
         <!-- Overlay Background -->
         <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
             <!-- Modal Container -->
-            <div class="bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
                 <!-- Header -->
                 <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 lg:p-8 flex justify-between items-start">
                     <div>
@@ -596,7 +596,7 @@
                         <p class="text-primary-100 text-sm">Négociez directement avec le vendeur</p>
                     </div>
                     <button type="button" onclick="closeModal('contactModal')" 
-                        class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white/20 border-0 text-white flex items-center justify-center transition-all duration-300 hover:bg-white/30 hover:scale-110" 
+                        class="w-8 h-8 lg:w-9 lg:h-9 rounded-full bg-white dark:bg-gray-800/20 border-0 text-white flex items-center justify-center transition-all duration-300 hover:bg-white dark:bg-gray-800/30 hover:scale-110" 
                         aria-label="Fermer">
                         <i class="fas fa-times text-sm"></i>
                     </button>
@@ -604,7 +604,7 @@
                 <!-- Body -->
                 <div class="p-4 lg:p-6">
                     <!-- Aperçu du produit -->
-                    <div class="bg-gray-50 p-4 lg:p-6 rounded-xl lg:rounded-2xl mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 rounded-xl lg:rounded-2xl mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                             <div>
                                 @if($item->images && count($item->images) > 0)
@@ -615,8 +615,8 @@
                                 @endif
                             </div>
                             <div class="md:col-span-2">
-                                <h6 class="font-bold text-gray-900 mb-2 text-sm lg:text-base">{{ $item->name }}</h6>
-                                <p class="text-gray-600 text-xs lg:text-sm mb-4">{{ Str::limit($item->description, 120) }}</p>
+                                <h6 class="font-bold text-gray-900 dark:text-white mb-2 text-sm lg:text-base">{{ $item->name }}</h6>
+                                <p class="text-gray-600 dark:text-gray-300 text-xs lg:text-sm mb-4">{{ Str::limit($item->description, 120) }}</p>
                                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                                     <span class="text-lg lg:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                                         {{ $item->formatted_price }}
@@ -632,7 +632,7 @@
 
                     <!-- Message personnalisé -->
                     <div class="mb-6">
-                        <label for="customMessage" class="block font-semibold text-gray-900 mb-2 text-sm lg:text-base">
+                        <label for="customMessage" class="block font-semibold text-gray-900 dark:text-white mb-2 text-sm lg:text-base">
                             <i class="fas fa-comment-dots text-primary-600 mr-2"></i>
                             Votre message (optionnel)
                         </label>
@@ -641,7 +641,7 @@
                                   rows="4" 
                                   class="w-full border-2 border-primary-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none text-sm resize-none"
                                   placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
-                        <small class="text-gray-500 text-xs lg:text-sm mt-2 block">
+                        <small class="text-gray-500 dark:text-gray-400 text-xs lg:text-sm mt-2 block">
                             <i class="fas fa-info-circle mr-1"></i>
                             Un message automatique sera envoyé si vous laissez ce champ vide
                         </small>
@@ -654,19 +654,19 @@
                             Comment ça fonctionne ?
                         </div>
                         <ul class="space-y-2">
-                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
                                 <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Votre demande est envoyée instantanément au vendeur
                             </li>
-                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
                                 <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Le vendeur peut vous proposer une réduction personnalisée
                             </li>
-                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
                                 <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 La réduction est appliquée automatiquement si acceptée
                             </li>
-                            <li class="flex items-start text-gray-600 text-xs lg:text-sm">
+                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
                                 <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Vous recevez une notification de la réponse
                             </li>
@@ -675,9 +675,9 @@
                 </div>
                 
                 <!-- Footer -->
-                <div class="bg-gray-50 p-4 lg:p-6 flex flex-col sm:flex-row gap-3 lg:gap-4">
+                <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 flex flex-col sm:flex-row gap-3 lg:gap-4">
                     <button type="button" onclick="closeModal('contactModal')" 
-                        class="flex-1 bg-white text-gray-700 border-2 border-gray-300 font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:bg-gray-50 hover:-translate-y-0.5 text-sm lg:text-base">
+                        class="flex-1 bg-white dark:bg-gray-800 text-gray-700 border-2 border-gray-300 font-semibold py-2.5 lg:py-3 rounded-lg lg:rounded-xl transition-all duration-300 hover:bg-gray-50 dark:bg-gray-900 hover:-translate-y-0.5 text-sm lg:text-base">
                         <i class="fas fa-times mr-2"></i>
                         Annuler
                     </button>
@@ -700,7 +700,7 @@ function openModal(modalId) {
         modal.classList.remove('opacity-0', 'invisible');
         modal.classList.add('opacity-100', 'visible');
         
-        const modalContent = modal.querySelector('.bg-white');
+        const modalContent = modal.querySelector('.bg-white dark:bg-gray-800');
         if (modalContent) {
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
@@ -717,7 +717,7 @@ function closeModal(modalId) {
         modal.classList.remove('opacity-100', 'visible');
         modal.classList.add('opacity-0', 'invisible');
         
-        const modalContent = modal.querySelector('.bg-white');
+        const modalContent = modal.querySelector('.bg-white dark:bg-gray-800');
         if (modalContent) {
             modalContent.classList.remove('scale-100');
             modalContent.classList.add('scale-95');
@@ -853,7 +853,7 @@ function submitDiscountRequest() {
             info.innerHTML = `
                 <div class="mb-2">
                     <strong class="block mb-1">Réduction de ${discount.discount_percentage}% !</strong>
-                    <small class="text-gray-500 block">
+                    <small class="text-gray-500 dark:text-gray-400 block">
                         Prix original: <span class="line-through">${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(discount.original_price)}</span>
                     </small>
                     <small class="block mt-1">
@@ -861,10 +861,10 @@ function submitDiscountRequest() {
                             Nouveau prix: ${currencySymbol} ${formattedFinalPrice}
                         </span>
                     </small>
-                    <small class="text-gray-500 block mt-1">
+                    <small class="text-gray-500 dark:text-gray-400 block mt-1">
                         Économie: <span class="font-bold text-emerald-600">${currencySymbol} ${formattedSavings}</span>
                     </small>
-                    <small class="text-gray-500 block mt-1">
+                    <small class="text-gray-500 dark:text-gray-400 block mt-1">
                         <i class="fas fa-clock mr-1"></i>
                         Valable jusqu'au ${new Date(discount.expires_at).toLocaleDateString('fr-FR')}
                     </small>
@@ -1012,7 +1012,7 @@ function showNotification(message, type = 'info') {
     
     const color = colorMap[type];
     
-    notification.className = `fixed top-5 right-5 z-50 min-w-80 max-w-md bg-white rounded-2xl shadow-2xl p-5 border-l-4 border-${color}-500 animate-slide-in-right`;
+    notification.className = `fixed top-5 right-5 z-50 min-w-80 max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-5 border-l-4 border-${color}-500 animate-slide-in-right`;
     
     notification.innerHTML = `
         <div class="flex items-start gap-4">
@@ -1020,10 +1020,10 @@ function showNotification(message, type = 'info') {
                 <i class="fas fa-${iconMap[type]} text-${color}-600 text-lg"></i>
             </div>
             <div class="flex-1">
-                <p class="font-semibold text-gray-900 leading-relaxed">${message}</p>
+                <p class="font-semibold text-gray-900 dark:text-white leading-relaxed">${message}</p>
             </div>
             <button onclick="this.parentElement.parentElement.remove()" 
-                class="w-6 h-6 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-all duration-200">
+                class="w-6 h-6 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-all duration-200">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>

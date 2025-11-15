@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -6,9 +6,9 @@
     <title>Test de statut - VintApp</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 p-8">
-    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">🔍 Test de Restriction Géographique</h1>
+<body class="bg-gray-100 dark:bg-gray-800 p-8">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">🔍 Test de Restriction Géographique</h1>
         
         <div class="space-y-4">
             <div class="bg-blue-50 border-l-4 border-blue-500 p-4">
@@ -39,9 +39,9 @@
                 </p>
             </div>
             @else
-            <div class="bg-gray-50 border-l-4 border-gray-500 p-4">
-                <h2 class="font-semibold text-gray-800">Statut utilisateur</h2>
-                <p class="text-gray-900">❌ Non connecté (visiteur)</p>
+            <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-gray-500 p-4">
+                <h2 class="font-semibold text-gray-800 dark:text-gray-100">Statut utilisateur</h2>
+                <p class="text-gray-900 dark:text-white">❌ Non connecté (visiteur)</p>
             </div>
             @endauth
 

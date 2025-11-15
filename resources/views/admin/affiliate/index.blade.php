@@ -1,19 +1,19 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des Affiliations')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 p-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
     <!-- Header Section -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
         <div class="mb-4 lg:mb-0">
-            <h1 class="text-3xl font-bold text-gray-900 flex items-center">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
                 <svg class="w-8 h-8 mr-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                 </svg>
                 Gestion des Affiliations
             </h1>
-            <p class="text-gray-600 mt-1">Gérez les parrains et leurs performances</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-1">Gérez les parrains et leurs performances</p>
         </div>
         
         <div class="flex flex-col sm:flex-row gap-3">
@@ -23,7 +23,7 @@
                 </svg>
                 Nouvelle Récompense
             </button>
-            <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-colors duration-200">
+            <button onclick="refreshData()" class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors duration-200">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                 </svg>
@@ -41,7 +41,7 @@
                     <p class="text-blue-100 text-sm font-medium">Total Parrains</p>
                     <p class="text-3xl font-bold" id="totalReferrers">-</p>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="bg-white dark:bg-gray-800 bg-opacity-20 rounded-lg p-3">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>
@@ -56,7 +56,7 @@
                     <p class="text-green-100 text-sm font-medium">Parrainages Actifs</p>
                     <p class="text-3xl font-bold" id="activeReferrals">-</p>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="bg-white dark:bg-gray-800 bg-opacity-20 rounded-lg p-3">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zM4 18v-4h3v4h2v-7.5c0-1.1-.9-2-2-2s-2 .9-2 2V16H2v2h2zm14.5-2.5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5.67 1.5 1.5 1.5 1.5-.67 1.5-1.5z"/>
                     </svg>
@@ -71,7 +71,7 @@
                     <p class="text-primary-100 text-sm font-medium">Points Distribués</p>
                     <p class="text-3xl font-bold" id="totalPoints">-</p>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="bg-white dark:bg-gray-800 bg-opacity-20 rounded-lg p-3">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                     </svg>
@@ -86,7 +86,7 @@
                     <p class="text-yellow-100 text-sm font-medium">Récompenses Données</p>
                     <p class="text-3xl font-bold" id="totalRewards">-</p>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-lg p-3">
+                <div class="bg-white dark:bg-gray-800 bg-opacity-20 rounded-lg p-3">
                     <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -96,9 +96,9 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
             </svg>
             Filtres et Recherche
@@ -106,9 +106,9 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
             <div class="lg:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Rechercher un parrain</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rechercher un parrain</label>
                 <div class="relative">
-                    <input type="text" id="searchInput" placeholder="Nom ou email..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="text" id="searchInput" placeholder="Nom ou email..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <svg class="absolute left-3 top-2.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -116,8 +116,8 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Niveau minimum</label>
-                <select id="levelFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Niveau minimum</label>
+                <select id="levelFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">Tous niveaux</option>
                     <option value="1">Niveau 1+</option>
                     <option value="2">Niveau 2+</option>
@@ -128,8 +128,8 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Parrainages min</label>
-                <select id="referralsFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Parrainages min</label>
+                <select id="referralsFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">Tous</option>
                     <option value="5">5+</option>
                     <option value="10">10+</option>
@@ -139,8 +139,8 @@
             </div>
             
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Période</label>
-                <select id="periodFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Période</label>
+                <select id="periodFilter" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                     <option value="">Toutes</option>
                     <option value="this_month">Ce mois</option>
                     <option value="last_month">Mois dernier</option>
@@ -152,7 +152,7 @@
                 <button onclick="applyFilters()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200">
                     Filtrer
                 </button>
-                <button onclick="resetFilters()" class="px-3 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg transition-colors duration-200">
+                <button onclick="resetFilters()" class="px-3 py-2 border border-gray-300 hover:bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 rounded-lg transition-colors duration-200">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                     </svg>
@@ -164,9 +164,9 @@
     <!-- Content Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         <!-- Top Performers -->
-        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+        <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                     <svg class="w-5 h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
@@ -184,9 +184,9 @@
         </div>
 
         <!-- Level Distribution Chart -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                     <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
@@ -200,9 +200,9 @@
     </div>
 
     <!-- Referrers Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-        <div class="p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4 sm:mb-0">Tous les Parrains</h3>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 sm:mb-0">Tous les Parrains</h3>
             <button onclick="bulkReward()" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
@@ -213,22 +213,22 @@
         
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50">
+                <thead class="bg-gray-50 dark:bg-gray-900">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
-                            <input type="checkbox" id="selectAll" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-8">
+                            <input type="checkbox" id="selectAll" class="h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500">
                         </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parrain</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Niveau</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Parrainages</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Points</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière Activité</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Récompenses</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Parrain</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Niveau</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Parrainages</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Points</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dernière Activité</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Récompenses</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="referrersTableBody" class="bg-white divide-y divide-gray-200">
+                <tbody id="referrersTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                     <tr>
                         <td colspan="9" class="px-6 py-12 text-center">
                             <div class="flex justify-center">
@@ -241,7 +241,7 @@
         </div>
         
         <!-- Pagination -->
-        <div class="px-6 py-4 border-t border-gray-200">
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
             <nav class="flex justify-center">
                 <ul id="pagination" class="flex space-x-2">
                     <!-- Pagination will be generated here -->
@@ -258,17 +258,17 @@
         <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onclick="closeRewardModal()"></div>
         
         <!-- Modal Content -->
-        <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white dark:bg-gray-800 rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
             <!-- Header -->
-            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+            <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <svg class="w-6 h-6 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
                         </svg>
                         Attribuer une Récompense
                     </h3>
-                    <button onclick="closeRewardModal()" class="text-gray-400 hover:text-gray-600">
+                    <button onclick="closeRewardModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -281,15 +281,15 @@
                 <form id="rewardForm" class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Sélectionner le parrain</label>
-                            <select id="selectedReferrer" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Sélectionner le parrain</label>
+                            <select id="selectedReferrer" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">Chargement...</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Type de récompense</label>
-                            <select id="rewardType" required onchange="toggleRewardSections()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type de récompense</label>
+                            <select id="rewardType" required onchange="toggleRewardSections()" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">Choisir le type...</option>
                                 <option value="points">Points Bonus</option>
                                 <option value="cash">Récompense en Argent</option>
@@ -304,12 +304,12 @@
                         <h4 class="font-medium text-blue-900 mb-3">Configuration des Points</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Nombre de points</label>
-                                <input type="number" id="bonusPoints" min="1" max="10000" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nombre de points</label>
+                                <input type="number" id="bonusPoints" min="1" max="10000" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Multiplicateur</label>
-                                <select id="pointsMultiplier" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Multiplicateur</label>
+                                <select id="pointsMultiplier" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                     <option value="1">x1 (Normal)</option>
                                     <option value="1.5">x1.5</option>
                                     <option value="2">x2 (Double)</option>
@@ -324,12 +324,12 @@
                         <h4 class="font-medium text-green-900 mb-3">Récompense Financière</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Montant</label>
-                                <input type="number" id="cashAmount" min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Montant</label>
+                                <input type="number" id="cashAmount" min="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Devise</label>
-                                <select id="cashCurrency" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Devise</label>
+                                <select id="cashCurrency" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                     <option value="USD">USD - Dollar Américain</option>
                                     <option value="CDF">CDF - Franc Congolais</option>
                                 </select>
@@ -342,8 +342,8 @@
                         <h4 class="font-medium text-primary-900 mb-3">Badge Spécial</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Type de badge</label>
-                                <select id="badgeName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type de badge</label>
+                                <select id="badgeName" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="top_referrer">Top Parrain</option>
                                     <option value="super_ambassador">Super Ambassadeur</option>
                                     <option value="loyalty_champion">Champion de Fidélité</option>
@@ -351,8 +351,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Durée de validité</label>
-                                <select id="badgeDuration" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Durée de validité</label>
+                                <select id="badgeDuration" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                                     <option value="permanent">Permanent</option>
                                     <option value="30">30 jours</option>
                                     <option value="90">90 jours</option>
@@ -367,16 +367,16 @@
                         <h4 class="font-medium text-yellow-900 mb-3">Boost de Niveau</h4>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Niveaux à ajouter</label>
-                                <select id="levelBoost" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Niveaux à ajouter</label>
+                                <select id="levelBoost" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
                                     <option value="1">+1 Niveau</option>
                                     <option value="2">+2 Niveaux</option>
                                     <option value="3">+3 Niveaux</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Type de boost</label>
-                                <select id="boostType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type de boost</label>
+                                <select id="boostType" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500">
                                     <option value="permanent">Permanent</option>
                                     <option value="temporary">Temporaire (30 jours)</option>
                                 </select>
@@ -385,26 +385,26 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Raison de la récompense</label>
-                        <textarea id="rewardReason" rows="3" placeholder="Expliquez pourquoi vous attribuez cette récompense..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Raison de la récompense</label>
+                        <textarea id="rewardReason" rows="3" placeholder="Expliquez pourquoi vous attribuez cette récompense..." class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="flex items-center">
-                            <input type="checkbox" id="sendNotification" checked class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="sendNotification" class="ml-2 text-sm text-gray-700">Envoyer une notification au parrain</label>
+                            <input type="checkbox" id="sendNotification" checked class="h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500">
+                            <label for="sendNotification" class="ml-2 text-sm text-gray-700 dark:text-gray-200">Envoyer une notification au parrain</label>
                         </div>
                         <div class="flex items-center">
-                            <input type="checkbox" id="makePublic" class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
-                            <label for="makePublic" class="ml-2 text-sm text-gray-700">Rendre publique dans le classement</label>
+                            <input type="checkbox" id="makePublic" class="h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500">
+                            <label for="makePublic" class="ml-2 text-sm text-gray-700 dark:text-gray-200">Rendre publique dans le classement</label>
                         </div>
                     </div>
                 </form>
             </div>
             
             <!-- Footer -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end space-x-3">
-                <button onclick="closeRewardModal()" class="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                <button onclick="closeRewardModal()" class="px-4 py-2 text-gray-700 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                     Annuler
                 </button>
                 <button onclick="submitReward()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors duration-200 flex items-center">
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const container = document.getElementById('topPerformersList');
         
         if (performers.length === 0) {
-            container.innerHTML = '<div class="text-center text-gray-500 py-8">Aucun parrain trouvé</div>';
+            container.innerHTML = '<div class="text-center text-gray-500 dark:text-gray-400 py-8">Aucun parrain trouvé</div>';
             return;
         }
         
@@ -532,20 +532,20 @@ document.addEventListener('DOMContentLoaded', function() {
         performers.forEach((performer, index) => {
             const medals = ['🥇', '🥈', '🥉'];
             const medal = index < 3 ? medals[index] : '👤';
-            const bgColor = index < 3 ? 'bg-gradient-to-r from-yellow-50 to-orange-50' : 'bg-gray-50';
+            const bgColor = index < 3 ? 'bg-gradient-to-r from-yellow-50 to-orange-50' : 'bg-gray-50 dark:bg-gray-900';
             
             html += `
                 <div class="flex items-center justify-between p-4 rounded-lg ${bgColor} hover:shadow-md transition-shadow duration-200">
                     <div class="flex items-center">
                         <div class="text-2xl mr-4">${medal}</div>
                         <div>
-                            <div class="font-semibold text-gray-900">${performer.name}</div>
-                            <div class="text-sm text-gray-600">${performer.email}</div>
+                            <div class="font-semibold text-gray-900 dark:text-white">${performer.name}</div>
+                            <div class="text-sm text-gray-600 dark:text-gray-300">${performer.email}</div>
                         </div>
                     </div>
                     <div class="text-right">
                         <div class="font-bold text-lg text-indigo-600">${performer.referrals_count}</div>
-                        <div class="text-sm text-gray-500">parrainages</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">parrainages</div>
                     </div>
                 </div>
             `;
@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.getElementById('referrersTableBody');
         
         if (referrers.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500">Aucun parrain trouvé</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">Aucun parrain trouvé</td></tr>';
             return;
         }
         
@@ -616,11 +616,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 new Date(referrer.last_activity_at).toLocaleDateString() : 'Jamais';
             
             html += `
-                <tr class="hover:bg-gray-50">
+                <tr class="hover:bg-gray-50 dark:bg-gray-900">
                     <td class="px-6 py-4">
-                        <input type="checkbox" class="referrer-checkbox h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500" value="${referrer.id}">
+                        <input type="checkbox" class="referrer-checkbox h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500" value="${referrer.id}">
                     </td>
-                    <td class="px-6 py-4 text-sm font-medium text-gray-900">
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                         ${((currentPage - 1) * 10) + index + 1}
                     </td>
                     <td class="px-6 py-4">
@@ -629,8 +629,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 ${referrer.name.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                                <div class="font-medium text-gray-900">${referrer.name}</div>
-                                <div class="text-sm text-gray-500">${referrer.email}</div>
+                                <div class="font-medium text-gray-900 dark:text-white">${referrer.name}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">${referrer.email}</div>
                             </div>
                         </div>
                     </td>
@@ -645,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td class="px-6 py-4 text-center font-semibold text-primary-600">
                         ${referrer.total_points || 0}
                     </td>
-                    <td class="px-6 py-4 text-center text-sm text-gray-500">
+                    <td class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                         ${lastActivity}
                     </td>
                     <td class="px-6 py-4 text-center">
@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.prev_page_url) {
             html += `
                 <li>
-                    <button onclick="loadReferrers(${data.current_page - 1})" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700">
+                    <button onclick="loadReferrers(${data.current_page - 1})" class="px-3 py-2 ml-0 leading-tight text-gray-500 bg-white dark:bg-gray-800 border border-gray-300 rounded-l-lg hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-200">
                         Précédent
                     </button>
                 </li>
@@ -695,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const isActive = i === data.current_page;
             html += `
                 <li>
-                    <button onclick="loadReferrers(${i})" class="px-3 py-2 leading-tight ${isActive ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700'} border">
+                    <button onclick="loadReferrers(${i})" class="px-3 py-2 leading-tight ${isActive ? 'text-indigo-600 bg-indigo-50 border-indigo-300' : 'text-gray-500 bg-white dark:bg-gray-800 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-200'} border">
                         ${i}
                     </button>
                 </li>
@@ -706,7 +706,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.next_page_url) {
             html += `
                 <li>
-                    <button onclick="loadReferrers(${data.current_page + 1})" class="px-3 py-2 leading-tight text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700">
+                    <button onclick="loadReferrers(${data.current_page + 1})" class="px-3 py-2 leading-tight text-gray-500 bg-white dark:bg-gray-800 border border-gray-300 rounded-r-lg hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-200">
                         Suivant
                     </button>
                 </li>

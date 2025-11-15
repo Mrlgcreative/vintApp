@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Statistiques des transactions')
 
@@ -14,7 +14,7 @@
     <!-- Cartes de statistiques -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total des transactions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-primary-100 dark:bg-primary-900 rounded-md p-3">
                     <svg class="h-6 w-6 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
         </div>
 
         <!-- Transactions en attente -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-md p-3">
                     <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@
         </div>
 
         <!-- Transactions complétées -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 rounded-md p-3">
                     <svg class="h-6 w-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
         </div>
 
         <!-- Total des transactions Mobile Money -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <div class="flex items-center">
                 <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-md p-3">
                     <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@
     <!-- Graphiques et tableaux détaillés -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Transactions par méthode de paiement -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 Transactions par méthode de paiement
             </h3>
@@ -119,7 +119,7 @@
         </div>
 
         <!-- Montant total aujourd'hui -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 Montant total aujourd'hui
             </h3>

@@ -1,13 +1,13 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
-        <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">
             <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-gray-900 font-medium">Mes articles</span>
+            <span class="text-gray-900 dark:text-white font-medium">Mes articles</span>
         </nav>
 
         <!-- En-tête -->
@@ -17,8 +17,8 @@
                     <i class="fas fa-box text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900">Mes articles</h1>
-                    <p class="text-gray-600 mt-1">Gérez votre inventaire et vos ventes</p>
+                    <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Mes articles</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Gérez votre inventaire et vos ventes</p>
                 </div>
             </div>
             <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl transition-all duration-300 font-semibold shadow-lg hover:shadow-xl hover:-translate-y-1">
@@ -36,7 +36,7 @@
                         <h3 class="text-blue-100 text-sm font-medium mb-2">Total</h3>
                         <p class="text-3xl font-bold">{{ $items->total() }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-box text-xl"></i>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         <h3 class="text-emerald-100 text-sm font-medium mb-2">Actifs</h3>
                         <p class="text-3xl font-bold">{{ $items->where('status', 'active')->count() }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-check-circle text-xl"></i>
                     </div>
                 </div>
@@ -62,7 +62,7 @@
                         <h3 class="text-amber-100 text-sm font-medium mb-2">Vendus</h3>
                         <p class="text-3xl font-bold">{{ $items->where('status', 'sold')->count() }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-shopping-cart text-xl"></i>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         <h3 class="text-gray-100 text-sm font-medium mb-2">Inactifs</h3>
                         <p class="text-3xl font-bold">{{ $items->where('status', 'inactive')->count() }}</p>
                     </div>
-                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center">
                         <i class="fas fa-pause-circle text-xl"></i>
                     </div>
                 </div>
@@ -85,13 +85,13 @@
         <!-- Liste des articles -->
         <div class="w-full">
             @if($items->count() > 0)
-                <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
-                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 overflow-hidden">
+                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 dark:border-gray-700 p-6">
                         <div class="flex items-center">
                             <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-3">
                                 <i class="fas fa-list"></i>
                             </div>
-                            <h2 class="text-xl font-bold text-gray-900">Gérer mes articles</h2>
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-white">Gérer mes articles</h2>
                         </div>
                     </div>
                     
@@ -100,19 +100,19 @@
                         <div class="hidden lg:block overflow-x-auto">
                             <table class="w-full">
                                 <thead>
-                                    <tr class="border-b border-gray-200">
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Image</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Nom</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Prix</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Statut</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Vues</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Date</th>
-                                        <th class="text-left py-4 px-2 font-semibold text-gray-700">Actions</th>
+                                    <tr class="border-b border-gray-200 dark:border-gray-700">
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Image</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Nom</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Prix</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Statut</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Vues</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Date</th>
+                                        <th class="text-left py-4 px-2 font-semibold text-gray-700 dark:text-gray-200">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($items as $item)
-                                        <tr class="border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-200">
+                                        <tr class="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900/50 transition-colors duration-200">
                                             <td class="py-4 px-2">
                                                 @if($item->images && count($item->images) > 0)
                                                     <img src="{{ Storage::url($item->images[0]) }}" 
@@ -120,22 +120,22 @@
                                                          class="w-12 h-12 object-cover rounded-lg shadow-sm"
                                                          loading="lazy">
                                                 @else
-                                                    <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                    <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                                                         <i class="fas fa-image text-gray-400"></i>
                                                     </div>
                                                 @endif
                                             </td>
                                             <td class="py-4 px-2">
                                                 <div>
-                                                    <p class="font-semibold text-gray-900">{{ Str::limit($item->name, 30) }}</p>
-                                                    <p class="text-sm text-gray-500">{{ $item->category->name }}</p>
+                                                    <p class="font-semibold text-gray-900 dark:text-white">{{ Str::limit($item->name, 30) }}</p>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->category->name }}</p>
                                                 </div>
                                             </td>
                                             <td class="py-4 px-2">
                                                 <span class="font-bold text-blue-600">{{ $item->formatted_price }}</span>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <select class="px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
+                                                <select class="px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
                                                         data-item-id="{{ $item->id }}">
                                                     <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
                                                     <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
@@ -146,7 +146,7 @@
                                                 <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm font-medium">{{ $item->views }}</span>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <span class="text-sm text-gray-500">{{ $item->created_at->format('d/m/Y') }}</span>
+                                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $item->created_at->format('d/m/Y') }}</span>
                                             </td>
                                             <td class="py-4 px-2">
                                                 <div class="flex space-x-2">
@@ -170,7 +170,7 @@
                                                             <i class="fas fa-rocket text-sm"></i>
                                                         </a>
                                                     @else
-                                                        <div class="w-8 h-8 bg-gray-100 text-gray-400 rounded-lg flex items-center justify-center" 
+                                                        <div class="w-8 h-8 bg-gray-100 dark:bg-gray-800 text-gray-400 rounded-lg flex items-center justify-center" 
                                                              title="{{ $hasActiveBoost ? 'Article déjà boosté' : 'Article inactif' }}">
                                                             <i class="fas fa-{{ $hasActiveBoost ? 'star' : 'pause' }} text-sm"></i>
                                                         </div>
@@ -192,7 +192,7 @@
                         <!-- Cards responsives pour mobile/tablette -->
                         <div class="lg:hidden space-y-4">
                             @foreach($items as $item)
-                                <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                                <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
                                     <div class="flex items-start space-x-4">
                                         <!-- Image -->
                                         <div class="flex-shrink-0">
@@ -202,7 +202,7 @@
                                                      class="w-16 h-16 object-cover rounded-lg shadow-sm"
                                                      loading="lazy">
                                             @else
-                                                <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                                                <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                                                     <i class="fas fa-image text-gray-400"></i>
                                                 </div>
                                             @endif
@@ -212,8 +212,8 @@
                                         <div class="flex-1 min-w-0">
                                             <div class="flex justify-between items-start mb-2">
                                                 <div>
-                                                    <h3 class="font-semibold text-gray-900 truncate">{{ $item->name }}</h3>
-                                                    <p class="text-sm text-gray-500">{{ $item->category->name }}</p>
+                                                    <h3 class="font-semibold text-gray-900 dark:text-white truncate">{{ $item->name }}</h3>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->category->name }}</p>
                                                 </div>
                                                 <span class="font-bold text-blue-600 text-lg">{{ $item->formatted_price }}</span>
                                             </div>
@@ -221,13 +221,13 @@
                                             <div class="flex items-center justify-between mb-3">
                                                 <div class="flex items-center space-x-3">
                                                     <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-medium">{{ $item->views }} vues</span>
-                                                    <span class="text-xs text-gray-500">{{ $item->created_at->format('d/m/Y') }}</span>
+                                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ $item->created_at->format('d/m/Y') }}</span>
                                                 </div>
                                             </div>
                                             
                                             <!-- Statut -->
                                             <div class="mb-3">
-                                                <select class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
+                                                <select class="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
                                                         data-item-id="{{ $item->id }}">
                                                     <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
                                                     <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
@@ -277,12 +277,12 @@
                     </div>
                 </div>
             @else
-                <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 p-12 text-center">
-                    <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl shadow-xl shadow-blue-600/10 border border-gray-100/50 p-12 text-center">
+                    <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-box-open text-4xl text-gray-400"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Vous n'avez pas encore d'articles</h3>
-                    <p class="text-gray-600 mb-8">Commencez par vendre votre premier article !</p>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Vous n'avez pas encore d'articles</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-8">Commencez par vendre votre premier article !</p>
                     <a href="{{ route('items.create') }}" class="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-8 py-4 rounded-xl transition-all duration-300 font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 inline-flex items-center">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre mon premier article
@@ -350,7 +350,7 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
             const itemId = this.dataset.itemId;
-            const row = this.closest('tr') || this.closest('.bg-gray-50');
+            const row = this.closest('tr') || this.closest('.bg-gray-50 dark:bg-gray-900');
             
             if (confirm('Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.')) {
                 // Désactiver le bouton pendant la suppression
@@ -434,7 +434,7 @@ function showNotification(message, type = 'info') {
                 <p class="font-semibold text-sm">${message}</p>
             </div>
             <button onclick="this.parentElement.parentElement.remove()" 
-                class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+                class="w-6 h-6 rounded-full hover:bg-white dark:bg-gray-800/20 flex items-center justify-center transition-all duration-200">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>

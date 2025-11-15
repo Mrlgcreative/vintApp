@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Logs système')
 
@@ -6,8 +6,8 @@
 <!-- Header -->
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
     <div>
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Logs système</h1>
-        <p class="text-gray-600 mt-1">Consultez et gérez les logs de l'application</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Logs système</h1>
+        <p class="text-gray-600 dark:text-gray-300 mt-1">Consultez et gérez les logs de l'application</p>
     </div>
     <div class="flex flex-wrap gap-3">
         <button onclick="clearLogs()" 
@@ -25,10 +25,10 @@
 
 <!-- Statistiques -->
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Erreurs aujourd'hui</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Erreurs aujourd'hui</p>
                 <p class="text-3xl font-bold text-red-600 mt-2">{{ $stats['error'] ?? 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -37,10 +37,10 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Avertissements</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Avertissements</p>
                 <p class="text-3xl font-bold text-yellow-600 mt-2">{{ $stats['warning'] ?? 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -49,10 +49,10 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Informations</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Informations</p>
                 <p class="text-3xl font-bold text-blue-600 mt-2">{{ $stats['info'] ?? 0 }}</p>
             </div>
             <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -61,10 +61,10 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-sm font-medium text-gray-600">Taille du fichier</p>
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">Taille du fichier</p>
                 <p class="text-3xl font-bold text-primary-600 mt-2">{{ number_format(($fileSize ?? 0) / 1024, 0) }} KB</p>
             </div>
             <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
@@ -75,17 +75,17 @@
 </div>
 
 <!-- Filtres -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-8">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-8">
     <div class="p-6">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4">Filtres</h2>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Filtres</h2>
         <form method="GET" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Niveau -->
             <div>
-                <label for="level" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="level" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-layer-group text-gray-400 mr-1"></i>
                     Niveau
                 </label>
-                <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white" 
+                <select class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors bg-white dark:bg-gray-800" 
                         id="level" 
                         name="level">
                     <option value="">Tous les niveaux</option>
@@ -102,12 +102,12 @@
             
             <!-- Date -->
             <div>
-                <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="date" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-calendar text-gray-400 mr-1"></i>
                     Date
                 </label>
                 <input type="date" 
-                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
+                       class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                        id="date" 
                        name="date" 
                        value="{{ request('date') }}">
@@ -115,12 +115,12 @@
             
             <!-- Recherche -->
             <div>
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-2">
+                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     <i class="fas fa-search text-gray-400 mr-1"></i>
                     Recherche
                 </label>
                 <input type="text" 
-                       class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
+                       class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors" 
                        id="search" 
                        name="search" 
                        placeholder="Rechercher..." 
@@ -129,7 +129,7 @@
             
             <!-- Bouton -->
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">&nbsp;</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">&nbsp;</label>
                 <button type="submit" 
                         class="w-full inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-lg text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors">
                     <i class="fas fa-filter mr-2"></i>
@@ -141,34 +141,34 @@
 </div>
 
 <!-- Logs - Vue Desktop -->
-<div class="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <h2 class="text-lg font-semibold text-gray-900">
-            <i class="fas fa-list mr-2 text-gray-600"></i>
+<div class="hidden lg:block bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+            <i class="fas fa-list mr-2 text-gray-600 dark:text-gray-300"></i>
             Entrées des logs
         </h2>
     </div>
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Niveau
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Message
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Contexte
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Date/Heure
                     </th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                 @forelse($logs as $log)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
                             @php
                                 $levelLower = strtolower($log['level']);
@@ -176,8 +176,8 @@
                                     'emergency', 'alert', 'critical', 'error' => 'bg-red-100 text-red-800',
                                     'warning' => 'bg-yellow-100 text-yellow-800',
                                     'notice', 'info' => 'bg-blue-100 text-blue-800',
-                                    'debug' => 'bg-gray-100 text-gray-800',
-                                    default => 'bg-gray-100 text-gray-800',
+                                    'debug' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
+                                    default => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
                                 };
                                 $icon = match($levelLower) {
                                     'emergency', 'alert', 'critical', 'error' => 'fa-times-circle',
@@ -193,12 +193,12 @@
                             </span>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-900 max-w-md">
+                            <div class="text-sm text-gray-900 dark:text-white max-w-md">
                                 {{ \Illuminate\Support\Str::limit($log['message'], 100) }}
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-600 space-y-1">
+                            <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                                 <div><span class="font-medium">Env:</span> {{ $log['env'] }}</div>
                                 @if(!empty(trim($log['context'])))
                                     <div class="text-xs max-w-xs overflow-hidden">
@@ -209,8 +209,8 @@
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</div>
-                            <div class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</div>
                         </td>
                     </tr>
                 @empty
@@ -238,15 +238,15 @@
                 'emergency', 'alert', 'critical', 'error' => 'bg-red-50 border-red-100',
                 'warning' => 'bg-yellow-50 border-yellow-100',
                 'notice', 'info' => 'bg-blue-50 border-blue-100',
-                'debug' => 'bg-gray-50 border-gray-100',
-                default => 'bg-gray-50 border-gray-100',
+                'debug' => 'bg-gray-50 dark:bg-gray-900 border-gray-100',
+                default => 'bg-gray-50 dark:bg-gray-900 border-gray-100',
             };
             $badgeClass = match($levelLower) {
                 'emergency', 'alert', 'critical', 'error' => 'bg-red-100 text-red-800',
                 'warning' => 'bg-yellow-100 text-yellow-800',
                 'notice', 'info' => 'bg-blue-100 text-blue-800',
-                'debug' => 'bg-gray-100 text-gray-800',
-                default => 'bg-gray-100 text-gray-800',
+                'debug' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
+                default => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
             };
             $icon = match($levelLower) {
                 'emergency', 'alert', 'critical', 'error' => 'fa-times-circle',
@@ -257,39 +257,39 @@
             };
         @endphp
         
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="{{ $bgClass }} px-4 py-3 border-b">
                 <div class="flex items-center justify-between">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold {{ $badgeClass }}">
                         <i class="fas {{ $icon }} mr-1"></i>
                         {{ strtoupper($log['level']) }}
                     </span>
-                    <span class="text-xs text-gray-600">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</span>
+                    <span class="text-xs text-gray-600 dark:text-gray-300">{{ \Carbon\Carbon::parse($log['datetime'])->diffForHumans() }}</span>
                 </div>
             </div>
             <div class="p-4 space-y-3">
                 <div>
-                    <p class="text-sm font-medium text-gray-700 mb-1">Message:</p>
-                    <p class="text-sm text-gray-900">{{ $log['message'] }}</p>
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Message:</p>
+                    <p class="text-sm text-gray-900 dark:text-white">{{ $log['message'] }}</p>
                 </div>
                 <div>
-                    <p class="text-sm font-medium text-gray-700 mb-1">Contexte:</p>
-                    <div class="text-sm text-gray-600 space-y-1">
+                    <p class="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Contexte:</p>
+                    <div class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
                         <div><span class="font-medium">Env:</span> {{ $log['env'] }}</div>
                         @if(!empty(trim($log['context'])))
-                            <div class="text-xs bg-gray-50 p-2 rounded max-h-24 overflow-auto">
+                            <div class="text-xs bg-gray-50 dark:bg-gray-900 p-2 rounded max-h-24 overflow-auto">
                                 <pre class="whitespace-pre-wrap text-xs">{{ \Illuminate\Support\Str::limit($log['context'], 200) }}</pre>
                             </div>
                         @endif
                     </div>
                 </div>
                 <div class="pt-2 border-t border-gray-100">
-                    <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ \Carbon\Carbon::parse($log['datetime'])->format('d/m/Y H:i:s') }}</p>
                 </div>
             </div>
         </div>
     @empty
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12">
             <div class="flex flex-col items-center justify-center text-gray-400">
                 <i class="fas fa-inbox text-5xl mb-4"></i>
                 <p class="text-lg font-medium text-center">Aucun log trouvé</p>

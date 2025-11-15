@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Dashboard Boost')
 
@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Storage;
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
         <div class="mb-4 lg:mb-0">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Dashboard Boost</h1>
-            <p class="text-gray-600">Gérez vos boosts et consultez vos statistiques</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard Boost</h1>
+            <p class="text-gray-600 dark:text-gray-300">Gérez vos boosts et consultez vos statistiques</p>
         </div>
         <a href="{{ route('boost.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
             <i class="fas fa-plus mr-2"></i>Nouveau Boost
@@ -51,17 +51,17 @@ use Illuminate\Support\Facades\Storage;
     </div>
 
     <!-- Onglets -->
-    <div class="border-b border-gray-200 mb-6">
+    <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
             <button class="tab-button active border-b-2 border-blue-500 py-2 px-1 text-blue-600 font-medium text-sm whitespace-nowrap" 
                     id="active-tab" data-target="#active" type="button" role="tab">
                 <i class="fas fa-play-circle mr-2"></i>Boosts Actifs ({{ $activeBoosts->count() }})
             </button>
-            <button class="tab-button border-b-2 border-transparent py-2 px-1 text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap" 
+            <button class="tab-button border-b-2 border-transparent py-2 px-1 text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 font-medium text-sm whitespace-nowrap" 
                     id="expired-tab" data-target="#expired" type="button" role="tab">
                 <i class="fas fa-clock mr-2"></i>Boosts Expirés ({{ $expiredBoosts->count() }})
             </button>
-            <button class="tab-button border-b-2 border-transparent py-2 px-1 text-gray-500 hover:text-gray-700 hover:border-gray-300 font-medium text-sm whitespace-nowrap" 
+            <button class="tab-button border-b-2 border-transparent py-2 px-1 text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 font-medium text-sm whitespace-nowrap" 
                     id="cancelled-tab" data-target="#cancelled" type="button" role="tab">
                 <i class="fas fa-times-circle mr-2"></i>Boosts Annulés ({{ $cancelledBoosts->count() }})
             </button>
@@ -73,7 +73,7 @@ use Illuminate\Support\Facades\Storage;
         <!-- Boosts Actifs -->
         <div class="tab-pane active" id="active" role="tabpanel">
             @forelse($activeBoosts as $boost)
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 p-6 boost-item hover:shadow-md transition-shadow duration-200 border-l-4 border-l-blue-500">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-4 p-6 boost-item hover:shadow-md transition-shadow duration-200 border-l-4 border-l-blue-500">
                 <div class="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
                     <!-- Image du produit -->
                     <div class="flex-shrink-0">
@@ -81,7 +81,7 @@ use Illuminate\Support\Facades\Storage;
                         <img src="{{ Storage::url($boost->item->images[0]) }}" alt="{{ $boost->item->name }}" 
                              class="w-20 h-20 object-cover rounded-lg">
                         @else
-                        <div class="w-20 h-20 bg-gray-100 flex items-center justify-center rounded-lg">
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
                             <i class="fas fa-image text-2xl text-gray-400"></i>
                         </div>
                         @endif
@@ -89,8 +89,8 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Informations du produit -->
                     <div class="flex-grow">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $boost->item->name }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $boost->item->name }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium text-white" 
                               style="background-color: {{ $boost->boostType->color ?? '#3B82F6' }};">
                             <i class="{{ $boost->boostType->icon ?? 'fas fa-star' }} mr-1"></i>
@@ -100,25 +100,25 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Progression -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-2">Progression</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Progression</div>
                         @php
                             $progress = $boost->getProgressPercentage();
                         @endphp
-                        <div class="w-24 bg-gray-200 rounded-full h-2 mb-1">
+                        <div class="w-24 bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-1">
                             <div class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: {{ $progress }}%"></div>
                         </div>
-                        <span class="text-xs text-gray-600">{{ round($progress) }}%</span>
+                        <span class="text-xs text-gray-600 dark:text-gray-300">{{ round($progress) }}%</span>
                     </div>
                     
                     <!-- Temps restant -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-1">Temps restant</div>
-                        <div class="font-semibold text-gray-900">{{ $boost->getRemainingTimeForHumans() }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temps restant</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ $boost->getRemainingTimeForHumans() }}</div>
                     </div>
                     
                     <!-- Statistiques et actions -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-2">Statistiques</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Statistiques</div>
                         <div class="flex justify-center space-x-4 text-sm mb-3">
                             <span class="flex items-center text-cyan-600" title="Vues">
                                 <i class="fas fa-eye mr-1"></i>{{ $boost->views_generated ?? 0 }}
@@ -127,7 +127,7 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="fas fa-mouse-pointer mr-1"></i>{{ $boost->clicks_generated ?? 0 }}
                             </span>
                         </div>
-                        <button class="inline-flex items-center px-3 py-1.5 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 cancel-boost-btn" 
+                        <button class="inline-flex items-center px-3 py-1.5 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white dark:bg-gray-800 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 cancel-boost-btn" 
                                 data-boost-id="{{ $boost->id }}" 
                                 data-boost-title="{{ $boost->item->name }}">
                             <i class="fas fa-stop mr-1.5"></i>Annuler
@@ -140,7 +140,7 @@ use Illuminate\Support\Facades\Storage;
                 <div class="flex justify-center mb-4">
                     <i class="fas fa-rocket text-6xl text-gray-300"></i>
                 </div>
-                <h4 class="text-xl font-medium text-gray-500 mb-2">Aucun boost actif</h4>
+                <h4 class="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2">Aucun boost actif</h4>
                 <p class="text-gray-400 mb-6">Commencez par booster un de vos produits pour augmenter sa visibilité.</p>
                 <a href="{{ route('boost.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
                     <i class="fas fa-plus mr-2"></i>Créer un boost
@@ -152,7 +152,7 @@ use Illuminate\Support\Facades\Storage;
         <!-- Boosts Expirés -->
         <div class="tab-pane hidden" id="expired" role="tabpanel">
             @forelse($expiredBoosts as $boost)
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 p-6 boost-item opacity-75 border-l-4 border-l-gray-400">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-4 p-6 boost-item opacity-75 border-l-4 border-l-gray-400">
                 <div class="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
                     <!-- Image du produit -->
                     <div class="flex-shrink-0">
@@ -160,7 +160,7 @@ use Illuminate\Support\Facades\Storage;
                         <img src="{{ Storage::url($boost->item->images[0]) }}" alt="{{ $boost->item->name }}" 
                              class="w-20 h-20 object-cover rounded-lg">
                         @else
-                        <div class="w-20 h-20 bg-gray-100 flex items-center justify-center rounded-lg">
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
                             <i class="fas fa-image text-2xl text-gray-400"></i>
                         </div>
                         @endif
@@ -168,8 +168,8 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Informations du produit -->
                     <div class="flex-grow">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $boost->item->name }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $boost->item->name }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-500 text-white">
                             <i class="{{ $boost->boostType->icon ?? 'fas fa-star' }} mr-1"></i>
                             {{ $boost->boostType->name }}
@@ -178,19 +178,19 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Durée -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-1">Durée</div>
-                        <div class="font-semibold text-gray-900">{{ $boost->duration }} jour{{ $boost->duration > 1 ? 's' : '' }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Durée</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ $boost->duration }} jour{{ $boost->duration > 1 ? 's' : '' }}</div>
                     </div>
                     
                     <!-- Coût total -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-1">Coût total</div>
-                        <div class="font-semibold text-gray-900">{{ number_format($boost->total_price, 0, ',', ' ') }} CDF</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Coût total</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ number_format($boost->total_price, 0, ',', ' ') }} CDF</div>
                     </div>
                     
                     <!-- Résultats -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-2">Résultats</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Résultats</div>
                         <div class="flex justify-center space-x-4 text-sm mb-1">
                             <span class="flex items-center text-cyan-600" title="Vues">
                                 <i class="fas fa-eye mr-1"></i>{{ $boost->views_generated ?? 0 }}
@@ -199,7 +199,7 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="fas fa-mouse-pointer mr-1"></i>{{ $boost->clicks_generated ?? 0 }}
                             </span>
                         </div>
-                        <div class="text-xs text-gray-500">Expiré le {{ $boost->expires_at->format('d/m/Y') }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Expiré le {{ $boost->expires_at->format('d/m/Y') }}</div>
                     </div>
                 </div>
             </div>
@@ -208,7 +208,7 @@ use Illuminate\Support\Facades\Storage;
                 <div class="flex justify-center mb-4">
                     <i class="fas fa-clock text-6xl text-gray-300"></i>
                 </div>
-                <h4 class="text-xl font-medium text-gray-500 mb-2">Aucun boost expiré</h4>
+                <h4 class="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2">Aucun boost expiré</h4>
                 <p class="text-gray-400">Les boosts expirés apparaîtront ici.</p>
             </div>
             @endforelse
@@ -217,7 +217,7 @@ use Illuminate\Support\Facades\Storage;
         <!-- Boosts Annulés -->
         <div class="tab-pane hidden" id="cancelled" role="tabpanel">
             @forelse($cancelledBoosts as $boost)
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 p-6 boost-item opacity-75 border-l-4 border-l-red-400">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-4 p-6 boost-item opacity-75 border-l-4 border-l-red-400">
                 <div class="flex flex-col lg:flex-row lg:items-center space-y-4 lg:space-y-0 lg:space-x-6">
                     <!-- Image du produit -->
                     <div class="flex-shrink-0">
@@ -225,7 +225,7 @@ use Illuminate\Support\Facades\Storage;
                         <img src="{{ Storage::url($boost->item->images[0]) }}" alt="{{ $boost->item->name }}" 
                              class="w-20 h-20 object-cover rounded-lg">
                         @else
-                        <div class="w-20 h-20 bg-gray-100 flex items-center justify-center rounded-lg">
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 flex items-center justify-center rounded-lg">
                             <i class="fas fa-image text-2xl text-gray-400"></i>
                         </div>
                         @endif
@@ -233,8 +233,8 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Informations du produit -->
                     <div class="flex-grow">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ $boost->item->name }}</h3>
-                        <p class="text-sm text-gray-500 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $boost->item->name }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">{{ $boost->item->category->name ?? 'N/A' }}</p>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-500 text-white">
                             <i class="fas fa-times mr-1"></i>Annulé
                         </span>
@@ -242,19 +242,19 @@ use Illuminate\Support\Facades\Storage;
                     
                     <!-- Durée prévue -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-1">Durée prévue</div>
-                        <div class="font-semibold text-gray-900">{{ $boost->duration }} jour{{ $boost->duration > 1 ? 's' : '' }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Durée prévue</div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ $boost->duration }} jour{{ $boost->duration > 1 ? 's' : '' }}</div>
                     </div>
                     
                     <!-- Remboursé -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-1">Remboursé</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Remboursé</div>
                         <div class="font-semibold text-green-600">{{ number_format($boost->refund_amount ?? 0, 0, ',', ' ') }} CDF</div>
                     </div>
                     
                     <!-- Résultats -->
                     <div class="text-center">
-                        <div class="text-sm text-gray-500 mb-2">Résultats</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">Résultats</div>
                         <div class="flex justify-center space-x-4 text-sm mb-1">
                             <span class="flex items-center text-cyan-600" title="Vues">
                                 <i class="fas fa-eye mr-1"></i>{{ $boost->views_generated ?? 0 }}
@@ -263,7 +263,7 @@ use Illuminate\Support\Facades\Storage;
                                 <i class="fas fa-mouse-pointer mr-1"></i>{{ $boost->clicks_generated ?? 0 }}
                             </span>
                         </div>
-                        <div class="text-xs text-gray-500">Annulé le {{ $boost->cancelled_at?->format('d/m/Y') }}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Annulé le {{ $boost->cancelled_at?->format('d/m/Y') }}</div>
                     </div>
                 </div>
             </div>
@@ -272,7 +272,7 @@ use Illuminate\Support\Facades\Storage;
                 <div class="flex justify-center mb-4">
                     <i class="fas fa-times-circle text-6xl text-gray-300"></i>
                 </div>
-                <h4 class="text-xl font-medium text-gray-500 mb-2">Aucun boost annulé</h4>
+                <h4 class="text-xl font-medium text-gray-500 dark:text-gray-400 mb-2">Aucun boost annulé</h4>
                 <p class="text-gray-400">Les boosts annulés apparaîtront ici.</p>
             </div>
             @endforelse
@@ -284,22 +284,22 @@ use Illuminate\Support\Facades\Storage;
 <div class="fixed inset-0 z-50 hidden" id="cancelBoostModal" aria-hidden="true">
     <div class="flex items-center justify-center min-h-screen p-4">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeCancelModal()"></div>
-        <div class="relative bg-white rounded-lg shadow-xl max-w-lg w-full">
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full">
             <!-- Header -->
-            <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-triangle text-yellow-500 text-xl mr-3"></i>
-                    <h3 class="text-lg font-semibold text-gray-900">Annuler le boost</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Annuler le boost</h3>
                 </div>
-                <button type="button" class="text-gray-400 hover:text-gray-600 transition-colors" onclick="closeCancelModal()">
+                <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors" onclick="closeCancelModal()">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             
             <!-- Body -->
             <div class="p-6">
-                <p class="text-gray-700 mb-4">
-                    Êtes-vous sûr de vouloir annuler le boost pour le produit <strong id="boostItemTitle" class="text-gray-900"></strong> ?
+                <p class="text-gray-700 dark:text-gray-200 mb-4">
+                    Êtes-vous sûr de vouloir annuler le boost pour le produit <strong id="boostItemTitle" class="text-gray-900 dark:text-white"></strong> ?
                 </p>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <div class="flex items-start">
@@ -317,8 +317,8 @@ use Illuminate\Support\Facades\Storage;
             </div>
             
             <!-- Footer -->
-            <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
-                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors" onclick="closeCancelModal()">
+            <div class="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50 dark:bg-gray-900">
+                <button type="button" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors" onclick="closeCancelModal()">
                     Non, garder le boost
                 </button>
                 <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors" id="confirmCancelBoost">
@@ -347,12 +347,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Désactiver tous les onglets
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active', 'border-blue-500', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700 dark:text-gray-200', 'hover:border-gray-300 dark:border-gray-600');
             });
             
             // Activer l'onglet cliqué
             this.classList.add('active', 'border-blue-500', 'text-blue-600');
-            this.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+            this.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700 dark:text-gray-200', 'hover:border-gray-300 dark:border-gray-600');
             
             // Masquer tous les contenus
             document.querySelectorAll('.tab-pane').forEach(pane => {

@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5 px-3" style="background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 50%, #faf5ff 100%);">
@@ -7,7 +7,7 @@
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
             <!-- Header avec icône -->
             <div class="card-header text-white text-center py-4 border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="d-inline-flex align-items-center justify-content-center bg-white rounded-circle mb-3" style="width: 80px; height: 80px;">
+                <div class="d-inline-flex align-items-center justify-content-center bg-white dark:bg-gray-800 rounded-circle mb-3" style="width: 80px; height: 80px;">
                     <i class="fas fa-envelope-open-text fa-3x text-primary"></i>
                 </div>
                 <h1 class="h3 fw-bold mb-2">Vérifiez votre email</h1>

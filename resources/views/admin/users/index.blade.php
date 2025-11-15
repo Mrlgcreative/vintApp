@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Gestion des utilisateurs')
 @section('page-title', 'Gestion des utilisateurs')
@@ -18,7 +18,7 @@
         <span class="sm:hidden">Actions</span>
     </button>
     <a href="{{ route('admin.users.index', ['export' => 'csv']) }}" 
-       class="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+       class="inline-flex items-center justify-center px-3 sm:px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
         <i class="fas fa-download mr-2"></i>
         <span class="hidden sm:inline">Exporter CSV</span>
         <span class="sm:hidden">Export</span>
@@ -28,14 +28,14 @@
 
 @section('content')
 <!-- Filtres -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-4 sm:mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-4 sm:mb-6">
     <div class="p-4 sm:p-6">
         <form method="GET" action="{{ route('admin.users.index') }}" class="space-y-4">
             <!-- Ligne 1: Recherche -->
             <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
-                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
+                    <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rechercher</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
                            id="search" name="search" value="{{ request('search') }}" placeholder="Nom ou email...">
                 </div>
             </div>
@@ -43,8 +43,8 @@
             <!-- Ligne 2: Filtres -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Rôle</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
+                    <label for="role" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Rôle</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
                             id="role" name="role">
                         <option value="">Tous les rôles</option>
                         <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
@@ -52,8 +52,8 @@
                     </select>
                 </div>
                 <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
+                    <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-sm sm:text-base" 
                             id="status" name="status">
                         <option value="">Tous les statuts</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
@@ -69,7 +69,7 @@
                             <i class="fas fa-search mr-2"></i>Filtrer
                         </button>
                         <a href="{{ route('admin.users.index') }}" 
-                           class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                           class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                             <i class="fas fa-undo mr-2"></i>Reset
                         </a>
                     </div>
@@ -80,9 +80,9 @@
 </div>
 
 <!-- Tableau des utilisateurs -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <div class="px-4 sm:px-6 py-4 border-b border-gray-200">
-        <h3 class="text-base sm:text-lg font-semibold text-gray-900">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
             Utilisateurs ({{ $users->total() }})
         </h3>
     </div>
@@ -91,20 +91,20 @@
             <!-- Vue Desktop (Table) - Cachée sur mobile et tablet -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôles</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Wallets</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière connexion</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Utilisateur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Rôles</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Wallets</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dernière connexion</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                         @foreach($users as $user)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if($user->avatar)
@@ -115,14 +115,14 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                            <div class="text-sm text-gray-500">ID: {{ $user->id }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $user->name }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $user->id }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <span class="text-sm text-gray-900">{{ $user->email }}</span>
+                                        <span class="text-sm text-gray-900 dark:text-white">{{ $user->email }}</span>
                                         @if($user->email_verified_at)
                                             <i class="fas fa-check-circle text-green-500 ml-2" title="Email vérifié"></i>
                                         @else
@@ -139,7 +139,7 @@
                                         @endforeach
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                     <div class="space-y-1">
                                         @if($user->usdWallet())
                                             <div>USD: {{ number_format($user->usdWallet()->balance, 2) }}</div>
@@ -149,16 +149,16 @@
                                         @endif
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                     @if($user->last_seen)
-                                        <div class="text-sm text-gray-900">{{ $user->last_seen->diffForHumans() }}</div>
+                                        <div class="text-sm text-gray-900 dark:text-white">{{ $user->last_seen->diffForHumans() }}</div>
                                         @if($user->isOnline())
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 En ligne
                                             </span>
                                         @endif
                                     @else
-                                        <span class="text-gray-500">Jamais connecté</span>
+                                        <span class="text-gray-500 dark:text-gray-400">Jamais connecté</span>
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -182,20 +182,20 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="relative">
-                                        <button class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                                        <button class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500" 
                                                 type="button" onclick="toggleDropdown('user-desktop-{{ $user->id }}-dropdown')">
                                             Actions
                                             <i class="fas fa-chevron-down ml-1"></i>
                                         </button>
-                                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+                                        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
                                              id="user-desktop-{{ $user->id }}-dropdown">
                                             <div class="py-1">
                                                 <a href="{{ route('admin.users.show', $user) }}" 
-                                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                                     <i class="fas fa-eye mr-3 w-4"></i>Voir détails
                                                 </a>
                                                 <a href="{{ route('admin.users.edit', $user) }}" 
-                                                   class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                                     <i class="fas fa-edit mr-3 w-4"></i>Modifier
                                                 </a>
                                                 <div class="border-t border-gray-100"></div>
@@ -255,7 +255,7 @@
             <!-- Vue Mobile/Tablet (Cards) - Cachée sur desktop -->
             <div class="lg:hidden divide-y divide-gray-200">
                 @foreach($users as $user)
-                    <div class="p-4 hover:bg-gray-50 transition-colors duration-150">
+                    <div class="p-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                         <!-- En-tête utilisateur -->
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex items-center space-x-3 flex-1 min-w-0">
@@ -267,8 +267,8 @@
                                     </div>
                                 @endif
                                 <div class="flex-1 min-w-0">
-                                    <h4 class="text-sm font-semibold text-gray-900 truncate">{{ $user->name }}</h4>
-                                    <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $user->name }}</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
                                     <p class="text-xs text-gray-400">ID: {{ $user->id }}</p>
                                 </div>
                             </div>
@@ -276,18 +276,18 @@
                             <!-- Menu actions mobile -->
                             <div class="relative ml-2 flex-shrink-0">
                                 <button onclick="toggleMobileDropdown({{ $user->id }})" 
-                                        class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-ellipsis-v text-gray-500"></i>
+                                        class="p-2 rounded-lg hover:bg-gray-100 dark:bg-gray-800 transition-colors">
+                                    <i class="fas fa-ellipsis-v text-gray-500 dark:text-gray-400"></i>
                                 </button>
                                 <div id="mobile-dropdown-{{ $user->id }}" 
-                                     class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20">
+                                     class="hidden absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20">
                                     <div class="py-1">
                                         <a href="{{ route('admin.users.show', $user) }}" 
-                                           class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                             <i class="fas fa-eye mr-3 w-4"></i>Voir détails
                                         </a>
                                         <a href="{{ route('admin.users.edit', $user) }}" 
-                                           class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                           class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                             <i class="fas fa-edit mr-3 w-4"></i>Modifier
                                         </a>
                                         <div class="border-t border-gray-100"></div>
@@ -398,7 +398,7 @@
                             @endif
 
                             <!-- Dernière connexion -->
-                            <div class="text-xs text-gray-500">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
                                 @if($user->last_seen)
                                     <i class="fas fa-clock mr-1"></i>
                                     {{ $user->last_seen->diffForHumans() }}
@@ -414,14 +414,14 @@
         @else
             <div class="text-center py-12">
                 <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
-                <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Aucun utilisateur trouvé</h3>
-                <p class="text-sm text-gray-500">Aucun utilisateur ne correspond aux critères de recherche.</p>
+                <h3 class="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun utilisateur trouvé</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Aucun utilisateur ne correspond aux critères de recherche.</p>
             </div>
         @endif
     </div>
     
     @if($users->hasPages())
-        <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div class="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50 dark:bg-gray-900">
             {{ $users->appends(request()->query())->links() }}
         </div>
     @endif

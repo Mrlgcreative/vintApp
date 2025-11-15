@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <!-- Toast notification Bootstrap -->
@@ -14,7 +14,7 @@
 </div>
 
 <!-- Container principal avec Tailwind -->
-<div class="min-h-screen bg-white pb-20">
+<div class="min-h-screen bg-white dark:bg-gray-800 pb-20">
 
     <!-- Hero Carrousel -->
     @if(isset($heroSlides) && $heroSlides->count() > 0)
@@ -362,7 +362,7 @@
     <!-- Catégories populaires -->
     <section class="px-3 px-md-4 py-4 py-md-6">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4 fw-bold text-gray-800 mb-0">
+            <h2 class="h4 fw-bold text-gray-800 dark:text-gray-100 mb-0">
                 <i class="fas fa-layer-group text-primary-600 me-2"></i>
                 Catégories populaires
             </h2>
@@ -377,7 +377,7 @@
                             <div class="fs-2 mb-2">
                                 <i class="fas fa-{{ $category->icon ?? 'tag' }} text-primary-600"></i>
                             </div>
-                            <h6 class="card-title mb-1 text-gray-800 fw-semibold" style="font-size: 0.9rem;">
+                            <h6 class="card-title mb-1 text-gray-800 dark:text-gray-100 fw-semibold" style="font-size: 0.9rem;">
                                 {{ $category->name }}
                             </h6>
                             <small class="text-muted">{{ $category->items_count ?? 0 }} articles</small>
@@ -409,7 +409,7 @@
     <!-- Articles populaires -->
     <section class="px-3 px-md-4 py-4 py-md-6">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="h4 fw-bold text-gray-800 mb-0">
+            <h2 class="h4 fw-bold text-gray-800 dark:text-gray-100 mb-0">
                 <i class="fas fa-box text-primary-600 me-2"></i>
                 Derniers articles
             </h2>
@@ -447,7 +447,7 @@
                         
                         <!-- Info produit -->
                         <div class="card-body p-3">
-                            <h6 class="card-title mb-2 fw-semibold text-gray-800" 
+                            <h6 class="card-title mb-2 fw-semibold text-gray-800 dark:text-gray-100" 
                                 style="font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
                                 {{ $item->name }}
                             </h6>
@@ -473,8 +473,8 @@
                         <div class="mb-4">
                             <i class="fas fa-box-open text-gray-300" style="font-size: 4rem;"></i>
                         </div>
-                        <h4 class="h5 fw-semibold text-gray-600 mb-2">Aucun article disponible</h4>
-                        <p class="text-gray-500 mb-4">Soyez le premier à publier un article !</p>
+                        <h4 class="h5 fw-semibold text-gray-600 dark:text-gray-300 mb-2">Aucun article disponible</h4>
+                        <p class="text-gray-500 dark:text-gray-400 mb-4">Soyez le premier à publier un article !</p>
                         @auth
                             <a href="{{ route('items.create') }}" 
                                class="btn btn-purple btn-lg rounded-pill px-5 fw-semibold shadow">
@@ -541,7 +541,7 @@
     background-color: #f3e8ff !important;
 }
 
-.text-gray-800 {
+.text-gray-800 dark:text-gray-100 {
     color: #1f2937 !important;
 }
 

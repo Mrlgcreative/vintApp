@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Traçage Commande #' . $order->order_number)
 @section('page-title', 'Traçage de la Commande #' . $order->order_number)
@@ -116,8 +116,8 @@
         <div class="info-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Numéro de commande</p>
-                    <p class="text-lg font-bold text-gray-900">{{ $order->order_number }}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Numéro de commande</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $order->order_number }}</p>
                 </div>
                 <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center">
                     <i class="fas fa-hashtag text-primary-600 text-xl"></i>
@@ -128,7 +128,7 @@
         <div class="info-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Statut</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Statut</p>
                     @if($currentTracking)
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $currentTracking->status_badge_class }}">
                             <i class="fas {{ $currentTracking->status_icon }} mr-1"></i>
@@ -149,7 +149,7 @@
         <div class="info-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Distance restante</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Distance restante</p>
                     @if($currentTracking && $currentTracking->distance_to_customer)
                         <p class="text-lg font-bold text-primary-600">{{ $currentTracking->distance_to_customer }} km</p>
                     @else
@@ -165,9 +165,9 @@
         <div class="info-card">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600 mb-1">Livraison estimée</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">Livraison estimée</p>
                     @if($currentTracking && $currentTracking->estimated_delivery)
-                        <p class="text-sm font-semibold {{ $currentTracking->is_late ? 'text-red-600' : 'text-gray-900' }}">
+                        <p class="text-sm font-semibold {{ $currentTracking->is_late ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">
                             {{ $currentTracking->formatted_estimated_delivery }}
                         </p>
                     @else
@@ -182,9 +182,9 @@
     </div>
 
     <!-- Carte de suivi GPS -->
-    <div class="bg-white rounded-xl shadow-lg p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-bold text-gray-900">
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">
                 <i class="fas fa-map-marked-alt text-primary-600 mr-2"></i>
                 Carte de Suivi GPS
             </h3>
@@ -204,12 +204,12 @@
                 <div class="flex items-center">
                     <i class="fas fa-route text-primary-600 text-2xl mr-3"></i>
                     <div>
-                        <p class="text-sm text-gray-600">Distance entre livreur et client</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Distance entre livreur et client</p>
                         <p class="text-2xl font-bold text-primary-700" id="distanceValue">- km</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-xs text-gray-500">Temps estimé</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Temps estimé</p>
                     <p class="text-lg font-semibold text-blue-600" id="estimatedTime">-</p>
                 </div>
             </div>
@@ -284,8 +284,8 @@
     </div>
 
     <!-- Historique de traçage -->
-    <div class="bg-white rounded-xl shadow-lg p-6">
-        <h3 class="text-xl font-bold text-gray-900 mb-6">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
             <i class="fas fa-history text-primary-600 mr-2"></i>
             Historique de Suivi
         </h3>
@@ -294,7 +294,7 @@
             <div class="tracking-timeline">
                 @foreach($trackingHistory->sortByDesc('tracked_at') as $index => $tracking)
                     <div class="tracking-item {{ $index === 0 ? 'current' : 'completed' }}">
-                        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                             <div class="flex items-start justify-between mb-2">
                                 <div class="flex items-center">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $tracking->status_badge_class }}">
@@ -302,24 +302,24 @@
                                         {{ $tracking->status_text }}
                                     </span>
                                     @if($tracking->carrier)
-                                        <span class="ml-2 text-xs text-gray-600">
+                                        <span class="ml-2 text-xs text-gray-600 dark:text-gray-300">
                                             <i class="fas fa-shipping-fast mr-1"></i>
                                             {{ $tracking->carrier }}
                                         </span>
                                     @endif
                                 </div>
-                                <span class="text-sm text-gray-500">
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
                                     <i class="far fa-clock mr-1"></i>
                                     {{ $tracking->formatted_tracked_at }}
                                 </span>
                             </div>
                             
                             @if($tracking->description)
-                                <p class="text-sm text-gray-700 mb-2">{{ $tracking->description }}</p>
+                                <p class="text-sm text-gray-700 dark:text-gray-200 mb-2">{{ $tracking->description }}</p>
                             @endif
                             
                             @if($tracking->address)
-                                <p class="text-xs text-gray-600">
+                                <p class="text-xs text-gray-600 dark:text-gray-300">
                                     <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
                                     {{ $tracking->address }}
                                     @if($tracking->city)
@@ -341,7 +341,7 @@
         @else
             <div class="text-center py-12">
                 <i class="fas fa-exclamation-circle text-gray-300 text-5xl mb-4"></i>
-                <p class="text-gray-500 text-lg">Aucun historique de suivi disponible</p>
+                <p class="text-gray-500 dark:text-gray-400 text-lg">Aucun historique de suivi disponible</p>
                 <button onclick="openUpdateTrackingModal()" class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">
                     <i class="fas fa-plus mr-2"></i> Ajouter une position
                 </button>
@@ -352,7 +352,7 @@
 
 <!-- Modal pour mettre à jour le tracking -->
 <div id="updateTrackingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" style="display: none;">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         <div class="bg-gradient-to-r from-primary-600 to-primary-800 px-6 py-4 rounded-t-2xl">
             <h3 class="text-xl font-bold text-white">
                 <i class="fas fa-map-marker-alt mr-2"></i>
@@ -365,8 +365,8 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Statut *</label>
-                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut *</label>
+                    <select name="status" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                         <option value="pending">En attente</option>
                         <option value="picked_up">Collecté</option>
                         <option value="in_transit">En transit</option>
@@ -378,8 +378,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Transporteur</label>
-                    <input type="text" name="carrier" placeholder="Ex: DHL, FedEx, Local..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Transporteur</label>
+                    <input type="text" name="carrier" placeholder="Ex: DHL, FedEx, Local..." class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                 </div>
             </div>
 
@@ -392,13 +392,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
-                    <input type="number" step="0.00000001" name="latitude" id="modal_latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Latitude</label>
+                    <input type="number" step="0.00000001" name="latitude" id="modal_latitude" placeholder="-4.325000" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
-                    <input type="number" step="0.00000001" name="longitude" id="modal_longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Longitude</label>
+                    <input type="number" step="0.00000001" name="longitude" id="modal_longitude" placeholder="15.307778" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500" onchange="calculateModalDistance()">
                 </div>
             </div>
 
@@ -407,47 +407,47 @@
                 <div class="flex items-center">
                     <i class="fas fa-route text-primary-600 text-xl mr-3"></i>
                     <div>
-                        <p class="text-xs text-gray-600">Distance jusqu'au client</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300">Distance jusqu'au client</p>
                         <p class="text-lg font-bold text-primary-700" id="modalDistanceValue">- km</p>
                     </div>
                     <div class="ml-auto text-right">
-                        <p class="text-xs text-gray-600">Temps estimé</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-300">Temps estimé</p>
                         <p class="text-sm font-semibold text-blue-600" id="modalEstimatedTime">-</p>
                     </div>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Adresse Actuelle</label>
-                <input type="text" name="address" placeholder="Ex: Avenue de la Libération, Gombe" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Adresse Actuelle</label>
+                <input type="text" name="address" placeholder="Ex: Avenue de la Libération, Gombe" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
-                    <input type="text" name="city" placeholder="Kinshasa" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Ville</label>
+                    <input type="text" name="city" placeholder="Kinshasa" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Code de Suivi</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Code de Suivi</label>
                     <div class="flex gap-2">
-                        <input type="text" id="tracking_code" name="tracking_code" placeholder="Ex: TRACK123456" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-primary-500">
+                        <input type="text" id="tracking_code" name="tracking_code" placeholder="Ex: TRACK123456" readonly class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary-500">
                         <button type="button" onclick="generateTrackingCode()" class="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition whitespace-nowrap">
                             <i class="fas fa-sync-alt"></i>
                         </button>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">Code généré automatiquement</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Code généré automatiquement</p>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea name="description" rows="3" placeholder="Décrivez l'état actuel de la livraison..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
+                <textarea name="description" rows="3" placeholder="Décrivez l'état actuel de la livraison..." class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500"></textarea>
             </div>
 
             <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Livraison Estimée</label>
-                <input type="datetime-local" name="estimated_delivery" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Livraison Estimée</label>
+                <input type="datetime-local" name="estimated_delivery" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
             </div>
 
             <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
@@ -539,7 +539,7 @@
             </div>
 
             <div class="flex justify-end gap-3">
-                <button type="button" onclick="closeUpdateTrackingModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition">
+                <button type="button" onclick="closeUpdateTrackingModal()" class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition">
                     Annuler
                 </button>
                 <button type="submit" class="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition">

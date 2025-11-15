@@ -1,23 +1,23 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
-        <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-8">
+        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">
             <a href="{{ route('home') }}" class="hover:text-primary-600 transition-colors">Accueil</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <a href="{{ route('items.index') }}" class="hover:text-primary-600 transition-colors">Produits</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-gray-900 font-medium">Vendre un article</span>
+            <span class="text-gray-900 dark:text-white font-medium">Vendre un article</span>
         </nav>
 
         <div class="max-w-4xl mx-auto">
             <!-- Header Card -->
-            <div class="bg-white rounded-2xl lg:rounded-3xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">
                 <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6 lg:p-8">
                     <div class="flex items-center">
-                        <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                        <div class="w-12 h-12 bg-white dark:bg-gray-800/20 rounded-xl flex items-center justify-center mr-4">
                             <i class="fas fa-plus text-xl"></i>
                         </div>
                         <div>
@@ -38,19 +38,19 @@
                                 <div class="w-8 h-8 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-info-circle"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Informations de base</h2>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Informations de base</h2>
                             </div>
 
                             <!-- Nom et Prix -->
                             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                                 <!-- Nom de l'article -->
                                 <div class="lg:col-span-2">
-                                    <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-tag text-primary-600 mr-2"></i>
                                         Nom de l'article *
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('name') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('name') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="name" 
                                            name="name" 
                                            value="{{ old('name') }}" 
@@ -66,12 +66,12 @@
 
                                 <!-- Prix -->
                                 <div>
-                                    <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="price" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-dollar-sign text-primary-600 mr-2"></i>
                                         Prix *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('price') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('price') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="price" 
                                            name="price" 
                                            value="{{ old('price') }}" 
@@ -90,11 +90,11 @@
 
                             <!-- Description -->
                             <div>
-                                <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                     <i class="fas fa-align-left text-primary-600 mr-2"></i>
                                     Description détaillée *
                                 </label>
-                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 resize-none @error('description') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                <textarea class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 resize-none @error('description') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                           id="description" 
                                           name="description" 
                                           rows="4"
@@ -106,7 +106,7 @@
                                         {{ $message }}
                                     </p>
                                 @enderror
-                                <p class="text-gray-500 text-sm mt-2 flex items-center">
+                                <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 flex items-center">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Décrivez votre article en détail pour attirer les acheteurs
                                 </p>
@@ -119,19 +119,19 @@
                                 <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-cogs"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Détails du produit</h2>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Détails du produit</h2>
                             </div>
 
                             <!-- Couleur, Taille, Numéro -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Couleur -->
                                 <div>
-                                    <label for="color" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="color" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-palette text-primary-600 mr-2"></i>
                                         Couleur
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('color') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('color') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="color" 
                                            name="color" 
                                            value="{{ old('color') }}" 
@@ -146,11 +146,11 @@
 
                                 <!-- Taille -->
                                 <div>
-                                    <label for="size" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="size" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-ruler text-primary-600 mr-2"></i>
                                         Taille
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('size') border-red-500 ring-4 ring-red-500/20 @enderror"
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('size') border-red-500 ring-4 ring-red-500/20 @enderror"
                                             id="size"
                                             name="size">
                                         <option value="">Choisir une taille</option>
@@ -172,12 +172,12 @@
 
                                 <!-- Numéro d'article -->
                                 <div>
-                                    <label for="item_number" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="item_number" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-hashtag text-primary-600 mr-2"></i>
                                         Numéro d'article
                                     </label>
                                     <input type="text" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('item_number') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('item_number') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="item_number" 
                                            name="item_number" 
                                            value="{{ old('item_number') }}" 
@@ -195,11 +195,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Catégorie -->
                                 <div>
-                                    <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="category_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-folder text-primary-600 mr-2"></i>
                                         Catégorie *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('category_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('category_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="category_id" 
                                             name="category_id" 
                                             required>
@@ -221,11 +221,11 @@
 
                                 <!-- Marque -->
                                 <div>
-                                    <label for="brand_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="brand_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-trademark text-primary-600 mr-2"></i>
                                         Marque
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('brand_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('brand_id') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="brand_id" 
                                             name="brand_id">
                                         <option value="">Choisir une marque (optionnel)</option>
@@ -249,11 +249,11 @@
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <!-- Devise -->
                                 <div>
-                                    <label for="currency" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="currency" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-money-bill text-primary-600 mr-2"></i>
                                         Devise *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('currency') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('currency') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="currency" 
                                             name="currency" 
                                             required>
@@ -271,11 +271,11 @@
 
                                 <!-- État -->
                                 <div>
-                                    <label for="condition" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="condition" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-star text-primary-600 mr-2"></i>
                                         État de l'article *
                                     </label>
-                                    <select class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('condition') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                    <select class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('condition') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                             id="condition" 
                                             name="condition" 
                                             required>
@@ -296,12 +296,12 @@
 
                                 <!-- Quantité -->
                                 <div>
-                                    <label for="quantity" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <label for="quantity" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                         <i class="fas fa-boxes text-primary-600 mr-2"></i>
                                         Quantité disponible *
                                     </label>
                                     <input type="number" 
-                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('quantity') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('quantity') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="quantity" 
                                            name="quantity" 
                                            value="{{ old('quantity', 1) }}" 
@@ -323,17 +323,17 @@
                                 <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-images"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Photos de l'article</h2>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Photos de l'article</h2>
                             </div>
 
                             <div>
-                                <label for="images" class="block text-sm font-semibold text-gray-700 mb-2">
+                                <label for="images" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                     <i class="fas fa-upload text-primary-600 mr-2"></i>
                                     Sélectionner des images
                                 </label>
                                 <div class="relative">
                                     <input type="file" 
-                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('images.*') border-red-500 ring-4 ring-red-500/20 @enderror" 
+                                           class="w-full px-4 py-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300 @error('images.*') border-red-500 ring-4 ring-red-500/20 @enderror" 
                                            id="images" 
                                            name="images[]" 
                                            multiple 
@@ -341,7 +341,7 @@
                                     <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                                         <div class="text-center">
                                             <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
-                                            <p class="text-gray-500">Glissez vos images ici ou cliquez pour sélectionner</p>
+                                            <p class="text-gray-500 dark:text-gray-400">Glissez vos images ici ou cliquez pour sélectionner</p>
                                         </div>
                                     </div>
                                 </div>
@@ -351,7 +351,7 @@
                                         {{ $message }}
                                     </p>
                                 @enderror
-                                <p class="text-gray-500 text-sm mt-2 flex items-center">
+                                <p class="text-gray-500 dark:text-gray-400 text-sm mt-2 flex items-center">
                                     <i class="fas fa-info-circle mr-1"></i>
                                     Vous pouvez sélectionner plusieurs images. Formats acceptés : JPG, PNG, GIF (max 2MB par image)
                                 </p>
@@ -369,22 +369,22 @@
                                 <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center mr-3">
                                     <i class="fas fa-cogs"></i>
                                 </div>
-                                <h2 class="text-xl font-bold text-gray-900">Spécifications (optionnel)</h2>
+                                <h2 class="text-xl font-bold text-gray-900 dark:text-white">Spécifications (optionnel)</h2>
                             </div>
 
                             <div id="specificationsContainer" class="space-y-4">
                                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row">
                                     <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nom de la spécification</label>
                                         <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
+                                               class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                                                name="specifications[key][]" 
                                                placeholder="Ex: Couleur, Matériau">
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Valeur</label>
                                         <input type="text" 
-                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
+                                               class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                                                name="specifications[value][]" 
                                                placeholder="Ex: Rouge, Coton">
                                     </div>
@@ -403,8 +403,8 @@
                         </div>
 
                         <!-- Boutons -->
-                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200">
-                            <a href="{{ route('items.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-xl transition-all duration-300 font-semibold text-center">
+                        <div class="flex flex-col sm:flex-row justify-between gap-4 pt-8 border-t border-gray-200 dark:border-gray-700">
+                            <a href="{{ route('items.index') }}" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-xl transition-all duration-300 font-semibold text-center">
                                 <i class="fas fa-arrow-left mr-2"></i>
                                 Annuler
                             </a>
@@ -489,16 +489,16 @@ document.addEventListener('DOMContentLoaded', function() {
         newRow.className = 'grid grid-cols-1 md:grid-cols-5 gap-4 items-end specification-row';
         newRow.innerHTML = `
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nom de la spécification</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nom de la spécification</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                        name="specifications[key][]" 
                        placeholder="Ex: Couleur, Matériau">
             </div>
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Valeur</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Valeur</label>
                 <input type="text" 
-                       class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
+                       class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none transition-all duration-300" 
                        name="specifications[value][]" 
                        placeholder="Ex: Rouge, Coton">
             </div>
@@ -527,11 +527,12 @@ document.addEventListener('DOMContentLoaded', function() {
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 field.classList.add('border-red-500', 'ring-4', 'ring-red-500/20');
-                field.classList.remove('border-gray-200');
+                field.classList.remove('border-gray-200 dark:border-gray-700');
                 isValid = false;
             } else {
                 field.classList.remove('border-red-500', 'ring-4', 'ring-red-500/20');
                 field.classList.add('border-gray-200');
+                field.classList.add('dark:border-gray-700');
             }
         });
         
@@ -597,7 +598,7 @@ function showNotification(message, type = 'info') {
                 <p class="font-semibold text-sm">${message}</p>
             </div>
             <button onclick="this.parentElement.parentElement.remove()" 
-                class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+                class="w-6 h-6 rounded-full hover:bg-white dark:bg-gray-800/20 flex items-center justify-center transition-all duration-200">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>

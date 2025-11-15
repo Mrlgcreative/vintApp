@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Mes vérifications d\'authenticité')
 
@@ -7,13 +7,13 @@
     <div class="max-w-6xl mx-auto">
         <!-- En-tête -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Vérifications d'authenticité</h1>
-            <p class="text-gray-600">Gérez toutes vos demandes de vérification et badges d'authenticité</p>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Vérifications d'authenticité</h1>
+            <p class="text-gray-600 dark:text-gray-300">Gérez toutes vos demandes de vérification et badges d'authenticité</p>
         </div>
 
         <!-- Statistiques -->
         <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow-sm p-6 border">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
                 <div class="flex items-center">
                     <div class="p-2 bg-blue-100 rounded-lg">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -21,13 +21,13 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm text-gray-600">Total demandes</p>
-                        <p class="text-2xl font-bold text-gray-900">{{ $stats['total_requests'] }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Total demandes</p>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_requests'] }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-sm p-6 border">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
                 <div class="flex items-center">
                     <div class="p-2 bg-green-100 rounded-lg">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,13 +35,13 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm text-gray-600">Produits vérifiés</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">Produits vérifiés</p>
                         <p class="text-2xl font-bold text-green-600">{{ $stats['verified_items'] }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="bg-white rounded-lg shadow-sm p-6 border">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
                 <div class="flex items-center">
                     <div class="p-2 bg-yellow-100 rounded-lg">
                         <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -49,7 +49,7 @@
                         </svg>
                     </div>
                     <div class="ml-4">
-                        <p class="text-sm text-gray-600">En cours</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">En cours</p>
                         <p class="text-2xl font-bold text-yellow-600">{{ $stats['pending_verifications'] }}</p>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
         </div>
 
         <!-- Filtres et actions -->
-        <div class="bg-white rounded-lg shadow-sm border p-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-4 mb-6">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <select class="border rounded-lg px-3 py-2 text-sm">
@@ -84,7 +84,7 @@
         </div>
 
         <!-- Liste des vérifications -->
-        <div class="bg-white rounded-lg shadow-sm border">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border">
             @if($checks->count() > 0)
                 <div class="divide-y divide-gray-200">
                     @foreach($checks as $check)
@@ -96,14 +96,14 @@
                                              alt="{{ $check->item->name }}" 
                                              class="w-16 h-16 object-cover rounded-lg">
                                     @else
-                                        <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                                             <span class="text-gray-400 text-xs">No image</span>
                                         </div>
                                     @endif
                                     
                                     <div>
-                                        <h3 class="font-semibold text-gray-900 mb-1">{{ $check->item->name }}</h3>
-                                        <p class="text-sm text-gray-600 mb-2">
+                                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{{ $check->item->name }}</h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                             {{ $check->item->brand->name ?? 'Marque non spécifiée' }} • 
                                             {{ $check->item->category->name ?? 'Catégorie' }}
                                         </p>
@@ -115,7 +115,7 @@
                                             </div>
                                         @endif
                                         
-                                        <div class="flex items-center space-x-4 text-sm text-gray-500">
+                                        <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                             <span>Demande #{{ $check->id }}</span>
                                             <span>{{ $check->created_at->format('d/m/Y') }}</span>
                                             @if($check->expert)
@@ -139,7 +139,7 @@
                                         @endif
                                         
                                         <a href="{{ route('authenticity.status', $check->item) }}" 
-                                           class="block w-full text-center bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200">
+                                           class="block w-full text-center bg-gray-100 dark:bg-gray-800 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:bg-gray-700">
                                             Voir détails
                                         </a>
                                         
@@ -153,7 +153,7 @@
                             
                             <!-- Progression rapide -->
                             <div class="mt-4 flex items-center space-x-2">
-                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                     @php
                                         $progress = 20; // Base
                                         if ($check->payment_completed) $progress = 40;
@@ -164,13 +164,13 @@
                                     <div class="h-2 rounded-full {{ $check->isApproved() ? 'bg-green-500' : ($check->isRejected() ? 'bg-red-500' : 'bg-blue-500') }}" 
                                          style="width: {{ $progress }}%"></div>
                                 </div>
-                                <span class="text-sm text-gray-500">{{ $progress }}%</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $progress }}%</span>
                             </div>
                             
                             @if($check->expert_notes)
-                                <div class="mt-3 bg-gray-50 rounded-lg p-3">
-                                    <h5 class="text-sm font-medium text-gray-900 mb-1">Notes de l'expert :</h5>
-                                    <p class="text-sm text-gray-700">{{ Str::limit($check->expert_notes, 150) }}</p>
+                                <div class="mt-3 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
+                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">Notes de l'expert :</h5>
+                                    <p class="text-sm text-gray-700 dark:text-gray-200">{{ Str::limit($check->expert_notes, 150) }}</p>
                                 </div>
                             @endif
                         </div>
@@ -187,13 +187,13 @@
             @else
                 <!-- État vide -->
                 <div class="text-center py-12">
-                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">Aucune vérification</h3>
-                    <p class="text-gray-600 mb-6">Vous n'avez pas encore demandé de vérification d'authenticité pour vos produits.</p>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune vérification</h3>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">Vous n'avez pas encore demandé de vérification d'authenticité pour vos produits.</p>
                     <a href="{{ route('items.index') }}" 
                        class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
                         Voir mes produits

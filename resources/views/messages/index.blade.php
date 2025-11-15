@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Mes conversations avec les vendeurs')
 
@@ -10,7 +10,7 @@
                 <i class="fas fa-store mr-3"></i>
                 Mes conversations avec les vendeurs
             </h2>
-            <p class="text-gray-600 mt-2">Gérez vos discussions et demandes de réduction</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Gérez vos discussions et demandes de réduction</p>
         </div>
         <div>
             <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
@@ -23,9 +23,9 @@
     @if($vendorContacts->count() > 0)
         <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             @foreach($vendorContacts as $contact)
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <!-- En-tête avec le vendeur -->
-                    <div class="bg-gray-50 rounded-t-xl p-4 flex items-center">
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-t-xl p-4 flex items-center">
                         <div class="mr-3">
                             @if($contact->vendor->avatar)
                                 <img src="{{ Storage::url($contact->vendor->avatar) }}" 
@@ -38,8 +38,8 @@
                             @endif
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h6 class="font-semibold text-gray-900 truncate">{{ $contact->vendor->name }}</h6>
-                            <p class="text-sm text-gray-500 flex items-center">
+                            <h6 class="font-semibold text-gray-900 dark:text-white truncate">{{ $contact->vendor->name }}</h6>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center">
                                 <i class="fas fa-calendar mr-1"></i>
                                 Contacté {{ $contact->contact_date->diffForHumans() }}
                             </p>
@@ -59,13 +59,13 @@
                                      alt="{{ $contact->item->name }}" 
                                      class="w-20 h-20 rounded-lg object-cover mr-3 flex-shrink-0">
                             @else
-                                <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-content-center mr-3 flex-shrink-0">
+                                <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-content-center mr-3 flex-shrink-0">
                                     <i class="fas fa-image text-gray-400"></i>
                                 </div>
                             @endif
                             <div class="flex-1 min-w-0">
                                 @if($contact->item)
-                                    <h6 class="font-semibold text-gray-900 mb-1 truncate">{{ $contact->item->name }}</h6>
+                                    <h6 class="font-semibold text-gray-900 dark:text-white mb-1 truncate">{{ $contact->item->name }}</h6>
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="text-blue-600 font-bold">{{ $contact->item->formatted_price }}</span>
                                         @if($contact->has_discount)
@@ -75,16 +75,16 @@
                                             </span>
                                         @endif
                                     </div>
-                                    <p class="text-sm text-gray-500">{{ $contact->item->category->name }}</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $contact->item->category->name }}</p>
                                 @else
-                                    <h6 class="font-semibold text-gray-500 mb-1">Article non disponible</h6>
+                                    <h6 class="font-semibold text-gray-500 dark:text-gray-400 mb-1">Article non disponible</h6>
                                 @endif
                             </div>
                         </div>
 
                         <!-- Dernier message -->
                         @if($contact->last_message)
-                            <div class="border-t border-gray-200 pt-3">
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
                                 <div class="flex items-start">
                                     <div class="mr-2 mt-1">
                                         @if($contact->last_message->sender_id === Auth::id())
@@ -94,7 +94,7 @@
                                         @endif
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm text-gray-700 mb-1 truncate">
+                                        <p class="text-sm text-gray-700 dark:text-gray-200 mb-1 truncate">
                                             @if($contact->last_message->sender_id === Auth::id())
                                                 <span class="font-medium">Vous :</span>
                                             @else
@@ -102,7 +102,7 @@
                                             @endif
                                             {{ $contact->last_message->content ?: 'Fichier joint' }}
                                         </p>
-                                        <p class="text-xs text-gray-500">
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
                                             {{ $contact->last_message_time }}
                                         </p>
                                     </div>
@@ -121,7 +121,7 @@
                             </a>
                             @if($contact->item)
                                 <a href="{{ route('items.show', $contact->item) }}" 
-                                   class="bg-gray-100 text-gray-700 p-2 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center">
+                                   class="bg-gray-100 dark:bg-gray-800 text-gray-700 p-2 rounded-lg hover:bg-gray-200 dark:bg-gray-700 transition-colors flex items-center justify-center">
                                     <i class="fas fa-eye"></i>
                                 </a>
                             @endif
@@ -133,20 +133,20 @@
 
         <!-- Statistiques -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div class="bg-gray-50 rounded-xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1">
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 text-center hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1">
                 <i class="fas fa-store text-4xl text-blue-600 mb-3"></i>
-                <h5 class="text-2xl font-bold text-gray-900">{{ $vendorContacts->count() }}</h5>
-                <p class="text-sm text-gray-600">Vendeurs contactés</p>
+                <h5 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $vendorContacts->count() }}</h5>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Vendeurs contactés</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1">
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 text-center hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1">
                 <i class="fas fa-tag text-4xl text-green-600 mb-3"></i>
-                <h5 class="text-2xl font-bold text-gray-900">{{ $vendorContacts->where('has_discount', true)->count() }}</h5>
-                <p class="text-sm text-gray-600">Réductions obtenues</p>
+                <h5 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $vendorContacts->where('has_discount', true)->count() }}</h5>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Réductions obtenues</p>
             </div>
-            <div class="bg-gray-50 rounded-xl p-6 text-center hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1">
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 text-center hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1">
                 <i class="fas fa-envelope text-4xl text-yellow-600 mb-3"></i>
-                <h5 class="text-2xl font-bold text-gray-900">{{ $vendorContacts->sum('unread_count') }}</h5>
-                <p class="text-sm text-gray-600">Messages non lus</p>
+                <h5 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $vendorContacts->sum('unread_count') }}</h5>
+                <p class="text-sm text-gray-600 dark:text-gray-300">Messages non lus</p>
             </div>
         </div>
     @else
@@ -154,8 +154,8 @@
             <div class="mb-6">
                 <i class="fas fa-store text-6xl text-gray-400"></i>
             </div>
-            <h4 class="text-2xl font-medium text-gray-500 mb-4">Aucun vendeur contacté</h4>
-            <p class="text-gray-500 mb-8 max-w-md mx-auto">
+            <h4 class="text-2xl font-medium text-gray-500 dark:text-gray-400 mb-4">Aucun vendeur contacté</h4>
+            <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">
                 Vous n'avez pas encore contacté de vendeurs pour demander des réductions.<br>
                 Parcourez les produits et utilisez le bouton "Contacter le vendeur" pour commencer.
             </p>

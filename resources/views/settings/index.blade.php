@@ -1,27 +1,27 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Paramètres - VintApp')
 
 @section('meta_description', 'Gérez vos préférences, votre profil et les paramètres de votre compte VintApp.')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 py-6 transition-colors duration-200">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête avec navigation -->
         <div class="mb-8">
             <div class="flex items-center mb-4">
-                <button onclick="history.back()" class="mr-4 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors">
+                <button onclick="history.back()" class="mr-4 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full transition-colors">
                     <i class="fas fa-arrow-left text-lg"></i>
                 </button>
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900">Paramètres</h1>
-                    <p class="text-gray-600 mt-1">Gérez vos préférences et votre compte</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
+                    <p class="text-gray-600 dark:text-gray-300 mt-1">Gérez vos préférences et votre compte</p>
                 </div>
             </div>
         </div>
 
         <!-- Profil utilisateur -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8 transition-colors duration-200">
             <div class="flex items-center space-x-4">
                 @if(Auth::user()->avatar)
                     @php
@@ -42,11 +42,11 @@
                     </div>
                 @endif
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-900">{{ Auth::user()->name }}</h2>
-                    <p class="text-gray-600">{{ Auth::user()->email }}</p>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name }}</h2>
+                    <p class="text-gray-600 dark:text-gray-300">{{ Auth::user()->email }}</p>
                     <div class="flex items-center mt-2">
                         <div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
-                        <span class="text-sm text-green-600 font-medium">Compte actif</span>
+                        <span class="text-sm text-green-600 dark:text-green-400 font-medium">Compte actif</span>
                     </div>
                 </div>
             </div>
@@ -55,58 +55,58 @@
         <!-- Grille des sections -->
         <div class="space-y-8">
             <!-- Section : Mon compte -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <i class="fas fa-user-circle mr-3 text-primary-600"></i>
                         Mon compte
                     </h3>
                 </div>
-                <div class="divide-y divide-gray-200">
-                    <a href="{{ route('profile.edit') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                <div class="divide-y divide-gray-200 dark:divide-gray-600">
+                    <a href="{{ route('profile.edit') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-user-cog text-lg"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-semibold text-gray-900">Modifier mon profil</h4>
-                                    <p class="text-sm text-gray-600">Informations personnelles, photo de profil</p>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Modifier mon profil</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Informations personnelles, photo de profil</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </a>
 
-                    <button onclick="openPersonalizationModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <button onclick="openPersonalizationModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-cogs text-lg"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-semibold text-gray-900">Personnalisation</h4>
-                                    <p class="text-sm text-gray-600">Préférences d'affichage et notifications</p>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Personnalisation</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Préférences d'affichage et notifications</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </button>
 
-                    <button onclick="openThemeModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <button onclick="openThemeModal()" class="w-full text-left px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-300 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-palette text-lg"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-semibold text-gray-900">Thème d'affichage</h4>
-                                    <p class="text-sm text-gray-600">Clair, Sombre ou Automatique</p>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Thème d'affichage</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Clair, Sombre ou Automatique</p>
                                 </div>
                             </div>
                             <div class="flex items-center space-x-2">
-                                <span id="current-theme-badge" class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full font-medium">Auto</span>
-                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                                <span id="current-theme-badge" class="px-3 py-1 bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full font-medium">Auto</span>
+                                <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                             </div>
                         </div>
                     </button>
@@ -114,9 +114,9 @@
             </div>
 
             <!-- Section : Navigation rapide -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-colors duration-200">
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <i class="fas fa-compass mr-3 text-primary-600"></i>
                         Navigation rapide
                     </h3>
@@ -124,38 +124,38 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200">
                     <!-- Colonne 1 -->
                     <div class="divide-y divide-gray-200">
-                        <a href="{{ route('dashboard') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('dashboard') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-tachometer-alt"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Dashboard</h4>
-                                    <p class="text-sm text-gray-600">Vue d'ensemble</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Dashboard</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Vue d'ensemble</p>
                                 </div>
                             </div>
                         </a>
 
-                        <a href="{{ route('orders.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('orders.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Mes commandes</h4>
-                                    <p class="text-sm text-gray-600">Historique d'achats</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Mes commandes</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Historique d'achats</p>
                                 </div>
                             </div>
                         </a>
 
-                        <a href="{{ route('orders.my-sales') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('orders.my-sales') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-dollar-sign"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Mes ventes</h4>
-                                    <p class="text-sm text-gray-600">Articles vendus</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Mes ventes</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Articles vendus</p>
                                 </div>
                             </div>
                         </a>
@@ -163,38 +163,38 @@
 
                     <!-- Colonne 2 -->
                     <div class="divide-y divide-gray-200">
-                        <a href="{{ route('items.my-items') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('items.my-items') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-box"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Mes articles</h4>
-                                    <p class="text-sm text-gray-600">Articles en vente</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Mes articles</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Articles en vente</p>
                                 </div>
                             </div>
                         </a>
 
-                        <a href="{{ route('wallet.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('wallet.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-wallet"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Mon portefeuille</h4>
-                                    <p class="text-sm text-gray-600">Solde et transactions</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Mon portefeuille</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Solde et transactions</p>
                                 </div>
                             </div>
                         </a>
 
-                        <a href="{{ route('messages.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                        <a href="{{ route('messages.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-comments"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Messages</h4>
-                                    <p class="text-sm text-gray-600">Conversations</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Messages</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Conversations</p>
                                 </div>
                             </div>
                         </a>
@@ -202,7 +202,7 @@
                 </div>
 
                 <!-- Affiliation (section spéciale) -->
-                <div class="border-t border-gray-200 bg-gradient-to-r from-primary-50 to-cyan-50">
+                <div class="border-t border-gray-200 dark:border-gray-700 bg-gradient-to-r from-primary-50 to-cyan-50">
                     <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:from-primary-100 hover:to-cyan-100 transition-all group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
@@ -211,59 +211,59 @@
                                 </div>
                                 <div>
                                     <div class="flex items-center space-x-2">
-                                        <h4 class="font-semibold text-gray-900">Programme d'affiliation</h4>
+                                        <h4 class="font-semibold text-gray-900 dark:text-white">Programme d'affiliation</h4>
                                         <span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">NOUVEAU</span>
                                     </div>
-                                    <p class="text-sm text-gray-600">Parrainez vos amis et gagnez des récompenses</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Parrainez vos amis et gagnez des récompenses</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </a>
                 </div>
             </div>
 
             <!-- Section : Catalogue -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <i class="fas fa-store mr-3 text-primary-600"></i>
                         Catalogue
                     </h3>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
-                    <a href="{{ route('brands.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('brands.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-red-100 text-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fas fa-tags"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Marques</h4>
-                                <p class="text-sm text-gray-600">Explorer les marques</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Marques</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Explorer les marques</p>
                             </div>
                         </div>
                     </a>
 
-                    <a href="{{ route('categories.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('categories.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fas fa-layer-group"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Catégories</h4>
-                                <p class="text-sm text-gray-600">Par catégorie</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Catégories</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Par catégorie</p>
                             </div>
                         </div>
                     </a>
 
-                    <a href="{{ route('items.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('items.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fas fa-box-open"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Tous les articles</h4>
-                                <p class="text-sm text-gray-600">Catalogue complet</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Tous les articles</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Catalogue complet</p>
                             </div>
                         </div>
                     </a>
@@ -271,56 +271,56 @@
             </div>
 
             <!-- Section : Aide & Support -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                         <i class="fas fa-question-circle mr-3 text-primary-600"></i>
                         Aide & Support
                     </h3>
                 </div>
                 <div class="divide-y divide-gray-200">
-                    <a href="{{ route('help.index') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('help.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-life-ring"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Centre d'aide</h4>
-                                    <p class="text-sm text-gray-600">FAQ et guides</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Centre d'aide</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">FAQ et guides</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </a>
 
-                    <a href="{{ route('help.index') }}#contact" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('help.index') }}#contact" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Nous contacter</h4>
-                                    <p class="text-sm text-gray-600">Envoyez-nous un message</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Nous contacter</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Envoyez-nous un message</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </a>
 
-                    <a href="{{ route('terms') }}" class="block px-6 py-4 hover:bg-gray-50 transition-colors group">
+                    <a href="{{ route('terms') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-file-contract"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-medium text-gray-900">Conditions d'utilisation</h4>
-                                    <p class="text-sm text-gray-600">CGU et politique de confidentialité</p>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Conditions d'utilisation</h4>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">CGU et politique de confidentialité</p>
                                 </div>
                             </div>
-                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 transition-colors"></i>
+                            <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>
                         </div>
                     </a>
                 </div>
@@ -329,7 +329,7 @@
             <!-- Section : Actions du compte -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Déconnexion -->
-                <div class="bg-white rounded-xl shadow-sm border border-orange-200 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-orange-200 overflow-hidden">
                     <div class="px-6 py-4 bg-orange-50 border-b border-orange-200">
                         <h3 class="text-lg font-semibold text-orange-900 flex items-center">
                             <i class="fas fa-sign-out-alt mr-3 text-orange-600"></i>
@@ -344,12 +344,12 @@
                                 <span>Se déconnecter</span>
                             </button>
                         </form>
-                        <p class="text-sm text-gray-600 mt-2 text-center">Déconnexion sécurisée de votre compte</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-2 text-center">Déconnexion sécurisée de votre compte</p>
                     </div>
                 </div>
 
                 <!-- Zone dangereuse -->
-                <div class="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-red-200 overflow-hidden">
                     <div class="px-6 py-4 bg-red-50 border-b border-red-200">
                         <h3 class="text-lg font-semibold text-red-900 flex items-center">
                             <i class="fas fa-exclamation-triangle mr-3 text-red-600"></i>
@@ -367,7 +367,7 @@
             </div>
 
             <!-- Version et copyright -->
-            <div class="text-center py-8 text-gray-500">
+            <div class="text-center py-8 text-gray-500 dark:text-gray-400">
                 <div class="flex items-center justify-center space-x-2 mb-2">
                     <i class="fas fa-mobile-alt"></i>
                     <span class="font-medium">{{ config('app.name', 'VintApp') }} v1.0.0</span>
@@ -379,63 +379,63 @@
 </div>
 
 <!-- Modal de sélection du thème -->
-<div id="themeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
+<div id="themeModal" class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden transition-colors duration-200">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-palette mr-2 text-primary-600"></i>
                     Choisir un thème
                 </h3>
-                <button onclick="closeThemeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <button onclick="closeThemeModal()" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
         </div>
         <div class="p-6">
             <div class="space-y-3">
-                <button onclick="selectTheme('light')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="light">
+                <button onclick="selectTheme('light')" class="theme-option w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary-300 dark:hover:border-primary-500 transition-colors text-left" data-theme="light">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-sun"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900">Clair</h4>
-                                <p class="text-sm text-gray-600">Thème lumineux</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Clair</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Thème lumineux</p>
                             </div>
                         </div>
-                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                        <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
                     </div>
                 </button>
 
-                <button onclick="selectTheme('dark')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="dark">
+                <button onclick="selectTheme('dark')" class="theme-option w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary-300 dark:hover:border-primary-500 transition-colors text-left" data-theme="dark">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 bg-gray-800 text-white rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-gray-800 dark:bg-gray-600 text-white rounded-lg flex items-center justify-center">
                                 <i class="fas fa-moon"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900">Sombre</h4>
-                                <p class="text-sm text-gray-600">Thème foncé</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Sombre</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Thème foncé</p>
                             </div>
                         </div>
-                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                        <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
                     </div>
                 </button>
 
-                <button onclick="selectTheme('auto')" class="theme-option w-full p-4 border-2 border-gray-200 rounded-lg hover:border-primary-300 transition-colors text-left" data-theme="auto">
+                <button onclick="selectTheme('auto')" class="theme-option w-full p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-primary-300 dark:hover:border-primary-500 transition-colors text-left" data-theme="auto">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center">
                                 <i class="fas fa-magic"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-gray-900">Automatique</h4>
-                                <p class="text-sm text-gray-600">Suit les préférences système</p>
+                                <h4 class="font-semibold text-gray-900 dark:text-white">Automatique</h4>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Suit les préférences système</p>
                             </div>
                         </div>
-                        <i class="fas fa-check text-green-500 hidden theme-check"></i>
+                        <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
                     </div>
                 </button>
             </div>
@@ -445,14 +445,14 @@
 
 <!-- Modal de personnalisation -->
 <div id="personalizationModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h3 class="text-xl font-semibold text-gray-900 flex items-center">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-cogs mr-2 text-green-600"></i>
                     Personnalisation
                 </h3>
-                <button onclick="closePersonalizationModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                <button onclick="closePersonalizationModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -460,19 +460,19 @@
         <div class="p-6 space-y-6">
             <!-- Notifications -->
             <div>
-                <h4 class="font-semibold text-gray-900 mb-3">Notifications</h4>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Notifications</h4>
                 <div class="space-y-3">
-                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-bell text-blue-600"></i>
-                            <span class="text-gray-900">Notifications push</span>
+                            <span class="text-gray-900 dark:text-white">Notifications push</span>
                         </div>
                         <input type="checkbox" class="toggle-switch" checked>
                     </label>
-                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-envelope text-green-600"></i>
-                            <span class="text-gray-900">Notifications email</span>
+                            <span class="text-gray-900 dark:text-white">Notifications email</span>
                         </div>
                         <input type="checkbox" class="toggle-switch" checked>
                     </label>
@@ -481,27 +481,27 @@
 
             <!-- Préférences d'affichage -->
             <div>
-                <h4 class="font-semibold text-gray-900 mb-3">Affichage</h4>
+                <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Affichage</h4>
                 <div class="space-y-3">
-                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-eye text-primary-600"></i>
-                            <span class="text-gray-900">Mode compact</span>
+                            <span class="text-gray-900 dark:text-white">Mode compact</span>
                         </div>
                         <input type="checkbox" class="toggle-switch">
                     </label>
-                    <label class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer">
+                    <label class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer">
                         <div class="flex items-center space-x-3">
                             <i class="fas fa-images text-orange-600"></i>
-                            <span class="text-gray-900">Chargement automatique des images</span>
+                            <span class="text-gray-900 dark:text-white">Chargement automatique des images</span>
                         </div>
                         <input type="checkbox" class="toggle-switch" checked>
                     </label>
                 </div>
             </div>
 
-            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button onclick="closePersonalizationModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button onclick="closePersonalizationModal()" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 transition-colors">
                     Annuler
                 </button>
                 <button class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -514,7 +514,7 @@
 
 <!-- Modal de suppression du compte -->
 <div id="deleteAccountModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="px-6 py-4 bg-red-50 border-b border-red-200">
             <h3 class="text-xl font-semibold text-red-900 flex items-center">
                 <i class="fas fa-exclamation-triangle mr-2 text-red-600"></i>
@@ -530,7 +530,7 @@
             </div>
 
             <div class="mb-6">
-                <p class="text-gray-700 mb-3">En supprimant votre compte, vous perdrez :</p>
+                <p class="text-gray-700 dark:text-gray-200 mb-3">En supprimant votre compte, vous perdrez :</p>
                 <ul class="space-y-2 text-red-600">
                     <li class="flex items-center">
                         <i class="fas fa-times-circle mr-2"></i>
@@ -570,13 +570,13 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label for="delete_password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <label for="delete_password" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Pour confirmer, entrez votre mot de passe :
                         </label>
                         <input type="password" 
                                id="delete_password" 
                                name="password" 
-                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
                                placeholder="Votre mot de passe"
                                required
                                autocomplete="current-password">
@@ -584,15 +584,15 @@
                     
                     <label class="flex items-start space-x-3 cursor-pointer">
                         <input type="checkbox" id="confirmDelete" class="mt-1" required>
-                        <span class="text-sm text-gray-700">
+                        <span class="text-sm text-gray-700 dark:text-gray-200">
                             Je comprends que cette action est définitive et irréversible
                         </span>
                     </label>
                 </div>
             </form>
 
-            <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                <button onclick="closeDeleteAccountModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+            <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button onclick="closeDeleteAccountModal()" class="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 transition-colors">
                     Annuler
                 </button>
                 <button onclick="confirmDeleteAccount()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center space-x-2">
@@ -845,17 +845,46 @@ document.addEventListener('keydown', function(event) {
 }
 
 /* Dark mode support */
+[data-theme="dark"] .bg-gray-50 dark:bg-gray-900 {
+    background-color: #111827;
+}
+
+[data-theme="dark"] .bg-white dark:bg-gray-800 {
+    background-color: #1f2937;
+}
+
+[data-theme="dark"] .text-gray-900 dark:text-white {
+    color: #f9fafb;
+}
+
+[data-theme="dark"] .text-gray-600 dark:text-gray-300 {
+    color: #d1d5db;
+}
+
+[data-theme="dark"] .border-gray-200 dark:border-gray-700 {
+    border-color: #374151;
+}
+
+/* Auto mode avec préférences système */
 @media (prefers-color-scheme: dark) {
-    [data-theme="auto"] .bg-gray-50 {
+    [data-theme="auto"] .bg-gray-50 dark:bg-gray-900 {
+        background-color: #111827;
+    }
+    
+    [data-theme="auto"] .bg-white dark:bg-gray-800 {
         background-color: #1f2937;
     }
     
-    [data-theme="auto"] .text-gray-900 {
+    [data-theme="auto"] .text-gray-900 dark:text-white {
         color: #f9fafb;
     }
     
-    [data-theme="auto"] .bg-white {
-        background-color: #374151;
+    [data-theme="auto"] .text-gray-600 dark:text-gray-300 {
+        color: #d1d5db;
+    }
+    
+    [data-theme="auto"] .border-gray-200 dark:border-gray-700 {
+        border-color: #374151;
     }
 }
 

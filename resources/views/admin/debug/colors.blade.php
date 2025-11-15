@@ -1,16 +1,16 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Debug des Couleurs')
 
 @section('content')
 <div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-6">Debug du Système de Couleurs</h1>
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Debug du Système de Couleurs</h1>
         
         <!-- Variables disponibles -->
         <div class="mb-8">
             <h2 class="text-lg font-semibold mb-4">Variables disponibles dans cette vue :</h2>
-            <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
                 <p><strong>activePaletteName:</strong> {{ $activePaletteName ?? 'NON DÉFINI' }}</p>
                 <p><strong>activeColors disponibles:</strong> {{ isset($activeColors) ? 'OUI' : 'NON' }}</p>
                 <p><strong>activePaletteCSS disponible:</strong> {{ isset($activePaletteCSS) ? 'OUI (' . strlen($activePaletteCSS) . ' caractères)' : 'NON' }}</p>
@@ -26,10 +26,10 @@
                 @foreach($activeColors as $colorName => $colorValue)
                     @if($colorName !== 'name')
                         <div class="text-center">
-                            <div class="w-16 h-16 rounded-lg border border-gray-200 mx-auto mb-2"
+                            <div class="w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-700 mx-auto mb-2"
                                  style="background-color: {{ $colorValue }}"></div>
                             <div class="text-sm font-medium">{{ $colorName }}</div>
-                            <div class="text-xs text-gray-500 font-mono">{{ $colorValue }}</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400 font-mono">{{ $colorValue }}</div>
                         </div>
                     @endif
                 @endforeach

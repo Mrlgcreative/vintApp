@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Détails de la livraison locale')
 
@@ -6,9 +6,9 @@
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-4xl mx-auto">
         <!-- En-tête -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold text-gray-800">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                     Livraison Locale #{{ $localDelivery->id }}
                 </h1>
                 <span class="px-3 py-1 rounded-full text-sm font-medium
@@ -29,14 +29,14 @@
                             bg-red-100 text-red-800
                             @break
                         @default
-                            bg-gray-100 text-gray-800
+                            bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100
                     @endswitch
                 ">
                     {{ ucfirst(str_replace('_', ' ', $localDelivery->status)) }}
                 </span>
             </div>
             
-            <div class="mt-4 text-sm text-gray-600">
+            <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
                 <p>Commande: <a href="{{ route('orders.show', $localDelivery->order->id) }}" 
                     class="text-blue-600 hover:text-blue-800">#{{ $localDelivery->order->order_number }}</a></p>
                 <p>Type de livraison: {{ $localDelivery->delivery_type_text }}</p>
@@ -47,8 +47,8 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Informations vendeur -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                     <i class="fas fa-user-tie mr-2"></i>Vendeur
                 </h2>
                 <div class="space-y-3">
@@ -71,8 +71,8 @@
             </div>
 
             <!-- Informations acheteur -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
                     <i class="fas fa-user mr-2"></i>Acheteur
                 </h2>
                 <div class="space-y-3">
@@ -90,8 +90,8 @@
 
         <!-- Actions selon le statut et l'utilisateur -->
         @auth
-        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Actions</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Actions</h2>
             
             @if($localDelivery->status === 'proposed' && auth()->id() === $localDelivery->buyer_id)
                 <!-- L'acheteur peut accepter la proposition -->
@@ -138,11 +138,11 @@
                     <form action="{{ route('local-delivery.delivered', $localDelivery) }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
-                            <label for="delivery_code" class="block text-sm font-medium text-gray-700">
+                            <label for="delivery_code" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
                                 Code de vérification reçu du vendeur:
                             </label>
                             <input type="text" name="delivery_code" id="delivery_code" required 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
                         <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-6 py-2 rounded-md">
                             <i class="fas fa-check-circle mr-2"></i>Confirmer la réception
@@ -158,11 +158,11 @@
                     @csrf
                     <div class="space-y-4">
                         <div>
-                            <label for="reason" class="block text-sm font-medium text-gray-700">
+                            <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-200">
                                 Raison de l'annulation (optionnel):
                             </label>
                             <input type="text" name="reason" id="reason" 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                    placeholder="Expliquez pourquoi vous annulez...">
                         </div>
                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-md">
@@ -175,14 +175,14 @@
         @endauth
 
         <!-- Historique -->
-        <div class="bg-white rounded-lg shadow-md p-6 mt-6">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Historique</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Historique</h2>
             <div class="space-y-4">
                 <div class="flex items-center space-x-3">
                     <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">Livraison proposée</p>
-                        <p class="text-sm text-gray-600">{{ $localDelivery->created_at->format('d/m/Y à H:i') }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $localDelivery->created_at->format('d/m/Y à H:i') }}</p>
                     </div>
                 </div>
 
@@ -191,7 +191,7 @@
                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">Livraison acceptée</p>
-                        <p class="text-sm text-gray-600">{{ $localDelivery->accepted_at->format('d/m/Y à H:i') }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $localDelivery->accepted_at->format('d/m/Y à H:i') }}</p>
                     </div>
                 </div>
                 @endif
@@ -201,7 +201,7 @@
                     <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">En transit</p>
-                        <p class="text-sm text-gray-600">{{ $localDelivery->pickup_time->format('d/m/Y à H:i') }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $localDelivery->pickup_time->format('d/m/Y à H:i') }}</p>
                     </div>
                 </div>
                 @endif
@@ -211,7 +211,7 @@
                     <div class="w-3 h-3 bg-primary-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">Livraison effectuée</p>
-                        <p class="text-sm text-gray-600">{{ $localDelivery->actual_delivery_time->format('d/m/Y à H:i') }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $localDelivery->actual_delivery_time->format('d/m/Y à H:i') }}</p>
                     </div>
                 </div>
                 @endif
@@ -221,7 +221,7 @@
                     <div class="w-3 h-3 bg-red-500 rounded-full"></div>
                     <div>
                         <p class="font-medium">Livraison annulée</p>
-                        <p class="text-sm text-gray-600">{{ $localDelivery->updated_at->format('d/m/Y à H:i') }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">{{ $localDelivery->updated_at->format('d/m/Y à H:i') }}</p>
                         @if($localDelivery->cancellation_reason)
                             <p class="text-sm text-red-600">Raison: {{ $localDelivery->cancellation_reason }}</p>
                         @endif

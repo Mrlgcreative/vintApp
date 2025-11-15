@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Mes livraisons locales')
 
@@ -6,19 +6,19 @@
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-6xl mx-auto">
         <!-- En-tête avec onglets -->
-        <div class="bg-white rounded-lg shadow-md mb-6">
-            <div class="border-b border-gray-200">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="-mb-px flex space-x-8 px-6">
                     <a href="{{ route('local-delivery.user', 'seller') }}" 
                        class="py-4 px-1 border-b-2 font-medium text-sm
                        @if(request('type') === 'seller')
                            border-indigo-500 text-indigo-600
                        @else
-                           border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300
+                           border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600
                        @endif">
                         Mes ventes
                         @if(isset($counts['seller']) && $counts['seller'] > 0)
-                            <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">
+                            <span class="ml-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs">
                                 {{ $counts['seller'] }}
                             </span>
                         @endif
@@ -29,11 +29,11 @@
                        @if(request('type') === 'buyer')
                            border-indigo-500 text-indigo-600
                        @else
-                           border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300
+                           border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600
                        @endif">
                         Mes achats
                         @if(isset($counts['buyer']) && $counts['buyer'] > 0)
-                            <span class="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">
+                            <span class="ml-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs">
                                 {{ $counts['buyer'] }}
                             </span>
                         @endif
@@ -42,14 +42,14 @@
             </div>
 
             <div class="p-6">
-                <h1 class="text-2xl font-bold text-gray-800">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                     @if(request('type') === 'seller')
                         Mes livraisons en tant que vendeur
                     @else
                         Mes livraisons en tant qu'acheteur
                     @endif
                 </h1>
-                <p class="text-gray-600 mt-2">
+                <p class="text-gray-600 dark:text-gray-300 mt-2">
                     Gérez vos livraisons locales et suivez leur progression.
                 </p>
             </div>
@@ -59,11 +59,11 @@
         @if($deliveries->count() > 0)
         <div class="space-y-4">
             @foreach($deliveries as $delivery)
-            <div class="bg-white rounded-lg shadow-md p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
                 <div class="flex items-center justify-between">
                     <div class="flex-1">
                         <div class="flex items-center space-x-3">
-                            <h3 class="text-lg font-semibold text-gray-800">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 Commande #{{ $delivery->order->order_number }}
                             </h3>
                             <span class="px-3 py-1 rounded-full text-sm font-medium
@@ -84,14 +84,14 @@
                                         bg-red-100 text-red-800
                                         @break
                                     @default
-                                        bg-gray-100 text-gray-800
+                                        bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100
                                 @endswitch
                             ">
                                 {{ ucfirst(str_replace('_', ' ', $delivery->status)) }}
                             </span>
                         </div>
 
-                        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 dark:text-gray-300">
                             <div>
                                 <span class="font-medium">
                                     @if(request('type') === 'seller')
@@ -125,7 +125,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-3 text-sm text-gray-600">
+                        <div class="mt-3 text-sm text-gray-600 dark:text-gray-300">
                             <span class="font-medium">Créé le:</span>
                             {{ $delivery->created_at->format('d/m/Y à H:i') }}
                             
@@ -177,13 +177,13 @@
 
         @else
         <!-- État vide -->
-        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
             <div class="max-w-sm mx-auto">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8v.01M6 5v.01" />
                 </svg>
-                <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune livraison</h3>
-                <p class="mt-1 text-sm text-gray-500">
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Aucune livraison</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     @if(request('type') === 'seller')
                         Vous n'avez encore proposé aucune livraison locale.
                     @else

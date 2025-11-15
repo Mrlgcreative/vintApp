@@ -1,4 +1,4 @@
-              @extends('layouts.admin')
+﻿              @extends('layouts.admin')
 
 @section('title', 'Gestion des marques')
 @section('page-title', 'Gestion des marques')
@@ -6,33 +6,33 @@
 @section('page-actions')
 <div class="flex flex-wrap gap-3">
     <div class="relative">
-        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200" 
+        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
                 type="button" onclick="toggleDropdown('filter-dropdown')">
             <i class="fas fa-filter mr-2"></i>Filtrer
             <i class="fas fa-chevron-down ml-1"></i>
         </button>
-        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
              id="filter-dropdown">
             <div class="py-1">
-                <a href="{{ route('admin.brands.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Toutes</a>
-                <a href="{{ route('admin.brands.index', ['status' => 'active']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Actives</a>
-                <a href="{{ route('admin.brands.index', ['status' => 'inactive']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Inactives</a>
-                <a href="{{ route('admin.brands.index', ['featured' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">En vedette</a>
+                <a href="{{ route('admin.brands.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Toutes</a>
+                <a href="{{ route('admin.brands.index', ['status' => 'active']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Actives</a>
+                <a href="{{ route('admin.brands.index', ['status' => 'inactive']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Inactives</a>
+                <a href="{{ route('admin.brands.index', ['featured' => '1']) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">En vedette</a>
             </div>
         </div>
     </div>
     <div class="relative">
-        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200" 
+        <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200" 
                 type="button" onclick="toggleDropdown('export-dropdown')">
             <i class="fas fa-download mr-2"></i>Export
             <i class="fas fa-chevron-down ml-1"></i>
         </button>
-        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
              id="export-dropdown">
             <div class="py-1">
-                <a href="#" onclick="exportBrands('csv')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">CSV</a>
-                <a href="#" onclick="exportBrands('excel')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Excel</a>
-                <a href="#" onclick="exportBrands('pdf')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">PDF</a>
+                <a href="#" onclick="exportBrands('csv')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">CSV</a>
+                <a href="#" onclick="exportBrands('excel')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">Excel</a>
+                <a href="#" onclick="exportBrands('pdf')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">PDF</a>
             </div>
         </div>
     </div>
@@ -66,7 +66,7 @@
 @endif
 
 <!-- Barre de recherche et filtres -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
     <div class="p-6">
         <form method="GET" action="{{ route('admin.brands.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div class="md:col-span-2">
@@ -75,21 +75,21 @@
                         <i class="fas fa-search text-gray-400"></i>
                     </div>
                     <input type="text" 
-                           class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
+                           class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" 
                            name="search" 
                            placeholder="Rechercher une marque..." 
                            value="{{ request('search') }}">
                 </div>
             </div>
             <div>
-                <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="">Tous les statuts</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
             </div>
             <div>
-                <select name="country" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="country" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="">Tous les pays</option>
                     <option value="FR" {{ request('country') === 'FR' ? 'selected' : '' }}>France</option>
                     <option value="IT" {{ request('country') === 'IT' ? 'selected' : '' }}>Italie</option>
@@ -98,7 +98,7 @@
                 </select>
             </div>
             <div>
-                <select name="sort" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                <select name="sort" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                     <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nom A-Z</option>
                     <option value="-name" {{ request('sort') === '-name' ? 'selected' : '' }}>Nom Z-A</option>
                     <option value="created_at" {{ request('sort') === 'created_at' ? 'selected' : '' }}>Plus ancien</option>
@@ -109,7 +109,7 @@
                 <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
                     <i class="fas fa-search"></i>
                 </button>
-                <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -120,12 +120,12 @@
 <!-- Statistiques -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
     <!-- Total marques -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Total marques</div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $brands->total() ?? 0 }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $brands->total() ?? 0 }}</div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -138,12 +138,12 @@
     </div>
 
     <!-- Marques actives -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Marques actives</div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $brands->where('is_active', 1)->count() ?? 0 }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $brands->where('is_active', 1)->count() ?? 0 }}</div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -156,12 +156,12 @@
     </div>
 
     <!-- En vedette -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">En vedette</div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $brands->where('is_featured', 1)->count() ?? 0 }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $brands->where('is_featured', 1)->count() ?? 0 }}</div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
@@ -174,12 +174,12 @@
     </div>
 
     <!-- Articles total -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
         <div class="p-6">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <div class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Articles total</div>
-                    <div class="text-2xl font-bold text-gray-900">{{ $brands->sum('items_count') ?? 0 }}</div>
+                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $brands->sum('items_count') ?? 0 }}</div>
                 </div>
                 <div class="flex-shrink-0">
                     <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -193,13 +193,13 @@
 </div>
 
 <!-- Liste des marques -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200">
-    <div class="p-4 md:p-6 border-b border-gray-200">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div>
-                <h5 class="text-lg md:text-xl font-bold text-gray-900 mb-1">Liste des marques</h5>
+                <h5 class="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-1">Liste des marques</h5>
                 @if(isset($brands))
-                    <p class="text-xs md:text-sm text-gray-500">{{ $brands->total() }} marque(s) trouvée(s)</p>
+                    <p class="text-xs md:text-sm text-gray-500 dark:text-gray-400">{{ $brands->total() }} marque(s) trouvée(s)</p>
                 @endif
             </div>
             <div class="flex gap-2 items-center">
@@ -217,24 +217,24 @@
             <!-- Version Desktop - Table -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="w-full">
-                    <thead class="bg-gray-50 border-b border-gray-200">
+                    <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
                         <tr>
                             <th class="px-6 py-4 text-left">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="selectAll" onchange="toggleSelectAll()">
                                 </div>
                             </th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Marque</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Pays</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Articles</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Créée le</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Marque</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Pays</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Articles</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Créée le</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
                         @foreach($brands as $brand)
-                        <tr data-brand-id="{{ $brand->id }}" class="hover:bg-gray-50 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
+                        <tr data-brand-id="{{ $brand->id }}" class="hover:bg-gray-50 dark:bg-gray-900 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
                             <td class="px-6 py-4">
                                 <div class="form-check">
                                     <input class="form-check-input brand-checkbox" type="checkbox" value="{{ $brand->id }}">
@@ -244,7 +244,7 @@
                                 <div class="flex items-center gap-3">
                                     @if($brand->logo)
                                         <img src="{{ $brand->logo_url }}" 
-                                             class="w-12 h-12 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                             class="w-12 h-12 rounded-lg object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
                                              alt="Logo {{ $brand->name }}">
                                     @else
                                         <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
@@ -252,9 +252,9 @@
                                         </div>
                                     @endif
                                     <div>
-                                        <div class="font-semibold text-gray-900">{{ $brand->name }}</div>
+                                        <div class="font-semibold text-gray-900 dark:text-white">{{ $brand->name }}</div>
                                         @if($brand->slug)
-                                            <div class="text-xs text-gray-500">{{ $brand->slug }}</div>
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ $brand->slug }}</div>
                                         @endif
                                         @if($brand->description)
                                             <div class="text-xs text-gray-400 mt-0.5">{{ Str::limit($brand->description, 40) }}</div>
@@ -264,7 +264,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1.5">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700' }}">
                                         <span class="w-1.5 h-1.5 rounded-full {{ $brand->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1.5"></span>
                                         {{ $brand->is_active ? 'Active' : 'Inactive' }}
                                     </span>
@@ -279,7 +279,7 @@
                                 @if($brand->country)
                                     <div class="flex items-center gap-2">
                                         <span class="fi fi-{{ strtolower($brand->country) }}"></span>
-                                        <span class="text-sm text-gray-700">{{ $brand->country }}</span>
+                                        <span class="text-sm text-gray-700 dark:text-gray-200">{{ $brand->country }}</span>
                                     </div>
                                 @else
                                     <span class="text-sm text-gray-400">Non spécifié</span>
@@ -288,7 +288,7 @@
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     <strong class="text-primary-600 text-lg">{{ $brand->items_count ?? 0 }}</strong>
-                                    <span class="text-xs text-gray-500 ml-1">articles</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">articles</span>
                                 </div>
                                 @if($brand->items_count > 0)
                                     <div class="text-xs text-gray-400 mt-1">
@@ -297,8 +297,8 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900">{{ $brand->created_at->format('d/m/Y') }}</div>
-                                <div class="text-xs text-gray-500">{{ $brand->created_at->format('H:i') }}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">{{ $brand->created_at->format('d/m/Y') }}</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $brand->created_at->format('H:i') }}</div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex gap-1 justify-end items-center">
@@ -315,7 +315,7 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <div class="dropdown">
-                                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors" 
+                                        <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 dark:bg-gray-900 transition-colors" 
                                                 type="button" 
                                                 data-bs-toggle="dropdown">
                                             <i class="fas fa-ellipsis-v"></i>
@@ -352,7 +352,7 @@
             <!-- Version Mobile/Tablet - Cartes -->
             <div class="lg:hidden">
                 @foreach($brands as $brand)
-                <div data-brand-id="{{ $brand->id }}" class="border-b border-gray-200 p-4 hover:bg-gray-50 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
+                <div data-brand-id="{{ $brand->id }}" class="border-b border-gray-200 p-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors {{ !$brand->is_active ? 'opacity-60' : '' }}">
                     <div class="flex gap-3">
                         <!-- Checkbox et Logo -->
                         <div class="flex flex-col items-center gap-2">
@@ -361,7 +361,7 @@
                             </div>
                             @if($brand->logo)
                                 <img src="{{ $brand->logo_url }}" 
-                                     class="w-16 h-16 rounded-lg object-cover border border-gray-200 shadow-sm"
+                                     class="w-16 h-16 rounded-lg object-cover border border-gray-200 dark:border-gray-700 shadow-sm"
                                      alt="Logo {{ $brand->name }}">
                             @else
                                 <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 text-white rounded-lg flex items-center justify-center border border-primary-300 shadow-sm">
@@ -375,31 +375,31 @@
                             <!-- En-tête avec nom et actions -->
                             <div class="flex justify-between items-start mb-2">
                                 <div class="flex-1 min-w-0">
-                                    <h6 class="font-semibold text-gray-900 truncate">{{ $brand->name }}</h6>
+                                    <h6 class="font-semibold text-gray-900 dark:text-white truncate">{{ $brand->name }}</h6>
                                     @if($brand->slug)
-                                        <p class="text-xs text-gray-500 truncate">{{ $brand->slug }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $brand->slug }}</p>
                                     @endif
                                 </div>
                                 
                                 <!-- Menu dropdown actions mobile -->
                                 <div class="relative">
-                                    <button class="text-gray-400 hover:text-gray-600 p-1" onclick="toggleMobileDropdown({{ $brand->id }})">
+                                    <button class="text-gray-400 hover:text-gray-600 dark:text-gray-300 p-1" onclick="toggleMobileDropdown({{ $brand->id }})">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </button>
-                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden z-10" 
+                                    <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
                                          id="mobile-dropdown-{{ $brand->id }}">
                                         <div class="py-1">
-                                            <a href="{{ route('admin.brands.show', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <a href="{{ route('admin.brands.show', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                                 <i class="fas fa-eye w-4"></i> Voir
                                             </a>
-                                            <a href="{{ route('admin.brands.edit', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                            <a href="{{ route('admin.brands.edit', $brand) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                                                 <i class="fas fa-edit w-4"></i> Modifier
                                             </a>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleBrandStatus({{ $brand->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleBrandStatus({{ $brand->id }})">
                                                 <i class="fas {{ $brand->is_active ? 'fa-pause' : 'fa-play' }} w-4"></i>
                                                 {{ $brand->is_active ? 'Désactiver' : 'Activer' }}
                                             </button>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onclick="toggleBrandFeatured({{ $brand->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800" onclick="toggleBrandFeatured({{ $brand->id }})">
                                                 <i class="fas fa-star w-4"></i>
                                                 {{ $brand->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
                                             </button>
@@ -419,7 +419,7 @@
                             
                             <!-- Badges et infos -->
                             <div class="flex flex-wrap gap-2 mb-2">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 text-gray-800 border border-gray-200' }}">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $brand->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700' }}">
                                     <span class="w-1.5 h-1.5 rounded-full {{ $brand->is_active ? 'bg-green-500' : 'bg-gray-500' }} mr-1"></span>
                                     {{ $brand->is_active ? 'Active' : 'Inactive' }}
                                 </span>
@@ -439,7 +439,7 @@
                             </div>
                             
                             <!-- Statistiques -->
-                            <div class="flex items-center gap-4 text-xs text-gray-500">
+                            <div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                                 <span>
                                     <i class="fas fa-box text-gray-400"></i>
                                     {{ $brand->items_count ?? 0 }} articles
@@ -456,11 +456,11 @@
             </div>
             
             <!-- Actions en lot -->
-            <div class="p-4 bg-gray-50 border-t border-gray-200" id="bulkActions" style="display: none;">
+            <div class="p-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700" id="bulkActions" style="display: none;">
                 <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
                     <div class="text-xs sm:text-sm">
-                        <span class="font-semibold text-gray-900" id="selectedCount">0</span>
-                        <span class="text-gray-600"> marque(s) sélectionnée(s)</span>
+                        <span class="font-semibold text-gray-900 dark:text-white" id="selectedCount">0</span>
+                        <span class="text-gray-600 dark:text-gray-300"> marque(s) sélectionnée(s)</span>
                     </div>
                     <div class="flex flex-wrap gap-2 justify-center sm:justify-end">
                         <button class="inline-flex items-center px-3 py-1.5 text-xs sm:text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 transition-colors" onclick="bulkAction('activate')">
@@ -484,11 +484,11 @@
             
             <!-- Pagination -->
             @if($brands->hasPages())
-                <div class="p-4 bg-white border-t border-gray-200">
+                <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                        <div class="text-xs sm:text-sm text-gray-600 text-center sm:text-left">
-                            Affichage de <span class="font-medium text-gray-900">{{ $brands->firstItem() }}</span> à <span class="font-medium text-gray-900">{{ $brands->lastItem() }}</span> 
-                            sur <span class="font-medium text-gray-900">{{ $brands->total() }}</span> résultats
+                        <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 text-center sm:text-left">
+                            Affichage de <span class="font-medium text-gray-900 dark:text-white">{{ $brands->firstItem() }}</span> à <span class="font-medium text-gray-900 dark:text-white">{{ $brands->lastItem() }}</span> 
+                            sur <span class="font-medium text-gray-900 dark:text-white">{{ $brands->total() }}</span> résultats
                         </div>
                         <div class="w-full sm:w-auto overflow-x-auto">
                             {{ $brands->appends(request()->query())->links() }}
@@ -499,20 +499,20 @@
         @else
             <div class="text-center py-12">
                 @if(request()->has('search') || request()->has('status') || request()->has('country'))
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
                         <i class="fas fa-search text-3xl text-gray-400"></i>
                     </div>
-                    <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune marque trouvée</h5>
-                    <p class="text-gray-500 mb-4">Aucune marque ne correspond à vos critères de recherche.</p>
-                    <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune marque trouvée</h5>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">Aucune marque ne correspond à vos critères de recherche.</p>
+                    <a href="{{ route('admin.brands.index') }}" class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 dark:bg-gray-900 transition-colors">
                         <i class="fas fa-times me-2"></i>Effacer les filtres
                     </a>
                 @else
                     <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
                         <i class="fas fa-tags text-3xl text-primary-600"></i>
                     </div>
-                    <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucune marque enregistrée</h5>
-                    <p class="text-gray-500 mb-4">Commencez par ajouter des marques pour organiser vos articles.</p>
+                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune marque enregistrée</h5>
+                    <p class="text-gray-500 dark:text-gray-400 mb-4">Commencez par ajouter des marques pour organiser vos articles.</p>
                     <a href="{{ route('admin.brands.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                         <i class="fas fa-plus me-2"></i>Ajouter une marque
                     </a>
@@ -533,7 +533,7 @@
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         
         <!-- Modal Panel -->
-        <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <!-- Header -->
             <div class="bg-red-50 px-6 py-4 border-b border-red-100">
                 <div class="flex items-center justify-between">
@@ -548,10 +548,10 @@
             </div>
             
             <!-- Body -->
-            <div class="bg-white px-6 py-4">
-                <p class="text-gray-700 mb-4">
+            <div class="bg-white dark:bg-gray-800 px-6 py-4">
+                <p class="text-gray-700 dark:text-gray-200 mb-4">
                     Êtes-vous sûr de vouloir supprimer la marque 
-                    <strong class="text-gray-900" id="brandNameToDelete"></strong> ?
+                    <strong class="text-gray-900 dark:text-white" id="brandNameToDelete"></strong> ?
                 </p>
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
                     <div class="flex items-start">
@@ -573,8 +573,8 @@
             </div>
             
             <!-- Footer -->
-            <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
-                <button type="button" onclick="closeDeleteModal()" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors w-full sm:w-auto">
+            <div class="bg-gray-50 dark:bg-gray-900 px-6 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors w-full sm:w-auto">
                     <i class="fas fa-times mr-2"></i>Annuler
                 </button>
                 <form id="deleteForm" method="POST" class="w-full sm:w-auto">

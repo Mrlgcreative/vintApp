@@ -1,12 +1,12 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Paiement Réussi')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-2xl mx-auto">
         <!-- Carte de succès principale -->
-        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-slide-up">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-slide-up">
             <div class="px-8 py-12 text-center">
                 <!-- Animation de confettis -->
                 <div id="confetti-container" class="fixed inset-0 pointer-events-none z-50"></div>
@@ -20,8 +20,8 @@
                     </div>
                 </div>
                 
-                <h1 class="text-3xl font-bold text-gray-900 mb-3">Paiement Réussi !</h1>
-                <p class="text-gray-600 mb-8">Votre transaction a été traitée avec succès</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">Paiement Réussi !</h1>
+                <p class="text-gray-600 dark:text-gray-300 mb-8">Votre transaction a été traitée avec succès</p>
                 
                 @if(isset($transaction))
                     <!-- Montant en grand -->
@@ -31,36 +31,36 @@
                         </div>
                         @if(isset($transaction->currency))
                             @if($transaction->currency === 'USD')
-                                <div class="text-gray-500 text-sm">
+                                <div class="text-gray-500 dark:text-gray-400 text-sm">
                                     Environ {{ number_format($transaction->amount * 2650, 0) }} CDF
                                 </div>
                             @elseif($transaction->currency === 'CDF')
-                                <div class="text-gray-500 text-sm">
+                                <div class="text-gray-500 dark:text-gray-400 text-sm">
                                     Environ {{ number_format($transaction->amount / 2650, 2) }} USD
                                 </div>
                             @endif
                         @else
-                            <div class="text-gray-500 text-sm">
+                            <div class="text-gray-500 dark:text-gray-400 text-sm">
                                 {{ number_format($transaction->amount * 2650, 0) }} CDF
                             </div>
                         @endif
                     </div>
                     
                     <!-- Détails de la transaction -->
-                    <div class="bg-gray-50 rounded-xl p-6 mb-8 text-left">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                    <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 mb-8 text-left">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             Détails de la transaction
                         </h3>
                         <div class="space-y-3">
-                            <div class="flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-600">ID Transaction</span>
+                            <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300">ID Transaction</span>
                                 <span class="font-medium text-primary-600">{{ $transaction->transaction_id }}</span>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-600">Opérateur</span>
+                            <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300">Opérateur</span>
                                 <span class="font-medium flex items-center">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -69,21 +69,21 @@
                                 </span>
                             </div>
                             @if($transaction->phone)
-                            <div class="flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-600">Téléphone</span>
+                            <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300">Téléphone</span>
                                 <span class="font-medium">{{ $transaction->phone }}</span>
                             </div>
                             @endif
-                            <div class="flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-600">Date</span>
+                            <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300">Date</span>
                                 <span class="font-medium">{{ $transaction->created_at->format('d/m/Y à H:i') }}</span>
                             </div>
-                            <div class="flex justify-between py-2 border-b border-gray-200">
-                                <span class="text-gray-600">Objet</span>
+                            <div class="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                                <span class="text-gray-600 dark:text-gray-300">Objet</span>
                                 <span class="font-medium">{{ $transaction->purpose }}</span>
                             </div>
                             <div class="flex justify-between py-2">
-                                <span class="text-gray-600">Statut</span>
+                                <span class="text-gray-600 dark:text-gray-300">Statut</span>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
@@ -104,7 +104,7 @@
                         Retour au Dashboard
                     </a>
                     @if(isset($transaction))
-                        <button onclick="window.print()" class="w-full inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200">
+                        <button onclick="window.print()" class="w-full inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
@@ -139,27 +139,27 @@
 @if(isset($unratedOrders) && $unratedOrders->count() > 0)
 <!-- Modal de notation moderne -->
 <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
-        <div class="p-6 border-b border-gray-200">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-screen overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="modalContent">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between">
-                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
                     <svg class="w-7 h-7 mr-3 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                     </svg>
                     Notez vos achats
                 </h2>
-                <button id="closeRatingModal" class="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-2">
+                <button id="closeRatingModal" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors duration-200 p-2">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
-            <p class="text-gray-600 mt-2">Partagez votre expérience avec vos vendeurs pour aider la communauté</p>
+            <p class="text-gray-600 dark:text-gray-300 mt-2">Partagez votre expérience avec vos vendeurs pour aider la communauté</p>
         </div>
 
         <div class="p-6 space-y-6" id="ratingsContainer">
             @foreach($unratedOrders as $order)
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200" data-order-id="{{ $order->id }}">
+                <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200 dark:border-gray-700" data-order-id="{{ $order->id }}">
                     <div class="flex items-start space-x-4 mb-4">
                         <div class="flex-shrink-0">
                             @if($order->item && $order->item->images && is_array($order->item->images) && count($order->item->images) > 0)
@@ -167,7 +167,7 @@
                                      alt="{{ $order->item->name }}" 
                                      class="w-16 h-16 rounded-lg object-cover">
                             @else
-                                <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                                     <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
@@ -175,8 +175,8 @@
                             @endif
                         </div>
                         <div class="flex-1">
-                            <h4 class="text-lg font-semibold text-gray-900 mb-1">{{ $order->item ? $order->item->name : 'Article' }}</h4>
-                            <p class="text-gray-600 text-sm mb-2">Vendeur: {{ $order->seller ? $order->seller->name : 'Vendeur' }}</p>
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $order->item ? $order->item->name : 'Article' }}</h4>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm mb-2">Vendeur: {{ $order->seller ? $order->seller->name : 'Vendeur' }}</p>
                             <p class="text-primary-600 font-medium">{{ number_format($order->total_amount, 2) }} {{ $order->currency }}</p>
                         </div>
                     </div>
@@ -187,7 +187,7 @@
                         
                         <!-- Système d'étoiles -->
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Note (cliquez sur les étoiles)</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Note (cliquez sur les étoiles)</label>
                             <div class="flex space-x-1" data-rating="0">
                                 @for($i = 1; $i <= 5; $i++)
                                     <button type="button" class="star text-3xl text-gray-300 hover:text-yellow-400 transition-colors duration-150" data-value="{{ $i }}">
@@ -196,13 +196,13 @@
                                 @endfor
                             </div>
                             <input type="hidden" name="rating" value="0">
-                            <p class="text-sm text-gray-500 mt-1">Cliquez sur une étoile pour noter de 1 à 5</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Cliquez sur une étoile pour noter de 1 à 5</p>
                         </div>
 
                         <!-- Commentaire optionnel -->
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Commentaire (optionnel)</label>
-                            <textarea name="comment" rows="3" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200" placeholder="Partagez votre expérience avec ce vendeur..."></textarea>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Commentaire (optionnel)</label>
+                            <textarea name="comment" rows="3" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm placeholder-gray-500 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200" placeholder="Partagez votre expérience avec ce vendeur..."></textarea>
                         </div>
 
                         <button type="submit" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white font-medium py-2.5 px-4 rounded-lg hover:from-primary-700 hover:to-primary-800 transition-all duration-200 transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed">
@@ -220,8 +220,8 @@
             @endforeach
         </div>
 
-        <div class="p-6 border-t border-gray-200">
-            <button id="skipRating" class="w-full text-center text-gray-500 hover:text-gray-700 transition-colors duration-200 font-medium">
+        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+            <button id="skipRating" class="w-full text-center text-gray-500 hover:text-gray-700 dark:text-gray-200 transition-colors duration-200 font-medium">
                 Passer pour le moment
             </button>
         </div>
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     orderContainer.style.opacity = '0.5';
                     
                     setTimeout(() => {
-                        orderContainer.innerHTML = '<div class="text-center py-6"><div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3"><svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div><p class="text-green-700 font-medium">Merci pour votre avis !</p><p class="text-gray-500 text-sm mt-1">Votre note a été enregistrée</p></div>';
+                        orderContainer.innerHTML = '<div class="text-center py-6"><div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3"><svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div><p class="text-green-700 font-medium">Merci pour votre avis !</p><p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Votre note a été enregistrée</p></div>';
                         orderContainer.style.transform = 'scale(1)';
                         orderContainer.style.opacity = '1';
                     }, 300);

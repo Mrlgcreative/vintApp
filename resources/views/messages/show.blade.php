@@ -1,13 +1,13 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Conversation avec ' . $otherUser->name)
 
 @section('content')
-<div class="fixed inset-0 bg-gray-50 flex flex-col overflow-hidden z-50 pb-16 md:pb-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 10px);">
+<div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden z-50 pb-16 md:pb-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 10px);">
     <!-- En-tête style WhatsApp -->
     <div class="bg-primary-600 text-white shadow-lg">
         <div class="flex items-center px-4 py-3 gap-3">
-            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white hover:bg-opacity-10 p-2 rounded-full transition-colors">
+            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div class="flex items-center flex-1 gap-3 cursor-pointer">
@@ -29,25 +29,25 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <button class="text-white hover:bg-white hover:bg-opacity-10 p-2 rounded-full transition-colors">
+                <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
                     <i class="fas fa-phone"></i>
                 </button>
-                <button class="text-white hover:bg-white hover:bg-opacity-10 p-2 rounded-full transition-colors">
+                <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
                     <i class="fas fa-video"></i>
                 </button>
                 <div class="relative">
-                    <button class="text-white hover:bg-white hover:bg-opacity-10 p-2 rounded-full transition-colors" onclick="toggleDropdown()">
+                    <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors" onclick="toggleDropdown()">
                         <i class="fas fa-ellipsis-v"></i>
                     </button>
-                    <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden z-10">
-                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+                    <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 hidden z-10">
+                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                             <i class="fas fa-search mr-3"></i>Rechercher
                         </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
                             <i class="fas fa-ban mr-3"></i>Bloquer
                         </a>
                         <hr class="my-2">
-                        <a href="#" class="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100">
+                        <a href="#" class="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100 dark:bg-gray-800">
                             <i class="fas fa-trash mr-3"></i>Supprimer
                         </a>
                     </div>
@@ -66,7 +66,7 @@
                          class="w-12 h-12 rounded-lg object-cover">
                 @endif
                 <div class="flex-1">
-                    <span class="font-semibold text-gray-900 block">{{ $item->name }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white block">{{ $item->name }}</span>
                     <span class="text-primary-600 font-bold">{{ $item->formatted_price }}</span>
                 </div>
                 <a href="{{ route('items.show', $item) }}" class="text-primary-600 hover:text-primary-700 p-2">
@@ -83,53 +83,53 @@
                         <i class="fas fa-percent text-green-600 mr-2"></i>
                         <span class="font-semibold">Proposer une réduction</span>
                     </div>
-                    <button class="text-gray-500 hover:text-gray-700">
+                    <button class="text-gray-500 hover:text-gray-700 dark:text-gray-200">
                         <i class="fas fa-chevron-down transition-transform" id="discountToggleIcon"></i>
                     </button>
                 </div>
                 
                 <div class="px-4 pb-4 hidden" id="discountContent">
                     <div class="border-t border-green-200 pt-4">
-                        <div class="bg-white rounded-lg p-3 mb-4 border border-gray-200 flex justify-between items-center">
-                            <span class="text-gray-600 font-medium">Prix actuel:</span>
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 mb-4 border border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <span class="text-gray-600 dark:text-gray-300 font-medium">Prix actuel:</span>
                             <span class="text-primary-600 font-bold text-lg">{{ $item->formatted_price }}</span>
                         </div>
                         
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="5">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="5">
                                 <div class="font-bold text-lg mb-1">5%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.95, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.05, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.05, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="10">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="10">
                                 <div class="font-bold text-lg mb-1">10%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.90, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.10, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.10, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="15">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="15">
                                 <div class="font-bold text-lg mb-1">15%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.85, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.15, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.15, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="20">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="20">
                                 <div class="font-bold text-lg mb-1">20%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.80, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.20, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.20, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="25">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="25">
                                 <div class="font-bold text-lg mb-1">25%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.75, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.25, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.25, 2) }}</div>
                             </div>
-                            <div class="rate-option bg-white border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="30">
+                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="30">
                                 <div class="font-bold text-lg mb-1">30%</div>
                                 <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.70, 2) }}</div>
-                                <div class="text-sm text-gray-500">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.30, 2) }}</div>
+                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.30, 2) }}</div>
                             </div>
                         </div>
                         
                         <div class="space-y-3">
-                            <div class="bg-white rounded-lg p-3 border border-primary-600 hidden" id="selectedDiscountInfo">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-primary-600 hidden" id="selectedDiscountInfo">
                                 <div class="flex justify-between items-center">
                                     <span class="font-semibold text-primary-600 selected-rate"></span>
                                     <span class="font-bold text-green-600 text-lg selected-price"></span>
@@ -152,7 +152,7 @@
             @if($messages->count() > 0)
                 @foreach($messages as $message)
                     <div class="mb-2 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-100' : 'bg-white' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br' : 'rounded-bl' }} px-3 py-2 shadow-sm animate-fade-in">
+                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-100' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br' : 'rounded-bl' }} px-3 py-2 shadow-sm animate-fade-in">
                             @if($message->subject)
                                 <div class="bg-black bg-opacity-10 rounded-xl px-2 py-1 mb-2 text-sm font-semibold flex items-center gap-1">
                                     <i class="fas fa-tag"></i>
@@ -161,7 +161,7 @@
                             @endif
                             
                             @if($message->content)
-                                <div class="text-sm leading-relaxed text-gray-900 mb-1">
+                                <div class="text-sm leading-relaxed text-gray-900 dark:text-white mb-1">
                                     {!! nl2br(e($message->content)) !!}
                                 </div>
                             @endif
@@ -184,7 +184,7 @@
                                 </div>
                             @endif
                             
-                            <div class="flex items-center justify-end gap-1 text-xs text-gray-500 mt-1">
+                            <div class="flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {{ $message->created_at->format('H:i') }}
                                 @if($message->sender_id === Auth::id())
                                     <span class="ml-1">
@@ -200,7 +200,7 @@
                     </div>
                 @endforeach
             @else
-                <div class="text-center py-16 text-gray-500">
+                <div class="text-center py-16 text-gray-500 dark:text-gray-400">
                     <div class="mb-4">
                         <i class="fas fa-comments text-6xl opacity-30"></i>
                     </div>
@@ -212,19 +212,19 @@
     </div>
 
     <!-- Zone de saisie style WhatsApp -->
-    <div class="bg-gray-100 border-t border-gray-200 p-4 pb-20 md:pb-4 fixed md:relative bottom-0 left-0 right-0 z-40">
+    <div class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 pb-20 md:pb-4 fixed md:relative bottom-0 left-0 right-0 z-40">
         <form id="messageForm" method="POST" action="{{ route('messages.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_id" value="{{ $otherUser->id }}">
             
-            <div class="flex items-end gap-2 bg-white rounded-3xl px-3 py-2 shadow-sm">
-                <button type="button" class="text-gray-500 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 transition-colors" onclick="document.getElementById('attachmentInput').click()">
+            <div class="flex items-end gap-2 bg-white dark:bg-gray-800 rounded-3xl px-3 py-2 shadow-sm">
+                <button type="button" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 dark:bg-gray-800 transition-colors" onclick="document.getElementById('attachmentInput').click()">
                     <i class="fas fa-paperclip text-xl"></i>
                 </button>
                 
                 <div class="flex-1 relative">
                     <textarea name="content" 
-                              class="w-full border-0 outline-none bg-transparent resize-none text-gray-900 placeholder-gray-500 max-h-24 min-h-5 py-2" 
+                              class="w-full border-0 outline-none bg-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 max-h-24 min-h-5 py-2" 
                               placeholder="Tapez un message..."
                               rows="1"
                               id="messageContent"></textarea>
@@ -307,7 +307,7 @@ main.min-vh-100 {
     @apply text-green-100;
 }
 
-.rate-option.selected .text-gray-500 {
+.rate-option.selected .text-gray-500 dark:text-gray-400 {
     @apply text-white text-opacity-80;
 }
 
@@ -396,12 +396,12 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContainer.className = `mb-2 flex ${isAuthor ? 'justify-end' : 'justify-start'}`;
         
         const messageBubble = document.createElement('div');
-        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-100' : 'bg-white'} rounded-2xl ${isAuthor ? 'rounded-br' : 'rounded-bl'} px-3 py-2 shadow-sm animate-fade-in`;
+        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-100' : 'bg-white dark:bg-gray-800'} rounded-2xl ${isAuthor ? 'rounded-br' : 'rounded-bl'} px-3 py-2 shadow-sm animate-fade-in`;
         
         // Contenu du message
         if (message.content) {
             const messageText = document.createElement('div');
-            messageText.className = 'text-sm leading-relaxed text-gray-900 mb-1';
+            messageText.className = 'text-sm leading-relaxed text-gray-900 dark:text-white mb-1';
             messageText.innerHTML = message.content.replace(/\n/g, '<br>');
             messageBubble.appendChild(messageText);
         }
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Horodatage
         const timeDiv = document.createElement('div');
-        timeDiv.className = 'flex items-center justify-end gap-1 text-xs text-gray-500 mt-1';
+        timeDiv.className = 'flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1';
         timeDiv.textContent = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         messageBubble.appendChild(timeDiv);
         

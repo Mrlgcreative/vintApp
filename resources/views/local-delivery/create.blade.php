@@ -1,4 +1,4 @@
-@extends('app')
+﻿@extends('app')
 
 @section('title', 'Proposer une livraison locale')
 
@@ -6,27 +6,27 @@
 <div class="container mx-auto px-4 py-6">
     <div class="max-w-4xl mx-auto">
         <!-- En-tête -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
-            <h1 class="text-2xl font-bold text-gray-800 mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">
                 <i class="fas fa-truck mr-2 text-blue-500"></i>Proposer une livraison locale
             </h1>
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-300">
                 Proposez une livraison locale pour connecter directement avec votre acheteur et offrir une expérience personnalisée.
             </p>
         </div>
 
         <!-- Formulaire de proposition -->
-        <div class="bg-white rounded-lg shadow-md p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <form action="{{ route('local-delivery.propose') }}" method="POST" id="deliveryForm">
                 @csrf
                 
                 <!-- Sélection de la commande -->
                 <div class="mb-6">
-                    <label for="order_id" class="block text-sm font-medium text-gray-700 mb-2">
+                    <label for="order_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         <i class="fas fa-shopping-bag mr-2"></i>Commande
                     </label>
                     <select name="order_id" id="order_id" required 
-                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         <option value="">Sélectionnez une commande...</option>
                         @foreach($orders as $order)
                             <option value="{{ $order->id }}" 
@@ -53,39 +53,39 @@
 
                 <!-- Type de livraison -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">
                         <i class="fas fa-route mr-2"></i>Type de livraison
                     </label>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <label class="relative">
                             <input type="radio" name="delivery_type" value="pickup" class="sr-only peer" required>
-                            <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300">
+                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300 dark:border-gray-600">
                                 <div class="text-center">
-                                    <i class="fas fa-store text-3xl text-gray-600 mb-2 peer-checked:text-blue-500"></i>
-                                    <h3 class="font-medium text-gray-900">Récupération</h3>
-                                    <p class="text-sm text-gray-600 mt-1">L'acheteur vient récupérer chez vous</p>
+                                    <i class="fas fa-store text-3xl text-gray-600 dark:text-gray-300 mb-2 peer-checked:text-blue-500"></i>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">Récupération</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">L'acheteur vient récupérer chez vous</p>
                                 </div>
                             </div>
                         </label>
 
                         <label class="relative">
                             <input type="radio" name="delivery_type" value="meetup" class="sr-only peer">
-                            <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300">
+                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300 dark:border-gray-600">
                                 <div class="text-center">
-                                    <i class="fas fa-handshake text-3xl text-gray-600 mb-2 peer-checked:text-blue-500"></i>
-                                    <h3 class="font-medium text-gray-900">Point de rencontre</h3>
-                                    <p class="text-sm text-gray-600 mt-1">Rendez-vous à mi-chemin</p>
+                                    <i class="fas fa-handshake text-3xl text-gray-600 dark:text-gray-300 mb-2 peer-checked:text-blue-500"></i>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">Point de rencontre</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Rendez-vous à mi-chemin</p>
                                 </div>
                             </div>
                         </label>
 
                         <label class="relative">
                             <input type="radio" name="delivery_type" value="hand_delivery" class="sr-only peer">
-                            <div class="p-4 border-2 border-gray-200 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300">
+                            <div class="p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer peer-checked:border-blue-500 peer-checked:bg-blue-50 hover:border-gray-300 dark:border-gray-600">
                                 <div class="text-center">
-                                    <i class="fas fa-home text-3xl text-gray-600 mb-2 peer-checked:text-blue-500"></i>
-                                    <h3 class="font-medium text-gray-900">Livraison à domicile</h3>
-                                    <p class="text-sm text-gray-600 mt-1">Vous livrez chez l'acheteur</p>
+                                    <i class="fas fa-home text-3xl text-gray-600 dark:text-gray-300 mb-2 peer-checked:text-blue-500"></i>
+                                    <h3 class="font-medium text-gray-900 dark:text-white">Livraison à domicile</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Vous livrez chez l'acheteur</p>
                                 </div>
                             </div>
                         </label>
@@ -94,24 +94,24 @@
 
                 <!-- Informations vendeur -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                         <i class="fas fa-user-tie mr-2"></i>Vos informations
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="seller_address" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="seller_address" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Votre adresse
                             </label>
                             <textarea name="seller_address" id="seller_address" rows="3" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                     placeholder="Votre adresse complète..."></textarea>
                         </div>
                         <div>
-                            <label for="seller_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="seller_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Votre téléphone
                             </label>
                             <input type="tel" name="seller_phone" id="seller_phone" required
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    placeholder="+243999123456">
                         </div>
                     </div>
@@ -120,25 +120,25 @@
                     <div class="mt-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="seller_latitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="seller_latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Latitude
                                 </label>
                                 <input type="number" name="seller_latitude" id="seller_latitude" step="any" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        placeholder="-4.441931">
                             </div>
                             <div>
-                                <label for="seller_longitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="seller_longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Longitude
                                 </label>
                                 <input type="number" name="seller_longitude" id="seller_longitude" step="any" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        placeholder="15.266293">
                             </div>
                         </div>
                         <div class="mt-2">
                             <button type="button" onclick="getCurrentLocation('seller')" 
-                                    class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                    class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900">
                                 <i class="fas fa-map-marker-alt mr-2"></i>
                                 Utiliser ma position actuelle
                             </button>
@@ -148,7 +148,7 @@
 
                 <!-- Informations acheteur -->
                 <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                         <i class="fas fa-user mr-2"></i>Informations de l'acheteur
                         <span id="auto-fill-indicator" class="hidden ml-2 text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
                             <i class="fas fa-check mr-1"></i><span id="auto-fill-source">Remplies automatiquement</span>
@@ -162,19 +162,19 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="buyer_address" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="buyer_address" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Adresse de l'acheteur
                             </label>
                             <textarea name="buyer_address" id="buyer_address" rows="3" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                     placeholder="Adresse de livraison..."></textarea>
                         </div>
                         <div>
-                            <label for="buyer_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="buyer_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Téléphone de l'acheteur
                             </label>
                             <input type="tel" name="buyer_phone" id="buyer_phone" required
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    placeholder="+243999654321">
                         </div>
                     </div>
@@ -183,19 +183,19 @@
                     <div class="mt-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label for="buyer_latitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="buyer_latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Latitude
                                 </label>
                                 <input type="number" name="buyer_latitude" id="buyer_latitude" step="any" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        placeholder="-4.432774">
                             </div>
                             <div>
-                                <label for="buyer_longitude" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="buyer_longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Longitude
                                 </label>
                                 <input type="number" name="buyer_longitude" id="buyer_longitude" step="any" required
-                                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        placeholder="15.251050">
                             </div>
                         </div>
@@ -204,51 +204,51 @@
 
                 <!-- Point de rencontre (visible seulement si meetup est sélectionné) -->
                 <div id="meetup_section" class="mb-6 hidden">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                         <i class="fas fa-map-pin mr-2"></i>Point de rencontre
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="md:col-span-2">
-                            <label for="meetup_address" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="meetup_address" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Adresse du point de rencontre
                             </label>
                             <textarea name="meetup_address" id="meetup_address" rows="2"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                     placeholder="Lieu de rendez-vous convenu..."></textarea>
                         </div>
                         <div>
-                            <label for="meetup_latitude" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="meetup_latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Latitude
                             </label>
                             <input type="number" name="meetup_latitude" id="meetup_latitude" step="any"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                         <div>
-                            <label for="meetup_longitude" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="meetup_longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Longitude
                             </label>
                             <input type="number" name="meetup_longitude" id="meetup_longitude" step="any"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500">
                         </div>
                     </div>
                 </div>
 
                 <!-- Informations calculées -->
-                <div id="delivery_info" class="mb-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h3 class="text-lg font-medium text-gray-900 mb-2">
+                <div id="delivery_info" class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hidden">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
                         <i class="fas fa-calculator mr-2"></i>Informations de livraison
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
-                            <span class="font-medium text-gray-700">Distance:</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200">Distance:</span>
                             <span id="calculated_distance" class="text-blue-600 font-medium">-- km</span>
                         </div>
                         <div>
-                            <span class="font-medium text-gray-700">Frais estimés:</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200">Frais estimés:</span>
                             <span id="calculated_fee" class="text-green-600 font-medium">-- CDF</span>
                         </div>
                         <div>
-                            <span class="font-medium text-gray-700">Temps estimé:</span>
+                            <span class="font-medium text-gray-700 dark:text-gray-200">Temps estimé:</span>
                             <span id="estimated_time" class="text-orange-600 font-medium">-- min</span>
                         </div>
                     </div>
@@ -257,7 +257,7 @@
                 <!-- Actions -->
                 <div class="flex justify-between">
                     <a href="{{ route('orders.index') }}" 
-                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                       class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900">
                         <i class="fas fa-arrow-left mr-2"></i>Retour
                     </a>
                     

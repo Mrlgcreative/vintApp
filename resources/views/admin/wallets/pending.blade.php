@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Wallets Pending')
 @section('page-title', 'Wallets Pending - Argent en Attente de Confirmation')
@@ -25,11 +25,11 @@
 </div>
 
 <!-- Carte principale avec en-tête responsive -->
-<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <!-- En-tête avec totaux - Responsive -->
-    <div class="bg-gray-50 border-b border-gray-200 px-4 md:px-6 py-4">
+    <div class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4">
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
                 <i class="fas fa-wallet text-yellow-600 mr-2"></i>
                 <span class="hidden sm:inline">Wallets Pending</span>
                 <span class="sm:hidden">Pending</span>
@@ -41,13 +41,13 @@
             <!-- Totaux en grille responsive -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:flex lg:items-center lg:space-x-6">
                 <div class="text-center lg:text-right">
-                    <span class="block text-xs text-gray-600 mb-1">Total USD</span>
+                    <span class="block text-xs text-gray-600 dark:text-gray-300 mb-1">Total USD</span>
                     <span class="text-lg font-bold text-green-600">
                         ${{ number_format($pendingWallets->where('currency', 'USD')->sum('balance'), 2) }}
                     </span>
                 </div>
                 <div class="text-center lg:text-right">
-                    <span class="block text-xs text-gray-600 mb-1">Total CDF</span>
+                    <span class="block text-xs text-gray-600 dark:text-gray-300 mb-1">Total CDF</span>
                     <span class="text-lg font-bold text-blue-600">
                         {{ number_format($pendingWallets->where('currency', 'CDF')->sum('balance'), 0, ',', ' ') }} FC
                     </span>
@@ -62,20 +62,20 @@
             <!-- Vue tableau - Desktop et tablettes -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                    <thead class="bg-gray-50 dark:bg-gray-900">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendeur</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Devise</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dernière MAJ</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Vendeur</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Devise</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Montant</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dernière MAJ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
                         @foreach($pendingWallets as $wallet)
-                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                            <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if($wallet->user->avatar)
@@ -86,8 +86,8 @@
                                             </div>
                                         @endif
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $wallet->user->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $wallet->user->email }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $wallet->user->name }}</div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $wallet->user->email }}</div>
                                         </div>
                                     </div>
                                 </td>
@@ -97,7 +97,7 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold text-gray-900">
+                                    <div class="text-sm font-bold text-gray-900 dark:text-white">
                                         {{ number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ') }} {{ $wallet->currency }}
                                     </div>
                                     @php
@@ -105,7 +105,7 @@
                                         $transport = $wallet->balance * 0.05;
                                         $seller = $wallet->balance - $commission - $transport;
                                     @endphp
-                                    <div class="text-xs text-gray-500 mt-1">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         Distribution : {{ number_format($seller, $wallet->currency === 'USD' ? 2 : 0) }} vendeur + {{ number_format($commission + $transport, $wallet->currency === 'USD' ? 2 : 0) }} plateforme
                                     </div>
                                 </td>
@@ -121,7 +121,7 @@
                                         {{ $wallet->is_active ? 'Actif' : 'Inactif' }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     <div>{{ $wallet->updated_at->format('d/m/Y H:i') }}</div>
                                     <div class="text-xs text-gray-400">{{ $wallet->updated_at->diffForHumans() }}</div>
                                 </td>
@@ -151,7 +151,7 @@
             <div class="lg:hidden">
                 <div class="space-y-4 p-4">
                     @foreach($pendingWallets as $wallet)
-                        <div class="wallet-card bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-150">
+                        <div class="wallet-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-150">
                             <!-- En-tête de la carte avec utilisateur -->
                             <div class="flex items-center mb-4">
                                 @if($wallet->user->avatar)
@@ -162,8 +162,8 @@
                                     </div>
                                 @endif
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium text-gray-900 truncate">{{ $wallet->user->name }}</div>
-                                    <div class="text-sm text-gray-500 truncate">{{ $wallet->user->email }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $wallet->user->name }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $wallet->user->email }}</div>
                                 </div>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
                                     {{ $wallet->currency }}
@@ -171,8 +171,8 @@
                             </div>
                             
                             <!-- Informations financières -->
-                            <div class="bg-gray-50 rounded-lg p-3 mb-4">
-                                <div class="text-lg font-bold text-gray-900 mb-2">
+                            <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 mb-4">
+                                <div class="text-lg font-bold text-gray-900 dark:text-white mb-2">
                                     {{ number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ') }} {{ $wallet->currency }}
                                 </div>
                                 @php
@@ -180,7 +180,7 @@
                                     $transport = $wallet->balance * 0.05;
                                     $seller = $wallet->balance - $commission - $transport;
                                 @endphp
-                                <div class="text-xs text-gray-600">
+                                <div class="text-xs text-gray-600 dark:text-gray-300">
                                     <div class="mb-1">
                                         <span class="font-medium">Distribution prévue :</span>
                                     </div>
@@ -201,7 +201,7 @@
                                     <i class="fas fa-circle text-xs mr-1"></i>
                                     {{ $wallet->is_active ? 'Actif' : 'Inactif' }}
                                 </span>
-                                <span class="text-xs text-gray-500">
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
                                     {{ $wallet->updated_at->diffForHumans() }}
                                 </span>
                             </div>
@@ -231,8 +231,8 @@
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
                     <i class="fas fa-check-circle text-3xl text-green-600"></i>
                 </div>
-                <h5 class="text-lg font-semibold text-gray-900 mb-2">Aucun wallet pending</h5>
-                <p class="text-gray-500 mb-4 max-w-md mx-auto">Tous les paiements ont été confirmés et distribués.</p>
+                <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun wallet pending</h5>
+                <p class="text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">Tous les paiements ont été confirmés et distribués.</p>
                 <p class="text-sm text-gray-400 max-w-lg mx-auto">Les wallets pending apparaissent ici lorsqu'un acheteur paie mais n'a pas encore confirmé la réception.</p>
             </div>
         @endif
@@ -240,9 +240,9 @@
     
     <!-- Pagination responsive -->
     @if($pendingWallets->hasPages())
-        <div class="border-t border-gray-200 px-4 md:px-6 py-4">
+        <div class="border-t border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                <div class="text-sm text-gray-700 text-center sm:text-left">
+                <div class="text-sm text-gray-700 dark:text-gray-200 text-center sm:text-left">
                     Affichage de 
                     <span class="font-medium">{{ $pendingWallets->firstItem() ?? 0 }}</span>
                     à 

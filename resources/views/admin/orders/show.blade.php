@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Détails de la commande #' . $order->id)
 @section('page-title', 'Détails de la commande #' . $order->id)
@@ -26,9 +26,9 @@
     <!-- Colonne principale -->
     <div class="lg:col-span-2 space-y-6">
         <!-- Informations de la commande -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4 bg-gradient-to-r from-primary-50 to-primary-100">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-gradient-to-r from-primary-50 to-primary-100">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-shopping-cart text-primary-600 mr-2"></i>
                     Commande #{{ $order->id }}
                 </h3>
@@ -36,14 +36,14 @@
             <div class="p-6">
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Date de commande</label>
-                        <p class="text-base text-gray-900">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Date de commande</label>
+                        <p class="text-base text-gray-900 dark:text-white">
                             <i class="far fa-calendar text-gray-400 mr-2"></i>
                             {{ $order->created_at->format('d/m/Y à H:i') }}
                         </p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Statut</label>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Statut</label>
                         <p>
                             @php
                                 $statusColors = [
@@ -61,20 +61,20 @@
                                     'cancelled' => 'Annulée',
                                 ];
                             @endphp
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100' }}">
                                 {{ $statusLabels[$order->status] ?? $order->status }}
                             </span>
                         </p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Quantité</label>
-                        <p class="text-base text-gray-900">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Quantité</label>
+                        <p class="text-base text-gray-900 dark:text-white">
                             <i class="fas fa-box text-gray-400 mr-2"></i>
                             {{ $order->quantity }} article(s)
                         </p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Montant total</label>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Montant total</label>
                         <p class="text-xl font-bold text-primary-600">
                             {{ number_format($order->total_price, 2) }} {{ $order->currency ?? 'USD' }}
                         </p>
@@ -84,9 +84,9 @@
         </div>
 
         <!-- Article commandé -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-tag text-primary-600 mr-2"></i>
                     Article commandé
                 </h3>
@@ -97,15 +97,15 @@
                     @if(!empty($order->item->images) && is_array($order->item->images))
                     <img src="{{ Storage::url($order->item->images[0]) }}" 
                          alt="{{ $order->item->name }}" 
-                         class="w-24 h-24 object-cover rounded-lg border border-gray-200">
+                         class="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
                     @else
-                    <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div class="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
                         <i class="fas fa-image text-gray-400 text-2xl"></i>
                     </div>
                     @endif
                     <div class="flex-1">
-                        <h4 class="font-semibold text-gray-900 text-lg mb-2">{{ $order->item->name }}</h4>
-                        <p class="text-gray-600 text-sm mb-3 line-clamp-2">{{ $order->item->description }}</p>
+                        <h4 class="font-semibold text-gray-900 dark:text-white text-lg mb-2">{{ $order->item->name }}</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{{ $order->item->description }}</p>
                         <div class="flex flex-wrap gap-3">
                             @if($order->item->category)
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -124,7 +124,7 @@
                     </div>
                 </div>
                 @else
-                <p class="text-gray-500 text-center py-4">
+                <p class="text-gray-500 dark:text-gray-400 text-center py-4">
                     <i class="fas fa-exclamation-triangle mr-2"></i>
                     Article non disponible
                 </p>
@@ -133,9 +133,9 @@
         </div>
 
         <!-- Transaction associée -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-receipt text-primary-600 mr-2"></i>
                     Informations de paiement
                 </h3>
@@ -143,17 +143,17 @@
             <div class="p-6">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Numéro de commande</label>
-                        <p class="text-base text-gray-900 font-mono">{{ $order->order_number }}</p>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Numéro de commande</label>
+                        <p class="text-base text-gray-900 dark:text-white font-mono">{{ $order->order_number }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Montant payé</label>
-                        <p class="text-base text-gray-900 font-semibold">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Montant payé</label>
+                        <p class="text-base text-gray-900 dark:text-white font-semibold">
                             {{ number_format($order->total_amount, 2) }} {{ $order->currency ?? 'USD' }}
                         </p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Statut du paiement</label>
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Statut du paiement</label>
                         <p>
                             @if($order->paid_at)
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
@@ -168,8 +168,8 @@
                     </div>
                     @if($order->paid_at)
                     <div>
-                        <label class="block text-sm font-medium text-gray-500 mb-1">Date de paiement</label>
-                        <p class="text-base text-gray-900">
+                        <label class="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Date de paiement</label>
+                        <p class="text-base text-gray-900 dark:text-white">
                             <i class="far fa-calendar text-gray-400 mr-2"></i>
                             {{ $order->paid_at->format('d/m/Y à H:i') }}
                         </p>
@@ -183,9 +183,9 @@
     <!-- Colonne latérale -->
     <div class="space-y-6">
         <!-- Acheteur -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4 bg-blue-50">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-blue-50">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-user text-blue-600 mr-2"></i>
                     Acheteur
                 </h3>
@@ -202,8 +202,8 @@
                         <i class="fas fa-user text-blue-600 text-2xl"></i>
                     </div>
                     @endif
-                    <h4 class="font-semibold text-gray-900">{{ $order->buyer->name }}</h4>
-                    <p class="text-sm text-gray-500">{{ $order->buyer->email }}</p>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ $order->buyer->name }}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $order->buyer->email }}</p>
                 </div>
                 <div class="space-y-2 pt-4 border-t border-gray-100">
                     @if($order->buyer->phone)
@@ -224,15 +224,15 @@
                     </a>
                 </div>
                 @else
-                <p class="text-gray-500 text-center">Utilisateur non disponible</p>
+                <p class="text-gray-500 dark:text-gray-400 text-center">Utilisateur non disponible</p>
                 @endif
             </div>
         </div>
 
         <!-- Vendeur -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4 bg-green-50">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-green-50">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-store text-green-600 mr-2"></i>
                     Vendeur
                 </h3>
@@ -249,8 +249,8 @@
                         <i class="fas fa-user text-green-600 text-2xl"></i>
                     </div>
                     @endif
-                    <h4 class="font-semibold text-gray-900">{{ $order->seller->name }}</h4>
-                    <p class="text-sm text-gray-500">{{ $order->seller->email }}</p>
+                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ $order->seller->name }}</h4>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $order->seller->email }}</p>
                 </div>
                 <div class="space-y-2 pt-4 border-t border-gray-100">
                     @if($order->seller->phone)
@@ -271,15 +271,15 @@
                     </a>
                 </div>
                 @else
-                <p class="text-gray-500 text-center">Utilisateur non disponible</p>
+                <p class="text-gray-500 dark:text-gray-400 text-center">Utilisateur non disponible</p>
                 @endif
             </div>
         </div>
 
         <!-- Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-            <div class="border-b border-gray-200 px-6 py-4">
-                <h3 class="text-lg font-semibold text-gray-900">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     <i class="fas fa-cog text-primary-600 mr-2"></i>
                     Actions
                 </h3>

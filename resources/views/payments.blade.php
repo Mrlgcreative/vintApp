@@ -1,9 +1,9 @@
-@extends('app')
+﻿@extends('app')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-2xl mx-auto">
-        <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="bg-blue-600 text-white px-6 py-4 text-center">
                 <h4 class="text-xl font-semibold flex items-center justify-center">
                     <i class="fas fa-mobile-alt mr-3"></i>Paiement Mobile Money
@@ -12,19 +12,19 @@
             <div class="p-6">
                 @if(isset($cart) && !empty($cart))
                     <div class="mb-6">
-                        <h5 class="text-lg font-semibold text-gray-900 mb-4">Votre commande</h5>
+                        <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Votre commande</h5>
                         <div class="space-y-3 mb-4">
                             @foreach($cart as $item)
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
                                     <div class="flex items-center space-x-3">
                                         @if(isset($item['image']) && $item['image'])
                                             <img src="{{ asset('storage/' . $item['image']) }}" 
                                                  alt="{{ $item['name'] }}" 
                                                  class="w-8 h-8 rounded object-cover">
                                         @endif
-                                        <span class="text-gray-900">{{ $item['name'] }} x {{ $item['quantity'] }}</span>
+                                        <span class="text-gray-900 dark:text-white">{{ $item['name'] }} x {{ $item['quantity'] }}</span>
                                     </div>
-                                    <span class="font-semibold text-gray-900">{{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}</span>
+                                    <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -68,25 +68,25 @@
                         @endphp
                         
                         <!-- Récapitulatif des montants -->
-                        <div class="border-t border-gray-200 pt-4">
+                        <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <div class="flex justify-between items-center mb-3">
-                                <span class="text-gray-700">Sous-total :</span>
-                                <span class="font-semibold text-gray-900">{{ number_format($subtotalInPriority, 2) }} {{ $priorityCurrency }}</span>
+                                <span class="text-gray-700 dark:text-gray-200">Sous-total :</span>
+                                <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($subtotalInPriority, 2) }} {{ $priorityCurrency }}</span>
                             </div>
                             <div class="flex justify-between items-center mb-3">
-                                <span class="text-gray-700">
+                                <span class="text-gray-700 dark:text-gray-200">
                                     Frais de livraison :
-                                    <span class="text-sm text-gray-500">({{ $transportFeePercentage }}%)</span>
+                                    <span class="text-sm text-gray-500 dark:text-gray-400">({{ $transportFeePercentage }}%)</span>
                                 </span>
                                 <span class="font-semibold text-blue-600">+{{ number_format($transportFeeInPriority, 2) }} {{ $priorityCurrency }}</span>
                             </div>
-                            <div class="border-t border-gray-200 pt-4">
+                            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xl font-semibold text-gray-900">Total à payer :</span>
+                                    <span class="text-xl font-semibold text-gray-900 dark:text-white">Total à payer :</span>
                                     <span class="text-xl font-bold text-green-600">{{ number_format($totalInPriority, 2) }} {{ $priorityCurrency }}</span>
                                 </div>
                                 @if(count($currencyCounts) > 1)
-                                    <p class="text-sm text-gray-500 mt-2">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                         <i class="fas fa-info-circle mr-1"></i> Devises mixtes converties en {{ $priorityCurrency }}
                                     </p>
                                 @endif
@@ -98,15 +98,15 @@
                 <form id="payment-form">
                     @csrf
                     <div class="mb-6">
-                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Numéro Mobile Money</label>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Numéro Mobile Money</label>
                         <div id="operator-info" class="mb-4 hidden">
-                            <div class="flex items-center p-4 bg-gray-50 rounded-lg border border-gray-200">
-                                <div class="w-16 h-16 rounded-full overflow-hidden shadow-sm bg-white mr-4 flex-shrink-0">
+                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div class="w-16 h-16 rounded-full overflow-hidden shadow-sm bg-white dark:bg-gray-800 mr-4 flex-shrink-0">
                                     <img id="operator-logo" src="" alt="" class="w-full h-full object-cover">
                                 </div>
                                 <div class="flex-1">
-                                    <h5 id="operator-name" class="font-semibold text-gray-900 mb-1"></h5>
-                                    <p id="operator-format" class="text-sm text-gray-600 mb-2"></p>
+                                    <h5 id="operator-name" class="font-semibold text-gray-900 dark:text-white mb-1"></h5>
+                                    <p id="operator-format" class="text-sm text-gray-600 dark:text-gray-300 mb-2"></p>
                                     <div class="flex items-center">
                                         <i class="fas fa-signal text-green-500 mr-2"></i>
                                         <span class="text-sm text-green-600">Réseau disponible</span>
@@ -115,26 +115,26 @@
                             </div>
                         </div>
                         <div class="flex">
-                            <span class="inline-flex items-center px-3 py-2 bg-gray-50 border border-r-0 border-gray-300 rounded-l-lg text-sm font-medium text-gray-700">+243</span>
+                            <span class="inline-flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-r-0 border-gray-300 rounded-l-lg text-sm font-medium text-gray-700 dark:text-gray-200">+243</span>
                             <input type="tel" 
-                                   class="flex-1 px-3 py-2 border border-gray-300 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
+                                   class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
                                    id="phone" 
                                    name="phone" 
                                    maxlength="9" 
                                    placeholder="Ex: 850123456" 
                                    required>
                         </div>
-                        <p class="text-sm text-gray-500 mt-2">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                             Entrez votre numéro Mobile Money (Orange: 84/85, M-Pesa: 81/82, Airtel: 97/99, Africell: 90-93)
                         </p>
                         <input type="hidden" id="provider" name="provider">
                     </div>
                     
                     <div class="mb-6">
-                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-2">Montant à payer</label>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Montant à payer</label>
                         <div class="flex">
                             <input type="number" 
-                                   class="flex-1 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-gray-50" 
+                                   class="flex-1 px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-gray-50 dark:bg-gray-900" 
                                    id="amount" 
                                    name="amount" 
                                    min="1" 
@@ -142,17 +142,17 @@
                                    required 
                                    readonly
                                    value="{{ isset($totalInPriority) ? $totalInPriority : (isset($total) ? $total : '') }}">
-                            <span class="inline-flex items-center px-3 py-2 bg-gray-50 border border-gray-300 rounded-r-lg text-sm font-medium text-gray-700">{{ isset($priorityCurrency) ? $priorityCurrency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}</span>
+                            <span class="inline-flex items-center px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-300 rounded-r-lg text-sm font-medium text-gray-700 dark:text-gray-200">{{ isset($priorityCurrency) ? $priorityCurrency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}</span>
                         </div>
                         @php
                             $displayCurrency = isset($priorityCurrency) ? $priorityCurrency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD');
                         @endphp
                         @if($displayCurrency === 'USD')
-                            <p class="text-sm text-gray-500 mt-2">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                 Environ <span id="amount-cdf" class="font-medium">0</span> CDF (1 USD = <span id="rate-display">2650</span> CDF)
                             </p>
                         @elseif($displayCurrency === 'CDF')
-                            <p class="text-sm text-gray-500 mt-2">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                 Environ <span id="amount-usd" class="font-medium">0</span> USD (1 USD = <span id="rate-display">2650</span> CDF)
                             </p>
                         @endif
