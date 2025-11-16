@@ -321,101 +321,42 @@
                                     Pourquoi voulez-vous rejoindre VintApp ?
                                     <span class="text-gray-500 text-xs font-normal">(optionnel)</span>
                                 </span>
+                        <!-- Motivations -->
+                        <div>
+                            <label for="reason" class="block text-sm font-bold text-gray-900 dark:text-white mb-3">
+                               
                             </label>
-                            <div class="bg-gradient-to-br from-gray-50 to-violet-50/30 dark:from-gray-800 dark:to-violet-900/10 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 space-y-3">
-                                <label for="reason_buyer" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_buyer" 
-                                           name="reasons[]" 
-                                           value="Acheter des produits vintage de qualité"
-                                           {{ is_array(old('reasons')) && in_array('Acheter des produits vintage de qualité', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">🛍️ Acheter des produits vintage</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Découvrir et acquérir des pièces uniques</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_seller" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_seller" 
-                                           name="reasons[]" 
-                                           value="Vendre mes articles vintage"
-                                           {{ is_array(old('reasons')) && in_array('Vendre mes articles vintage', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">💼 Vendre mes articles vintage</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Monétiser ma collection ou mes trouvailles</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_business" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_business" 
-                                           name="reasons[]" 
-                                           value="Développer mon business vintage"
-                                           {{ is_array(old('reasons')) && in_array('Développer mon business vintage', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">🚀 Développer mon business</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Faire croître mon activité professionnelle</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_community" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_community" 
-                                           name="reasons[]" 
-                                           value="Rejoindre une communauté de passionnés"
-                                           {{ is_array(old('reasons')) && in_array('Rejoindre une communauté de passionnés', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">👥 Rejoindre la communauté</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Échanger avec d'autres passionnés</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_collection" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_collection" 
-                                           name="reasons[]" 
-                                           value="Enrichir ma collection personnelle"
-                                           {{ is_array(old('reasons')) && in_array('Enrichir ma collection personnelle', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">⭐ Enrichir ma collection</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Compléter et valoriser mes pièces</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_sustainable" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_sustainable" 
-                                           name="reasons[]" 
-                                           value="Consommer de manière responsable et durable"
-                                           {{ is_array(old('reasons')) && in_array('Consommer de manière responsable et durable', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">♻️ Consommation responsable</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Privilégier la seconde main et l'économie circulaire</span>
-                                    </div>
-                                </label>
-                                
-                                <label for="reason_curiosity" class="group flex items-start gap-4 p-4 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-gray-700/50 transition-all duration-200 border-2 border-transparent hover:border-violet-200 dark:hover:border-violet-800">
-                                    <input type="checkbox" 
-                                           id="reason_curiosity" 
-                                           name="reasons[]" 
-                                           value="Découvrir une nouvelle plateforme innovante"
-                                           {{ is_array(old('reasons')) && in_array('Découvrir une nouvelle plateforme innovante', old('reasons')) ? 'checked' : '' }}
-                                           class="w-6 h-6 text-violet-600 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 mt-0.5 flex-shrink-0 cursor-pointer">
-                                    <div class="flex-1">
-                                        <span class="block font-semibold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">🔍 Curiosité et découverte</span>
-                                        <span class="text-sm text-gray-600 dark:text-gray-400">Explorer une nouvelle expérience d'achat/vente</span>
-                                    </div>
-                                </label>
-                            </div>
+                            <select class="w-full px-5 py-4 bg-gray-50 dark:bg-gray-800 border-2 @error('reasons') border-red-400 @else border-gray-200 dark:border-gray-700 @enderror rounded-2xl focus:border-violet-500 focus:ring-4 focus:ring-violet-100 dark:focus:ring-violet-900/30 transition-all duration-300 text-gray-900 dark:text-white" 
+                                    id="reason" 
+                                    name="reasons[]">
+                                <option value="">Sélectionnez une raison</option>
+                                <option value="Acheter des produits vintage de qualité" {{ is_array(old('reasons')) && in_array('Acheter des produits vintage de qualité', old('reasons')) ? 'selected' : '' }}>
+                                    🛍️ Acheter des produits vintage
+                                </option>
+                                <option value="Vendre mes articles vintage" {{ is_array(old('reasons')) && in_array('Vendre mes articles vintage', old('reasons')) ? 'selected' : '' }}>
+                                    💼 Vendre mes articles vintage
+                                </option>
+                                <option value="Développer mon business vintage" {{ is_array(old('reasons')) && in_array('Développer mon business vintage', old('reasons')) ? 'selected' : '' }}>
+                                    🚀 Développer mon business
+                                </option>
+                                <option value="Rejoindre une communauté de passionnés" {{ is_array(old('reasons')) && in_array('Rejoindre une communauté de passionnés', old('reasons')) ? 'selected' : '' }}>
+                                    👥 Rejoindre la communauté
+                                </option>
+                                <option value="Enrichir ma collection personnelle" {{ is_array(old('reasons')) && in_array('Enrichir ma collection personnelle', old('reasons')) ? 'selected' : '' }}>
+                                    ⭐ Enrichir ma collection
+                                </option>
+                                <option value="Consommer de manière responsable et durable" {{ is_array(old('reasons')) && in_array('Consommer de manière responsable et durable', old('reasons')) ? 'selected' : '' }}>
+                                    ♻️ Consommation responsable
+                                </option>
+                                <option value="Découvrir une nouvelle plateforme innovante" {{ is_array(old('reasons')) && in_array('Découvrir une nouvelle plateforme innovante', old('reasons')) ? 'selected' : '' }}>
+                                    🔍 Curiosité et découverte
+                                </option>
+                            </select>
                             @error('reasons')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                    {{ $message }}
+                                </p>
                             @enderror
                         </div>
 
@@ -501,22 +442,52 @@
     <script>
         // Configuration Firebase (initialisée quand les scripts sont chargés)
         const firebaseConfig = {
-            apiKey: "{{ config('firebase.web_config.apiKey') }}",
-            authDomain: "{{ config('firebase.web_config.authDomain') }}",
-            projectId: "{{ config('firebase.web_config.projectId') }}",
-            storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-            messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-            appId: "{{ config('firebase.web_config.appId') }}"
+            apiKey: "{{ env('FIREBASE_API_KEY') }}",
+            authDomain: "{{ env('FIREBASE_AUTH_DOMAIN') }}",
+            projectId: "{{ env('FIREBASE_PROJECT_ID') }}",
+            storageBucket: "{{ env('FIREBASE_STORAGE_BUCKET') }}",
+            messagingSenderId: "{{ env('FIREBASE_MESSAGING_SENDER_ID') }}",
+            appId: "{{ env('FIREBASE_APP_ID') }}"
         };
         
         let auth, db;
         
+        // Vérification de la configuration au chargement
+        console.log('Firebase Config:', {
+            apiKey: firebaseConfig.apiKey ? '✓ Défini' : '✗ Manquant',
+            authDomain: firebaseConfig.authDomain ? '✓ Défini' : '✗ Manquant',
+            projectId: firebaseConfig.projectId ? '✓ Défini' : '✗ Manquant',
+            storageBucket: firebaseConfig.storageBucket ? '✓ Défini' : '✗ Manquant',
+            messagingSenderId: firebaseConfig.messagingSenderId ? '✓ Défini' : '✗ Manquant',
+            appId: firebaseConfig.appId ? '✓ Défini' : '✗ Manquant'
+        });
+        
         // Initialiser Firebase quand les scripts sont chargés
         function initializeFirebase() {
-            if (typeof firebase !== 'undefined') {
+            if (typeof firebase === 'undefined') {
+                console.error('❌ Firebase SDK non chargé');
+                return false;
+            }
+            
+            // Vérifier que la configuration est valide
+            const configValid = firebaseConfig.apiKey && 
+                              firebaseConfig.authDomain && 
+                              firebaseConfig.projectId;
+            
+            if (!configValid) {
+                console.error('❌ Configuration Firebase invalide. Vérifiez le fichier .env');
+                return false;
+            }
+            
+            try {
                 firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
                 db = firebase.firestore();
+                console.log('✅ Firebase initialisé avec succès');
+                return true;
+            } catch (error) {
+                console.error('❌ Erreur d\'initialisation Firebase:', error);
+                return false;
             }
         }
         
@@ -535,7 +506,27 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             // Initialiser Firebase
-            initializeFirebase();
+            const firebaseInitialized = initializeFirebase();
+            
+            if (!firebaseInitialized) {
+                // Afficher un message d'erreur si Firebase n'est pas initialisé
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'mb-8 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-xl p-5';
+                errorDiv.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <svg class="w-6 h-6 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-red-900 dark:text-red-100 font-semibold">Configuration Firebase manquante</p>
+                            <p class="text-sm text-red-700 dark:text-red-300 mt-1">Veuillez configurer Firebase dans le fichier .env avant de pouvoir vous inscrire.</p>
+                        </div>
+                    </div>
+                `;
+                
+                const formContainer = document.querySelector('form').parentElement;
+                formContainer.insertBefore(errorDiv, formContainer.firstChild);
+            }
             
             // Auto-dismiss alerts
             autoDismissAlerts();

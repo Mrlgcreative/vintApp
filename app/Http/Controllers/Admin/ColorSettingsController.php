@@ -25,6 +25,11 @@ class ColorSettingsController extends Controller
     public function index()
     {
         $palettes = config('colors.palettes');
+        
+        // Fusionner avec les palettes personnalisées
+        $customPalettes = Cache::get('vintapp_custom_palettes', []);
+        $palettes = array_merge($palettes, $customPalettes);
+        
         $activePaletteName = $this->colorService->getActivePaletteName();
         $currentColors = $this->colorService->getAllColors();
 
@@ -174,7 +179,7 @@ class ColorSettingsController extends Controller
             $customPalettes = Cache::get('vintapp_custom_palettes', []);
             $paletteKey = 'custom_' . uniqid();
 
-            $customPalettes[$paletteKey] = [
+            $paletteData = [
                 'name' => $request->name,
                 'primary' => $request->primary,
                 'secondary' => $request->secondary,
@@ -188,8 +193,25 @@ class ColorSettingsController extends Controller
                 'created_at' => now(),
                 'custom' => true
             ];
+            
+            $customPalettes[$paletteKey] = $paletteData;
 
+            // Sauvegarder dans le cache
             Cache::put('vintapp_custom_palettes', $customPalettes, now()->addDays(365));
+            
+            // Sauvegarder aussi dans la base de données pour persistance
+            \App\Models\Setting::updateOrCreate(
+                ['key' => "custom_palette_{$paletteKey}"],
+                [
+                    'value' => json_encode($paletteData),
+                    'label' => "Palette personnalisée: {$request->name}",
+                    'description' => 'Palette de couleurs personnalisée créée par l\'utilisateur',
+                    'category' => 'appearance',
+                    'type' => 'json',
+                    'is_public' => false,
+                    'is_encrypted' => false
+                ]
+            );
 
             return redirect()->back()->with('success', 'Palette personnalisée créée avec succès !');
 

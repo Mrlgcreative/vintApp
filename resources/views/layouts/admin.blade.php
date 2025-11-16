@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -63,19 +63,28 @@
 
         /* Scrollbar personnalisé */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+            width: 8px;
         }
         
         .custom-scrollbar::-webkit-scrollbar-track {
-            @apply bg-transparent;
+            @apply bg-primary-800 rounded-full;
+            margin: 8px 0;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            @apply bg-white dark:bg-gray-800 bg-opacity-20 rounded-full;
+            @apply bg-white bg-opacity-30 rounded-full;
+            border: 2px solid transparent;
+            background-clip: padding-box;
         }
         
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            @apply bg-white dark:bg-gray-800 bg-opacity-30;
+            @apply bg-white bg-opacity-50;
+        }
+        
+        /* Scrollbar pour Firefox */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.3) rgba(59, 130, 246, 0.5);
         }
 
         /* Sidebar responsive */
@@ -97,10 +106,10 @@
         @endphp
 
         <!-- Sidebar -->
-        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-dark-800 to-dark-900 shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
+        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-primary-700 to-primary-900 shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
             <div class="flex h-full flex-col">
                 <!-- Brand -->
-                <div class="relative border-b border-white/10 bg-white dark:bg-gray-800/5 p-6">
+                <div class="relative border-b border-white/10 bg-primary-600 dark:bg-gray-800/5 p-6">
                     <x-app-brand 
                         :show-logo="true"
                         :show-name="true"
@@ -117,13 +126,13 @@
                     @if($isExpert)
                         <!-- Menu Expert -->
                         <a href="{{ route('expert.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.dashboard*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.dashboard*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-shield-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Dashboard Expert</span>
                         </a>
 
                         <a href="{{ route('expert.verifications.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-search w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Mes Vérifications</span>
                             @php
@@ -139,7 +148,7 @@
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_review']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">En attente d'examen</span>
                             @if($pendingVerifications > 0)
@@ -150,13 +159,13 @@
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_approved']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-check-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Approuvées</span>
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_rejected']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-times-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rejetées</span>
                         </a>
@@ -165,13 +174,13 @@
                         <div class="my-4 h-px bg-white dark:bg-gray-800/10"></div>
 
                         <a href="{{ route('expert.profile') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.profile*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('expert.profile*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-user-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Mon Profil Expert</span>
                         </a>
 
                         <!-- Statistiques rapides -->
-                        <div class="mt-6 rounded-xl bg-white dark:bg-gray-800/5 p-4">
+                        <div class="mt-6 rounded-xl bg-primary-600 dark:bg-gray-800/5 p-4">
                             <h4 class="text-sm font-semibold text-white/80 mb-3">Statistiques</h4>
                             @php
                                 $expertStats = [
@@ -200,13 +209,13 @@
                     @else
                         <!-- Menu Admin -->
                         <a href="{{ route('admin.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.dashboard')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.dashboard')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-tachometer-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Tableau de bord</span>
                         </a>
 
                         <a href="{{ route('admin.users.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs</span>
                             @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
@@ -218,7 +227,7 @@
 
                         <!-- 🆕 Menu Utilisateurs Connectés -->
                         <a href="{{ route('admin.users.online') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs Connectés</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
@@ -226,7 +235,7 @@
 
                         <!-- 🎯 Menu Gestion des Experts -->
                         <a href="{{ route('admin.experts.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.experts.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.experts.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-user-graduate w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Experts</span>
                             @php
@@ -241,13 +250,13 @@
                         </a>
 
                         <a href="{{ route('admin.transactions.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.transactions.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.transactions.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Transactions</span>
                         </a>
 
                         <a href="{{ route('admin.wallets.pending') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.wallets.pending')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.wallets.pending')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Wallets en attente</span>
                             @if(isset($pendingWalletsCount) && $pendingWalletsCount > 0)
@@ -258,14 +267,14 @@
                         </a>
 
                         <a href="{{ route('admin.orders.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Commandes</span>
                         </a>
 
                         <!-- 🆕 Menu Remboursements -->
                         <a href="{{ route('admin.refunds.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.refunds.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.refunds.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-undo w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Remboursements</span>
                             @php
@@ -280,26 +289,26 @@
 
                         <!-- 🆕 Menu Traçage GPS -->
                         <a href="{{ route('admin.orders.tracking.list') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Traçage GPS</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
                         <a href="{{ route('admin.brands.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.brands.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.brands.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-tags w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Marques</span>
                         </a>
 
                         <a href="{{ route('admin.categories.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.categories.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.categories.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-list w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Catégories</span>
                         </a>
 
                         <a href="{{ route('admin.support.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Support Client</span>
                             @php
@@ -315,7 +324,7 @@
 
                         <!-- 🎯 Menu Affiliation et Récompenses -->
                         <a href="{{ route('admin.affiliate.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Affiliation</span>
                             @php
@@ -331,25 +340,25 @@
                         </a>
 
                         <a href="{{ route('admin.reports') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rapports</span>
                         </a>
 
                         <a href="{{ route('admin.logs') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.logs')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.logs')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Logs système</span>
                         </a>
 
                         <a href="{{ route('admin.settings.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Paramètres</span>
                         </a>
 
                         <a href="{{ route('admin.locations.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Zones autorisées</span>
                         </a>
@@ -359,7 +368,7 @@
                 <!-- Footer -->
                 <div class="mt-auto p-4 space-y-2">
                     <a href="{{ route('home') }}" 
-                       class="flex w-full items-center justify-center rounded-xl border border-white/20 bg-transparent px-4 py-3 text-white/80 transition-all duration-300 hover:bg-white dark:bg-gray-800/10 hover:text-white">
+                       class="flex w-full items-center justify-center rounded-xl border border-white/20 bg-transparent px-4 py-3 text-white/80 transition-all duration-300 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Retour au site
                     </a>
@@ -387,22 +396,22 @@
         <!-- Contenu principal -->
         <main class="flex-1 transition-all duration-300" id="main-content">
             <!-- Header -->
-            <header class="sticky top-0 z-30 border-b border-gray-200 bg-white dark:bg-gray-800/95 p-4 shadow-sm backdrop-blur-lg">
+            <header class="sticky top-0 z-30 border-b border-primary-700 bg-primary dark:bg-gray-800/95 p-4 shadow-sm backdrop-blur-lg">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-4">
                         <!-- Toggle Button -->
-                        <button class="rounded-lg p-2 text-gray-600 transition-all duration-300 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-500" 
+                        <button class="rounded-lg p-2 text-white transition-all duration-300 hover:bg-primary-700 dark:bg-gray-800 hover:text-white dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-white" 
                                 id="sidebar-toggle"
                                 aria-label="Toggle sidebar">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-xl font-bold text-gray-900 dark:text-white lg:text-2xl">@yield('page-title')</h1>
+                        <h1 class="text-xl font-bold text-white dark:text-white lg:text-2xl">@yield('page-title')</h1>
                     </div>
                     
                     <div class="flex items-center space-x-4">
                         <!-- Notifications -->
                         <div class="relative">
-                            <button class="relative rounded-lg p-2 text-gray-600 transition-colors hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:hover:text-white" 
+                            <button class="relative rounded-lg p-2 text-white transition-colors hover:bg-primary-700 dark:bg-gray-800 hover:text-white dark:hover:text-white" 
                                     type="button" id="notificationsDropdown">
                                 <i class="fas fa-bell text-lg"></i>
                                 <span class="notification-dot hidden" id="notification-badge">0</span>
@@ -428,7 +437,7 @@
 
                         <!-- Profil -->
                         <div class="relative">
-                            <button class="flex items-center rounded-lg p-2 text-gray-600 dark:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700" 
+                            <button class="flex items-center rounded-lg p-2 text-white dark:text-gray-300 transition-colors hover:bg-primary-700 dark:hover:bg-gray-700" 
                                     type="button" id="userDropdown">
                                 @if(auth()->user()->avatar)
                                     @php
@@ -438,7 +447,7 @@
                                     @endphp
                                     <img src="{{ $avatarUrl }}" 
                                          alt="{{ auth()->user()->name }}" 
-                                         class="h-8 w-8 rounded-full object-cover border-2 border-primary-200 mr-2"
+                                         class="h-8 w-8 rounded-full object-cover border-2 border-white mr-2"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="mr-2 hidden h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 text-white text-sm font-semibold">
                                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
@@ -448,8 +457,8 @@
                                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                     </div>
                                 @endif
-                                <span class="hidden text-sm font-medium text-gray-900 dark:text-white lg:block">{{ auth()->user()->name }}</span>
-                                <i class="fas fa-chevron-down ml-2 text-xs text-gray-400 dark:text-gray-500"></i>
+                                <span class="hidden text-sm font-medium text-white dark:text-white lg:block">{{ auth()->user()->name }}</span>
+                                <i class="fas fa-chevron-down ml-2 text-xs text-white dark:text-gray-500"></i>
                             </button>
                             
                             <!-- Dropdown profil -->

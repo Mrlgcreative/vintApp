@@ -46,15 +46,13 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
     
     <!-- Header avec barre de profil -->
-    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <!-- Barre de profil supérieure -->
-        <div class="max-w-7xl mx-auto px-4 py-3">
-            <div class="flex items-center justify-between">
-                <?php if(auth()->guard()->check()): ?>
-                    <!-- Profil utilisateur connecté -->
+    <header class="bg-primary lg:bg-white dark:bg-gray-800 shadow-sm border-b border-primary-700 lg:border-gray-200 dark:border-gray-700 sticky top-0 z-50">
+        <div class="flex items-center justify-between px-4 py-3 max-w-7xl lg:mx-auto">
+            <?php if(auth()->guard()->check()): ?>
+                <!-- Profil utilisateur connecté -->
                     <div class="flex items-center space-x-3">
                         <a href="<?php echo e(route('profile.index')); ?>" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
                             <?php if(Auth::user()->avatar): ?>
@@ -65,27 +63,27 @@
                                 ?>
                                 <img src="<?php echo e($avatarUrl); ?>" 
                                      alt="<?php echo e(Auth::user()->name); ?>" 
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-primary-200"
+                                     class="w-10 h-10 rounded-full object-cover border-2 border-white lg:border-primary-200"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                 <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 items-center justify-center text-white font-bold text-sm hidden">
                                     <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
                                 </div>
                             <?php else: ?>
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 flex items-center justify-center text-white font-bold text-sm">
+                                <div class="w-10 h-10 rounded-full bg-white lg:bg-gradient-to-r lg:from-primary-600 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-sm border-2 border-white lg:border-0">
                                     <?php echo e(strtoupper(substr(Auth::user()->name, 0, 2))); ?>
 
                                 </div>
                             <?php endif; ?>
-                            <span class="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base"><?php echo e(Auth::user()->name); ?></span>
+                            <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm sm:text-base"><?php echo e(Auth::user()->name); ?></span>
                         </a>
                     </div>
                     
                     <!-- Actions utilisateur connecté -->
                     <div class="flex items-center space-x-2">
                         <!-- Notifications -->
-                        <button class="relative p-2.5 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors" onclick="toggleNotifications()">
-                            <i class="fas fa-bell text-gray-700 dark:text-gray-200 text-lg"></i>
+                        <button class="relative p-2.5 hover:bg-primary-700 lg:hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors" onclick="toggleNotifications()">
+                            <i class="fas fa-bell text-white lg:text-gray-700 dark:text-gray-200 text-lg"></i>
                             <?php
                                 $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
                             ?>
@@ -95,10 +93,10 @@
                         </button>
                         
                         <!-- Panier -->
-                        <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
-                            <i class="fas fa-shopping-cart text-gray-700 dark:text-gray-200 text-lg"></i>
+                        <a href="<?php echo e(route('cart.index')); ?>" class="relative p-2.5 hover:bg-primary-700 lg:hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
+                            <i class="fas fa-shopping-cart text-white lg:text-gray-700 dark:text-gray-200 text-lg"></i>
                             <?php if(session('cart') && count(session('cart')) > 0): ?>
-                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-primary-600 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-white lg:bg-primary-600 text-primary-600 lg:text-white text-xs rounded-full flex items-center justify-center font-bold border-2 border-primary-600 lg:border-0">
                                     <?php echo e(count(session('cart'))); ?>
 
                                 </span>
@@ -109,10 +107,10 @@
                     <!-- Logo pour utilisateur non connecté -->
                     <div class="flex items-center space-x-3">
                         <a href="<?php echo e(url('/')); ?>" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 flex items-center justify-center text-white font-bold text-sm">
+                            <div class="w-10 h-10 rounded-full bg-white lg:bg-gradient-to-r lg:from-primary-600 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-sm border-2 border-white lg:border-0">
                                 <i class="fas fa-home"></i>
                             </div>
-                            <span class="font-semibold text-gray-800 dark:text-gray-100 text-sm sm:text-base"><?php echo e(config('app.name', 'VintApp')); ?></span>
+                            <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm sm:text-base"><?php echo e(config('app.name', 'VintApp')); ?></span>
                         </a>
                     </div>
                     
@@ -128,7 +126,6 @@
                         </a>
                     </div> -->
                 <?php endif; ?>
-            </div>
         </div>
 
         <!-- Navigation principale (desktop seulement) -->
@@ -428,35 +425,35 @@
     <?php endif; ?>
 
     <!-- Navigation mobile (bottom) -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-primary dark:bg-gray-800 border-t border-primary-700 dark:border-gray-700 z-50">
         <div class="grid grid-cols-5 h-16">
-            <a href="<?php echo e(url('/')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 <?php echo e(request()->is('/') ? 'text-primary-600' : ''); ?>">
+            <a href="<?php echo e(url('/')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white <?php echo e(request()->is('/') ? 'text-white font-bold' : ''); ?>">
                 <i class="fas fa-home text-lg"></i>
                 <span class="text-xs mt-1">Accueil</span>
             </a>
-            <a href="<?php echo e(route('items.create')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 <?php echo e(request()->routeIs('items.create') ? 'text-primary-600' : ''); ?>">
+            <a href="<?php echo e(route('items.create')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white <?php echo e(request()->routeIs('items.create') ? 'text-white font-bold' : ''); ?>">
                 <i class="fas fa-plus-circle text-lg"></i>
                 <span class="text-xs mt-1">Vendre</span>
             </a>
-            <a href="<?php echo e(route('items.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 <?php echo e(request()->routeIs('items.index') ? 'text-primary-600' : ''); ?>">
+            <a href="<?php echo e(route('items.index')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white <?php echo e(request()->routeIs('items.index') ? 'text-white font-bold' : ''); ?>">
                 <i class="fas fa-box text-lg"></i>
                 <span class="text-xs mt-1">Articles</span>
             </a>
             <?php if(auth()->guard()->check()): ?>
-                <a href="<?php echo e(route('wallet.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 <?php echo e(request()->routeIs('wallet.*') ? 'text-primary-600' : ''); ?>">
+                <a href="<?php echo e(route('wallet.index')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white <?php echo e(request()->routeIs('wallet.*') ? 'text-white font-bold' : ''); ?>">
                     <i class="fas fa-wallet text-lg"></i>
                     <span class="text-xs mt-1">Wallet</span>
                 </a>
-                <a href="<?php echo e(route('settings.index')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600 <?php echo e(request()->routeIs('settings.*') ? 'text-primary-600' : ''); ?>">
+                <a href="<?php echo e(route('settings.index')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white <?php echo e(request()->routeIs('settings.*') ? 'text-white font-bold' : ''); ?>">
                     <i class="fas fa-cog text-lg"></i>
                     <span class="text-xs mt-1">Profil</span>
                 </a>
             <?php else: ?>
-                <a href="<?php echo e(route('login')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600">
+                <a href="<?php echo e(route('login')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white">
                     <i class="fas fa-sign-in-alt text-lg"></i>
                     <span class="text-xs mt-1">Connexion</span>
                 </a>
-                <a href="<?php echo e(route('register')); ?>" class="flex flex-col items-center justify-center text-gray-500 dark:text-gray-400 hover:text-primary-600">
+                <a href="<?php echo e(route('register')); ?>" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white">
                     <i class="fas fa-user-plus text-lg"></i>
                     <span class="text-xs mt-1">S'inscrire</span>
                 </a>

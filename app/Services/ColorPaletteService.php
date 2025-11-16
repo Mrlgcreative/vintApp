@@ -48,11 +48,23 @@ class ColorPaletteService
             return $this->config['palettes'][$paletteName];
         }
 
+        // Chercher dans les palettes personnalisées du cache
+        $customPalettes = Cache::get('vintapp_custom_palettes', []);
+        if (isset($customPalettes[$paletteName])) {
+            return $customPalettes[$paletteName];
+        }
+
         // Ensuite chercher dans les palettes personnalisées (base de données)
         try {
             $customPalette = \App\Models\Setting::where('key', "custom_palette_{$paletteName}")->first();
             if ($customPalette && $customPalette->value) {
-                return json_decode($customPalette->value, true);
+                $paletteData = json_decode($customPalette->value, true);
+                
+                // Mettre en cache pour les prochaines utilisations
+                $customPalettes[$paletteName] = $paletteData;
+                Cache::put('vintapp_custom_palettes', $customPalettes, now()->addDays(365));
+                
+                return $paletteData;
             }
         } catch (\Exception $e) {
             // Fallback

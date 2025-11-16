@@ -178,7 +178,7 @@
 
         <!-- Résultats -->
         @if($items->count() > 0)
-            <div class="grid grid-cols-2 gap-4" id="items-grid">
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="items-grid">
                 @foreach($items as $loop_index => $item)
                     @php
                         $firstImage = is_string($item->images) ? json_decode($item->images, true)[0] ?? null : ($item->images[0] ?? null);

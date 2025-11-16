@@ -63,46 +63,60 @@ class BoostController extends Controller
 
         try {
             $boostType = BoostType::findOrFail($request->boost_type_id);
-        $user = Auth::user();
-        $userCurrency = $user->preferred_currency ?? 'CDF';
-        
-        // Vérifier que la durée est disponible (convertir les heures en jours pour comparaison)
-        $availableDurations = $boostType->available_durations;
-        if (is_string($availableDurations)) {
-            $availableDurations = json_decode($availableDurations, true);
-        }
-        
-        // Convertir les durées disponibles (heures) en jours pour comparaison
-        $availableDaysArray = [];
-        if (is_array($availableDurations)) {
-            $availableDaysArray = array_map(function($hours) {
-                return intval($hours / 24);
-            }, $availableDurations);
-        }
-        
-        if (!in_array((int)$request->duration, $availableDaysArray)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Durée non disponible pour ce type de boost'
-            ], 400);
-        }
+            $user = Auth::user();
+            $userCurrency = $user->preferred_currency ?? 'CDF';
+            $durationInDays = (int) $request->duration;
+            
+            // Vérifier que la durée respecte les limites min/max
+            // min_duration et max_duration sont stockés en jours dans la DB
+            if ($durationInDays < $boostType->min_duration || $durationInDays > $boostType->max_duration) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "La durée doit être entre {$boostType->min_duration} et {$boostType->max_duration} jours"
+                ], 400);
+            }
 
         // Prix de base selon la devise
         $basePrice = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
         
-        // Calcul avec multiplicateur selon la durée (maintenant en jours)
+        // Tarification dégressive fixe basée sur 17 000 CDF pour 30 jours (base 10 000)
+        // Progression cohérente pour toutes les durées
         $duration = (int) $request->duration;
-        $multiplier = 1;
-        if ($duration >= 7) { // 7 jours ou plus
-            $multiplier = 1.5;
-        } elseif ($duration >= 3) { // 3 jours ou plus
-            $multiplier = 1.2;
-        } elseif ($duration >= 2) { // 2 jours ou plus
-            $multiplier = 1.1;
-        }
         
-        // Prix total = prix de base × durée × multiplicateur
-        $totalPrice = $basePrice * $duration * $multiplier;
+        switch ($duration) {
+            case 1:
+                $totalPrice = $basePrice; // 100% - Prix plein
+                break;
+            case 3:
+                $totalPrice = $basePrice * 2.4; // 8 000 par jour → 24 000 pour 3 jours (base 10k)
+                break;
+            case 7:
+                $totalPrice = $basePrice * 4.9; // 7 000 par jour → 49 000 pour 7 jours (base 10k)
+                break;
+            case 14:
+                $totalPrice = $basePrice * 8.4; // 6 000 par jour → 84 000 pour 14 jours (base 10k)
+                break;
+            case 21:
+                $totalPrice = $basePrice * 10.5; // 5 000 par jour → 105 000 pour 21 jours (base 10k)
+                break;
+            case 30:
+                $totalPrice = $basePrice * 1.7; // 567 par jour → 17 000 pour 30 jours (base 10k)
+                break;
+            default:
+                // Pour les durées non standard, interpolation proportionnelle
+                if ($duration <= 3) {
+                    $totalPrice = $basePrice * $duration * 0.80;
+                } elseif ($duration <= 7) {
+                    $totalPrice = $basePrice * $duration * 0.70;
+                } elseif ($duration <= 14) {
+                    $totalPrice = $basePrice * $duration * 0.60;
+                } elseif ($duration <= 21) {
+                    $totalPrice = $basePrice * $duration * 0.50;
+                } else {
+                    $totalPrice = $basePrice * $duration * 0.057;
+                }
+                break;
+        }
         $currencySymbol = $userCurrency === 'USD' ? '$' : 'CDF';
 
             return response()->json([
@@ -114,7 +128,7 @@ class BoostController extends Controller
                     : number_format($totalPrice, 0, ',', ' ') . ' CDF'
             ]);
         } catch (\Exception $e) {
-            \Log::error('Erreur lors du calcul du prix de boost: ' . $e->getMessage(), [
+            Log::error('Erreur lors du calcul du prix de boost: ' . $e->getMessage(), [
                 'request' => $request->all(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -131,66 +145,116 @@ class BoostController extends Controller
      */
     public function purchase(Request $request)
     {
-        $request->validate([
-            'boost_type_id' => 'required|exists:boost_types,id',
-            'item_id' => 'required|exists:items,id',
-            'duration' => 'required|integer|min:1|max:365'
-        ]);
-
-        $item = Item::where('id', $request->item_id)
-                   ->where('user_id', Auth::id())
-                   ->firstOrFail();
-
-        $boostType = BoostType::findOrFail($request->boost_type_id);
-
-        // Vérifier qu'il n'y a pas déjà un boost actif pour ce produit
-        $existingBoost = ProductBoost::where('item_id', $item->id)
-                                    ->where('status', 'active')
-                                    ->first();
-
-        if ($existingBoost) {
+        try {
+            $request->validate([
+                'boost_type_id' => 'required|exists:boost_types,id',
+                'item_id' => 'required|exists:items,id',
+                'duration' => 'required|integer|min:1|max:365'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation boost purchase failed', [
+                'errors' => $e->validator->errors()->all(),
+                'request' => $request->all()
+            ]);
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Ce produit a déjà un boost actif. Annulez-le d\'abord ou attendez qu\'il expire.'
-            ], 400);
-        }
-
-        // Vérifier la durée
-        if ($request->duration < $boostType->min_duration || $request->duration > $boostType->max_duration) {
-            return response()->json([
-                'success' => false,
-                'message' => "La durée doit être entre {$boostType->min_duration} et {$boostType->max_duration} jours"
-            ], 400);
-        }
-
-        // Calculer le prix total (même logique que calculatePrice)
-        $user = Auth::user();
-        $userCurrency = $user->preferred_currency ?? 'CDF';
-        $basePrice = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
-        
-        // Appliquer le même multiplicateur que dans calculatePrice
-        $duration = (int) $request->duration;
-        $multiplier = 1;
-        if ($duration >= 7) { // 7 jours ou plus
-            $multiplier = 1.5;
-        } elseif ($duration >= 3) { // 3 jours ou plus
-            $multiplier = 1.2;
-        } elseif ($duration >= 2) { // 2 jours ou plus
-            $multiplier = 1.1;
-        }
-        
-        // Prix total = prix de base × durée × multiplicateur
-        $totalPrice = $basePrice * $duration * $multiplier;
-
-        // Vérifier le solde du wallet de l'utilisateur
-        if (!isset($user->wallet_balance) || $user->wallet_balance < $totalPrice) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Solde insuffisant. Votre solde: ' . number_format($user->wallet_balance ?? 0, 0, ',', ' ') . ' CDF, Requis: ' . number_format($totalPrice, 0, ',', ' ') . ' CDF'
+                'message' => 'Données invalides: ' . implode(', ', $e->validator->errors()->all())
             ], 400);
         }
 
         try {
+            $item = Item::where('id', $request->item_id)
+                       ->where('user_id', Auth::id())
+                       ->first();
+
+            if (!$item) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Produit non trouvé ou vous n\'en êtes pas le propriétaire'
+                ], 404);
+            }
+
+            $boostType = BoostType::findOrFail($request->boost_type_id);
+            $durationInDays = (int) $request->duration;
+
+            // Vérifier qu'il n'y a pas déjà un boost actif pour ce produit
+            $existingBoost = ProductBoost::where('item_id', $item->id)
+                                        ->where('status', 'active')
+                                        ->where('expires_at', '>', now())
+                                        ->first();
+
+            if ($existingBoost) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce produit a déjà un boost actif. Annulez-le d\'abord ou attendez qu\'il expire.'
+                ], 400);
+            }
+
+            // Vérifier la durée (min_duration et max_duration sont en jours)
+            if ($durationInDays < $boostType->min_duration || $durationInDays > $boostType->max_duration) {
+                Log::warning('Duration out of bounds', [
+                    'requested' => $durationInDays,
+                    'min' => $boostType->min_duration,
+                    'max' => $boostType->max_duration
+                ]);
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => "La durée doit être entre {$boostType->min_duration} et {$boostType->max_duration} jours"
+                ], 400);
+            }
+
+            // Calculer le prix total (même logique que calculatePrice)
+            $user = Auth::user();
+            $userCurrency = $user->preferred_currency ?? 'CDF';
+            $basePrice = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
+            
+            // Tarification dégressive fixe (identique à calculatePrice)
+            $duration = (int) $request->duration;
+            
+            switch ($duration) {
+                case 1:
+                    $totalPrice = $basePrice;
+                    break;
+                case 3:
+                    $totalPrice = $basePrice * 2.4;
+                    break;
+                case 7:
+                    $totalPrice = $basePrice * 4.9;
+                    break;
+                case 14:
+                    $totalPrice = $basePrice * 8.4;
+                    break;
+                case 21:
+                    $totalPrice = $basePrice * 10.5;
+                    break;
+                case 30:
+                    $totalPrice = $basePrice * 1.7;
+                    break;
+                default:
+                    if ($duration <= 3) {
+                        $totalPrice = $basePrice * $duration * 0.80;
+                    } elseif ($duration <= 7) {
+                        $totalPrice = $basePrice * $duration * 0.70;
+                    } elseif ($duration <= 14) {
+                        $totalPrice = $basePrice * $duration * 0.60;
+                    } elseif ($duration <= 21) {
+                        $totalPrice = $basePrice * $duration * 0.50;
+                    } else {
+                        $totalPrice = $basePrice * $duration * 0.057;
+                    }
+                    break;
+            }
+
+            // Vérifier le solde du wallet de l'utilisateur
+            if (!isset($user->wallet_balance) || $user->wallet_balance < $totalPrice) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Solde insuffisant. Votre solde: ' . number_format($user->wallet_balance ?? 0, 0, ',', ' ') . ' CDF, Requis: ' . number_format($totalPrice, 0, ',', ' ') . ' CDF'
+                ], 400);
+            }
+
             DB::beginTransaction();
 
             // Déduire le montant du wallet
@@ -221,6 +285,13 @@ class BoostController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            Log::error('Boost purchase failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'user_id' => Auth::id()
+            ]);
             
             return response()->json([
                 'success' => false,
@@ -441,28 +512,26 @@ class BoostController extends Controller
             $minDuration = $boostType->min_duration ?? 1;
             $maxDuration = $boostType->max_duration ?? 30;
             
-            $durations = [];
-            // Proposer quelques durées entre min et max
-            if ($minDuration <= 1 && $maxDuration >= 1) $durations[] = 1;
-            if ($minDuration <= 3 && $maxDuration >= 3) $durations[] = 3;
-            if ($minDuration <= 7 && $maxDuration >= 7) $durations[] = 7;
-            if ($minDuration <= 14 && $maxDuration >= 14) $durations[] = 14;
-            if ($minDuration <= 30 && $maxDuration >= 30) $durations[] = 30;
+            // Proposer des durées standards : 1, 3, 7, 14, 21, 30 jours
+            $standardDurations = [1, 3, 7, 14, 21, 30];
+            $durations = array_filter($standardDurations, function($d) use ($minDuration, $maxDuration) {
+                return $d >= $minDuration && $d <= $maxDuration;
+            });
             
-            // Si aucune durée par défaut ne convient, utiliser min et max
+            // Si aucune durée standard ne convient, utiliser min et max
             if (empty($durations)) {
                 $durations = [$minDuration];
                 if ($maxDuration > $minDuration) {
                     $durations[] = $maxDuration;
                 }
             }
-        } else {
-            // Convertir toutes les heures en jours
-            $durations = array_map(function($duration) {
-                // Toutes les valeurs stockées dans available_durations sont en heures
-                return intval($duration / 24);
-            }, $durations);
         }
+        
+        // S'assurer que toutes les durées sont des entiers
+        $durations = array_map('intval', array_values($durations));
+        
+        // Trier les durées
+        sort($durations);
         
         return response()->json([
             'success' => true,
