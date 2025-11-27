@@ -11,6 +11,7 @@ use App\Events\OrderNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\CreateOrderRequest;
 
 class OrderController extends Controller
 {
@@ -49,16 +50,10 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateOrderRequest $request)
     {
-        $request->validate([
-            'item_id' => 'required|exists:items,id',
-            'quantity' => 'required|integer|min:1',
-            'shipping_address' => 'required|string|max:500',
-            'shipping_city' => 'required|string|max:100',
-            'shipping_phone' => 'required|string|max:20',
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        // Validation déjà effectuée par CreateOrderRequest
+        $validated = $request->validated();
 
         $item = Item::findOrFail($request->item_id);
 

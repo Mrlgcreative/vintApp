@@ -365,7 +365,7 @@
                                     <div class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ $item->user->name }}</div>
                                     <small class="text-gray-500 dark:text-gray-400 text-sm">
                                         <i class="fas fa-calendar mr-1"></i>
-                                        Membre depuis {{ $item->user->created_at->format('M Y') }}
+                                        Membre depuis {{ $item->user->created_at?->format('M Y') ?? 'N/A' }}
                                     </small>
                                 </div>
                                 <div class="flex items-center text-lg font-bold text-gray-900 dark:text-white">

@@ -4,20 +4,20 @@
 
 /* Variables CSS dynamiques VintApp - seront injectées automatiquement */
 :root {
-  --color-primary: #3B82F6;
-  --color-primary-50: #4e8ef6;
-  --color-primary-100: #629bf7;
-  --color-primary-150: #75a7f8;
-  --color-primary-200: #89b4f9;
-  --color-primary-250: #9dc0fa;
-  --color-primary-300: #b0cdfb;
-  --color-primary-350: #c4d9fc;
-  --color-primary-400: #d7e6fd;
-  --color-primary-500: #3B82F6;
-  --color-primary-600: #2f68c4;
-  --color-primary-700: #234e93;
-  --color-primary-800: #173462;
-  --color-primary-900: #0b1931;
+  --color-primary: #8B5CF6;
+  --color-primary-50: #966cf6;
+  --color-primary-100: #a27cf7;
+  --color-primary-150: #ad8cf8;
+  --color-primary-200: #b99df9;
+  --color-primary-250: #c5adfa;
+  --color-primary-300: #d0bdfb;
+  --color-primary-350: #dccefc;
+  --color-primary-400: #e7defd;
+  --color-primary-500: #8B5CF6;
+  --color-primary-600: #6f49c4;
+  --color-primary-700: #533793;
+  --color-primary-800: #372462;
+  --color-primary-900: #1b1231;
   --color-secondary: #6B7280;
   --color-secondary-50: #79808c;
   --color-secondary-100: #888e99;
@@ -32,20 +32,20 @@
   --color-secondary-700: #40444c;
   --color-secondary-800: #2a2d33;
   --color-secondary-900: #151619;
-  --color-accent: #8B5CF6;
-  --color-accent-50: #966cf6;
-  --color-accent-100: #a27cf7;
-  --color-accent-150: #ad8cf8;
-  --color-accent-200: #b99df9;
-  --color-accent-250: #c5adfa;
-  --color-accent-300: #d0bdfb;
-  --color-accent-350: #dccefc;
-  --color-accent-400: #e7defd;
-  --color-accent-500: #8B5CF6;
-  --color-accent-600: #6f49c4;
-  --color-accent-700: #533793;
-  --color-accent-800: #372462;
-  --color-accent-900: #1b1231;
+  --color-accent: #F59E0B;
+  --color-accent-50: #f6a723;
+  --color-accent-100: #f7b13b;
+  --color-accent-150: #f8bb54;
+  --color-accent-200: #f9c46c;
+  --color-accent-250: #face85;
+  --color-accent-300: #fbd89d;
+  --color-accent-350: #fce1b5;
+  --color-accent-400: #fdebce;
+  --color-accent-500: #F59E0B;
+  --color-accent-600: #c47e08;
+  --color-accent-700: #935e06;
+  --color-accent-800: #623f04;
+  --color-accent-900: #301f02;
   --color-success: #10B981;
   --color-success-50: #27c08d;
   --color-success-100: #3fc79a;
@@ -149,6 +149,9 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
 
 
 
@@ -352,20 +355,20 @@
 
 /* --- Variables CSS Dynamiques (injectées par le système de couleurs) --- */
 :root {
-  --color-primary: #3B82F6;
-  --color-primary-50: #4e8ef6;
-  --color-primary-100: #629bf7;
-  --color-primary-150: #75a7f8;
-  --color-primary-200: #89b4f9;
-  --color-primary-250: #9dc0fa;
-  --color-primary-300: #b0cdfb;
-  --color-primary-350: #c4d9fc;
-  --color-primary-400: #d7e6fd;
-  --color-primary-500: #3B82F6;
-  --color-primary-600: #2f68c4;
-  --color-primary-700: #234e93;
-  --color-primary-800: #173462;
-  --color-primary-900: #0b1931;
+  --color-primary: #8B5CF6;
+  --color-primary-50: #966cf6;
+  --color-primary-100: #a27cf7;
+  --color-primary-150: #ad8cf8;
+  --color-primary-200: #b99df9;
+  --color-primary-250: #c5adfa;
+  --color-primary-300: #d0bdfb;
+  --color-primary-350: #dccefc;
+  --color-primary-400: #e7defd;
+  --color-primary-500: #8B5CF6;
+  --color-primary-600: #6f49c4;
+  --color-primary-700: #533793;
+  --color-primary-800: #372462;
+  --color-primary-900: #1b1231;
   --color-secondary: #6B7280;
   --color-secondary-50: #79808c;
   --color-secondary-100: #888e99;
@@ -380,20 +383,20 @@
   --color-secondary-700: #40444c;
   --color-secondary-800: #2a2d33;
   --color-secondary-900: #151619;
-  --color-accent: #8B5CF6;
-  --color-accent-50: #966cf6;
-  --color-accent-100: #a27cf7;
-  --color-accent-150: #ad8cf8;
-  --color-accent-200: #b99df9;
-  --color-accent-250: #c5adfa;
-  --color-accent-300: #d0bdfb;
-  --color-accent-350: #dccefc;
-  --color-accent-400: #e7defd;
-  --color-accent-500: #8B5CF6;
-  --color-accent-600: #6f49c4;
-  --color-accent-700: #533793;
-  --color-accent-800: #372462;
-  --color-accent-900: #1b1231;
+  --color-accent: #F59E0B;
+  --color-accent-50: #f6a723;
+  --color-accent-100: #f7b13b;
+  --color-accent-150: #f8bb54;
+  --color-accent-200: #f9c46c;
+  --color-accent-250: #face85;
+  --color-accent-300: #fbd89d;
+  --color-accent-350: #fce1b5;
+  --color-accent-400: #fdebce;
+  --color-accent-500: #F59E0B;
+  --color-accent-600: #c47e08;
+  --color-accent-700: #935e06;
+  --color-accent-800: #623f04;
+  --color-accent-900: #301f02;
   --color-success: #10B981;
   --color-success-50: #27c08d;
   --color-success-100: #3fc79a;
@@ -497,6 +500,9 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
 
 
 

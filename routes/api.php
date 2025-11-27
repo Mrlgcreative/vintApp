@@ -28,16 +28,18 @@ use App\Http\Controllers\WalletController;
 */
 
 // Routes publiques
-Route::get('/health', function () {
-    return response()->json([
-        'status' => 'success',
-        'message' => 'VintApp API is running',
-        'version' => '1.0.0'
-    ]);
+Route::middleware(['cache.response:60', 'compress.response'])->group(function () {
+    Route::get('/health', function () {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'VintApp API is running',
+            'version' => '1.0.0'
+        ]);
+    });
 });
 
 // Validation de code de parrainage (public pour l'inscription)
-Route::post('/validate-referral-code', [App\Http\Controllers\AffiliateController::class, 'validateReferralCode']);
+Route::middleware(['throttle:10,1'])->post('/validate-referral-code', [App\Http\Controllers\AffiliateController::class, 'validateReferralCode']);
 
 // Routes de callback pour les paiements (publiques car appelées par les opérateurs)
 Route::prefix('payment-callbacks')->group(function () {
@@ -65,10 +67,10 @@ Route::post('/login', function (Request $request) {
 });
 
 // Routes protégées par authentification
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'compress.response'])->group(function () {
     
-    // User routes
-    Route::prefix('user')->group(function () {
+    // User routes (rate limit: 60/min)
+    Route::middleware('throttle:60,1')->prefix('user')->group(function () {
         Route::get('/profile', [UserController::class, 'profile']);
         Route::put('/profile', [UserController::class, 'updateProfile']);
         Route::post('/avatar', [UserController::class, 'uploadAvatar']);
@@ -80,19 +82,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/account', [UserController::class, 'destroy']);
     });
 
-    // Items routes
+    // Items routes (rate limit: 100/min pour GET, 20/min pour modifications)
     Route::prefix('items')->group(function () {
-        Route::get('/', [ItemController::class, 'index']);
-        Route::post('/', [ItemController::class, 'store']);
-        Route::get('/{item}', [ItemController::class, 'show']);
-        Route::put('/{item}', [ItemController::class, 'update']);
-        Route::delete('/{item}', [ItemController::class, 'destroy']);
-        Route::post('/{item}/favorite', [ItemController::class, 'toggleFavorite']);
-        Route::get('/search', [ItemController::class, 'search']);
+        Route::middleware(['throttle:100,1', 'cache.response:180'])->get('/', [ItemController::class, 'index']);
+        Route::middleware('throttle:20,1')->post('/', [ItemController::class, 'store']);
+        Route::middleware(['throttle:100,1', 'cache.response:120'])->get('/{item}', [ItemController::class, 'show']);
+        Route::middleware('throttle:20,1')->put('/{item}', [ItemController::class, 'update']);
+        Route::middleware('throttle:10,1')->delete('/{item}', [ItemController::class, 'destroy']);
+        Route::middleware('throttle:30,1')->post('/{item}/favorite', [ItemController::class, 'toggleFavorite']);
+        Route::middleware(['throttle:100,1', 'cache.response:120'])->get('/search', [ItemController::class, 'search']);
     });
 
-    // Orders routes
-    Route::prefix('orders')->group(function () {
+    // Orders routes (rate limit: 40/min)
+    Route::middleware('throttle:40,1')->prefix('orders')->group(function () {
         Route::get('/', [OrderController::class, 'index']);
         Route::post('/', [OrderController::class, 'store']);
         Route::get('/{order}', [OrderController::class, 'show']);
@@ -100,8 +102,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{order}', [OrderController::class, 'destroy']);
     });
 
-    // Messages routes
-    Route::prefix('messages')->group(function () {
+    // Messages routes (rate limit: 50/min)
+    Route::middleware('throttle:50,1')->prefix('messages')->group(function () {
         Route::get('/', [MessageController::class, 'index']);
         Route::post('/', [MessageController::class, 'store']);
         Route::get('/{message}', [MessageController::class, 'show']);
@@ -110,8 +112,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/conversations', [MessageController::class, 'conversations']);
     });
 
-    // Reviews routes
-    Route::prefix('reviews')->group(function () {
+    // Reviews routes (rate limit: 20/min)
+    Route::middleware('throttle:20,1')->prefix('reviews')->group(function () {
         Route::get('/', [ReviewController::class, 'index']);
         Route::post('/', [ReviewController::class, 'store']);
         Route::get('/{review}', [ReviewController::class, 'show']);
@@ -119,8 +121,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{review}', [ReviewController::class, 'destroy']);
     });
 
-    // Notifications routes
-    Route::prefix('notifications')->group(function () {
+    // Notifications routes (rate limit: 60/min)
+    Route::middleware('throttle:60,1')->prefix('notifications')->group(function () {
         Route::get('/', [NotificationController::class, 'index']);
         Route::put('/{notification}/read', [NotificationController::class, 'markAsRead']);
         Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
@@ -129,33 +131,39 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/', [NotificationController::class, 'clearAll']);
     });
 
-    // Dashboard routes
-    Route::prefix('dashboard')->group(function () {
+    // Dashboard routes (rate limit: 30/min)
+    Route::middleware('throttle:30,1')->prefix('dashboard')->group(function () {
         Route::get('/analytics', [DashboardController::class, 'analytics']);
         Route::get('/user', [DashboardController::class, 'userDashboard']);
         Route::get('/data', [DashboardController::class, 'apiData']);
     });
 
-    // Categories routes
-    Route::prefix('categories')->group(function () {
+    // Categories routes (rate limit: 100/min avec cache)
+    Route::middleware(['throttle:100,1', 'cache.response:3600'])->prefix('categories')->group(function () {
         Route::get('/', [CategoryController::class, 'index']);
-        Route::post('/', [CategoryController::class, 'store']);
         Route::get('/{category}', [CategoryController::class, 'show']);
+    });
+    
+    Route::middleware('throttle:10,1')->prefix('categories')->group(function () {
+        Route::post('/', [CategoryController::class, 'store']);
         Route::put('/{category}', [CategoryController::class, 'update']);
         Route::delete('/{category}', [CategoryController::class, 'destroy']);
     });
 
-    // Brands routes
-    Route::prefix('brands')->group(function () {
+    // Brands routes (rate limit: 100/min avec cache)
+    Route::middleware(['throttle:100,1', 'cache.response:3600'])->prefix('brands')->group(function () {
         Route::get('/', [BrandController::class, 'index']);
-        Route::post('/', [BrandController::class, 'store']);
         Route::get('/{brand}', [BrandController::class, 'show']);
+    });
+    
+    Route::middleware('throttle:10,1')->prefix('brands')->group(function () {
+        Route::post('/', [BrandController::class, 'store']);
         Route::put('/{brand}', [BrandController::class, 'update']);
         Route::delete('/{brand}', [BrandController::class, 'destroy']);
     });
 
-    // Affiliate routes
-    Route::prefix('affiliate')->group(function () {
+    // Affiliate routes (rate limit: 30/min)
+    Route::middleware('throttle:30,1')->prefix('affiliate')->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\AffiliateController::class, 'dashboard']);
         Route::get('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'getReferralCodes']);
         Route::post('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'createReferralCode']);

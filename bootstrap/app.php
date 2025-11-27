@@ -49,11 +49,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
             'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
             'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+            'cache.response' => \App\Http\Middleware\CacheResponse::class, // 🚀 Cache HTTP
+            'compress.response' => \App\Http\Middleware\CompressResponse::class, // 🚀 Compression GZIP
             'can' => \Illuminate\Auth\Middleware\Authorize::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
             'signed' => \App\Http\Middleware\ValidateSignature::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+            'throttle.login' => \App\Http\Middleware\ThrottleLogin::class, // 🔐 Rate limit login
+            'security.log' => \App\Http\Middleware\SecurityLogging::class, // 🔐 Security logging
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class, // ✅ Notre middleware personnalisé
             'role' => \App\Http\Middleware\CheckRole::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
@@ -61,6 +65,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'dynamic.config' => \App\Http\Middleware\DynamicConfigMiddleware::class,
             'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
             'preregistration' => \App\Http\Middleware\CheckPreregistrationMode::class,
+            'mobile.optimize' => \App\Http\Middleware\MobileOptimization::class, // 📱 Optimisation mobile
             'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
         ]);
     })

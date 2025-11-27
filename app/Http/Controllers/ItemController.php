@@ -14,23 +14,46 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
+use App\Services\CacheService;
+use App\Http\Requests\StoreItemRequest;
+use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
+    protected $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        // Utiliser le cache pour les catégories et marques
+        $categories = $this->cacheService->getCategories(true);
+        $brands = $this->cacheService->getBrands(true);
+
+        // Relations à charger de manière optimisée
+        $eagerLoad = [
+            'category:id,name,slug',
+            'brand:id,name,country',
+            'user:id,name,avatar,avatar_url',
+            'activeBoosts.boostType:id,name,icon,visual_config'
+        ];
+
         // Récupérer les articles avec boost prioritaires
-        $boostedItemsQuery = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+        $boostedItemsQuery = Item::with($eagerLoad)
             ->whereHas('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Récupérer les articles réguliers (non-boostés)
-        $regularItemsQuery = Item::with(['category', 'brand', 'user'])
+        $regularItemsQuery = Item::with(array_diff($eagerLoad, ['activeBoosts.boostType:id,name,icon,visual_config']))
             ->whereDoesntHave('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Appliquer les filtres à toutes les requêtes
         $queries = [$boostedItemsQuery, $regularItemsQuery];
@@ -95,9 +118,6 @@ class ItemController extends Controller
         );
         $items->appends($request->query());
 
-        $categories = Category::where('is_active', true)->get();
-        $brands = Brand::where('is_active', true)->get();
-
         return view('items.index', compact('items', 'categories', 'brands'));
     }
 
@@ -106,8 +126,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        $categories = Category::where('is_active', true)->get();
-        $brands = Brand::where('is_active', true)->get();
+        $categories = $this->cacheService->getCategories(true);
+        $brands = $this->cacheService->getBrands(true);
         
         // Vérifier si les restrictions géographiques sont activées
         $locationRestrictionsEnabled = Setting::get('enable_location_restrictions', true);
@@ -123,23 +143,9 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreItemRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'currency' => 'required|in:USD,CDF',
-            'quantity' => 'required|integer|min:1',
-            'condition' => 'required|in:new,like_new,good,fair,poor',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'specifications' => 'nullable|array',
-            'color' => 'nullable|string|max:50',
-            'size' => 'nullable|string|max:50',
-            'item_number' => 'nullable|string|max:50',
-        ]);
+        // Validation déjà effectuée par StoreItemRequest
 
         $item = new Item();
         $item->user_id = Auth::id();
@@ -233,22 +239,32 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        // Incrémenter les vues
-        $item->increment('views');
+        // Incrémenter les vues de manière asynchrone pour ne pas ralentir l'affichage
+        $item->incrementQuietly('views');
+        
+        // Invalider le cache de l'item après incrément
+        $this->cacheService->forgetItem($item->id);
         
         // Nettoyer et valider les données
         $item->specifications = is_array($item->specifications) ? $item->specifications : [];
         $item->images = is_array($item->images) ? $item->images : [];
         
-        // Charger les relations
-        $item->load(['category', 'brand', 'user']);
+        // Charger les relations de manière optimisée
+        $item->load([
+            'category:id,name,slug',
+            'brand:id,name,country',
+            'user:id,name,avatar,avatar_url,email',
+            'activeBoosts.boostType:id,name,icon,visual_config',
+            'authenticityCheck'
+        ]);
         
-        // Récupérer les reviews approuvées pour cet item
+        // Récupérer les reviews approuvées pour cet item avec eager loading
         $reviews = \App\Models\Review::where('item_id', $item->id)
             ->where('status', 'approved')
-            ->with(['reviewer'])
+            ->with(['reviewer:id,name,avatar,avatar_url'])
+            ->select('id', 'item_id', 'reviewer_id', 'rating', 'comment', 'created_at')
             ->orderBy('created_at', 'desc')
-            ->take(2) // Les 2 derniers commentaires
+            ->take(2)
             ->get();
         
         // Calculer la moyenne des ratings et le total
@@ -260,13 +276,21 @@ class ItemController extends Controller
         $averageRating = $reviewsStats->average_rating ? round($reviewsStats->average_rating, 1) : 0;
         $totalReviews = $reviewsStats->total_reviews ?? 0;
         
-        // Articles similaires
-        $similarItems = Item::where('category_id', $item->category_id)
-                           ->where('id', '!=', $item->id)
-            ->where('status', 'active')
-            ->with(['category', 'brand'])
-                           ->limit(4)
-                           ->get();
+        // Articles similaires avec cache
+        $cacheKey = "similar_items.{$item->category_id}.exclude.{$item->id}";
+        $similarItems = $this->cacheService->remember($cacheKey, 300, function () use ($item) {
+            return Item::where('category_id', $item->category_id)
+                ->where('id', '!=', $item->id)
+                ->where('status', 'active')
+                ->with([
+                    'category:id,name,slug',
+                    'brand:id,name',
+                    'user:id,name'
+                ])
+                ->select('id', 'user_id', 'name', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition')
+                ->limit(4)
+                ->get();
+        });
 
         return view('items.show', compact('item', 'similarItems', 'reviews', 'averageRating', 'totalReviews'));
     }
@@ -281,8 +305,8 @@ class ItemController extends Controller
             abort(403, 'Vous n\'êtes pas autorisé à modifier cet article.');
         }
 
-        $categories = Category::where('is_active', true)->get();
-        $brands = Brand::where('is_active', true)->get();
+        $categories = $this->cacheService->getCategories(true);
+        $brands = $this->cacheService->getBrands(true);
 
         return view('items.edit', compact('item', 'categories', 'brands'));
     }
@@ -290,28 +314,9 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Item $item)
+    public function update(UpdateItemRequest $request, Item $item)
     {
-        // Vérifier que l'utilisateur est le propriétaire
-        if ($item->user_id !== Auth::id()) {
-            abort(403, 'Vous n\'êtes pas autorisé à modifier cet article.');
-        }
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'price' => 'required|numeric|min:0',
-            'currency' => 'required|in:USD,CDF',
-            'quantity' => 'required|integer|min:1',
-            'condition' => 'required|in:new,like_new,good,fair,poor',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            'specifications' => 'nullable|array',
-            'color' => 'nullable|string|max:50',
-            'size' => 'nullable|string|max:50',
-            'item_number' => 'nullable|string|max:50',
-        ]);
+        // Validation et autorisation déjà effectuées par UpdateItemRequest
 
         $item->name = $request->name;
         $item->description = $request->description;

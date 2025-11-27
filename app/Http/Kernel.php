@@ -66,5 +66,8 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'expert' => \App\Http\Middleware\IsExpert::class,
+        // Performance optimization middlewares
+        'cache.response' => \App\Http\Middleware\CacheResponse::class,
+        'compress.response' => \App\Http\Middleware\CompressResponse::class,
     ];
 }

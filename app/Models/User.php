@@ -160,6 +160,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Alias pour reviewsReceived (compatibilité)
+     */
+    public function receivedReviews()
+    {
+        return $this->reviewsReceived();
+    }
+
+    /**
+     * Alias pour reviewsGiven (compatibilité)
+     */
+    public function givenReviews()
+    {
+        return $this->reviewsGiven();
+    }
+
+    /**
      * Relation avec les paiements effectués
      */
     public function paymentsAsBuyer()

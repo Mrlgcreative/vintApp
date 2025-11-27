@@ -90,7 +90,9 @@ Route::post('/order/scan/{token}/confirm', [OrderController::class, 'confirmOrde
 Route::middleware('auth')->group(function () {
     // Routes pour les items (CRUD) - Routes spécifiques AVANT les routes avec paramètres
     Route::get('/items/create', [ItemController::class, 'create'])->name('items.create');
-    Route::post('/items', [ItemController::class, 'store'])->name('items.store');
+    Route::post('/items', [ItemController::class, 'store'])
+        ->middleware(['security.log'])
+        ->name('items.store');
     Route::get('/my-items', [ItemController::class, 'myItems'])->name('items.my-items');
     Route::get('/items/personalization', [ItemController::class, 'personalization'])->name('items.personalization');
     Route::get('/items/{item}/edit', [ItemController::class, 'edit'])->name('items.edit');
@@ -136,7 +138,9 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::post('/orders', [OrderController::class, 'store'])
+        ->middleware(['security.log'])
+        ->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
     Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
@@ -189,7 +193,7 @@ Route::post('/reviews/post-payment', [App\Http\Controllers\ReviewController::cla
     ->middleware('auth');
 
 // Routes d'administration
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:60,1'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:60,1', 'security.log'])->group(function () {
     // Dashboard
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
@@ -252,6 +256,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         // 🆕 Transfert de commission vers WalletEntreprise
         Route::post('/transfer-commission', [App\Http\Controllers\WalletController::class, 'transferCommission'])
             ->name('transfer-commission');
+    });
+
+    // 🔍 Monitoring et Métriques
+    Route::prefix('monitoring')->name('monitoring.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\MonitoringController::class, 'index'])->name('index');
+        Route::get('/stats', [App\Http\Controllers\Admin\MonitoringController::class, 'stats'])->name('stats');
+        Route::get('/health', [App\Http\Controllers\Admin\MonitoringController::class, 'health'])->name('health');
+        Route::post('/reset', [App\Http\Controllers\Admin\MonitoringController::class, 'reset'])->name('reset');
     });
 
     // Gestion des transactions
@@ -773,10 +785,16 @@ Route::post('/set-password', [App\Http\Controllers\Admin\AdminController::class,
 
 // Firebase Authentication Routes
 Route::prefix('firebase')->name('firebase.')->group(function () {
-    // Routes de connexion Firebase
-    Route::post('/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('login');
-    Route::post('/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('register');
-    Route::post('/logout', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'logout'])->name('logout')->middleware('auth');
+    // Routes de connexion Firebase (avec rate limiting et logging)
+    Route::post('/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])
+        ->middleware(['throttle.login', 'security.log'])
+        ->name('login');
+    Route::post('/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])
+        ->middleware(['security.log'])
+        ->name('register');
+    Route::post('/logout', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'logout'])
+        ->middleware(['auth', 'security.log'])
+        ->name('logout');
     
     // Vérification de l'état d'authentification
     Route::get('/check-auth', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'checkAuthStatus'])->name('check-auth');
