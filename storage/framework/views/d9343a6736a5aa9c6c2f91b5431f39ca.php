@@ -272,6 +272,22 @@
                             <span>Transactions</span>
                         </a>
 
+                        <!-- 🆕 Modération des images - Items en attente -->
+                        <a href="<?php echo e(route('admin.moderation.items.pending_verification')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.moderation.items.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                            <i class="fas fa-image w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Items en attente de vérification</span>
+                            <?php
+                                $pendingModerations = \App\Models\Item::where('status', 'pending_verification')->count();
+                            ?>
+                            <?php if($pendingModerations > 0): ?>
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                    <?php echo e($pendingModerations); ?>
+
+                                </span>
+                            <?php endif; ?>
+                        </a>
+
                         <a href="<?php echo e(route('admin.wallets.pending')); ?>" 
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.wallets.pending')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>

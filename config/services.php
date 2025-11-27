@@ -127,4 +127,35 @@ return [
         'enabled' => env('ILLICOCASH_ENABLED', true),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | CinetPay Payment Gateway Configuration
+    |--------------------------------------------------------------------------
+    |
+    | CinetPay is a payment gateway for African markets
+    | Supporting multiple payment methods including Mobile Money and Cards
+    |
+    */
+    'cinetpay' => [
+        'site_id' => env('CINETPAY_SITE_ID', '124598'),
+        'api_key' => env('CINETPAY_API_KEY', '39955468c7a8c0cef1.68322505'),
+        'platform' => env('CINETPAY_PLATFORM', 'TEST'), // TEST or PROD
+        'version' => env('CINETPAY_VERSION', 'V2'), // V1 or V2
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AfribaPay Payment Gateway Configuration
+    |--------------------------------------------------------------------------
+    |
+    | AfribaPay is a payment gateway supporting Mobile Money across Africa
+    | Supports: CD (CDF/USD), CI, BF, CM, GA, GN, ML, NE, SN, TG, BJ
+    |
+    */
+    'afribapay' => [
+        'token' => env('AFRIBAPAY_TOKEN'),
+        'environment' => env('AFRIBAPAY_ENVIRONMENT', 'sandbox'), // sandbox or production
+        'webhook_secret' => env('AFRIBAPAY_WEBHOOK_SECRET'),
+    ],
+
 ];

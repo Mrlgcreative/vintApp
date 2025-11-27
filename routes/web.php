@@ -506,6 +506,73 @@ Route::middleware('auth')->prefix('support')->name('support.')->group(function (
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
+    // CinetPay Integration Routes
+    Route::middleware(['auth'])->group(function () {
+        // Initier un paiement depuis le checkout (panier)
+        Route::post('/checkout/initiate', [PaymentController::class, 'initiateCheckoutPayment'])->name('payments.checkout.initiate');
+        
+        // Initier un paiement pour une commande
+        Route::post('/orders/{order}/pay', [PaymentController::class, 'initiateOrderPayment'])->name('payments.order.initiate');
+        
+        // Initier un rechargement de wallet
+        Route::post('/wallet/topup', [PaymentController::class, 'initiateWalletTopup'])->name('payments.wallet.topup');
+    });
+    
+    // CinetPay Webhooks (pas d'authentification requise)
+    Route::post('/cinetpay/notify', [PaymentController::class, 'handleNotification'])->name('payments.cinetpay.notify');
+    
+    // CinetPay Return URL (authentification requise)
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/cinetpay/return', [PaymentController::class, 'handleReturn'])->name('payments.cinetpay.return');
+    });
+
+    // ========================================================================
+    // AfribaPay Integration Routes
+    // ========================================================================
+    Route::middleware(['auth'])->group(function () {
+        // Rediriger les accès GET vers le checkout
+        Route::get('/afribapay/form', function() {
+            return redirect()->route('cart.checkout')->with('error', 'Veuillez procéder via le checkout.');
+        });
+        
+        // Afficher le formulaire de paiement AfribaPay
+        Route::post('/afribapay/form', [PaymentController::class, 'showAfribaPaymentForm'])->name('payments.afribapay.form');
+        
+        // Initier un paiement AfribaPay
+        Route::post('/afribapay/initiate', [PaymentController::class, 'initiateAfribaPayment'])->name('payments.afribapay.initiate');
+        
+        // Vérifier l'OTP
+        Route::post('/afribapay/{payment}/verify-otp', [PaymentController::class, 'verifyAfribaOTP'])->name('payments.afribapay.verify-otp');
+
+        // Admin moderation routes for image verification
+        // Protégées par le middleware 'admin' en plus de 'auth'
+        Route::prefix('admin')->middleware('admin')->group(function () {
+            // List items pending verification
+            Route::get('/items/pending-verification', [\App\Http\Controllers\ItemController::class, 'pendingVerificationList'])
+                ->name('admin.items.pending_verification');
+
+            // Approve an item (POST)
+            Route::post('/items/{item}/approve', [\App\Http\Controllers\ItemController::class, 'approveItem'])
+                ->name('admin.items.approve');
+
+            // Reject an item (POST)
+            Route::post('/items/{item}/reject', [\App\Http\Controllers\ItemController::class, 'rejectItem'])
+                ->name('admin.items.reject');
+        });
+        
+        // Page de statut (polling)
+        Route::get('/afribapay/{payment}/status', [PaymentController::class, 'showAfribaStatus'])->name('payments.afribapay.status');
+        
+        // API pour vérifier le statut (AJAX)
+        Route::get('/afribapay/{payment}/check-status', [PaymentController::class, 'checkAfribaStatus'])->name('payments.afribapay.check-status');
+        
+        // Page de retour
+        Route::get('/afribapay/return', [PaymentController::class, 'handleAfribaReturn'])->name('payments.afribapay.return');
+    });
+    
+    // AfribaPay Webhook (pas d'authentification requise)
+    Route::post('/afribapay/notify', [PaymentController::class, 'handleAfribaNotification'])->name('payments.afribapay.notify');
+    
     // Page de test pour la simulation de paiement
     Route::get('/test', function () {
         return view('payments.test');

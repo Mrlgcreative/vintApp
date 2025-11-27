@@ -1038,5 +1038,714 @@ class PaymentController extends Controller
             Log::error('Erreur lors de l\'envoi des notifications de négociation: ' . $e->getMessage());
         }
     }
+
+    // ========================================================================
+    // CINETPAY INTEGRATION
+    // ========================================================================
+
+    /**
+     * Initier un paiement depuis le checkout (panier multi-articles)
+     */
+    public function initiateCheckoutPayment(Request $request)
+    {
+        $request->validate([
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|json',
+            'total_amount' => 'required|numeric|min:5',
+            'currency' => 'nullable|string|max:3',
+        ]);
+
+        $cartItems = json_decode($request->cart_items, true);
+        $totalAmount = $request->total_amount;
+        $currency = $request->currency ?? 'XOF';
+        
+        // Générer l'ID de transaction unique
+        $transactionId = 'CHECKOUT-' . date('YmdHis') . '-' . auth()->id();
+
+        // Créer l'enregistrement de paiement
+        $payment = \App\Models\Payment::create([
+            'transaction_id' => $transactionId,
+            'user_id' => auth()->id(),
+            'buyer_id' => auth()->id(),
+            'amount' => $totalAmount,
+            'currency' => $currency,
+            'designation' => "Paiement panier - " . count($cartItems) . " article(s)",
+            'status' => 'pending',
+            'method' => 'cinetpay',
+            'ip_address' => $request->ip(),
+            'metadata' => [
+                'cart_items' => $cartItems,
+                'delivery_address_id' => $request->delivery_address_id,
+            ],
+        ]);
+
+        // Initialiser CinetPay
+        $cinetPay = new \App\Services\CinetPay(
+            config('services.cinetpay.site_id'),
+            config('services.cinetpay.api_key'),
+            config('services.cinetpay.platform'),
+            config('services.cinetpay.version')
+        );
+
+        // Configurer le paiement
+        $cinetPay->setTransId($transactionId)
+            ->setAmount($totalAmount)
+            ->setDesignation($payment->designation)
+            ->setCurrency($currency)
+            ->setCustom(json_encode([
+                'user_id' => auth()->id(),
+                'payment_id' => $payment->id,
+                'type' => 'checkout',
+                'delivery_address_id' => $request->delivery_address_id,
+            ]))
+            ->setNotifyUrl(route('payments.cinetpay.notify'))
+            ->setReturnUrl(route('payments.cinetpay.return'))
+            ->setCancelUrl(route('cart.checkout'))
+            ->setDebug(config('app.debug'));
+
+        // Afficher le formulaire de paiement
+        return view('payments.checkout', [
+            'payment' => $payment,
+            'cinetPay' => $cinetPay,
+            'isCheckout' => true,
+            'cartItems' => $cartItems,
+            'totalAmount' => $totalAmount,
+            'currency' => $currency,
+        ]);
+    }
+
+    /**
+     * Initier un paiement pour une commande via CinetPay
+     */
+    public function initiateOrderPayment(Request $request, Order $order)
+    {
+        // Vérifier que la commande appartient à l'utilisateur
+        if ($order->buyer_id !== Auth::id()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        // Vérifier que la commande n'est pas déjà payée
+        if ($order->payment_status === 'paid') {
+            return redirect()->route('orders.show', $order)
+                ->with('error', 'Cette commande est déjà payée');
+        }
+
+        // Générer l'ID de transaction unique
+        $transactionId = 'VIN-' . date('YmdHis') . '-' . $order->id;
+
+        // Créer l'enregistrement de paiement
+        $payment = \App\Models\Payment::create([
+            'transaction_id' => $transactionId,
+            'user_id' => auth()->id(),
+            'order_id' => $order->id,
+            'amount' => $order->total_amount,
+            'currency' => 'XOF',
+            'designation' => "Paiement commande #{$order->order_number}",
+            'status' => 'pending',
+            'ip_address' => $request->ip(),
+        ]);
+
+        // Mettre à jour la commande
+        $order->update([
+            'payment_transaction_id' => $transactionId,
+            'payment_status' => 'pending',
+        ]);
+
+        // Initialiser CinetPay
+        $cinetPay = new \App\Services\CinetPay(
+            config('services.cinetpay.site_id'),
+            config('services.cinetpay.api_key'),
+            config('services.cinetpay.platform'),
+            config('services.cinetpay.version')
+        );
+
+        // Configurer le paiement
+        $cinetPay->setTransId($transactionId)
+            ->setAmount($order->total_amount)
+            ->setDesignation($payment->designation)
+            ->setCustom(json_encode([
+                'user_id' => auth()->id(),
+                'order_id' => $order->id,
+                'payment_id' => $payment->id,
+            ]))
+            ->setNotifyUrl(route('payments.cinetpay.notify'))
+            ->setReturnUrl(route('payments.cinetpay.return'))
+            ->setCancelUrl(route('orders.show', $order))
+            ->setDebug(config('app.debug'));
+
+        // Afficher le formulaire de paiement
+        return view('payments.checkout', [
+            'order' => $order,
+            'payment' => $payment,
+            'cinetPay' => $cinetPay,
+        ]);
+    }
+
+    /**
+     * Webhook de notification IPN (appelé par CinetPay)
+     * C'est le SEUL endroit où la base de données doit être mise à jour
+     */
+    public function handleNotification(Request $request)
+    {
+        Log::info('CinetPay IPN Notification', $request->all());
+
+        try {
+            // Récupérer l'ID de transaction
+            $transactionId = $request->input('cpm_trans_id');
+
+            if (!$transactionId) {
+                Log::error('CinetPay IPN: Transaction ID manquant');
+                return response('Transaction ID manquant', 400);
+            }
+
+            // Vérifier le statut du paiement via l'API CinetPay
+            $cinetPay = new \App\Services\CinetPay(
+                config('services.cinetpay.site_id'),
+                config('services.cinetpay.api_key'),
+                config('services.cinetpay.platform'),
+                config('services.cinetpay.version')
+            );
+
+            $cinetPay->setTransId($transactionId)->getPayStatus();
+
+            // Récupérer le paiement
+            $payment = \App\Models\Payment::where('transaction_id', $transactionId)->firstOrFail();
+
+            // Prévention de fraude : vérifier le montant
+            $apiAmount = floatval($cinetPay->_cpm_amount);
+            $dbAmount = floatval($payment->amount);
+
+            if (abs($apiAmount - $dbAmount) > 0.01) {
+                Log::error("CinetPay Fraud Alert: Montant incohérent", [
+                    'transaction_id' => $transactionId,
+                    'api_amount' => $apiAmount,
+                    'db_amount' => $dbAmount,
+                ]);
+                return response('Montant incohérent', 400);
+            }
+
+            // Éviter le traitement en double
+            if ($payment->status === 'completed') {
+                Log::info("CinetPay: Paiement déjà traité - {$transactionId}");
+                return response('OK', 200);
+            }
+
+            \DB::beginTransaction();
+
+            try {
+                // Paiement réussi
+                if ($cinetPay->_cpm_result == '00') {
+                    $payment->markAsCompleted([
+                        'cpm_result' => $cinetPay->_cpm_result,
+                        'cpm_trans_status' => $cinetPay->_cpm_trans_status,
+                        'payment_method' => $cinetPay->_payment_method ?? null,
+                        'cpm_amount' => $cinetPay->_cpm_amount,
+                    ]);
+
+                    $payment->update([
+                        'cpm_trans_id' => $transactionId,
+                        'metadata' => [
+                            'operator_id' => $cinetPay->_operator_id ?? null,
+                            'phone_number' => $cinetPay->_cel_phone_num ?? null,
+                            'payment_date' => $cinetPay->_payment_date ?? null,
+                        ],
+                    ]);
+
+                    // Mettre à jour la commande
+                    if ($payment->order_id) {
+                        $payment->order->update([
+                            'payment_status' => 'paid',
+                            'status' => 'processing',
+                        ]);
+                    }
+
+                    // Si c'est un paiement de checkout (panier), créer les commandes
+                    if (!$payment->order_id && isset($payment->metadata['cart_items'])) {
+                        $this->createOrdersFromCheckout($payment);
+                    }
+
+                    Log::info("CinetPay: Paiement confirmé - {$transactionId}");
+                } else {
+                    // Paiement échoué
+                    $payment->markAsFailed($cinetPay->_cpm_result);
+
+                    if ($payment->order_id) {
+                        $payment->order->update([
+                            'payment_status' => 'failed',
+                        ]);
+                    }
+
+                    Log::warning("CinetPay: Paiement échoué - {$transactionId}", [
+                        'result' => $cinetPay->_cpm_result,
+                        'status' => $cinetPay->_cpm_trans_status,
+                    ]);
+                }
+
+                \DB::commit();
+                return response('OK', 200);
+            } catch (\Exception $e) {
+                \DB::rollBack();
+                throw $e;
+            }
+        } catch (\Exception $e) {
+            Log::error('CinetPay IPN Error: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response('Internal Error', 500);
+        }
+    }
+
+    /**
+     * Page de retour après paiement (redirection utilisateur)
+     * NE DOIT PAS mettre à jour la base de données
+     */
+    public function handleReturn(Request $request)
+    {
+        $transactionId = $request->input('transaction_id') ?? $request->input('cpm_trans_id');
+
+        if (!$transactionId) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Transaction introuvable');
+        }
+
+        $payment = \App\Models\Payment::where('transaction_id', $transactionId)
+            ->orWhere('cpm_trans_id', $transactionId)
+            ->first();
+
+        if (!$payment) {
+            return redirect()->route('orders.index')
+                ->with('error', 'Paiement introuvable');
+        }
+
+        // Rediriger en fonction du statut
+        if ($payment->isCompleted()) {
+            return redirect()->route('orders.show', $payment->order_id)
+                ->with('success', 'Paiement effectué avec succès !');
+        } else {
+            return redirect()->route('orders.show', $payment->order_id)
+                ->with('warning', 'Paiement en cours de traitement. Vous recevrez une notification.');
+        }
+    }
+
+    /**
+     * Initier un rechargement de wallet via CinetPay
+     */
+    public function initiateWalletTopup(Request $request)
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:5',
+        ]);
+
+        $amount = $request->input('amount');
+        $transactionId = 'WALLET-' . date('YmdHis') . '-' . auth()->id();
+
+        // Créer le paiement
+        $payment = \App\Models\Payment::create([
+            'transaction_id' => $transactionId,
+            'user_id' => auth()->id(),
+            'amount' => $amount,
+            'currency' => 'XOF',
+            'designation' => "Rechargement wallet - " . auth()->user()->name,
+            'status' => 'pending',
+            'ip_address' => $request->ip(),
+        ]);
+
+        // Initialiser CinetPay
+        $cinetPay = new \App\Services\CinetPay(
+            config('services.cinetpay.site_id'),
+            config('services.cinetpay.api_key'),
+            config('services.cinetpay.platform'),
+            config('services.cinetpay.version')
+        );
+
+        $cinetPay->setTransId($transactionId)
+            ->setAmount($amount)
+            ->setDesignation($payment->designation)
+            ->setCustom(json_encode([
+                'user_id' => auth()->id(),
+                'payment_id' => $payment->id,
+                'type' => 'wallet_topup',
+            ]))
+            ->setNotifyUrl(route('payments.cinetpay.notify'))
+            ->setReturnUrl(route('wallet.index'))
+            ->setCancelUrl(route('wallet.index'))
+            ->setDebug(config('app.debug'));
+
+        return view('payments.checkout', [
+            'payment' => $payment,
+            'cinetPay' => $cinetPay,
+            'isWalletTopup' => true,
+        ]);
+    }
+
+    /**
+     * Créer les commandes à partir du panier après paiement réussi
+     */
+    private function createOrdersFromCheckout(\App\Models\Payment $payment)
+    {
+        $cartItems = $payment->metadata['cart_items'] ?? [];
+        $deliveryAddressId = $payment->metadata['delivery_address_id'] ?? null;
+
+        foreach ($cartItems as $item) {
+            try {
+                // Récupérer l'article
+                $itemModel = \App\Models\Item::find($item['id']);
+                if (!$itemModel) {
+                    Log::warning("Item not found: {$item['id']}");
+                    continue;
+                }
+
+                // Créer la commande
+                $order = \App\Models\Order::create([
+                    'order_number' => 'ORD-' . strtoupper(uniqid()),
+                    'buyer_id' => $payment->user_id,
+                    'seller_id' => $itemModel->user_id,
+                    'item_id' => $itemModel->id,
+                    'quantity' => $item['quantity'],
+                    'item_price' => $item['price'],
+                    'total_amount' => $item['price'] * $item['quantity'],
+                    'status' => 'processing',
+                    'payment_status' => 'paid',
+                    'payment_transaction_id' => $payment->transaction_id,
+                    'delivery_address_id' => $deliveryAddressId,
+                ]);
+
+                // Lier le paiement à la première commande créée
+                if (!$payment->order_id) {
+                    $payment->update(['order_id' => $order->id]);
+                }
+
+                // TODO: Logique métier
+                // - Réduire le stock de l'article
+                // - Créer une transaction wallet pour le vendeur
+                // - Envoyer notification au vendeur et acheteur
+
+                Log::info("Order created from checkout", [
+                    'order_id' => $order->id,
+                    'payment_id' => $payment->id,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Error creating order from checkout: " . $e->getMessage(), [
+                    'item' => $item,
+                    'payment_id' => $payment->id,
+                ]);
+            }
+        }
+    }
+
+    // ========================================================================
+    // AFRIBAPAY INTEGRATION
+    // ========================================================================
+
+    /**
+     * Afficher le formulaire de paiement AfribaPay
+     */
+    public function showAfribaPaymentForm(Request $request)
+    {
+        $request->validate([
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|string',
+            'total_amount' => 'required|numeric|min:1',
+            'currency' => 'required|in:CDF,USD,XOF,XAF,GNF',
+        ]);
+
+        $cartItems = json_decode($request->cart_items, true);
+        
+        return view('payments.afribapay-form', [
+            'cartItems' => $cartItems,
+            'totalAmount' => $request->total_amount,
+            'currency' => $request->currency,
+            'deliveryAddressId' => $request->delivery_address_id,
+        ]);
+    }
+
+    /**
+     * Initier un paiement AfribaPay depuis le checkout
+     */
+    public function initiateAfribaPayment(Request $request)
+    {
+        $request->validate([
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|string',
+            'total_amount' => 'required|numeric|min:1',
+            'currency' => 'required|in:CDF,USD,XOF,XAF,GNF',
+            'phone_number' => 'required|string',
+            'operator_code' => 'required|string',
+            'country_code' => 'nullable|string|size:2',
+        ]);
+
+        $cartItems = json_decode($request->cart_items, true);
+        $totalAmount = $request->total_amount;
+        $currency = $request->currency;
+        $countryCode = $request->country_code ?? 'CD'; // Par défaut RDC
+
+        // Générer la référence de transaction
+        $reference = \App\Services\AfribaPay::generateReference('AFRIBA-CHECKOUT');
+
+        // Créer l'enregistrement de paiement
+        $payment = \App\Models\Payment::create([
+            'transaction_id' => $reference,
+            'user_id' => auth()->id(),
+            'buyer_id' => auth()->id(),
+            'amount' => $totalAmount,
+            'currency' => $currency,
+            'designation' => "Paiement panier AfribaPay - " . count($cartItems) . " article(s)",
+            'status' => 'pending',
+            'method' => 'afribapay',
+            'ip_address' => $request->ip(),
+            'metadata' => [
+                'cart_items' => $cartItems,
+                'delivery_address_id' => $request->delivery_address_id,
+                'phone_number' => $request->phone_number,
+                'operator_code' => $request->operator_code,
+                'country_code' => $countryCode,
+            ],
+        ]);
+
+        try {
+            // Initialiser AfribaPay
+            $afribaPay = new \App\Services\AfribaPay();
+
+            // Formater le numéro de téléphone
+            $phoneNumber = $afribaPay->formatPhoneNumber(
+                $request->phone_number,
+                $countryCode
+            );
+
+            // Initier le paiement
+            $paymentData = $afribaPay->initiatePayment([
+                'reference' => $reference,
+                'amount' => $totalAmount,
+                'currency' => $currency,
+                'country_code' => $countryCode,
+                'phone_number' => $phoneNumber,
+                'operator_code' => $request->operator_code,
+                'description' => $payment->designation,
+                'callback_url' => route('payments.afribapay.notify'),
+                'return_url' => route('payments.afribapay.return'),
+                'customer_name' => auth()->user()->name,
+                'customer_email' => auth()->user()->email,
+            ]);
+
+            // Mettre à jour le paiement avec les infos AfribaPay
+            $payment->update([
+                'metadata' => array_merge($payment->metadata ?? [], [
+                    'afribapay_transaction_id' => $paymentData['data']['transaction_id'] ?? null,
+                    'afribapay_response' => $paymentData,
+                ]),
+            ]);
+
+            // Vérifier si OTP est requis
+            if ($afribaPay->requiresOTP($countryCode, $currency, $request->operator_code)) {
+                return view('payments.afribapay-otp', [
+                    'payment' => $payment,
+                    'afribaPay' => $afribaPay,
+                    'paymentData' => $paymentData,
+                    'ussdCode' => $afribaPay->getUSSDCode($request->country_code, $currency, $request->operator_code),
+                ]);
+            }
+
+            // Sinon, rediriger vers la page de statut
+            return redirect()->route('payments.afribapay.status', ['payment' => $payment->id]);
+
+        } catch (\Exception $e) {
+            Log::error('AfribaPay payment initiation failed: ' . $e->getMessage(), [
+                'payment_id' => $payment->id,
+            ]);
+
+            $payment->markAsFailed($e->getMessage());
+
+            return back()->with('error', 'Échec de l\'initiation du paiement: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Vérifier l'OTP AfribaPay
+     */
+    public function verifyAfribaOTP(Request $request, \App\Models\Payment $payment)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6',
+        ]);
+
+        try {
+            $afribaPay = new \App\Services\AfribaPay();
+
+            $afribaTransactionId = $payment->metadata['afribapay_transaction_id'] ?? null;
+            
+            if (!$afribaTransactionId) {
+                throw new \Exception("Transaction AfribaPay introuvable");
+            }
+
+            // Vérifier l'OTP
+            $otpResult = $afribaPay->verifyOTP($afribaTransactionId, $request->otp);
+
+            // Mettre à jour le paiement
+            $payment->update([
+                'metadata' => array_merge($payment->metadata ?? [], [
+                    'otp_verified' => true,
+                    'otp_result' => $otpResult,
+                ]),
+            ]);
+
+            // Vérifier le statut du paiement
+            $status = $afribaPay->checkStatus($afribaTransactionId);
+
+            if (($status['data']['status'] ?? '') === 'SUCCESS') {
+                $this->processSuccessfulAfribaPayment($payment, $status);
+                return redirect()->route('payments.afribapay.return', ['payment' => $payment->id])
+                    ->with('success', 'Paiement effectué avec succès !');
+            }
+
+            return redirect()->route('payments.afribapay.status', ['payment' => $payment->id]);
+
+        } catch (\Exception $e) {
+            Log::error('AfribaPay OTP verification failed: ' . $e->getMessage(), [
+                'payment_id' => $payment->id,
+            ]);
+
+            return back()->with('error', 'Vérification OTP échouée: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Webhook de notification AfribaPay
+     */
+    public function handleAfribaNotification(Request $request)
+    {
+        Log::info('AfribaPay notification received', $request->all());
+
+        try {
+            // Récupérer le paiement par référence
+            $reference = $request->input('reference');
+            $payment = \App\Models\Payment::where('transaction_id', $reference)->first();
+
+            if (!$payment) {
+                Log::error('Payment not found for AfribaPay notification', ['reference' => $reference]);
+                return response()->json(['status' => 'error', 'message' => 'Payment not found'], 404);
+            }
+
+            // Vérifier le statut
+            $status = $request->input('status');
+
+            if ($status === 'SUCCESS') {
+                $this->processSuccessfulAfribaPayment($payment, $request->all());
+            } elseif ($status === 'FAILED') {
+                $payment->markAsFailed($request->input('message', 'Payment failed'));
+            }
+
+            return response()->json(['status' => 'success'], 200);
+
+        } catch (\Exception $e) {
+            Log::error('Error processing AfribaPay notification: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Page de retour AfribaPay
+     */
+    public function handleAfribaReturn(Request $request, ?\App\Models\Payment $payment = null)
+    {
+        if (!$payment) {
+            $paymentId = $request->query('payment');
+            $payment = \App\Models\Payment::find($paymentId);
+        }
+
+        if (!$payment) {
+            return redirect()->route('cart.index')->with('error', 'Paiement introuvable');
+        }
+
+        // Vérifier le statut final
+        try {
+            $afribaPay = new \App\Services\AfribaPay();
+            $afribaTransactionId = $payment->metadata['afribapay_transaction_id'] ?? null;
+
+            if ($afribaTransactionId) {
+                $status = $afribaPay->checkStatus($afribaTransactionId);
+                
+                if (($status['data']['status'] ?? '') === 'SUCCESS' && $payment->status !== 'completed') {
+                    $this->processSuccessfulAfribaPayment($payment, $status);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Error checking AfribaPay status on return: ' . $e->getMessage());
+        }
+
+        return view('payments.afribapay-return', [
+            'payment' => $payment,
+        ]);
+    }
+
+    /**
+     * Page de statut AfribaPay (polling)
+     */
+    public function showAfribaStatus(\App\Models\Payment $payment)
+    {
+        return view('payments.afribapay-status', [
+            'payment' => $payment,
+        ]);
+    }
+
+    /**
+     * API pour vérifier le statut AfribaPay (AJAX)
+     */
+    public function checkAfribaStatus(\App\Models\Payment $payment)
+    {
+        try {
+            $afribaPay = new \App\Services\AfribaPay();
+            $afribaTransactionId = $payment->metadata['afribapay_transaction_id'] ?? null;
+
+            if (!$afribaTransactionId) {
+                return response()->json([
+                    'status' => $payment->status,
+                    'message' => 'Transaction ID not found',
+                ]);
+            }
+
+            $status = $afribaPay->checkStatus($afribaTransactionId);
+
+            if (($status['data']['status'] ?? '') === 'SUCCESS' && $payment->status !== 'completed') {
+                $this->processSuccessfulAfribaPayment($payment, $status);
+            }
+
+            return response()->json([
+                'status' => $payment->fresh()->status,
+                'data' => $status,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Traiter un paiement AfribaPay réussi
+     */
+    protected function processSuccessfulAfribaPayment(\App\Models\Payment $payment, array $data)
+    {
+        if ($payment->isCompleted()) {
+            return; // Déjà traité
+        }
+
+        // Marquer comme complété
+        $payment->markAsCompleted([
+            'afribapay_result' => $data,
+        ]);
+
+        // Créer les commandes si c'est un checkout
+        $cartItems = $payment->metadata['cart_items'] ?? null;
+        if ($cartItems) {
+            $this->createOrdersFromCheckout($payment, $cartItems);
+        }
+
+        Log::info('AfribaPay payment processed successfully', [
+            'payment_id' => $payment->id,
+        ]);
+    }
 }
 

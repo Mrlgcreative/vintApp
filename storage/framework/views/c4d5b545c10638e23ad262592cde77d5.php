@@ -1,6 +1,6 @@
-﻿@extends('app')
+﻿
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
         <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
@@ -9,12 +9,12 @@
         </h2>
     </div>
 
-    @if(empty($cart))
+    <?php if(empty($cart)): ?>
         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
             <i class="fas fa-info-circle mr-3 text-blue-600"></i>
             <span class="text-blue-800">Votre panier est vide.</span>
         </div>
-    @else
+    <?php else: ?>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <!-- Colonne gauche : Formulaire de livraison -->
         <div class="lg:col-span-7">
@@ -26,7 +26,7 @@
                 </div>
                 <div class="p-6">
                     <form id="deliveryForm">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Nom complet -->
                             <div class="md:col-span-1">
@@ -37,7 +37,7 @@
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
                                        id="full_name" 
                                        name="full_name" 
-                                       value="{{ Auth::user()->name ?? '' }}" 
+                                       value="<?php echo e(Auth::user()->name ?? ''); ?>" 
                                        required>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre nom complet.</div>
                             </div>
@@ -65,7 +65,7 @@
                                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
                                        id="email" 
                                        name="email" 
-                                       value="{{ Auth::user()->email ?? '' }}" 
+                                       value="<?php echo e(Auth::user()->email ?? ''); ?>" 
                                        required>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer une adresse email valide.</div>
                             </div>
@@ -263,48 +263,49 @@
                 </div>
                 <div class="p-6">
                     <div class="space-y-4 mb-6">
-                        @foreach($cart as $item)
+                        <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                                 <div class="flex-shrink-0">
-                                    @if($item['image'])
-                                        <img src="{{ asset('storage/' . $item['image']) }}" 
-                                             alt="{{ $item['name'] }}" 
+                                    <?php if($item['image']): ?>
+                                        <img src="<?php echo e(asset('storage/' . $item['image'])); ?>" 
+                                             alt="<?php echo e($item['name']); ?>" 
                                              class="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
-                                    @else
+                                    <?php else: ?>
                                         <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 flex items-center justify-content-center rounded-lg border border-gray-200 dark:border-gray-700">
                                             <i class="fas fa-image text-gray-400"></i>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <div class="font-semibold text-gray-900 dark:text-white truncate">{{ $item['name'] }}</div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400">Qté: {{ $item['quantity'] }}</div>
+                                    <div class="font-semibold text-gray-900 dark:text-white truncate"><?php echo e($item['name']); ?></div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">Qté: <?php echo e($item['quantity']); ?></div>
                                 </div>
                                 <div class="text-right">
                                     <div class="font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
+                                        <?php echo e(number_format($item['price'] * $item['quantity'], 2)); ?> <?php echo e($item['currency']); ?>
+
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-gray-700 dark:text-gray-200">Sous-total :</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($subtotal, 2) }} {{ $item['currency'] ?? '' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white"><?php echo e(number_format($subtotal, 2)); ?> <?php echo e($item['currency'] ?? ''); ?></span>
                         </div>
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-gray-700 dark:text-gray-200">
                                 Frais de livraison :
-                                <span class="text-sm text-gray-500 dark:text-gray-400">({{ $transportFeePercentage }}%)</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">(<?php echo e($transportFeePercentage); ?>%)</span>
                             </span>
-                            <span class="font-semibold text-blue-600">+{{ number_format($transportFee, 2) }} {{ $item['currency'] ?? '' }}</span>
+                            <span class="font-semibold text-blue-600">+<?php echo e(number_format($transportFee, 2)); ?> <?php echo e($item['currency'] ?? ''); ?></span>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-semibold text-gray-900 dark:text-white">Total :</span>
-                                <span class="text-xl font-bold text-blue-600">{{ number_format($total, 2) }} {{ $item['currency'] ?? '' }}</span>
+                                <span class="text-xl font-bold text-blue-600"><?php echo e(number_format($total, 2)); ?> <?php echo e($item['currency'] ?? ''); ?></span>
                             </div>
                         </div>
                     </div>
@@ -355,12 +356,12 @@
                         </div>
 
                         <!-- Formulaire CinetPay -->
-                        <form action="{{ route('payments.checkout.initiate') }}" method="POST" id="cinetpayForm" class="payment-gateway-form">
-                            @csrf
+                        <form action="<?php echo e(route('payments.checkout.initiate')); ?>" method="POST" id="cinetpayForm" class="payment-gateway-form">
+                            <?php echo csrf_field(); ?>
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
-                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
-                            <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $item['currency'] ?? 'XOF' }}">
+                            <input type="hidden" name="cart_items" value="<?php echo e(json_encode($cart)); ?>">
+                            <input type="hidden" name="total_amount" value="<?php echo e($total); ?>">
+                            <input type="hidden" name="currency" value="<?php echo e($item['currency'] ?? 'XOF'); ?>">
                             
                             <button type="submit" 
                                     class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
@@ -372,12 +373,12 @@
                         </form>
 
                         <!-- Formulaire AfribaPay (caché par défaut) -->
-                        <form action="{{ route('payments.afribapay.form') }}" method="POST" id="afribapayForm" class="payment-gateway-form hidden">
-                            @csrf
+                        <form action="<?php echo e(route('payments.afribapay.form')); ?>" method="POST" id="afribapayForm" class="payment-gateway-form hidden">
+                            <?php echo csrf_field(); ?>
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
-                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
-                            <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $item['currency'] ?? 'CDF' }}">
+                            <input type="hidden" name="cart_items" value="<?php echo e(json_encode($cart)); ?>">
+                            <input type="hidden" name="total_amount" value="<?php echo e($total); ?>">
+                            <input type="hidden" name="currency" value="<?php echo e($item['currency'] ?? 'CDF'); ?>">
                             
                             <button type="submit" 
                                     class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
@@ -409,10 +410,10 @@
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const deliveryForm = document.getElementById('deliveryForm');
@@ -699,5 +700,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
-@endsection 
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/checkout.blade.php ENDPATH**/ ?>

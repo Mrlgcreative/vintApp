@@ -1,0 +1,217 @@
+﻿
+
+<?php $__env->startSection('title', 'Mes livraisons locales'); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="container mx-auto px-4 py-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- En-tête avec onglets -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md mb-6">
+            <div class="border-b border-gray-200 dark:border-gray-700">
+                <nav class="-mb-px flex space-x-8 px-6">
+                    <a href="<?php echo e(route('local-delivery.user', 'seller')); ?>" 
+                       class="py-4 px-1 border-b-2 font-medium text-sm
+                       <?php if(request('type') === 'seller'): ?>
+                           border-indigo-500 text-indigo-600
+                       <?php else: ?>
+                           border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600
+                       <?php endif; ?>">
+                        Mes ventes
+                        <?php if(isset($counts['seller']) && $counts['seller'] > 0): ?>
+                            <span class="ml-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs">
+                                <?php echo e($counts['seller']); ?>
+
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                    
+                    <a href="<?php echo e(route('local-delivery.user', 'buyer')); ?>" 
+                       class="py-4 px-1 border-b-2 font-medium text-sm
+                       <?php if(request('type') === 'buyer'): ?>
+                           border-indigo-500 text-indigo-600
+                       <?php else: ?>
+                           border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600
+                       <?php endif; ?>">
+                        Mes achats
+                        <?php if(isset($counts['buyer']) && $counts['buyer'] > 0): ?>
+                            <span class="ml-2 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs">
+                                <?php echo e($counts['buyer']); ?>
+
+                            </span>
+                        <?php endif; ?>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                    <?php if(request('type') === 'seller'): ?>
+                        Mes livraisons en tant que vendeur
+                    <?php else: ?>
+                        Mes livraisons en tant qu'acheteur
+                    <?php endif; ?>
+                </h1>
+                <p class="text-gray-600 dark:text-gray-300 mt-2">
+                    Gérez vos livraisons locales et suivez leur progression.
+                </p>
+            </div>
+        </div>
+
+        <!-- Liste des livraisons -->
+        <?php if($deliveries->count() > 0): ?>
+        <div class="space-y-4">
+            <?php $__currentLoopData = $deliveries; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $delivery): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                Commande #<?php echo e($delivery->order->order_number); ?>
+
+                            </h3>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                                <?php switch($delivery->status):
+                                    case ('proposed'): ?>
+                                        bg-blue-100 text-blue-800
+                                        <?php break; ?>
+                                    <?php case ('accepted'): ?>
+                                        bg-green-100 text-green-800
+                                        <?php break; ?>
+                                    <?php case ('in_transit'): ?>
+                                        bg-yellow-100 text-yellow-800
+                                        <?php break; ?>
+                                    <?php case ('delivered'): ?>
+                                        bg-primary-100 text-primary-800
+                                        <?php break; ?>
+                                    <?php case ('cancelled'): ?>
+                                        bg-red-100 text-red-800
+                                        <?php break; ?>
+                                    <?php default: ?>
+                                        bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100
+                                <?php endswitch; ?>
+                            ">
+                                <?php echo e(ucfirst(str_replace('_', ' ', $delivery->status))); ?>
+
+                            </span>
+                        </div>
+
+                        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 dark:text-gray-300">
+                            <div>
+                                <span class="font-medium">
+                                    <?php if(request('type') === 'seller'): ?>
+                                        Acheteur:
+                                    <?php else: ?>
+                                        Vendeur:
+                                    <?php endif; ?>
+                                </span>
+                                <p>
+                                    <?php if(request('type') === 'seller'): ?>
+                                        <?php echo e($delivery->buyer->name); ?>
+
+                                    <?php else: ?>
+                                        <?php echo e($delivery->seller->name); ?>
+
+                                    <?php endif; ?>
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class="font-medium">Type:</span>
+                                <p><?php echo e($delivery->delivery_type_text); ?></p>
+                            </div>
+
+                            <div>
+                                <span class="font-medium">Distance:</span>
+                                <p><?php echo e($delivery->distance_km); ?> km</p>
+                            </div>
+
+                            <div>
+                                <span class="font-medium">Frais:</span>
+                                <p><?php echo e($delivery->delivery_fee); ?> <?php echo e($delivery->currency); ?></p>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-sm text-gray-600 dark:text-gray-300">
+                            <span class="font-medium">Créé le:</span>
+                            <?php echo e($delivery->created_at->format('d/m/Y à H:i')); ?>
+
+                            
+                            <?php if($delivery->status === 'in_transit' && $delivery->delivery_code): ?>
+                                <span class="ml-4 font-medium text-yellow-700">
+                                    Code: <?php echo e($delivery->delivery_code); ?>
+
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3">
+                        <!-- Actions rapides selon le statut -->
+                        <?php if($delivery->status === 'proposed' && request('type') === 'buyer'): ?>
+                            <form action="<?php echo e(route('local-delivery.accept', $delivery)); ?>" method="POST" class="inline">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm">
+                                    Accepter
+                                </button>
+                            </form>
+                        <?php endif; ?>
+
+                        <?php if($delivery->status === 'accepted' && request('type') === 'seller'): ?>
+                            <form action="<?php echo e(route('local-delivery.in-transit', $delivery)); ?>" method="POST" class="inline">
+                                <?php echo csrf_field(); ?>
+                                <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm">
+                                    En transit
+                                </button>
+                            </form>
+                        <?php endif; ?>
+
+                        <!-- Bouton voir détails -->
+                        <a href="<?php echo e(route('local-delivery.show', $delivery)); ?>" 
+                           class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm">
+                            Détails
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        </div>
+
+        <!-- Pagination -->
+        <?php if($deliveries->hasPages()): ?>
+        <div class="mt-6">
+            <?php echo e($deliveries->appends(request()->query())->links()); ?>
+
+        </div>
+        <?php endif; ?>
+
+        <?php else: ?>
+        <!-- État vide -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-12 text-center">
+            <div class="max-w-sm mx-auto">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8v.01M6 5v.01" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Aucune livraison</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <?php if(request('type') === 'seller'): ?>
+                        Vous n'avez encore proposé aucune livraison locale.
+                    <?php else: ?>
+                        Vous n'avez encore reçu aucune proposition de livraison locale.
+                    <?php endif; ?>
+                </p>
+                <div class="mt-6">
+                    <a href="<?php echo e(route('orders.index')); ?>" 
+                       class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Voir mes commandes
+                    </a>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\projet\vintapp\resources\views/local-delivery/index.blade.php ENDPATH**/ ?>

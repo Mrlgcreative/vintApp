@@ -200,6 +200,12 @@
 
 
 
+
+
+
+
+
+
 /* Dark Mode Variables - Applied when [data-theme="dark"] */
 [data-theme="dark"] {
   /* Inverser les couleurs de fond */
@@ -491,6 +497,12 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
+
+
+
 
 
 
