@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\MonitoringService;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class MonitoringController extends Controller
 {
@@ -21,7 +20,7 @@ class MonitoringController extends Controller
         $stats = $this->monitoring->getRealTimeStats();
         $health = $this->monitoring->healthCheck();
 
-        return Inertia::render('Admin/Monitoring/Dashboard', [
+        return view('admin.monitoring.dashboard', [
             'stats' => $stats,
             'health' => $health,
             'timestamp' => now()->toIso8601String(),

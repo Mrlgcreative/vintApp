@@ -28,6 +28,75 @@ Route::get('/splash', function() {
 // Page d'accueil avec WelcomeController
 Route::get('/home', [WelcomeController::class, 'index'])->name('home');
 
+// Page offline pour PWA
+Route::get('/offline', function() {
+    return view('offline');
+})->name('offline');
+
+// Page de test notifications push
+Route::get('/test-push', function() {
+    return view('test-push-simple');
+})->name('test.push');
+
+// Page de debug PWA
+Route::get('/pwa-debug', function() {
+    return view('pwa-debug');
+})->name('pwa.debug');
+
+// Page de test Background Sync
+Route::get('/test-background-sync', function() {
+    return view('test-background-sync');
+})->name('test.background.sync');
+
+// Routes de test pour Background Sync (mock endpoints)
+Route::post('/api/items', function(Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Item créé avec succès',
+        'data' => [
+            'id' => rand(1000, 9999),
+            'title' => $request->input('title'),
+            'created_at' => now()
+        ]
+    ]);
+});
+
+Route::post('/api/orders', function(Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Commande créée avec succès',
+        'data' => [
+            'id' => rand(1000, 9999),
+            'item_id' => $request->input('item_id'),
+            'total' => $request->input('total'),
+            'created_at' => now()
+        ]
+    ]);
+});
+
+Route::post('/api/messages', function(Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Message envoyé avec succès',
+        'data' => [
+            'id' => rand(1000, 9999),
+            'message' => $request->input('message'),
+            'created_at' => now()
+        ]
+    ]);
+});
+
+Route::put('/api/profile', function(Illuminate\Http\Request $request) {
+    return response()->json([
+        'success' => true,
+        'message' => 'Profil mis à jour avec succès',
+        'data' => [
+            'bio' => $request->input('bio'),
+            'updated_at' => now()
+        ]
+    ]);
+});
+
 // Page d'accueil principale - gestion des redirections par rôle
 Route::get('/', function() {
     if (Auth::check()) {

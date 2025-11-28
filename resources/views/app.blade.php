@@ -7,8 +7,17 @@
     <meta name="description" content="@yield('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité')">
     <meta name="keywords" content="@yield('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique')">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#8B5CF6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VintApp">
+
     <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -438,6 +447,15 @@
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- PWA Manager -->
+    <script src="{{ asset('js/pwa.js') }}?v={{ time() }}" defer></script>
+    
+    <!-- Push Notification Manager -->
+    <script type="module" src="{{ asset('js/push-manager.js') }}?v={{ time() }}"></script>
+    
+    <!-- Background Sync Manager -->
+    <script src="{{ asset('js/background-sync.js') }}?v={{ time() }}"></script>
 
     <!-- Scripts personnalisés -->
     <script>

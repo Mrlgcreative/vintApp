@@ -67,7 +67,7 @@ Route::post('/login', function (Request $request) {
 });
 
 // Routes protégées par authentification
-Route::middleware(['auth:sanctum', 'compress.response'])->group(function () {
+Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () {
     
     // User routes (rate limit: 60/min)
     Route::middleware('throttle:60,1')->prefix('user')->group(function () {
@@ -186,6 +186,15 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 // Route pour obtenir l'utilisateur authentifié
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+// Push Notifications (accessible avec session web)
+Route::middleware(['web', 'auth:web'])->prefix('notifications')->group(function () {
+    Route::post('/subscribe', [App\Http\Controllers\Api\NotificationController::class, 'subscribe']);
+    Route::post('/unsubscribe', [App\Http\Controllers\Api\NotificationController::class, 'unsubscribe']);
+    Route::post('/closed', [App\Http\Controllers\Api\NotificationController::class, 'closed']);
+    Route::match(['get', 'post'], '/test', [App\Http\Controllers\Api\NotificationController::class, 'test']);
+    Route::post('/broadcast-test', [App\Http\Controllers\Api\NotificationController::class, 'broadcastTest']);
 });
 
 Route::post('/bot', [BotController::class, 'ask']);

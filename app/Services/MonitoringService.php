@@ -88,6 +88,18 @@ class MonitoringService
     protected function getDatabaseStats(): array
     {
         return Cache::remember('monitoring:db_stats', 60, function () {
+            // Récupérer les revenus par devise
+            $revenuesByCurrency = DB::table('orders')
+                ->whereDate('created_at', today())
+                ->where('status', 'completed')
+                ->select('currency', DB::raw('SUM(total_amount) as total'))
+                ->groupBy('currency')
+                ->get()
+                ->mapWithKeys(function ($item) {
+                    return [$item->currency => $item->total];
+                })
+                ->toArray();
+
             return [
                 'total_users' => DB::table('users')->count(),
                 'active_items' => DB::table('items')->where('status', 'approved')->count(),
@@ -95,10 +107,7 @@ class MonitoringService
                 'total_orders_today' => DB::table('orders')
                     ->whereDate('created_at', today())
                     ->count(),
-                'revenue_today' => DB::table('orders')
-                    ->whereDate('created_at', today())
-                    ->where('status', 'completed')
-                    ->sum('total_amount'),
+                'revenue_today' => $revenuesByCurrency,
             ];
         });
     }

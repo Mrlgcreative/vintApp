@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\CacheService;
+use App\Services\MonitoringService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 
@@ -145,9 +146,13 @@ class ItemController extends Controller
      */
     public function store(StoreItemRequest $request)
     {
-        // Validation déjà effectuée par StoreItemRequest
+        $startTime = microtime(true);
+        $monitoring = app(MonitoringService::class);
+        
+        try {
+            // Validation déjà effectuée par StoreItemRequest
 
-        $item = new Item();
+            $item = new Item();
         $item->user_id = Auth::id();
         $item->name = $request->name;
         $item->description = $request->description;
@@ -220,18 +225,43 @@ class ItemController extends Controller
             }
         }
 
-        $item->save();
+            $item->save();
 
-        // Déclencher l'événement pour envoyer les emails newsletter
-        event(new \App\Events\ItemCreated($item));
+            // Enregistrer la métrique business
+            $monitoring->recordBusinessMetric('item_created', $item->price, [
+                'item_id' => $item->id,
+                'user_id' => $item->user_id,
+                'category_id' => $item->category_id,
+                'currency' => $item->currency,
+            ]);
 
-        $message = 'Article créé avec succès !';
-        if ($item->status === 'pending_verification') {
-            $message = 'Article créé mais en attente de validation des images par l\'équipe (vérification automatique détectée).';
+            // Enregistrer la performance
+            $duration = microtime(true) - $startTime;
+            $monitoring->recordPerformance('item.store', $duration, [
+                'user_id' => $item->user_id,
+                'images_count' => count($item->images ?? []),
+            ]);
+
+            // Déclencher l'événement pour envoyer les emails newsletter
+            event(new \App\Events\ItemCreated($item));
+
+            $message = 'Article créé avec succès !';
+            if ($item->status === 'pending_verification') {
+                $message = 'Article créé mais en attente de validation des images par l\'équipe (vérification automatique détectée).';
+            }
+
+            return redirect()->route('items.show', $item)
+                ->with('success', $message);
+        } catch (\Exception $e) {
+            // Enregistrer l'erreur
+            $monitoring->recordError($e, [
+                'action' => 'item.store',
+                'user_id' => Auth::id(),
+            ]);
+            
+            return back()->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création de l\'article.');
         }
-
-        return redirect()->route('items.show', $item)
-            ->with('success', $message);
     }
 
     /**

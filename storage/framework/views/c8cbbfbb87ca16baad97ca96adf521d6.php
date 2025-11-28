@@ -7,8 +7,17 @@
     <meta name="description" content="<?php echo $__env->yieldContent('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité'); ?>">
     <meta name="keywords" content="<?php echo $__env->yieldContent('meta_keywords', 'vintapp, marketplace, occasion, vente, achat, articles, vêtements, électronique'); ?>">
 
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="<?php echo e(asset('manifest.json')); ?>">
+    <meta name="theme-color" content="#8B5CF6">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VintApp">
+
     <title><?php echo $__env->yieldContent('title', '<?php echo e($appName ?? "Vintapp"); ?>'); ?></title>
     <link rel="icon" type="image/x-icon" href="<?php echo e(asset($appFavicon ?? '/favicon.ico')); ?>">
+    <link rel="apple-touch-icon" href="<?php echo e(asset('favicon.ico')); ?>">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -466,6 +475,15 @@
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- PWA Manager -->
+    <script src="<?php echo e(asset('js/pwa.js')); ?>?v=<?php echo e(time()); ?>" defer></script>
+    
+    <!-- Push Notification Manager -->
+    <script type="module" src="<?php echo e(asset('js/push-manager.js')); ?>?v=<?php echo e(time()); ?>"></script>
+    
+    <!-- Background Sync Manager -->
+    <script src="<?php echo e(asset('js/background-sync.js')); ?>?v=<?php echo e(time()); ?>"></script>
 
     <!-- Scripts personnalisés -->
     <script>

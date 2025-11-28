@@ -11,6 +11,7 @@ use App\Events\OrderNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\MonitoringService;
 use App\Http\Requests\CreateOrderRequest;
 
 class OrderController extends Controller
@@ -52,6 +53,9 @@ class OrderController extends Controller
      */
     public function store(CreateOrderRequest $request)
     {
+        $startTime = microtime(true);
+        $monitoring = app(MonitoringService::class);
+        
         // Validation déjà effectuée par CreateOrderRequest
         $validated = $request->validated();
 
@@ -98,6 +102,22 @@ class OrderController extends Controller
 
             DB::commit();
 
+            // Enregistrer la métrique business
+            $monitoring->recordBusinessMetric('order_created', $order->total_amount, [
+                'order_id' => $order->id,
+                'buyer_id' => $order->buyer_id,
+                'seller_id' => $order->seller_id,
+                'item_id' => $order->item_id,
+                'currency' => $order->currency,
+            ]);
+
+            // Enregistrer la performance
+            $duration = microtime(true) - $startTime;
+            $monitoring->recordPerformance('order.store', $duration, [
+                'buyer_id' => $order->buyer_id,
+                'total_amount' => $order->total_amount,
+            ]);
+
             // 🔔 Envoyer notification au vendeur (nouvelle commande)
             broadcast(new OrderNotification(
                 $order,
@@ -111,6 +131,14 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+            
+            // Enregistrer l'erreur
+            $monitoring->recordError($e, [
+                'action' => 'order.store',
+                'user_id' => Auth::id(),
+                'item_id' => $request->item_id,
+            ]);
+            
             Log::error('Erreur lors de la création de la commande: ' . $e->getMessage());
             
             return back()->withErrors(['error' => 'Une erreur est survenue lors de la création de la commande.']);

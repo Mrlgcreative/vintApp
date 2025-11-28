@@ -366,6 +366,13 @@
                             <span>Rapports</span>
                         </a>
 
+                        <a href="<?php echo e(route('admin.monitoring.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.monitoring.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                            <i class="fas fa-heartbeat w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Monitoring</span>
+                            <span class="inline-flex items-center justify-center w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
+                        </a>
+
                         <a href="<?php echo e(route('admin.logs')); ?>" 
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.logs')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
