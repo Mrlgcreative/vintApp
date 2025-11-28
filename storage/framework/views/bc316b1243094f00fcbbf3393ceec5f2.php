@@ -1,8 +1,8 @@
-﻿@extends('app')
+﻿
 
-@section('title', 'Mon Profil')
+<?php $__env->startSection('title', 'Mon Profil'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
@@ -17,17 +17,18 @@
                 <!-- Profile Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                     <div class="p-6 text-center">
-                        @if($user->avatar)
-                            <img src="{{ Storage::url($user->avatar) }}" 
-                                 alt="{{ $user->name }}" 
+                        <?php if($user->avatar): ?>
+                            <img src="<?php echo e(Storage::url($user->avatar)); ?>" 
+                                 alt="<?php echo e($user->name); ?>" 
                                  class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-primary-100 dark:border-primary-900">
-                        @else
+                        <?php else: ?>
                             <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center mx-auto mb-4 text-3xl font-bold border-4 border-primary-100 dark:border-primary-900">
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                <?php echo e(strtoupper(substr($user->name, 0, 1))); ?>
+
                             </div>
-                        @endif
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $user->name }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ $user->email }}</p>
+                        <?php endif; ?>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1"><?php echo e($user->name); ?></h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4"><?php echo e($user->email); ?></p>
                         <button onclick="showAvatarModal()" 
                                 class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all font-medium text-sm flex items-center justify-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,19 +51,19 @@
                         </h3>
                         <div class="grid grid-cols-2 gap-4">
                             <div class="text-center p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ $stats['total_items'] }}</div>
+                                <div class="text-2xl font-bold text-primary-600 dark:text-primary-400"><?php echo e($stats['total_items']); ?></div>
                                 <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">Articles</div>
                             </div>
                             <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $stats['completed_orders'] }}</div>
+                                <div class="text-2xl font-bold text-green-600 dark:text-green-400"><?php echo e($stats['completed_orders']); ?></div>
                                 <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">Ventes</div>
                             </div>
                             <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ $stats['total_revenue'] }}€</div>
+                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400"><?php echo e($stats['total_revenue']); ?>€</div>
                                 <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">Revenus</div>
                             </div>
                             <div class="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{{ number_format($stats['average_rating'], 1) }}</div>
+                                <div class="text-2xl font-bold text-yellow-600 dark:text-yellow-400"><?php echo e(number_format($stats['average_rating'], 1)); ?></div>
                                 <div class="text-xs text-gray-600 dark:text-gray-400 mt-1">Note</div>
                             </div>
                         </div>
@@ -115,9 +116,9 @@
                     <div class="p-6">
                         <!-- General Tab -->
                         <div x-show="activeTab === 'general'" x-cloak>
-                            <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
-                                @csrf
-                                @method('PATCH')
+                            <form method="POST" action="<?php echo e(route('profile.update')); ?>" class="space-y-6">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('PATCH'); ?>
                                 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -127,12 +128,26 @@
                                         <input type="text" 
                                                id="name" 
                                                name="name" 
-                                               value="{{ old('name', $user->name) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('name') border-red-500 @enderror"
+                                               value="<?php echo e(old('name', $user->name)); ?>" 
+                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                required>
-                                        @error('name')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
+                                        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div>
@@ -142,12 +157,26 @@
                                         <input type="email" 
                                                id="email" 
                                                name="email" 
-                                               value="{{ old('email', $user->email) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('email') border-red-500 @enderror"
+                                               value="<?php echo e(old('email', $user->email)); ?>" 
+                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                required>
-                                        @error('email')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
+                                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div>
@@ -157,11 +186,25 @@
                                         <input type="tel" 
                                                id="phone" 
                                                name="phone" 
-                                               value="{{ old('phone', $user->phone) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('phone') border-red-500 @enderror">
-                                        @error('phone')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
+                                               value="<?php echo e(old('phone', $user->phone)); ?>" 
+                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                        <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div>
@@ -171,11 +214,25 @@
                                         <input type="text" 
                                                id="location" 
                                                name="location" 
-                                               value="{{ old('location', $user->location) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('location') border-red-500 @enderror">
-                                        @error('location')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
+                                               value="<?php echo e(old('location', $user->location)); ?>" 
+                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['location'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                                        <?php $__errorArgs = ['location'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
                                 </div>
 
@@ -186,10 +243,24 @@
                                     <textarea id="bio" 
                                               name="bio" 
                                               rows="4" 
-                                              class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('bio') border-red-500 @enderror">{{ old('bio', $user->bio) }}</textarea>
-                                    @error('bio')
-                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                    @enderror
+                                              class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['bio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"><?php echo e(old('bio', $user->bio)); ?></textarea>
+                                    <?php $__errorArgs = ['bio'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                        <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                 </div>
 
                                 <div class="flex justify-end">
@@ -209,9 +280,9 @@
                             <!-- Change Password -->
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Changer le mot de passe</h3>
-                                <form method="POST" action="{{ route('profile.password') }}" class="space-y-4">
-                                    @csrf
-                                    @method('PATCH')
+                                <form method="POST" action="<?php echo e(route('profile.password')); ?>" class="space-y-4">
+                                    <?php echo csrf_field(); ?>
+                                    <?php echo method_field('PATCH'); ?>
                                     
                                     <div>
                                         <label for="current_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -220,11 +291,25 @@
                                         <input type="password" 
                                                id="current_password" 
                                                name="current_password" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('current_password') border-red-500 @enderror"
+                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['current_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                required>
-                                        @error('current_password')
-                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                        @enderror
+                                        <?php $__errorArgs = ['current_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                     </div>
 
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -235,11 +320,25 @@
                                             <input type="password" 
                                                    id="password" 
                                                    name="password" 
-                                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('password') border-red-500 @enderror"
+                                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                    required>
-                                            @error('password')
-                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                            @enderror
+                                            <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         </div>
 
                                         <div>
@@ -272,15 +371,15 @@
                                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Authentification à deux facteurs</h3>
                                     <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 flex items-center justify-between">
                                         <div class="flex items-center gap-4">
-                                            <div class="flex items-center justify-center w-12 h-12 rounded-xl {{ auth()->user()->google2fa_enabled ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-200 dark:bg-gray-700' }}">
-                                                <svg class="w-6 h-6 {{ auth()->user()->google2fa_enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <div class="flex items-center justify-center w-12 h-12 rounded-xl <?php echo e(auth()->user()->google2fa_enabled ? 'bg-green-100 dark:bg-green-900' : 'bg-gray-200 dark:bg-gray-700'); ?>">
+                                                <svg class="w-6 h-6 <?php echo e(auth()->user()->google2fa_enabled ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'); ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                                                 </svg>
                                             </div>
                                             <div>
                                                 <p class="font-semibold text-gray-900 dark:text-white">Protection renforcée de votre compte</p>
                                                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                                    @if(auth()->user()->google2fa_enabled)
+                                                    <?php if(auth()->user()->google2fa_enabled): ?>
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -288,7 +387,7 @@
                                                             Activée
                                                         </span>
                                                         L'authentification à deux facteurs est active
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
                                                             <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
@@ -296,11 +395,11 @@
                                                             Désactivée
                                                         </span>
                                                         Ajoutez une couche de sécurité supplémentaire
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </p>
                                             </div>
                                         </div>
-                                        <a href="{{ route('two-factor.index') }}" 
+                                        <a href="<?php echo e(route('two-factor.index')); ?>" 
                                            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all font-medium text-sm flex items-center gap-2">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -327,9 +426,9 @@
                                         </div>
                                     </div>
                                     
-                                    <form method="POST" action="{{ route('profile.destroy') }}" onsubmit="return confirm('Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.')" class="space-y-4">
-                                        @csrf
-                                        @method('DELETE')
+                                    <form method="POST" action="<?php echo e(route('profile.destroy')); ?>" onsubmit="return confirm('Êtes-vous absolument sûr de vouloir supprimer votre compte ? Cette action est irréversible.')" class="space-y-4">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <div>
                                             <label for="delete_password" class="block text-sm font-medium text-red-900 dark:text-red-100 mb-2">
                                                 Confirmez avec votre mot de passe
@@ -337,11 +436,25 @@
                                             <input type="password" 
                                                    id="delete_password" 
                                                    name="password" 
-                                                   class="w-full px-4 py-3 border-2 border-red-300 dark:border-red-700 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:bg-red-900/20 dark:text-white transition-all @error('password', 'userDeletion') border-red-500 @enderror"
+                                                   class="w-full px-4 py-3 border-2 border-red-300 dark:border-red-700 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:bg-red-900/20 dark:text-white transition-all <?php $__errorArgs = ['password', 'userDeletion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                                    required>
-                                            @error('password', 'userDeletion')
-                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-                                            @enderror
+                                            <?php $__errorArgs = ['password', 'userDeletion'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                                <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                                         </div>
                                         <button type="submit" 
                                                 class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
@@ -358,9 +471,9 @@
                         <!-- Preferences Tab -->
                         <div x-show="activeTab === 'preferences'" x-cloak>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Préférences d'affichage</h3>
-                            <form method="POST" action="{{ route('profile.theme') }}" class="space-y-6">
-                                @csrf
-                                @method('PATCH')
+                            <form method="POST" action="<?php echo e(route('profile.theme')); ?>" class="space-y-6">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('PATCH'); ?>
                                 
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
@@ -371,7 +484,8 @@
                                             <input type="radio" 
                                                    name="theme_preference" 
                                                    value="auto" 
-                                                   {{ $user->theme_preference === 'auto' ? 'checked' : '' }}
+                                                   <?php echo e($user->theme_preference === 'auto' ? 'checked' : ''); ?>
+
                                                    class="peer sr-only">
                                             <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-6 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
                                                 <svg class="w-12 h-12 mx-auto mb-3 text-gray-600 dark:text-gray-400 peer-checked:text-primary-600 dark:peer-checked:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,7 +500,8 @@
                                             <input type="radio" 
                                                    name="theme_preference" 
                                                    value="light" 
-                                                   {{ $user->theme_preference === 'light' ? 'checked' : '' }}
+                                                   <?php echo e($user->theme_preference === 'light' ? 'checked' : ''); ?>
+
                                                    class="peer sr-only">
                                             <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-6 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
                                                 <svg class="w-12 h-12 mx-auto mb-3 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,7 +516,8 @@
                                             <input type="radio" 
                                                    name="theme_preference" 
                                                    value="dark" 
-                                                   {{ $user->theme_preference === 'dark' ? 'checked' : '' }}
+                                                   <?php echo e($user->theme_preference === 'dark' ? 'checked' : ''); ?>
+
                                                    class="peer sr-only">
                                             <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-6 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
                                                 <svg class="w-12 h-12 mx-auto mb-3 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -439,26 +555,27 @@
                             </div>
                             
                             <div class="space-y-3">
-                                @forelse($user->notifications()->latest()->take(10)->get() as $notification)
-                                    <div class="bg-white dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600 transition-all {{ !$notification->read_at ? 'ring-2 ring-primary-100 dark:ring-primary-900' : '' }}">
+                                <?php $__empty_1 = true; $__currentLoopData = $user->notifications()->latest()->take(10)->get(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notification): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                    <div class="bg-white dark:bg-gray-700 rounded-xl p-4 border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600 transition-all <?php echo e(!$notification->read_at ? 'ring-2 ring-primary-100 dark:ring-primary-900' : ''); ?>">
                                         <div class="flex items-start justify-between gap-4">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2 mb-1">
-                                                    <h4 class="font-semibold text-gray-900 dark:text-white">{{ $notification->title }}</h4>
-                                                    @if(!$notification->read_at)
+                                                    <h4 class="font-semibold text-gray-900 dark:text-white"><?php echo e($notification->title); ?></h4>
+                                                    <?php if(!$notification->read_at): ?>
                                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200">
                                                             Nouveau
                                                         </span>
-                                                    @endif
+                                                    <?php endif; ?>
                                                 </div>
-                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ $notification->message }}</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400"><?php echo e($notification->message); ?></p>
                                             </div>
                                             <span class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-                                                {{ $notification->created_at->diffForHumans() }}
+                                                <?php echo e($notification->created_at->diffForHumans()); ?>
+
                                             </span>
                                         </div>
                                     </div>
-                                @empty
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                     <div class="text-center py-16">
                                         <svg class="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
@@ -466,7 +583,7 @@
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune notification</h3>
                                         <p class="text-gray-600 dark:text-gray-400">Vous n'avez aucune notification pour le moment</p>
                                     </div>
-                                @endforelse
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -489,8 +606,8 @@
                 </button>
             </div>
 
-            <form method="POST" action="{{ route('profile.avatar') }}" enctype="multipart/form-data" class="space-y-4">
-                @csrf
+            <form method="POST" action="<?php echo e(route('profile.avatar')); ?>" enctype="multipart/form-data" class="space-y-4">
+                <?php echo csrf_field(); ?>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Sélectionner une image
@@ -518,7 +635,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
 function showAvatarModal() {
@@ -545,9 +662,11 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
 <style>
 [x-cloak] { display: none !important; }
 </style>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/profile/edit.blade.php ENDPATH**/ ?>

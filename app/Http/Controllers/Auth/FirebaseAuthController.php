@@ -97,6 +97,45 @@ class FirebaseAuthController extends Controller
             // Connecter l'utilisateur
             Auth::login($user, true);
 
+            // Vérifier si l'email doit être vérifié
+            if (!$user->email_verified_at) {
+                // Générer et envoyer un code de vérification
+                $this->sendVerificationCode($user);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Connexion réussie ! Veuillez vérifier votre email.',
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'avatar' => $user->avatar,
+                    ],
+                    'redirect' => route('verification.code')
+                ]);
+            }
+
+            // Vérifier si 2FA est activé pour cet utilisateur
+            if ($user->google2fa_enabled) {
+                // Marquer que l'utilisateur doit passer par 2FA
+                session(['2fa_required' => true, '2fa_user_id' => $user->id]);
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Veuillez entrer votre code d\'authentification à deux facteurs',
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'avatar' => $user->avatar,
+                    ],
+                    'redirect' => route('two-factor.challenge')
+                ]);
+            }
+
+            // Marquer la session comme complètement authentifiée
+            session(['2fa_verified' => true]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Connexion réussie',
@@ -110,17 +149,21 @@ class FirebaseAuthController extends Controller
             ]);
 
         } catch (\Kreait\Firebase\Exception\Auth\InvalidIdToken $e) {
+            Log::error('Firebase Invalid ID Token: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Token d\'authentification invalide'
             ], 401);
 
         } catch (\Exception $e) {
-            logger('Firebase auth error: ' . $e->getMessage());
+            Log::error('Firebase auth error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur de connexion. Veuillez réessayer.'
+                'message' => 'Erreur de connexion. Veuillez réessayer.',
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
@@ -180,6 +223,25 @@ class FirebaseAuthController extends Controller
                 }
 
                 Auth::login($existingUser, true);
+
+                // Vérifier si 2FA est activé
+                if ($existingUser->google2fa_enabled) {
+                    session(['2fa_required' => true, '2fa_user_id' => $existingUser->id]);
+                    
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Veuillez entrer votre code d\'authentification à deux facteurs',
+                        'user' => [
+                            'id' => $existingUser->id,
+                            'name' => $existingUser->name,
+                            'email' => $existingUser->email,
+                            'avatar' => $existingUser->avatar,
+                        ],
+                        'redirect' => route('two-factor.challenge')
+                    ]);
+                }
+
+                session(['2fa_verified' => true]);
 
                 return response()->json([
                     'success' => true,

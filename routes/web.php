@@ -933,6 +933,7 @@ Route::get('/privacy', function() {
 
 // Routes Firebase Authentication
 Route::post('/auth/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('auth.firebase.login');
+Route::post('/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('firebase.login'); // Alias pour compatibilité
 Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
 
 // ==========================================
@@ -1017,6 +1018,18 @@ Route::middleware('auth')->prefix('boost')->name('boost.')->group(function () {
     // Dashboard des boosts du vendeur (statistiques et gestion)
     Route::get('/dashboard', [App\Http\Controllers\BoostController::class, 'dashboard'])->name('dashboard');
 });
+
+// Routes pour l'authentification à deux facteurs
+Route::middleware(['auth'])->prefix('two-factor')->name('two-factor.')->group(function () {
+    Route::get('/', [App\Http\Controllers\TwoFactorAuthController::class, 'index'])->name('index');
+    Route::get('/challenge', [App\Http\Controllers\TwoFactorAuthController::class, 'showChallenge'])->name('challenge');
+    Route::post('/enable', [App\Http\Controllers\TwoFactorAuthController::class, 'enable'])->name('enable');
+    Route::post('/confirm', [App\Http\Controllers\TwoFactorAuthController::class, 'confirm'])->name('confirm');
+    Route::post('/disable', [App\Http\Controllers\TwoFactorAuthController::class, 'disable'])->name('disable');
+    Route::post('/verify', [App\Http\Controllers\TwoFactorAuthController::class, 'verify'])->name('verify');
+    Route::post('/regenerate-codes', [App\Http\Controllers\TwoFactorAuthController::class, 'regenerateRecoveryCodes'])->name('regenerate-codes');
+});
+
 
 // Routes des experts
 require __DIR__.'/expert.php';

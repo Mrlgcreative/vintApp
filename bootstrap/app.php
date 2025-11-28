@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\CheckCityAccess::class,
             \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions utilisateurs
             \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Gérer les codes de parrainage
+            \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Vérification 2FA globale
             \App\Http\Middleware\CaptureRequests::class, // 🔍 Middleware temporaire pour debug 404
         ]);
 
@@ -67,6 +68,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'preregistration' => \App\Http\Middleware\CheckPreregistrationMode::class,
             'mobile.optimize' => \App\Http\Middleware\MobileOptimization::class, // 📱 Optimisation mobile
             'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
+            '2fa' => \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Authentification à deux facteurs
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
