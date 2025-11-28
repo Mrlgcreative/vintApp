@@ -211,6 +211,8 @@
 
 
 
+
+
 /* Dark Mode Variables - Applied when [data-theme="dark"] */
 [data-theme="dark"] {
   /* Inverser les couleurs de fond */
@@ -477,6 +479,8 @@
     --font-primary: 'Figtree', sans-serif;
     --transition: all 0.3s ease;
 }
+
+
 
 
 

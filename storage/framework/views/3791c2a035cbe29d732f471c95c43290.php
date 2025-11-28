@@ -1,10 +1,8 @@
-@extends('app')
+<?php $__env->startSection('title', 'Centre d\'aide - VintApp'); ?>
+<?php $__env->startSection('meta_description', 'Centre d\'aide VintApp - FAQ, guides d\'utilisation et support pour acheter et vendre en toute sécurité'); ?>
+<?php $__env->startSection('meta_keywords', 'aide, FAQ, support, guide, tutoriel, VintApp, assistance'); ?>
 
-@section('title', 'Centre d\'aide - VintApp')
-@section('meta_description', 'Centre d\'aide VintApp - FAQ, guides d\'utilisation et support pour acheter et vendre en toute sécurité')
-@section('meta_keywords', 'aide, FAQ, support, guide, tutoriel, VintApp, assistance')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-purple-50">
     <!-- Header du centre d'aide -->
     <div class="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white py-16">
@@ -590,7 +588,7 @@
                         <h2 class="text-6xl font-bold mb-2">500</h2>
                         <h5 class="text-xl font-semibold mb-2">Points par parrainage</h5>
                         <p class="text-purple-100 mb-6">+ 100 points bonus pour votre filleul</p>
-                        <a href="{{ route('affiliate.dashboard') }}" class="inline-flex items-center px-6 py-3 bg-white text-purple-600 rounded-xl font-bold hover:shadow-lg transition-all duration-200 hover:scale-105">
+                        <a href="<?php echo e(route('affiliate.dashboard')); ?>" class="inline-flex items-center px-6 py-3 bg-white text-purple-600 rounded-xl font-bold hover:shadow-lg transition-all duration-200 hover:scale-105">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                             </svg>
@@ -703,9 +701,9 @@
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Navigation entre sections
@@ -800,4 +798,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/help/index.blade.php ENDPATH**/ ?>

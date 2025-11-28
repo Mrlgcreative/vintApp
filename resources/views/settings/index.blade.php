@@ -294,7 +294,7 @@
                         </div>
                     </a>
 
-                    <a href="{{ route('help.index') }}#contact" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
+                    <a href="{{ route('support.create') }}" class="block px-6 py-4 hover:bg-gray-50 dark:bg-gray-900 transition-colors group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -302,7 +302,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-900 dark:text-white">Nous contacter</h4>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Envoyez-nous un message</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Créer un ticket de support</p>
                                 </div>
                             </div>
                             <i class="fas fa-chevron-right text-gray-400 group-hover:text-gray-600 dark:text-gray-300 transition-colors"></i>

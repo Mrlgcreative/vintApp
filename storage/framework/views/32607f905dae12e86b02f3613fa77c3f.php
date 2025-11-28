@@ -1,6 +1,6 @@
-@extends('app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- En-tête -->
@@ -9,7 +9,7 @@
                 <h1 class="text-3xl font-bold text-gray-900 mb-1">Mes demandes de support</h1>
                 <p class="text-gray-600">Gérez vos conversations avec notre équipe d'assistance</p>
             </div>
-            <a href="{{ route('support.create') }}" 
+            <a href="<?php echo e(route('support.create')); ?>" 
                class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -19,13 +19,13 @@
         </div>
 
         <!-- Statistiques rapides -->
-        @if($chats->count() > 0)
+        <?php if($chats->count() > 0): ?>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <div class="bg-white rounded-2xl shadow-lg border-l-4 border-purple-500 p-6 transform hover:scale-105 transition-all duration-200">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Total</p>
-                            <p class="text-3xl font-bold text-gray-900">{{ $chats->count() }}</p>
+                            <p class="text-3xl font-bold text-gray-900"><?php echo e($chats->count()); ?></p>
                         </div>
                         <div class="p-4 rounded-xl bg-purple-100">
                             <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">En cours</p>
-                            <p class="text-3xl font-bold text-amber-600">{{ $chats->whereIn('status', ['open', 'in_progress'])->count() }}</p>
+                            <p class="text-3xl font-bold text-amber-600"><?php echo e($chats->whereIn('status', ['open', 'in_progress'])->count()); ?></p>
                         </div>
                         <div class="p-4 rounded-xl bg-amber-100">
                             <svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">En attente</p>
-                            <p class="text-3xl font-bold text-blue-600">{{ $chats->where('status', 'waiting_user')->count() }}</p>
+                            <p class="text-3xl font-bold text-blue-600"><?php echo e($chats->where('status', 'waiting_user')->count()); ?></p>
                         </div>
                         <div class="p-4 rounded-xl bg-blue-100">
                             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +67,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Résolues</p>
-                            <p class="text-3xl font-bold text-green-600">{{ $chats->where('status', 'closed')->count() }}</p>
+                            <p class="text-3xl font-bold text-green-600"><?php echo e($chats->where('status', 'closed')->count()); ?></p>
                         </div>
                         <div class="p-4 rounded-xl bg-green-100">
                             <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
@@ -77,11 +77,11 @@
                     </div>
                 </div>
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Liste des conversations -->
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            @if($chats->count() > 0)
+            <?php if($chats->count() > 0): ?>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gradient-to-r from-gray-50 to-gray-100">
@@ -96,74 +96,84 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            @foreach($chats as $chat)
+                            <?php $__currentLoopData = $chats; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $chat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr class="hover:bg-purple-50 transition-colors duration-150">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center gap-2">
-                                            <span class="font-semibold text-gray-900">{{ $chat->reference }}</span>
-                                            @if($chat->unread_count_for_user > 0)
+                                            <span class="font-semibold text-gray-900"><?php echo e($chat->reference); ?></span>
+                                            <?php if($chat->unread_count_for_user > 0): ?>
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-600 text-white animate-pulse">
-                                                    {{ $chat->unread_count_for_user }} nouveau(x)
+                                                    <?php echo e($chat->unread_count_for_user); ?> nouveau(x)
                                                 </span>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                     
                                     <td class="px-6 py-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $chat->subject ?: 'Demande d\'assistance' }}</div>
-                                        <div class="text-sm text-gray-500">{{ $chat->formatted_category }}</div>
+                                        <div class="text-sm font-medium text-gray-900"><?php echo e($chat->subject ?: 'Demande d\'assistance'); ?></div>
+                                        <div class="text-sm text-gray-500"><?php echo e($chat->formatted_category); ?></div>
                                     </td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                                            {{ $chat->status === 'open' ? 'bg-red-100 text-red-800' : '' }}
-                                            {{ $chat->status === 'in_progress' ? 'bg-amber-100 text-amber-800' : '' }}
-                                            {{ $chat->status === 'waiting_user' ? 'bg-blue-100 text-blue-800' : '' }}
-                                            {{ $chat->status === 'closed' ? 'bg-green-100 text-green-800' : '' }}">
-                                            {{ $chat->formatted_status }}
+                                            <?php echo e($chat->status === 'open' ? 'bg-red-100 text-red-800' : ''); ?>
+
+                                            <?php echo e($chat->status === 'in_progress' ? 'bg-amber-100 text-amber-800' : ''); ?>
+
+                                            <?php echo e($chat->status === 'waiting_user' ? 'bg-blue-100 text-blue-800' : ''); ?>
+
+                                            <?php echo e($chat->status === 'closed' ? 'bg-green-100 text-green-800' : ''); ?>">
+                                            <?php echo e($chat->formatted_status); ?>
+
                                         </span>
                                     </td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold
-                                            {{ $chat->priority === 'low' ? 'bg-gray-100 text-gray-800' : '' }}
-                                            {{ $chat->priority === 'normal' ? 'bg-blue-100 text-blue-800' : '' }}
-                                            {{ $chat->priority === 'high' ? 'bg-orange-100 text-orange-800' : '' }}
-                                            {{ $chat->priority === 'urgent' ? 'bg-red-100 text-red-800' : '' }}">
-                                            {{ $chat->formatted_priority }}
+                                            <?php echo e($chat->priority === 'low' ? 'bg-gray-100 text-gray-800' : ''); ?>
+
+                                            <?php echo e($chat->priority === 'normal' ? 'bg-blue-100 text-blue-800' : ''); ?>
+
+                                            <?php echo e($chat->priority === 'high' ? 'bg-orange-100 text-orange-800' : ''); ?>
+
+                                            <?php echo e($chat->priority === 'urgent' ? 'bg-red-100 text-red-800' : ''); ?>">
+                                            <?php echo e($chat->formatted_priority); ?>
+
                                         </span>
                                     </td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($chat->admin)
+                                        <?php if($chat->admin): ?>
                                             <div class="flex items-center gap-2">
-                                                @if($chat->admin->avatar)
+                                                <?php if($chat->admin->avatar): ?>
                                                     <img class="w-8 h-8 rounded-full object-cover ring-2 ring-purple-200" 
-                                                         src="{{ asset('storage/' . $chat->admin->avatar) }}" 
-                                                         alt="{{ $chat->admin->name }}">
-                                                @else
+                                                         src="<?php echo e(asset('storage/' . $chat->admin->avatar)); ?>" 
+                                                         alt="<?php echo e($chat->admin->name); ?>">
+                                                <?php else: ?>
                                                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center ring-2 ring-purple-200">
-                                                        <span class="text-xs font-bold text-white">{{ substr($chat->admin->name, 0, 1) }}</span>
+                                                        <span class="text-xs font-bold text-white"><?php echo e(substr($chat->admin->name, 0, 1)); ?></span>
                                                     </div>
-                                                @endif
-                                                <span class="text-sm font-medium text-gray-900">{{ $chat->admin->name }}</span>
+                                                <?php endif; ?>
+                                                <span class="text-sm font-medium text-gray-900"><?php echo e($chat->admin->name); ?></span>
                                             </div>
-                                        @else
+                                        <?php else: ?>
                                             <span class="text-sm italic text-gray-400">En attente d'assignation</span>
-                                        @endif
+                                        <?php endif; ?>
                                     </td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        @if($chat->last_message_at)
-                                            {{ $chat->last_message_at->diffForHumans() }}
-                                        @else
-                                            {{ $chat->created_at->diffForHumans() }}
-                                        @endif
+                                        <?php if($chat->last_message_at): ?>
+                                            <?php echo e($chat->last_message_at->diffForHumans()); ?>
+
+                                        <?php else: ?>
+                                            <?php echo e($chat->created_at->diffForHumans()); ?>
+
+                                        <?php endif; ?>
                                     </td>
                                     
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex justify-end gap-2">
-                                            <a href="{{ route('support.show', $chat) }}" 
+                                            <a href="<?php echo e(route('support.show', $chat)); ?>" 
                                                class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition-all duration-200"
                                                title="Voir">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,23 +181,23 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                                 </svg>
                                             </a>
-                                            @if($chat->status !== 'closed')
-                                                <button onclick="closeChat('{{ $chat->id }}')" 
+                                            <?php if($chat->status !== 'closed'): ?>
+                                                <button onclick="closeChat('<?php echo e($chat->id); ?>')" 
                                                         class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-all duration-200" 
                                                         title="Fermer">
                                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                     </svg>
                                                 </button>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
                     </table>
                 </div>
-            @else
+            <?php else: ?>
                 <!-- État vide -->
                 <div class="text-center py-16 px-4">
                     <svg class="mx-auto w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -195,7 +205,7 @@
                     </svg>
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Aucune demande de support</h3>
                     <p class="text-gray-600 mb-6">Vous n'avez pas encore créé de demande d'assistance.</p>
-                    <a href="{{ route('support.create') }}" 
+                    <a href="<?php echo e(route('support.create')); ?>" 
                        class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold hover:from-purple-700 hover:to-blue-700 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -203,7 +213,7 @@
                         Créer ma première demande
                     </a>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
 
         <!-- Aide et informations -->
@@ -289,4 +299,6 @@ function closeChat(chatId) {
     }
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/support/index.blade.php ENDPATH**/ ?>

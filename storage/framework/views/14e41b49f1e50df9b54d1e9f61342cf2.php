@@ -1,13 +1,11 @@
-@extends('app')
+<?php $__env->startSection('title', 'Nouvelle demande de support'); ?>
 
-@section('title', 'Nouvelle demande de support')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
         <!-- En-tête -->
         <div class="flex items-center gap-4 mb-8">
-            <a href="{{ route('support.index') }}" 
+            <a href="<?php echo e(route('support.index')); ?>" 
                class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200 group">
                 <svg class="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -20,39 +18,39 @@
         </div>
 
         <!-- Messages flash -->
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="mb-6 p-4 rounded-xl bg-green-50 border border-green-200 flex items-start gap-3" x-data="{ show: true }" x-show="show" x-transition>
                 <svg class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                 </svg>
-                <p class="text-green-800 flex-1">{{ session('success') }}</p>
+                <p class="text-green-800 flex-1"><?php echo e(session('success')); ?></p>
                 <button @click="show = false" class="text-green-600 hover:text-green-800">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                 </button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             <div class="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3" x-data="{ show: true }" x-show="show" x-transition>
                 <svg class="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
                 </svg>
-                <p class="text-red-800 flex-1">{{ session('error') }}</p>
+                <p class="text-red-800 flex-1"><?php echo e(session('error')); ?></p>
                 <button @click="show = false" class="text-red-600 hover:text-red-800">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
                 </button>
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Formulaire -->
         <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
             <div class="p-6 sm:p-8">
-                <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    @csrf
+                <form action="<?php echo e(route('support.store')); ?>" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    <?php echo csrf_field(); ?>
 
                     <!-- Catégorie -->
                     <div>
@@ -62,17 +60,31 @@
                         <select id="category" 
                                 name="category" 
                                 required
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none @error('category') border-red-300 @enderror">
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none <?php $__errorArgs = ['category'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                             <option value="">Sélectionnez une catégorie</option>
-                            <option value="technical" {{ old('category') === 'technical' ? 'selected' : '' }}>🔧 Problème technique</option>
-                            <option value="account" {{ old('category') === 'account' ? 'selected' : '' }}>👤 Compte utilisateur</option>
-                            <option value="payment" {{ old('category') === 'payment' ? 'selected' : '' }}>💳 Paiement</option>
-                            <option value="order" {{ old('category') === 'order' ? 'selected' : '' }}>📦 Commande</option>
-                            <option value="general" {{ old('category') === 'general' ? 'selected' : '' }}>💬 Question générale</option>
+                            <option value="technical" <?php echo e(old('category') === 'technical' ? 'selected' : ''); ?>>🔧 Problème technique</option>
+                            <option value="account" <?php echo e(old('category') === 'account' ? 'selected' : ''); ?>>👤 Compte utilisateur</option>
+                            <option value="payment" <?php echo e(old('category') === 'payment' ? 'selected' : ''); ?>>💳 Paiement</option>
+                            <option value="order" <?php echo e(old('category') === 'order' ? 'selected' : ''); ?>>📦 Commande</option>
+                            <option value="general" <?php echo e(old('category') === 'general' ? 'selected' : ''); ?>>💬 Question générale</option>
                         </select>
-                        @error('category')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['category'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         <p class="mt-2 text-sm text-gray-500">Choisissez la catégorie qui correspond le mieux à votre demande</p>
                     </div>
 
@@ -84,13 +96,27 @@
                         <input type="text" 
                                id="subject" 
                                name="subject" 
-                               value="{{ old('subject') }}"
+                               value="<?php echo e(old('subject')); ?>"
                                maxlength="255"
                                placeholder="Ex: Problème de connexion, question sur un paiement..."
-                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none @error('subject') border-red-300 @enderror">
-                        @error('subject')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                               class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none <?php $__errorArgs = ['subject'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                        <?php $__errorArgs = ['subject'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <!-- Priorité -->
@@ -100,15 +126,29 @@
                         </label>
                         <select id="priority" 
                                 name="priority"
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none @error('priority') border-red-300 @enderror">
-                            <option value="normal" {{ old('priority', 'normal') === 'normal' ? 'selected' : '' }}>Normal</option>
-                            <option value="low" {{ old('priority') === 'low' ? 'selected' : '' }}>Basse</option>
-                            <option value="high" {{ old('priority') === 'high' ? 'selected' : '' }}>Haute</option>
-                            <option value="urgent" {{ old('priority') === 'urgent' ? 'selected' : '' }}>Urgente</option>
+                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none <?php $__errorArgs = ['priority'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
+                            <option value="normal" <?php echo e(old('priority', 'normal') === 'normal' ? 'selected' : ''); ?>>Normal</option>
+                            <option value="low" <?php echo e(old('priority') === 'low' ? 'selected' : ''); ?>>Basse</option>
+                            <option value="high" <?php echo e(old('priority') === 'high' ? 'selected' : ''); ?>>Haute</option>
+                            <option value="urgent" <?php echo e(old('priority') === 'urgent' ? 'selected' : ''); ?>>Urgente</option>
                         </select>
-                        @error('priority')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['priority'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
 
                     <!-- Message -->
@@ -122,14 +162,28 @@
                                   maxlength="5000"
                                   required
                                   placeholder="Décrivez votre problème de manière détaillée..."
-                                  class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none resize-none @error('message') border-red-300 @enderror">{{ old('message') }}</textarea>
-                        @error('message')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                                  class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none resize-none <?php $__errorArgs = ['message'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"><?php echo e(old('message')); ?></textarea>
+                        <?php $__errorArgs = ['message'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         <div class="flex justify-between items-center mt-2">
                             <p class="text-sm text-gray-500">Soyez aussi précis que possible pour obtenir une réponse rapide</p>
                             <span class="text-sm text-gray-500">
-                                <span id="charCount">{{ strlen(old('message', '')) }}</span>/5000
+                                <span id="charCount"><?php echo e(strlen(old('message', ''))); ?></span>/5000
                             </span>
                         </div>
                     </div>
@@ -145,11 +199,25 @@
                                    name="attachments[]" 
                                    multiple
                                    accept="image/*,.pdf,.doc,.docx,.txt"
-                                   class="w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-300 hover:border-purple-400 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 @error('attachments.*') border-red-300 @enderror">
+                                   class="w-full px-4 py-3 rounded-xl border-2 border-dashed border-gray-300 hover:border-purple-400 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 <?php $__errorArgs = ['attachments.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-300 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>">
                         </div>
-                        @error('attachments.*')
-                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['attachments.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="mt-2 text-sm text-red-600"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                         <p class="mt-2 text-sm text-gray-500 flex items-center gap-1">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
@@ -198,7 +266,7 @@
 
                     <!-- Boutons -->
                     <div class="flex flex-col sm:flex-row justify-between gap-4 pt-4">
-                        <a href="{{ route('support.index') }}" 
+                        <a href="<?php echo e(route('support.index')); ?>" 
                            class="inline-flex items-center justify-center px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -237,7 +305,7 @@
     </div>
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const messageTextarea = document.getElementById('message');
@@ -300,5 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/support/create.blade.php ENDPATH**/ ?>

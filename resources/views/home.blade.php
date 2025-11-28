@@ -429,7 +429,7 @@
     <!-- Section Catégories - Optimisée -->
     <section class="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- En-t�te Section -->
+            <!-- En-tête Section -->
             <div class="mb-12">
                 <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
                     Catégories
@@ -519,7 +519,7 @@
                 </div>
             </div>
                         
-                        <!-- Ic�ne -->
+                        <!-- Icône -->
                         <div class="text-4xl lg:text-6xl mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 filter drop-shadow-sm">
                             {{ $icons[$index % count($icons)] }}
                         </div>
@@ -527,7 +527,7 @@
         </div>
     </section>
 
-    <!-- CSS et JavaScript pour les cat�gories horizontales -->
+    <!-- CSS et JavaScript pour les catégories horizontales -->
     <style>
         .scrollbar-hide {
             -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -587,7 +587,7 @@
         });
     </script>
 
-    <!-- Section Produits Spotlight - Carrousel Sp�cial -->
+    <!-- Section Produits Spotlight - Carrousel Spécial -->
     @if(isset($spotlightItems) && $spotlightItems->count() > 0)
     <section class="py-16 lg:py-20 bg-gradient-to-br from-primary-50 via-white to-accent-50 relative overflow-hidden">
         <!-- Background Decorations -->
@@ -598,7 +598,7 @@
         </div>
 
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <!-- En-t�te Section -->
+            <!-- En-tête Section -->
             <div class="text-center mb-12">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-2xl mb-6 shadow-xl">
                     <i class="fas fa-lightbulb text-2xl"></i>
@@ -821,13 +821,13 @@
     </script>
     @endif
 
-    <!-- Section Produits Vedettes - Optimis�e -->
+    <!-- Section Produits Vedettes - Optimisée -->
     <section id="collection" class="py-20 lg:py-32 bg-white dark:bg-gray-800">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- En-t�te Section -->
+            <!-- En-tête Section -->
             <div class="mb-12">
                 <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
-                    Articles R�cents
+                    Articles Récents
                 </h2>
             </div>
 
@@ -839,7 +839,7 @@
                         $firstImage = count($images) > 0 ? $images[0] : null;
                         $isNew = $item->created_at->gt(now()->subDays(7));
                         
-                        // Utiliser la m�me logique que le carrousel Spotlight
+                        // Utiliser la même logique que le carrousel Spotlight
                         $activeBoost = $item->activeBoosts->first();
                         $isBoosted = $activeBoost !== null;
                         $boostType = $activeBoost?->boostType;
