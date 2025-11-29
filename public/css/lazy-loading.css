@@ -1,0 +1,209 @@
+/**
+ * Styles Lazy Loading avec Tailwind CSS
+ * VintApp PWA
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* Images en cours de chargement */
+    .lazy-loading {
+        @apply opacity-60 blur-[5px] transition-all duration-300 ease-in-out;
+    }
+
+    /* Images chargées */
+    .lazy-loaded {
+        @apply opacity-100 blur-0;
+    }
+
+    /* Images avec erreur */
+    .lazy-error {
+        @apply opacity-50 border-2 border-dashed border-red-500;
+    }
+
+    /* Placeholder */
+    .lazy-placeholder {
+        @apply animate-shimmer bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100;
+        background-size: 200% 100%;
+    }
+
+    /* Container pour lazy loading */
+    .lazy-container {
+        @apply relative overflow-hidden;
+    }
+
+    .lazy-container::before {
+        content: '';
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+               w-10 h-10 border-4 border-primary-100 border-t-primary-600 
+               rounded-full animate-spin z-10;
+    }
+
+    .lazy-container.lazy-loaded::before {
+        @apply hidden;
+    }
+
+    /* Skeleton loader de base */
+    .skeleton-loader {
+        @apply relative overflow-hidden rounded-lg animate-shimmer
+               bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100
+               dark:from-gray-700 dark:via-gray-600 dark:to-gray-700;
+        background-size: 200% 100%;
+    }
+
+    /* Effet de brillance supplémentaire */
+    .skeleton-loader::after {
+        content: '';
+        @apply absolute inset-0 -translate-x-full animate-shimmer-overlay
+               bg-gradient-to-r from-transparent via-white/30 to-transparent
+               dark:via-white/10;
+    }
+
+    /* Variantes de skeleton */
+    .skeleton-text {
+        @apply h-4 mb-2;
+    }
+
+    .skeleton-title {
+        @apply h-6 w-3/5 mb-4;
+    }
+
+    .skeleton-image {
+        @apply h-48 w-full;
+    }
+
+    .skeleton-avatar {
+        @apply w-12 h-12 rounded-full;
+    }
+
+    .skeleton-button {
+        @apply h-10 w-24 rounded-lg;
+    }
+
+    /* Page Skeleton Overlay */
+    .page-skeleton {
+        @apply animate-fadeIn;
+    }
+
+    /* Progressive image loading */
+    .progressive-image {
+        @apply relative overflow-hidden;
+    }
+
+    .progressive-image__placeholder {
+        @apply absolute inset-0 w-full h-full object-cover 
+               blur-[20px] scale-110 transition-opacity duration-300;
+    }
+
+    .progressive-image__full {
+        @apply opacity-0 transition-opacity duration-300;
+    }
+
+    .progressive-image__full.loaded {
+        @apply opacity-100;
+    }
+
+    .progressive-image.loaded .progressive-image__placeholder {
+        @apply opacity-0;
+    }
+
+    /* Blur up effect */
+    .blur-up {
+        @apply blur-[20px] transition-[filter] duration-400 ease-in-out;
+    }
+
+    .blur-up.loaded {
+        @apply blur-0;
+    }
+
+    /* Aspect ratio containers */
+    .aspect-ratio-16-9 {
+        @apply relative pb-[56.25%];
+    }
+
+    .aspect-ratio-4-3 {
+        @apply relative pb-[75%];
+    }
+
+    .aspect-ratio-1-1 {
+        @apply relative pb-[100%];
+    }
+
+    .aspect-ratio-16-9 img,
+    .aspect-ratio-4-3 img,
+    .aspect-ratio-1-1 img {
+        @apply absolute inset-0 w-full h-full object-cover;
+    }
+
+    /* Fade in animation */
+    .fade-in {
+        @apply animate-fadeIn;
+    }
+
+    /* Pulse loading */
+    .pulse-loading {
+        @apply animate-pulse;
+    }
+
+    /* Grid skeleton */
+    .grid-skeleton {
+        @apply grid gap-4 grid-cols-[repeat(auto-fill,minmax(250px,1fr))];
+    }
+
+    .skeleton-card {
+        @apply bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm;
+    }
+}
+
+@layer utilities {
+    /* Responsive spinner */
+    @screen sm {
+        .lazy-container::before {
+            @apply w-8 h-8 border-[3px];
+        }
+    }
+}
+
+/* Animations personnalisées */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes shimmer-overlay {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Configuration Tailwind pour les animations */
+@layer utilities {
+    .animate-shimmer {
+        animation: shimmer 1.5s infinite;
+    }
+
+    .animate-shimmer-overlay {
+        animation: shimmer-overlay 2s infinite;
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.2s ease-in;
+    }
+}

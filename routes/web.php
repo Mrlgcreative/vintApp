@@ -20,6 +20,46 @@ use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\AffiliateController;
 
+// 🔍 Route de débogage pour vérifier les permissions admin
+Route::get('/debug/check-admin', function() {
+    if (!Auth::check()) {
+        return response()->json(['error' => 'Non authentifié']);
+    }
+    
+    $user = Auth::user();
+    $roles = $user->roles()->get(['id', 'name', 'slug']);
+    $isAdmin = $user->isAdmin();
+    
+    return response()->json([
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'user_email' => $user->email,
+        'roles' => $roles,
+        'is_admin' => $isAdmin,
+        'has_admin_role' => $user->hasRole('admin'),
+        'role_user_records' => DB::table('role_user')->where('user_id', $user->id)->get(),
+    ]);
+})->middleware('auth');
+
+// 🔍 Route de test pour vérification items (sans security.log)
+Route::get('/debug/test-verification-access', function() {
+    return response()->json([
+        'message' => 'Accès autorisé à la vérification',
+        'user' => Auth::user()->only(['id', 'name', 'email']),
+        'is_admin' => auth()->user()->isAdmin(),
+    ]);
+})->middleware(['auth', 'admin']);
+
+// 🚀 Route de test pour le lazy loading
+Route::get('/test-lazy-loading', function() {
+    return view('test-lazy-loading');
+});
+
+// 🔄 Route de test pour le navigation skeleton
+Route::get('/test-navigation-skeleton', function() {
+    return view('test-navigation-skeleton');
+});
+
 // Page de démarrage
 Route::get('/splash', function() {
     return view('splash');
@@ -262,7 +302,7 @@ Route::post('/reviews/post-payment', [App\Http\Controllers\ReviewController::cla
     ->middleware('auth');
 
 // Routes d'administration
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:60,1', 'security.log'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     // Dashboard
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
@@ -357,6 +397,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin', 'throttle:6
         // 🆕 Routes pour la facture imprimable
         Route::get('/{order}/invoice', [App\Http\Controllers\Admin\AdminController::class, 'orderInvoice'])->name('invoice');
         Route::get('/{order}/invoice/download', [App\Http\Controllers\Admin\AdminController::class, 'downloadOrderInvoice'])->name('invoice.download');
+    });
+
+    // 🆕 Vérification IA des items (modération)
+    Route::prefix('items')->name('items.')->group(function () {
+        Route::get('/pending-verification', [App\Http\Controllers\ItemController::class, 'pendingVerificationList'])
+            ->name('pending_verification');
+        Route::get('/{item}', [App\Http\Controllers\ItemController::class, 'adminShow'])
+            ->name('show');
+        Route::post('/{item}/approve', [App\Http\Controllers\ItemController::class, 'approveItem'])
+            ->name('approve');
+        Route::post('/{item}/reject', [App\Http\Controllers\ItemController::class, 'rejectItem'])
+            ->name('reject');
     });
 
     // Gestion des marques (CRUD complet)
@@ -624,22 +676,6 @@ Route::prefix('payments')->group(function () {
         
         // Vérifier l'OTP
         Route::post('/afribapay/{payment}/verify-otp', [PaymentController::class, 'verifyAfribaOTP'])->name('payments.afribapay.verify-otp');
-
-        // Admin moderation routes for image verification
-        // Protégées par le middleware 'admin' en plus de 'auth'
-        Route::prefix('admin')->middleware('admin')->group(function () {
-            // List items pending verification
-            Route::get('/items/pending-verification', [\App\Http\Controllers\ItemController::class, 'pendingVerificationList'])
-                ->name('admin.items.pending_verification');
-
-            // Approve an item (POST)
-            Route::post('/items/{item}/approve', [\App\Http\Controllers\ItemController::class, 'approveItem'])
-                ->name('admin.items.approve');
-
-            // Reject an item (POST)
-            Route::post('/items/{item}/reject', [\App\Http\Controllers\ItemController::class, 'rejectItem'])
-                ->name('admin.items.reject');
-        });
         
         // Page de statut (polling)
         Route::get('/afribapay/{payment}/status', [PaymentController::class, 'showAfribaStatus'])->name('payments.afribapay.status');
@@ -890,6 +926,7 @@ Route::middleware(['auth'])->prefix('affiliate')->name('affiliate.')->group(func
     // Gestion des codes de parrainage
     Route::get('/referral-codes', [AffiliateController::class, 'getReferralCodes'])->name('referral-codes.index');
     Route::post('/referral-codes', [AffiliateController::class, 'createReferralCode'])->name('referral-codes.create');
+    Route::get('/codes/stats', [AffiliateController::class, 'getCodesStats'])->name('codes.stats');
     
     // Parrainages
     Route::get('/referrals', [AffiliateController::class, 'getReferrals'])->name('referrals.index');

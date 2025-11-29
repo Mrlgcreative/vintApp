@@ -26,6 +26,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
 
+    <!-- Lazy Loading CSS -->
+    <link rel="stylesheet" href="{{ asset('css/lazy-loading.css') }}">
+
     <!-- Vinted Violet CSS -->
    
 
@@ -447,6 +450,21 @@
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Network Speed Adapter (doit être chargé en premier) -->
+    <script src="{{ asset('js/network-adapter.js') }}"></script>
+
+    <!-- Content Visibility Manager (charger en premier) -->
+    <script src="{{ asset('js/content-visibility.js') }}"></script>
+
+    <!-- Page Skeleton Loader -->
+    <script src="{{ asset('js/page-skeleton.js') }}"></script>
+
+    <!-- Navigation Skeleton Manager (pour les transitions entre pages) -->
+    <script src="{{ asset('js/navigation-skeleton.js') }}"></script>
+
+    <!-- Lazy Loading Manager -->
+    <script src="{{ asset('js/lazy-loading.js') }}" defer></script>
 
     <!-- PWA Manager -->
     <script src="{{ asset('js/pwa.js') }}?v={{ time() }}" defer></script>

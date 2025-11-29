@@ -1,8 +1,8 @@
+@extends('app')
 
+@section('title', 'Conditions d\'utilisation')
 
-<?php $__env->startSection('title', 'Conditions d\'utilisation'); ?>
-
-<?php $__env->startSection('content'); ?>
+@section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-700 dark:to-emerald-700">
@@ -17,8 +17,7 @@
                     Conditions d'utilisation
                 </h1>
                 <p class="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto">
-                    Dernière mise à jour : <?php echo e(date('d/m/Y')); ?>
-
+                    Dernière mise à jour : {{ date('d/m/Y') }}
                 </p>
             </div>
         </div>
@@ -292,7 +291,7 @@
                         </svg>
                         Envoyer un email
                     </a>
-                    <a href="<?php echo e(route('help.index')); ?>" class="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-lg text-white rounded-xl font-medium hover:bg-white/20 transition-colors border border-white/20">
+                    <a href="{{ route('help.index') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white/10 backdrop-blur-lg text-white rounded-xl font-medium hover:bg-white/20 transition-colors border border-white/20">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -304,13 +303,13 @@
 
         <!-- Footer Navigation -->
         <div class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 p-6 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl">
-            <a href="<?php echo e(route('privacy')); ?>" class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors">
+            <a href="{{ route('privacy') }}" class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 transition-colors">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                 </svg>
                 Politique de confidentialité
             </a>
-            <a href="<?php echo e(route('home')); ?>" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors shadow-lg shadow-green-600/20">
+            <a href="{{ route('home') }}" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-colors shadow-lg shadow-green-600/20">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
@@ -319,6 +318,4 @@
         </div>
     </div>
 </div>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/legal/terms.blade.php ENDPATH**/ ?>
+@endsection

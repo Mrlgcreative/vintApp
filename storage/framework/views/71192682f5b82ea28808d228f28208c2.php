@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 py-8" data-page-type="product-grid">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
         <div class="mb-8">
@@ -198,11 +198,11 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-<?php echo e($boostType?->color ?? 'primary'); ?>-400/10 to-transparent pointer-events-none z-0"></div>
                             <?php endif; ?>
                             
-                            <a href="<?php echo e(route('items.show', $item)); ?>" class="block">
+                            <a href="<?php echo e(route('items.show', $item)); ?>" class="block lazy-container">
                                 <?php if($item->images && count($item->images) > 0): ?>
-                                    <img src="<?php echo e(Storage::url($item->images[0])); ?>" 
-                                         <?php echo e($loop_index > 7 ? 'loading="lazy"' : ''); ?>
-
+                                    <img data-src="<?php echo e(Storage::url($item->images[0])); ?>" 
+                                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect fill='%23e5e7eb' width='300' height='200'/%3E%3C/svg%3E"
+                                         loading="lazy"
                                          class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 <?php echo e($isBoosted ? 'filter brightness-105' : ''); ?>" 
                                          alt="<?php echo e($item->name); ?>">
                                 <?php else: ?>

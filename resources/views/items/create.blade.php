@@ -595,6 +595,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check image validation results if images selected
         const input = document.getElementById('images');
+        if (!input || !input.files || input.files.length < 3) {
+            e.preventDefault();
+            showNotification('Veuillez fournir au minimum 3 images de bonne qualité', 'error');
+            return;
+        }
+        
         if (input && input.files && input.files.length > 0) {
             const results = window.imageValidationResults || [];
             // If results not yet filled, prevent submit and ask user to wait

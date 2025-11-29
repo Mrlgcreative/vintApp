@@ -26,6 +26,9 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
 
+    <!-- Lazy Loading CSS -->
+    <link rel="stylesheet" href="<?php echo e(asset('css/lazy-loading.css')); ?>">
+
     <!-- Vinted Violet CSS -->
    
 
@@ -475,6 +478,18 @@
 
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Content Visibility Manager (charger en premier) -->
+    <script src="<?php echo e(asset('js/content-visibility.js')); ?>"></script>
+
+    <!-- Page Skeleton Loader -->
+    <script src="<?php echo e(asset('js/page-skeleton.js')); ?>"></script>
+
+    <!-- Navigation Skeleton Manager (pour les transitions entre pages) -->
+    <script src="<?php echo e(asset('js/navigation-skeleton.js')); ?>"></script>
+
+    <!-- Lazy Loading Manager -->
+    <script src="<?php echo e(asset('js/lazy-loading.js')); ?>" defer></script>
 
     <!-- PWA Manager -->
     <script src="<?php echo e(asset('js/pwa.js')); ?>?v=<?php echo e(time()); ?>" defer></script>

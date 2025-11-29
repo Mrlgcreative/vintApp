@@ -217,6 +217,8 @@
 
 
 
+
+
 /* Dark Mode Variables - Applied when [data-theme="dark"] */
 [data-theme="dark"] {
   /* Inverser les couleurs de fond */
@@ -372,7 +374,7 @@
     --color-light: #f8fafc;
     --color-dark: #02275a;
     --color-accent: #4d2f92;
-    --color-created_at: 2025-11-28 17:53:03;
+    --color-created_at: 2025-11-28T17:53:03.716451Z;
     --color-custom: 1;
     
     /* Variables dérivées pour compatibilité */
@@ -485,6 +487,8 @@
     --font-primary: 'Figtree', sans-serif;
     --transition: all 0.3s ease;
 }
+
+
 
 
 

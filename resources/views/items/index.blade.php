@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 py-8" data-page-type="product-grid">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
         <div class="mb-8">
@@ -196,10 +196,11 @@
                                 <div class="absolute inset-0 bg-gradient-to-tr from-{{ $boostType?->color ?? 'primary' }}-400/10 to-transparent pointer-events-none z-0"></div>
                             @endif
                             
-                            <a href="{{ route('items.show', $item) }}" class="block">
+                            <a href="{{ route('items.show', $item) }}" class="block lazy-container">
                                 @if($item->images && count($item->images) > 0)
-                                    <img src="{{ Storage::url($item->images[0]) }}" 
-                                         {{ $loop_index > 7 ? 'loading="lazy"' : '' }}
+                                    <img data-src="{{ Storage::url($item->images[0]) }}" 
+                                         src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect fill='%23e5e7eb' width='300' height='200'/%3E%3C/svg%3E"
+                                         loading="lazy"
                                          class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 {{ $isBoosted ? 'filter brightness-105' : '' }}" 
                                          alt="{{ $item->name }}">
                                 @else

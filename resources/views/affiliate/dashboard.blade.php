@@ -2,6 +2,21 @@
 
 @section('content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
+<style>
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.animate-fade-in {
+    animation: fade-in 0.3s ease-out;
+}
+</style>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex flex-col lg:flex-row gap-6">
         <!-- Sidebar Navigation -->
@@ -49,7 +64,7 @@
                             <i class="fas fa-sync-alt mr-2"></i> Actualiser
                         </button>
                         <!-- Bouton de test pour les modales -->
-                        <button class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium" onclick="openModal('createCodeModal')">
+                        <button class="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium" onclick="window.openModal('createCodeModal')">
                             <i class="fas fa-plus mr-2"></i> Test Modal
                         </button>
                     </div>
@@ -219,7 +234,7 @@
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
                         <i class="fas fa-qr-code text-gray-600 dark:text-gray-300 mr-3"></i> Mes Codes de Parrainage
                     </h2>
-                    <button class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium" onclick="openModal('createCodeModal')">
+                    <button class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium" onclick="window.openModal('createCodeModal')">
                         <i class="fas fa-plus mr-2"></i> Nouveau Code
                     </button>
                 </div>
@@ -269,7 +284,7 @@
                                 <option value="inactive">Inactifs</option>
                                 <option value="expired">Expirés</option>
                             </select>
-                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors" onclick="refreshCodesList()">
+                            <button class="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-900 transition-colors" onclick="window.refreshCodesList()">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -332,113 +347,153 @@
             <h5 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
                 <i class="fas fa-plus mr-2"></i> Créer un Nouveau Code de Parrainage
             </h5>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors" onclick="closeModal('createCodeModal')">
+            <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors" onclick="window.closeModal('createCodeModal')">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
         <div class="p-6">
             <form id="createCodeForm">
-                <!-- Auto-generated title display -->
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Titre du code (généré automatiquement):</label>
-                    <div class="flex">
-                        <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" id="codeTitle" readonly>
-                        <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:bg-gray-800 transition-colors" type="button" onclick="generateCodeTitle()">
-                            <i class="fas fa-refresh"></i> Regénérer
-                        </button>
-                    </div>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Le titre sera automatiquement généré lors de la création</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-1">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description (optionnelle):</label>
-                            <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeDescription" rows="3" maxlength="500" placeholder="Décrivez votre code de parrainage..."></textarea>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Maximum 500 caractères</p>
-                        </div>
-                    </div>
-                    <div class="md:col-span-1">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type de code:</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeType" onchange="updateCodePreview()">
-                                <option value="general">Général</option>
-                                <option value="limited">Limité</option>
-                                <option value="premium">Premium</option>
-                                <option value="seasonal">Saisonnier</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Limite d'utilisation:</label>
-                            <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeMaxUses" min="1" max="10000" placeholder="Illimité">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Laissez vide pour illimité</p>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Points bonus pour le filleul:</label>
-                            <input type="number" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeBonusPoints" min="0" max="1000" step="10" placeholder="0">
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Points supplémentaires à l'inscription</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date d'expiration:</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeExpiry">
-                                <option value="">Pas d'expiration</option>
-                                <option value="7">7 jours</option>
-                                <option value="30">30 jours</option>
-                                <option value="60">60 jours</option>
-                                <option value="90">90 jours</option>
-                                <option value="365">1 an</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut:</label>
-                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" id="codeStatus">
-                                <option value="active">Actif</option>
-                                <option value="inactive">Inactif</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Code Preview -->
-                <div class="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
-                    <div class="mb-3">
-                        <h6 class="text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center">
-                            <i class="fas fa-eye mr-2"></i> Aperçu du Code
-                        </h6>
-                    </div>
-                    <div id="codePreview" class="text-center">
-                        <div class="bg-white dark:bg-gray-800 border-2 border-dashed border-blue-500 rounded-lg p-4">
-                            <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2" id="previewTitle">Code Parrainage #001</h5>
-                            <div class="text-xl font-mono font-bold text-blue-600 uppercase tracking-wider mb-2" id="previewCode">PARRAINS001</div>
-                            <div>
-                                <small class="text-gray-500 dark:text-gray-400" id="previewDetails">Général • Illimité • Permanent</small>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Formulaire -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-heading text-blue-500 mr-1"></i> Titre du code
+                            </label>
+                            <div class="flex gap-2">
+                                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                       id="codeTitle" 
+                                       placeholder="Ex: PARRAINS2024" 
+                                       maxlength="50"
+                                       oninput="window.updateCodePreview()">
+                                <button type="button" 
+                                        class="px-3 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all" 
+                                        onclick="window.generateCodeTitle()"
+                                        title="Générer automatiquement">
+                                    <i class="fas fa-magic"></i>
+                                </button>
                             </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-info-circle"></i> Le titre sera utilisé pour identifier votre code
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-align-left text-green-500 mr-1"></i> Description (optionnelle)
+                            </label>
+                            <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white" 
+                                      id="codeDescription" 
+                                      rows="3" 
+                                      maxlength="500" 
+                                      placeholder="Décrivez votre code de parrainage..."
+                                      oninput="window.updateCodePreview()"></textarea>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span id="descriptionCount">0</span>/500 caractères
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-tag text-purple-500 mr-1"></i> Type de code
+                            </label>
+                            <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
+                                    id="codeType"
+                                    onchange="window.updateCodePreview()">
+                                <option value="general">🌍 Général - Pour tous</option>
+                                <option value="limited">⏱️ Limité - Nombre d'utilisations restreint</option>
+                                <option value="premium">⭐ Premium - Bonus supplémentaires</option>
+                                <option value="seasonal">🎄 Saisonnier - Événement spécial</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-users text-orange-500 mr-1"></i> Limite d'utilisation
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
+                                   id="codeMaxUses" 
+                                   placeholder="Illimité si vide" 
+                                   min="1"
+                                   oninput="window.updateCodePreview()">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-info-circle"></i> Laissez vide pour un usage illimité
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-gift text-yellow-500 mr-1"></i> Points bonus (optionnel)
+                            </label>
+                            <input type="number" 
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
+                                   id="codeBonusPoints" 
+                                   placeholder="0" 
+                                   min="0"
+                                   oninput="window.updateCodePreview()">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-coins"></i> Points bonus pour les utilisateurs de ce code
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                <i class="fas fa-calendar-alt text-red-500 mr-1"></i> Date d'expiration (optionnelle)
+                            </label>
+                            <input type="date" 
+                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" 
+                                   id="codeExpiresAt"
+                                   oninput="window.updateCodePreview()">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <i class="fas fa-info-circle"></i> Laissez vide si le code n'expire pas
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Prévisualisation -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                            <i class="fas fa-eye text-indigo-500 mr-1"></i> Aperçu du Code
+                        </label>
+                        <div id="codePreview" class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 border-2 border-dashed border-blue-300 dark:border-blue-600 rounded-lg p-6 min-h-[400px]">
+                            <div class="text-center text-gray-400 dark:text-gray-500">
+                                <i class="fas fa-code text-4xl mb-3"></i>
+                                <p>Remplissez le formulaire pour voir l'aperçu</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                            <h6 class="font-semibold text-blue-900 dark:text-blue-200 mb-2 flex items-center">
+                                <i class="fas fa-lightbulb mr-2"></i> Conseils
+                            </h6>
+                            <ul class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
+                                <li><i class="fas fa-check-circle text-green-500 mr-1"></i> Utilisez un titre unique et mémorable</li>
+                                <li><i class="fas fa-check-circle text-green-500 mr-1"></i> Ajoutez une description pour expliquer l'usage</li>
+                                <li><i class="fas fa-check-circle text-green-500 mr-1"></i> Limitez les utilisations pour les codes spéciaux</li>
+                                <li><i class="fas fa-check-circle text-green-500 mr-1"></i> Les codes Premium offrent plus de points</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-        <div class="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50 dark:bg-gray-900">
-            <button type="button" class="px-4 py-2 bg-gray-300 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 transition-colors" onclick="closeModal('createCodeModal')">
-                <i class="fas fa-times mr-2"></i> Annuler
-            </button>
-            <button type="submit" form="createCodeForm" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i> Créer le Code
-            </button>
+        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <div class="text-sm text-gray-600 dark:text-gray-400">
+                <i class="fas fa-info-circle"></i> Votre code sera généré automatiquement
+            </div>
+            <div class="flex gap-3">
+                <button type="button" 
+                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors" 
+                        onclick="window.closeModal('createCodeModal')">
+                    <i class="fas fa-times mr-2"></i> Annuler
+                </button>
+                <button type="submit" 
+                        form="createCodeForm" 
+                        class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl">
+                    <i class="fas fa-plus mr-2"></i> Créer le Code
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -448,70 +503,89 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md">
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h5 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                <i class="fas fa-share-alt mr-2"></i> Partager mon Code de Parrainage
+                <i class="fas fa-share-alt mr-2"></i> Partager mon Code
             </h5>
-            <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors" onclick="closeModal('shareModal')">
+            <button type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors" onclick="window.closeModal('shareModal')">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        <div class="p-6">
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mon code de parrainage:</label>
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <i class="fas fa-code mr-1"></i> Code de parrainage
+                </label>
                 <div class="flex">
-                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" id="shareCode" readonly>
-                    <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:bg-gray-800 transition-colors" type="button" onclick="copyToClipboard('#shareCode')">
-                        <i class="fas fa-copy"></i> Copier
+                    <input type="text" 
+                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-900 dark:text-white" 
+                           id="shareCode" 
+                           readonly>
+                    <button class="px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" 
+                            type="button" 
+                            onclick="window.copyToClipboard('#shareCode')">
+                        <i class="fas fa-copy"></i>
                     </button>
                 </div>
             </div>
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Lien de parrainage:</label>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <i class="fas fa-link mr-1"></i> Lien de partage
+                </label>
                 <div class="flex">
-                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" id="shareUrl" readonly>
-                    <button class="px-4 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:bg-gray-800 transition-colors" type="button" onclick="copyToClipboard('#shareUrl')">
-                        <i class="fas fa-copy"></i> Copier
+                    <input type="text" 
+                           class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-900 dark:text-white text-sm" 
+                           id="shareUrl" 
+                           readonly>
+                    <button class="px-4 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-lg bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" 
+                            type="button" 
+                            onclick="window.copyToClipboard('#shareUrl')">
+                        <i class="fas fa-copy"></i>
                     </button>
                 </div>
             </div>
-            <div class="space-y-3">
-                <button class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center" onclick="shareOnFacebook()">
-                    <i class="fab fa-facebook mr-2"></i> Partager sur Facebook
-                </button>
-                <button class="w-full bg-blue-400 text-white py-2 px-4 rounded-lg hover:bg-blue-500 transition-colors flex items-center justify-center" onclick="shareOnTwitter()">
-                    <i class="fab fa-twitter mr-2"></i> Partager sur Twitter
-                </button>
-                <button class="w-full bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition-colors flex items-center justify-center" onclick="shareOnWhatsApp()">
-                    <i class="fab fa-whatsapp mr-2"></i> Partager sur WhatsApp
-                </button>
+            
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-3">
+                    <i class="fas fa-share-nodes mr-1"></i> Partager sur les réseaux sociaux
+                </label>
+                <div class="grid grid-cols-3 gap-3">
+                    <button type="button" 
+                            class="flex flex-col items-center justify-center p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            onclick="window.shareOnFacebook()">
+                        <i class="fab fa-facebook-f text-xl mb-1"></i>
+                        <span class="text-xs">Facebook</span>
+                    </button>
+                    <button type="button" 
+                            class="flex flex-col items-center justify-center p-3 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors"
+                            onclick="window.shareOnTwitter()">
+                        <i class="fab fa-twitter text-xl mb-1"></i>
+                        <span class="text-xs">Twitter</span>
+                    </button>
+                    <button type="button" 
+                            class="flex flex-col items-center justify-center p-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                            onclick="window.shareOnWhatsApp()">
+                        <i class="fab fa-whatsapp text-xl mb-1"></i>
+                        <span class="text-xs">WhatsApp</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
-<script src="{{ asset('js/affiliate-dashboard.js') }}"></script>
+<!-- Scripts pour le dashboard affilié -->
 <script>
-// Test de debug pour vérifier que les fonctions sont bien disponibles
-console.log('Scripts chargés');
-console.log('openModal function exists:', typeof openModal);
-console.log('closeModal function exists:', typeof closeModal);
-
-// Test direct du click
+// Compteur de caractères pour la description
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM chargé');
+    const descriptionField = document.getElementById('codeDescription');
+    const descriptionCount = document.getElementById('descriptionCount');
     
-    // Test direct des modales
-    const testButton = document.querySelector('[onclick*="openModal"]');
-    if (testButton) {
-        console.log('Bouton trouvé:', testButton);
+    if (descriptionField && descriptionCount) {
+        descriptionField.addEventListener('input', function() {
+            descriptionCount.textContent = this.value.length;
+        });
     }
-    
-    // Test des éléments de modal
-    const createModal = document.getElementById('createCodeModal');
-    const shareModal = document.getElementById('shareModal');
-    console.log('Modal createCodeModal trouvée:', !!createModal);
-    console.log('Modal shareModal trouvée:', !!shareModal);
 });
 </script>
-@endpush
+<script src="{{ asset('js/affiliate-dashboard.js') }}?v={{ now()->timestamp }}"></script>
+@endsection

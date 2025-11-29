@@ -58,7 +58,10 @@ class ColorPaletteService
         try {
             $customPalette = \App\Models\Setting::where('key', "custom_palette_{$paletteName}")->first();
             if ($customPalette && $customPalette->value) {
-                $paletteData = json_decode($customPalette->value, true);
+                // Le modèle Setting caste déjà la valeur en tableau si type='json' ou 'array'
+                $paletteData = is_array($customPalette->value) 
+                    ? $customPalette->value 
+                    : json_decode($customPalette->value, true);
                 
                 // Mettre en cache pour les prochaines utilisations
                 $customPalettes[$paletteName] = $paletteData;

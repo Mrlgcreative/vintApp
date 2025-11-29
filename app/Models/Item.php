@@ -30,6 +30,11 @@ class Item extends Model
         'authenticity_verified',
         'authenticity_verified_at',
         'authenticity_badge_type',
+        'verification_status',
+        'verification_score',
+        'verification_details',
+        'verified_at',
+        'verified_by',
     ];
 
     protected $casts = [
@@ -39,6 +44,9 @@ class Item extends Model
         'authenticity_requested' => 'boolean',
         'authenticity_verified' => 'boolean',
         'authenticity_verified_at' => 'datetime',
+        'verification_details' => 'array',
+        'verification_score' => 'decimal:2',
+        'verified_at' => 'datetime',
     ];
 
     /**

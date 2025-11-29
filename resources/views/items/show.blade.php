@@ -1,7 +1,7 @@
 ﻿@extends('app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30" data-page-type="product-detail">
     <div class="container mx-auto px-4 py-8 lg:py-16">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">
@@ -54,7 +54,9 @@
                 <div class="relative bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-primary-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                     @if($item->images && count($item->images) > 0)
                         <img id="mainProductImg" 
-                             src="{{ Storage::url($item->images[0]) }}" 
+                             data-src="{{ Storage::url($item->images[0]) }}" 
+                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%23e5e7eb' width='800' height='600'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='20'%3EChargement...%3C/text%3E%3C/svg%3E"
+                             loading="eager"
                              class="w-full h-64 sm:h-80 lg:h-[400px] xl:h-[500px] object-contain rounded-xl lg:rounded-2xl transition-all duration-300" 
                              alt="{{ $item->name }}">
                         <div class="absolute inset-4 lg:inset-6 bg-black/70 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300 cursor-zoom-in">

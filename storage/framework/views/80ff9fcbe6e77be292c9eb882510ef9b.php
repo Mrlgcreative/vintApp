@@ -17,6 +17,9 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     
+    <!-- Lazy Loading CSS -->
+    <link href="<?php echo e(asset('css/lazy-loading.css')); ?>" rel="stylesheet">
+    
     <!-- Custom Admin Styles -->
     <link href="<?php echo e(asset('css/admin-components.css')); ?>" rel="stylesheet">
     
@@ -290,6 +293,22 @@
                             <span>Commandes</span>
                         </a>
 
+                        <!-- 🆕 Menu Vérification Items IA -->
+                        <a href="<?php echo e(route('admin.items.pending_verification')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.items.pending_verification')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                            <i class="fas fa-search-plus w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Vérification IA</span>
+                            <?php
+                                $pendingItemsCount = \App\Models\Item::where('verification_status', 'pending')->count();
+                            ?>
+                            <?php if($pendingItemsCount > 0): ?>
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-purple-500 rounded-full animate-pulse">
+                                    <?php echo e($pendingItemsCount); ?>
+
+                                </span>
+                            <?php endif; ?>
+                        </a>
+
                         <!-- 🆕 Menu Remboursements -->
                         <a href="<?php echo e(route('admin.refunds.index')); ?>" 
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.refunds.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
@@ -557,7 +576,7 @@
             </div>
 
             <!-- Contenu principal -->
-            <div class="flex-1 p-4 lg:p-8">
+            <div class="flex-1 p-4 lg:p-8" data-page-type="dashboard">
                 <?php echo $__env->yieldContent('content'); ?>
             </div>
         </main>
@@ -839,6 +858,13 @@
 
     <!-- Admin Utils JavaScript -->
     <script src="<?php echo e(asset('js/admin-utils.js')); ?>"></script>
+
+    <!-- Lazy Loading & PWA Scripts -->
+    <script src="<?php echo e(asset('js/content-visibility.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/page-skeleton.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/admin-skeleton-config.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/navigation-skeleton.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/lazy-loading.js')); ?>" defer></script>
 
     <!-- Performance Monitor (Development only) -->
     <?php if(config('app.env') === 'local' || config('app.debug')): ?>

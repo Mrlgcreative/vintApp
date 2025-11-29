@@ -16,6 +16,54 @@ class AffiliateDashboard {
         this.loadDashboard();
     }
 
+    /**
+     * Helper pour gérer les réponses fetch avec validation JSON
+     */
+    async fetchJSON(url, options = {}) {
+        try {
+            // Ajouter les headers nécessaires par défaut
+            const defaultHeaders = {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            };
+
+            // Fusionner avec les headers existants
+            options.headers = {
+                ...defaultHeaders,
+                ...options.headers
+            };
+
+            const response = await fetch(url, options);
+
+            // Vérifier le statut HTTP
+            if (!response.ok) {
+                if (response.status === 401 || response.status === 403) {
+                    this.showAlert('Session expirée. Veuillez vous reconnecter.', 'error');
+                    setTimeout(() => window.location.href = '/login', 2000);
+                    throw new Error('Session expirée');
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Vérifier le Content-Type
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const text = await response.text();
+                console.error('Réponse non-JSON reçue:', text.substring(0, 200));
+                throw new Error('La réponse n\'est pas au format JSON. Vérifiez que vous êtes authentifié.');
+            }
+
+            // Parser le JSON
+            return await response.json();
+        } catch (error) {
+            if (error.message === 'Session expirée') {
+                throw error;
+            }
+            console.error('Erreur fetch:', error);
+            throw error;
+        }
+    }
+
     setupModalEvents() {
         // Close modal on backdrop click
         document.addEventListener('click', (e) => {
@@ -523,10 +571,12 @@ class AffiliateDashboard {
         }
 
         try {
-            const response = await fetch('/api/affiliate/convert-points', {
+            const data = await this.fetchJSON('/affiliate/points/generate-discount', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({ 
@@ -534,8 +584,6 @@ class AffiliateDashboard {
                     expires_days: parseInt(expiresDays) 
                 })
             });
-
-            const data = await response.json();
 
             if (data.success) {
                 this.showAlert(
@@ -581,84 +629,200 @@ class AffiliateDashboard {
 
     updateCodePreview() {
         const codeType = document.getElementById('codeType')?.value || 'general';
-        const title = document.getElementById('codeTitle')?.value || 'Code Parrainage';
+        const title = document.getElementById('codeTitle')?.value || '';
         const description = document.getElementById('codeDescription')?.value || '';
         const maxUses = document.getElementById('codeMaxUses')?.value;
         const bonusPoints = document.getElementById('codeBonusPoints')?.value || '0';
-        const expiry = document.getElementById('codeExpiry')?.value;
+        const expiresAt = document.getElementById('codeExpiresAt')?.value;
+        
+        const previewContainer = document.getElementById('codePreview');
+        if (!previewContainer) return;
+        
+        // Si aucun champ n'est rempli, afficher le message par défaut
+        if (!title && !description && !maxUses && !bonusPoints && !expiresAt) {
+            previewContainer.innerHTML = `
+                <div class="text-center text-gray-400 dark:text-gray-500">
+                    <i class="fas fa-code text-4xl mb-3"></i>
+                    <p>Remplissez le formulaire pour voir l'aperçu</p>
+                </div>
+            `;
+            return;
+        }
         
         // Générer un code d'aperçu
         const codePrefix = codeType.toUpperCase().substr(0, 3);
         const randomCode = Math.floor(Math.random() * 9000) + 1000;
         const previewCode = `${codePrefix}${randomCode}`;
         
-        // Mettre à jour l'aperçu
-        document.getElementById('previewTitle').textContent = title;
-        document.getElementById('previewCode').textContent = previewCode;
-        
         // Construire les détails
         const typeLabels = {
-            'general': 'Général',
-            'limited': 'Limité',
-            'premium': 'Premium',
-            'seasonal': 'Saisonnier'
+            'general': '🌍 Général',
+            'limited': '⏱️ Limité',
+            'premium': '⭐ Premium',
+            'seasonal': '🎄 Saisonnier'
         };
         
-        let details = typeLabels[codeType];
-        details += maxUses ? ` • Max ${maxUses} utilisations` : ' • Illimité';
+        const typeColors = {
+            'general': 'bg-blue-500',
+            'limited': 'bg-orange-500',
+            'premium': 'bg-purple-500',
+            'seasonal': 'bg-green-500'
+        };
         
-        if (expiry) {
-            const expiryLabel = expiry === '7' ? '7 jours' :
-                              expiry === '30' ? '1 mois' :
-                              expiry === '60' ? '2 mois' :
-                              expiry === '90' ? '3 mois' :
-                              expiry === '365' ? '1 an' : `${expiry} jours`;
-            details += ` • Expire dans ${expiryLabel}`;
+        let detailsHTML = '';
+        
+        if (maxUses) {
+            detailsHTML += `
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-users text-orange-500 mr-2"></i>
+                    <span>Max ${maxUses} utilisations</span>
+                </div>
+            `;
         } else {
-            details += ' • Permanent';
+            detailsHTML += `
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-infinity text-blue-500 mr-2"></i>
+                    <span>Utilisations illimitées</span>
+                </div>
+            `;
+        }
+        
+        if (expiresAt) {
+            const expiryDate = new Date(expiresAt);
+            const formattedDate = expiryDate.toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            detailsHTML += `
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-calendar-alt text-red-500 mr-2"></i>
+                    <span>Expire le ${formattedDate}</span>
+                </div>
+            `;
+        } else {
+            detailsHTML += `
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>Permanent</span>
+                </div>
+            `;
         }
         
         if (bonusPoints && bonusPoints !== '0') {
-            details += ` • +${bonusPoints} pts bonus`;
+            detailsHTML += `
+                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-gift text-yellow-500 mr-2"></i>
+                    <span>+${bonusPoints} points bonus</span>
+                </div>
+            `;
         }
         
-        document.getElementById('previewDetails').textContent = details;
-        
-        // Ajouter une classe de type pour le style
-        const previewCard = document.querySelector('.code-display');
-        if (previewCard) {
-            previewCard.className = `code-display p-3 border rounded bg-white code-type-${codeType}`;
-        }
+        // Générer l'aperçu complet
+        previewContainer.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border-2 ${typeColors[codeType]} border-opacity-50">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="px-3 py-1 ${typeColors[codeType]} text-white rounded-full text-xs font-semibold">
+                        ${typeLabels[codeType]}
+                    </span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-clock mr-1"></i> Créé maintenant
+                    </span>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                    ${title || 'Titre du code'}
+                </h3>
+                
+                <div class="bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-600 rounded-lg p-4 mb-4 text-center">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Code généré automatiquement</p>
+                    <p class="text-2xl font-mono font-bold text-gray-900 dark:text-white tracking-wider">
+                        ${previewCode}
+                    </p>
+                </div>
+                
+                ${description ? `
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-4 italic">
+                        "${description}"
+                    </p>
+                ` : ''}
+                
+                <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-gray-600">
+                    ${detailsHTML}
+                </div>
+                
+                <div class="mt-4 flex items-center justify-center">
+                    <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-share-alt mr-1"></i>
+                        <span>Partageable sur tous les réseaux</span>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 
     async createReferralCode() {
+        const title = document.getElementById('codeTitle').value;
+        const expiresAt = document.getElementById('codeExpiresAt').value;
+        
+        if (!title || title.trim() === '') {
+            this.showAlert('Veuillez saisir un titre pour le code', 'warning');
+            return;
+        }
+        
         const formData = {
-            title: document.getElementById('codeTitle').value,
+            title: title,
             description: document.getElementById('codeDescription').value,
-            type: document.getElementById('codeType').value,
             max_uses: document.getElementById('codeMaxUses').value || null,
             bonus_points: document.getElementById('codeBonusPoints').value || 0,
-            expires_days: document.getElementById('codeExpiry').value || null,
-            status: document.getElementById('codeStatus').value
+            expires_at: expiresAt || null,
+            is_active: true
         };
 
+        // Désactiver le bouton et afficher un loader
+        const submitBtn = document.querySelector('#createCodeForm button[type="submit"], button[form="createCodeForm"]');
+        const originalBtnContent = submitBtn?.innerHTML;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Création en cours...';
+        }
+
         try {
-            const response = await fetch('/api/affiliate/referral-codes', {
+            const data = await this.fetchJSON('/affiliate/referral-codes', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify(formData)
             });
 
-            const data = await response.json();
-
             if (data.success) {
                 this.showAlert(`Code créé avec succès: <strong>${data.data.code}</strong>`, 'success');
+                
+                // Réinitialiser le formulaire
                 document.getElementById('createCodeForm').reset();
                 
-                // Fermer le modal avec Tailwind
+                // Réinitialiser la prévisualisation
+                const previewContainer = document.getElementById('codePreview');
+                if (previewContainer) {
+                    previewContainer.innerHTML = `
+                        <div class="text-center text-gray-400 dark:text-gray-500">
+                            <i class="fas fa-code text-4xl mb-3"></i>
+                            <p>Remplissez le formulaire pour voir l'aperçu</p>
+                        </div>
+                    `;
+                }
+                
+                // Réinitialiser le compteur de caractères
+                const descriptionCount = document.getElementById('descriptionCount');
+                if (descriptionCount) {
+                    descriptionCount.textContent = '0';
+                }
+                
+                // Fermer le modal
                 this.closeModal('createCodeModal');
                 
                 // Recharger les codes et les statistiques
@@ -669,14 +833,21 @@ class AffiliateDashboard {
             }
         } catch (error) {
             console.error('Erreur création code:', error);
-            this.showAlert('Erreur lors de la création', 'error');
+            if (error.message !== 'Session expirée') {
+                this.showAlert('Erreur lors de la création du code', 'error');
+            }
+        } finally {
+            // Réactiver le bouton
+            if (submitBtn && originalBtnContent) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
+            }
         }
     }
 
     async updateCodesStats() {
         try {
-            const response = await fetch('/api/affiliate/codes/stats');
-            const data = await response.json();
+            const data = await this.fetchJSON('/affiliate/referral-codes');
 
             if (data.success) {
                 const stats = data.data;
@@ -688,6 +859,7 @@ class AffiliateDashboard {
             }
         } catch (error) {
             console.error('Erreur stats codes:', error);
+            // Silencieux pour les stats
         }
     }
 
@@ -696,14 +868,14 @@ class AffiliateDashboard {
         const period = document.getElementById('historyPeriod')?.value || 'all';
 
         try {
-            const response = await fetch(`/affiliate/points/history?type=${type}&period=${period}`);
-            const data = await response.json();
+            const data = await this.fetchJSON(`/affiliate/points/history?type=${type}&period=${period}`);
 
             if (data.success) {
                 this.renderPointsHistory(data.data.transactions);
             }
         } catch (error) {
             console.error('Erreur historique points:', error);
+            this.showAlert('Impossible de charger l\'historique', 'error');
         }
     }
 
@@ -740,14 +912,14 @@ class AffiliateDashboard {
 
     async loadReferrals() {
         try {
-            const response = await fetch('/api/affiliate/referrals');
-            const data = await response.json();
+            const data = await this.fetchJSON('/affiliate/referrals');
 
             if (data.success) {
                 this.renderReferrals(data.data);
             }
         } catch (error) {
             console.error('Erreur chargement parrainages:', error);
+            this.showAlert('Impossible de charger les parrainages', 'error');
         }
     }
 
@@ -783,18 +955,20 @@ class AffiliateDashboard {
         const statusFilter = document.getElementById('codeStatusFilter')?.value || 'all';
         
         try {
-            const url = statusFilter === 'all' ? '/api/affiliate/referral-codes' : 
-                       `/api/affiliate/referral-codes?status=${statusFilter}`;
+            const url = statusFilter === 'all' ? '/affiliate/referral-codes' : 
+                       `/affiliate/referral-codes?status=${statusFilter}`;
             
-            const response = await fetch(url);
-            const data = await response.json();
+            const data = await this.fetchJSON(url);
 
             if (data.success) {
                 this.renderReferralCodes(data.data);
                 this.updateCodesStats();
+            } else {
+                this.showAlert(data.message || 'Erreur lors du chargement des codes', 'error');
             }
         } catch (error) {
             console.error('Erreur chargement codes:', error);
+            this.showAlert('Impossible de charger les codes de parrainage', 'error');
         }
     }
 
@@ -814,89 +988,105 @@ class AffiliateDashboard {
         }
 
         const codesHtml = codes.map(c => {
-            const typeColor = {
-                'general': 'primary',
-                'limited': 'warning',
-                'premium': 'info',
-                'seasonal': 'success'
-            }[c.type] || 'secondary';
-
-            const statusColor = {
-                'active': 'success',
-                'inactive': 'secondary',
-                'expired': 'danger'
-            }[c.status] || 'secondary';
-
+            // Déterminer le statut basé sur is_active et expires_at
+            let status = 'inactive';
+            let statusLabel = 'Inactif';
+            let statusColor = 'bg-gray-400';
+            
+            if (c.is_active) {
+                if (c.expires_at && new Date(c.expires_at) < new Date()) {
+                    status = 'expired';
+                    statusLabel = 'Expiré';
+                    statusColor = 'bg-red-500';
+                } else {
+                    status = 'active';
+                    statusLabel = 'Actif';
+                    statusColor = 'bg-green-500';
+                }
+            }
+            
             return `
-                <div class="card code-card mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <div>
-                                <h5 class="card-title mb-1">${c.title}</h5>
-                                <span class="badge bg-${typeColor} me-2">${c.type.charAt(0).toUpperCase() + c.type.slice(1)}</span>
-                                <span class="badge bg-${statusColor}">${c.status.charAt(0).toUpperCase() + c.status.slice(1)}</span>
-                            </div>
-                            <div class="code-actions">
-                                <button class="btn btn-sm btn-outline-primary" onclick="copyToClipboard('${c.code}')" title="Copier le code">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-info" onclick="shareCode('${c.code}', '${c.share_url}')" title="Partager">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" onclick="editCode('${c.id}')" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </button>
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-4 hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${c.title || 'Code sans titre'}</h5>
+                            <div class="flex gap-2 mb-2">
+                                <span class="px-3 py-1 ${statusColor} text-white rounded-full text-xs font-semibold">
+                                    ${statusLabel}
+                                </span>
                             </div>
                         </div>
-                        
+                        <div class="flex gap-2">
+                            <button class="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors" 
+                                    onclick="window.copyToClipboard('#code-${c.id}')" 
+                                    title="Copier le code">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            <button class="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors" 
+                                    onclick="window.shareCode('${c.code}', '${c.share_url || ''}')" 
+                                    title="Partager">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <strong class="text-sm text-gray-600 dark:text-gray-400">Code:</strong>
+                            <code id="code-${c.id}" class="text-lg font-mono font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded">${c.code}</code>
+                        </div>
+                        ${c.description ? `<p class="text-sm text-gray-600 dark:text-gray-300 italic">"${c.description}"</p>` : ''}
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                        <div class="text-center">
+                            <div class="flex items-center justify-center text-blue-600 dark:text-blue-400 mb-1">
+                                <i class="fas fa-users mr-1"></i>
+                            </div>
+                            <div class="text-lg font-bold text-gray-900 dark:text-white">
+                                ${c.current_uses || 0}${c.max_uses ? `/${c.max_uses}` : ''}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Utilisations</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="flex items-center justify-center text-green-600 dark:text-green-400 mb-1">
+                                <i class="fas fa-handshake mr-1"></i>
+                            </div>
+                            <div class="text-lg font-bold text-gray-900 dark:text-white">
+                                ${c.stats?.completed_referrals || 0}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Parrainages</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="flex items-center justify-center text-yellow-600 dark:text-yellow-400 mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                            </div>
+                            <div class="text-lg font-bold text-gray-900 dark:text-white">
+                                ${c.stats?.total_points_generated || 0}
+                            </div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Points</div>
+                        </div>
+                    </div>
+                    
+                    ${c.bonus_points > 0 ? `
                         <div class="mb-2">
-                            <div class="d-flex align-items-center mb-1">
-                                <strong>Code:</strong>
-                                <code class="fs-5 ms-2 me-2">${c.code}</code>
-                            </div>
-                            ${c.description ? `<p class="text-muted mb-2">${c.description}</p>` : ''}
+                            <span class="inline-flex items-center text-sm text-green-600 dark:text-green-400">
+                                <i class="fas fa-gift mr-1"></i> +${c.bonus_points} points bonus pour les filleuls
+                            </span>
                         </div>
-                        
-                        <div class="code-stats mb-2">
-                            <div class="code-stat">
-                                <i class="fas fa-users text-primary"></i>
-                                <strong>${c.stats.total_uses}</strong>${c.stats.max_uses ? `/${c.stats.max_uses}` : ''} utilisations
-                            </div>
-                            <div class="code-stat">
-                                <i class="fas fa-handshake text-success"></i>
-                                <strong>${c.stats.completed_referrals}</strong> parrainages
-                            </div>
-                            <div class="code-stat">
-                                <i class="fas fa-star text-warning"></i>
-                                <strong>${c.stats.total_points_generated}</strong> points générés
-                            </div>
+                    ` : ''}
+                    
+                    ${c.expires_at ? `
+                        <div class="mb-2">
+                            <span class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-calendar-alt mr-1"></i> Expire le ${new Date(c.expires_at).toLocaleDateString('fr-FR')}
+                            </span>
                         </div>
-                        
-                        ${c.bonus_points > 0 ? `
-                            <div class="mb-2">
-                                <small class="text-success">
-                                    <i class="fas fa-gift"></i> +${c.bonus_points} points bonus pour les filleuls
-                                </small>
-                            </div>
-                        ` : ''}
-                        
-                        ${c.expires_at ? `
-                            <div class="mb-2">
-                                <small class="text-muted">
-                                    <i class="fas fa-clock"></i> Expire le ${new Date(c.expires_at).toLocaleDateString('fr-FR')}
-                                </small>
-                            </div>
-                        ` : ''}
-                        
-                        <div class="mt-3">
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-${typeColor}" 
-                                     style="width: ${c.stats.max_uses ? (c.stats.total_uses / c.stats.max_uses * 100) : 100}%">
-                                </div>
-                            </div>
-                            <small class="text-muted">
-                                ${c.stats.max_uses ? `${Math.round(c.stats.total_uses / c.stats.max_uses * 100)}% utilisé` : 'Utilisations illimitées'}
-                            </small>
+                    ` : ''}
+                    
+                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-1"></i> Créé le ${new Date(c.created_at).toLocaleDateString('fr-FR')}
                         </div>
                     </div>
                 </div>
@@ -908,14 +1098,14 @@ class AffiliateDashboard {
 
     async loadRedemptions() {
         try {
-            const response = await fetch('/api/affiliate/redemptions');
-            const data = await response.json();
+            const data = await this.fetchJSON('/affiliate/redemptions');
 
             if (data.success) {
                 this.renderRedemptions(data.data);
             }
         } catch (error) {
             console.error('Erreur chargement rachats:', error);
+            this.showAlert('Impossible de charger les rachats', 'error');
         }
     }
 
@@ -954,14 +1144,14 @@ class AffiliateDashboard {
 
     async loadLeaderboard() {
         try {
-            const response = await fetch('/api/affiliate/referrals'); // Leaderboard via referrals
-            const data = await response.json();
+            const data = await this.fetchJSON('/affiliate/leaderboard');
 
             if (data.success) {
                 this.renderLeaderboard(data.data);
             }
         } catch (error) {
             console.error('Erreur chargement classement:', error);
+            this.showAlert('Impossible de charger le classement', 'error');
         }
     }
 
@@ -1116,7 +1306,7 @@ class AffiliateDashboard {
 }
 
 // Fonctions globales pour les événements
-function openModal(modalId) {
+window.openModal = function openModal(modalId) {
     console.log('openModal appelée avec:', modalId);
     if (window.affiliateDashboard) {
         window.affiliateDashboard.openModal(modalId);
@@ -1131,7 +1321,7 @@ function openModal(modalId) {
     }
 }
 
-function closeModal(modalId) {
+window.closeModal = function closeModal(modalId) {
     console.log('closeModal appelée avec:', modalId);
     if (window.affiliateDashboard) {
         window.affiliateDashboard.closeModal(modalId);
@@ -1146,32 +1336,39 @@ function closeModal(modalId) {
     }
 }
 
-function copyToClipboard(text) {
-    const textToCopy = typeof text === 'string' && text.startsWith('#') ? 
-        document.querySelector(text).value : text;
+window.copyToClipboard = function copyToClipboard(text) {
+    let textToCopy = text;
+    
+    if (typeof text === 'string' && text.startsWith('#')) {
+        const element = document.querySelector(text);
+        if (element) {
+            textToCopy = element.value || element.textContent || element.innerText;
+        }
+    }
     
     navigator.clipboard.writeText(textToCopy).then(() => {
-        // Créer une notification temporaire
+        // Créer une notification temporaire avec Tailwind
         const notification = document.createElement('div');
-        notification.className = 'position-fixed top-50 start-50 translate-middle alert alert-success';
-        notification.style.zIndex = '9999';
-        notification.textContent = 'Copié dans le presse-papiers !';
+        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in';
+        notification.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Copié dans le presse-papiers !';
         
         document.body.appendChild(notification);
         
         setTimeout(() => {
             notification.remove();
         }, 2000);
+    }).catch(err => {
+        console.error('Erreur copie:', err);
     });
 }
 
-function shareOnFacebook() {
+window.shareOnFacebook = function shareOnFacebook() {
     const url = document.getElementById('shareUrl').value;
     const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
     window.open(shareUrl, '_blank', 'width=600,height=400');
 }
 
-function shareOnTwitter() {
+window.shareOnTwitter = function shareOnTwitter() {
     const code = document.getElementById('shareCode').value;
     const text = `Rejoignez VintApp avec mon code de parrainage ${code} et gagnez des points !`;
     const url = document.getElementById('shareUrl').value;
@@ -1179,7 +1376,7 @@ function shareOnTwitter() {
     window.open(shareUrl, '_blank', 'width=600,height=400');
 }
 
-function shareOnWhatsApp() {
+window.shareOnWhatsApp = function shareOnWhatsApp() {
     const code = document.getElementById('shareCode').value;
     const url = document.getElementById('shareUrl').value;
     const text = `🎉 Rejoignez VintApp avec mon code de parrainage *${code}* et gagnez des points ! ${url}`;
@@ -1187,12 +1384,27 @@ function shareOnWhatsApp() {
     window.open(shareUrl, '_blank');
 }
 
-function shareCode(code, url) {
+window.shareCode = function shareCode(code, url) {
     document.getElementById('shareCode').value = code;
     document.getElementById('shareUrl').value = url;
-    
+    window.openModal('shareModal');
+}
+
+window.refreshCodesList = function refreshCodesList() {
     if (window.affiliateDashboard) {
-        window.affiliateDashboard.openModal('shareModal');
+        window.affiliateDashboard.loadReferralCodes();
+    }
+}
+
+window.generateCodeTitle = function generateCodeTitle() {
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const title = `PARRAINS${randomNum}`;
+    document.getElementById('codeTitle').value = title;
+}
+
+window.updateCodePreview = function updateCodePreview() {
+    if (window.affiliateDashboard) {
+        window.affiliateDashboard.updateCodePreview();
     }
 }
 

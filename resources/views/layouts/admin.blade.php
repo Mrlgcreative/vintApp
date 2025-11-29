@@ -17,6 +17,9 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     
+    <!-- Lazy Loading CSS -->
+    <link href="{{ asset('css/lazy-loading.css') }}" rel="stylesheet">
+    
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/admin-components.css') }}" rel="stylesheet">
     
@@ -270,6 +273,21 @@
                            class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
                             <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Commandes</span>
+                        </a>
+
+                        <!-- 🆕 Menu Vérification Items IA -->
+                        <a href="{{ route('admin.items.pending_verification') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.items.pending_verification')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-search-plus w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Vérification IA</span>
+                            @php
+                                $pendingItemsCount = \App\Models\Item::where('verification_status', 'pending')->count();
+                            @endphp
+                            @if($pendingItemsCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-purple-500 rounded-full animate-pulse">
+                                    {{ $pendingItemsCount }}
+                                </span>
+                            @endif
                         </a>
 
                         <!-- 🆕 Menu Remboursements -->
@@ -534,7 +552,7 @@
             </div>
 
             <!-- Contenu principal -->
-            <div class="flex-1 p-4 lg:p-8">
+            <div class="flex-1 p-4 lg:p-8" data-page-type="dashboard">
                 @yield('content')
             </div>
         </main>
@@ -814,8 +832,21 @@
         }
     </script>
 
+    <!-- Network Speed Adapter (doit être chargé en premier) -->
+    <script src="{{ asset('js/network-adapter.js') }}"></script>
+
+    <!-- Network Speed Adapter (doit être chargé en premier) -->
+    <script src="{{ asset('js/network-adapter.js') }}"></script>
+
     <!-- Admin Utils JavaScript -->
     <script src="{{ asset('js/admin-utils.js') }}"></script>
+
+    <!-- Lazy Loading & PWA Scripts -->
+    <script src="{{ asset('js/content-visibility.js') }}"></script>
+    <script src="{{ asset('js/page-skeleton.js') }}"></script>
+    <script src="{{ asset('js/admin-skeleton-config.js') }}"></script>
+    <script src="{{ asset('js/navigation-skeleton.js') }}"></script>
+    <script src="{{ asset('js/lazy-loading.js') }}" defer></script>
 
     <!-- Performance Monitor (Development only) -->
     @if(config('app.env') === 'local' || config('app.debug'))

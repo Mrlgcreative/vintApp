@@ -74,7 +74,8 @@ class AffiliateController extends Controller
             'description' => 'nullable|string|max:500',
             'max_uses' => 'nullable|integer|min:1|max:10000',
             'bonus_points' => 'nullable|numeric|min:0|max:1000',
-            'expires_at' => 'nullable|date|after:now'
+            'expires_at' => 'nullable|date|after:now',
+            'is_active' => 'nullable|boolean'
         ]);
 
         if ($validator->fails()) {
@@ -153,6 +154,46 @@ class AffiliateController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors du chargement des codes',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Statistiques des codes de parrainage
+     */
+    public function getCodesStats(): JsonResponse
+    {
+        try {
+            /** @var User $user */
+            $user = Auth::user();
+            
+            $codes = $user->referralCodes;
+            $totalCodes = $codes->count();
+            $activeCodes = $codes->where('is_active', true)->count();
+            $totalUses = $codes->sum(function($code) {
+                return $code->referrals()->count();
+            });
+            
+            // Trouver le code le plus performant
+            $bestPerforming = $codes->sortByDesc(function($code) {
+                return $code->referrals()->count();
+            })->first();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'total_codes' => $totalCodes,
+                    'active_codes' => $activeCodes,
+                    'total_uses' => $totalUses,
+                    'best_performing' => $bestPerforming ? $bestPerforming->code : '-'
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du chargement des statistiques',
                 'error' => $e->getMessage()
             ], 500);
         }

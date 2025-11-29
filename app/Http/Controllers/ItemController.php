@@ -16,16 +16,19 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\CacheService;
 use App\Services\MonitoringService;
+use App\Services\ItemVerificationService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
     protected $cacheService;
+    protected $verificationService;
 
-    public function __construct(CacheService $cacheService)
+    public function __construct(CacheService $cacheService, ItemVerificationService $verificationService)
     {
         $this->cacheService = $cacheService;
+        $this->verificationService = $verificationService;
     }
     /**
      * Display a listing of the resource.
@@ -150,7 +153,11 @@ class ItemController extends Controller
         $monitoring = app(MonitoringService::class);
         
         try {
-            // Validation déjà effectuée par StoreItemRequest
+            // Validation des images (minimum 3 requises)
+            if (!$request->hasFile('images') || count($request->file('images')) < 3) {
+                return back()->withInput()
+                    ->with('error', 'Veuillez fournir au minimum 3 images de bonne qualité pour votre article.');
+            }
 
             $item = new Item();
         $item->user_id = Auth::id();
@@ -203,26 +210,41 @@ class ItemController extends Controller
             $item->images = $images;
         }
 
-        // Avant d'enregistrer définitivement, vérifier les images automatiquement
-        if ($item->images && is_array($item->images)) {
-            $verification = $this->verifyImagesConformity($item->images);
-            if ($verification['pass']) {
+        // Avant d'enregistrer définitivement, vérifier les images automatiquement avec le nouveau service
+        if ($item->images && is_array($item->images) && count($item->images) >= 3) {
+            // Récupérer les noms de catégorie et marque pour la vérification
+            $category = Category::find($item->category_id);
+            $brand = Brand::find($item->brand_id);
+            
+            $verification = $this->verificationService->verifyItem(
+                $item->images,
+                $item->name,
+                $item->description ?? '',
+                $brand->name ?? null,
+                $category->name ?? null
+            );
+            
+            // Appliquer le résultat de la vérification
+            $item->verification_status = $verification['status'];
+            $item->verification_score = $verification['score'];
+            $item->verification_details = $verification['details'];
+            $item->verified_at = now();
+            
+            // Ajuster le statut de publication en fonction de la vérification
+            if ($verification['status'] === 'approved') {
                 $item->status = 'active';
-                // Nettoyer les rapports de vérification précédents
-                $item->image_verification_report = null;
-                if (is_array($item->specifications) && isset($item->specifications['image_verification'])) {
-                    unset($item->specifications['image_verification']);
-                }
-            } else {
-                // Marquer pour vérification manuelle si une ou plusieurs images semblent suspectes
+            } elseif ($verification['status'] === 'pending') {
                 $item->status = 'pending_verification';
-                // Stocker un résumé des problèmes détectés dans les specifications pour suivi (non bloquant)
-                $specs = is_array($item->specifications) ? $item->specifications : [];
-                $specs['image_verification'] = $verification['issues'];
-                $item->specifications = $specs;
-                // Stocker le rapport structuré dans la colonne JSON dédiée
-                $item->image_verification_report = $verification;
+            } else {
+                $item->status = 'inactive';
             }
+        } else {
+            // Moins de 3 images = mise en attente automatique
+            $item->verification_status = 'pending';
+            $item->status = 'pending_verification';
+            $item->verification_details = [
+                'reason' => 'Nombre d\'images insuffisant (minimum 3 requises)'
+            ];
         }
 
             $item->save();
@@ -245,13 +267,19 @@ class ItemController extends Controller
             // Déclencher l'événement pour envoyer les emails newsletter
             event(new \App\Events\ItemCreated($item));
 
+            // Message personnalisé selon le statut de vérification
             $message = 'Article créé avec succès !';
-            if ($item->status === 'pending_verification') {
-                $message = 'Article créé mais en attente de validation des images par l\'équipe (vérification automatique détectée).';
+            
+            if ($item->verification_status === 'approved') {
+                $message = "Article créé et publié avec succès ! Score de vérification: {$item->verification_score}/100";
+            } elseif ($item->verification_status === 'pending') {
+                $message = "Article créé mais en attente de vérification manuelle par notre équipe. Score: {$item->verification_score}/100";
+            } else {
+                $message = "Article créé mais nécessite des améliorations. Veuillez vérifier les images et la description. Score: {$item->verification_score}/100";
             }
 
             return redirect()->route('items.show', $item)
-                ->with('success', $message);
+                ->with($item->verification_status === 'rejected' ? 'warning' : 'success', $message);
         } catch (\Exception $e) {
             // Enregistrer l'erreur
             $monitoring->recordError($e, [
@@ -398,33 +426,39 @@ class ItemController extends Controller
         }
 
         // Après mise à jour des images, relancer la vérification automatique
-        if ($item->images && is_array($item->images)) {
-            $verification = $this->verifyImagesConformity($item->images);
-            if ($verification['pass']) {
-                // Si l'article était en attente de vérification et passe maintenant, activer
-                if ($item->status !== 'active') {
-                    $item->status = 'active';
-                }
-                // Nettoyer le flag de vérification
-                if (is_array($item->specifications) && isset($item->specifications['image_verification'])) {
-                    unset($item->specifications['image_verification']);
-                }
-                // Nettoyer le rapport structuré
-                $item->image_verification_report = null;
-            } else {
+        if ($item->images && is_array($item->images) && count($item->images) > 0) {
+            // Récupérer les noms de catégorie et marque
+            $category = Category::find($item->category_id);
+            $brand = Brand::find($item->brand_id);
+            
+            $verification = $this->verificationService->verifyItem(
+                $item->images,
+                $item->name,
+                $item->description ?? '',
+                $brand->name ?? null,
+                $category->name ?? null
+            );
+            
+            // Appliquer le résultat de la vérification
+            $item->verification_status = $verification['status'];
+            $item->verification_score = $verification['score'];
+            $item->verification_details = $verification['details'];
+            $item->verified_at = now();
+            
+            // Ajuster le statut
+            if ($verification['status'] === 'approved') {
+                $item->status = 'active';
+            } elseif ($verification['status'] === 'pending') {
                 $item->status = 'pending_verification';
-                $specs = is_array($item->specifications) ? $item->specifications : [];
-                $specs['image_verification'] = $verification['issues'];
-                $item->specifications = $specs;
-                // Mettre à jour le rapport structuré
-                $item->image_verification_report = $verification;
+            } else {
+                $item->status = 'inactive';
             }
         }
 
         $item->save();
 
         return redirect()->route('items.show', $item)
-            ->with('success', 'Article mis à jour avec succès !');
+            ->with('success', "Article mis à jour avec succès ! Score de vérification: {$item->verification_score}/100");
     }
 
     /**
@@ -432,17 +466,19 @@ class ItemController extends Controller
      */
     public function approveItem(Item $item)
     {
+        // La vérification admin est déjà faite par le middleware
         $user = Auth::user();
-        if (!$user || !$user->is_admin) {
-            abort(403, 'Non autorisé');
-        }
 
         $item->status = 'active';
+        $item->verification_status = 'approved';
+        $item->verified_at = now();
+        $item->verified_by = $user->id;
+        
+        // Nettoyer les anciennes données de vérification
         if (is_array($item->specifications) && isset($item->specifications['image_verification'])) {
             unset($item->specifications['image_verification']);
         }
-        // Nettoyer le rapport structuré
-        $item->image_verification_report = null;
+        
         $item->save();
 
         return redirect()->back()->with('success', 'Article approuvé et publié.');
@@ -453,114 +489,28 @@ class ItemController extends Controller
      */
     public function rejectItem(Item $item, Request $request)
     {
+        // La vérification admin est déjà faite par le middleware
         $user = Auth::user();
-        if (!$user || !$user->is_admin) {
-            abort(403, 'Non autorisé');
-        }
 
         $reason = $request->input('reason', 'Rejeté par l\'équipe de modération');
+        
         $item->status = 'inactive';
-        $specs = is_array($item->specifications) ? $item->specifications : [];
-        $specs['image_verification'] = ['rejected_reason' => $reason];
-        $item->specifications = $specs;
-        // Stocker aussi le rapport structuré
-        $item->image_verification_report = ['rejected' => true, 'reason' => $reason];
+        $item->verification_status = 'rejected';
+        $item->verified_at = now();
+        $item->verified_by = $user->id;
+        
+        // Ajouter la raison du rejet aux détails
+        $details = $item->verification_details ?? [];
+        $details['admin_rejection'] = [
+            'reason' => $reason,
+            'rejected_by' => $user->name,
+            'rejected_at' => now()->toDateTimeString(),
+        ];
+        $item->verification_details = $details;
+        
         $item->save();
 
         return redirect()->back()->with('success', 'Article rejeté et retiré de la publication.');
-    }
-
-    /**
-     * Vérifie automatiquement un ensemble d'images et renvoie un rapport
-     * Retourne ['pass' => bool, 'issues' => array]
-     */
-    private function verifyImagesConformity(array $images): array
-    {
-        $issues = [];
-        foreach ($images as $idx => $imgPath) {
-            try {
-                $fullPath = Storage::disk('public')->path($imgPath);
-                if (!file_exists($fullPath)) {
-                    $issues[] = "Image non trouvée: {$imgPath}";
-                    continue;
-                }
-
-                $result = $this->isImageConforming($fullPath);
-                if ($result !== true) {
-                    $issues[] = "Image {$imgPath}: {$result}";
-                }
-            } catch (\Exception $e) {
-                Log::warning('Erreur lors de la vérification d\'image: ' . $e->getMessage(), ['image' => $imgPath]);
-                $issues[] = "Erreur lors de l'analyse: {$imgPath}";
-            }
-        }
-
-        return ['pass' => empty($issues), 'issues' => $issues];
-    }
-
-    /**
-     * Heuristiques simples pour détecter des images non conformes/falsifiées
-     * Retourne true si conforme, sinon une chaîne décrivant le problème
-     */
-    private function isImageConforming(string $fullPath)
-    {
-        // Vérifier le type et dimensions
-        $info = @getimagesize($fullPath);
-        if (!$info) {
-            return 'Fichier non image ou corrompu';
-        }
-
-        [$width, $height, $type] = [$info[0], $info[1], $info[2]];
-        if ($width < 200 || $height < 200) {
-            return "Dimensions trop petites ({$width}x{$height})";
-        }
-
-        $filesize = filesize($fullPath);
-        if ($filesize !== false && $filesize < 10240) { // moins de 10KB
-            return 'Fichier trop petit, possible manipulation';
-        }
-
-        // Vérifier la variance de luminance pour détecter images unicolores
-        try {
-            $data = file_get_contents($fullPath);
-            $im = @imagecreatefromstring($data);
-            if (!$im) {
-                return 'Impossible de traiter l\'image';
-            }
-
-            $sampleSteps = 10;
-            $pixels = [];
-            $w = imagesx($im);
-            $h = imagesy($im);
-            for ($x = 0; $x < $w; $x += max(1, intval($w / $sampleSteps))) {
-                for ($y = 0; $y < $h; $y += max(1, intval($h / $sampleSteps))) {
-                    $rgb = imagecolorat($im, $x, $y);
-                    $r = ($rgb >> 16) & 0xFF;
-                    $g = ($rgb >> 8) & 0xFF;
-                    $b = $rgb & 0xFF;
-                    $l = (0.299*$r + 0.587*$g + 0.114*$b);
-                    $pixels[] = $l;
-                }
-            }
-            imagedestroy($im);
-
-            if (count($pixels) >= 2) {
-                $mean = array_sum($pixels) / count($pixels);
-                $variance = 0.0;
-                foreach ($pixels as $p) {
-                    $variance += pow($p - $mean, 2);
-                }
-                $variance = $variance / count($pixels);
-                if ($variance < 20) { // très faible variance -> image unicolore/retouchée
-                    return 'Image à faible variance de luminance (probablement retouchée ou unicolore)';
-                }
-            }
-        } catch (\Throwable $e) {
-            Log::warning('Erreur lors de l\'analyse d\'image: ' . $e->getMessage(), ['path' => $fullPath]);
-            return 'Erreur lors de l\'analyse d\'image';
-        }
-
-        return true;
     }
 
     /**
@@ -568,16 +518,24 @@ class ItemController extends Controller
      */
     public function pendingVerificationList(Request $request)
     {
-        $user = Auth::user();
-        if (!$user || !$user->is_admin) {
-            abort(403, 'Non autorisé');
-        }
-
-        $items = Item::where('status', 'pending_verification')
+        // La vérification admin est déjà faite par le middleware
+        // Pas besoin de re-vérifier ici
+        
+        $items = Item::where('verification_status', 'pending')
+            ->with(['user', 'category', 'brand'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
         return view('admin.items.pending_verification', compact('items'));
+    }
+
+    /**
+     * Affiche les détails d'un item pour l'admin
+     */
+    public function adminShow(Item $item)
+    {
+        $item->load(['user', 'category', 'brand']);
+        return view('admin.items.show', compact('item'));
     }
 
     /**

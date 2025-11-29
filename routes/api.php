@@ -168,6 +168,7 @@ Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () 
         Route::get('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'getReferralCodes']);
         Route::post('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'createReferralCode']);
         Route::post('/referral-codes/custom', [App\Http\Controllers\AffiliateController::class, 'createCustomReferralCode']);
+        Route::get('/codes/stats', [App\Http\Controllers\AffiliateController::class, 'getCodesStats']);
         Route::get('/referrals', [App\Http\Controllers\AffiliateController::class, 'getReferrals']);
         Route::get('/points-history', [App\Http\Controllers\AffiliateController::class, 'getPointsHistory']);
         Route::post('/convert-points', [App\Http\Controllers\AffiliateController::class, 'convertPointsToCash']);
