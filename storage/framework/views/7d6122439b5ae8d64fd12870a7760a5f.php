@@ -1,6 +1,104 @@
 ﻿
 
 <?php $__env->startSection('content'); ?>
+<style>
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out forwards;
+}
+
+/* Auto-hide notifications après 5 secondes */
+@keyframes slide-out {
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+.notification-auto-hide {
+    animation: slide-out 0.3s ease-in forwards 5s;
+}
+</style>
+
+<!-- Messages de notification Laravel -->
+<?php if(session('success')): ?>
+<div class="notification-auto-hide fixed top-5 right-5 z-50 min-w-80 max-w-md bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl shadow-2xl p-4 transform transition-all duration-300 animate-slide-in">
+    <div class="flex items-start gap-3">
+        <div class="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="flex-1">
+            <p class="font-semibold text-sm"><?php echo e(session('success')); ?></p>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" 
+            class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if(session('error')): ?>
+<div class="notification-auto-hide fixed top-5 right-5 z-50 min-w-80 max-w-md bg-gradient-to-r from-red-500 to-red-600 text-white rounded-2xl shadow-2xl p-4 transform transition-all duration-300 animate-slide-in">
+    <div class="flex items-start gap-3">
+        <div class="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="flex-1">
+            <p class="font-semibold text-sm"><?php echo e(session('error')); ?></p>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" 
+            class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if(session('warning')): ?>
+<div class="notification-auto-hide fixed top-5 right-5 z-50 min-w-80 max-w-md bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-2xl shadow-2xl p-4 transform transition-all duration-300 animate-slide-in">
+    <div class="flex items-start gap-3">
+        <div class="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="flex-1">
+            <p class="font-semibold text-sm"><?php echo e(session('warning')); ?></p>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" 
+            class="w-6 h-6 rounded-full hover:bg-white/20 flex items-center justify-center transition-all duration-200">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl max-w-md mx-4">
+        <div class="flex flex-col items-center">
+            <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mt-6">Création en cours...</h3>
+            <p class="text-gray-600 dark:text-gray-400 mt-2 text-center" id="loadingMessage">
+                Téléchargement des images et vérification automatique
+            </p>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-4">
+                <div id="progressBar" class="bg-gradient-to-r from-primary-600 to-primary-700 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2" id="progressText">0%</p>
+        </div>
+    </div>
+</div>
+
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-primary-50/30 py-8">
     <div class="container mx-auto px-4">
         <!-- Breadcrumb -->
@@ -603,7 +701,15 @@ unset($__errorArgs, $__bag); ?>
 </div>
 
 <script>
+// Auto-supprimer les notifications après 5 secondes
 document.addEventListener('DOMContentLoaded', function() {
+    const notifications = document.querySelectorAll('.notification-auto-hide');
+    notifications.forEach(notification => {
+        setTimeout(() => {
+            notification.remove();
+        }, 5300); // 5s d'animation + 300ms de transition
+    });
+
     // Prévisualisation des images
     const imageInput = document.getElementById('images');
     const imagePreview = document.getElementById('imagePreview');
@@ -775,31 +881,16 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Check image validation results if images selected
+        // Vérifier uniquement le nombre minimum d'images
         const input = document.getElementById('images');
         if (!input || !input.files || input.files.length < 3) {
             e.preventDefault();
             showNotification('Veuillez fournir au minimum 3 images de bonne qualité', 'error');
             return;
         }
-        
-        if (input && input.files && input.files.length > 0) {
-            const results = window.imageValidationResults || [];
-            // If results not yet filled, prevent submit and ask user to wait
-            if (results.length !== input.files.length) {
-                e.preventDefault();
-                showNotification('Veuillez patienter pendant la vérification des images...', 'warning');
-                return;
-            }
 
-            // If any image has issues, prevent submit
-            const bad = results.find(r => r && r.ok === false);
-            if (bad) {
-                e.preventDefault();
-                showNotification('Certaines images nécessitent une vérification (taille/dimensions). Veuillez corriger avant de publier.', 'error');
-                return;
-            }
-        }
+        // Tout est valide, afficher le loading
+        showLoading();
     });
 
     // Validation du prix
@@ -830,6 +921,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Fonction pour afficher le chargement
+function showLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const loadingMessage = document.getElementById('loadingMessage');
+    
+    overlay.classList.remove('hidden');
+    
+    let progress = 0;
+    const messages = [
+        'Téléchargement des images...',
+        'Vérification de la qualité...',
+        'Analyse automatique en cours...',
+        'Détection d\'authenticité...',
+        'Finalisation de la publication...'
+    ];
+    
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90; // Ne pas aller jusqu'à 100% avant la vraie fin
+        
+        progressBar.style.width = progress + '%';
+        progressText.textContent = Math.round(progress) + '%';
+        
+        // Changer le message selon la progression
+        const messageIndex = Math.min(Math.floor(progress / 20), messages.length - 1);
+        loadingMessage.textContent = messages[messageIndex];
+    }, 500);
+    
+    // Stocker l'interval pour pouvoir l'arrêter si nécessaire
+    window.loadingInterval = interval;
+}
 
 // Fonction pour afficher les notifications
 function showNotification(message, type = 'info') {

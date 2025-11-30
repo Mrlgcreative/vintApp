@@ -6,62 +6,74 @@ Le système de **Lazy Loading** est maintenant intégré à l'interface d'admini
 
 ## ✨ Fonctionnalités Admin
 
-- ✅ Skeleton automatique sur tous les liens de navigation
-- ✅ Templates adaptés aux pages admin (listes, détails, dashboard)
-- ✅ Détection intelligente du type de page
-- ✅ Temps d'affichage optimisé (300ms pour admin)
-- ✅ Support du mode sombre
-- ✅ Transitions fluides entre les pages
+-   ✅ Skeleton automatique sur tous les liens de navigation
+-   ✅ Templates adaptés aux pages admin (listes, détails, dashboard)
+-   ✅ Détection intelligente du type de page
+-   ✅ Temps d'affichage optimisé (300ms pour admin)
+-   ✅ Support du mode sombre
+-   ✅ Transitions fluides entre les pages
 
 ## 🎨 Templates disponibles
 
 ### 1. Dashboard
+
 **Pages concernées :**
-- `/admin/dashboard`
-- `/admin/monitoring`
-- `/admin/affiliate`
+
+-   `/admin/dashboard`
+-   `/admin/monitoring`
+-   `/admin/affiliate`
 
 **Affiche :**
-- 4 cards de statistiques
-- Graphique central
-- Tableau de données
-- Activité récente
+
+-   4 cards de statistiques
+-   Graphique central
+-   Tableau de données
+-   Activité récente
 
 ### 2. Liste (List)
+
 **Pages concernées :**
-- `/admin/users`
-- `/admin/orders`
-- `/admin/transactions`
-- `/admin/refunds`
-- `/admin/experts`
+
+-   `/admin/users`
+-   `/admin/orders`
+-   `/admin/transactions`
+-   `/admin/refunds`
+-   `/admin/experts`
 
 **Affiche :**
-- Header avec actions
-- Barre de filtres
-- Tableau avec 8 lignes
-- Pagination
+
+-   Header avec actions
+-   Barre de filtres
+-   Tableau avec 8 lignes
+-   Pagination
 
 ### 3. Détail/Formulaire (Detail)
+
 **Pages concernées :**
-- `/admin/users/{id}`
-- `/admin/orders/{id}`
-- Toutes les pages d'édition
+
+-   `/admin/users/{id}`
+-   `/admin/orders/{id}`
+-   Toutes les pages d'édition
 
 **Affiche :**
-- Header avec boutons d'action
-- Colonne principale (formulaires)
-- Sidebar avec infos complémentaires
+
+-   Header avec boutons d'action
+-   Colonne principale (formulaires)
+-   Sidebar avec infos complémentaires
 
 ### 4. Vérification
+
 **Pages concernées :**
-- `/admin/items/pending_verification`
-- `/admin/experts/verifications`
-- `/expert/verifications`
+
+-   `/admin/items/pending_verification`
+-   `/admin/experts/verifications`
+-   `/expert/verifications`
 
 **Affiche :**
-- Stats cards (4 cards)
-- Grille de 6 items à vérifier
-- Boutons d'action (Approuver/Rejeter)
+
+-   Stats cards (4 cards)
+-   Grille de 6 items à vérifier
+-   Boutons d'action (Approuver/Rejeter)
 
 ## 🚀 Utilisation automatique
 
@@ -111,16 +123,16 @@ Ajoutez `data-page-type` sur le container principal de votre page :
 
 Le système détecte automatiquement le type de page basé sur l'URL :
 
-| URL Pattern | Type détecté | Template |
-|-------------|--------------|----------|
-| `/admin/dashboard` | dashboard | Dashboard |
-| `/admin/users` | list | Liste |
-| `/admin/users/{id}` | detail | Détail |
-| `/admin/orders` | list | Liste |
-| `/admin/transactions` | list | Liste |
+| URL Pattern                         | Type détecté | Template     |
+| ----------------------------------- | ------------ | ------------ |
+| `/admin/dashboard`                  | dashboard    | Dashboard    |
+| `/admin/users`                      | list         | Liste        |
+| `/admin/users/{id}`                 | detail       | Détail       |
+| `/admin/orders`                     | list         | Liste        |
+| `/admin/transactions`               | list         | Liste        |
 | `/admin/items/pending_verification` | verification | Vérification |
-| `/admin/experts` | list | Liste |
-| `/expert/verifications` | verification | Vérification |
+| `/admin/experts`                    | list         | Liste        |
+| `/expert/verifications`             | verification | Vérification |
 
 ## ⚙️ Configuration Admin
 
@@ -130,8 +142,8 @@ Le fichier `admin-skeleton-config.js` contient :
 
 ```javascript
 const adminSkeletonConfig = {
-    minDisplayTime: 300,  // 300ms (plus court que public: 400ms)
-    fadeOutDuration: 200  // Transition rapide
+    minDisplayTime: 300, // 300ms (plus court que public: 400ms)
+    fadeOutDuration: 200, // Transition rapide
 };
 ```
 
@@ -140,8 +152,8 @@ const adminSkeletonConfig = {
 ```javascript
 // Dans votre page admin
 window.adminSkeletonConfig = {
-    minDisplayTime: 500,  // Afficher au moins 500ms
-    fadeOutDuration: 300  // Transition plus lente
+    minDisplayTime: 500, // Afficher au moins 500ms
+    fadeOutDuration: 300, // Transition plus lente
 };
 ```
 
@@ -150,10 +162,10 @@ window.adminSkeletonConfig = {
 Le système utilise `AdminPageDetector` pour identifier automatiquement les pages :
 
 ```javascript
-AdminPageDetector.isDashboard()      // true si /admin/dashboard
-AdminPageDetector.isUsersList()      // true si /admin/users
-AdminPageDetector.isUserDetail()     // true si /admin/users/{id}
-AdminPageDetector.isVerification()   // true si page de vérification
+AdminPageDetector.isDashboard(); // true si /admin/dashboard
+AdminPageDetector.isUsersList(); // true si /admin/users
+AdminPageDetector.isUserDetail(); // true si /admin/users/{id}
+AdminPageDetector.isVerification(); // true si page de vérification
 ```
 
 ## 💡 Bonnes pratiques Admin
@@ -167,8 +179,8 @@ AdminPageDetector.isVerification()   // true si page de vérification
 </div>
 
 <!-- 2. Utiliser lazy loading sur les images admin -->
-<img data-src="{{ $user->avatar }}" 
-     loading="lazy" 
+<img data-src="{{ $user->avatar }}"
+     loading="lazy"
      class="lazy-loading">
 
 <!-- 3. Ajouter des placeholders pour les avatars -->
@@ -197,7 +209,7 @@ AdminPageDetector.isVerification()   // true si page de vérification
 ```javascript
 // Dans un fichier JS admin personnalisé
 const AdminSkeletonTemplates = {
-    showCustomAdmin: function(skeleton) {
+    showCustomAdmin: function (skeleton) {
         const html = `
             <div class="max-w-7xl mx-auto p-6">
                 <div class="skeleton-loader skeleton-title w-64 mb-6"></div>
@@ -205,7 +217,7 @@ const AdminSkeletonTemplates = {
             </div>
         `;
         skeleton.showCustom(html);
-    }
+    },
 };
 
 // Utiliser
@@ -226,7 +238,7 @@ AdminSkeletonTemplates.showCustomAdmin(skeleton);
             <div class="bg-white rounded-xl p-6">{{ $stat }}</div>
         @endforeach
     </div>
-    
+
     <!-- Chart -->
     <div class="bg-white rounded-xl p-6">
         <canvas id="chart"></canvas>
@@ -245,14 +257,14 @@ AdminSkeletonTemplates.showCustomAdmin(skeleton);
         <h1>Liste des utilisateurs</h1>
         <a href="{{ route('admin.users.create') }}" class="btn">Ajouter</a>
     </div>
-    
+
     <!-- Filtres -->
     <div class="bg-white rounded-xl p-4 mb-6">
         <form>
             <!-- Filtres -->
         </form>
     </div>
-    
+
     <!-- Table -->
     <table class="w-full">
         @foreach($users as $user)
@@ -280,7 +292,7 @@ AdminSkeletonTemplates.showCustomAdmin(skeleton);
                 </form>
             </div>
         </div>
-        
+
         <!-- Sidebar -->
         <div>
             <div class="bg-white rounded-xl p-6">
@@ -306,7 +318,7 @@ AdminSkeletonTemplates.showCustomAdmin(skeleton);
         </div>
         <!-- Autres stats -->
     </div>
-    
+
     <!-- Items Grid -->
     <div class="grid grid-cols-3 gap-6">
         @foreach($items as $item)
@@ -340,13 +352,13 @@ Toutes les classes du lazy loading standard sont disponibles :
 <div class="skeleton-loader skeleton-button"></div>
 
 <!-- Lazy images -->
-<img class="lazy-loading" data-src="image.jpg">
-<img class="lazy-loaded" src="image.jpg">
-<img class="lazy-error" src="fallback.jpg">
+<img class="lazy-loading" data-src="image.jpg" />
+<img class="lazy-loaded" src="image.jpg" />
+<img class="lazy-error" src="fallback.jpg" />
 
 <!-- Containers -->
 <div class="lazy-container">
-    <img data-src="image.jpg" loading="lazy">
+    <img data-src="image.jpg" loading="lazy" />
 </div>
 ```
 
@@ -373,6 +385,7 @@ Le skeleton s'adapte automatiquement au mode sombre de l'admin :
 ### Le skeleton ne s'affiche pas
 
 1. Vérifiez que les scripts sont bien chargés :
+
 ```html
 <script src="{{ asset('js/page-skeleton.js') }}"></script>
 <script src="{{ asset('js/admin-skeleton-config.js') }}"></script>
@@ -380,6 +393,7 @@ Le skeleton s'adapte automatiquement au mode sombre de l'admin :
 ```
 
 2. Vérifiez l'attribut `data-page-type` :
+
 ```blade
 <div data-page-type="list">
     <!-- Contenu -->
@@ -387,6 +401,7 @@ Le skeleton s'adapte automatiquement au mode sombre de l'admin :
 ```
 
 3. Ouvrez la console pour voir les erreurs :
+
 ```javascript
 // Console du navigateur
 console.log(window.AdminPageDetector);
@@ -411,8 +426,8 @@ Ajustez la configuration :
 
 ```javascript
 window.adminSkeletonConfig = {
-    minDisplayTime: 500,  // Afficher plus longtemps
-    fadeOutDuration: 300  // Transition plus lente
+    minDisplayTime: 500, // Afficher plus longtemps
+    fadeOutDuration: 300, // Transition plus lente
 };
 ```
 
@@ -421,14 +436,16 @@ window.adminSkeletonConfig = {
 ### Impact sur les métriques
 
 **Sans skeleton :**
-- Impression de lenteur ❌
-- CLS (Cumulative Layout Shift) élevé ❌
-- Utilisateur voit page blanche ❌
+
+-   Impression de lenteur ❌
+-   CLS (Cumulative Layout Shift) élevé ❌
+-   Utilisateur voit page blanche ❌
 
 **Avec skeleton :**
-- Perception de rapidité ✅
-- CLS réduit (structure préservée) ✅
-- Feedback visuel immédiat ✅
+
+-   Perception de rapidité ✅
+-   CLS réduit (structure préservée) ✅
+-   Feedback visuel immédiat ✅
 
 ### Optimisations admin
 
@@ -461,18 +478,19 @@ window.adminSkeletonConfig = {
 
 ## 📚 Fichiers impliqués
 
-- **Layout** : `resources/views/layouts/admin.blade.php`
-- **Config** : `public/js/admin-skeleton-config.js`
-- **Navigation** : `public/js/navigation-skeleton.js`
-- **Core** : `public/js/page-skeleton.js`
-- **CSS** : `public/css/lazy-loading.css`
+-   **Layout** : `resources/views/layouts/admin.blade.php`
+-   **Config** : `public/js/admin-skeleton-config.js`
+-   **Navigation** : `public/js/navigation-skeleton.js`
+-   **Core** : `public/js/page-skeleton.js`
+-   **CSS** : `public/css/lazy-loading.css`
 
 ## 🎓 Exemples complets
 
 Voir les fichiers de documentation :
-- `docs/PAGE_SKELETON_GUIDE.md` - Guide général
-- `docs/LAZY_LOADING_TAILWIND.md` - Utilisation Tailwind
-- `docs/NAVIGATION_SKELETON_GUIDE.md` - Navigation globale
+
+-   `docs/PAGE_SKELETON_GUIDE.md` - Guide général
+-   `docs/LAZY_LOADING_TAILWIND.md` - Utilisation Tailwind
+-   `docs/NAVIGATION_SKELETON_GUIDE.md` - Navigation globale
 
 ---
 

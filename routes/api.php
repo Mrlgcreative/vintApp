@@ -2,6 +2,9 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
@@ -196,6 +199,228 @@ Route::middleware(['web', 'auth:web'])->prefix('notifications')->group(function 
     Route::post('/closed', [App\Http\Controllers\Api\NotificationController::class, 'closed']);
     Route::match(['get', 'post'], '/test', [App\Http\Controllers\Api\NotificationController::class, 'test']);
     Route::post('/broadcast-test', [App\Http\Controllers\Api\NotificationController::class, 'broadcastTest']);
+});
+
+// FCM Token Registration
+Route::middleware(['web', 'auth:web'])->post('/fcm-token', function (Request $request) {
+    try {
+        $validated = $request->validate([
+            'token' => 'required|string',
+            'device_type' => 'nullable|string|max:20'
+        ]);
+
+        $user = Auth::user();
+        $user->fcm_token = $validated['token'];
+        $user->device_type = $validated['device_type'] ?? 'unknown';
+        $user->browser = $request->userAgent();
+        $user->fcm_token_updated_at = now();
+        $user->save();
+
+        Log::info('Token FCM enregistré', [
+            'user_id' => $user->id,
+            'device_type' => $user->device_type
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Token FCM enregistré avec succès'
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Erreur enregistrement token FCM', [
+            'error' => $e->getMessage()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de l\'enregistrement du token'
+        ], 500);
+    }
+});
+
+// Test FCM Notification
+Route::middleware(['web', 'auth:web'])->post('/test-fcm-notification', function (Request $request) {
+    try {
+        $user = Auth::user();
+        
+        if (!$user->fcm_token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aucun token FCM enregistré. Autorisez d\'abord les notifications.'
+            ], 400);
+        }
+
+        $type = $request->input('type', 'approved');
+        $fcmService = app(\App\Services\FirebasePushService::class);
+
+        if ($type === 'approved') {
+            $result = $fcmService->sendItemApprovedNotification($user->fcm_token, [
+                'item_id' => 999,
+                'item_name' => 'Article de Test',
+                'item_image' => 'items/test-image.jpg',
+                'verification_score' => 95
+            ]);
+        } else {
+            $result = $fcmService->sendItemRejectedNotification($user->fcm_token, [
+                'item_id' => 999,
+                'item_name' => 'Article de Test',
+                'item_image' => 'items/test-image.jpg',
+                'reason' => 'Ceci est un test de notification de rejet'
+            ]);
+        }
+
+        if ($result) {
+            Log::info('Notification FCM test envoyée', [
+                'user_id' => $user->id,
+                'type' => $type
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Notification envoyée avec succès ! Vérifiez votre téléphone.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Échec de l\'envoi de la notification. Vérifiez les logs.'
+            ], 500);
+        }
+
+    } catch (\Exception $e) {
+        Log::error('Erreur test notification FCM', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
+// Admin Broadcast FCM Test
+Route::middleware(['web', 'auth:web'])->post('/admin/broadcast-fcm-test', function (Request $request) {
+    try {
+        $user = Auth::user();
+        
+        // Vérifier que l'utilisateur est admin via role_user
+        $isAdmin = DB::table('role_user')
+            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('role_user.user_id', $user->id)
+            ->where('roles.slug', 'admin')
+            ->exists();
+        
+        if (!$isAdmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Accès non autorisé. Administrateur requis.'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'message' => 'required|string|max:500'
+        ]);
+
+        // Récupérer tous les utilisateurs avec un token FCM
+        $usersWithTokens = \App\Models\User::whereNotNull('fcm_token')
+            ->where('fcm_token', '!=', '')
+            ->get();
+
+        if ($usersWithTokens->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Aucun appareil avec notifications activées trouvé.'
+            ]);
+        }
+
+        $fcmService = app(\App\Services\FirebasePushService::class);
+        $tokens = $usersWithTokens->pluck('fcm_token')->toArray();
+
+        // Envoyer notification multicast
+        $result = $fcmService->sendMulticast(
+            $tokens,
+            $validated['title'],
+            $validated['message'],
+            [
+                'type' => 'admin_broadcast',
+                'timestamp' => now()->toIso8601String()
+            ],
+            null // Pas d'image pour le test
+        );
+
+        Log::info('Broadcast FCM admin envoyé', [
+            'admin_id' => $user->id,
+            'total_devices' => count($tokens),
+            'success' => $result['success'],
+            'failure' => $result['failure']
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Notification envoyée à {$result['success']} appareil(s) sur " . count($tokens),
+            'stats' => [
+                'total' => count($tokens),
+                'success' => $result['success'],
+                'failure' => $result['failure'],
+                'failed_tokens' => $result['failed_tokens']
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        Log::error('Erreur broadcast FCM admin', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
+// ⚠️ Route de validation GPS déplacée vers routes/web.php (ligne ~207)
+// Raison: Les routes API n'ont pas accès aux sessions web
+
+// Admin FCM Stats
+Route::middleware(['web', 'auth:web'])->get('/admin/fcm-stats', function (Request $request) {
+    try {
+        $user = Auth::user();
+        
+        // Vérifier que l'utilisateur est admin via role_user
+        $isAdmin = DB::table('role_user')
+            ->join('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('role_user.user_id', $user->id)
+            ->where('roles.slug', 'admin')
+            ->exists();
+        
+        if (!$isAdmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Accès non autorisé'
+            ], 403);
+        }
+
+        $totalUsers = \App\Models\User::count();
+        $devicesWithFCM = \App\Models\User::whereNotNull('fcm_token')
+            ->where('fcm_token', '!=', '')
+            ->count();
+
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'total_users' => $totalUsers,
+                'devices_with_fcm' => $devicesWithFCM
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur: ' . $e->getMessage()
+        ], 500);
+    }
 });
 
 Route::post('/bot', [BotController::class, 'ask']);

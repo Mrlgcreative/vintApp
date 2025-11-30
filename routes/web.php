@@ -188,6 +188,108 @@ Route::get('/test-notifications', function() {
     return view('test-notifications');
 })->middleware('auth')->name('test.notifications');
 
+// Page de test pour les notifications push FCM
+Route::get('/test-fcm', function() {
+    return view('test-fcm');
+})->middleware('auth')->name('test.fcm');
+
+// Page de test pour la géolocalisation
+Route::get('/test-geo', function() {
+    return view('test-geo');
+})->name('test.geo');
+
+// Page de test pour la session GPS
+Route::get('/test-session-gps', function() {
+    return view('test-session-gps');
+})->name('test.session.gps');
+
+// Page de validation GPS
+Route::get('/location/validate', function() {
+    return view('location-validate');
+})->name('location.validate');
+
+// API de validation GPS (doit être dans web pour la session)
+Route::post('/location/validate', function(\Illuminate\Http\Request $request) {
+    $validated = $request->validate([
+        'latitude' => 'required|numeric|between:-90,90',
+        'longitude' => 'required|numeric|between:-180,180'
+    ]);
+
+    $userLat = $validated['latitude'];
+    $userLon = $validated['longitude'];
+
+    // Récupérer toutes les villes autorisées avec coordonnées
+    $allowedCities = \App\Models\AllowedCity::active()
+        ->whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->get();
+
+    $maxDistance = 50; // 50km de rayon
+    $nearestCity = null;
+    $minDistance = PHP_FLOAT_MAX;
+
+    // Calcul de distance (formule de Haversine)
+    foreach ($allowedCities as $city) {
+        $cityLat = $city->latitude;
+        $cityLon = $city->longitude;
+
+        $R = 6371; // Rayon de la Terre en km
+        $dLat = deg2rad($cityLat - $userLat);
+        $dLon = deg2rad($cityLon - $userLon);
+        
+        $a = sin($dLat/2) * sin($dLat/2) +
+             cos(deg2rad($userLat)) * cos(deg2rad($cityLat)) *
+             sin($dLon/2) * sin($dLon/2);
+        
+        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+        $distance = $R * $c;
+
+        if ($distance < $minDistance) {
+            $minDistance = $distance;
+            $nearestCity = $city;
+        }
+    }
+
+    if ($nearestCity && $minDistance <= $maxDistance) {
+        // ✅ Ville autorisée trouvée - SAUVEGARDER SESSION
+        session([
+            'gps_location_validated' => true,
+            'user_city' => $nearestCity->name,
+            'validated_at' => now()->toIso8601String()
+        ]);
+        
+        // Forcer la sauvegarde de la session
+        session()->save();
+        
+        \Log::info('✅ GPS: Accès autorisé + SESSION SAUVEGARDÉE', [
+            'ville' => $nearestCity->name,
+            'distance' => round($minDistance, 2) . 'km',
+            'coords' => [$userLat, $userLon],
+            'session_id' => session()->getId()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'city' => $nearestCity->name,
+            'distance' => round($minDistance, 2),
+            'message' => "Bienvenue ! Vous êtes à {$nearestCity->name}"
+        ]);
+    }
+
+    \Log::warning('❌ GPS: Ville non autorisée', [
+        'ville_proche' => $nearestCity ? $nearestCity->name : 'Aucune',
+        'distance' => $nearestCity ? round($minDistance, 2) . 'km' : 'N/A',
+        'coords' => [$userLat, $userLon]
+    ]);
+
+    return response()->json([
+        'success' => false,
+        'message' => 'VintApp n\'est pas encore disponible dans votre ville.',
+        'nearest_city' => $nearestCity ? $nearestCity->name : null,
+        'distance' => $nearestCity ? round($minDistance, 2) : null
+    ], 403);
+})->name('location.validate.post');
+
 // Routes publiques pour les items
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
@@ -618,6 +720,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             Route::post('/bulk-reward', [App\Http\Controllers\Admin\AffiliateController::class, 'bulkReward'])->name('bulk-reward');
         });
     });
+
+    // 🔔 Broadcast Notifications Push FCM
+    Route::get('/broadcast-fcm', function() {
+        return view('admin.broadcast-fcm');
+    })->name('broadcast.fcm');
 });
 
 // Route publique pour la page de restriction géographique

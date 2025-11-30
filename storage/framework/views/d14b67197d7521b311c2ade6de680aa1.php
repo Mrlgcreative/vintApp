@@ -4,7 +4,9 @@
 <div class="container mx-auto px-4 py-8">
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Items en attente de vérification</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Système de vérification IA - Score minimum requis: 50/100</p>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Système de vérification IA - Triés par score décroissant (meilleurs articles en premier)
+        </p>
     </div>
 
     <?php if(session('success')): ?>
@@ -123,12 +125,21 @@
                                                 <?php echo e(number_format($imageScore, 1)); ?>/100
                                             </span>
                                         </div>
-                                        <?php if(isset($details['images']['issues']) && !empty($details['images']['issues'])): ?>
+                                        <?php if(isset($details['images']['issues']) && !empty($details['images']['issues']) && is_array($details['images']['issues'])): ?>
                                             <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                                <?php $__currentLoopData = $details['images']['issues']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $issue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php $__currentLoopData = $details['images']['issues']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $imageKey => $issue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <li class="flex items-start">
                                                         <span class="text-red-500 mr-2">⚠️</span>
-                                                        <span><?php echo e($issue); ?></span>
+                                                        <?php if(is_array($issue)): ?>
+                                                            <div>
+                                                                <strong><?php echo e($imageKey); ?>:</strong>
+                                                                <?php $__currentLoopData = $issue['issues'] ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $singleIssue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                    <div class="ml-4">• <?php echo e($singleIssue); ?></div>
+                                                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <span><?php echo e($issue); ?></span>
+                                                        <?php endif; ?>
                                                     </li>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </ul>
@@ -145,12 +156,12 @@
                                                 <?php echo e(number_format($textScore, 1)); ?>/100
                                             </span>
                                         </div>
-                                        <?php if(isset($details['text']['issues']) && !empty($details['text']['issues'])): ?>
+                                        <?php if(isset($details['text']['issues']) && !empty($details['text']['issues']) && is_array($details['text']['issues'])): ?>
                                             <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                                                 <?php $__currentLoopData = $details['text']['issues']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $issue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <li class="flex items-start">
                                                         <span class="text-red-500 mr-2">⚠️</span>
-                                                        <span><?php echo e($issue); ?></span>
+                                                        <span><?php echo e(is_array($issue) ? implode(', ', $issue) : $issue); ?></span>
                                                     </li>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </ul>
@@ -167,12 +178,12 @@
                                                 <?php echo e(number_format($coherenceScore, 1)); ?>/100
                                             </span>
                                         </div>
-                                        <?php if(isset($details['coherence']['issues']) && !empty($details['coherence']['issues'])): ?>
+                                        <?php if(isset($details['coherence']['issues']) && !empty($details['coherence']['issues']) && is_array($details['coherence']['issues'])): ?>
                                             <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                                                 <?php $__currentLoopData = $details['coherence']['issues']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $issue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                     <li class="flex items-start">
                                                         <span class="text-red-500 mr-2">⚠️</span>
-                                                        <span><?php echo e($issue); ?></span>
+                                                        <span><?php echo e(is_array($issue) ? implode(', ', $issue) : $issue); ?></span>
                                                     </li>
                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                             </ul>
@@ -182,10 +193,15 @@
                                     </div>
 
                                     <!-- Admin Rejection Reason (if exists) -->
-                                    <?php if(isset($details['admin_rejection'])): ?>
+                                    <?php if(isset($details['admin_rejection']) && is_array($details['admin_rejection'])): ?>
                                         <div class="border-l-4 border-red-500 pl-3 bg-red-50 dark:bg-red-900/20 p-3 rounded">
                                             <h4 class="font-semibold text-red-800 dark:text-red-400 mb-1">❌ Motif de rejet précédent</h4>
-                                            <p class="text-sm text-red-700 dark:text-red-300"><?php echo e($details['admin_rejection']); ?></p>
+                                            <p class="text-sm text-red-700 dark:text-red-300 mb-1"><?php echo e($details['admin_rejection']['reason'] ?? 'Non spécifié'); ?></p>
+                                            <div class="text-xs text-red-600 dark:text-red-400 mt-2">
+                                                <span>Rejeté par: <?php echo e($details['admin_rejection']['rejected_by'] ?? 'N/A'); ?></span>
+                                                <span class="mx-2">•</span>
+                                                <span>Le: <?php echo e($details['admin_rejection']['rejected_at'] ?? 'N/A'); ?></span>
+                                            </div>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -199,11 +215,15 @@
                                     👁️ Voir détails
                                 </a>
                                 
-                                <form action="<?php echo e(route('admin.items.approve', $item)); ?>" method="POST" class="inline">
+                                <form action="<?php echo e(route('admin.items.approve', $item)); ?>" method="POST" class="inline approve-form">
                                     <?php echo csrf_field(); ?>
                                     <button type="submit" 
-                                            class="px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium">
-                                        ✓ Approuver
+                                            class="approve-btn px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <span class="btn-text">✓ Approuver</span>
+                                        <svg class="btn-loader hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
                                     </button>
                                 </form>
                                 
@@ -255,8 +275,12 @@
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium">
-                        Confirmer le rejet
+                            class="reject-submit-btn px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span class="btn-text">Confirmer le rejet</span>
+                        <svg class="btn-loader hidden animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
                     </button>
                 </div>
             </form>
@@ -278,6 +302,40 @@
 </div>
 
 <script>
+// Gestion du chargement sur les boutons d'approbation
+document.querySelectorAll('.approve-form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        const btn = this.querySelector('.approve-btn');
+        const btnText = btn.querySelector('.btn-text');
+        const btnLoader = btn.querySelector('.btn-loader');
+        
+        // Désactiver le bouton et afficher le loader
+        btn.disabled = true;
+        btnText.textContent = 'Approbation...';
+        btnLoader.classList.remove('hidden');
+    });
+});
+
+// Gestion du chargement sur le formulaire de rejet
+document.getElementById('rejectForm').addEventListener('submit', function(e) {
+    const btn = this.querySelector('.reject-submit-btn');
+    const btnText = btn.querySelector('.btn-text');
+    const btnLoader = btn.querySelector('.btn-loader');
+    
+    // Vérifier que le motif est rempli
+    const reason = document.getElementById('rejectReason').value.trim();
+    if (!reason) {
+        e.preventDefault();
+        alert('Veuillez saisir un motif de rejet');
+        return;
+    }
+    
+    // Désactiver le bouton et afficher le loader
+    btn.disabled = true;
+    btnText.textContent = 'Rejet en cours...';
+    btnLoader.classList.remove('hidden');
+});
+
 function toggleDetails(id) {
     const details = document.getElementById(id);
     const icon = document.getElementById('icon-' + id);
@@ -299,6 +357,14 @@ function openRejectModal(itemId) {
     modal.classList.add('flex');
     document.getElementById('rejectReason').value = '';
     document.getElementById('rejectReason').focus();
+    
+    // Réinitialiser le bouton
+    const btn = form.querySelector('.reject-submit-btn');
+    const btnText = btn.querySelector('.btn-text');
+    const btnLoader = btn.querySelector('.btn-loader');
+    btn.disabled = false;
+    btnText.textContent = 'Confirmer le rejet';
+    btnLoader.classList.add('hidden');
 }
 
 function closeRejectModal(event) {

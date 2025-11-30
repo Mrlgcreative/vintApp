@@ -10,7 +10,7 @@
         "firebase/php-jwt": "^6.11",
         "guzzlehttp/guzzle": "^7.9",
         "inertiajs/inertia-laravel": "^2.0",
-        "intervention/image": "*",
+        "intervention/image": "^3.11",
         "jenssegers/agent": "^2.6",
         "kreait/firebase-php": "^7.23",
         "laravel/framework": "^12.0",

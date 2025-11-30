@@ -20,7 +20,7 @@ Le système de lazy loading de VintApp optimise automatiquement le chargement de
 ✅ **Économie de données** : Réduit la consommation de bande passante  
 ✅ **Meilleure expérience utilisateur** : Pages plus réactives  
 ✅ **SEO amélioré** : Temps de chargement optimisé  
-✅ **Support automatique** : Fonctionne avec les images dynamiques  
+✅ **Support automatique** : Fonctionne avec les images dynamiques
 
 ## Installation
 
@@ -44,7 +44,7 @@ Le lazy loading est automatiquement activé dans `app.blade.php` :
 
 ```html
 <!-- CSS -->
-<link rel="stylesheet" href="{{ asset('css/lazy-loading.css') }}">
+<link rel="stylesheet" href="{{ asset('css/lazy-loading.css') }}" />
 
 <!-- JavaScript -->
 <script src="{{ asset('js/lazy-loading.js') }}" defer></script>
@@ -58,13 +58,15 @@ Remplacez `src` par `data-src` pour activer le lazy loading :
 
 ```html
 <!-- ❌ Ancien (chargement immédiat) -->
-<img src="{{ Storage::url($item->images[0]) }}" alt="Mon article">
+<img src="{{ Storage::url($item->images[0]) }}" alt="Mon article" />
 
 <!-- ✅ Nouveau (lazy loading) -->
-<img data-src="{{ Storage::url($item->images[0]) }}" 
-     src="data:image/svg+xml,..."
-     loading="lazy"
-     alt="Mon article">
+<img
+    data-src="{{ Storage::url($item->images[0]) }}"
+    src="data:image/svg+xml,..."
+    loading="lazy"
+    alt="Mon article"
+/>
 ```
 
 ### 2. Images de fond avec `data-bg`
@@ -72,17 +74,20 @@ Remplacez `src` par `data-src` pour activer le lazy loading :
 Pour les images de fond CSS :
 
 ```html
-<div data-bg="{{ asset('images/banner.jpg') }}" 
-     class="h-64 bg-cover bg-center lazy-container">
-</div>
+<div
+    data-bg="{{ asset('images/banner.jpg') }}"
+    class="h-64 bg-cover bg-center lazy-container"
+></div>
 ```
 
 ### 3. Iframes
 
 ```html
-<iframe data-src="https://www.youtube.com/embed/VIDEO_ID" 
-        class="w-full h-64"
-        loading="lazy">
+<iframe
+    data-src="https://www.youtube.com/embed/VIDEO_ID"
+    class="w-full h-64"
+    loading="lazy"
+>
 </iframe>
 ```
 
@@ -93,7 +98,7 @@ Pour les images de fond CSS :
 Utilisez le composant Blade pour simplifier l'intégration :
 
 ```blade
-<x-lazy-image 
+<x-lazy-image
     src="{{ Storage::url($item->images[0]) }}"
     alt="{{ $item->name }}"
     class="w-full h-48 object-cover rounded-lg"
@@ -104,28 +109,28 @@ Utilisez le composant Blade pour simplifier l'intégration :
 
 #### Paramètres disponibles
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `src` | string | **requis** | URL de l'image |
-| `alt` | string | '' | Texte alternatif |
-| `class` | string | '' | Classes CSS supplémentaires |
-| `width` | int | null | Largeur de l'image |
-| `height` | int | null | Hauteur de l'image |
-| `aspectRatio` | string | null | Ratio (16-9, 4-3, 1-1) |
-| `placeholder` | bool | true | Afficher un placeholder |
+| Paramètre     | Type   | Défaut     | Description                 |
+| ------------- | ------ | ---------- | --------------------------- |
+| `src`         | string | **requis** | URL de l'image              |
+| `alt`         | string | ''         | Texte alternatif            |
+| `class`       | string | ''         | Classes CSS supplémentaires |
+| `width`       | int    | null       | Largeur de l'image          |
+| `height`      | int    | null       | Hauteur de l'image          |
+| `aspectRatio` | string | null       | Ratio (16-9, 4-3, 1-1)      |
+| `placeholder` | bool   | true       | Afficher un placeholder     |
 
 #### Exemples avec aspect ratio
 
 ```blade
 <!-- Ratio 16:9 (vidéo) -->
-<x-lazy-image 
+<x-lazy-image
     src="{{ $image }}"
     alt="Vidéo"
     aspectRatio="16-9"
 />
 
 <!-- Ratio carré (avatar) -->
-<x-lazy-image 
+<x-lazy-image
     src="{{ $avatar }}"
     alt="Avatar"
     aspectRatio="1-1"
@@ -142,11 +147,11 @@ Vous pouvez personnaliser le comportement du lazy loader :
 ```javascript
 // Dans votre fichier JavaScript
 window.lazyLoader = new LazyLoadingManager({
-    rootMargin: '200px',        // Charger avant 200px du viewport
-    threshold: 0.01,            // Seuil de visibilité
-    loadingClass: 'is-loading', // Classe personnalisée
-    loadedClass: 'is-loaded',   // Classe après chargement
-    errorClass: 'has-error'     // Classe en cas d'erreur
+    rootMargin: "200px", // Charger avant 200px du viewport
+    threshold: 0.01, // Seuil de visibilité
+    loadingClass: "is-loading", // Classe personnalisée
+    loadedClass: "is-loaded", // Classe après chargement
+    errorClass: "has-error", // Classe en cas d'erreur
 });
 ```
 
@@ -156,8 +161,8 @@ Pour précharger des images importantes :
 
 ```javascript
 window.lazyLoader.preloadImages([
-    '/images/logo.png',
-    '/images/hero-banner.jpg'
+    "/images/logo.png",
+    "/images/hero-banner.jpg",
 ]);
 ```
 
@@ -174,8 +179,8 @@ window.lazyLoader.loadAll();
 Écoutez les événements de chargement :
 
 ```javascript
-document.addEventListener('lazyloaded', function(e) {
-    console.log('Image chargée:', e.detail.src);
+document.addEventListener("lazyloaded", function (e) {
+    console.log("Image chargée:", e.detail.src);
     // Votre code ici
 });
 ```
@@ -198,12 +203,12 @@ Utilisez les skeleton loaders pour améliorer l'expérience pendant le chargemen
 
 ### Classes disponibles
 
-- `.skeleton-loader` - Base
-- `.skeleton-image` - Image (200px height)
-- `.skeleton-title` - Titre (1.5rem height)
-- `.skeleton-text` - Texte (1rem height)
-- `.skeleton-avatar` - Avatar (3rem circle)
-- `.skeleton-button` - Bouton (2.5rem height)
+-   `.skeleton-loader` - Base
+-   `.skeleton-image` - Image (200px height)
+-   `.skeleton-title` - Titre (1.5rem height)
+-   `.skeleton-text` - Texte (1rem height)
+-   `.skeleton-avatar` - Avatar (3rem circle)
+-   `.skeleton-button` - Bouton (2.5rem height)
 
 ## Performances
 
@@ -211,10 +216,10 @@ Utilisez les skeleton loaders pour améliorer l'expérience pendant le chargemen
 
 Avec le lazy loading activé, vous devriez observer :
 
-- **Temps de chargement initial** : -40% à -60%
-- **First Contentful Paint (FCP)** : -30% à -50%
-- **Largest Contentful Paint (LCP)** : -20% à -40%
-- **Données transférées** : -50% à -70% (selon le scroll)
+-   **Temps de chargement initial** : -40% à -60%
+-   **First Contentful Paint (FCP)** : -30% à -50%
+-   **Largest Contentful Paint (LCP)** : -20% à -40%
+-   **Données transférées** : -50% à -70% (selon le scroll)
 
 ### Bonnes pratiques
 
@@ -222,18 +227,18 @@ Avec le lazy loading activé, vous devriez observer :
 
 ```blade
 <!-- 1. Toujours fournir un placeholder -->
-<img data-src="{{ $image }}" 
+<img data-src="{{ $image }}"
      src="data:image/svg+xml,..."
      loading="lazy">
 
 <!-- 2. Spécifier les dimensions -->
-<img data-src="{{ $image }}" 
-     width="300" 
+<img data-src="{{ $image }}"
+     width="300"
      height="200"
      loading="lazy">
 
 <!-- 3. Utiliser loading="eager" pour l'image principale -->
-<img data-src="{{ $heroImage }}" 
+<img data-src="{{ $heroImage }}"
      loading="eager">
 
 <!-- 4. Grouper dans un container -->
@@ -280,12 +285,10 @@ Pour une expérience encore plus fluide, utilisez le chargement progressif :
 ```html
 <div class="progressive-image">
     <!-- Petite image floue (< 5KB) -->
-    <img src="{{ $thumbnail }}" 
-         class="progressive-image__placeholder">
-    
+    <img src="{{ $thumbnail }}" class="progressive-image__placeholder" />
+
     <!-- Image complète (lazy loaded) -->
-    <img data-src="{{ $fullImage }}" 
-         class="progressive-image__full">
+    <img data-src="{{ $fullImage }}" class="progressive-image__full" />
 </div>
 ```
 
@@ -294,17 +297,20 @@ Pour une expérience encore plus fluide, utilisez le chargement progressif :
 ### Les images ne se chargent pas
 
 1. Vérifiez que `lazy-loading.js` est bien chargé :
+
 ```javascript
 console.log(window.lazyLoader); // Doit afficher l'instance
 ```
 
 2. Vérifiez la console pour les erreurs :
+
 ```javascript
 // Activez le mode debug
-localStorage.setItem('lazyDebug', 'true');
+localStorage.setItem("lazyDebug", "true");
 ```
 
 3. Vérifiez que les URLs sont correctes :
+
 ```blade
 {{ Storage::url($item->images[0]) }}
 ```
@@ -344,13 +350,13 @@ Le script fournit un fallback automatique, mais pour une meilleure compatibilit�
 
 ### Navigateurs supportés
 
-| Navigateur | Version | Support |
-|------------|---------|---------|
-| Chrome | 58+ | ✅ Complet |
-| Firefox | 55+ | ✅ Complet |
-| Safari | 12.1+ | ✅ Complet |
-| Edge | 16+ | ✅ Complet |
-| IE 11 | - | ⚠️ Fallback |
+| Navigateur | Version | Support     |
+| ---------- | ------- | ----------- |
+| Chrome     | 58+     | ✅ Complet  |
+| Firefox    | 55+     | ✅ Complet  |
+| Safari     | 12.1+   | ✅ Complet  |
+| Edge       | 16+     | ✅ Complet  |
+| IE 11      | -       | ⚠️ Fallback |
 
 ### Fallback pour anciens navigateurs
 
@@ -401,16 +407,16 @@ Pour les navigateurs sans IntersectionObserver, toutes les images se chargent im
 </div>
 
 <!-- Lazy load les autres sections -->
-<div data-bg="{{ $section2Banner }}" 
+<div data-bg="{{ $section2Banner }}"
      class="lazy-container h-64">
 </div>
 ```
 
 ## Ressources
 
-- [MDN - Lazy Loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading)
-- [web.dev - Native Lazy Loading](https://web.dev/browser-level-image-lazy-loading/)
-- [Can I Use - Loading attribute](https://caniuse.com/loading-lazy-attr)
+-   [MDN - Lazy Loading](https://developer.mozilla.org/en-US/docs/Web/Performance/Lazy_loading)
+-   [web.dev - Native Lazy Loading](https://web.dev/browser-level-image-lazy-loading/)
+-   [Can I Use - Loading attribute](https://caniuse.com/loading-lazy-attr)
 
 ---
 

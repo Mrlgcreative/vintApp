@@ -117,15 +117,18 @@ class NetworkSpeedAdapter {
     }
 
     async measureSpeed() {
-        // Mesure simple de la vitesse en téléchargeant une petite image
+        // Mesure simple de la vitesse en téléchargeant le logo
         const startTime = performance.now();
-        const testImageUrl = '/images/speed-test.jpg?cache=' + Date.now();
+        const testImageUrl = '/build/assets/logo-Dkiz87pR.webp?cache=' + Date.now();
         
         try {
             const response = await fetch(testImageUrl, { 
-                cache: 'no-cache',
-                mode: 'no-cors' 
+                cache: 'no-cache'
             });
+            
+            if (!response.ok) {
+                throw new Error('Failed to load test image');
+            }
             
             const endTime = performance.now();
             const duration = endTime - startTime;
@@ -143,7 +146,8 @@ class NetworkSpeedAdapter {
             
             console.log('⏱️ Vitesse mesurée:', duration.toFixed(0) + 'ms', '→', this.speedCategory);
         } catch (error) {
-            console.warn('⚠️ Impossible de mesurer la vitesse:', error);
+            console.warn('⚠️ Impossible de mesurer la vitesse, utilisation de la détection API');
+            // Fallback sur la détection via Network Information API uniquement
         }
     }
 

@@ -387,6 +387,14 @@
                             <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Zones autorisées</span>
                         </a>
+
+                        <!-- 🔔 Broadcast Notifications FCM -->
+                        <a href="{{ route('admin.broadcast.fcm') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 @if(request()->routeIs('admin.broadcast.fcm')) bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-bullhorn w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Broadcast Push</span>
+                            <span class="inline-flex items-center justify-center w-2 h-2 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/50"></span>
+                        </a>
                     @endif
                 </nav>
 

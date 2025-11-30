@@ -19,6 +19,8 @@ use App\Services\MonitoringService;
 use App\Services\ItemVerificationService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
+use App\Notifications\ItemApproved;
+use App\Notifications\ItemRejected;
 
 class ItemController extends Controller
 {
@@ -153,11 +155,14 @@ class ItemController extends Controller
         $monitoring = app(MonitoringService::class);
         
         try {
-            // Validation des images (minimum 3 requises)
-            if (!$request->hasFile('images') || count($request->file('images')) < 3) {
-                return back()->withInput()
-                    ->with('error', 'Veuillez fournir au minimum 3 images de bonne qualité pour votre article.');
-            }
+            // La validation est déjà faite par StoreItemRequest (minimum 3 images)
+            
+            Log::info('Création d\'article - Début', [
+                'user_id' => Auth::id(),
+                'name' => $request->name,
+                'has_images' => $request->hasFile('images'),
+                'image_count' => $request->hasFile('images') ? count($request->file('images')) : 0
+            ]);
 
             $item = new Item();
         $item->user_id = Auth::id();
@@ -172,7 +177,8 @@ class ItemController extends Controller
         $item->color = $request->color;
         $item->size = $request->size;
         $item->item_number = $request->item_number;
-        $item->status = 'active';
+        // Tous les articles doivent passer par la vérification admin
+        $item->status = 'pending_verification';
 
         // Gestion des spécifications
         if ($request->filled('specifications') && is_array($request->specifications)) {
@@ -212,31 +218,48 @@ class ItemController extends Controller
 
         // Avant d'enregistrer définitivement, vérifier les images automatiquement avec le nouveau service
         if ($item->images && is_array($item->images) && count($item->images) >= 3) {
-            // Récupérer les noms de catégorie et marque pour la vérification
-            $category = Category::find($item->category_id);
-            $brand = Brand::find($item->brand_id);
-            
-            $verification = $this->verificationService->verifyItem(
-                $item->images,
-                $item->name,
-                $item->description ?? '',
-                $brand->name ?? null,
-                $category->name ?? null
-            );
-            
-            // Appliquer le résultat de la vérification
-            $item->verification_status = $verification['status'];
-            $item->verification_score = $verification['score'];
-            $item->verification_details = $verification['details'];
-            $item->verified_at = now();
-            
-            // Ajuster le statut de publication en fonction de la vérification
-            if ($verification['status'] === 'approved') {
-                $item->status = 'active';
-            } elseif ($verification['status'] === 'pending') {
+            try {
+                Log::info('Vérification des images - Début');
+                
+                // Récupérer les noms de catégorie et marque pour la vérification
+                $category = Category::find($item->category_id);
+                $brand = Brand::find($item->brand_id);
+                
+                $verification = $this->verificationService->verifyItem(
+                    $item->images,
+                    $item->name,
+                    $item->description ?? '',
+                    $brand->name ?? null,
+                    $category->name ?? null
+                );
+                
+                Log::info('Vérification des images - Résultat', [
+                    'status' => $verification['status'],
+                    'score' => $verification['score']
+                ]);
+                
+                // Appliquer le résultat de la vérification
+                $item->verification_status = $verification['status'];
+                $item->verification_score = $verification['score'];
+                $item->verification_details = $verification['details'];
+                $item->verified_at = now();
+                
+                // Tous les articles restent en attente de vérification manuelle par l'admin
+                // même si l'IA les approuve automatiquement
                 $item->status = 'pending_verification';
-            } else {
-                $item->status = 'inactive';
+            } catch (\Exception $e) {
+                // Si la vérification échoue, on met en attente de vérification manuelle
+                Log::error('Erreur vérification automatique', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                
+                $item->verification_status = 'pending';
+                $item->status = 'pending_verification';
+                $item->verification_details = [
+                    'error' => 'Erreur lors de la vérification automatique',
+                    'message' => $e->getMessage()
+                ];
             }
         } else {
             // Moins de 3 images = mise en attente automatique
@@ -248,6 +271,12 @@ class ItemController extends Controller
         }
 
             $item->save();
+
+            Log::info('Article créé avec succès', [
+                'item_id' => $item->id,
+                'verification_status' => $item->verification_status,
+                'score' => $item->verification_score
+            ]);
 
             // Enregistrer la métrique business
             $monitoring->recordBusinessMetric('item_created', $item->price, [
@@ -268,27 +297,33 @@ class ItemController extends Controller
             event(new \App\Events\ItemCreated($item));
 
             // Message personnalisé selon le statut de vérification
-            $message = 'Article créé avec succès !';
+            $message = 'Article créé avec succès et envoyé pour vérification !';
             
-            if ($item->verification_status === 'approved') {
-                $message = "Article créé et publié avec succès ! Score de vérification: {$item->verification_score}/100";
-            } elseif ($item->verification_status === 'pending') {
-                $message = "Article créé mais en attente de vérification manuelle par notre équipe. Score: {$item->verification_score}/100";
+            if ($item->verification_score >= 75) {
+                $message = "Article créé avec succès ! Score IA: {$item->verification_score}/100. En attente de validation admin.";
+            } elseif ($item->verification_score >= 50) {
+                $message = "Article créé ! Score IA: {$item->verification_score}/100. Notre équipe vérifiera votre article sous peu.";
             } else {
-                $message = "Article créé mais nécessite des améliorations. Veuillez vérifier les images et la description. Score: {$item->verification_score}/100";
+                $message = "Article créé. Score IA: {$item->verification_score}/100. Vérification manuelle requise par notre équipe.";
             }
 
             return redirect()->route('items.show', $item)
-                ->with($item->verification_status === 'rejected' ? 'warning' : 'success', $message);
+                ->with('success', $message);
         } catch (\Exception $e) {
             // Enregistrer l'erreur
+            Log::error('Erreur création article', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
             $monitoring->recordError($e, [
                 'action' => 'item.store',
                 'user_id' => Auth::id(),
             ]);
             
             return back()->withInput()
-                ->with('error', 'Une erreur est survenue lors de la création de l\'article.');
+                ->with('error', 'Une erreur est survenue lors de la création de l\'article: ' . $e->getMessage());
         }
     }
 
@@ -481,7 +516,23 @@ class ItemController extends Controller
         
         $item->save();
 
-        return redirect()->back()->with('success', 'Article approuvé et publié.');
+        // Envoyer la notification au vendeur
+        try {
+            $item->user->notify(new ItemApproved($item, $user->name));
+            
+            Log::info('Notification d\'approbation envoyée', [
+                'item_id' => $item->id,
+                'seller_id' => $item->user_id,
+                'admin_id' => $user->id
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi notification approbation', [
+                'error' => $e->getMessage(),
+                'item_id' => $item->id
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Article approuvé et vendeur notifié.');
     }
 
     /**
@@ -510,7 +561,24 @@ class ItemController extends Controller
         
         $item->save();
 
-        return redirect()->back()->with('success', 'Article rejeté et retiré de la publication.');
+        // Envoyer la notification au vendeur
+        try {
+            $item->user->notify(new ItemRejected($item, $reason, $user->name));
+            
+            Log::info('Notification de rejet envoyée', [
+                'item_id' => $item->id,
+                'seller_id' => $item->user_id,
+                'admin_id' => $user->id,
+                'reason' => $reason
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi notification rejet', [
+                'error' => $e->getMessage(),
+                'item_id' => $item->id
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Article rejeté et vendeur notifié.');
     }
 
     /**
@@ -521,8 +589,12 @@ class ItemController extends Controller
         // La vérification admin est déjà faite par le middleware
         // Pas besoin de re-vérifier ici
         
-        $items = Item::where('verification_status', 'pending')
+        // Filtrer par status 'pending_verification' pour inclure tous les articles
+        // en attente de validation admin (peu importe le score IA)
+        // Trier par score IA décroissant pour prioriser les meilleurs articles
+        $items = Item::where('status', 'pending_verification')
             ->with(['user', 'category', 'brand'])
+            ->orderBy('verification_score', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 

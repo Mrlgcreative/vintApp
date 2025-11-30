@@ -1091,6 +1091,16 @@ function displayCitiesOnMap(cities) {
 
 // Ajouter un marqueur de ville sur la carte
 function addCityMarkerToMap(city) {
+    // ✅ Convertir latitude/longitude en nombres si ce sont des strings
+    const lat = parseFloat(city.latitude);
+    const lng = parseFloat(city.longitude);
+    
+    // Vérifier que les coordonnées sont valides
+    if (isNaN(lat) || isNaN(lng)) {
+        console.warn('⚠️ Coordonnées GPS invalides pour', city.name, { latitude: city.latitude, longitude: city.longitude });
+        return;
+    }
+    
     // Couleur selon le statut
     const iconColor = city.is_active ? '#10b981' : '#ef4444'; // green-500 : red-500
     
@@ -1126,7 +1136,7 @@ function addCityMarkerToMap(city) {
         popupAnchor: [0, -40]
     });
     
-    const marker = L.marker([city.latitude, city.longitude], { icon: customIcon });
+    const marker = L.marker([lat, lng], { icon: customIcon });
     
     // Contenu du popup
     const popupContent = `
@@ -1144,7 +1154,7 @@ function addCityMarkerToMap(city) {
                 </span>
             </p>
             <p style="font-size: 11px; color: #6b7280; margin-top: 8px; border-top: 1px solid #e5e7eb; padding-top: 8px;">
-                📍 ${city.latitude.toFixed(4)}°, ${city.longitude.toFixed(4)}°
+                📍 ${lat.toFixed(4)}°, ${lng.toFixed(4)}°
             </p>
         </div>
     `;
@@ -1383,9 +1393,14 @@ function openAddCityWithCoords(lat, lng) {
     // Désactiver le mode marquage
     disableMapMarkerMode();
     
-    // Pré-remplir les coordonnées
-    document.getElementById('cityLatitudeInput').value = lat.toFixed(6);
-    document.getElementById('cityLongitudeInput').value = lng.toFixed(6);
+    // ✅ IMPORTANT: Pré-remplir les coordonnées GPS avec précision maximale
+    const latitude = parseFloat(lat).toFixed(6);
+    const longitude = parseFloat(lng).toFixed(6);
+    
+    document.getElementById('cityLatitudeInput').value = latitude;
+    document.getElementById('cityLongitudeInput').value = longitude;
+    
+    console.log('📍 Coordonnées GPS pré-remplies:', { latitude, longitude });
     
     // Effectuer un géocodage inversé pour obtenir le nom de la ville
     reverseGeocode(lat, lng);
@@ -1428,21 +1443,46 @@ function reverseGeocode(lat, lng) {
             const country = address.country || '';
             const countryCode = address.country_code ? address.country_code.toUpperCase() : 'CD';
             
-            // Remplir le formulaire
+            // Remplir le formulaire avec toutes les données
             document.getElementById('cityNameInput').value = cityName;
             document.getElementById('cityRegionInput').value = region;
             document.getElementById('worldCountrySelect').value = countryCode;
             document.getElementById('countryName').value = country;
             
+            // ✅ IMPORTANT: Les coordonnées GPS sont déjà remplies via openAddCityWithCoords()
+            // Vérifier qu'elles sont bien présentes
+            const latInput = document.getElementById('cityLatitudeInput');
+            const lngInput = document.getElementById('cityLongitudeInput');
+            
+            if (!latInput.value || !lngInput.value) {
+                console.warn('⚠️ Coordonnées GPS manquantes! Utilisation des coords du clic.');
+                latInput.value = lat.toFixed(6);
+                lngInput.value = lng.toFixed(6);
+            }
+            
+            console.log('📍 Ville avec GPS:', {
+                name: cityName,
+                latitude: latInput.value,
+                longitude: lngInput.value,
+                country: country
+            });
+            
             // Activer le bouton submit
             document.getElementById('submitCityBtn').disabled = false;
             
-            // Afficher l'aperçu
+            // Afficher l'aperçu avec coordonnées GPS
             document.getElementById('cityPreviewFlag').textContent = getCountryFlag(countryCode);
             document.getElementById('cityPreviewName').textContent = cityName;
             document.getElementById('cityPreviewLocation').textContent = `${region ? region + ', ' : ''}${country}`;
-            document.getElementById('cityPreviewCoords').textContent = `📍 ${lat.toFixed(6)}°, ${lng.toFixed(6)}°`;
+            
+            // Récupérer les coordonnées actuelles du formulaire
+            const currentLat = document.getElementById('cityLatitudeInput').value;
+            const currentLng = document.getElementById('cityLongitudeInput').value;
+            
+            document.getElementById('cityPreviewCoords').textContent = `📍 GPS: ${currentLat}°, ${currentLng}°`;
             document.getElementById('cityPreview').classList.remove('hidden');
+            
+            console.log('✅ Aperçu GPS affiché:', { latitude: currentLat, longitude: currentLng });
             
             showToast(`✅ Ville trouvée : ${cityName}`, 'success');
         } else {
@@ -1896,11 +1936,18 @@ function displayNoResults() {
 function selectCity(cityData) {
     selectedCityData = cityData;
     
-    // Remplir le formulaire
+    // Remplir le formulaire avec coordonnées GPS précises
     document.getElementById('cityNameInput').value = cityData.city || cityData.name;
     document.getElementById('cityRegionInput').value = cityData.state || '';
-    document.getElementById('cityLatitudeInput').value = cityData.latitude;
-    document.getElementById('cityLongitudeInput').value = cityData.longitude;
+    
+    // ✅ IMPORTANT: Coordonnées GPS avec 6 décimales de précision
+    const latitude = parseFloat(cityData.latitude).toFixed(6);
+    const longitude = parseFloat(cityData.longitude).toFixed(6);
+    
+    document.getElementById('cityLatitudeInput').value = latitude;
+    document.getElementById('cityLongitudeInput').value = longitude;
+    
+    console.log('📍 GPS enregistré:', { latitude, longitude, city: cityData.city || cityData.name });
     
     // Mettre à jour l'aperçu
     const countryCode = document.getElementById('worldCountrySelect').value;
@@ -1963,10 +2010,17 @@ function handleCityFormSubmit(event) {
         method: 'POST',
         body: formData,
         headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             // Ajouter la ville sur la carte immédiatement

@@ -49,10 +49,10 @@ class LocationAccessController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'country_code' => 'required|string|size:2', // ISO 3166-1 alpha-2
+            'country_code' => 'required|string|max:3', // ISO 3166-1 alpha-2 ou alpha-3
             'region' => 'nullable|string|max:255',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
+            'latitude' => 'required|numeric|between:-90,90', // ✅ OBLIGATOIRE pour système GPS
+            'longitude' => 'required|numeric|between:-180,180', // ✅ OBLIGATOIRE pour système GPS
             'city_code' => 'nullable|string|max:50|unique:allowed_cities,city_code',
             'population' => 'nullable|integer|min:0',
             'timezone' => 'nullable|string|max:50',
@@ -61,6 +61,14 @@ class LocationAccessController extends Controller
         ]);
 
         $city = AllowedCity::create($validated);
+        
+        // Log pour debug
+        \Log::info('📍 Nouvelle ville ajoutée avec GPS', [
+            'name' => $city->name,
+            'latitude' => $city->latitude,
+            'longitude' => $city->longitude,
+            'country' => $city->country
+        ]);
 
         // Vider le cache
         Cache::flush();

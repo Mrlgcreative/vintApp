@@ -1,4 +1,95 @@
-/* Palette de couleurs Vinted Violet */
+/* 
+ * MIGRATION VERS TAILWIND - Guide de Conversion
+ * 
+ * Ce fichier CSS a été remplacé par des classes Tailwind.
+ * Configuration dans tailwind.config.js avec la palette 'vinted'.
+ * 
+ * GUIDE DE MIGRATION DES CLASSES:
+ * 
+ * 1. BOUTONS:
+ *    .btn-primary → bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white rounded-lg font-medium transition-all hover:-translate-y-0.5 hover:shadow-vinted-primary
+ *    .btn-outline-primary → border-2 border-vinted-primary-600 text-vinted-primary-600 hover:bg-vinted-primary-600 hover:text-white rounded-lg font-medium transition-all
+ *    .btn → rounded-lg font-medium transition-all px-4 py-2
+ *    .btn-sm → px-3 py-1.5 text-sm
+ *    .btn-lg → px-6 py-3 text-lg
+ * 
+ * 2. NAVBAR:
+ *    .navbar-dark.bg-primary → bg-gradient-to-br from-vinted-primary-600 to-vinted-primary-700 shadow-vinted-sm
+ *    .navbar-brand → font-bold text-2xl
+ *    .nav-link → font-medium transition-all hover:text-white/90 hover:-translate-y-0.5
+ *    .nav-link.active → text-white font-semibold relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-white after:rounded-sm
+ * 
+ * 3. CARDS:
+ *    .card → border-0 rounded-xl shadow-vinted-sm transition-all hover:shadow-vinted hover:-translate-y-0.5
+ *    .card-header → bg-white border-b border-vinted-secondary-200 rounded-t-xl
+ * 
+ * 4. FORMULAIRES:
+ *    .form-control → border-2 border-vinted-secondary-200 rounded-lg transition-all focus:border-vinted-primary-600 focus:ring-4 focus:ring-vinted-primary-600/10 text-[0.95rem]
+ *    .form-select → border-2 border-vinted-secondary-200 rounded-lg transition-all focus:border-vinted-primary-600 focus:ring-4 focus:ring-vinted-primary-600/10
+ * 
+ * 5. BADGES:
+ *    .badge → rounded-full font-medium px-3 py-1.5
+ *    .badge.bg-danger → bg-vinted-danger-500
+ *    .badge.bg-primary → bg-vinted-primary-600
+ * 
+ * 6. DROPDOWNS:
+ *    .dropdown-menu → border-0 rounded-xl shadow-vinted-lg py-2
+ *    .dropdown-item → px-4 py-3 transition-all hover:bg-vinted-accent-50 hover:text-vinted-primary-600
+ * 
+ * 7. ALERTS:
+ *    .alert → border-0 rounded-xl font-medium
+ *    .alert-danger → bg-vinted-danger-50 text-vinted-danger-500 border-l-4 border-vinted-danger-500
+ *    .alert-success → bg-vinted-success-50 text-vinted-success-600 border-l-4 border-vinted-success-600
+ * 
+ * 8. MODALS:
+ *    .modal-content → border-0 rounded-2xl shadow-vinted-xl
+ *    .modal-header → border-b border-vinted-secondary-200 rounded-t-2xl
+ *    .modal-footer → border-t border-vinted-secondary-200 rounded-b-2xl
+ * 
+ * 9. COULEURS DE TEXTE:
+ *    .text-primary → text-vinted-primary-600
+ *    .text-muted → text-vinted-secondary-500
+ * 
+ * 10. BACKGROUNDS:
+ *     .bg-light → bg-vinted-secondary-50
+ *     .bg-white → bg-white
+ * 
+ * 11. BORDERS:
+ *     .border → border-vinted-secondary-200
+ *     .border-end → border-r-vinted-secondary-200
+ *     .border-bottom → border-b-vinted-secondary-200
+ * 
+ * 12. SHADOWS:
+ *     .shadow-sm → shadow-vinted-sm
+ *     .shadow → shadow-vinted
+ *     .shadow-lg → shadow-vinted-lg
+ * 
+ * 13. ANIMATIONS:
+ *     .fade-in-up → animate-fade-in-up
+ *     .hover-lift → transition-all hover:-translate-y-0.5 hover:shadow-vinted-lg
+ * 
+ * 14. SCROLLBAR (ajouter au HTML ou composant):
+ *     scrollbar-thin scrollbar-thumb-vinted-secondary-300 scrollbar-track-vinted-secondary-100
+ * 
+ * EXEMPLE DE CONVERSION COMPLÈTE:
+ * 
+ * Avant (CSS):
+ * <button class="btn btn-primary">Action</button>
+ * 
+ * Après (Tailwind):
+ * <button class="bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white rounded-lg font-medium transition-all hover:-translate-y-0.5 hover:shadow-vinted-primary px-4 py-2">
+ *   Action
+ * </button>
+ * 
+ * OU créer des composants réutilisables:
+ * <x-button-primary>Action</x-button-primary>
+ * 
+ * PLUGIN RECOMMANDÉ:
+ * Pour les scrollbars personnalisées, installer: npm install -D tailwind-scrollbar
+ * Puis ajouter dans tailwind.config.js plugins: [forms, require('tailwind-scrollbar')]
+ */
+
+/* Variables CSS root pour compatibilité - peuvent être supprimées si toutes les vues utilisent Tailwind */
 :root {
     --vinted-primary: #7c3aed;
     --vinted-primary-dark: #6d28d9;
@@ -12,334 +103,18 @@
     --vinted-warning: #f59e0b;
     --vinted-danger: #ef4444;
     --vinted-white: #ffffff;
-    --vinted-gray-50: #f9fafb;
-    --vinted-gray-100: #f3f4f6;
-    --vinted-gray-200: #e5e7eb;
-    --vinted-gray-300: #d1d5db;
-    --vinted-gray-400: #9ca3af;
-    --vinted-gray-500: #6b7280;
-    --vinted-gray-600: #4b5563;
-    --vinted-gray-700: #374151;
-    --vinted-gray-800: #1f2937;
-    --vinted-gray-900: #111827;
 }
 
-/* Override Bootstrap pour le style Vinted */
-.btn-primary {
-    background-color: var(--vinted-primary) !important;
-    border-color: var(--vinted-primary) !important;
-    color: white !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-}
-
-.btn-primary:hover {
-    background-color: var(--vinted-primary-dark) !important;
-    border-color: var(--vinted-primary-dark) !important;
-    transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
-}
-
-.btn-outline-primary {
-    color: var(--vinted-primary) !important;
-    border-color: var(--vinted-primary) !important;
-    background-color: transparent !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-}
-
-.btn-outline-primary:hover {
-    background-color: var(--vinted-primary) !important;
-    border-color: var(--vinted-primary) !important;
-    color: white !important;
-}
-
-/* Navbar Vinted style */
-.navbar-dark.bg-primary {
-    background: linear-gradient(135deg, var(--vinted-primary) 0%, var(--vinted-primary-dark) 100%) !important;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2) !important;
-}
-
-.navbar-brand {
-    font-weight: 700 !important;
-    font-size: 1.5rem !important;
-}
-
-.nav-link {
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-}
-
-.nav-link:hover {
-    color: rgba(255, 255, 255, 0.9) !important;
-    transform: translateY(-1px) !important;
-}
-
-.nav-link.active {
-    color: white !important;
-    font-weight: 600 !important;
-    position: relative !important;
-}
-
-.nav-link.active::after {
-    content: '' !important;
-    position: absolute !important;
-    bottom: -2px !important;
-    left: 0 !important;
-    right: 0 !important;
-    height: 2px !important;
-    background-color: white !important;
-    border-radius: 1px !important;
-}
-
-/* Cards Vinted style */
-.card {
-    border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-    transition: all 0.2s ease !important;
-}
-
-.card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
-    transform: translateY(-2px) !important;
-}
-
-.card-header {
-    background-color: var(--vinted-white) !important;
-    border-bottom: 1px solid var(--vinted-gray-200) !important;
-    border-radius: 12px 12px 0 0 !important;
-}
-
-/* Form controls Vinted style */
-.form-control {
-    border: 2px solid var(--vinted-gray-200) !important;
-    border-radius: 8px !important;
-    transition: all 0.2s ease !important;
-    font-size: 0.95rem !important;
-}
-
-.form-control:focus {
-    border-color: var(--vinted-primary) !important;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
-}
-
-.form-select {
-    border: 2px solid var(--vinted-gray-200) !important;
-    border-radius: 8px !important;
-    transition: all 0.2s ease !important;
-}
-
-.form-select:focus {
-    border-color: var(--vinted-primary) !important;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
-}
-
-/* Badges Vinted style */
-.badge {
-    border-radius: 20px !important;
-    font-weight: 500 !important;
-    padding: 0.4em 0.8em !important;
-}
-
-.badge.bg-danger {
-    background-color: var(--vinted-danger) !important;
-}
-
-.badge.bg-primary {
-    background-color: var(--vinted-primary) !important;
-}
-
-/* Dropdown Vinted style */
-.dropdown-menu {
-    border: none !important;
-    border-radius: 12px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
-    padding: 0.5rem 0 !important;
-}
-
-.dropdown-item {
-    padding: 0.75rem 1rem !important;
-    transition: all 0.2s ease !important;
-    border-radius: 0 !important;
-}
-
-.dropdown-item:hover {
-    background-color: var(--vinted-accent) !important;
-    color: var(--vinted-primary) !important;
-}
-
-/* Buttons Vinted style */
-.btn {
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    transition: all 0.2s ease !important;
-    padding: 0.5rem 1rem !important;
-}
-
-.btn-sm {
-    padding: 0.375rem 0.75rem !important;
-    font-size: 0.875rem !important;
-}
-
-.btn-lg {
-    padding: 0.75rem 1.5rem !important;
-    font-size: 1.125rem !important;
-}
-
-/* Alert Vinted style */
-.alert {
-    border: none !important;
-    border-radius: 12px !important;
-    font-weight: 500 !important;
-}
-
-.alert-danger {
-    background-color: #fef2f2 !important;
-    color: var(--vinted-danger) !important;
-    border-left: 4px solid var(--vinted-danger) !important;
-}
-
-.alert-success {
-    background-color: #f0fdf4 !important;
-    color: var(--vinted-success) !important;
-    border-left: 4px solid var(--vinted-success) !important;
-}
-
-/* Breadcrumb Vinted style */
-.breadcrumb {
-    background-color: transparent !important;
-    padding: 0 !important;
-}
-
-.breadcrumb-item + .breadcrumb-item::before {
-    color: var(--vinted-gray-400) !important;
-}
-
-/* Modal Vinted style */
-.modal-content {
-    border: none !important;
-    border-radius: 16px !important;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-}
-
-.modal-header {
-    border-bottom: 1px solid var(--vinted-gray-200) !important;
-    border-radius: 16px 16px 0 0 !important;
-}
-
-.modal-footer {
-    border-top: 1px solid var(--vinted-gray-200) !important;
-    border-radius: 0 0 16px 16px !important;
-}
-
-/* Custom scrollbar */
+/* Scrollbar personnalisée (uniquement si le plugin scrollbar n'est pas installé) */
 ::-webkit-scrollbar {
-    width: 8px !important;
+    width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--vinted-gray-100) !important;
-    border-radius: 4px !important;
+    @apply bg-vinted-secondary-100 rounded;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--vinted-gray-300) !important;
-    border-radius: 4px !important;
+    @apply bg-vinted-secondary-300 rounded hover:bg-vinted-secondary-400;
 }
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--vinted-gray-400) !important;
-}
-
-/* Text colors */
-.text-primary {
-    color: var(--vinted-primary) !important;
-}
-
-.text-muted {
-    color: var(--vinted-text-light) !important;
-}
-
-/* Background colors */
-.bg-light {
-    background-color: var(--vinted-gray-50) !important;
-}
-
-.bg-white {
-    background-color: var(--vinted-white) !important;
-}
-
-/* Border colors */
-.border {
-    border-color: var(--vinted-gray-200) !important;
-}
-
-.border-end {
-    border-right-color: var(--vinted-gray-200) !important;
-}
-
-.border-bottom {
-    border-bottom-color: var(--vinted-gray-200) !important;
-}
-
-/* Shadow utilities */
-.shadow-sm {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
-}
-
-.shadow {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
-}
-
-.shadow-lg {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Hover effects */
-.hover-lift {
-    transition: all 0.2s ease !important;
-}
-
-.hover-lift:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Focus states */
-.focus-ring:focus {
-    outline: none !important;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1) !important;
-}
-
-/* Animation keyframes */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.fade-in-up {
-    animation: fadeInUp 0.3s ease-out;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .btn {
-        padding: 0.625rem 1rem !important;
-    }
-    
-    .card {
-        border-radius: 8px !important;
-    }
-    
-    .modal-content {
-        border-radius: 12px !important;
-    }
-} 
+ 

@@ -9,15 +9,26 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <meta name="theme-color" content="#8B5CF6">
+    <meta name="theme-color" content="#7c3aed">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="VintApp">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-512x512.png') }}">
+    <link rel="apple-touch-icon" sizes="72x72" href="{{ asset('images/icons/icon-72x72.png') }}">
+    <link rel="apple-touch-icon" sizes="96x96" href="{{ asset('images/icons/icon-96x96.png') }}">
+    <link rel="apple-touch-icon" sizes="128x128" href="{{ asset('images/icons/icon-128x128.png') }}">
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ asset('images/icons/icon-144x144.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('images/icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ asset('images/icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="384x384" href="{{ asset('images/icons/icon-384x384.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
 
     <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-512x512.png') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -316,6 +327,9 @@
     <main class="flex-1 pb-20 lg:pb-0">
         @yield('content')
     </main>
+
+    <!-- Notifications en temps réel -->
+    <x-notifications-realtime />
 
     <!-- Footer -->
     @if(!request()->routeIs('messages.*'))
@@ -653,7 +667,170 @@
                     applyTheme('auto');
                 }
             });
+            
+            @auth
+            // Initialiser les notifications push Firebase
+            initFirebasePushNotifications();
+            @endauth
         });
     </script>
+
+    @auth
+    <!-- Firebase SDK pour notifications push -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    
+    <script>
+        // Configuration Firebase
+        const firebaseConfig = {
+            apiKey: "{{ config('services.firebase.api_key') }}",
+            authDomain: "{{ config('services.firebase.auth_domain') }}",
+            projectId: "{{ config('services.firebase.project_id') }}",
+            storageBucket: "{{ config('services.firebase.storage_bucket') }}",
+            messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
+            appId: "{{ config('services.firebase.app_id') }}"
+        };
+
+        // Initialiser Firebase
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        // VAPID Key pour les notifications push web
+        const vapidKey = "{{ config('services.firebase.vapid_key') }}";
+
+        async function initFirebasePushNotifications() {
+            try {
+                console.log('📱 Initialisation des notifications push...');
+
+                // Vérifier si le navigateur supporte les notifications
+                if (!('Notification' in window)) {
+                    console.log('⚠️ Ce navigateur ne supporte pas les notifications');
+                    return;
+                }
+
+                // Vérifier si le Service Worker est supporté
+                if (!('serviceWorker' in navigator)) {
+                    console.log('⚠️ Service Worker non supporté');
+                    return;
+                }
+
+                // Enregistrer le Service Worker
+                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                console.log('✅ Service Worker enregistré:', registration);
+
+                // Demander la permission de notification
+                const permission = await requestNotificationPermission();
+                
+                if (permission === 'granted') {
+                    // Récupérer le token FCM
+                    const currentToken = await messaging.getToken({
+                        vapidKey: vapidKey,
+                        serviceWorkerRegistration: registration
+                    });
+
+                    if (currentToken) {
+                        console.log('✅ Token FCM obtenu:', currentToken);
+                        await saveFCMToken(currentToken);
+                    } else {
+                        console.log('⚠️ Aucun token FCM disponible');
+                    }
+
+                    // Écouter les messages en premier plan (app ouverte)
+                    messaging.onMessage((payload) => {
+                        console.log('📬 Message reçu en premier plan:', payload);
+                        displayForegroundNotification(payload);
+                    });
+                } else {
+                    console.log('❌ Permission de notification refusée');
+                }
+
+            } catch (error) {
+                console.error('❌ Erreur initialisation FCM:', error);
+            }
+        }
+
+        async function requestNotificationPermission() {
+            try {
+                const permission = await Notification.requestPermission();
+                console.log('🔔 Permission notifications:', permission);
+                return permission;
+            } catch (error) {
+                console.error('Erreur demande permission:', error);
+                return 'denied';
+            }
+        }
+
+        async function saveFCMToken(token) {
+            try {
+                const response = await fetch('/api/fcm-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ 
+                        token: token,
+                        device_type: /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('✅ Token FCM enregistré sur le serveur');
+                    localStorage.setItem('fcm_token', token);
+                } else {
+                    console.error('❌ Erreur enregistrement token:', data.message);
+                }
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde token:', error);
+            }
+        }
+
+        function displayForegroundNotification(payload) {
+            const title = payload.notification?.title || payload.data?.title || 'VintApp';
+            const options = {
+                body: payload.notification?.body || payload.data?.body || 'Nouvelle notification',
+                icon: payload.notification?.icon || payload.data?.icon || '/images/icons/icon-192x192.png',
+                badge: '/images/icons/icon-96x96.png',
+                vibrate: [200, 100, 200],
+                data: payload.data || {},
+                requireInteraction: false
+            };
+
+            // Afficher notification système (si permission accordée)
+            if (Notification.permission === 'granted') {
+                const notification = new Notification(title, options);
+                
+                notification.onclick = function(event) {
+                    event.preventDefault();
+                    const url = payload.data?.url || payload.fcmOptions?.link || '/';
+                    window.open(url, '_blank');
+                    notification.close();
+                };
+            }
+
+            // Aussi afficher le toast dans l'app
+            if (typeof showNotification === 'function' && payload.data) {
+                showNotification(payload.data);
+            }
+        }
+
+        // Rafraîchir le token périodiquement (toutes les 24h)
+        setInterval(async () => {
+            try {
+                const currentToken = await messaging.getToken({ vapidKey: vapidKey });
+                const savedToken = localStorage.getItem('fcm_token');
+                
+                if (currentToken && currentToken !== savedToken) {
+                    console.log('🔄 Token FCM mis à jour');
+                    await saveFCMToken(currentToken);
+                }
+            } catch (error) {
+                console.error('Erreur rafraîchissement token:', error);
+            }
+        }, 24 * 60 * 60 * 1000); // 24 heures
+    </script>
+    @endauth
 </body>
 </html>

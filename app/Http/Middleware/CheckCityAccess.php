@@ -49,8 +49,10 @@ class CheckCityAccess
 
         // Bypass en environnement local pour le développement (SAUF si on veut tester)
         $enableTestingMode = env('ENABLE_GEO_TESTING', false);
-        if (app()->environment('local') && $request->ip() === '127.0.0.1' && !$enableTestingMode) {
-            Log::info("Bypass localhost activé - Accès autorisé pour IP: 127.0.0.1");
+        
+        // En mode test, ne jamais bypass
+        if (!$enableTestingMode && app()->environment('local') && $request->ip() === '127.0.0.1') {
+            Log::info("🔓 Bypass localhost activé - Accès autorisé pour IP: 127.0.0.1");
             return $next($request);
         }
 
@@ -140,7 +142,13 @@ class CheckCityAccess
             $regionName = $position->regionName;
             $countryName = $position->countryName;
 
-            Log::info("Vérification d'accès - IP: {$ip}, Ville: {$cityName}, Région: {$regionName}, Pays: {$countryName}");
+            Log::info("🌍 Vérification d'accès géographique", [
+                'ip' => $ip,
+                'ville' => $cityName,
+                'région' => $regionName,
+                'pays' => $countryName,
+                'code_pays' => $position->countryCode
+            ]);
 
             // Vérifier si le pays est la RDC
             $isDRC = stripos($countryName, 'Congo') !== false || 
@@ -149,20 +157,32 @@ class CheckCityAccess
 
             if (!$isDRC) {
                 // Pour l'instant, bloquer les pays hors RDC (configurable plus tard)
-                Log::info("Pays non autorisé: {$countryName}");
+                Log::warning("❌ Pays non autorisé: {$countryName}");
                 return false;
             }
 
             // Vérifier si la ville est autorisée
-            if ($cityName && AllowedCity::isCityAllowed($cityName)) {
-                return true;
+            if ($cityName) {
+                $cityAllowed = AllowedCity::isCityAllowed($cityName, $countryName);
+                
+                Log::info("🔍 Vérification ville", [
+                    'ville_détectée' => $cityName,
+                    'autorisée' => $cityAllowed ? 'OUI' : 'NON'
+                ]);
+                
+                if ($cityAllowed) {
+                    Log::info("✅ Accès autorisé pour la ville: {$cityName}");
+                    return true;
+                }
             }
 
             // Vérifier si la région est autorisée
             if ($regionName && AllowedRegion::isRegionAllowed($regionName)) {
+                Log::info("✅ Accès autorisé pour la région: {$regionName}");
                 return true;
             }
 
+            Log::warning("❌ Accès refusé - Ville '{$cityName}' non autorisée");
             return false;
 
         } catch (\Exception $e) {

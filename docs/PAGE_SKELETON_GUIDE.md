@@ -6,14 +6,14 @@ Le **Page Skeleton Loader** affiche un squelette complet de la page pendant le c
 
 ## ✨ Fonctionnalités
 
-- ✅ Skeleton complet de page (pas seulement les images)
-- ✅ Détection automatique du type de page
-- ✅ 4 templates prédéfinis (Grid, Detail, Dashboard, List)
-- ✅ Animation shimmer fluide
-- ✅ Transition douce à l'affichage du contenu
-- ✅ Support mode sombre
-- ✅ Temps d'affichage minimum pour éviter les flashs
-- ✅ Cache du navigateur respecté (pas de skeleton au back)
+-   ✅ Skeleton complet de page (pas seulement les images)
+-   ✅ Détection automatique du type de page
+-   ✅ 4 templates prédéfinis (Grid, Detail, Dashboard, List)
+-   ✅ Animation shimmer fluide
+-   ✅ Transition douce à l'affichage du contenu
+-   ✅ Support mode sombre
+-   ✅ Temps d'affichage minimum pour éviter les flashs
+-   ✅ Cache du navigateur respecté (pas de skeleton au back)
 
 ## 🚀 Utilisation automatique
 
@@ -49,12 +49,12 @@ Ajoutez simplement `data-page-type` sur votre container principal :
 
 Le système détecte automatiquement le type de page basé sur l'URL :
 
-| URL Pattern | Type détecté | Template |
-|-------------|--------------|----------|
-| `/items` | product-grid | Grille de produits |
-| `/items/{id}` | product-detail | Détail produit |
-| `/dashboard` | dashboard | Dashboard |
-| `/orders`, `/messages` | list | Liste |
+| URL Pattern            | Type détecté   | Template           |
+| ---------------------- | -------------- | ------------------ |
+| `/items`               | product-grid   | Grille de produits |
+| `/items/{id}`          | product-detail | Détail produit     |
+| `/dashboard`           | dashboard      | Dashboard          |
+| `/orders`, `/messages` | list           | Liste              |
 
 ## 🎨 Templates disponibles
 
@@ -65,15 +65,17 @@ skeleton.showProductGrid(12); // 12 cards
 ```
 
 **Affiche:**
-- En-tête avec titre
-- Barre de recherche
-- Grille de 12 cards produits
-- Chaque card : image + titre + prix + avatar
+
+-   En-tête avec titre
+-   Barre de recherche
+-   Grille de 12 cards produits
+-   Chaque card : image + titre + prix + avatar
 
 **Idéal pour:**
-- Liste d'articles
-- Catalogue produits
-- Page de recherche
+
+-   Liste d'articles
+-   Catalogue produits
+-   Page de recherche
 
 ### 2. Product Detail (Détail produit)
 
@@ -82,12 +84,14 @@ skeleton.showProductDetail();
 ```
 
 **Affiche:**
-- Colonne images (grande image + 4 miniatures)
-- Colonne info (titre + prix + tags + description + boutons)
+
+-   Colonne images (grande image + 4 miniatures)
+-   Colonne info (titre + prix + tags + description + boutons)
 
 **Idéal pour:**
-- Page de détail article
-- Fiche produit complète
+
+-   Page de détail article
+-   Fiche produit complète
 
 ### 3. Dashboard
 
@@ -96,14 +100,16 @@ skeleton.showDashboard();
 ```
 
 **Affiche:**
-- 4 cards de statistiques
-- Graphique
-- Tableau de données
+
+-   4 cards de statistiques
+-   Graphique
+-   Tableau de données
 
 **Idéal pour:**
-- Dashboard admin
-- Tableau de bord utilisateur
-- Page analytics
+
+-   Dashboard admin
+-   Tableau de bord utilisateur
+-   Page analytics
 
 ### 4. List (Liste générique)
 
@@ -112,13 +118,15 @@ skeleton.showList(10); // 10 items
 ```
 
 **Affiche:**
-- Titre
-- 10 items avec avatar + 2 lignes de texte
+
+-   Titre
+-   10 items avec avatar + 2 lignes de texte
 
 **Idéal pour:**
-- Liste de commandes
-- Liste de messages
-- Historique
+
+-   Liste de commandes
+-   Liste de messages
+-   Historique
 
 ## 🔧 Utilisation manuelle
 
@@ -126,10 +134,10 @@ skeleton.showList(10); // 10 items
 
 ```javascript
 const skeleton = new PageSkeletonLoader({
-    containerSelector: 'body',
-    skeletonClass: 'page-skeleton',
+    containerSelector: "body",
+    skeletonClass: "page-skeleton",
     fadeOutDuration: 300,
-    minDisplayTime: 400
+    minDisplayTime: 400,
 });
 
 // Afficher un template
@@ -173,8 +181,8 @@ skeleton.showCustom(customTemplate);
 
 ```javascript
 const skeleton = new PageSkeletonLoader({
-    fadeOutDuration: 500,      // Plus lent
-    minDisplayTime: 600        // Afficher au moins 600ms
+    fadeOutDuration: 500, // Plus lent
+    minDisplayTime: 600, // Afficher au moins 600ms
 });
 ```
 
@@ -184,19 +192,21 @@ const skeleton = new PageSkeletonLoader({
 
 ```css
 .skeleton-loader          /* Base */
+/* Base */
 .skeleton-text            /* Ligne de texte */
 .skeleton-title           /* Titre */
 .skeleton-image           /* Image */
 .skeleton-avatar          /* Avatar rond */
-.skeleton-button          /* Bouton */
+.skeleton-button; /* Bouton */
 ```
 
 ### États
 
 ```css
 .page-skeleton            /* Container principal */
+/* Container principal */
 .content-loading          /* Contenu en cours de chargement */
-.content-loaded           /* Contenu chargé */
+.content-loaded; /* Contenu chargé */
 ```
 
 ## 💡 Bonnes pratiques
@@ -237,7 +247,7 @@ const skeleton = new PageSkeletonLoader({
 
 ```javascript
 // Dans la console du navigateur
-localStorage.setItem('skeletonDebug', 'true');
+localStorage.setItem("skeletonDebug", "true");
 location.reload();
 ```
 
@@ -259,7 +269,7 @@ skeleton.forceHide();
 
 ```javascript
 if (window.pageSkeleton && window.pageSkeleton.isVisible()) {
-    console.log('Skeleton actif');
+    console.log("Skeleton actif");
 }
 ```
 
@@ -267,9 +277,9 @@ if (window.pageSkeleton && window.pageSkeleton.isVisible()) {
 
 Les skeletons s'adaptent automatiquement :
 
-- **Mobile (< 640px)** : 2 colonnes pour product-grid
-- **Tablet (640-1024px)** : 3 colonnes pour product-grid
-- **Desktop (> 1024px)** : 4 colonnes pour product-grid
+-   **Mobile (< 640px)** : 2 colonnes pour product-grid
+-   **Tablet (640-1024px)** : 3 colonnes pour product-grid
+-   **Desktop (> 1024px)** : 4 colonnes pour product-grid
 
 ## 🌙 Mode sombre
 
@@ -288,14 +298,16 @@ Le skeleton détecte automatiquement le mode sombre :
 ### Impact sur les métriques
 
 **Sans skeleton:**
-- FCP (First Contentful Paint): 2.5s
-- LCP (Largest Contentful Paint): 3.2s
-- Perception: Lente ❌
+
+-   FCP (First Contentful Paint): 2.5s
+-   LCP (Largest Contentful Paint): 3.2s
+-   Perception: Lente ❌
 
 **Avec skeleton:**
-- FCP: 0.3s ✅
-- LCP: 0.5s ✅
-- Perception: Rapide ✅
+
+-   FCP: 0.3s ✅
+-   LCP: 0.5s ✅
+-   Perception: Rapide ✅
 
 ### Optimisations
 
@@ -339,7 +351,7 @@ Le skeleton détecte automatiquement le mode sombre :
 <div data-page-type="product-grid">
     <div class="max-w-7xl mx-auto px-4 py-8">
         <h1>Articles disponibles</h1>
-        
+
         <div class="grid grid-cols-4 gap-4">
             @foreach($items as $item)
                 <div class="product-card">
@@ -366,7 +378,7 @@ Le skeleton détecte automatiquement le mode sombre :
         <div class="col-span-7">
             <img data-src="{{ $item->image }}" loading="eager">
         </div>
-        
+
         <!-- Info -->
         <div class="col-span-5">
             <h1>{{ $item->name }}</h1>
@@ -391,7 +403,7 @@ Le skeleton détecte automatiquement le mode sombre :
             <div class="stat-card">{{ $stat }}</div>
         @endforeach
     </div>
-    
+
     <!-- Chart -->
     <div class="chart-container">
         <!-- Chart JS -->
@@ -422,9 +434,9 @@ Le skeleton détecte automatiquement le mode sombre :
 
 ## 📚 Ressources
 
-- **Fichiers** : `public/js/page-skeleton.js`, `public/js/content-visibility.js`
-- **CSS** : `public/css/lazy-loading.css`
-- **Docs** : `docs/LAZY_LOADING_GUIDE.md`
+-   **Fichiers** : `public/js/page-skeleton.js`, `public/js/content-visibility.js`
+-   **CSS** : `public/css/lazy-loading.css`
+-   **Docs** : `docs/LAZY_LOADING_GUIDE.md`
 
 ---
 

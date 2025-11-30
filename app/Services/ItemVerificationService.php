@@ -5,10 +5,24 @@ namespace App\Services;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ItemVerificationService
 {
+    /**
+     * Image Manager instance
+     */
+    private ImageManager $manager;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->manager = new ImageManager(new Driver());
+    }
+
     /**
      * Score minimum requis pour auto-validation (sur 100)
      */
@@ -98,7 +112,7 @@ class ItemVerificationService
                 }
 
                 // Charger l'image avec Intervention
-                $img = Image::make($fullPath);
+                $img = $this->manager->read($fullPath);
                 $width = $img->width();
                 $height = $img->height();
 
@@ -186,7 +200,7 @@ class ItemVerificationService
         ];
 
         try {
-            $img = Image::make($fullPath);
+            $img = $this->manager->read($fullPath);
             $width = $img->width();
             $height = $img->height();
 
@@ -201,9 +215,14 @@ class ItemVerificationService
             for ($x = 0; $x < $width; $x += $stepX) {
                 for ($y = 0; $y < $height; $y += $stepY) {
                     $color = $img->pickColor($x, $y);
-                    $gray = 0.299 * $color[0] + 0.587 * $color[1] + 0.114 * $color[2];
+                    // Convertir en RGB array
+                    $rgb = $color->toArray();
+                    $r = $rgb[0];
+                    $g = $rgb[1];
+                    $b = $rgb[2];
+                    $gray = 0.299 * $r + 0.587 * $g + 0.114 * $b;
                     $pixels[] = $gray;
-                    $brightness[] = ($color[0] + $color[1] + $color[2]) / 3;
+                    $brightness[] = ($r + $g + $b) / 3;
                 }
             }
 
@@ -243,7 +262,7 @@ class ItemVerificationService
     {
         // Implémentation basique - peut être améliorée avec OCR
         try {
-            $img = Image::make($fullPath);
+            $img = $this->manager->read($fullPath);
             
             // Analyser les coins de l'image (où se trouvent généralement les watermarks)
             $corners = [
@@ -283,7 +302,8 @@ class ItemVerificationService
         for ($x = $startX; $x < $endX; $x += 5) {
             for ($y = $startY; $y < $endY; $y += 5) {
                 $color = $img->pickColor($x, $y);
-                $gray = 0.299 * $color[0] + 0.587 * $color[1] + 0.114 * $color[2];
+                $rgb = $color->toArray();
+                $gray = 0.299 * $rgb[0] + 0.587 * $rgb[1] + 0.114 * $rgb[2];
                 $pixels[] = $gray;
             }
         }
@@ -521,12 +541,12 @@ class ItemVerificationService
 
         try {
             // Comparer les 2 premières images
-            $img1 = Image::make(Storage::disk('public')->path($imagePaths[0]));
-            $img2 = Image::make(Storage::disk('public')->path($imagePaths[1]));
+            $img1 = $this->manager->read(Storage::disk('public')->path($imagePaths[0]));
+            $img2 = $this->manager->read(Storage::disk('public')->path($imagePaths[1]));
 
             // Redimensionner pour comparaison
-            $img1->resize(100, 100);
-            $img2->resize(100, 100);
+            $img1->scale(100, 100);
+            $img2->scale(100, 100);
 
             // Comparer les histogrammes de couleur (simplifié)
             $hash1 = $this->getImageHash($img1);
@@ -551,7 +571,8 @@ class ItemVerificationService
         for ($x = 0; $x < 10; $x++) {
             for ($y = 0; $y < 10; $y++) {
                 $color = $img->pickColor($x * 10, $y * 10);
-                $hash[] = round(($color[0] + $color[1] + $color[2]) / 3 / 25);
+                $rgb = $color->toArray();
+                $hash[] = round(($rgb[0] + $rgb[1] + $rgb[2]) / 3 / 25);
             }
         }
         return $hash;
@@ -567,7 +588,7 @@ class ItemVerificationService
         $dimensions = [];
         foreach ($imagePaths as $path) {
             try {
-                $img = Image::make(Storage::disk('public')->path($path));
+                $img = $this->manager->read(Storage::disk('public')->path($path));
                 $dimensions[] = $img->width() . 'x' . $img->height();
             } catch (\Exception $e) {
                 continue;

@@ -37,9 +37,10 @@
 **Visitez** : `http://localhost/test-navigation-skeleton`
 
 Vous verrez :
-- 6 exemples de skeleton
-- Console de debug
-- Statistiques en temps réel
+
+-   6 exemples de skeleton
+-   Console de debug
+-   Statistiques en temps réel
 
 ## 🎨 Types de skeleton disponibles
 
@@ -61,7 +62,7 @@ Vous verrez :
 window.navigationSkeletonManager.options.minDisplayTime = 500;
 
 // Exclure un pattern
-window.navigationSkeletonManager.addExcludePattern('/api/');
+window.navigationSkeletonManager.addExcludePattern("/api/");
 
 // Désactiver/activer
 window.navigationSkeletonManager.disable();
@@ -76,6 +77,7 @@ window.navigationSkeletonManager.enable();
 ## 🎉 Résultat
 
 Votre PWA a maintenant :
+
 1. ✅ Lazy loading des images
 2. ✅ Skeleton au chargement initial
 3. ✅ **Skeleton lors de TOUTE navigation** (NOUVEAU !)

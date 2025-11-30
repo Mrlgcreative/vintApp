@@ -6,13 +6,13 @@ Le **Navigation Skeleton Manager** affiche automatiquement un skeleton lors de l
 
 ## ✨ Caractéristiques
 
-- ✅ **Interception automatique** des clics sur tous les liens
-- ✅ **Détection intelligente** du type de page destination
-- ✅ **6 types de skeleton** : Product Grid, Product Detail, Dashboard, List, Profile, Generic
-- ✅ **Transition fluide** avec temps minimum d'affichage
-- ✅ **Configuration flexible** avec patterns d'exclusion
-- ✅ **Scroll to top** automatique lors de la navigation
-- ✅ **Support dark mode** natif
+-   ✅ **Interception automatique** des clics sur tous les liens
+-   ✅ **Détection intelligente** du type de page destination
+-   ✅ **6 types de skeleton** : Product Grid, Product Detail, Dashboard, List, Profile, Generic
+-   ✅ **Transition fluide** avec temps minimum d'affichage
+-   ✅ **Configuration flexible** avec patterns d'exclusion
+-   ✅ **Scroll to top** automatique lors de la navigation
+-   ✅ **Support dark mode** natif
 
 ## 🚀 Installation
 
@@ -48,14 +48,14 @@ Tous les liens **internes** déclenchent automatiquement un skeleton :
 
 Le système détecte automatiquement le type de skeleton basé sur l'URL :
 
-| URL | Skeleton affiché |
-|-----|------------------|
-| `/items` | Product Grid (12 cards) |
-| `/items/{id}` | Product Detail (galerie + info) |
-| `/dashboard` | Dashboard (stats + chart) |
-| `/orders`, `/messages`, `/notifications` | List (10 items) |
-| `/profile`, `/settings` | Profile (avatar + tabs + cards) |
-| Autres | Generic (header + content grid + sidebar) |
+| URL                                      | Skeleton affiché                          |
+| ---------------------------------------- | ----------------------------------------- |
+| `/items`                                 | Product Grid (12 cards)                   |
+| `/items/{id}`                            | Product Detail (galerie + info)           |
+| `/dashboard`                             | Dashboard (stats + chart)                 |
+| `/orders`, `/messages`, `/notifications` | List (10 items)                           |
+| `/profile`, `/settings`                  | Profile (avatar + tabs + cards)           |
+| Autres                                   | Generic (header + content grid + sidebar) |
 
 ## 🎨 Personnalisation du skeleton
 
@@ -119,18 +119,18 @@ Le système détecte aussi les classes :
 
 ```javascript
 excludePatterns: [
-    '/logout',
-    '/login',
-    '/register',
-    '#'  // Liens d'ancrage
-]
+    "/logout",
+    "/login",
+    "/register",
+    "#", // Liens d'ancrage
+];
 ```
 
 ### Ajouter des patterns d'exclusion
 
 ```javascript
 // Exclure dynamiquement
-window.navigationSkeletonManager.addExcludePattern('/api/');
+window.navigationSkeletonManager.addExcludePattern("/api/");
 window.navigationSkeletonManager.addExcludePattern(/^\/admin\//);
 ```
 
@@ -164,13 +164,13 @@ window.navigationSkeletonManager.enable();
 
 ```javascript
 // Dans votre JavaScript personnalisé
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     if (window.navigationSkeletonManager) {
         // Modifier le temps minimum
         window.navigationSkeletonManager.options.minDisplayTime = 500;
-        
+
         // Ajouter des exclusions
-        window.navigationSkeletonManager.addExcludePattern('/search');
+        window.navigationSkeletonManager.addExcludePattern("/search");
     }
 });
 ```
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <a href="/dashboard">Dashboard</a>
     <a href="/orders">Commandes</a>
     <a href="/profile">Profil</a>
-    
+
     <!-- ❌ Celui-ci est exclu -->
     <a href="/logout" data-no-skeleton>Déconnexion</a>
 </nav>
@@ -212,14 +212,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ```blade
 <!-- Skeleton dashboard -->
-<a href="/dashboard" 
+<a href="/dashboard"
    class="btn btn-primary"
    data-skeleton-type="dashboard">
     Voir mes statistiques
 </a>
 
 <!-- Skeleton product-grid -->
-<a href="/search?q=laptop" 
+<a href="/search?q=laptop"
    class="btn btn-secondary"
    data-skeleton-type="product-grid">
     Rechercher
@@ -236,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ## 🎭 Templates de skeleton
 
 ### Product Grid
+
 ```
 ┌─────────────────────────────────────┐
 │  [Titre]              [Bouton]      │
@@ -255,6 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 
 ### Product Detail
+
 ```
 ┌─────────────────────────────────────┐
 │  ┌──────────┐  ┌─────────────────┐  │
@@ -268,6 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 
 ### Dashboard
+
 ```
 ┌─────────────────────────────────────┐
 │  ┌────┐ ┌────┐ ┌────┐ ┌────┐       │
@@ -283,6 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 
 ### Profile
+
 ```
 ┌─────────────────────────────────────┐
 │  ┌─┐ Nom utilisateur                │
@@ -304,11 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ```javascript
 // Instance globale
-window.navigationSkeletonManager
+window.navigationSkeletonManager;
 
 // Classes
-window.NavigationSkeletonManager
-window.PageSkeletonLoader
+window.NavigationSkeletonManager;
+window.PageSkeletonLoader;
 ```
 
 ### Méthodes
@@ -319,18 +323,18 @@ navigationSkeletonManager.disable();
 navigationSkeletonManager.enable();
 
 // Ajouter exclusion
-navigationSkeletonManager.addExcludePattern('/api/');
+navigationSkeletonManager.addExcludePattern("/api/");
 
 // Naviguer manuellement avec skeleton
-navigationSkeletonManager.navigateWithSkeleton('/items', linkElement);
+navigationSkeletonManager.navigateWithSkeleton("/items", linkElement);
 ```
 
 ### Événements
 
 ```javascript
 // Quand le skeleton se cache
-document.addEventListener('skeletonHidden', () => {
-    console.log('Skeleton caché, contenu visible');
+document.addEventListener("skeletonHidden", () => {
+    console.log("Skeleton caché, contenu visible");
 });
 ```
 
@@ -339,12 +343,14 @@ document.addEventListener('skeletonHidden', () => {
 ### Le skeleton ne s'affiche pas
 
 1. Vérifiez que les scripts sont chargés :
+
 ```javascript
 console.log(window.navigationSkeletonManager);
 // Devrait afficher l'instance
 ```
 
 2. Vérifiez que le lien n'est pas exclu :
+
 ```blade
 <!-- ❌ Pas de skeleton -->
 <a href="/logout">Logout</a>
@@ -358,12 +364,14 @@ console.log(window.navigationSkeletonManager);
 ### Le skeleton reste affiché
 
 Le système a un timeout de 5 secondes maximum. Si le skeleton reste :
-- Vérifiez que la navigation fonctionne
-- Ouvrez la console pour voir les erreurs
+
+-   Vérifiez que la navigation fonctionne
+-   Ouvrez la console pour voir les erreurs
 
 ### Flash de contenu
 
 Si vous voyez le contenu avant le skeleton :
+
 ```javascript
 // Augmentez le temps minimum
 navigationSkeletonManager.options.minDisplayTime = 500;
@@ -374,14 +382,16 @@ navigationSkeletonManager.options.minDisplayTime = 500;
 ### Impact sur les métriques
 
 **Sans skeleton de navigation :**
-- Impression de lenteur ❌
-- Page blanche pendant le chargement
-- Expérience utilisateur pauvre
+
+-   Impression de lenteur ❌
+-   Page blanche pendant le chargement
+-   Expérience utilisateur pauvre
 
 **Avec skeleton de navigation :**
-- Feedback immédiat ✅
-- Perception de rapidité
-- Expérience fluide comme une SPA
+
+-   Feedback immédiat ✅
+-   Perception de rapidité
+-   Expérience fluide comme une SPA
 
 ### Optimisations
 
@@ -406,18 +416,18 @@ console.log(`Skeleton affiché pendant ${displayTime}ms`);
 
 ```javascript
 // Dans votre page
-document.addEventListener('DOMContentLoaded', () => {
-    const link = document.querySelector('#special-link');
-    link.addEventListener('click', (e) => {
+document.addEventListener("DOMContentLoaded", () => {
+    const link = document.querySelector("#special-link");
+    link.addEventListener("click", (e) => {
         e.preventDefault();
-        
+
         const skeleton = new PageSkeletonLoader();
         skeleton.showCustom(`
             <div class="custom-skeleton">
                 <!-- Votre HTML -->
             </div>
         `);
-        
+
         setTimeout(() => {
             window.location.href = link.href;
         }, 300);
@@ -430,16 +440,19 @@ document.addEventListener('DOMContentLoaded', () => {
 ### ✅ À faire
 
 1. **Utilisez data-skeleton-type** pour les pages importantes
+
 ```blade
 <a href="/checkout" data-skeleton-type="generic">Passer commande</a>
 ```
 
 2. **Excluez les actions critiques**
+
 ```blade
 <a href="/delete" data-no-skeleton>Supprimer</a>
 ```
 
 3. **Testez sur connexion lente**
+
 ```
 Chrome DevTools > Network > Slow 3G
 ```
@@ -447,6 +460,7 @@ Chrome DevTools > Network > Slow 3G
 ### ❌ À éviter
 
 1. Ne pas mettre de skeleton sur TOUS les liens
+
 ```blade
 <!-- ❌ Inutile pour les modales -->
 <a href="#modal" data-skeleton-type="generic">Ouvrir</a>
@@ -461,9 +475,9 @@ Chrome DevTools > Network > Slow 3G
 
 ## 📚 Ressources
 
-- **Fichier** : `public/js/navigation-skeleton.js`
-- **Dépendances** : `page-skeleton.js`, `content-visibility.js`
-- **Documentation** : `docs/PAGE_SKELETON_GUIDE.md`
+-   **Fichier** : `public/js/navigation-skeleton.js`
+-   **Dépendances** : `page-skeleton.js`, `content-visibility.js`
+-   **Documentation** : `docs/PAGE_SKELETON_GUIDE.md`
 
 ---
 

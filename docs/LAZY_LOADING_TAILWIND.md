@@ -6,11 +6,11 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 
 ## ✨ Avantages Tailwind
 
-- ✅ **Cohérence** : Même système de design que l'app
-- ✅ **Purge automatique** : CSS optimisé en production
-- ✅ **Dark mode** : Support natif avec `dark:`
-- ✅ **Responsive** : Media queries simplifiées
-- ✅ **Personnalisable** : Extend dans `tailwind.config.js`
+-   ✅ **Cohérence** : Même système de design que l'app
+-   ✅ **Purge automatique** : CSS optimisé en production
+-   ✅ **Dark mode** : Support natif avec `dark:`
+-   ✅ **Responsive** : Media queries simplifiées
+-   ✅ **Personnalisable** : Extend dans `tailwind.config.js`
 
 ## 🎨 Classes disponibles
 
@@ -18,19 +18,19 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 
 ```html
 <!-- Image en cours de chargement -->
-<img class="lazy-loading" data-src="image.jpg">
+<img class="lazy-loading" data-src="image.jpg" />
 <!-- Classes appliquées : opacity-60 blur-[5px] transition-all -->
 
 <!-- Image chargée -->
-<img class="lazy-loaded" src="image.jpg">
+<img class="lazy-loaded" src="image.jpg" />
 <!-- Classes appliquées : opacity-100 blur-0 -->
 
 <!-- Image avec erreur -->
-<img class="lazy-error" src="fallback.jpg">
+<img class="lazy-error" src="fallback.jpg" />
 <!-- Classes appliquées : opacity-50 border-2 border-dashed border-red-500 -->
 
 <!-- Placeholder -->
-<img class="lazy-placeholder" src="placeholder.jpg">
+<img class="lazy-placeholder" src="placeholder.jpg" />
 <!-- Gradient animé avec shimmer -->
 ```
 
@@ -39,13 +39,13 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 ```html
 <!-- Container avec spinner -->
 <div class="lazy-container">
-    <img data-src="image.jpg" loading="lazy">
+    <img data-src="image.jpg" loading="lazy" />
 </div>
 <!-- Spinner centré automatiquement -->
 
 <!-- Container chargé (spinner caché) -->
 <div class="lazy-container lazy-loaded">
-    <img src="image.jpg">
+    <img src="image.jpg" />
 </div>
 ```
 
@@ -56,11 +56,16 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 <div class="skeleton-loader"></div>
 
 <!-- Variantes -->
-<div class="skeleton-loader skeleton-text"></div>     <!-- Ligne de texte -->
-<div class="skeleton-loader skeleton-title"></div>    <!-- Titre -->
-<div class="skeleton-loader skeleton-image"></div>    <!-- Image -->
-<div class="skeleton-loader skeleton-avatar"></div>   <!-- Avatar rond -->
-<div class="skeleton-loader skeleton-button"></div>   <!-- Bouton -->
+<div class="skeleton-loader skeleton-text"></div>
+<!-- Ligne de texte -->
+<div class="skeleton-loader skeleton-title"></div>
+<!-- Titre -->
+<div class="skeleton-loader skeleton-image"></div>
+<!-- Image -->
+<div class="skeleton-loader skeleton-avatar"></div>
+<!-- Avatar rond -->
+<div class="skeleton-loader skeleton-button"></div>
+<!-- Bouton -->
 ```
 
 ### Progressive Image Loading
@@ -68,14 +73,18 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 ```html
 <div class="progressive-image">
     <!-- Placeholder flou -->
-    <img class="progressive-image__placeholder" 
-         src="thumbnail-10x10.jpg" 
-         alt="Placeholder">
-    
+    <img
+        class="progressive-image__placeholder"
+        src="thumbnail-10x10.jpg"
+        alt="Placeholder"
+    />
+
     <!-- Image complète -->
-    <img class="progressive-image__full" 
-         data-src="full-image.jpg" 
-         alt="Image complète">
+    <img
+        class="progressive-image__full"
+        data-src="full-image.jpg"
+        alt="Image complète"
+    />
 </div>
 ```
 
@@ -84,17 +93,17 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 ```html
 <!-- 16:9 (vidéo) -->
 <div class="aspect-ratio-16-9">
-    <img data-src="video-thumbnail.jpg" loading="lazy">
+    <img data-src="video-thumbnail.jpg" loading="lazy" />
 </div>
 
 <!-- 4:3 (photo classique) -->
 <div class="aspect-ratio-4-3">
-    <img data-src="photo.jpg" loading="lazy">
+    <img data-src="photo.jpg" loading="lazy" />
 </div>
 
 <!-- 1:1 (carré) -->
 <div class="aspect-ratio-1-1">
-    <img data-src="avatar.jpg" loading="lazy">
+    <img data-src="avatar.jpg" loading="lazy" />
 </div>
 ```
 
@@ -102,8 +111,8 @@ Le système de **Lazy Loading** utilise maintenant **Tailwind CSS** pour des sty
 
 ```html
 <!-- Blur up effect -->
-<img class="blur-up" data-src="image.jpg">
-<img class="blur-up loaded" src="image.jpg">
+<img class="blur-up" data-src="image.jpg" />
+<img class="blur-up loaded" src="image.jpg" />
 
 <!-- Fade in -->
 <div class="fade-in">Contenu qui apparaît</div>
@@ -134,29 +143,29 @@ export default {
     theme: {
         extend: {
             animation: {
-                'shimmer': 'shimmer 1.5s infinite',
-                'shimmer-overlay': 'shimmer-overlay 2s infinite',
-                'fadeIn': 'fadeIn 0.2s ease-in',
+                shimmer: "shimmer 1.5s infinite",
+                "shimmer-overlay": "shimmer-overlay 2s infinite",
+                fadeIn: "fadeIn 0.2s ease-in",
             },
             keyframes: {
                 shimmer: {
-                    '0%': { backgroundPosition: '-200% 0' },
-                    '100%': { backgroundPosition: '200% 0' }
+                    "0%": { backgroundPosition: "-200% 0" },
+                    "100%": { backgroundPosition: "200% 0" },
                 },
-                'shimmer-overlay': {
-                    '100%': { transform: 'translateX(100%)' }
+                "shimmer-overlay": {
+                    "100%": { transform: "translateX(100%)" },
                 },
                 fadeIn: {
-                    '0%': { opacity: '0', transform: 'translateY(10px)' },
-                    '100%': { opacity: '1', transform: 'translateY(0)' }
-                }
+                    "0%": { opacity: "0", transform: "translateY(10px)" },
+                    "100%": { opacity: "1", transform: "translateY(0)" },
+                },
             },
             transitionDuration: {
-                '400': '400ms',
-            }
-        }
-    }
-}
+                400: "400ms",
+            },
+        },
+    },
+};
 ```
 
 ## 💡 Exemples pratiques
@@ -167,12 +176,12 @@ export default {
 <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-lg">
     <!-- Image avec aspect ratio -->
     <div class="aspect-ratio-4-3 lazy-container">
-        <img data-src="{{ Storage::url($item->image) }}" 
+        <img data-src="{{ Storage::url($item->image) }}"
              loading="lazy"
              alt="{{ $item->name }}"
              class="lazy-loading">
     </div>
-    
+
     <!-- Contenu -->
     <div class="p-4">
         <h3 class="font-semibold text-gray-900 dark:text-white">
@@ -190,7 +199,7 @@ export default {
     @forelse($items as $item)
         <div class="fade-in">
             <div class="lazy-container aspect-ratio-1-1">
-                <img data-src="{{ Storage::url($item->image) }}" 
+                <img data-src="{{ Storage::url($item->image) }}"
                      loading="lazy"
                      class="lazy-loading rounded-lg">
             </div>
@@ -213,13 +222,13 @@ export default {
 ```blade
 <div class="progressive-image h-96 rounded-2xl overflow-hidden">
     <!-- Tiny placeholder (quelques Ko) -->
-    <img class="progressive-image__placeholder" 
-         src="{{ Storage::url($item->thumbnail_tiny) }}" 
+    <img class="progressive-image__placeholder"
+         src="{{ Storage::url($item->thumbnail_tiny) }}"
          alt="Loading...">
-    
+
     <!-- Full quality (lazy loaded) -->
-    <img class="progressive-image__full" 
-         data-src="{{ Storage::url($item->hero_image) }}" 
+    <img class="progressive-image__full"
+         data-src="{{ Storage::url($item->hero_image) }}"
          loading="eager"
          alt="{{ $item->name }}">
 </div>
@@ -233,11 +242,11 @@ export default {
         <li class="flex items-center gap-4 fade-in">
             <!-- Avatar lazy -->
             <div class="lazy-container">
-                <img data-src="{{ $user->avatar }}" 
+                <img data-src="{{ $user->avatar }}"
                      loading="lazy"
                      class="skeleton-avatar lazy-loading">
             </div>
-            
+
             <div class="flex-1">
                 <h4 class="font-medium">{{ $user->name }}</h4>
                 <p class="text-sm text-gray-500">{{ $user->email }}</p>
@@ -286,16 +295,18 @@ Toutes les classes supportent le dark mode automatiquement :
 
 ```html
 <!-- Lazy loading + Tailwind utilities -->
-<img data-src="image.jpg" 
-     loading="lazy"
-     class="lazy-loading rounded-xl shadow-lg hover:scale-105 transition-transform">
+<img
+    data-src="image.jpg"
+    loading="lazy"
+    class="lazy-loading rounded-xl shadow-lg hover:scale-105 transition-transform"
+/>
 
 <!-- Skeleton + Tailwind spacing -->
 <div class="skeleton-loader skeleton-image mb-6 rounded-2xl"></div>
 
 <!-- Container + Tailwind flex -->
 <div class="lazy-container flex items-center justify-center min-h-[400px]">
-    <img data-src="image.jpg" loading="lazy">
+    <img data-src="image.jpg" loading="lazy" />
 </div>
 ```
 
@@ -303,12 +314,13 @@ Toutes les classes supportent le dark mode automatiquement :
 
 ```html
 <!-- Ajouter vos propres classes -->
-<div class="skeleton-loader skeleton-image 
+<div
+    class="skeleton-loader skeleton-image 
             rounded-2xl shadow-2xl 
             ring-4 ring-primary-100 
             transform hover:scale-105 
-            transition-all duration-300">
-</div>
+            transition-all duration-300"
+></div>
 ```
 
 ## ⚡ Performance
@@ -319,11 +331,11 @@ Toutes les classes supportent le dark mode automatiquement :
 // tailwind.config.js
 export default {
     content: [
-        './resources/views/**/*.blade.php',
-        './public/js/**/*.js',
+        "./resources/views/**/*.blade.php",
+        "./public/js/**/*.js",
         // Lazy loading CSS sera purgé automatiquement
     ],
-}
+};
 ```
 
 ### Build optimisé
@@ -345,7 +357,7 @@ npm run build
 <div class="skeleton-loader rounded-lg shadow-md"></div>
 
 <!-- Combiner lazy loading + transitions -->
-<img class="lazy-loading transition-all duration-300 hover:scale-110">
+<img class="lazy-loading transition-all duration-300 hover:scale-110" />
 
 <!-- Dark mode explicite -->
 <div class="bg-white dark:bg-gray-800 skeleton-loader"></div>
@@ -372,7 +384,7 @@ npm run build
 
 ```javascript
 // Console navigateur
-const img = document.querySelector('img.lazy-loading');
+const img = document.querySelector("img.lazy-loading");
 console.log(img.className);
 // "lazy-loading opacity-60 blur-[5px] transition-all duration-300"
 ```
@@ -408,31 +420,32 @@ cat public/build/assets/app-*.css | grep "lazy-loading"
 ```
 
 **Avantages :**
-- ✅ Cohérence avec le reste de l'app
-- ✅ Purge automatique (fichier CSS plus petit)
-- ✅ Dark mode intégré
-- ✅ Responsive avec `sm:`, `md:`, `lg:`
-- ✅ Facile à étendre
+
+-   ✅ Cohérence avec le reste de l'app
+-   ✅ Purge automatique (fichier CSS plus petit)
+-   ✅ Dark mode intégré
+-   ✅ Responsive avec `sm:`, `md:`, `lg:`
+-   ✅ Facile à étendre
 
 ## 🔄 Migration
 
 ### Anciennes classes → Nouvelles classes
 
-| Ancienne classe | Nouvelle classe Tailwind |
-|----------------|--------------------------|
-| `opacity: 0.6` | `opacity-60` |
-| `filter: blur(5px)` | `blur-[5px]` |
-| `border-radius: 0.5rem` | `rounded-lg` |
-| `margin-bottom: 0.5rem` | `mb-2` |
-| `width: 3rem` | `w-12` |
-| `height: 200px` | `h-48` |
+| Ancienne classe         | Nouvelle classe Tailwind |
+| ----------------------- | ------------------------ |
+| `opacity: 0.6`          | `opacity-60`             |
+| `filter: blur(5px)`     | `blur-[5px]`             |
+| `border-radius: 0.5rem` | `rounded-lg`             |
+| `margin-bottom: 0.5rem` | `mb-2`                   |
+| `width: 3rem`           | `w-12`                   |
+| `height: 200px`         | `h-48`                   |
 
 ## 📚 Ressources
 
-- **Config Tailwind** : `tailwind.config.js`
-- **CSS Source** : `public/css/lazy-loading.css`
-- **Build** : `npm run dev` ou `npm run build`
-- **Docs Tailwind** : https://tailwindcss.com
+-   **Config Tailwind** : `tailwind.config.js`
+-   **CSS Source** : `public/css/lazy-loading.css`
+-   **Build** : `npm run dev` ou `npm run build`
+-   **Docs Tailwind** : https://tailwindcss.com
 
 ---
 
