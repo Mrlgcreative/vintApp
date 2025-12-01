@@ -466,7 +466,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Network Speed Adapter (doit être chargé en premier) -->
-    <script src="{{ asset('js/network-adapter.js') }}"></script>
+    <script src="{{ asset('js/network-adapter.js') }}?v={{ filemtime(public_path('js/network-adapter.js')) }}"></script>
 
     <!-- Content Visibility Manager (charger en premier) -->
     <script src="{{ asset('js/content-visibility.js') }}"></script>
