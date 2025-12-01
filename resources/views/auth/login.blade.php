@@ -517,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Configuration Firebase - Valeurs réelles du fichier .env
 const firebaseConfig = {
-    apiKey: "AIzaSyBe0WQbkZ0A3Cz9vKyQWsE-edxLfWrV1_E",
+    apiKey: "AIzaSyC0x3pmQewGWynoAbFsG9SiFbYjKxDYOrE",
     authDomain: "vintapp-e6fa7.firebaseapp.com",
     projectId: "vintapp-e6fa7",
     storageBucket: "vintapp-e6fa7.appspot.com",
