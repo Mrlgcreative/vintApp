@@ -408,6 +408,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dashboard
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\Admin\AdminController::class, 'getNotifications'])->name('notifications');
+    Route::post('/notifications/{id}/mark-read', [App\Http\Controllers\Admin\AdminController::class, 'markNotificationAsRead'])->name('notifications.mark-read');
+    
     // Gestion des utilisateurs (CRUD complet)
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'users'])->name('index');

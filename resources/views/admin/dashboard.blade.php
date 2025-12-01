@@ -317,7 +317,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $transaction->user->name }}</p>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</p>
                                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $transaction->description }}</p>
                                     </div>
                                     <div class="text-right flex-shrink-0 ml-4">

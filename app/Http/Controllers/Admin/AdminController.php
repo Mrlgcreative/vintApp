@@ -3381,4 +3381,67 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Récupérer les notifications de l'admin
+     */
+    public function getNotifications(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            
+            // Récupérer les notifications (limité à 10)
+            $notifications = $user->notifications()
+                ->latest()
+                ->take(10)
+                ->get()
+                ->map(function ($notification) {
+                    return [
+                        'id' => $notification->id,
+                        'type' => $notification->type,
+                        'message' => $notification->data['message'] ?? 'Nouvelle notification',
+                        'icon' => $this->getNotificationIcon($notification->type),
+                        'link' => $notification->data['link'] ?? '#',
+                        'created_at' => $notification->created_at->diffForHumans(),
+                        'read_at' => $notification->read_at,
+                    ];
+                });
+
+            $unreadCount = $user->unreadNotifications()->count();
+
+            return response()->json([
+                'success' => true,
+                'notifications' => $notifications,
+                'unread_count' => $unreadCount,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur notifications', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'notifications' => [],
+                'unread_count' => 0,
+            ], 200);
+        }
+    }
+
+    /**
+     * Obtenir l'icône pour un type de notification
+     */
+    private function getNotificationIcon($type)
+    {
+        $icons = [
+            'App\Notifications\NewUserRegistered' => 'fa-user-plus',
+            'App\Notifications\NewOrder' => 'fa-shopping-cart',
+            'App\Notifications\NewTransaction' => 'fa-dollar-sign',
+            'App\Notifications\ItemVerificationRequest' => 'fa-check-circle',
+            'App\Notifications\NewSupportTicket' => 'fa-question-circle',
+        ];
+
+        return $icons[$type] ?? 'fa-bell';
+    }
 }

@@ -225,34 +225,46 @@
                                 <tr class="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900">
                                     <td class="py-4 px-4">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 flex-shrink-0">
-                                                @if($expert->user->avatar)
-                                                    @php
-                                                        $avatarUrl = filter_var($expert->user->avatar, FILTER_VALIDATE_URL) 
-                                                            ? $expert->user->avatar 
-                                                            : Storage::url($expert->user->avatar);
-                                                    @endphp
-                                                    <img src="{{ $avatarUrl }}" 
-                                                         class="w-10 h-10 rounded-full object-cover" 
-                                                         alt="{{ $expert->user->name }}"
-                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                                    <div class="w-10 h-10 bg-blue-600 rounded-full hidden items-center justify-center">
-                                                        <span class="text-white font-bold text-sm">
-                                                            {{ strtoupper(substr($expert->user->name, 0, 1)) }}
-                                                        </span>
+                                            @if($expert->user)
+                                                <div class="w-10 h-10 flex-shrink-0">
+                                                    @if($expert->user->avatar)
+                                                        @php
+                                                            $avatarUrl = filter_var($expert->user->avatar, FILTER_VALIDATE_URL) 
+                                                                ? $expert->user->avatar 
+                                                                : Storage::url($expert->user->avatar);
+                                                        @endphp
+                                                        <img src="{{ $avatarUrl }}" 
+                                                             class="w-10 h-10 rounded-full object-cover" 
+                                                             alt="{{ $expert->user->name }}"
+                                                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                        <div class="w-10 h-10 bg-blue-600 rounded-full hidden items-center justify-center">
+                                                            <span class="text-white font-bold text-sm">
+                                                                {{ strtoupper(substr($expert->user->name, 0, 1)) }}
+                                                            </span>
+                                                        </div>
+                                                    @else
+                                                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                                                            <span class="text-white font-bold text-sm">
+                                                                {{ strtoupper(substr($expert->user->name, 0, 1)) }}
+                                                            </span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div>
+                                                    <div class="font-semibold text-gray-900 dark:text-white">{{ $expert->user->name }}</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $expert->user->email }}</div>
+                                                </div>
+                                            @else
+                                                <div class="w-10 h-10 flex-shrink-0">
+                                                    <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                                                        <span class="text-white font-bold text-sm">?</span>
                                                     </div>
-                                                @else
-                                                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                                                        <span class="text-white font-bold text-sm">
-                                                            {{ strtoupper(substr($expert->user->name, 0, 1)) }}
-                                                        </span>
-                                                    </div>
-                                                @endif
-                                            </div>
-                                            <div>
-                                                <div class="font-semibold text-gray-900 dark:text-white">{{ $expert->user->name }}</div>
-                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $expert->user->email }}</div>
-                                            </div>
+                                                </div>
+                                                <div>
+                                                    <div class="font-semibold text-gray-900 dark:text-white">Utilisateur supprimé</div>
+                                                    <div class="text-sm text-gray-500 dark:text-gray-400">N/A</div>
+                                                </div>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="py-4 px-4">
@@ -320,7 +332,7 @@
                                             <button type="button" 
                                                     class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors" 
                                                     title="Révoquer le statut d'expert"
-                                                    onclick="revokeExpert({{ $expert->id }}, '{{ $expert->user->name }}')">
+                                                    onclick="revokeExpert({{ $expert->id }}, '{{ $expert->user?->name ?? 'Utilisateur supprimé' }}')">
                                                 <i class="fas fa-user-times"></i>
                                             </button>
                                         </div>
