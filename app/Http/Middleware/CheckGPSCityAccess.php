@@ -24,6 +24,8 @@ class CheckGPSCityAccess
         'api/validate-location',
         'location/validate',
         'test-geo',
+        'auth/firebase/*',
+        'firebase/*',
     ];
 
     /**
