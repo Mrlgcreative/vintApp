@@ -8,17 +8,22 @@
 <script>
 // Configuration Pusher/Echo pour les notifications temps réel
 @if(config('broadcasting.default') === 'pusher')
-window.Echo.private('user.{{ Auth::id() }}')
-    .notification((notification) => {
-        console.log('Notification reçue:', notification);
-        showNotification(notification);
-        
-        // Jouer un son si disponible
-        playNotificationSound();
-        
-        // Mettre à jour le badge de notifications
-        updateNotificationBadge();
-    });
+// Vérifier que Echo est disponible avant de l'utiliser
+if (typeof window.Echo !== 'undefined' && window.Echo) {
+    window.Echo.private('user.{{ Auth::id() }}')
+        .notification((notification) => {
+            console.log('Notification reçue:', notification);
+            showNotification(notification);
+            
+            // Jouer un son si disponible
+            playNotificationSound();
+            
+            // Mettre à jour le badge de notifications
+            updateNotificationBadge();
+        });
+} else {
+    console.log('📡 Laravel Echo non disponible - notifications temps réel désactivées');
+}
 @endif
 
 /**
