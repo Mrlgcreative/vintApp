@@ -55,7 +55,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'can' => \Illuminate\Auth\Middleware\Authorize::class,
             'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
             'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
-            'signed' => \App\Http\Middleware\ValidateSignature::class,
+            'signed' => \Illuminate\Auth\Middleware\ValidateSignature::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
             'throttle.login' => \App\Http\Middleware\ThrottleLogin::class, // 🔐 Rate limit login
             'security.log' => \App\Http\Middleware\SecurityLogging::class, // 🔐 Security logging
@@ -69,6 +69,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'mobile.optimize' => \App\Http\Middleware\MobileOptimization::class, // 📱 Optimisation mobile
             'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
             '2fa' => \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Authentification à deux facteurs
+            'force.json' => \App\Http\Middleware\ForceJsonResponse::class, // 🔥 Force JSON response pour Firebase
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

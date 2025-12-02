@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
         // Performance optimization middlewares
         'cache.response' => \App\Http\Middleware\CacheResponse::class,
         'compress.response' => \App\Http\Middleware\CompressResponse::class,
+        'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
     ];
 }

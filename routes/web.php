@@ -1080,9 +1080,11 @@ Route::get('/privacy', function() {
 })->name('privacy');
 
 // Routes Firebase Authentication
-Route::post('/auth/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('auth.firebase.login');
-Route::post('/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('firebase.login'); // Alias pour compatibilité
-Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
+Route::middleware(['force.json'])->group(function () {
+    Route::post('/auth/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('auth.firebase.login');
+    Route::post('/firebase/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])->name('firebase.login'); // Alias pour compatibilité
+    Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
+});
 
 // ==========================================
 // Routes de vérification d'authenticité

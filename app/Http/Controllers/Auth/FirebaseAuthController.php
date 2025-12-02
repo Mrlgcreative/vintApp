@@ -38,7 +38,15 @@ class FirebaseAuthController extends Controller
      */
     public function loginWithFirebase(Request $request)
     {
+        // Force JSON response
+        $request->headers->set('Accept', 'application/json');
+        
         try {
+            Log::info('🔥 Firebase login attempt', [
+                'has_token' => $request->has('idToken'),
+                'ip' => $request->ip()
+            ]);
+
             $request->validate([
                 'idToken' => 'required|string'
             ]);
@@ -160,29 +168,37 @@ class FirebaseAuthController extends Controller
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('🔥 Firebase validation failed', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Données de connexion invalides',
                 'errors' => $e->errors()
             ], 422);
 
-        } catch (\Kreait\Firebase\Exception\Auth\InvalidIdToken $e) {
-            Log::error('Firebase Invalid ID Token: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Token d\'authentification invalide'
-            ], 401);
-
         } catch (\Exception $e) {
-            Log::error('Firebase auth error: ' . $e->getMessage(), [
+            // Log détaillé de l'erreur
+            Log::error('🔥 Firebase auth error: ' . $e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
             
+            // Déterminer le message d'erreur approprié
+            $message = 'Erreur de connexion. Veuillez réessayer.';
+            $statusCode = 500;
+            
+            if (strpos($e->getMessage(), 'Invalid') !== false || strpos($e->getMessage(), 'token') !== false) {
+                $message = 'Token d\'authentification invalide';
+                $statusCode = 401;
+            }
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur de connexion. Veuillez réessayer.',
-                'error' => config('app.debug') ? $e->getMessage() : null
-            ], 500);
+                'message' => $message,
+                'error' => config('app.debug') ? $e->getMessage() : null,
+                'exception' => config('app.debug') ? get_class($e) : null
+            ], $statusCode);
         }
     }
 
@@ -191,15 +207,22 @@ class FirebaseAuthController extends Controller
      */
     public function registerWithFirebase(Request $request)
     {
-        $request->validate([
-            'idToken' => 'required|string',
-            'name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'newsletter' => 'boolean',
-            'referral_code' => 'nullable|string|exists:referral_codes,code',
-        ]);
-
+        // Force JSON response
+        $request->headers->set('Accept', 'application/json');
+        
         try {
+            $request->validate([
+                'idToken' => 'required|string',
+                'name' => 'nullable|string|max:255',
+                'phone' => 'nullable|string|max:20',
+                'newsletter' => 'boolean',
+                'referral_code' => 'nullable|string|exists:referral_codes,code',
+            ]);
+
+            Log::info('🔥 Firebase register attempt', [
+                'email' => $request->email ?? 'unknown',
+                'ip' => $request->ip()
+            ]);
             // Vérifier le token Firebase
             $firebaseAuth = $this->firebaseService->auth();
             $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
@@ -319,11 +342,16 @@ class FirebaseAuthController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            logger('Firebase register error: ' . $e->getMessage());
+            Log::error('🔥 Firebase register error: ' . $e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'inscription. Veuillez réessayer.'
+                'message' => 'Erreur lors de l\'inscription. Veuillez réessayer.',
+                'error' => config('app.debug') ? $e->getMessage() : null
             ], 500);
         }
     }
