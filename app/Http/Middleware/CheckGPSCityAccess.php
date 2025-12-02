@@ -26,6 +26,7 @@ class CheckGPSCityAccess
         'test-geo',
         'auth/firebase/*',
         'firebase/*',
+        'storage/*',
     ];
 
     /**
