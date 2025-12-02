@@ -107,4 +107,17 @@ class Category extends Model
         }
         return $this->name;
     }
+
+    /**
+     * Accesseur pour obtenir l'URL complète de l'image.
+     */
+    public function getImageUrlAttribute()
+    {
+        if (!$this->image) {
+            return null;
+        }
+        
+        // Utiliser Storage::url() pour générer l'URL
+        return \Illuminate\Support\Facades\Storage::url($this->image);
+    }
 }
