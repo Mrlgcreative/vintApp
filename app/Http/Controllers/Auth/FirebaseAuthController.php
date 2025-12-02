@@ -38,11 +38,22 @@ class FirebaseAuthController extends Controller
      */
     public function loginWithFirebase(Request $request)
     {
-        $request->validate([
-            'idToken' => 'required|string'
-        ]);
-
         try {
+            $request->validate([
+                'idToken' => 'required|string'
+            ]);
+
+            // Vérifier que Firebase est configuré
+            if (!$this->firebaseService->isConfigured()) {
+                Log::error('Firebase non configuré lors de la tentative de connexion');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Service d\'authentification non disponible. Contactez l\'administrateur.'
+                ], 503);
+            }
+
+            Log::info('Tentative de connexion Firebase', ['idToken_length' => strlen($request->idToken)]);
+
             // Vérifier le token Firebase
             $firebaseAuth = $this->firebaseService->auth();
             $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
@@ -147,6 +158,13 @@ class FirebaseAuthController extends Controller
                 ],
                 'redirect' => route('home')
             ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Données de connexion invalides',
+                'errors' => $e->errors()
+            ], 422);
 
         } catch (\Kreait\Firebase\Exception\Auth\InvalidIdToken $e) {
             Log::error('Firebase Invalid ID Token: ' . $e->getMessage());
