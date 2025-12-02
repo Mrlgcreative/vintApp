@@ -295,7 +295,22 @@ window.signInWithGoogle = async function() {
             })
         });
         
-        const data = await response.json();
+        let data;
+        try {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const responseText = await response.text();
+                console.error('Réponse non-JSON reçue:', responseText.substring(0, 200));
+                throw new Error('Le serveur a retourné une réponse invalide. Veuillez réessayer.');
+            }
+            data = await response.json();
+        } catch (parseError) {
+            console.error('Erreur de parsing JSON:', parseError);
+            if (parseError.message.includes('invalide')) {
+                throw parseError;
+            }
+            throw new Error('Impossible de traiter la réponse du serveur');
+        }
         
         if (response.ok && data.success) {
             showLoading(false);
