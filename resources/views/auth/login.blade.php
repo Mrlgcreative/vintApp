@@ -282,6 +282,8 @@ window.signInWithGoogle = async function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
             },
             body: JSON.stringify({
@@ -530,14 +532,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// Configuration Firebase - Valeurs réelles du fichier .env
+// Configuration Firebase - Depuis config Laravel
 const firebaseConfig = {
-    apiKey: "AIzaSyC0x3pmQewGWynoAbFsG9SiFbYjKxDYOrE",
-    authDomain: "vintapp-e6fa7.firebaseapp.com",
-    projectId: "vintapp-e6fa7",
-    storageBucket: "vintapp-e6fa7.appspot.com",
-    messagingSenderId: "880178183981",
-    appId: "1:880178183981:web:395604645bd7d758a35da4"
+    apiKey: "{{ config('firebase.web_config.apiKey') }}",
+    authDomain: "{{ config('firebase.web_config.authDomain') }}",
+    projectId: "{{ config('firebase.web_config.projectId') }}",
+    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
+    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
+    appId: "{{ config('firebase.web_config.appId') }}"
 };
 
 // Initialiser Firebase avec vérification d'erreur

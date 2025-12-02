@@ -119,7 +119,7 @@ class NetworkSpeedAdapter {
     async measureSpeed() {
         // Mesure simple de la vitesse en téléchargeant le logo
         const startTime = performance.now();
-        const testImageUrl = '/build/assets/logo-Dkiz87pR.webp?cache=' + Date.now();
+        const testImageUrl = '/images/logo.svg?cache=' + Date.now();
         
         try {
             const response = await fetch(testImageUrl, { 

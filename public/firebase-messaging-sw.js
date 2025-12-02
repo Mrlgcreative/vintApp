@@ -8,12 +8,12 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-    apiKey: "AIzaSyBe0WQbkZ0A3Cz9vKyQWsE-edxLfWrV1_E",
+    apiKey: "AIzaSyC0x3pmQewGWynoAbFsG9SiFbYjKxDYOrE",
     authDomain: "vintapp-e6fa7.firebaseapp.com",
     projectId: "vintapp-e6fa7",
     storageBucket: "vintapp-e6fa7.appspot.com",
     messagingSenderId: "880178183981",
-    appId: "1:880178183981:web:395604645bd7d758a35da4"
+    appId: "1:880178183981:web:deed0feb693e8c82a35da4"
 });
 
 const messaging = firebase.messaging();

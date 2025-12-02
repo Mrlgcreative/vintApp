@@ -310,6 +310,8 @@ window.signInWithGoogle = async function() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({
@@ -323,7 +325,22 @@ window.signInWithGoogle = async function() {
             })
         });
         
-        const data = await response.json();
+        let data;
+        try {
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const responseText = await response.text();
+                console.error('Réponse non-JSON reçue:', responseText.substring(0, 200));
+                throw new Error('Le serveur a retourné une réponse invalide. Veuillez réessayer.');
+            }
+            data = await response.json();
+        } catch (parseError) {
+            console.error('Erreur de parsing JSON:', parseError);
+            if (parseError.message.includes('invalide')) {
+                throw parseError;
+            }
+            throw new Error('Impossible de traiter la réponse du serveur');
+        }
         
         if (response.ok && data.success) {
             showLoading(false);
@@ -543,14 +560,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.head.appendChild(style);
 });
 
-// Configuration Firebase - Valeurs réelles du fichier .env
+// Configuration Firebase - Depuis config Laravel
 const firebaseConfig = {
-    apiKey: "AIzaSyBe0WQbkZ0A3Cz9vKyQWsE-edxLfWrV1_E",
-    authDomain: "vintapp-e6fa7.firebaseapp.com",
-    projectId: "vintapp-e6fa7",
-    storageBucket: "vintapp-e6fa7.appspot.com",
-    messagingSenderId: "880178183981",
-    appId: "1:880178183981:web:395604645bd7d758a35da4"
+    apiKey: "<?php echo e(config('firebase.web_config.apiKey')); ?>",
+    authDomain: "<?php echo e(config('firebase.web_config.authDomain')); ?>",
+    projectId: "<?php echo e(config('firebase.web_config.projectId')); ?>",
+    storageBucket: "<?php echo e(config('firebase.web_config.storageBucket')); ?>",
+    messagingSenderId: "<?php echo e(config('firebase.web_config.messagingSenderId')); ?>",
+    appId: "<?php echo e(config('firebase.web_config.appId')); ?>"
 };
 
 // Initialiser Firebase avec vérification d'erreur

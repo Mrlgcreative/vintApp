@@ -66,15 +66,12 @@ class FirebaseAuthController extends Controller
             $firebaseAuth = $this->firebaseService->auth();
             $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
             
-            // Récupérer les informations utilisateur depuis Firebase
+            // Récupérer les informations utilisateur depuis le token (pas besoin d'appel API)
             $firebaseUid = $verifiedIdToken->claims()->get('sub');
-            $firebaseUser = $firebaseAuth->getUser($firebaseUid);
-
-            // Extraire les informations utilisateur
-            $email = $firebaseUser->email ?? null;
-            $name = $firebaseUser->displayName ?? 'Utilisateur';
-            $avatar = $firebaseUser->photoUrl ?? null;
-            $emailVerified = $firebaseUser->emailVerified ?? false;
+            $email = $verifiedIdToken->claims()->get('email');
+            $name = $verifiedIdToken->claims()->get('name') ?? $request->input('name') ?? 'Utilisateur';
+            $avatar = $verifiedIdToken->claims()->get('picture') ?? $request->input('photo_url');
+            $emailVerified = $verifiedIdToken->claims()->get('email_verified', false);
 
             if (!$email) {
                 return response()->json([
@@ -82,6 +79,12 @@ class FirebaseAuthController extends Controller
                     'message' => 'Adresse email requise pour la connexion'
                 ], 400);
             }
+
+            Log::info('🔥 Token Firebase vérifié', [
+                'uid' => $firebaseUid,
+                'email' => $email,
+                'name' => $name
+            ]);
 
             // Trouver ou créer l'utilisateur local
             $user = User::where('email', $email)
@@ -227,15 +230,12 @@ class FirebaseAuthController extends Controller
             $firebaseAuth = $this->firebaseService->auth();
             $verifiedIdToken = $firebaseAuth->verifyIdToken($request->idToken);
             
-            // Récupérer les informations utilisateur depuis Firebase
+            // Récupérer les informations utilisateur depuis le token (pas besoin d'appel API)
             $firebaseUid = $verifiedIdToken->claims()->get('sub');
-            $firebaseUser = $firebaseAuth->getUser($firebaseUid);
-
-            // Extraire les informations utilisateur
-            $email = $firebaseUser->email ?? null;
-            $name = $request->name ?? $firebaseUser->displayName ?? 'Utilisateur';
-            $avatar = $firebaseUser->photoUrl ?? null;
-            $emailVerified = $firebaseUser->emailVerified ?? false;
+            $email = $verifiedIdToken->claims()->get('email');
+            $name = $request->name ?? $verifiedIdToken->claims()->get('name') ?? 'Utilisateur';
+            $avatar = $verifiedIdToken->claims()->get('picture') ?? $request->input('photo_url');
+            $emailVerified = $verifiedIdToken->claims()->get('email_verified', false);
 
             if (!$email) {
                 return response()->json([

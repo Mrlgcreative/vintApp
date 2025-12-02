@@ -422,39 +422,41 @@ if (document.readyState === 'loading') {
     initializeSyncManager();
 }
 
-// Style pour les animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slide-down {
-        from {
-            transform: translate(-50%, -100%);
-            opacity: 0;
+// Style pour les animations (encapsulé pour éviter les conflits)
+(function() {
+    const syncStyle = document.createElement('style');
+    syncStyle.textContent = `
+        @keyframes slide-down {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
         }
-        to {
-            transform: translate(-50%, 0);
-            opacity: 1;
+        
+        @keyframes slide-up {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-    }
-    
-    @keyframes slide-up {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
+        
+        .animate-slide-down {
+            animation: slide-down 0.3s ease-out;
         }
-        to {
-            transform: translateY(0);
-            opacity: 1;
+        
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
         }
-    }
-    
-    .animate-slide-down {
-        animation: slide-down 0.3s ease-out;
-    }
-    
-    .animate-slide-up {
-        animation: slide-up 0.3s ease-out;
-    }
-`;
-document.head.appendChild(style);
+    `;
+    document.head.appendChild(syncStyle);
+})();
 
 console.log('🔄 Background Sync Manager chargé');

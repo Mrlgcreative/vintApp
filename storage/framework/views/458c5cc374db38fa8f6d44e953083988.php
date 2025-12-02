@@ -1,8 +1,8 @@
-﻿@extends('app')
+﻿
 
-@section('title', 'Inscription - VintApp')
+<?php $__env->startSection('title', 'Inscription - VintApp'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -96,7 +96,7 @@
                     </label>
                     <input type="text" 
                            id="firebase-referral-code"
-                           value="{{ session('referral_code', '') }}"
+                           value="<?php echo e(session('referral_code', '')); ?>"
                            class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-green-500 focus:outline-none focus:ring-4 focus:ring-green-100 transition-all duration-300 uppercase"
                            placeholder="CODE123">
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center">
@@ -250,7 +250,7 @@
             <div class="text-center mt-8 space-y-4">
                 <p class="text-sm text-gray-600 dark:text-gray-300">
                     Déjà un compte ? 
-                    <a href="{{ route('login') }}" class="text-green-600 hover:text-green-800 font-semibold underline">
+                    <a href="<?php echo e(route('login')); ?>" class="text-green-600 hover:text-green-800 font-semibold underline">
                         Se connecter
                     </a>
                 </p>
@@ -378,51 +378,86 @@
             </div>
         </div>
         <div class="p-6">
-            <form method="POST" action="{{ route('register') }}" class="space-y-4">
-                @csrf
+            <form method="POST" action="<?php echo e(route('register')); ?>" class="space-y-4">
+                <?php echo csrf_field(); ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Nom complet</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required
+                        <input type="text" name="name" value="<?php echo e(old('name')); ?>" required
                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
-                        @error('name')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
+                        <input type="email" name="email" value="<?php echo e(old('email')); ?>" required
                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
-                        @error('email')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Téléphone</label>
-                    <input type="tel" name="phone" value="{{ old('phone') }}" required
+                    <input type="tel" name="phone" value="<?php echo e(old('phone')); ?>" required
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
-                    @error('phone')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Adresse</label>
-                    <textarea name="address" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500" rows="3">{{ old('address') }}</textarea>
-                    @error('address')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <textarea name="address" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500" rows="3"><?php echo e(old('address')); ?></textarea>
+                    <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Code de parrainage (optionnel)</label>
-                    <input type="text" name="referral_code" value="{{ old('referral_code') }}"
+                    <input type="text" name="referral_code" value="<?php echo e(old('referral_code')); ?>"
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500 uppercase">
-                    @error('referral_code')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['referral_code'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -430,9 +465,16 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mot de passe</label>
                         <input type="password" name="password" required
                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-green-500 focus:border-green-500">
-                        @error('password')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Confirmer mot de passe</label>
@@ -511,12 +553,10 @@ window.registerWithFirebaseEmail = async function() {
         const idToken = await user.getIdToken();
         
         // Envoyer les données au backend Laravel pour créer la session
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({
@@ -536,7 +576,7 @@ window.registerWithFirebaseEmail = async function() {
             showToast('Inscription réussie ! Vérifiez votre email pour activer votre compte.', 'success');
             
             // Redirection immédiate vers la vérification par code
-            window.location.href = '{{ route("verification.code") }}';
+            window.location.href = '<?php echo e(route("verification.code")); ?>';
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -599,12 +639,10 @@ window.signUpWithGoogle = async function() {
         const idToken = await user.getIdToken();
         
         // Envoyer les données au backend Laravel pour créer la session
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({
@@ -637,7 +675,7 @@ window.signUpWithGoogle = async function() {
             showToast('Inscription Google réussie !', 'success');
             
             // Redirection immédiate vers la vérification
-            window.location.href = '{{ route("verification.code") }}';
+            window.location.href = '<?php echo e(route("verification.code")); ?>';
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -694,12 +732,10 @@ window.signUpWithFacebook = async function() {
         const idToken = await user.getIdToken();
         
         // Envoyer les données au backend Laravel pour créer la session
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
             body: JSON.stringify({
@@ -717,7 +753,7 @@ window.signUpWithFacebook = async function() {
             showToast('Inscription Facebook réussie !', 'success');
             
             // Redirection immédiate vers la vérification
-            window.location.href = '{{ route("verification.code") }}';
+            window.location.href = '<?php echo e(route("verification.code")); ?>';
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -1001,12 +1037,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Configuration Firebase - Depuis config Laravel
 const firebaseConfig = {
-    apiKey: "{{ config('firebase.web_config.apiKey') }}",
-    authDomain: "{{ config('firebase.web_config.authDomain') }}",
-    projectId: "{{ config('firebase.web_config.projectId') }}",
-    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-    appId: "{{ config('firebase.web_config.appId') }}"
+    apiKey: "<?php echo e(config('firebase.web_config.apiKey')); ?>",
+    authDomain: "<?php echo e(config('firebase.web_config.authDomain')); ?>",
+    projectId: "<?php echo e(config('firebase.web_config.projectId')); ?>",
+    storageBucket: "<?php echo e(config('firebase.web_config.storageBucket')); ?>",
+    messagingSenderId: "<?php echo e(config('firebase.web_config.messagingSenderId')); ?>",
+    appId: "<?php echo e(config('firebase.web_config.appId')); ?>"
 };
 
 // Initialiser Firebase avec vérification d'erreur
@@ -1033,4 +1069,6 @@ try {
 }
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/auth/register.blade.php ENDPATH**/ ?>

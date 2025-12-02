@@ -1086,6 +1086,110 @@ Route::middleware(['force.json'])->group(function () {
     Route::post('/auth/firebase/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])->name('auth.firebase.register');
 });
 
+// Route pour servir le Service Worker Firebase avec configuration dynamique
+Route::get('/firebase-messaging-sw.js', function () {
+    $config = config('firebase.web_config');
+    
+    $content = <<<JS
+/**
+ * Firebase Cloud Messaging Service Worker
+ * Gestion des notifications push en arrière-plan
+ * Configuration dynamique depuis Laravel
+ */
+
+// Configuration Firebase
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+    apiKey: "{$config['apiKey']}",
+    authDomain: "{$config['authDomain']}",
+    projectId: "{$config['projectId']}",
+    storageBucket: "{$config['storageBucket']}",
+    messagingSenderId: "{$config['messagingSenderId']}",
+    appId: "{$config['appId']}"
+});
+
+const messaging = firebase.messaging();
+
+// Gestion des messages en arrière-plan (app fermée)
+messaging.onBackgroundMessage((payload) => {
+    console.log('📬 Message reçu en arrière-plan:', payload);
+
+    const notificationTitle = payload.notification?.title || payload.data?.title || 'VintApp';
+    const notificationOptions = {
+        body: payload.notification?.body || payload.data?.body || 'Vous avez une nouvelle notification',
+        icon: payload.notification?.icon || payload.data?.icon || '/images/icons/icon-192x192.png',
+        badge: '/images/icons/icon-72x72.png',
+        image: payload.notification?.image || payload.data?.image,
+        data: payload.data || {},
+        tag: payload.data?.tag || 'vintapp-notification',
+        requireInteraction: payload.data?.requireInteraction === 'true',
+        actions: [
+            {
+                action: 'view',
+                title: 'Voir',
+                icon: '/images/icons/icon-72x72.png'
+            },
+            {
+                action: 'close',
+                title: 'Fermer'
+            }
+        ],
+        vibrate: [200, 100, 200],
+        timestamp: Date.now()
+    };
+
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Gestion des clics sur les notifications
+self.addEventListener('notificationclick', (event) => {
+    console.log('🖱️ Click sur notification:', event.notification.tag);
+    
+    event.notification.close();
+
+    if (event.action === 'close') {
+        return;
+    }
+
+    const urlToOpen = event.notification.data?.url || event.notification.data?.click_action || '/';
+
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                for (const client of clientList) {
+                    if (client.url.includes(self.location.origin) && 'focus' in client) {
+                        client.focus();
+                        client.navigate(urlToOpen);
+                        return;
+                    }
+                }
+                
+                if (clients.openWindow) {
+                    return clients.openWindow(urlToOpen);
+                }
+            })
+    );
+});
+
+self.addEventListener('push', (event) => {
+    if (!event.data) {
+        console.log('❌ Push reçu sans données');
+        return;
+    }
+    console.log('📨 Push reçu:', event.data.text());
+});
+
+console.log('🔥 Firebase Messaging Service Worker chargé');
+JS;
+
+    return response($content)
+        ->header('Content-Type', 'application/javascript')
+        ->header('Service-Worker-Allowed', '/')
+        ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
+})->name('firebase.sw');
+
 // ==========================================
 // Routes de vérification d'authenticité
 // ==========================================

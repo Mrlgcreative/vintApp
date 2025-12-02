@@ -513,7 +513,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- Network Speed Adapter (doit être chargé en premier) -->
-    <script src="<?php echo e(asset('js/network-adapter.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/network-adapter.js')); ?>?v=<?php echo e(filemtime(public_path('js/network-adapter.js'))); ?>"></script>
 
     <!-- Content Visibility Manager (charger en premier) -->
     <script src="<?php echo e(asset('js/content-visibility.js')); ?>"></script>
@@ -761,9 +761,31 @@
                     return;
                 }
 
-                // Enregistrer le Service Worker
-                const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                // Enregistrer le Service Worker et attendre qu'il soit actif
+                let registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
                 console.log('✅ Service Worker enregistré:', registration);
+
+                // Attendre que le Service Worker soit actif
+                if (registration.installing) {
+                    console.log('⏳ Service Worker en cours d\'installation...');
+                    await new Promise((resolve) => {
+                        registration.installing.addEventListener('statechange', (e) => {
+                            if (e.target.state === 'activated') {
+                                resolve();
+                            }
+                        });
+                    });
+                } else if (registration.waiting) {
+                    console.log('⏳ Service Worker en attente...');
+                    await navigator.serviceWorker.ready;
+                } else if (!registration.active) {
+                    console.log('⏳ Attente activation Service Worker...');
+                    await navigator.serviceWorker.ready;
+                }
+
+                // S'assurer qu'on a bien un Service Worker actif
+                registration = await navigator.serviceWorker.ready;
+                console.log('✅ Service Worker actif et prêt');
 
                 // Demander la permission de notification
                 const permission = await requestNotificationPermission();

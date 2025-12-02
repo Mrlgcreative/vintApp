@@ -407,24 +407,26 @@ if (document.readyState === 'loading') {
     pwaManager = new PWAManager();
 }
 
-// Style pour les animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slide-up {
-        from {
-            transform: translateY(100%);
-            opacity: 0;
+// Style pour les animations PWA (encapsulé pour éviter les conflits)
+(function() {
+    const pwaStyle = document.createElement('style');
+    pwaStyle.textContent = `
+        @keyframes slide-up {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
-        to {
-            transform: translateY(0);
-            opacity: 1;
+        
+        .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
         }
-    }
-    
-    .animate-slide-up {
-        animation: slide-up 0.3s ease-out;
-    }
-`;
-document.head.appendChild(style);
+    `;
+    document.head.appendChild(pwaStyle);
+})();
 
 console.log('🎯 PWA Manager initialisé');
