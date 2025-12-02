@@ -25,3 +25,10 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Fichiers SQL volumineux
+*.sql
+*.sql.gz
+*.zip
+*.7z
+sql_parts/
