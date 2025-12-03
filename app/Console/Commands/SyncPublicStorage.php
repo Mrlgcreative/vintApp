@@ -28,12 +28,12 @@ class SyncPublicStorage extends Command
     {
         $source = storage_path('app/public');
         
-        // Détecter si on est sur Hostinger (public/ à la racine)
-        // Si base_path() == public_path(), alors public/ est à la racine
-        $isHostinger = !file_exists(base_path('public'));
+        // Détecter si on est sur Hostinger (public_html à la racine)
+        // Sur Hostinger, base_path() pointe vers public_html/
+        $isHostinger = str_contains(base_path(), 'public_html');
         
         if ($isHostinger) {
-            // Sur Hostinger: storage/ à la racine
+            // Sur Hostinger: storage/ à la racine de public_html/
             $destination = base_path('storage');
         } else {
             // Environnement standard: public/storage/

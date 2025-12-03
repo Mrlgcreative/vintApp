@@ -15,11 +15,11 @@ class StorageSyncService
         try {
             $sourcePath = storage_path('app/public/' . $path);
             
-            // Détecter si on est sur Hostinger (public/ à la racine)
-            $isHostinger = !file_exists(base_path('public'));
+            // Détecter si on est sur Hostinger (public_html à la racine)
+            $isHostinger = str_contains(base_path(), 'public_html');
             
             if ($isHostinger) {
-                // Sur Hostinger: storage/ à la racine
+                // Sur Hostinger: storage/ à la racine de public_html/
                 $destPath = base_path('storage/' . $path);
                 $storageRoot = base_path('storage');
             } else {
@@ -67,7 +67,7 @@ class StorageSyncService
             $source = storage_path('app/public/' . $directory);
             
             // Détecter si on est sur Hostinger
-            $isHostinger = !file_exists(base_path('public'));
+            $isHostinger = str_contains(base_path(), 'public_html');
             
             if ($isHostinger) {
                 $destination = base_path('storage/' . $directory);
