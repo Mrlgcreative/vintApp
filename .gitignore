@@ -25,6 +25,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+composer.phar
 
 # Fichiers SQL volumineux
 *.sql
