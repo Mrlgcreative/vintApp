@@ -99,14 +99,14 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $transaction->id }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    @if($transaction->user->avatar)
+                                    @if($transaction->user?->avatar)
                                         <img src="{{ $transaction->user->avatar_url }}" class="w-8 h-8 rounded-full mr-3" alt="Avatar">
                                     @else
                                         <div class="w-8 h-8 bg-gray-500 rounded-full mr-3 flex items-center justify-center">
-                                            <span class="text-white text-sm font-medium">{{ $transaction->user->initial }}</span>
+                                            <span class="text-white text-sm font-medium">{{ $transaction->user?->initial ?? 'U' }}</span>
                                         </div>
                                     @endif
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $transaction->user->name }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</div>
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
