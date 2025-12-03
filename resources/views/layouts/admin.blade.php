@@ -12,7 +12,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
     
     <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
-    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ filemtime(public_path('css/vintapp-dynamic.css')) }}" rel="stylesheet">
     
     <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
     <style>

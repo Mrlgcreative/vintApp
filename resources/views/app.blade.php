@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="{{ asset('css/lazy-loading.css') }}">
 
     <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
-    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ filemtime(public_path('css/vintapp-dynamic.css')) }}" rel="stylesheet">
     
     <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
     <style>
