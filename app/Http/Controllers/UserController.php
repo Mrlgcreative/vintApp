@@ -121,6 +121,9 @@ public function uploadAvatar(Request $request)
         ], 500);
     }
 
+    // Copier vers public/storage pour Hostinger
+    StorageSyncService::syncFile($path);
+
     $user->update(['profile_image' => $path]);
 
     return response()->json([

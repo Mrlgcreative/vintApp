@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\Services\StorageSyncService;
 
 class AdminController extends Controller
 {
@@ -1305,6 +1306,9 @@ class AdminController extends Controller
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories/images', 'public');
             $data['image'] = $imagePath;
+            
+            // Copier vers public/storage pour Hostinger
+            StorageSyncService::syncFile($imagePath);
         }
 
         // DÃƒÂ©finir les valeurs par dÃƒÂ©faut pour les boolÃƒÂ©ens
@@ -3383,14 +3387,14 @@ class AdminController extends Controller
     }
 
     /**
-     * Récupérer les notifications de l'admin
+     * Rï¿½cupï¿½rer les notifications de l'admin
      */
     public function getNotifications(Request $request)
     {
         try {
             $user = Auth::user();
             
-            // Récupérer les notifications (limité à 10)
+            // Rï¿½cupï¿½rer les notifications (limitï¿½ ï¿½ 10)
             $notifications = $user->notifications()
                 ->latest()
                 ->take(10)
@@ -3430,7 +3434,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Obtenir l'icône pour un type de notification
+     * Obtenir l'icï¿½ne pour un type de notification
      */
     private function getNotificationIcon($type)
     {

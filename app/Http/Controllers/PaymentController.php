@@ -12,6 +12,9 @@ use App\Models\Refund;
 use App\Services\PaymentService;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use App\Services\StorageSyncService;
 
 class PaymentController extends Controller
 {
@@ -652,6 +655,7 @@ class PaymentController extends Controller
         if ($request->hasFile('evidence_photos')) {
             foreach ($request->file('evidence_photos') as $photo) {
                 $path = $photo->store('refund_evidence', 'public');
+                StorageSyncService::syncFile($path);
                 $evidencePhotos[] = $path;
             }
         }

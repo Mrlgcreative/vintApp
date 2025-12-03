@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\StorageSyncService;
 
 class SupportController extends Controller
 {
@@ -75,6 +76,7 @@ class SupportController extends Controller
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $path = $file->store('support/attachments', 'public');
+                    StorageSyncService::syncFile($path);
                     $attachments[] = [
                         'name' => $file->getClientOriginalName(),
                         'path' => $path,
@@ -162,6 +164,7 @@ class SupportController extends Controller
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
                     $path = $file->store('support/attachments', 'public');
+                    StorageSyncService::syncFile($path);
                     $attachments[] = [
                         'name' => $file->getClientOriginalName(),
                         'path' => $path,

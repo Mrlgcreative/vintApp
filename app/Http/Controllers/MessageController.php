@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use App\Services\StorageSyncService;
 
 class MessageController extends Controller
 {
@@ -128,6 +130,7 @@ class MessageController extends Controller
         $attachmentPath = null;
         if ($request->hasFile('attachment')) {
             $attachmentPath = $request->file('attachment')->store('messages', 'public');
+            StorageSyncService::syncFile($attachmentPath);
         }
 
         // On autorise l'envoi d'un message vide si un fichier est joint
