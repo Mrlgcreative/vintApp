@@ -11,6 +11,14 @@
     <title>@yield('title') - {{ $contextTitle }} {{ $appName ?? 'VintApp' }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
     
+    <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
+    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ time() }}" rel="stylesheet">
+    
+    <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
+    <style>
+        {!! $activePaletteCSS ?? '' !!}
+    </style>
+    
     <!-- CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
@@ -23,15 +31,10 @@
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/admin-components.css') }}" rel="stylesheet">
     
-    <!-- CSS Dynamique VintApp avec Couleurs Actives -->
+    <!-- CSS Dynamique VintApp avec Couleurs Actives (legacy) -->
     @if(isset($customCSSUrl) && $customCSSUrl)
         <link href="{{ $customCSSUrl }}?v={{ time() }}" rel="stylesheet">
     @endif
-    
-    <!-- Variables CSS Dynamiques de Secours -->
-    <style>
-        {!! $activePaletteCSS ?? '' !!}
-    </style>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
