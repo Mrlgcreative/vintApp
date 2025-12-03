@@ -354,25 +354,26 @@
             @if($recentUsers->count() > 0)
                 <div class="space-y-4">
                     @foreach($recentUsers as $user)
+                        @if($user)
                         <div class="flex items-center space-x-4">
                             <div class="flex-shrink-0">
                                 @if($user->avatar)
                                     <img src="{{ $user->avatar_url }}" class="w-10 h-10 rounded-full" alt="Avatar">
                                 @else
                                     <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                        {{ $user->initial }}
+                                        {{ $user->initial ?? substr($user->name ?? 'U', 0, 1) }}
                                     </div>
                                 @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name ?? 'Utilisateur' }}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $user->email ?? 'N/A' }}</p>
                                     </div>
                                     <div class="text-right flex-shrink-0 ml-4">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->created_at->diffForHumans() }}</p>
-                                        @if($user->isOnline())
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->created_at?->diffForHumans() ?? 'N/A' }}</p>
+                                        @if(method_exists($user, 'isOnline') && $user->isOnline())
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
                                                 En ligne
                                             </span>
@@ -381,6 +382,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </div>
                 <div class="mt-6 text-center">
