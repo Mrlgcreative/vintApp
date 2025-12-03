@@ -110,11 +110,11 @@ class PWAManager {
                         Une nouvelle version de VintApp est disponible.
                     </p>
                     <div class="mt-3 flex space-x-2">
-                        <button onclick="pwaManager.updateApp()" 
+                        <button id="pwa-update-btn" 
                                 class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
                             Mettre à jour
                         </button>
-                        <button onclick="pwaManager.dismissUpdate()" 
+                        <button id="pwa-dismiss-btn" 
                                 class="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded hover:bg-gray-300 dark:hover:bg-gray-600">
                             Plus tard
                         </button>
@@ -124,18 +124,58 @@ class PWAManager {
         `;
 
         document.body.appendChild(notification);
+        
+        // Ajouter les event listeners
+        document.getElementById('pwa-update-btn').addEventListener('click', () => {
+            console.log('🔄 Bouton mise à jour cliqué');
+            this.updateApp();
+        });
+        
+        document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+            console.log('⏭️ Bouton "Plus tard" cliqué');
+            this.dismissUpdate();
+        });
     }
 
     /**
      * Appliquer la mise à jour
      */
     updateApp() {
-        if (this.swRegistration && this.swRegistration.waiting) {
-            this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
-            
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                window.location.reload();
-            });
+        console.log('🚀 updateApp() appelée');
+        
+        if (!this.swRegistration) {
+            console.error('❌ Pas de Service Worker registration');
+            return;
+        }
+        
+        if (!this.swRegistration.waiting) {
+            console.error('❌ Pas de Service Worker en attente');
+            return;
+        }
+        
+        console.log('✅ Envoi du message SKIP_WAITING au Service Worker');
+        
+        // Envoyer le message au Service Worker
+        this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+        
+        // Écouter le changement de contrôleur
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            console.log('🔄 Contrôleur changé, rechargement de la page...');
+            window.location.reload();
+        });
+        
+        // Afficher un message de chargement
+        const notification = document.getElementById('pwa-update-notification');
+        if (notification) {
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                    <span class="ml-3 text-sm text-gray-700 dark:text-gray-300">Mise à jour en cours...</span>
+                </div>
+            `;
         }
     }
 
