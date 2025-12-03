@@ -1,9 +1,9 @@
-﻿@extends('layouts.admin')
+﻿
 
-@section('title', 'Wallets Pending')
-@section('page-title', 'Wallets Pending - Argent en Attente de Confirmation')
+<?php $__env->startSection('title', 'Wallets Pending'); ?>
+<?php $__env->startSection('page-title', 'Wallets Pending - Argent en Attente de Confirmation'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Section d'information - Responsive -->
 <div class="mb-6">
     <div class="bg-blue-50 border-l-4 border-blue-500 p-4 md:p-6 rounded-r-lg">
@@ -34,7 +34,8 @@
                 <span class="hidden sm:inline">Wallets Pending</span>
                 <span class="sm:hidden">Pending</span>
                 <span class="ml-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-sm font-medium">
-                    {{ $pendingWallets->total() }}
+                    <?php echo e($pendingWallets->total()); ?>
+
                 </span>
             </h3>
             
@@ -43,13 +44,14 @@
                 <div class="text-center lg:text-right">
                     <span class="block text-xs text-gray-600 dark:text-gray-300 mb-1">Total USD</span>
                     <span class="text-lg font-bold text-green-600">
-                        ${{ number_format($pendingWallets->where('currency', 'USD')->sum('balance'), 2) }}
+                        $<?php echo e(number_format($pendingWallets->where('currency', 'USD')->sum('balance'), 2)); ?>
+
                     </span>
                 </div>
                 <div class="text-center lg:text-right">
                     <span class="block text-xs text-gray-600 dark:text-gray-300 mb-1">Total CDF</span>
                     <span class="text-lg font-bold text-blue-600">
-                        {{ number_format($pendingWallets->where('currency', 'CDF')->sum('balance'), 0, ',', ' ') }} FC
+                        <?php echo e(number_format($pendingWallets->where('currency', 'CDF')->sum('balance'), 0, ',', ' ')); ?> FC
                     </span>
                 </div>
             </div>
@@ -58,7 +60,7 @@
     
     <!-- Contenu principal - Table sur desktop, cartes sur mobile -->
     <div class="p-0">
-        @if($pendingWallets->count() > 0)
+        <?php if($pendingWallets->count() > 0): ?>
             <!-- Vue tableau - Desktop et tablettes -->
             <div class="hidden lg:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -74,66 +76,71 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200">
-                        @foreach($pendingWallets as $wallet)
+                        <?php $__currentLoopData = $pendingWallets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $wallet): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        @if($wallet->user?->avatar)
-                                            <img src="{{ $wallet->user->avatar_url }}" class="w-10 h-10 rounded-full mr-3" alt="Avatar">
-                                        @else
+                                        <?php if($wallet->user->avatar): ?>
+                                            <img src="<?php echo e($wallet->user->avatar_url); ?>" class="w-10 h-10 rounded-full mr-3" alt="Avatar">
+                                        <?php else: ?>
                                             <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3">
-                                                {{ $wallet->user?->initial ?? 'U' }}
+                                                <?php echo e($wallet->user->initial); ?>
+
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $wallet->user?->name ?? 'Utilisateur supprimé' }}</div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $wallet->user?->email ?? 'N/A' }}</div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo e($wallet->user->name); ?></div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($wallet->user->email); ?></div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                        {{ $wallet->currency }}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'); ?>">
+                                        <?php echo e($wallet->currency); ?>
+
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-bold text-gray-900 dark:text-white">
-                                        {{ number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ') }} {{ $wallet->currency }}
+                                        <?php echo e(number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ')); ?> <?php echo e($wallet->currency); ?>
+
                                     </div>
-                                    @php
+                                    <?php
                                         $commission = $wallet->balance * 0.10;
                                         $transport = $wallet->balance * 0.05;
                                         $seller = $wallet->balance - $commission - $transport;
-                                    @endphp
+                                    ?>
                                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Distribution : {{ number_format($seller, $wallet->currency === 'USD' ? 2 : 0) }} vendeur + {{ number_format($commission + $transport, $wallet->currency === 'USD' ? 2 : 0) }} plateforme
+                                        Distribution : <?php echo e(number_format($seller, $wallet->currency === 'USD' ? 2 : 0)); ?> vendeur + <?php echo e(number_format($commission + $transport, $wallet->currency === 'USD' ? 2 : 0)); ?> plateforme
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                         <i class="fas fa-lock mr-1"></i>
-                                        {{ ucfirst($wallet->type) }}
+                                        <?php echo e(ucfirst($wallet->type)); ?>
+
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wallet->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($wallet->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
                                         <i class="fas fa-circle text-xs mr-1"></i>
-                                        {{ $wallet->is_active ? 'Actif' : 'Inactif' }}
+                                        <?php echo e($wallet->is_active ? 'Actif' : 'Inactif'); ?>
+
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    <div>{{ $wallet->updated_at->format('d/m/Y H:i') }}</div>
-                                    <div class="text-xs text-gray-400">{{ $wallet->updated_at->diffForHumans() }}</div>
+                                    <div><?php echo e($wallet->updated_at->format('d/m/Y H:i')); ?></div>
+                                    <div class="text-xs text-gray-400"><?php echo e($wallet->updated_at->diffForHumans()); ?></div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center space-x-2">
-                                        <a href="{{ route('admin.users.show', $wallet->user) }}" 
+                                        <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
                                            class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
                                            title="Voir utilisateur">
                                             <i class="fas fa-user text-sm"></i>
                                             <span class="ml-1.5 text-xs font-medium">Profil</span>
                                         </a>
-                                        <a href="{{ route('orders.index') }}?seller_id={{ $wallet->user_id }}&status=pending" 
+                                        <a href="<?php echo e(route('orders.index')); ?>?seller_id=<?php echo e($wallet->user_id); ?>&status=pending" 
                                            class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                            title="Voir commandes en attente">
                                             <i class="fas fa-shopping-cart text-sm"></i>
@@ -142,7 +149,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </tbody>
                 </table>
             </div>
@@ -150,43 +157,46 @@
             <!-- Vue cartes - Mobile et petites tablettes -->
             <div class="lg:hidden">
                 <div class="space-y-4 p-4">
-                    @foreach($pendingWallets as $wallet)
+                    <?php $__currentLoopData = $pendingWallets; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $wallet): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="wallet-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-150">
                             <!-- En-tête de la carte avec utilisateur -->
                             <div class="flex items-center mb-4">
-                                @if($wallet->user?->avatar)
-                                    <img src="{{ $wallet->user->avatar_url }}" class="w-12 h-12 rounded-full mr-3" alt="Avatar">
-                                @else
+                                <?php if($wallet->user->avatar): ?>
+                                    <img src="<?php echo e($wallet->user->avatar_url); ?>" class="w-12 h-12 rounded-full mr-3" alt="Avatar">
+                                <?php else: ?>
                                     <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3">
-                                        {{ $wallet->user?->initial ?? 'U' }}
+                                        <?php echo e($wallet->user->initial); ?>
+
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $wallet->user?->name ?? 'Utilisateur supprimé' }}</div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $wallet->user?->email ?? 'N/A' }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo e($wallet->user->name); ?></div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate"><?php echo e($wallet->user->email); ?></div>
                                 </div>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                    {{ $wallet->currency }}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'); ?>">
+                                    <?php echo e($wallet->currency); ?>
+
                                 </span>
                             </div>
                             
                             <!-- Informations financières -->
                             <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 mb-4">
                                 <div class="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                                    {{ number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ') }} {{ $wallet->currency }}
+                                    <?php echo e(number_format($wallet->balance, $wallet->currency === 'USD' ? 2 : 0, ',', ' ')); ?> <?php echo e($wallet->currency); ?>
+
                                 </div>
-                                @php
+                                <?php
                                     $commission = $wallet->balance * 0.10;
                                     $transport = $wallet->balance * 0.05;
                                     $seller = $wallet->balance - $commission - $transport;
-                                @endphp
+                                ?>
                                 <div class="text-xs text-gray-600 dark:text-gray-300">
                                     <div class="mb-1">
                                         <span class="font-medium">Distribution prévue :</span>
                                     </div>
                                     <div class="space-y-1">
-                                        <div>• Vendeur : {{ number_format($seller, $wallet->currency === 'USD' ? 2 : 0) }} {{ $wallet->currency }}</div>
-                                        <div>• Plateforme : {{ number_format($commission + $transport, $wallet->currency === 'USD' ? 2 : 0) }} {{ $wallet->currency }}</div>
+                                        <div>• Vendeur : <?php echo e(number_format($seller, $wallet->currency === 'USD' ? 2 : 0)); ?> <?php echo e($wallet->currency); ?></div>
+                                        <div>• Plateforme : <?php echo e(number_format($commission + $transport, $wallet->currency === 'USD' ? 2 : 0)); ?> <?php echo e($wallet->currency); ?></div>
                                     </div>
                                 </div>
                             </div>
@@ -195,26 +205,29 @@
                             <div class="flex flex-wrap items-center gap-2 mb-4">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                     <i class="fas fa-lock mr-1"></i>
-                                    {{ ucfirst($wallet->type) }}
+                                    <?php echo e(ucfirst($wallet->type)); ?>
+
                                 </span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $wallet->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($wallet->is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'); ?>">
                                     <i class="fas fa-circle text-xs mr-1"></i>
-                                    {{ $wallet->is_active ? 'Actif' : 'Inactif' }}
+                                    <?php echo e($wallet->is_active ? 'Actif' : 'Inactif'); ?>
+
                                 </span>
                                 <span class="text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $wallet->updated_at->diffForHumans() }}
+                                    <?php echo e($wallet->updated_at->diffForHumans()); ?>
+
                                 </span>
                             </div>
                             
                             <!-- Actions -->
                             <div class="flex flex-col sm:flex-row gap-2">
-                                <a href="{{ route('admin.users.show', $wallet->user) }}" 
+                                <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
                                    class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
                                    title="Voir utilisateur">
                                     <i class="fas fa-user text-sm mr-2"></i>
                                     <span class="text-sm font-medium">Voir Profil</span>
                                 </a>
-                                <a href="{{ route('orders.index') }}?seller_id={{ $wallet->user_id }}&status=pending" 
+                                <a href="<?php echo e(route('orders.index')); ?>?seller_id=<?php echo e($wallet->user_id); ?>&status=pending" 
                                    class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                    title="Voir commandes en attente">
                                     <i class="fas fa-shopping-cart text-sm mr-2"></i>
@@ -222,10 +235,10 @@
                                 </a>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-        @else
+        <?php else: ?>
             <!-- État vide - Responsive -->
             <div class="text-center py-12 px-4">
                 <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
@@ -235,31 +248,32 @@
                 <p class="text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">Tous les paiements ont été confirmés et distribués.</p>
                 <p class="text-sm text-gray-400 max-w-lg mx-auto">Les wallets pending apparaissent ici lorsqu'un acheteur paie mais n'a pas encore confirmé la réception.</p>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
     
     <!-- Pagination responsive -->
-    @if($pendingWallets->hasPages())
+    <?php if($pendingWallets->hasPages()): ?>
         <div class="border-t border-gray-200 dark:border-gray-700 px-4 md:px-6 py-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div class="text-sm text-gray-700 dark:text-gray-200 text-center sm:text-left">
                     Affichage de 
-                    <span class="font-medium">{{ $pendingWallets->firstItem() ?? 0 }}</span>
+                    <span class="font-medium"><?php echo e($pendingWallets->firstItem() ?? 0); ?></span>
                     à 
-                    <span class="font-medium">{{ $pendingWallets->lastItem() ?? 0 }}</span>
+                    <span class="font-medium"><?php echo e($pendingWallets->lastItem() ?? 0); ?></span>
                     sur 
-                    <span class="font-medium">{{ $pendingWallets->total() }}</span>
+                    <span class="font-medium"><?php echo e($pendingWallets->total()); ?></span>
                     résultats
                 </div>
                 <div class="flex justify-center">
-                    {{ $pendingWallets->links() }}
+                    <?php echo e($pendingWallets->links()); ?>
+
                 </div>
             </div>
         </div>
-    @endif
+    <?php endif; ?>
 </div>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
     /* Améliorations responsive personnalisées */
     @media (max-width: 640px) {
@@ -293,9 +307,9 @@
         }
     }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Amélioration UX pour les cartes mobiles
@@ -345,5 +359,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/admin/wallets/pending.blade.php ENDPATH**/ ?>
