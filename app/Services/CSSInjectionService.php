@@ -22,16 +22,10 @@ class CSSInjectionService
         return Cache::remember('vintapp_custom_css', 3600, function () {
             $activePalette = $this->colorService->getActivePalette();
             
-            // Lire le fichier CSS de base
-            $baseCSS = File::get(resource_path('css/app.css'));
-            
-            // Générer les variables CSS avec les couleurs actives
+            // Générer UNIQUEMENT les variables CSS (pas le contenu complet de app.css)
             $colorVariables = $this->generateColorVariables($activePalette);
             
-            // Remplacer les variables dans le CSS
-            $customCSS = $this->injectColorVariables($baseCSS, $colorVariables);
-            
-            return $customCSS;
+            return $colorVariables;
         });
     }
 

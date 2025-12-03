@@ -221,7 +221,7 @@
                             <td class="px-3 py-3">
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0 me-2">
-                                        <?php if($chat->user->avatar): ?>
+                                        <?php if($chat->user?->avatar): ?>
                                             <img class="rounded-circle" src="<?php echo e(asset('storage/' . $chat->user->avatar)); ?>" 
                                                  alt="" style="width: 32px; height: 32px; object-fit: cover;">
                                         <?php else: ?>
@@ -232,8 +232,8 @@
                                         <?php endif; ?>
                                     </div>
                                     <div>
-                                        <div class="fw-medium"><?php echo e($chat->user->name); ?></div>
-                                        <div class="small text-muted"><?php echo e($chat->user->email); ?></div>
+                                        <div class="fw-medium"><?php echo e($chat->user?->name ?? 'Utilisateur supprimé'); ?></div>
+                                        <div class="small text-muted"><?php echo e($chat->user?->email ?? 'N/A'); ?></div>
                                     </div>
                                 </div>
                             </td>
