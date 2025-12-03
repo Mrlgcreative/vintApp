@@ -14,7 +14,19 @@ class StorageSyncService
     {
         try {
             $sourcePath = storage_path('app/public/' . $path);
-            $destPath = public_path('storage/' . $path);
+            
+            // Détecter si on est sur Hostinger (public/ à la racine)
+            $isHostinger = !file_exists(base_path('public'));
+            
+            if ($isHostinger) {
+                // Sur Hostinger: storage/ à la racine
+                $destPath = base_path('storage/' . $path);
+                $storageRoot = base_path('storage');
+            } else {
+                // Environnement standard: public/storage/
+                $destPath = public_path('storage/' . $path);
+                $storageRoot = public_path('storage');
+            }
 
             // Skip if source doesn't exist
             if (!File::exists($sourcePath)) {
@@ -28,9 +40,9 @@ class StorageSyncService
             }
 
             // Remove if destination is a symlink
-            if (is_link(public_path('storage'))) {
-                @unlink(public_path('storage'));
-                File::makeDirectory(public_path('storage'), 0755, true);
+            if (is_link($storageRoot)) {
+                @unlink($storageRoot);
+                File::makeDirectory($storageRoot, 0755, true);
             }
 
             // Copy the file
@@ -53,7 +65,15 @@ class StorageSyncService
     {
         try {
             $source = storage_path('app/public/' . $directory);
-            $destination = public_path('storage/' . $directory);
+            
+            // Détecter si on est sur Hostinger
+            $isHostinger = !file_exists(base_path('public'));
+            
+            if ($isHostinger) {
+                $destination = base_path('storage/' . $directory);
+            } else {
+                $destination = public_path('storage/' . $directory);
+            }
 
             if (!File::exists($source)) {
                 return false;

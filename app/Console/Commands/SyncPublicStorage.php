@@ -27,7 +27,18 @@ class SyncPublicStorage extends Command
     public function handle()
     {
         $source = storage_path('app/public');
-        $destination = public_path('storage');
+        
+        // Détecter si on est sur Hostinger (public/ à la racine)
+        // Si base_path() == public_path(), alors public/ est à la racine
+        $isHostinger = !file_exists(base_path('public'));
+        
+        if ($isHostinger) {
+            // Sur Hostinger: storage/ à la racine
+            $destination = base_path('storage');
+        } else {
+            // Environnement standard: public/storage/
+            $destination = public_path('storage');
+        }
 
         if (!File::exists($source)) {
             $this->error("Source directory does not exist: {$source}");
@@ -46,6 +57,9 @@ class SyncPublicStorage extends Command
             File::makeDirectory($destination, 0755, true);
             $this->info("Removed symlink and created directory");
         }
+        
+        $this->info("Environment: " . ($isHostinger ? 'Hostinger (public at root)' : 'Standard (public folder)'));
+        $this->info("Destination: {$destination}");
 
         $this->info("Syncing files from {$source} to {$destination}...");
 
