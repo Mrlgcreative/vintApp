@@ -470,12 +470,15 @@
                             
                             <!-- Image de catégorie -->
                             <div class="mb-3 lg:mb-4 overflow-hidden rounded-xl aspect-square group-hover:scale-110 transition-all duration-300">
-                                <?php if($category->image && Storage::disk('public')->exists($category->image)): ?>
-                                    <img src="<?php echo e(Storage::url($category->image)); ?>" 
+                                <?php if($category->image_url): ?>
+                                    <img src="<?php echo e($category->image_url); ?>" 
                                          alt="<?php echo e($category->name); ?>" 
                                          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                          loading="lazy"
-                                         onerror="this.onerror=null; this.src='https://via.placeholder.com/200x200/6366f1/ffffff?text=<?php echo e(urlencode($category->name)); ?>';" />
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                                    <div class="w-full h-full bg-gradient-to-br <?php echo e($colors[$index % count($colors)]); ?> items-center justify-center hidden">
+                                        <span class="text-4xl lg:text-5xl"><?php echo e($icons[$index % count($icons)]); ?></span>
+                                    </div>
                                 <?php else: ?>
                                     <div class="w-full h-full bg-gradient-to-br <?php echo e($colors[$index % count($colors)]); ?> flex items-center justify-center">
                                         <span class="text-4xl lg:text-5xl"><?php echo e($icons[$index % count($icons)]); ?></span>

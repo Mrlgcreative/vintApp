@@ -40,8 +40,14 @@
     <!-- Lazy Loading CSS -->
     <link rel="stylesheet" href="<?php echo e(asset('css/lazy-loading.css')); ?>">
 
-    <!-- Vinted Violet CSS -->
-   
+    <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
+    <link href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
+    
+    <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
+    <style>
+        <?php echo $activePaletteCSS ?? ''; ?>
+
+    </style>
 
     <!-- Tailwind CSS -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>

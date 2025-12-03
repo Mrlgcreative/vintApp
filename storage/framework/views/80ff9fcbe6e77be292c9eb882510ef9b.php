@@ -11,6 +11,15 @@
     <title><?php echo $__env->yieldContent('title'); ?> - <?php echo e($contextTitle); ?> <?php echo e($appName ?? 'VintApp'); ?></title>
     <link rel="icon" type="image/x-icon" href="<?php echo e(asset($appFavicon ?? '/favicon.ico')); ?>">
     
+    <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
+    <link href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
+    
+    <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
+    <style>
+        <?php echo $activePaletteCSS ?? ''; ?>
+
+    </style>
+    
     <!-- CSS -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
@@ -23,16 +32,10 @@
     <!-- Custom Admin Styles -->
     <link href="<?php echo e(asset('css/admin-components.css')); ?>" rel="stylesheet">
     
-    <!-- CSS Dynamique VintApp avec Couleurs Actives -->
+    <!-- CSS Dynamique VintApp avec Couleurs Actives (legacy) -->
     <?php if(isset($customCSSUrl) && $customCSSUrl): ?>
         <link href="<?php echo e($customCSSUrl); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
     <?php endif; ?>
-    
-    <!-- Variables CSS Dynamiques de Secours -->
-    <style>
-        <?php echo $activePaletteCSS ?? ''; ?>
-
-    </style>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -865,17 +868,23 @@
     </script>
 
     <!-- Network Speed Adapter (doit être chargé en premier) -->
-    <script src="<?php echo e(asset('js/network-adapter.js')); ?>"></script>
-
-    <!-- Network Speed Adapter (doit être chargé en premier) -->
-    <script src="<?php echo e(asset('js/network-adapter.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/network-adapter.js')); ?>?v=<?php echo e(filemtime(public_path('js/network-adapter.js'))); ?>"></script>
 
     <!-- Admin Utils JavaScript -->
     <script src="<?php echo e(asset('js/admin-utils.js')); ?>"></script>
 
-    <!-- Lazy Loading & PWA Scripts -->
+    <!-- Lazy Loading & PWA Scripts (dans le bon ordre) -->
     <script src="<?php echo e(asset('js/content-visibility.js')); ?>"></script>
     <script src="<?php echo e(asset('js/page-skeleton.js')); ?>"></script>
+    <script>
+        // S'assurer que PageSkeletonLoader est disponible globalement
+        if (typeof PageSkeletonLoader !== 'undefined') {
+            window.PageSkeletonLoader = PageSkeletonLoader;
+            console.log('✅ PageSkeletonLoader chargé et disponible');
+        } else {
+            console.error('❌ PageSkeletonLoader non disponible');
+        }
+    </script>
     <script src="<?php echo e(asset('js/admin-skeleton-config.js')); ?>"></script>
     <script src="<?php echo e(asset('js/navigation-skeleton.js')); ?>"></script>
     <script src="<?php echo e(asset('js/lazy-loading.js')); ?>" defer></script>

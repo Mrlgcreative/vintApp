@@ -1,33 +1,33 @@
-﻿@extends('layouts.admin')
+﻿
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Messages Flash -->
-        @if(session('success'))
+        <?php if(session('success')): ?>
             <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
                 <div class="flex items-center">
                     <i class="fas fa-check-circle mr-2"></i>
-                    <span class="block sm:inline">{{ session('success') }}</span>
+                    <span class="block sm:inline"><?php echo e(session('success')); ?></span>
                 </div>
                 <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
                     <i class="fas fa-times text-green-500"></i>
                 </button>
             </div>
-        @endif
+        <?php endif; ?>
 
-        @if(session('error'))
+        <?php if(session('error')): ?>
             <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
                 <div class="flex items-center">
                     <i class="fas fa-exclamation-circle mr-2"></i>
-                    <span class="block sm:inline">{{ session('error') }}</span>
+                    <span class="block sm:inline"><?php echo e(session('error')); ?></span>
                 </div>
                 <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
                     <i class="fas fa-times text-red-500"></i>
                 </button>
             </div>
-        @endif
+        <?php endif; ?>
         
         <!-- Header -->
         <div class="mb-8">
@@ -40,7 +40,7 @@
                     <div class="flex items-center space-x-4">
                         <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-gray-200 dark:border-gray-700">
                             <span class="text-sm text-gray-500 dark:text-gray-400">Total des demandes:</span>
-                            <span class="ml-2 text-lg font-semibold text-blue-600">{{ $refunds->total() }}</span>
+                            <span class="ml-2 text-lg font-semibold text-blue-600"><?php echo e($refunds->total()); ?></span>
                         </div>
                     </div>
                 </div>
@@ -49,16 +49,16 @@
 
         <!-- Filtres -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-            <form method="GET" action="{{ route('admin.refunds.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <form method="GET" action="<?php echo e(route('admin.refunds.index')); ?>" class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
                     <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Tous les statuts</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approuvé</option>
-                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejeté</option>
-                        <option value="negotiation" {{ request('status') === 'negotiation' ? 'selected' : '' }}>Négociation</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Terminé</option>
+                        <option value="pending" <?php echo e(request('status') === 'pending' ? 'selected' : ''); ?>>En attente</option>
+                        <option value="approved" <?php echo e(request('status') === 'approved' ? 'selected' : ''); ?>>Approuvé</option>
+                        <option value="rejected" <?php echo e(request('status') === 'rejected' ? 'selected' : ''); ?>>Rejeté</option>
+                        <option value="negotiation" <?php echo e(request('status') === 'negotiation' ? 'selected' : ''); ?>>Négociation</option>
+                        <option value="completed" <?php echo e(request('status') === 'completed' ? 'selected' : ''); ?>>Terminé</option>
                     </select>
                 </div>
 
@@ -66,14 +66,14 @@
                     <label for="refund_type" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
                     <select name="refund_type" id="refund_type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Tous les types</option>
-                        <option value="full" {{ request('refund_type') === 'full' ? 'selected' : '' }}>Complet</option>
-                        <option value="partial" {{ request('refund_type') === 'partial' ? 'selected' : '' }}>Partiel</option>
+                        <option value="full" <?php echo e(request('refund_type') === 'full' ? 'selected' : ''); ?>>Complet</option>
+                        <option value="partial" <?php echo e(request('refund_type') === 'partial' ? 'selected' : ''); ?>>Partiel</option>
                     </select>
                 </div>
 
                 <div>
                     <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Recherche</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}" 
+                    <input type="text" name="search" id="search" value="<?php echo e(request('search')); ?>" 
                            placeholder="Numéro de commande, acheteur..."
                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
@@ -88,7 +88,7 @@
 
         <!-- Liste des demandes -->
         <div class="space-y-4">
-            @forelse($refunds as $refund)
+            <?php $__empty_1 = true; $__currentLoopData = $refunds; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $refund): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-200">
                     <div class="p-6">
                         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -97,35 +97,39 @@
                             <div class="flex-1">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        @if(!empty($refund->order?->item?->images) && count($refund->order->item->images) > 0)
-                                            <img src="{{ asset('storage/' . $refund->order->item->images[0]) }}" 
-                                                 alt="{{ $refund->order?->item?->name ?? 'Article' }}" 
+                                        <?php if(!empty($refund->order?->item?->images) && count($refund->order->item->images) > 0): ?>
+                                            <img src="<?php echo e(asset('storage/' . $refund->order->item->images[0])); ?>" 
+                                                 alt="<?php echo e($refund->order?->item?->name ?? 'Article'); ?>" 
                                                  class="w-16 h-16 object-cover rounded-lg">
-                                        @else
+                                        <?php else: ?>
                                             <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                                                 <i class="fas fa-image text-gray-400"></i>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="flex-1 min-w-0">
                                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                                            {{ $refund->order?->item?->name ?? 'Article supprimé' }}
+                                            <?php echo e($refund->order?->item?->name ?? 'Article supprimé'); ?>
+
                                         </h3>
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            Commande #{{ $refund->order?->order_number ?? 'N/A' }}
+                                            Commande #<?php echo e($refund->order?->order_number ?? 'N/A'); ?>
+
                                         </p>
                                         <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                            Acheteur: {{ $refund->buyer?->name ?? 'Utilisateur supprimé' }} ({{ $refund->buyer?->email ?? 'N/A' }})
+                                            Acheteur: <?php echo e($refund->buyer?->name ?? 'Utilisateur supprimé'); ?> (<?php echo e($refund->buyer?->email ?? 'N/A'); ?>)
                                         </p>
                                         <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            Demandé le: {{ $refund->created_at?->format('d/m/Y à H:i') ?? 'N/A' }}
+                                            Demandé le: <?php echo e($refund->created_at?->format('d/m/Y à H:i') ?? 'N/A'); ?>
+
                                         </p>
                                     </div>
                                 </div>
                                 
                                 <div class="mt-4 text-sm text-gray-700 dark:text-gray-200">
-                                    <strong>Raison:</strong> {{ Str::limit($refund->reason, 100) }}
+                                    <strong>Raison:</strong> <?php echo e(Str::limit($refund->reason, 100)); ?>
+
                                 </div>
                             </div>
 
@@ -134,22 +138,22 @@
                                 <div class="space-y-2">
                                     <div>
                                         <span class="text-sm text-gray-500 dark:text-gray-400">Montant original:</span>
-                                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->original_amount, 2) }}</div>
+                                        <div class="text-lg font-semibold text-gray-900 dark:text-white"><?php echo e($refund->currency === 'USD' ? '$' : 'FC'); ?> <?php echo e(number_format($refund->original_amount, 2)); ?></div>
                                     </div>
                                     <div>
                                         <span class="text-sm text-gray-500 dark:text-gray-400">Remboursement demandé:</span>
-                                        <div class="text-lg font-semibold text-blue-600">{{ $refund->formatted_refund_amount }}</div>
+                                        <div class="text-lg font-semibold text-blue-600"><?php echo e($refund->formatted_refund_amount); ?></div>
                                     </div>
-                                    @if($refund->status === 'negotiation' && $refund->counter_offer_amount)
+                                    <?php if($refund->status === 'negotiation' && $refund->counter_offer_amount): ?>
                                         <div>
                                             <span class="text-sm text-gray-500 dark:text-gray-400">Contre-offre:</span>
-                                            <div class="text-lg font-semibold text-orange-600">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->counter_offer_amount, 2) }}</div>
+                                            <div class="text-lg font-semibold text-orange-600"><?php echo e($refund->currency === 'USD' ? '$' : 'FC'); ?> <?php echo e(number_format($refund->counter_offer_amount, 2)); ?></div>
                                         </div>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <div class="mt-4">
-                                    @php
+                                    <?php
                                         $statusClasses = [
                                             'pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
                                             'approved' => 'bg-green-100 text-green-800 border-green-200',
@@ -157,30 +161,32 @@
                                             'negotiation' => 'bg-orange-100 text-orange-800 border-orange-200',
                                             'completed' => 'bg-blue-100 text-blue-800 border-blue-200'
                                         ];
-                                    @endphp
+                                    ?>
                                     
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border {{ $statusClasses[$refund->status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-700' }}">
-                                        {{ $refund->status_text }}
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border <?php echo e($statusClasses[$refund->status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-700'); ?>">
+                                        <?php echo e($refund->status_text); ?>
+
                                     </span>
                                     
                                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Type: {{ $refund->refund_type === 'full' ? 'Complet' : 'Partiel' }}
+                                        Type: <?php echo e($refund->refund_type === 'full' ? 'Complet' : 'Partiel'); ?>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Actions -->
-                        @if($refund->status === 'pending')
+                        <?php if($refund->status === 'pending'): ?>
                             <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                                 <div class="flex flex-wrap gap-3">
-                                    <a href="{{ route('admin.refunds.show', $refund) }}" 
+                                    <a href="<?php echo e(route('admin.refunds.show', $refund)); ?>" 
                                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
                                         <i class="fas fa-eye mr-2"></i>Examiner
                                     </a>
                                     
-                                    <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('refund.process', $refund)); ?>" class="inline-flex">
+                                        <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="approve">
                                         <button type="submit" 
                                                 onclick="return confirm('Approuver cette demande de remboursement ?')"
@@ -189,13 +195,13 @@
                                         </button>
                                     </form>
                                     
-                                    <button onclick="openNegotiationModal('{{ $refund->id }}')" 
+                                    <button onclick="openNegotiationModal('<?php echo e($refund->id); ?>')" 
                                             class="inline-flex items-center px-4 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200">
                                         <i class="fas fa-handshake mr-2"></i>Négocier
                                     </button>
                                     
-                                    <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('refund.process', $refund)); ?>" class="inline-flex">
+                                        <?php echo csrf_field(); ?>
                                         <input type="hidden" name="action" value="reject">
                                         <button type="submit" 
                                                 onclick="return confirm('Rejeter cette demande de remboursement ?')"
@@ -205,24 +211,25 @@
                                     </form>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?>
                     </div>
                 </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
                     <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune demande de remboursement</h3>
                     <p class="text-gray-500 dark:text-gray-400">Il n'y a actuellement aucune demande de remboursement à traiter.</p>
                 </div>
-            @endforelse
+            <?php endif; ?>
         </div>
 
         <!-- Pagination -->
-        @if($refunds->hasPages())
+        <?php if($refunds->hasPages()): ?>
             <div class="mt-8">
-                {{ $refunds->links() }}
+                <?php echo e($refunds->links()); ?>
+
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
@@ -236,7 +243,7 @@
             </h3>
             
             <form id="negotiationForm">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <input type="hidden" id="refundId" name="refund_id">
                 <input type="hidden" name="action" value="negotiate">
                 
@@ -334,4 +341,5 @@ document.getElementById('negotiationForm').addEventListener('submit', function(e
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/admin/refunds/index.blade.php ENDPATH**/ ?>
