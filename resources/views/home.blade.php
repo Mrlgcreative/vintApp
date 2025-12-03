@@ -521,12 +521,6 @@
                     </button>
                 </div>
             </div>
-                        
-                        <!-- Icône -->
-                        <div class="text-4xl lg:text-6xl mb-4 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 filter drop-shadow-sm">
-                            {{ $icons[$index % count($icons)] }}
-                        </div>
-
         </div>
     </section>
 
