@@ -127,12 +127,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center space-x-2">
-                                        <a href="{{ route('admin.users.show', $wallet->user) }}" 
-                                           class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
-                                           title="Voir utilisateur">
-                                            <i class="fas fa-user text-sm"></i>
-                                            <span class="ml-1.5 text-xs font-medium">Profil</span>
-                                        </a>
+                                        @if($wallet->user)
+                                            <a href="{{ route('admin.users.show', $wallet->user) }}" 
+                                               class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
+                                               title="Voir utilisateur">
+                                                <i class="fas fa-user text-sm"></i>
+                                                <span class="ml-1.5 text-xs font-medium">Profil</span>
+                                            </a>
+                                        @endif
                                         <a href="{{ route('orders.index') }}?seller_id={{ $wallet->user_id }}&status=pending" 
                                            class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                            title="Voir commandes en attente">
@@ -208,12 +210,14 @@
                             
                             <!-- Actions -->
                             <div class="flex flex-col sm:flex-row gap-2">
-                                <a href="{{ route('admin.users.show', $wallet->user) }}" 
-                                   class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
-                                   title="Voir utilisateur">
-                                    <i class="fas fa-user text-sm mr-2"></i>
-                                    <span class="text-sm font-medium">Voir Profil</span>
-                                </a>
+                                @if($wallet->user)
+                                    <a href="{{ route('admin.users.show', $wallet->user) }}" 
+                                       class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
+                                       title="Voir utilisateur">
+                                        <i class="fas fa-user text-sm mr-2"></i>
+                                        <span class="text-sm font-medium">Voir Profil</span>
+                                    </a>
+                                @endif
                                 <a href="{{ route('orders.index') }}?seller_id={{ $wallet->user_id }}&status=pending" 
                                    class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                    title="Voir commandes en attente">

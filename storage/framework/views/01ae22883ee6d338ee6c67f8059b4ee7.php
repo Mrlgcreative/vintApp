@@ -80,17 +80,17 @@
                             <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-150">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
-                                        <?php if($wallet->user->avatar): ?>
+                                        <?php if($wallet->user?->avatar): ?>
                                             <img src="<?php echo e($wallet->user->avatar_url); ?>" class="w-10 h-10 rounded-full mr-3" alt="Avatar">
                                         <?php else: ?>
                                             <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3">
-                                                <?php echo e($wallet->user->initial); ?>
+                                                <?php echo e($wallet->user?->initial ?? 'U'); ?>
 
                                             </div>
                                         <?php endif; ?>
                                         <div>
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo e($wallet->user->name); ?></div>
-                                            <div class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($wallet->user->email); ?></div>
+                                            <div class="text-sm font-medium text-gray-900 dark:text-white"><?php echo e($wallet->user?->name ?? 'Utilisateur supprimé'); ?></div>
+                                            <div class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($wallet->user?->email ?? 'N/A'); ?></div>
                                         </div>
                                     </div>
                                 </td>
@@ -134,12 +134,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center space-x-2">
-                                        <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
-                                           class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
-                                           title="Voir utilisateur">
-                                            <i class="fas fa-user text-sm"></i>
-                                            <span class="ml-1.5 text-xs font-medium">Profil</span>
-                                        </a>
+                                        <?php if($wallet->user): ?>
+                                            <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
+                                               class="inline-flex items-center px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
+                                               title="Voir utilisateur">
+                                                <i class="fas fa-user text-sm"></i>
+                                                <span class="ml-1.5 text-xs font-medium">Profil</span>
+                                            </a>
+                                        <?php endif; ?>
                                         <a href="<?php echo e(route('orders.index')); ?>?seller_id=<?php echo e($wallet->user_id); ?>&status=pending" 
                                            class="inline-flex items-center px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                            title="Voir commandes en attente">
@@ -161,17 +163,17 @@
                         <div class="wallet-card bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-150">
                             <!-- En-tête de la carte avec utilisateur -->
                             <div class="flex items-center mb-4">
-                                <?php if($wallet->user->avatar): ?>
+                                <?php if($wallet->user?->avatar): ?>
                                     <img src="<?php echo e($wallet->user->avatar_url); ?>" class="w-12 h-12 rounded-full mr-3" alt="Avatar">
                                 <?php else: ?>
                                     <div class="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm mr-3">
-                                        <?php echo e($wallet->user->initial); ?>
+                                        <?php echo e($wallet->user?->initial ?? 'U'); ?>
 
                                     </div>
                                 <?php endif; ?>
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo e($wallet->user->name); ?></div>
-                                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate"><?php echo e($wallet->user->email); ?></div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white truncate"><?php echo e($wallet->user?->name ?? 'Utilisateur supprimé'); ?></div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 truncate"><?php echo e($wallet->user?->email ?? 'N/A'); ?></div>
                                 </div>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo e($wallet->currency === 'USD' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'); ?>">
                                     <?php echo e($wallet->currency); ?>
@@ -221,12 +223,14 @@
                             
                             <!-- Actions -->
                             <div class="flex flex-col sm:flex-row gap-2">
-                                <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
-                                   class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
-                                   title="Voir utilisateur">
-                                    <i class="fas fa-user text-sm mr-2"></i>
-                                    <span class="text-sm font-medium">Voir Profil</span>
-                                </a>
+                                <?php if($wallet->user): ?>
+                                    <a href="<?php echo e(route('admin.users.show', $wallet->user)); ?>" 
+                                       class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors duration-150"
+                                       title="Voir utilisateur">
+                                        <i class="fas fa-user text-sm mr-2"></i>
+                                        <span class="text-sm font-medium">Voir Profil</span>
+                                    </a>
+                                <?php endif; ?>
                                 <a href="<?php echo e(route('orders.index')); ?>?seller_id=<?php echo e($wallet->user_id); ?>&status=pending" 
                                    class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors duration-150"
                                    title="Voir commandes en attente">

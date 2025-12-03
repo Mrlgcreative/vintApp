@@ -11,7 +11,7 @@
             "version": "2.0.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Bacon/BaconQrCode.git",
+                "url": "https://github.com/Bacon/Baco                ls -la public/storagenQrCode.git",
                 "reference": "8674e51bb65af933a5ffaf1c308a660387c35c22"
             },
             "dist": {
