@@ -2,7 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Variables CSS dynamiques VintApp - seront injectées automatiquement */
+/* Import du CSS dynamique généré par PHP avec les couleurs actives */
+@import url('/css/vintapp-dynamic.css');
+
+/* Variables CSS statiques par défaut (seront écrasées par vintapp-dynamic.css) */
 :root {
   --color-primary: #8B5CF6;
   --color-primary-50: #966cf6;
@@ -149,6 +152,8 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
 
 
 
@@ -514,6 +519,8 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
 
 
 

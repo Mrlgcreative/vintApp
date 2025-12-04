@@ -11,20 +11,6 @@
     <title>@yield('title') - {{ $contextTitle }} {{ $appName ?? 'VintApp' }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
     
-    <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
-    <link href="{{ asset('css/vintapp-dynamic.css') }}?v={{ filemtime(public_path('css/vintapp-dynamic.css')) }}" rel="stylesheet">
-    
-    <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
-    <style>
-        {!! $activePaletteCSS ?? '' !!}
-    </style>
-    
-    <!-- CSS -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-    
     <!-- Lazy Loading CSS -->
     <link href="{{ asset('css/lazy-loading.css') }}" rel="stylesheet">
     

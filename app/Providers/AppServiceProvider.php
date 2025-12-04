@@ -34,35 +34,45 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('apple', \SocialiteProviders\Apple\Provider::class);
         });
 
-        // Partager les variables de couleurs avec toutes les vues
+        // Partager les informations de l'app avec toutes les vues
         view()->composer('*', function ($view) {
-            // Récupérer le CSS de la palette active depuis le cache
-            $activePaletteCSS = Cache::remember('vintapp_active_palette_css', 3600, function () {
-                try {
-                    $colorService = app(\App\Services\ColorPaletteService::class);
-                    $colors = $colorService->getAllColors();
-                    
-                    // Générer uniquement les variables CSS :root
-                    // Tailwind est déjà configuré pour utiliser var(--color-primary), var(--color-primary-50), etc.
-                    $css = ":root {\n";
-                    foreach ($colors as $key => $value) {
-                        $css .= "    --color-{$key}: {$value};\n";
-                    }
-                    $css .= "}\n";
-                    
-                    return $css;
-                } catch (\Exception $e) {
-                    Log::error('Erreur génération palette CSS: ' . $e->getMessage());
-                    return '';
-                }
-            });
-
-            // Partager avec toutes les vues
-            $view->with('activePaletteCSS', $activePaletteCSS);
-            
-            // Partager aussi les informations de l'app
             $view->with('appName', config('app.name', 'VintApp'));
             $view->with('appFavicon', config('app.favicon', '/favicon.ico'));
         });
+        
+        // Générer automatiquement le fichier CSS dynamique au démarrage
+        $this->generateDynamicCSS();
+    }
+    
+    /**
+     * Générer le fichier CSS dynamique avec les couleurs actives
+     */
+    protected function generateDynamicCSS(): void
+    {
+        try {
+            $colorService = app(\App\Services\ColorPaletteService::class);
+            $colors = $colorService->getAllColors();
+            
+            // Générer le contenu CSS
+            $css = "/* Généré automatiquement par VintApp - Ne pas modifier manuellement */\n";
+            $css .= ":root {\n";
+            foreach ($colors as $key => $value) {
+                $css .= "    --color-{$key}: {$value};\n";
+            }
+            $css .= "}\n";
+            
+            // Écrire dans le fichier public/css/vintapp-dynamic.css
+            $cssPath = public_path('css/vintapp-dynamic.css');
+            $cssDir = dirname($cssPath);
+            
+            if (!file_exists($cssDir)) {
+                mkdir($cssDir, 0755, true);
+            }
+            
+            file_put_contents($cssPath, $css);
+            
+        } catch (\Exception $e) {
+            Log::error('Erreur génération CSS dynamique: ' . $e->getMessage());
+        }
     }
 }
