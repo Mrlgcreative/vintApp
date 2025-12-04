@@ -17,6 +17,12 @@
     <!-- Custom Admin Styles -->
     <link href="<?php echo e(asset('css/admin-components.css')); ?>" rel="stylesheet">
     
+    <!-- Tailwind CSS compilé avec Vite -->
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
+    
+    <!-- Palette de couleurs dynamique (générée par PHP) -->
+    <link rel="stylesheet" href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(filemtime(public_path('css/vintapp-dynamic.css'))); ?>">
+    
     <!-- CSS Dynamique VintApp avec Couleurs Actives (legacy) -->
     <?php if(isset($customCSSUrl) && $customCSSUrl): ?>
         <link href="<?php echo e($customCSSUrl); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">

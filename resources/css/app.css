@@ -1,6 +1,5 @@
- /* Import du CSS dynamique généré par PHP avec les couleurs actives */
-/* Note: Le fichier est généré automatiquement par AppServiceProvider::boot() */
-@import '../../public/css/vintapp-dynamic.css';
+ /* Note: vintapp-dynamic.css est chargé directement dans le layout via <link> */
+/* Ceci permet de fonctionner sur Hostinger où public/ est à la racine */
 
 @tailwind base;
 @tailwind components;
@@ -153,6 +152,9 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
 
 
 
@@ -521,6 +523,9 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
+
+
 
 
 
