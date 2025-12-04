@@ -2348,6 +2348,10 @@ class AdminController extends Controller
                 'is_active' => $validated['is_active'] ?? true,
             ]);
 
+            // Synchroniser automatiquement le storage
+            \Artisan::call('storage:sync');
+            Log::info('Storage synchronisé automatiquement après création du hero slide');
+
             return redirect()->back()->with('success', 'Slide ajoutée avec succès !');
         } catch (\Exception $e) {
             Log::error('Erreur lors de la création du slide: ' . $e->getMessage());
@@ -2400,6 +2404,10 @@ class AdminController extends Controller
                 }
                 
                 $data['image_path'] = $request->file('image')->store('hero-slides', 'public');
+                
+                // Synchroniser automatiquement le storage
+                \Artisan::call('storage:sync');
+                Log::info('Storage synchronisé automatiquement après mise à jour du hero slide');
             }
 
             $slide->update($data);
