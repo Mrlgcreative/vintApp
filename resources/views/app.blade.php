@@ -719,8 +719,8 @@
                     return;
                 }
 
-                // Enregistrer le Service Worker et attendre qu'il soit actif
-                let registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                // Enregistrer le Service Worker principal (qui inclut Firebase)
+                let registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('✅ Service Worker enregistré:', registration);
 
                 // Attendre que le Service Worker soit actif
