@@ -11,6 +11,15 @@
                     <div class="relative w-full h-full flex-shrink-0" 
                          style="width: {{ 100 / $slides->count() }}%; background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
                         
+                        <!-- Image de fond avec opacité 20% -->
+                        @if($slide->image_url)
+                            <div class="absolute inset-0 opacity-20">
+                                <img src="/storage/{{ $slide->image_url }}" 
+                                     alt="{{ $slide->title }}" 
+                                     class="w-full h-full object-cover" />
+                            </div>
+                        @endif
+                        
                         <div class="relative z-10 h-full flex items-center">
                             <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full min-h-[600px]">
