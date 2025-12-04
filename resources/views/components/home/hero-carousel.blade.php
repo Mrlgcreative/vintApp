@@ -49,10 +49,32 @@
                                     <!-- Right Content - Image -->
                                     <div class="relative h-full flex items-center justify-center">
                                         @if($slide->image_url)
-                                            <div class="relative w-full max-w-md lg:max-w-lg aspect-square">
-                                                <img src="/storage/{{ $slide->image_url }}" 
-                                                     alt="{{ $slide->title }}" 
-                                                     class="w-full h-full object-contain animate-scale-in" />
+                                            <div class="relative w-full max-w-md lg:max-w-lg aspect-square group">
+                                                <!-- Cadre décoratif extérieur avec effet vintage -->
+                                                <div class="absolute -inset-4 bg-gradient-to-br from-white/20 via-white/10 to-transparent rounded-3xl backdrop-blur-sm transform rotate-3 group-hover:rotate-6 transition-transform duration-500"></div>
+                                                
+                                                <!-- Cadre décoratif intérieur -->
+                                                <div class="absolute -inset-2 bg-white/30 rounded-2xl backdrop-blur-sm transform -rotate-2 group-hover:-rotate-3 transition-transform duration-500"></div>
+                                                
+                                                <!-- Container principal de l'image -->
+                                                <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white/50 backdrop-blur-md transform group-hover:scale-105 transition-all duration-500">
+                                                    <!-- Effet de brillance vintage -->
+                                                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                                    
+                                                    <!-- Image -->
+                                                    <img src="/storage/{{ $slide->image_url }}" 
+                                                         alt="{{ $slide->title }}" 
+                                                         class="w-full h-full object-cover animate-scale-in" />
+                                                    
+                                                    <!-- Overlay avec effet vignette -->
+                                                    <div class="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.1)] pointer-events-none"></div>
+                                                </div>
+                                                
+                                                <!-- Points décoratifs aux coins -->
+                                                <div class="absolute -top-2 -left-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
+                                                <div class="absolute -top-2 -right-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
+                                                <div class="absolute -bottom-2 -left-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
+                                                <div class="absolute -bottom-2 -right-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
                                             </div>
                                         @endif
                                     </div>
