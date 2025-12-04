@@ -101,7 +101,7 @@
                                                 @if($slide->image_position === 'left')
                                                     <!-- Image à gauche -->
                                                     <div class="col-md-6 text-center">
-                                                        <img src="/storage/{{ $slide->image_path }}" 
+                                                        <img src="/storage/{{ $slide->image_url }}" 
                                                              class="img-fluid" 
                                                              style="max-height: 400px; object-fit: contain;"
                                                              alt="{{ $slide->title }}">
@@ -139,7 +139,7 @@
                                                     </div>
                                                     <!-- Image à droite -->
                                                     <div class="col-md-6 text-center">
-                                                        <img src="/storage/{{ $slide->image_path }}" 
+                                                        <img src="/storage/{{ $slide->image_url }}" 
                                                              class="img-fluid" 
                                                              style="max-height: {{ $slide->image_size === 'small' ? '250px' : ($slide->image_size === 'medium' ? '350px' : ($slide->image_size === 'large' ? '450px' : '100%')) }}; object-fit: contain;"
                                                              alt="{{ $slide->title }}">
@@ -180,7 +180,7 @@
                                 <div class="flex flex-col md:flex-row gap-4">
                                     <!-- Image -->
                                     <div class="flex-shrink-0">
-                                        <img src="/storage/{{ $slide->image_path }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-lg">
+                                        <img src="/storage/{{ $slide->image_url }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-lg">
                                     </div>
                                     
                                     <!-- Contenu -->
@@ -547,7 +547,7 @@ function editSlide(slideId) {
     
     // Afficher l'aperçu de l'image existante
     document.getElementById('imagePreview').classList.remove('hidden');
-    document.getElementById('previewImg').src = `/storage/${slide.image_path}`;
+    document.getElementById('previewImg').src = `/storage/${slide.image_url}`;
     
     document.getElementById('slideModal').classList.remove('hidden');
     document.body.classList.add('overflow-hidden');

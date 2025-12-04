@@ -45,4 +45,12 @@ class HeroSlide extends Model
     {
         return $query->orderBy('order', 'asc');
     }
+
+    /**
+     * Accessor pour l'URL de l'image
+     */
+    public function getImageUrlAttribute()
+    {
+        return $this->image_path ? $this->image_path : null;
+    }
 }
