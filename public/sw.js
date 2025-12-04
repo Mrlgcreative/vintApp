@@ -1,11 +1,11 @@
 /**
  * VintApp Service Worker
- * Version: 1.0.0
+ * Version: 1.0.1
  * 
  * Gestion du cache offline et stratégies de mise en cache
  */
 
-const CACHE_VERSION = 'vintapp-v1.0.0';
+const CACHE_VERSION = 'vintapp-v1.0.1';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
