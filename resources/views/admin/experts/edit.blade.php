@@ -184,16 +184,11 @@
                 <div class="p-6">
                     <div class="text-center mb-6">
                         @if($expert->user->avatar)
-                            @php
-                                $avatarUrl = filter_var($expert->user->avatar, FILTER_VALIDATE_URL) 
-                                    ? $expert->user->avatar 
-                                    : Storage::url($expert->user->avatar);
-                            @endphp
-                            <img src="{{ $avatarUrl }}" 
+                            <img src="{{ $expert->user->avatar_url }}" 
                                  class="w-20 h-20 rounded-full mx-auto object-cover" 
                                  alt="{{ $expert->user->name }}"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="w-20 h-20 bg-blue-600 rounded-full mx-auto hidden items-center justify-center">
+                            <div class="w-20 h-20 bg-blue-600 rounded-full mx-auto flex items-center justify-center" style="display: none;">
                                 <span class="text-white font-bold text-2xl">
                                     {{ strtoupper(substr($expert->user->name, 0, 1)) }}
                                 </span>

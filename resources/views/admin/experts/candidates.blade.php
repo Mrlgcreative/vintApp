@@ -179,7 +179,7 @@
                                                             </span>
                                                         </div>
                                                     @else
-                                                        <img src="{{ Storage::url($candidate->avatar) }}" 
+                                                        <img src="{{ $candidate->avatar_url }}" 
                                                              class="w-10 h-10 rounded-full object-cover" 
                                                              alt="{{ $candidate->name }}"
                                                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">

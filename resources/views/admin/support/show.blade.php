@@ -53,7 +53,7 @@
                             @if($supportChat->user->avatar)
                                 <img class="rounded-circle" 
                                      style="width: 40px; height: 40px; object-fit: cover;" 
-                                     src="{{ asset('storage/' . $supportChat->user->avatar) }}" 
+                                     src="{{ $supportChat->user->avatar_url }}" 
                                      alt="">
                             @else
                                 <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center"
@@ -80,8 +80,8 @@
                         <div class="d-flex align-items-center gap-2">
                             @if($supportChat->admin->avatar)
                                 <img class="rounded-circle" 
-                                     style="width: 24px; height: 24px; object-fit: cover;" 
-                                     src="{{ asset('storage/' . $supportChat->admin->avatar) }}" 
+                                     style="width: 40px; height: 40px; object-fit: cover;" 
+                                     src="{{ $supportChat->admin->avatar_url }}" 
                                      alt="">
                             @else
                                 <div class="rounded-circle bg-primary bg-opacity-25 d-flex align-items-center justify-content-center"
@@ -141,8 +141,8 @@
                                         <div class="flex-shrink-0">
                                             @if($message->user->avatar)
                                                 <img class="rounded-circle" 
-                                                     style="width: 32px; height: 32px; object-fit: cover;" 
-                                                     src="{{ asset('storage/' . $message->user->avatar) }}" 
+                                                     style="width: 30px; height: 30px; object-fit: cover;" 
+                                                     src="{{ $message->user->avatar_url }}" 
                                                      alt="">
                                             @else
                                                 <div class="rounded-circle {{ $message->is_admin ? 'bg-primary' : 'bg-secondary' }} bg-opacity-25 d-flex align-items-center justify-content-center"

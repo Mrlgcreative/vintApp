@@ -366,6 +366,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarUrlAttribute()
     {
         if ($this->avatar) {
+            // Si c'est déjà une URL complète (Google, Facebook, etc.), retourner telle quelle
+            if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+                return $this->avatar;
+            }
+            // Sinon, c'est un chemin local dans storage
             return asset('storage/' . $this->avatar);
         }
         return null;

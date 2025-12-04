@@ -223,7 +223,7 @@
                                 <div class="d-flex align-items-center">
                                     <div class="flex-shrink-0 me-2">
                                         @if($chat->user?->avatar)
-                                            <img class="rounded-circle" src="{{ asset('storage/' . $chat->user->avatar) }}" 
+                                            <img class="rounded-circle" src="{{ $chat->user->avatar_url }}" 
                                                  alt="" style="width: 32px; height: 32px; object-fit: cover;">
                                         @else
                                             <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center" 
@@ -273,7 +273,7 @@
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0 me-2">
                                             @if($chat->admin->avatar)
-                                                <img class="rounded-circle" src="{{ asset('storage/' . $chat->admin->avatar) }}" 
+                                                <img class="rounded-circle" src="{{ $chat->admin->avatar_url }}" 
                                                      alt="" style="width: 24px; height: 24px; object-fit: cover;">
                                             @else
                                                 <div class="rounded-circle bg-primary bg-opacity-25 d-flex align-items-center justify-content-center" 

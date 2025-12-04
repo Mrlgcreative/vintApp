@@ -81,7 +81,7 @@
                                     </span>
                                 </div>
                             @else
-                                <img src="{{ Storage::url($expert->user->avatar) }}" 
+                                <img src="{{ $expert->user->avatar_url }}" 
                                      class="w-24 h-24 rounded-full mx-auto object-cover"
                                      alt="{{ $expert->user->name }}"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">

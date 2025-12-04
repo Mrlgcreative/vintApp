@@ -228,12 +228,7 @@
                                             @if($expert->user)
                                                 <div class="w-10 h-10 flex-shrink-0">
                                                     @if($expert->user->avatar)
-                                                        @php
-                                                            $avatarUrl = filter_var($expert->user->avatar, FILTER_VALIDATE_URL) 
-                                                                ? $expert->user->avatar 
-                                                                : Storage::url($expert->user->avatar);
-                                                        @endphp
-                                                        <img src="{{ $avatarUrl }}" 
+                                                        <img src="{{ $expert->user->avatar_url }}" 
                                                              class="w-10 h-10 rounded-full object-cover" 
                                                              alt="{{ $expert->user->name }}"
                                                              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
