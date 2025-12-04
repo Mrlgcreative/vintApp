@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Brand;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Services\StorageSyncService;
 
 class BrandController extends Controller
 {
@@ -55,6 +56,8 @@ class BrandController extends Controller
 
         if ($request->hasFile('logo')) {
             $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
+            StorageSyncService::syncFile($validated['logo']);
         }
 
         $validated['is_active'] = $request->has('is_active');
@@ -119,6 +122,8 @@ class BrandController extends Controller
                 Storage::disk('public')->delete($brand->logo);
             }
             $validated['logo'] = $request->file('logo')->store('brands', 'public');
+            // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
+            StorageSyncService::syncFile($validated['logo']);
         }
         $validated['is_active'] = $request->has('is_active');
         $brand->update($validated);

@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use App\Services\CacheService;
 use App\Services\MonitoringService;
 use App\Services\ItemVerificationService;
+use App\Services\StorageSyncService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 use App\Notifications\ItemApproved;
@@ -211,6 +212,8 @@ class ItemController extends Controller
                 if (!Storage::disk('public')->exists($path)) {
                     throw new \Exception('Erreur lors de l\'upload de l\'image.');
                 }
+                // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
+                StorageSyncService::syncFile($path);
                 $images[] = $path;
             }
             $item->images = $images;
@@ -455,6 +458,8 @@ class ItemController extends Controller
                 if (!Storage::disk('public')->exists($path)) {
                     throw new \Exception('Erreur lors de l\'upload de l\'image.');
                 }
+                // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
+                StorageSyncService::syncFile($path);
                 $currentImages[] = $path;
             }
             $item->images = $currentImages;
