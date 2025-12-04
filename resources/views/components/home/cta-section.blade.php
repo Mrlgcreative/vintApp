@@ -1,9 +1,14 @@
 <section class="max-w-[1400px] mx-auto px-6 lg:px-12 py-24">
     <div class="bg-black text-white rounded-3xl p-12 lg:p-20 text-center relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        <!-- Vintage Vogue Background Image -->
+        <div class="absolute inset-0 opacity-20">
+            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop" 
+                 alt="Vintage Fashion Background" 
+                 class="w-full h-full object-cover" />
         </div>
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60"></div>
         
         <div class="relative max-w-3xl mx-auto space-y-8">
             <h2 class="font-display text-4xl lg:text-6xl font-bold leading-tight">
