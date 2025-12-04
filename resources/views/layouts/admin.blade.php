@@ -20,11 +20,6 @@
     <!-- Tailwind CSS compilé avec Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <!-- CSS Dynamique VintApp avec Couleurs Actives (legacy) -->
-    @if(isset($customCSSUrl) && $customCSSUrl)
-        <link href="{{ $customCSSUrl }}?v={{ time() }}" rel="stylesheet">
-    @endif
-    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

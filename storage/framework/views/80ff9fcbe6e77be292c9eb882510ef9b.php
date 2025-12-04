@@ -20,18 +20,13 @@
     <!-- Tailwind CSS compilé avec Vite -->
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     
-    <!-- Palette de couleurs dynamique (générée par PHP) -->
-    <link rel="stylesheet" href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(filemtime(public_path('css/vintapp-dynamic.css'))); ?>">
-    
-    <!-- CSS Dynamique VintApp avec Couleurs Actives (legacy) -->
-    <?php if(isset($customCSSUrl) && $customCSSUrl): ?>
-        <link href="<?php echo e($customCSSUrl); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
-    <?php endif; ?>
-    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     
     <!-- Custom Page Styles -->
     <?php echo $__env->yieldPushContent('styles'); ?>
@@ -104,7 +99,7 @@
         ?>
 
         <!-- Sidebar -->
-        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-to-b from-primary-700 to-primary-900 shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
+        <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-primary-sidebar shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
             <div class="flex h-full flex-col">
                 <!-- Brand -->
                 <div class="relative border-b border-white/10 bg-primary-600 dark:bg-gray-800/5 p-6">
@@ -136,13 +131,13 @@
                     <?php if($isExpert): ?>
                         <!-- Menu Expert -->
                         <a href="<?php echo e(route('expert.dashboard')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.dashboard*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.dashboard*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-shield-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Dashboard Expert</span>
                         </a>
 
                         <a href="<?php echo e(route('expert.verifications.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-search w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Mes Vérifications</span>
                             <?php
@@ -159,7 +154,7 @@
                         </a>
 
                         <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_review'])); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review'): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">En attente d'examen</span>
                             <?php if($pendingVerifications > 0): ?>
@@ -171,13 +166,13 @@
                         </a>
 
                         <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_approved'])); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved'): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-check-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Approuvées</span>
                         </a>
 
                         <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_rejected'])); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected'): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-times-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rejetées</span>
                         </a>
@@ -186,7 +181,7 @@
                         <div class="my-4 h-px bg-white dark:bg-gray-800/10"></div>
 
                         <a href="<?php echo e(route('expert.profile')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.profile*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('expert.profile*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Mon Profil Expert</span>
                         </a>
@@ -221,13 +216,13 @@
                     <?php else: ?>
                         <!-- Menu Admin -->
                         <a href="<?php echo e(route('admin.dashboard')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.dashboard')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.dashboard')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-tachometer-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Tableau de bord</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.users.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs</span>
                             <?php if(isset($pendingUsersCount) && $pendingUsersCount > 0): ?>
@@ -240,7 +235,7 @@
 
                         <!-- 🆕 Menu Utilisateurs Connectés -->
                         <a href="<?php echo e(route('admin.users.online')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.online')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.online')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs Connectés</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
@@ -248,7 +243,7 @@
 
                         <!-- 🎯 Menu Gestion des Experts -->
                         <a href="<?php echo e(route('admin.experts.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.experts.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.experts.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-graduate w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Experts</span>
                             <?php
@@ -264,13 +259,13 @@
                         </a>
 
                         <a href="<?php echo e(route('admin.transactions.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.transactions.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.transactions.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Transactions</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.wallets.pending')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.wallets.pending')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.wallets.pending')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Wallets en attente</span>
                             <?php if(isset($pendingWalletsCount) && $pendingWalletsCount > 0): ?>
@@ -282,14 +277,14 @@
                         </a>
 
                         <a href="<?php echo e(route('admin.orders.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Commandes</span>
                         </a>
 
                         <!-- 🆕 Menu Vérification Items IA -->
                         <a href="<?php echo e(route('admin.items.pending_verification')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.items.pending_verification')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.items.pending_verification')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-search-plus w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Vérification IA</span>
                             <?php
@@ -305,7 +300,7 @@
 
                         <!-- 🆕 Menu Remboursements -->
                         <a href="<?php echo e(route('admin.refunds.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.refunds.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.refunds.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-undo w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Remboursements</span>
                             <?php
@@ -321,26 +316,26 @@
 
                         <!-- 🆕 Menu Traçage GPS -->
                         <a href="<?php echo e(route('admin.orders.tracking.list')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.tracking*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.tracking*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Traçage GPS</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
                         <a href="<?php echo e(route('admin.brands.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.brands.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.brands.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-tags w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Marques</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.categories.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.categories.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.categories.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Catégories</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.support.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.support.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.support.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Support Client</span>
                             <?php
@@ -357,7 +352,7 @@
 
                         <!-- 🎯 Menu Affiliation et Récompenses -->
                         <a href="<?php echo e(route('admin.affiliate.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.affiliate.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.affiliate.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Affiliation</span>
                             <?php
@@ -374,39 +369,39 @@
                         </a>
 
                         <a href="<?php echo e(route('admin.reports')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.reports')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.reports')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rapports</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.monitoring.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.monitoring.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.monitoring.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-heartbeat w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Monitoring</span>
                             <span class="inline-flex items-center justify-center w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
                         </a>
 
                         <a href="<?php echo e(route('admin.logs')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.logs')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.logs')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Logs système</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.settings.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Paramètres</span>
                         </a>
 
                         <a href="<?php echo e(route('admin.locations.index')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.locations.*')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.locations.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Zones autorisées</span>
                         </a>
 
                         <!-- 🔔 Broadcast Notifications FCM -->
                         <a href="<?php echo e(route('admin.broadcast.fcm')); ?>" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.broadcast.fcm')): ?> bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-primary-600 dark:bg-gray-800/10 hover:text-white/90 <?php if(request()->routeIs('admin.broadcast.fcm')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-bullhorn w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Broadcast Push</span>
                             <span class="inline-flex items-center justify-center w-2 h-2 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/50"></span>
@@ -888,4 +883,5 @@
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+
 <?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/layouts/admin.blade.php ENDPATH**/ ?>
