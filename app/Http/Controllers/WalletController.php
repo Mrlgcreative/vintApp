@@ -12,9 +12,12 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Services\PaymentService;
 use App\Services\MobileMoneyService;
+use App\Traits\ApiResponses;
 
 class WalletController extends Controller
 {
+    use ApiResponses;
+    
     private $paymentService;
     private $mobileMoneyService;
 
@@ -855,6 +858,288 @@ class WalletController extends Controller
                 'message' => 'Erreur lors du transfert de commission',
                 'error' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get user wallets via API
+     */
+    public function apiShow(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            $usdWallet = $this->getOrCreateUserWallet($user, 'USD');
+            $cdfWallet = $this->getOrCreateUserWallet($user, 'CDF');
+
+            return $this->successResponse([
+                'usd_wallet' => $usdWallet,
+                'cdf_wallet' => $cdfWallet,
+                'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500)
+            ], 'Wallets récupérés avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération des wallets', 500);
+        }
+    }
+
+    /**
+     * Get wallet transactions via API
+     */
+    public function apiTransactions(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $walletIds = $user->wallets()->pluck('id');
+
+            $transactions = WalletTransaction::whereIn('wallet_id', $walletIds)
+                ->with('wallet')
+                ->orderBy('created_at', 'desc')
+                ->paginate($request->per_page ?? 15);
+
+            return $this->paginatedResponse($transactions, 'Transactions récupérées avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération des transactions', 500);
+        }
+    }
+
+    /**
+     * Add funds via API
+     */
+    public function apiAddFunds(Request $request)
+    {
+        try {
+            $validator = \Validator::make($request->all(), [
+                'wallet_id' => 'required|exists:wallets,id',
+                'amount' => 'required|numeric|min:1',
+                'payment_method' => 'required|string|in:illicocash,orange_money,airtel_money,mpesa,africell',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $wallet = Wallet::findOrFail($request->wallet_id);
+
+            if ($wallet->user_id !== $request->user()->id) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            $paymentData = [
+                'buyer_id' => $request->user()->id,
+                'amount' => $request->amount,
+                'purpose' => 'Recharge de wallet ' . $wallet->currency,
+            ];
+
+            switch ($request->payment_method) {
+                case 'illicocash':
+                    $response = $this->paymentService->payWithIllicocash($paymentData);
+                    break;
+                case 'orange_money':
+                    $response = $this->paymentService->payWithOrangeMoney($paymentData);
+                    break;
+                case 'airtel_money':
+                    $response = $this->paymentService->payWithAirtelMoney($paymentData);
+                    break;
+                case 'mpesa':
+                    $response = $this->paymentService->payWithMpesa($paymentData);
+                    break;
+                case 'africell':
+                    $response = $this->paymentService->payWithAfricell($paymentData);
+                    break;
+                default:
+                    return $this->errorResponse('Méthode de paiement non supportée', 400);
+            }
+
+            if ($response['status'] === 'pending') {
+                $wallet->transactions()->create([
+                    'type' => 'credit_pending',
+                    'amount' => $request->amount,
+                    'balance_after' => $wallet->balance,
+                    'description' => 'Recharge via ' . ucfirst($request->payment_method),
+                    'reference' => $response['provider'] . '-' . time() . '-' . rand(1000, 9999),
+                    'status' => 'pending',
+                    'provider' => $request->payment_method
+                ]);
+            }
+
+            return $this->successResponse($response, 'Paiement initié avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de l\'ajout de fonds', 500);
+        }
+    }
+
+    /**
+     * Withdraw funds via API
+     */
+    public function apiWithdraw(Request $request)
+    {
+        try {
+            $validator = \Validator::make($request->all(), [
+                'wallet_id' => 'required|exists:wallets,id',
+                'amount' => 'required|numeric|min:0.01',
+                'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
+                'payment_method' => 'required|string|in:orange_money,airtel_money,mpesa,africell,illicocash,agent',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $wallet = Wallet::findOrFail($request->wallet_id);
+
+            if ($wallet->user_id !== $request->user()->id) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            if ($request->amount > $wallet->balance) {
+                return $this->errorResponse('Solde insuffisant', 400);
+            }
+
+            DB::beginTransaction();
+
+            $metadata = [
+                'phone_number' => $request->phone_number,
+                'payment_method' => $request->payment_method,
+                'withdrawal_date' => now()->toDateTimeString(),
+            ];
+
+            $transaction = $wallet->transactions()->create([
+                'type' => 'debit',
+                'amount' => $request->amount,
+                'balance_after' => $wallet->balance,
+                'description' => 'Retrait de fonds vers ' . $request->phone_number,
+                'reference' => 'WTH-' . time() . '-' . rand(1000, 9999),
+                'status' => 'processing',
+                'provider' => $request->payment_method,
+                'metadata' => json_encode($metadata)
+            ]);
+
+            $withdrawalRequest = WithdrawalRequest::create([
+                'wallet_transaction_id' => $transaction->id,
+                'phone_number' => $request->phone_number,
+                'payment_method' => $request->payment_method,
+                'amount' => $request->amount,
+                'currency' => $wallet->currency,
+                'status' => 'processing',
+            ]);
+
+            $wallet->decrement('balance', $request->amount);
+            $transaction->update(['balance_after' => $wallet->fresh()->balance]);
+
+            DB::commit();
+
+            try {
+                $cashOutResponse = $this->mobileMoneyService->cashOut(
+                    $request->payment_method,
+                    $request->phone_number,
+                    $request->amount,
+                    $wallet->currency,
+                    $transaction
+                );
+
+                $withdrawalRequest->update([
+                    'provider_reference' => $cashOutResponse['provider_reference'] ?? null,
+                    'provider_response' => json_encode($cashOutResponse),
+                    'status' => $cashOutResponse['status'] ?? 'processing',
+                ]);
+
+                $transaction->update(['status' => $cashOutResponse['status'] ?? 'processing']);
+
+                return $this->successResponse([
+                    'withdrawal' => $withdrawalRequest,
+                    'transaction' => $transaction,
+                ], 'Demande de retrait en cours de traitement');
+            } catch (\Exception $apiError) {
+                Log::error('Cash-out API error', ['error' => $apiError->getMessage()]);
+                
+                $withdrawalRequest->update(['status' => 'failed']);
+                $transaction->update(['status' => 'failed']);
+
+                return $this->successResponse([
+                    'withdrawal' => $withdrawalRequest,
+                    'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.'
+                ], 'Retrait en attente', 202);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur lors du retrait', 500);
+        }
+    }
+
+    /**
+     * Convert currency between wallets via API
+     */
+    public function apiConvert(Request $request)
+    {
+        try {
+            $validator = \Validator::make($request->all(), [
+                'from_wallet_id' => 'required|exists:wallets,id',
+                'to_wallet_id' => 'required|exists:wallets,id',
+                'amount' => 'required|numeric|min:0.01',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $fromWallet = Wallet::findOrFail($request->from_wallet_id);
+            $toWallet = Wallet::findOrFail($request->to_wallet_id);
+
+            if ($fromWallet->user_id !== $request->user()->id || $toWallet->user_id !== $request->user()->id) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            if ($fromWallet->currency === $toWallet->currency) {
+                return $this->errorResponse('Les deux wallets ont la même devise', 400);
+            }
+
+            if ($fromWallet->balance < $request->amount) {
+                return $this->errorResponse('Solde insuffisant', 400);
+            }
+
+            $rate = Cache::remember('usd_cdf_rate', 3600, function () {
+                return 2500.00;
+            });
+
+            $convertedAmount = $fromWallet->currency === 'USD'
+                ? $request->amount * $rate
+                : $request->amount / $rate;
+
+            DB::transaction(function () use ($fromWallet, $toWallet, $request, $convertedAmount, $rate) {
+                $fromWallet->decrement('balance', $request->amount);
+                $fromWallet->transactions()->create([
+                    'type' => 'debit',
+                    'amount' => $request->amount,
+                    'balance_after' => $fromWallet->fresh()->balance,
+                    'description' => 'Conversion ' . $fromWallet->currency . ' → ' . $toWallet->currency,
+                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
+                    'status' => 'completed',
+                ]);
+
+                $toWallet->increment('balance', $convertedAmount);
+                $toWallet->transactions()->create([
+                    'type' => 'credit',
+                    'amount' => $convertedAmount,
+                    'balance_after' => $toWallet->fresh()->balance,
+                    'description' => 'Conversion ' . $fromWallet->currency . ' → ' . $toWallet->currency,
+                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
+                    'status' => 'completed',
+                ]);
+            });
+
+            return $this->successResponse([
+                'from_currency' => $fromWallet->currency,
+                'to_currency' => $toWallet->currency,
+                'amount' => $request->amount,
+                'converted_amount' => round($convertedAmount, 2),
+                'rate' => $rate,
+                'from_balance' => $fromWallet->fresh()->balance,
+                'to_balance' => $toWallet->fresh()->balance,
+            ], 'Conversion effectuée avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la conversion', 500);
         }
     }
 }

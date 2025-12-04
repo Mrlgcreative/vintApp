@@ -1274,14 +1274,21 @@ Route::middleware('auth')->prefix('boost')->name('boost.')->group(function () {
 });
 
 // Routes pour l'authentification à deux facteurs
-Route::middleware(['auth'])->prefix('two-factor')->name('two-factor.')->group(function () {
-    Route::get('/', [App\Http\Controllers\TwoFactorAuthController::class, 'index'])->name('index');
-    Route::get('/challenge', [App\Http\Controllers\TwoFactorAuthController::class, 'showChallenge'])->name('challenge');
-    Route::post('/enable', [App\Http\Controllers\TwoFactorAuthController::class, 'enable'])->name('enable');
-    Route::post('/confirm', [App\Http\Controllers\TwoFactorAuthController::class, 'confirm'])->name('confirm');
-    Route::post('/disable', [App\Http\Controllers\TwoFactorAuthController::class, 'disable'])->name('disable');
-    Route::post('/verify', [App\Http\Controllers\TwoFactorAuthController::class, 'verify'])->name('verify');
-    Route::post('/regenerate-codes', [App\Http\Controllers\TwoFactorAuthController::class, 'regenerateRecoveryCodes'])->name('regenerate-codes');
+Route::prefix('two-factor')->name('two-factor.')->group(function () {
+    // Routes accessibles sans auth complète (pour le challenge 2FA)
+    Route::middleware(['web'])->group(function () {
+        Route::get('/challenge', [App\Http\Controllers\TwoFactorAuthController::class, 'showChallenge'])->name('challenge');
+        Route::post('/verify', [App\Http\Controllers\TwoFactorAuthController::class, 'verify'])->name('verify');
+    });
+    
+    // Routes protégées par auth
+    Route::middleware(['auth'])->group(function () {
+        Route::get('/', [App\Http\Controllers\TwoFactorAuthController::class, 'index'])->name('index');
+        Route::post('/enable', [App\Http\Controllers\TwoFactorAuthController::class, 'enable'])->name('enable');
+        Route::post('/confirm', [App\Http\Controllers\TwoFactorAuthController::class, 'confirm'])->name('confirm');
+        Route::post('/disable', [App\Http\Controllers\TwoFactorAuthController::class, 'disable'])->name('disable');
+        Route::post('/regenerate-codes', [App\Http\Controllers\TwoFactorAuthController::class, 'regenerateRecoveryCodes'])->name('regenerate-codes');
+    });
 });
 
 

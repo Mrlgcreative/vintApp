@@ -10,6 +10,7 @@ use App\Models\PointTransaction;
 use App\Models\PointRedemption;
 use App\Models\PointConversionRate;
 use App\Services\AffiliateService;
+use App\Traits\ApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Validator;
 
 class AffiliateController extends Controller
 {
+    use ApiResponses;
+    
     protected AffiliateService $affiliateService;
 
     public function __construct(AffiliateService $affiliateService)

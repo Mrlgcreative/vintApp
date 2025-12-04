@@ -16,6 +16,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\AuthenticityController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\WalletController;
 
@@ -109,12 +110,32 @@ Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () 
         Route::get('/brands/{id}', [BrandController::class, 'apiShow']);
         Route::get('/brands/{id}/items', [BrandController::class, 'apiItems']);
         
+        // Authenticity Verification API
+        Route::prefix('authenticity')->group(function () {
+            Route::get('/dashboard', [AuthenticityController::class, 'apiDashboard']);
+            Route::post('/{check}/confirm-payment', [AuthenticityController::class, 'apiConfirmPayment']);
+            Route::middleware('throttle:20,1')->group(function () {
+                Route::put('/{check}/update-status', [AuthenticityController::class, 'apiUpdateStatus']);
+            });
+        });
+        Route::get('/items/{item}/authenticity/can-verify', [AuthenticityController::class, 'apiCanVerify']);
+        Route::get('/items/{item}/authenticity/status', [AuthenticityController::class, 'apiStatus']);
+        Route::middleware('throttle:20,1')->group(function () {
+            Route::post('/items/{item}/authenticity/submit', [AuthenticityController::class, 'apiSubmit']);
+        });
+        
         // User API
         Route::prefix('user')->group(function () {
             Route::get('/profile', [UserController::class, 'apiProfile']);
             Route::put('/profile', [UserController::class, 'apiUpdateProfile']);
+            Route::put('/password', [UserController::class, 'apiUpdatePassword']);
+            Route::post('/avatar', [UserController::class, 'apiUploadAvatar']);
+            Route::get('/stats', [UserController::class, 'apiGetStats']);
             Route::get('/items', [UserController::class, 'apiGetItems']);
             Route::get('/orders', [UserController::class, 'apiGetOrders']);
+            Route::get('/sales', [UserController::class, 'apiGetSales']);
+            Route::get('/reviews', [UserController::class, 'apiGetReviews']);
+            Route::delete('/account', [UserController::class, 'apiDestroy']);
         });
         
         // Orders API
@@ -133,15 +154,30 @@ Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () 
         Route::prefix('messages')->group(function () {
             Route::get('/', [MessageController::class, 'apiIndex']);
             Route::post('/', [MessageController::class, 'apiStore']);
-            Route::get('/{id}', [MessageController::class, 'apiShow']);
+            Route::get('/{userId}', [MessageController::class, 'apiShow']);
+            Route::put('/{messageId}/mark-read', [MessageController::class, 'apiMarkAsRead']);
+            Route::get('/unread/count', [MessageController::class, 'apiUnreadCount']);
+            Route::post('/discount/apply', [MessageController::class, 'apiApplyDiscount']);
+            Route::get('/discounts/{itemId}', [MessageController::class, 'apiGetAvailableDiscounts']);
         });
         
+        // Reviews API
+        Route::prefix('reviews')->group(function () {
+            Route::get('/', [ReviewController::class, 'apiIndex']);
+            Route::get('/item/{itemId}', [ReviewController::class, 'apiItemReviews']);
+            Route::get('/seller/{sellerId}', [ReviewController::class, 'apiSellerReviews']);
+            Route::post('/', [ReviewController::class, 'apiStore']);
+            Route::put('/{reviewId}', [ReviewController::class, 'apiUpdate']);
+            Route::delete('/{reviewId}', [ReviewController::class, 'apiDestroy']);
+        });
+
         // Wallet API
         Route::prefix('wallet')->group(function () {
             Route::get('/', [WalletController::class, 'apiShow']);
             Route::get('/transactions', [WalletController::class, 'apiTransactions']);
             Route::post('/add-funds', [WalletController::class, 'apiAddFunds']);
             Route::post('/withdraw', [WalletController::class, 'apiWithdraw']);
+            Route::post('/convert', [WalletController::class, 'apiConvert']);
         });
     });
     
@@ -277,14 +313,28 @@ Route::middleware(['web', 'auth:web'])->prefix('notifications')->group(function 
 });
 
 // FCM Token Registration
-Route::middleware(['web', 'auth:web'])->post('/fcm-token', function (Request $request) {
+Route::middleware(['web'])->post('/fcm-token', function (Request $request) {
     try {
         $validated = $request->validate([
             'token' => 'required|string',
             'device_type' => 'nullable|string|max:20'
         ]);
 
+        // Vérifier si l'utilisateur est authentifié ou en challenge 2FA
         $user = Auth::user();
+        
+        // Si pas d'utilisateur Auth, vérifier si en challenge 2FA
+        if (!$user && session('2fa_user_id')) {
+            $user = \App\Models\User::find(session('2fa_user_id'));
+        }
+        
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Utilisateur non authentifié'
+            ], 401);
+        }
+
         $user->fcm_token = $validated['token'];
         $user->device_type = $validated['device_type'] ?? 'unknown';
         $user->browser = $request->userAgent();

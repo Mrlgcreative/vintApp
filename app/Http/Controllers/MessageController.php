@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\StorageSyncService;
+use App\Traits\ApiResponses;
 
 class MessageController extends Controller
 {
+    use ApiResponses;
+    
     private $notificationService;
 
     public function __construct(NotificationService $notificationService)
@@ -553,5 +556,236 @@ class MessageController extends Controller
 
         // Trier par dernier message
         return $conversations->sortByDesc('last_message.created_at');
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get all conversations for API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            $vendorContacts = $this->getVendorContacts($user);
+            $receivedConversations = $this->getReceivedConversations($user);
+            
+            $allContacts = $vendorContacts->merge($receivedConversations)
+                ->unique(function($contact) {
+                    return $contact->vendor_id . '-' . ($contact->item_id ?? 'general');
+                })
+                ->sortByDesc('last_message.created_at')
+                ->values();
+
+            return $this->successResponse($allContacts, 'Conversations récupérées avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération des conversations', 500);
+        }
+    }
+
+    /**
+     * Get conversation messages with a specific user for API
+     */
+    public function apiShow(Request $request, $userId)
+    {
+        try {
+            $currentUser = $request->user();
+            
+            $messages = Message::where(function($query) use ($currentUser, $userId) {
+                $query->where('sender_id', $currentUser->id)
+                      ->where('receiver_id', $userId);
+            })->orWhere(function($query) use ($currentUser, $userId) {
+                $query->where('sender_id', $userId)
+                      ->where('receiver_id', $currentUser->id);
+            })->with(['sender', 'receiver'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+            // Marquer les messages comme lus
+            Message::where('sender_id', $userId)
+                   ->where('receiver_id', $currentUser->id)
+                   ->where('is_read', false)
+                   ->update(['read_at' => now(), 'is_read' => true]);
+            
+            $otherUser = User::find($userId);
+
+            return $this->successResponse([
+                'messages' => $messages,
+                'other_user' => $otherUser
+            ], 'Messages récupérés avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération des messages', 500);
+        }
+    }
+
+    /**
+     * Send a message via API
+     */
+    public function apiStore(Request $request)
+    {
+        try {
+            $validator = \Validator::make($request->all(), [
+                'recipient_id' => 'required|exists:users,id',
+                'content' => 'nullable|string|max:1000',
+                'attachment' => 'nullable|file|max:10240',
+                'item_id' => 'nullable|exists:items,id'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $user = $request->user();
+            $recipientId = $request->recipient_id;
+
+            $attachmentPath = null;
+            if ($request->hasFile('attachment')) {
+                $attachmentPath = $request->file('attachment')->store('messages', 'public');
+                StorageSyncService::syncFile($attachmentPath);
+            }
+
+            if (empty($request->content) && !$attachmentPath) {
+                return $this->errorResponse('Message vide', 422);
+            }
+
+            $message = Message::create([
+                'sender_id' => $user->id,
+                'receiver_id' => $recipientId,
+                'content' => $request->content,
+                'attachment' => $attachmentPath,
+                'item_id' => $request->item_id
+            ]);
+
+            // Créer une notification pour le destinataire
+            $this->notificationService->createMessageNotification(
+                $user->id,
+                $recipientId,
+                $request->content ?? 'Fichier joint'
+            );
+
+            return $this->successResponse($message->load(['sender', 'receiver']), 'Message envoyé avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de l\'envoi du message', 500);
+        }
+    }
+
+    /**
+     * Mark message as read via API
+     */
+    public function apiMarkAsRead(Request $request, $messageId)
+    {
+        try {
+            $message = Message::findOrFail($messageId);
+            
+            if ($message->receiver_id !== $request->user()->id) {
+                return $this->errorResponse('Non autorisé', 403);
+            }
+
+            $message->update(['read_at' => now(), 'is_read' => true]);
+
+            return $this->successResponse($message, 'Message marqué comme lu');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors du marquage du message', 500);
+        }
+    }
+
+    /**
+     * Get unread messages count via API
+     */
+    public function apiUnreadCount(Request $request)
+    {
+        try {
+            $count = Message::where('receiver_id', $request->user()->id)
+                           ->where('is_read', false)
+                           ->count();
+
+            return $this->successResponse(['count' => $count], 'Nombre de messages non lus récupéré');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération du nombre de messages', 500);
+        }
+    }
+
+    /**
+     * Apply discount via API
+     */
+    public function apiApplyDiscount(Request $request)
+    {
+        try {
+            $validator = \Validator::make($request->all(), [
+                'item_id' => 'required|exists:items,id',
+                'buyer_id' => 'required|exists:users,id',
+                'discount_percentage' => 'required|numeric|min:1|max:50',
+                'expires_hours' => 'nullable|integer|min:1|max:168'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $seller = $request->user();
+            $item = \App\Models\Item::findOrFail($request->item_id);
+
+            if ($item->user_id !== $seller->id) {
+                return $this->errorResponse('Vous n\'êtes pas le propriétaire de cet article', 403);
+            }
+
+            $existingDiscount = \App\Models\Discount::where('item_id', $request->item_id)
+                                                   ->where('user_id', $request->buyer_id)
+                                                   ->where('status', 'approved')
+                                                   ->where('expires_at', '>', now())
+                                                   ->first();
+
+            if ($existingDiscount) {
+                return $this->errorResponse('Une réduction est déjà active pour ce client', 409);
+            }
+
+            $originalPrice = $item->price;
+            $discountAmount = ($originalPrice * $request->discount_percentage) / 100;
+            $finalPrice = $originalPrice - $discountAmount;
+
+            $discount = \App\Models\Discount::create([
+                'item_id' => $request->item_id,
+                'user_id' => $request->buyer_id,
+                'seller_id' => $seller->id,
+                'original_price' => $originalPrice,
+                'discount_percentage' => $request->discount_percentage,
+                'discount_amount' => $discountAmount,
+                'final_price' => $finalPrice,
+                'status' => 'approved',
+                'expires_at' => now()->addHours($request->expires_hours ?? 24),
+                'reason' => 'Réduction appliquée par le vendeur'
+            ]);
+
+            $this->notificationService->createDiscountNotification(
+                $seller->id,
+                $request->buyer_id,
+                $item->name,
+                $request->discount_percentage,
+                $item->currency_symbol . ' ' . $finalPrice
+            );
+
+            return $this->successResponse($discount, 'Réduction appliquée avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de l\'application de la réduction', 500);
+        }
+    }
+
+    /**
+     * Get available discounts for an item via API
+     */
+    public function apiGetAvailableDiscounts(Request $request, $itemId)
+    {
+        try {
+            $discounts = Discount::where('item_id', $itemId)
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'approved')
+                ->where('expires_at', '>', now())
+                ->get();
+
+            return $this->successResponse($discounts, 'Réductions récupérées avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération des réductions', 500);
+        }
     }
 }
