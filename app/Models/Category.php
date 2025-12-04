@@ -113,11 +113,8 @@ class Category extends Model
      */
     public function getImageUrlAttribute()
     {
-        if (!$this->image) {
-            return null;
-        }
-        
-        // Utiliser Storage::url() pour générer l'URL
-        return \Illuminate\Support\Facades\Storage::url($this->image);
+        // Retourner directement le chemin stocké (ex: categories/filename.jpg)
+        // La vue ajoutera /storage/ devant pour Hostinger
+        return $this->image;
     }
 }
