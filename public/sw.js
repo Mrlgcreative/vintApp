@@ -1,6 +1,6 @@
 /**
  * VintApp Service Worker
- * Version: 1.0.2
+ * Version: 1.0.3
  * 
  * Gestion du cache offline, stratégies de mise en cache et Firebase Cloud Messaging
  */
@@ -50,15 +50,14 @@ try {
     console.warn('⚠️ Firebase Messaging non disponible (mode offline/dégradé):', error);
 }
 
-const CACHE_VERSION = 'vintapp-v1.0.2';
+const CACHE_VERSION = 'vintapp-v1.0.3';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
-// Ressources à mettre en cache immédiatement (uniquement celles qui existent vraiment)
+// Ressources à mettre en cache immédiatement
 const STATIC_ASSETS = [
     '/',
-    '/favicon.ico',
 ];
 
 // Durée de vie du cache (7 jours)
@@ -68,36 +67,18 @@ const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
  * Installation du Service Worker
  */
 self.addEventListener('install', (event) => {
-    console.log('🔧 Service Worker v1.0.2: Installation...');
+    console.log('🔧 Service Worker v1.0.3: Installation démarrage...');
     
+    // Forcer l'installation immédiate sans mettre en cache
     event.waitUntil(
-        caches.open(STATIC_CACHE)
-            .then((cache) => {
-                console.log('📦 Service Worker: Mise en cache des assets statiques');
-                // Mettre en cache individuellement pour éviter qu'un fichier manquant bloque tout
-                return Promise.allSettled(
-                    STATIC_ASSETS.map(url => 
-                        cache.add(url)
-                            .then(() => {
-                                console.log(`✅ Mis en cache: ${url}`);
-                                return true;
-                            })
-                            .catch(err => {
-                                console.warn(`⚠️ Impossible de mettre en cache: ${url}`, err);
-                                return false;
-                            })
-                    )
-                );
-            })
-            .then((results) => {
-                const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
-                console.log(`✅ Service Worker: ${successCount}/${STATIC_ASSETS.length} assets mis en cache`);
-                // Toujours continuer l'installation même si certains fichiers manquent
+        Promise.resolve()
+            .then(() => {
+                console.log('✅ Service Worker: Installation sans cache initial (mode simplifié)');
                 return self.skipWaiting();
             })
             .catch((error) => {
                 console.error('❌ Service Worker: Erreur installation', error);
-                // Continuer quand même l'installation
+                // Continuer quand même
                 return self.skipWaiting();
             })
     );
