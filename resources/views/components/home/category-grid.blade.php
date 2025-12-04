@@ -36,7 +36,7 @@
                         <!-- Image de catégorie -->
                         <div class="mb-3 lg:mb-4 overflow-hidden rounded-xl aspect-square group-hover:scale-110 transition-all duration-300">
                             @if($category->image_url)
-                                <img src="{{ Storage::url($category->image_url) }}" 
+                                <img src="{{ asset($category->image_url) }}" 
                                      alt="{{ $category->name }}" 
                                      class="w-full h-full object-cover" />
                             @else

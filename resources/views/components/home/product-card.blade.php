@@ -13,7 +13,7 @@
     <!-- Image Container -->
     <div class="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
         @if($firstImage && Storage::disk('public')->exists($firstImage))
-            <img src="{{ Storage::url($firstImage) }}" 
+            <img src="{{ asset($firstImage) }}" 
                  alt="{{ $item->name }}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                  loading="lazy" />
