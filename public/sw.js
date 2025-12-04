@@ -31,7 +31,15 @@ self.addEventListener('install', (event) => {
         caches.open(STATIC_CACHE)
             .then((cache) => {
                 console.log('📦 Service Worker: Mise en cache des assets statiques');
-                return cache.addAll(STATIC_ASSETS);
+                // Mettre en cache les assets individuellement pour éviter les échecs
+                return Promise.allSettled(
+                    STATIC_ASSETS.map(url => 
+                        cache.add(url).catch(err => {
+                            console.warn(`⚠️ Impossible de mettre en cache: ${url}`, err);
+                            return null;
+                        })
+                    )
+                );
             })
             .then(() => {
                 console.log('✅ Service Worker: Installation terminée');
@@ -39,6 +47,8 @@ self.addEventListener('install', (event) => {
             })
             .catch((error) => {
                 console.error('❌ Service Worker: Erreur installation', error);
+                // Continuer quand même l'installation
+                return self.skipWaiting();
             })
     );
 });
