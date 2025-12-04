@@ -92,6 +92,19 @@ class PWAManager {
      * Afficher notification de mise à jour
      */
     showUpdateNotification() {
+        // Vérifier si la notification a déjà été affichée
+        const updateDismissed = sessionStorage.getItem('pwa-update-dismissed');
+        if (updateDismissed === 'true') {
+            console.log('⏭️ Notification de mise à jour déjà ignorée pour cette session');
+            return;
+        }
+        
+        // Vérifier si la notification existe déjà
+        if (document.getElementById('pwa-update-notification')) {
+            console.log('⚠️ Notification de mise à jour déjà affichée');
+            return;
+        }
+        
         const notification = document.createElement('div');
         notification.id = 'pwa-update-notification';
         notification.className = 'fixed bottom-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-sm z-50 animate-slide-up';
@@ -150,10 +163,17 @@ class PWAManager {
         
         if (!this.swRegistration.waiting) {
             console.error('❌ Pas de Service Worker en attente');
+            // Si pas de mise à jour en attente, juste recharger la page
+            console.log('🔄 Rechargement de la page pour forcer la mise à jour...');
+            sessionStorage.removeItem('pwa-update-dismissed');
+            window.location.reload(true);
             return;
         }
         
         console.log('✅ Envoi du message SKIP_WAITING au Service Worker');
+        
+        // Supprimer le flag de session
+        sessionStorage.removeItem('pwa-update-dismissed');
         
         // Envoyer le message au Service Worker
         this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -187,6 +207,9 @@ class PWAManager {
         if (notification) {
             notification.remove();
         }
+        // Marquer comme ignorée pour cette session
+        sessionStorage.setItem('pwa-update-dismissed', 'true');
+        console.log('✅ Notification de mise à jour ignorée pour cette session');
     }
 
     /**
