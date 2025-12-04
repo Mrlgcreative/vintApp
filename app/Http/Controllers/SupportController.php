@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\StorageSyncService;
+use App\Traits\ApiResponses;
 
 class SupportController extends Controller
 {
+    use ApiResponses;
     /**
      * Afficher les conversations de support de l'utilisateur
      */
@@ -367,5 +369,227 @@ class SupportController extends Controller
         if (strpos($userAgent, 'Android') !== false) return 'Android';
         if (strpos($userAgent, 'iOS') !== false) return 'iOS';
         return 'Inconnu';
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get user support chats via API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $chats = SupportChat::where('user_id', $request->user()->id)
+                ->with(['admin', 'lastMessage'])
+                ->orderBy('created_at', 'desc')
+                ->paginate($request->per_page ?? 15);
+
+            return $this->paginatedResponse($chats, 'Conversations de support récupérées');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération', 500);
+        }
+    }
+
+    /**
+     * Create new support chat via API
+     */
+    public function apiStore(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'subject' => 'nullable|string|max:255',
+            'category' => 'required|in:technical,account,payment,order,general',
+            'message' => 'required|string|max:5000',
+            'priority' => 'nullable|in:low,normal,high,urgent',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'file|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $metadata = [
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'browser' => $this->getBrowserInfo($request->userAgent()),
+                'os' => $this->getOSInfo($request->userAgent())
+            ];
+
+            $chat = SupportChat::createNew(
+                $request->user()->id,
+                $request->subject,
+                $request->category,
+                $metadata
+            );
+
+            if ($request->priority) {
+                $chat->update(['priority' => $request->priority]);
+            }
+
+            $attachments = [];
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store('support/attachments', 'public');
+                    StorageSyncService::syncFile($path);
+                    $attachments[] = [
+                        'name' => $file->getClientOriginalName(),
+                        'path' => $path,
+                        'size' => $file->getSize()
+                    ];
+                }
+            }
+
+            SupportMessage::createNew(
+                $chat->id,
+                $request->user()->id,
+                $request->message,
+                false,
+                !empty($attachments) ? $attachments : null
+            );
+
+            DB::commit();
+
+            return $this->successResponse(
+                $chat->load(['admin', 'messages.user']),
+                'Demande de support créée avec succès. Référence: ' . $chat->reference,
+                201
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('API Support creation error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Erreur lors de la création', 500);
+        }
+    }
+
+    /**
+     * Get support chat details via API
+     */
+    public function apiShow(Request $request, $chatId)
+    {
+        try {
+            $chat = SupportChat::where('id', $chatId)
+                ->where('user_id', $request->user()->id)
+                ->with(['admin', 'messages.user'])
+                ->firstOrFail();
+
+            // Mark admin messages as read
+            $chat->messages()
+                ->where('is_admin', true)
+                ->where('is_read', false)
+                ->update(['is_read' => true, 'read_at' => now()]);
+
+            return $this->successResponse($chat, 'Conversation récupérée');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Conversation introuvable', 404);
+        }
+    }
+
+    /**
+     * Reply to support chat via API
+     */
+    public function apiReply(Request $request, $chatId)
+    {
+        $validator = \Validator::make($request->all(), [
+            'message' => 'required|string|max:5000',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'file|max:5120',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $chat = SupportChat::where('id', $chatId)
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+
+            if ($chat->status === 'closed') {
+                return $this->errorResponse('Conversation fermée', 400);
+            }
+
+            DB::beginTransaction();
+
+            $attachments = [];
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $path = $file->store('support/attachments', 'public');
+                    StorageSyncService::syncFile($path);
+                    $attachments[] = [
+                        'name' => $file->getClientOriginalName(),
+                        'path' => $path,
+                        'size' => $file->getSize()
+                    ];
+                }
+            }
+
+            $message = SupportMessage::createNew(
+                $chat->id,
+                $request->user()->id,
+                $request->message,
+                false,
+                !empty($attachments) ? $attachments : null
+            );
+
+            if ($chat->status === 'waiting_user') {
+                $chat->update(['status' => 'in_progress']);
+            }
+
+            DB::commit();
+
+            return $this->successResponse(
+                $message->load('user'),
+                'Message envoyé avec succès'
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur lors de l\'envoi', 500);
+        }
+    }
+
+    /**
+     * Close support chat via API
+     */
+    public function apiClose(Request $request, $chatId)
+    {
+        try {
+            $chat = SupportChat::where('id', $chatId)
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+
+            $chat->close();
+
+            return $this->successResponse(null, 'Conversation fermée avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la fermeture', 500);
+        }
+    }
+
+    /**
+     * Get support statistics via API
+     */
+    public function apiStats(Request $request)
+    {
+        try {
+            $userId = $request->user()->id;
+
+            $stats = [
+                'total_chats' => SupportChat::where('user_id', $userId)->count(),
+                'open_chats' => SupportChat::where('user_id', $userId)
+                    ->whereIn('status', ['open', 'in_progress', 'waiting_user'])
+                    ->count(),
+                'closed_chats' => SupportChat::where('user_id', $userId)
+                    ->where('status', 'closed')
+                    ->count(),
+                'average_response_time' => null, // TODO: Calculate based on message timestamps
+            ];
+
+            return $this->successResponse($stats, 'Statistiques de support');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération', 500);
+        }
     }
 }

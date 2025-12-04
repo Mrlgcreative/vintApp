@@ -15,9 +15,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Services\StorageSyncService;
+use App\Traits\ApiResponses;
 
 class PaymentController extends Controller
 {
+    use ApiResponses;
+
     protected $paymentService;
     protected $notificationService;
 
@@ -1750,6 +1753,195 @@ class PaymentController extends Controller
         Log::info('AfribaPay payment processed successfully', [
             'payment_id' => $payment->id,
         ]);
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get payment history via API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $payments = \App\Models\Transaction::where('user_id', $request->user()->id)
+                ->latest()
+                ->paginate($request->per_page ?? 15);
+
+            return $this->paginatedResponse($payments, 'Historique de paiements récupéré');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération', 500);
+        }
+    }
+
+    /**
+     * Get payment details via API
+     */
+    public function apiShow(Request $request, $transactionId)
+    {
+        try {
+            $payment = \App\Models\Transaction::where('transaction_id', $transactionId)
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+
+            return $this->successResponse($payment, 'Détails du paiement récupérés');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Paiement introuvable', 404);
+        }
+    }
+
+    /**
+     * Initiate payment via API
+     */
+    public function apiInitiate(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'provider' => 'required|string|in:orange_money,mpesa,airtel_money,africell,illicocash',
+            'amount' => 'required|numeric|min:1',
+            'phone' => 'required|string|min:9|max:15',
+            'purpose' => 'required|string',
+            'currency' => 'nullable|in:USD,CDF'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $paymentData = [
+                'amount' => $request->amount,
+                'phone' => $request->phone,
+                'purpose' => $request->purpose,
+                'buyer_id' => $request->user()->id
+            ];
+
+            $methodName = 'payWith' . str_replace('_', '', ucwords($request->provider, '_'));
+            
+            if (!method_exists($this->paymentService, $methodName)) {
+                return $this->errorResponse('Méthode de paiement non supportée', 400);
+            }
+
+            $result = $this->paymentService->{$methodName}($paymentData);
+
+            if ($result['status'] === 'pending') {
+                return $this->successResponse($result, 'Paiement initié avec succès');
+            }
+
+            return $this->errorResponse($result['message'] ?? 'Erreur lors du paiement', 400);
+        } catch (\Exception $e) {
+            Log::error('API Payment initiation error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Erreur lors de l\'initiation du paiement', 500);
+        }
+    }
+
+    /**
+     * Request refund via API
+     */
+    public function apiRequestRefund(Request $request, $orderId)
+    {
+        $validator = \Validator::make($request->all(), [
+            'reason' => 'required|string|min:10|max:1000',
+            'refund_type' => 'required|in:partial,full',
+            'refund_amount' => 'nullable|numeric|min:0',
+            'evidence_photos' => 'nullable|array|max:5',
+            'evidence_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $order = Order::findOrFail($orderId);
+
+            if ($order->buyer_id !== $request->user()->id) {
+                return $this->errorResponse('Non autorisé', 403);
+            }
+
+            if (!$this->isRefundEligible($order)) {
+                return $this->errorResponse('Commande non éligible au remboursement', 400);
+            }
+
+            $evidencePhotos = [];
+            if ($request->hasFile('evidence_photos')) {
+                foreach ($request->file('evidence_photos') as $photo) {
+                    $path = $photo->store('refund_evidence', 'public');
+                    StorageSyncService::syncFile($path);
+                    $evidencePhotos[] = $path;
+                }
+            }
+
+            $refundAmount = $request->refund_type === 'full'
+                ? $order->total_amount
+                : min($request->refund_amount ?? $order->total_amount, $order->total_amount);
+
+            $refund = Refund::create([
+                'order_id' => $order->id,
+                'buyer_id' => $order->buyer_id,
+                'seller_id' => $order->seller_id,
+                'transaction_id' => $this->getTransactionIdForOrder($order),
+                'refund_amount' => $refundAmount,
+                'original_amount' => $order->total_amount,
+                'currency' => $order->currency,
+                'reason' => $request->reason,
+                'refund_type' => $request->refund_type,
+                'status' => 'pending',
+                'evidence_photos' => json_encode($evidencePhotos),
+                'requested_at' => now()
+            ]);
+
+            return $this->successResponse(
+                $refund,
+                'Demande de remboursement créée avec succès',
+                201
+            );
+        } catch (\Exception $e) {
+            Log::error('API Refund request error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Erreur lors de la demande de remboursement', 500);
+        }
+    }
+
+    /**
+     * Get refund status via API
+     */
+    public function apiRefundStatus(Request $request, $refundId)
+    {
+        try {
+            $refund = Refund::where('id', $refundId)
+                ->where('buyer_id', $request->user()->id)
+                ->with(['order'])
+                ->firstOrFail();
+
+            return $this->successResponse($refund, 'Statut du remboursement');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Remboursement introuvable', 404);
+        }
+    }
+
+    /**
+     * Get payment statistics via API
+     */
+    public function apiStats(Request $request)
+    {
+        try {
+            $userId = $request->user()->id;
+
+            $stats = [
+                'total_payments' => \App\Models\Transaction::where('user_id', $userId)->count(),
+                'successful_payments' => \App\Models\Transaction::where('user_id', $userId)
+                    ->where('status', 'completed')
+                    ->count(),
+                'total_amount' => \App\Models\Transaction::where('user_id', $userId)
+                    ->where('status', 'completed')
+                    ->sum('amount'),
+                'pending_refunds' => Refund::where('buyer_id', $userId)
+                    ->where('status', 'pending')
+                    ->count(),
+            ];
+
+            return $this->successResponse($stats, 'Statistiques de paiement');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la récupération', 500);
+        }
     }
 }
 

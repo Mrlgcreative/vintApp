@@ -19,6 +19,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\AuthenticityController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\SupportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -549,3 +550,34 @@ Route::middleware(['web', 'auth:web'])->get('/admin/fcm-stats', function (Reques
 });
 
 Route::post('/bot', [BotController::class, 'ask']);
+
+// ==================== Notification Routes ====================
+Route::prefix('v1/notifications')->middleware(['auth:sanctum,web'])->group(function () {
+    Route::get('/', [NotificationController::class, 'apiIndex']);
+    Route::get('/unread', [NotificationController::class, 'apiUnread']);
+    Route::get('/unread/count', [NotificationController::class, 'apiUnreadCount']);
+    Route::post('/mark-all-read', [NotificationController::class, 'apiMarkAllAsRead']);
+    Route::post('/{id}/mark-read', [NotificationController::class, 'apiMarkAsRead']);
+    Route::delete('/{id}', [NotificationController::class, 'apiDestroy']);
+    Route::delete('/read/all', [NotificationController::class, 'apiDeleteRead']);
+});
+
+// ==================== Support Routes ====================
+Route::prefix('v1/support')->middleware(['auth:sanctum,web'])->group(function () {
+    Route::get('/', [SupportController::class, 'apiIndex']);
+    Route::post('/', [SupportController::class, 'apiStore']);
+    Route::get('/stats', [SupportController::class, 'apiStats']);
+    Route::get('/{id}', [SupportController::class, 'apiShow']);
+    Route::post('/{id}/reply', [SupportController::class, 'apiReply']);
+    Route::post('/{id}/close', [SupportController::class, 'apiClose']);
+});
+
+// ==================== Payment Routes ====================
+Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function () {
+    Route::get('/', [PaymentController::class, 'apiIndex']);
+    Route::get('/stats', [PaymentController::class, 'apiStats']);
+    Route::get('/{transactionId}', [PaymentController::class, 'apiShow']);
+    Route::post('/initiate', [PaymentController::class, 'apiInitiate']);
+    Route::post('/refund/{orderId}', [PaymentController::class, 'apiRequestRefund']);
+    Route::get('/refund/{refundId}/status', [PaymentController::class, 'apiRefundStatus']);
+});
