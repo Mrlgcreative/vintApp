@@ -91,6 +91,24 @@ Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () 
             Route::delete('/items/{id}', [ItemController::class, 'apiDestroy']);
         });
         
+        // Categories API
+        Route::middleware('throttle:20,1')->group(function () {
+            Route::post('/categories', [CategoryController::class, 'apiStore']);
+            Route::put('/categories/{id}', [CategoryController::class, 'apiUpdate']);
+            Route::delete('/categories/{id}', [CategoryController::class, 'apiDestroy']);
+        });
+        Route::get('/categories/{id}', [CategoryController::class, 'apiShow']);
+        Route::get('/categories/{id}/items', [CategoryController::class, 'apiItems']);
+        
+        // Brands API
+        Route::middleware('throttle:20,1')->group(function () {
+            Route::post('/brands', [BrandController::class, 'apiStore']);
+            Route::put('/brands/{id}', [BrandController::class, 'apiUpdate']);
+            Route::delete('/brands/{id}', [BrandController::class, 'apiDestroy']);
+        });
+        Route::get('/brands/{id}', [BrandController::class, 'apiShow']);
+        Route::get('/brands/{id}/items', [BrandController::class, 'apiItems']);
+        
         // User API
         Route::prefix('user')->group(function () {
             Route::get('/profile', [UserController::class, 'apiProfile']);

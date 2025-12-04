@@ -41,7 +41,7 @@
     <link rel="stylesheet" href="<?php echo e(asset('css/lazy-loading.css')); ?>">
 
     <!-- Variables CSS Dynamiques (DOIT être chargé AVANT Tailwind) -->
-    <link href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
+    <link href="<?php echo e(asset('css/vintapp-dynamic.css')); ?>?v=<?php echo e(filemtime(public_path('css/vintapp-dynamic.css'))); ?>" rel="stylesheet">
     
     <!-- Variables CSS Dynamiques Inline (priorité maximale) -->
     <style>
@@ -767,8 +767,8 @@
                     return;
                 }
 
-                // Enregistrer le Service Worker et attendre qu'il soit actif
-                let registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+                // Enregistrer le Service Worker principal (qui inclut Firebase)
+                let registration = await navigator.serviceWorker.register('/sw.js');
                 console.log('✅ Service Worker enregistré:', registration);
 
                 // Attendre que le Service Worker soit actif
