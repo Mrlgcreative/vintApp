@@ -766,12 +766,21 @@ function toggleCityStatus(cityId) {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
     .then(data => {
         if (data.success) location.reload();
+    })
+    .catch(error => {
+        console.error('❌ Erreur toggle city:', error);
+        alert('Erreur lors du changement de statut');
     });
 }
 
@@ -805,12 +814,21 @@ function toggleRegionStatus(regionId) {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+    })
     .then(data => {
         if (data.success) location.reload();
+    })
+    .catch(error => {
+        console.error('❌ Erreur toggle region:', error);
+        alert('Erreur lors du changement de statut');
     });
 }
 
@@ -852,9 +870,20 @@ function handleCityFormSubmit(event) {
     fetch(form.action, {
         method: 'POST',
         body: formData,
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+        headers: { 
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP ${response.status}: ${text.substring(0, 200)}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             closeModal('addCityModal');
@@ -863,6 +892,7 @@ function handleCityFormSubmit(event) {
     })
     .catch(error => {
         console.error('❌ Erreur:', error);
+        alert('Erreur lors de l\'ajout de la ville. Vérifiez la console pour plus de détails.');
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalText;
     });
