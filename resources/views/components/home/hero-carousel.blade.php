@@ -57,7 +57,7 @@
                                                 <div class="absolute -inset-2 bg-white/30 rounded-2xl backdrop-blur-sm transform -rotate-2 group-hover:-rotate-3 transition-transform duration-500"></div>
                                                 
                                                 <!-- Container principal de l'image -->
-                                                <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-white/50 backdrop-blur-md transform group-hover:scale-105 transition-all duration-500">
+                                                <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/50 backdrop-blur-md transform group-hover:scale-105 transition-all duration-500">
                                                     <!-- Effet de brillance vintage -->
                                                     <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                                     
@@ -69,12 +69,6 @@
                                                     <!-- Overlay avec effet vignette -->
                                                     <div class="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.1)] pointer-events-none"></div>
                                                 </div>
-                                                
-                                                <!-- Points décoratifs aux coins -->
-                                                <div class="absolute -top-2 -left-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
-                                                <div class="absolute -top-2 -right-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
-                                                <div class="absolute -bottom-2 -left-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
-                                                <div class="absolute -bottom-2 -right-2 w-4 h-4 bg-white/80 rounded-full shadow-lg"></div>
                                             </div>
                                         @endif
                                     </div>
