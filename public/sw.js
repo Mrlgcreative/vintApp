@@ -1,20 +1,63 @@
 /**
  * VintApp Service Worker
- * Version: 1.0.1
+ * Version: 1.0.2
  * 
- * Gestion du cache offline et stratégies de mise en cache
+ * Gestion du cache offline, stratégies de mise en cache et Firebase Cloud Messaging
  */
 
-const CACHE_VERSION = 'vintapp-v1.0.1';
+// Importer Firebase pour les notifications push (optionnel - ne bloque pas l'installation)
+try {
+    importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+    importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+    
+    firebase.initializeApp({
+        apiKey: "AIzaSyC0x3pmQewGWynoAbFsG9SiFbYjKxDYOrE",
+        authDomain: "vintapp-e6fa7.firebaseapp.com",
+        projectId: "vintapp-e6fa7",
+        storageBucket: "vintapp-e6fa7.appspot.com",
+        messagingSenderId: "880178183981",
+        appId: "1:880178183981:web:deed0feb693e8c82a35da4"
+    });
+    
+    const messaging = firebase.messaging();
+    
+    // Gestion des messages en arrière-plan
+    messaging.onBackgroundMessage((payload) => {
+        console.log('📬 Firebase: Message reçu en arrière-plan:', payload);
+
+        const notificationTitle = payload.notification?.title || payload.data?.title || 'VintApp';
+        const notificationOptions = {
+            body: payload.notification?.body || payload.data?.body || 'Vous avez une nouvelle notification',
+            icon: payload.notification?.icon || payload.data?.icon || '/images/icons/icon-192x192.png',
+            badge: '/images/icons/icon-72x72.png',
+            image: payload.notification?.image || payload.data?.image,
+            data: payload.data || {},
+            tag: payload.data?.tag || 'vintapp-notification',
+            requireInteraction: payload.data?.requireInteraction === 'true',
+            actions: [
+                { action: 'view', title: 'Voir', icon: '/images/icons/icon-72x72.png' },
+                { action: 'close', title: 'Fermer' }
+            ],
+            vibrate: [200, 100, 200],
+            timestamp: Date.now()
+        };
+
+        return self.registration.showNotification(notificationTitle, notificationOptions);
+    });
+    
+    console.log('🔥 Firebase Messaging intégré');
+} catch (error) {
+    console.warn('⚠️ Firebase Messaging non disponible (mode offline/dégradé):', error);
+}
+
+const CACHE_VERSION = 'vintapp-v1.0.2';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
 
-// Ressources à mettre en cache immédiatement
+// Ressources à mettre en cache immédiatement (uniquement celles qui existent vraiment)
 const STATIC_ASSETS = [
     '/',
-    '/offline',
-    '/manifest.json',
     '/favicon.ico',
 ];
 
@@ -25,24 +68,31 @@ const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
  * Installation du Service Worker
  */
 self.addEventListener('install', (event) => {
-    console.log('🔧 Service Worker: Installation...');
+    console.log('🔧 Service Worker v1.0.2: Installation...');
     
     event.waitUntil(
         caches.open(STATIC_CACHE)
             .then((cache) => {
                 console.log('📦 Service Worker: Mise en cache des assets statiques');
-                // Mettre en cache les assets individuellement pour éviter les échecs
+                // Mettre en cache individuellement pour éviter qu'un fichier manquant bloque tout
                 return Promise.allSettled(
                     STATIC_ASSETS.map(url => 
-                        cache.add(url).catch(err => {
-                            console.warn(`⚠️ Impossible de mettre en cache: ${url}`, err);
-                            return null;
-                        })
+                        cache.add(url)
+                            .then(() => {
+                                console.log(`✅ Mis en cache: ${url}`);
+                                return true;
+                            })
+                            .catch(err => {
+                                console.warn(`⚠️ Impossible de mettre en cache: ${url}`, err);
+                                return false;
+                            })
                     )
                 );
             })
-            .then(() => {
-                console.log('✅ Service Worker: Installation terminée');
+            .then((results) => {
+                const successCount = results.filter(r => r.status === 'fulfilled' && r.value).length;
+                console.log(`✅ Service Worker: ${successCount}/${STATIC_ASSETS.length} assets mis en cache`);
+                // Toujours continuer l'installation même si certains fichiers manquent
                 return self.skipWaiting();
             })
             .catch((error) => {
@@ -141,10 +191,16 @@ async function cacheFirstStrategy(request, cacheName) {
         if (cachedResponse) return cachedResponse;
 
         if (request.destination === 'document') {
-            return caches.match('/offline');
+            // Essayer de retourner la page d'accueil au lieu de /offline
+            const homeResponse = await caches.match('/');
+            if (homeResponse) return homeResponse;
         }
 
-        return new Response('Ressource non disponible', { status: 503 });
+        return new Response('Ressource non disponible hors ligne', { 
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain' }
+        });
     }
 }
 
@@ -164,10 +220,16 @@ async function networkFirstStrategy(request, cacheName) {
         if (cachedResponse) return cachedResponse;
 
         if (request.destination === 'document') {
-            return caches.match('/offline');
+            // Essayer de retourner la page d'accueil au lieu de /offline
+            const homeResponse = await caches.match('/');
+            if (homeResponse) return homeResponse;
         }
 
-        return new Response('Ressource non disponible', { status: 503 });
+        return new Response('Ressource non disponible hors ligne', { 
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'text/plain' }
+        });
     }
 }
 
