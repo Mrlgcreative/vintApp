@@ -61,8 +61,9 @@ class AppServiceProvider extends ServiceProvider
             }
             $css .= "}\n";
             
-            // Écrire dans le fichier public/css/vintapp-dynamic.css
-            $cssPath = public_path('css/vintapp-dynamic.css');
+            // Écrire dans le fichier css/vintapp-dynamic.css
+            // Sur Hostinger, public/ est à la racine, donc on utilise base_path()
+            $cssPath = base_path('css/vintapp-dynamic.css');
             $cssDir = dirname($cssPath);
             
             if (!file_exists($cssDir)) {
