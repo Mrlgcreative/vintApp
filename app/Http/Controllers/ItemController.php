@@ -878,4 +878,187 @@ class ItemController extends Controller
         session(['cart' => $cart]);
         return redirect()->route('cart.checkout');
     }
+
+    // ==================== API METHODS ====================
+
+    /**
+     * API: Liste des articles (avec filtres et pagination)
+     */
+    public function apiIndex(Request $request)
+    {
+        $query = Item::with(['category', 'brand', 'user'])
+            ->where('status', 'approved');
+
+        // Filtres
+        if ($request->has('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('brand_id')) {
+            $query->where('brand_id', $request->brand_id);
+        }
+
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        if ($request->has('condition')) {
+            $query->where('condition', $request->condition);
+        }
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        // Tri
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Pagination
+        $perPage = min($request->get('per_page', 15), 50);
+        $items = $query->paginate($perPage);
+
+        return response()->json([
+            'success' => true,
+            'data' => $items->items(),
+            'pagination' => [
+                'total' => $items->total(),
+                'per_page' => $items->perPage(),
+                'current_page' => $items->currentPage(),
+                'last_page' => $items->lastPage(),
+            ]
+        ]);
+    }
+
+    /**
+     * API: Détails d'un article
+     */
+    public function apiShow($id)
+    {
+        $item = Item::with(['category', 'brand', 'user', 'reviews'])
+            ->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'data' => $item
+        ]);
+    }
+
+    /**
+     * API: Créer un article
+     */
+    public function apiStore(StoreItemRequest $request)
+    {
+        try {
+            $item = new Item();
+            $item->user_id = Auth::id();
+            $item->name = $request->name;
+            $item->description = $request->description;
+            $item->price = $request->price;
+            $item->currency = $request->currency;
+            $item->quantity = $request->quantity;
+            $item->condition = $request->condition;
+            $item->category_id = $request->category_id;
+            $item->brand_id = $request->brand_id;
+            $item->color = $request->color;
+            $item->size = $request->size;
+            $item->status = 'pending_verification';
+
+            // Upload d'images
+            if ($request->hasFile('images')) {
+                $images = [];
+                foreach ($request->file('images') as $image) {
+                    $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                    $path = $image->storeAs('items', $filename, 'public');
+                    StorageSyncService::syncFile($path);
+                    $images[] = $path;
+                }
+                $item->images = $images;
+            }
+
+            $item->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Article créé avec succès',
+                'data' => $item
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Mettre à jour un article
+     */
+    public function apiUpdate(UpdateItemRequest $request, $id)
+    {
+        try {
+            $item = Item::findOrFail($id);
+
+            if ($item->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Non autorisé'
+                ], 403);
+            }
+
+            $item->update($request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Article mis à jour avec succès',
+                'data' => $item
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * API: Supprimer un article
+     */
+    public function apiDestroy($id)
+    {
+        try {
+            $item = Item::findOrFail($id);
+
+            if ($item->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Non autorisé'
+                ], 403);
+            }
+
+            $item->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Article supprimé avec succès'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

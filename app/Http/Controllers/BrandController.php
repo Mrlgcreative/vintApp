@@ -145,4 +145,24 @@ class BrandController extends Controller
         $brand->delete();
         return redirect()->route('brands.index')->with('success', 'Marque supprimée avec succès !');
     }
+
+    // ==================== API METHODS ====================
+
+    /**
+     * API: Liste des marques
+     */
+    public function apiIndex()
+    {
+        $brands = Brand::withCount(['items' => function($q) {
+                $q->where('status', 'approved');
+            }])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $brands
+        ]);
+    }
 }

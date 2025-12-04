@@ -36,9 +36,18 @@ Route::middleware(['cache.response:60', 'compress.response'])->group(function ()
         return response()->json([
             'status' => 'success',
             'message' => 'VintApp API is running',
-            'version' => '1.0.0'
+            'version' => '1.0.0',
+            'timestamp' => now()->toIso8601String()
         ]);
     });
+    
+    // API publique: Liste des articles (lecture seule)
+    Route::get('/v1/items', [ItemController::class, 'apiIndex']);
+    Route::get('/v1/items/{id}', [ItemController::class, 'apiShow']);
+    
+    // API publique: Catégories et marques
+    Route::get('/v1/categories', [CategoryController::class, 'apiIndex']);
+    Route::get('/v1/brands', [BrandController::class, 'apiIndex']);
 });
 
 // Validation de code de parrainage (public pour l'inscription)
@@ -71,6 +80,54 @@ Route::post('/login', function (Request $request) {
 
 // Routes protégées par authentification
 Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () {
+    
+    // ==================== API V1 Routes ====================
+    Route::prefix('v1')->group(function () {
+        
+        // Items API
+        Route::middleware('throttle:60,1')->group(function () {
+            Route::post('/items', [ItemController::class, 'apiStore']);
+            Route::put('/items/{id}', [ItemController::class, 'apiUpdate']);
+            Route::delete('/items/{id}', [ItemController::class, 'apiDestroy']);
+        });
+        
+        // User API
+        Route::prefix('user')->group(function () {
+            Route::get('/profile', [UserController::class, 'apiProfile']);
+            Route::put('/profile', [UserController::class, 'apiUpdateProfile']);
+            Route::get('/items', [UserController::class, 'apiGetItems']);
+            Route::get('/orders', [UserController::class, 'apiGetOrders']);
+        });
+        
+        // Orders API
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [OrderController::class, 'apiIndex']);
+            Route::post('/', [OrderController::class, 'apiStore']);
+            Route::get('/sales', [OrderController::class, 'apiMySales']);
+            Route::get('/{id}', [OrderController::class, 'apiShow']);
+            Route::post('/{id}/confirm-payment', [OrderController::class, 'apiConfirmPayment']);
+            Route::post('/{id}/mark-shipped', [OrderController::class, 'apiMarkAsShipped']);
+            Route::post('/{id}/mark-delivered', [OrderController::class, 'apiMarkAsDelivered']);
+            Route::post('/{id}/confirm-delivery', [OrderController::class, 'apiConfirmDelivery']);
+        });
+        
+        // Messages API
+        Route::prefix('messages')->group(function () {
+            Route::get('/', [MessageController::class, 'apiIndex']);
+            Route::post('/', [MessageController::class, 'apiStore']);
+            Route::get('/{id}', [MessageController::class, 'apiShow']);
+        });
+        
+        // Wallet API
+        Route::prefix('wallet')->group(function () {
+            Route::get('/', [WalletController::class, 'apiShow']);
+            Route::get('/transactions', [WalletController::class, 'apiTransactions']);
+            Route::post('/add-funds', [WalletController::class, 'apiAddFunds']);
+            Route::post('/withdraw', [WalletController::class, 'apiWithdraw']);
+        });
+    });
+    
+    // ==================== Legacy API Routes ====================
     
     // User routes (rate limit: 60/min)
     Route::middleware('throttle:60,1')->prefix('user')->group(function () {

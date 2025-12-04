@@ -231,4 +231,24 @@ class CategoryController extends Controller
                 ->with('error', 'Erreur lors de la suppression : ' . $e->getMessage());
         }
     }
+
+    // ==================== API METHODS ====================
+
+    /**
+     * API: Liste des catégories
+     */
+    public function apiIndex()
+    {
+        $categories = Category::with('parent')
+            ->withCount(['items' => function($q) {
+                $q->where('status', 'approved');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $categories
+        ]);
+    }
 }

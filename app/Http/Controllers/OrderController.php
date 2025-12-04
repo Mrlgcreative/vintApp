@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\MonitoringService;
 use App\Http\Requests\CreateOrderRequest;
+use App\Traits\ApiResponses;
 
 class OrderController extends Controller
 {
+    use ApiResponses;
     /**
      * Display a listing of the resource.
      */
@@ -851,6 +853,125 @@ class OrderController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
             throw $e;
+        }
+    }
+
+    // ==================== API METHODS ====================
+
+    /**
+     * API: Liste des commandes de l'utilisateur
+     */
+    public function apiIndex(Request $request)
+    {
+        $orders = Order::with(['item', 'buyer', 'deliveryAddress'])
+            ->where('buyer_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return $this->paginatedResponse($orders, 'Commandes récupérées avec succès');
+    }
+
+    /**
+     * API: Créer une commande
+     */
+    public function apiStore(CreateOrderRequest $request)
+    {
+        try {
+            $result = $this->store($request);
+            
+            if ($result instanceof \Illuminate\Http\RedirectResponse) {
+                $order = Order::latest()->first();
+                return $this->successResponse($order, 'Commande créée avec succès', 201);
+            }
+            
+            return $this->errorResponse('Erreur lors de la création de la commande');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * API: Détails d'une commande
+     */
+    public function apiShow($id)
+    {
+        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->findOrFail($id);
+        
+        if ($order->buyer_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
+            return $this->errorResponse('Non autorisé', 403);
+        }
+
+        return $this->successResponse($order, 'Commande récupérée avec succès');
+    }
+
+    /**
+     * API: Mes ventes
+     */
+    public function apiMySales(Request $request)
+    {
+        $orders = Order::with(['item', 'buyer', 'deliveryAddress'])
+            ->whereHas('item', function ($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->get('per_page', 15));
+
+        return $this->paginatedResponse($orders, 'Ventes récupérées avec succès');
+    }
+
+    /**
+     * API: Confirmer le paiement
+     */
+    public function apiConfirmPayment($id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+            $this->confirmPayment($order);
+            return $this->successResponse($order->fresh(), 'Paiement confirmé avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * API: Marquer comme expédié
+     */
+    public function apiMarkAsShipped($id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+            $this->markAsShipped($order);
+            return $this->successResponse($order->fresh(), 'Commande marquée comme expédiée');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * API: Marquer comme livré
+     */
+    public function apiMarkAsDelivered($id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+            $this->markAsDelivered($order);
+            return $this->successResponse($order->fresh(), 'Commande marquée comme livrée');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * API: Confirmer la livraison (acheteur)
+     */
+    public function apiConfirmDelivery(Request $request, $id)
+    {
+        try {
+            $order = Order::findOrFail($id);
+            $this->confirmDelivery($request, $order);
+            return $this->successResponse($order->fresh(), 'Livraison confirmée avec succès');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
         }
     }
 }
