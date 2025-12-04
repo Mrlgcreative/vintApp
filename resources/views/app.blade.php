@@ -42,9 +42,6 @@
 
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <!-- Palette de couleurs dynamique (générée par PHP) -->
-    <link rel="stylesheet" href="{{ asset('css/vintapp-dynamic.css') }}?v={{ filemtime(public_path('css/vintapp-dynamic.css')) }}">
 
     <!-- Custom Styles -->
     @stack('styles')
