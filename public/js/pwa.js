@@ -92,18 +92,31 @@ class PWAManager {
      * Afficher notification de mise à jour
      */
     showUpdateNotification() {
-        // Vérifier si la notification a déjà été affichée
+        // Vérifier si la notification a déjà été affichée dans cette session
         const updateDismissed = sessionStorage.getItem('pwa-update-dismissed');
         if (updateDismissed === 'true') {
             console.log('⏭️ Notification de mise à jour déjà ignorée pour cette session');
             return;
         }
         
-        // Vérifier si la notification existe déjà
+        // Vérifier si déjà affichée dans les dernières 24h (localStorage)
+        const lastUpdateShown = localStorage.getItem('pwa-update-last-shown');
+        if (lastUpdateShown) {
+            const hoursSinceLastShown = (Date.now() - parseInt(lastUpdateShown)) / (1000 * 60 * 60);
+            if (hoursSinceLastShown < 24) {
+                console.log(`⏭️ Notification déjà affichée il y a ${hoursSinceLastShown.toFixed(1)}h`);
+                return;
+            }
+        }
+        
+        // Vérifier si la notification existe déjà dans le DOM
         if (document.getElementById('pwa-update-notification')) {
             console.log('⚠️ Notification de mise à jour déjà affichée');
             return;
         }
+        
+        // Enregistrer le timestamp de l'affichage
+        localStorage.setItem('pwa-update-last-shown', Date.now().toString());
         
         const notification = document.createElement('div');
         notification.id = 'pwa-update-notification';
@@ -156,24 +169,26 @@ class PWAManager {
     updateApp() {
         console.log('🚀 updateApp() appelée');
         
+        // Supprimer le flag de session et le timestamp
+        sessionStorage.removeItem('pwa-update-dismissed');
+        localStorage.removeItem('pwa-update-last-shown');
+        
         if (!this.swRegistration) {
             console.error('❌ Pas de Service Worker registration');
+            // Juste recharger la page
+            window.location.reload(true);
             return;
         }
         
         if (!this.swRegistration.waiting) {
-            console.error('❌ Pas de Service Worker en attente');
-            // Si pas de mise à jour en attente, juste recharger la page
+            console.warn('⚠️ Pas de Service Worker en attente');
+            // Si pas de mise à jour en attente, forcer un rechargement
             console.log('🔄 Rechargement de la page pour forcer la mise à jour...');
-            sessionStorage.removeItem('pwa-update-dismissed');
             window.location.reload(true);
             return;
         }
         
         console.log('✅ Envoi du message SKIP_WAITING au Service Worker');
-        
-        // Supprimer le flag de session
-        sessionStorage.removeItem('pwa-update-dismissed');
         
         // Envoyer le message au Service Worker
         this.swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -207,8 +222,9 @@ class PWAManager {
         if (notification) {
             notification.remove();
         }
-        // Marquer comme ignorée pour cette session
+        // Marquer comme ignorée pour cette session ET enregistrer le timestamp
         sessionStorage.setItem('pwa-update-dismissed', 'true');
+        localStorage.setItem('pwa-update-last-shown', Date.now().toString());
         console.log('✅ Notification de mise à jour ignorée pour cette session');
     }
 
