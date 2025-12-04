@@ -3,173 +3,29 @@
 @section('title', 'VintApp - Fashion Vintage')
 
 @push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
-    
     * { 
-        font-family: 'Inter', sans-serif; 
+        font-family: 'Inter', sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
-    
-    .font-display { font-family: 'Playfair Display', serif; }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+    .font-display { 
+        font-family: 'Playfair Display', serif; 
     }
-    
-    @keyframes slideUp {
-        from { opacity: 0; transform: translateY(60px); }
-        to { opacity: 1; transform: translateY(0); }
+    .scrollbar-hide::-webkit-scrollbar { 
+        display: none; 
     }
-    
-    @keyframes scaleIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-    
-    .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-    .animate-slide-up { animation: slideUp 1s ease-out forwards; }
-    .animate-scale-in { animation: scaleIn 0.6s ease-out forwards; }
-    
-    .stagger-1 { animation-delay: 0.1s; opacity: 0; }
-    .stagger-2 { animation-delay: 0.2s; opacity: 0; }
-    .stagger-3 { animation-delay: 0.3s; opacity: 0; }
-    .stagger-4 { animation-delay: 0.4s; opacity: 0; }
-    
-    .hero-text {
-        background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-    
-    .card-hover {
-        transition: all 0.3s ease;
-    }
-    
-    .card-hover:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .image-wrapper {
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .product-image {
-        transition: transform 0.3s ease;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-    
-    .card-hover:hover .product-image {
-        transform: scale(1.05);
-    }
-    
-    .category-item {
-        transition: all 0.3s ease;
-    }
-    
-    .category-item:hover {
-        transform: translateX(8px);
-    }
-    
-    .line-animate {
-        position: relative;
-    }
-    
-    .line-animate::after {
-        content: '';
-        position: absolute;
-        bottom: -4px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background: #1a1a1a;
-        transition: width 0.3s ease;
-    }
-    
-    .line-animate:hover::after {
-        width: 100%;
-    }
-    
-    .scrollbar-hide::-webkit-scrollbar { display: none; }
-    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    
-    /* Hero Carousel Animations */
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
-    
-    @keyframes slideInFromLeft {
-        0% { opacity: 0; transform: translateX(-100px); }
-        100% { opacity: 1; transform: translateX(0); }
-    }
-    
-    @keyframes slideInFromRight {
-        0% { opacity: 0; transform: translateX(100px); }
-        100% { opacity: 1; transform: translateX(0); }
-    }
-    
-    .carousel-dot {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .carousel-dot:hover {
-        transform: scale(1.2);
-    }
-    
-    /* Auto-play indicator */
-    .carousel-progress {
-        animation: carouselProgress 5s linear infinite;
-    }
-    
-    @keyframes carouselProgress {
-        0% { width: 0%; }
-        100% { width: 100%; }
-    }
-    
-    /* Boost Effects */
-    @keyframes boostGlow {
-        0%, 100% { box-shadow: 0 0 20px rgba(var(--primary-600-rgb), 0.4); }
-        50% { box-shadow: 0 0 40px rgba(var(--primary-600-rgb), 0.8), 0 0 60px rgba(var(--primary-600-rgb), 0.4); }
-    }
-    
-    @keyframes boostPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.05); opacity: 0.9; }
-    }
-    
-    @keyframes boostShimmer {
-        0% { background-position: -200px 0; }
-        100% { background-position: calc(200px + 100%) 0; }
-    }
-    
-    .boost-shimmer {
-        background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
-        background-size: 200px 100%;
-        animation: boostShimmer 2s infinite;
-    }
-    
-    .boost-glow {
-        animation: boostGlow 3s ease-in-out infinite;
-    }
-    
-    .boost-float {
-        animation: boostPulse 4s ease-in-out infinite;
+    .scrollbar-hide { 
+        -ms-overflow-style: none;
+        scrollbar-width: none; 
     }
 </style>
 @endpush
 
 @section('content')
 
-<!-- Toast Minimal -->
+<!-- Toast Notification -->
 <div id="toast" class="fixed top-8 right-8 z-50 bg-black text-white px-6 py-4 rounded-lg shadow-2xl transform translate-x-[500px] transition-all duration-500 flex items-center gap-3">
     <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -177,653 +33,24 @@
     <span id="toastMessage" class="text-sm font-medium">Success</span>
 </div>
 
-<div class="min-h-screen bg-white dark:bg-gray-800">
+<div class="min-h-screen bg-white">
 
-    <!-- Hero Section avec Carrousel Dynamique -->
-    <section class="relative h-screen overflow-hidden">
-        @if(isset($heroSlides) && $heroSlides->count() > 0)
-            <!-- Carrousel Container -->
-            <div class="relative h-full">
-                <!-- Slides -->
-                <div id="carouselInner" class="flex h-full transition-transform duration-700 ease-in-out" style="width: {{ $heroSlides->count() * 100 }}%;">
-                    @foreach($heroSlides as $index => $slide)
-                        <div class="relative w-full h-full flex-shrink-0" style="width: {{ 100 / $heroSlides->count() }}%; background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
-                            <!-- Content Layout -->
-                            <div class="relative z-10 h-full flex items-center">
-                                <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full min-h-[600px]">
-                                        
-                                        @if($slide->image_position === 'left')
-                                            <!-- Image à gauche -->
-                                            <div class="order-1 lg:order-1 flex justify-center items-center">
-                                                <div class="w-full max-w-lg">
-                                                    <img src="{{ Storage::url($slide->image_path) }}" 
-                                                         alt="{{ $slide->title ?? 'Hero Slide ' . ($index + 1) }}" 
-                                                         class="w-full h-auto object-contain drop-shadow-2xl rounded-2xl"
-                                                         style="max-height: {{ $slide->image_size === 'small' ? '300px' : ($slide->image_size === 'medium' ? '400px' : ($slide->image_size === 'large' ? '500px' : '600px')) }};" />
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Texte à droite -->
-                                            <div class="order-2 lg:order-2 text-{{ $slide->text_position ?? 'left' }}">
-                                                @if($slide->subtitle)
-                                                    <p class="text-white/90 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
-                                                        {{ $slide->subtitle }}
-                                                    </p>
-                                                @endif
-                                                
-                                                <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight animate-slide-up">
-                                                    {{ $slide->title ?? 'Vintage Collection' }}
-                                                </h1>
-                                                
-                                                @if($slide->subtitle)
-                                                    <p class="text-lg sm:text-xl text-white/80 mb-8 leading-relaxed animate-fade-in max-w-2xl {{ $slide->text_position === 'center' ? 'mx-auto' : ($slide->text_position === 'right' ? 'ml-auto' : '') }}">
-                                                        {{ $slide->subtitle }}
-                                                    </p>
-                                                @endif
-                                                
-                                                <!-- CTA Buttons -->
-                                                <div class="flex flex-col sm:flex-row gap-4 animate-scale-in {{ $slide->text_position === 'center' ? 'justify-center' : ($slide->text_position === 'right' ? 'justify-end' : 'justify-start') }}">
-                                                    @if($slide->button_primary_text)
-                                                        <a href="{{ $slide->button_primary_url ?? route('items.index') }}" 
-                                                           class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all transform hover:scale-105 shadow-xl">
-                                                            <span>{{ $slide->button_primary_text }}</span>
-                                                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                                            </svg>
-                                                        </a>
-                                                    @endif
-                                                    
-                                                    @if($slide->button_secondary_text)
-                                                        <a href="{{ $slide->button_secondary_url ?? '#' }}" 
-                                                           class="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white dark:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-all">
-                                                            {{ $slide->button_secondary_text }}
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @else
-                                            <!-- Texte à gauche -->
-                                            <div class="order-2 lg:order-1 text-{{ $slide->text_position ?? 'left' }}">
-                                                @if($slide->subtitle)
-                                                    <p class="text-white/90 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
-                                                        {{ $slide->subtitle }}
-                                                    </p>
-                                                @endif
-                                                
-                                                <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight animate-slide-up">
-                                                    {{ $slide->title ?? 'Vintage Collection' }}
-                                                </h1>
-                                                
-                                                @if($slide->subtitle)
-                                                    <p class="text-lg sm:text-xl text-white/80 mb-8 leading-relaxed animate-fade-in max-w-2xl {{ $slide->text_position === 'center' ? 'mx-auto' : ($slide->text_position === 'right' ? 'ml-auto' : '') }}">
-                                                        {{ $slide->subtitle }}
-                                                    </p>
-                                                @endif
-                                                
-                                                <!-- CTA Buttons -->
-                                                <div class="flex flex-col sm:flex-row gap-4 animate-scale-in {{ $slide->text_position === 'center' ? 'justify-center' : ($slide->text_position === 'right' ? 'justify-end' : 'justify-start') }}">
-                                                    @if($slide->button_primary_text)
-                                                        <a href="{{ $slide->button_primary_url ?? route('items.index') }}" 
-                                                           class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all transform hover:scale-105 shadow-xl">
-                                                            <span>{{ $slide->button_primary_text }}</span>
-                                                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                                                            </svg>
-                                                        </a>
-                                                    @endif
-                                                    
-                                                    @if($slide->button_secondary_text)
-                                                        <a href="{{ $slide->button_secondary_url ?? '#' }}" 
-                                                           class="inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white dark:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-all">
-                                                            {{ $slide->button_secondary_text }}
-                                                        </a>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Image à droite -->
-                                            <div class="order-1 lg:order-2 flex justify-center items-center">
-                                                <div class="w-full max-w-lg">
-                                                    <img src="{{ Storage::url($slide->image_path) }}" 
-                                                         alt="{{ $slide->title ?? 'Hero Slide ' . ($index + 1) }}" 
-                                                         class="w-full h-auto object-contain drop-shadow-2xl rounded-2xl"
-                                                         style="max-height: {{ $slide->image_size === 'small' ? '300px' : ($slide->image_size === 'medium' ? '400px' : ($slide->image_size === 'large' ? '500px' : '600px')) }};" />
-                                                </div>
-                                            </div>
-                                        @endif
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                
-                <!-- Navigation Arrows -->
-                @if($heroSlides->count() > 1)
-                    <button onclick="goToSlide({{ ($index ?? 0) > 0 ? ($index ?? 0) - 1 : $heroSlides->count() - 1 }})" 
-                            class="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800/20 backdrop-blur-sm hover:bg-white dark:bg-gray-800/30 rounded-full flex items-center justify-center transition-all z-20">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
-                    
-                    <button onclick="goToSlide({{ ($index ?? 0) < $heroSlides->count() - 1 ? ($index ?? 0) + 1 : 0 }})" 
-                            class="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800/20 backdrop-blur-sm hover:bg-white dark:bg-gray-800/30 rounded-full flex items-center justify-center transition-all z-20">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-                @endif
-                
-                <!-- Dots Indicator -->
-                @if($heroSlides->count() > 1)
-                    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-                        @foreach($heroSlides as $index => $slide)
-                            <button onclick="goToSlide({{ $index }})" 
-                                    class="carousel-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white dark:bg-gray-800' : 'bg-white dark:bg-gray-800/40 hover:bg-white dark:bg-gray-800/60' }}">
-                            </button>
-                        @endforeach
-                    </div>
-                @endif
-                
-                <!-- Scroll Indicator -->
-                <div class="absolute bottom-8 right-8 animate-bounce z-20">
-                    <div class="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center">
-                        <div class="w-1 h-3 bg-white dark:bg-gray-800/80 rounded-full mt-2 animate-pulse"></div>
-                    </div>
-                </div>
-            </div>
-        @else
-            <!-- Fallback Hero -->
-            <div class="relative h-full bg-gradient-to-br from-primary-900 via-accent-800 to-secondary-900 flex items-center justify-center">
-                <!-- Animated Background -->
-                <div class="absolute inset-0 opacity-20">
-                    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 25% 25%, var(--primary-600) 2px, transparent 0), radial-gradient(circle at 75% 75%, var(--accent-400) 2px, transparent 0); background-size: 100px 100px; animation: float 20s ease-in-out infinite;"></div>
-                </div>
-                
-                <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                    <p class="text-primary-300 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4 animate-fade-in">
-                        Découvrez Notre
-                    </p>
-                    
-                    <h1 class="font-display text-5xl sm:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight animate-slide-up">
-                        <span class="block text-transparent bg-clip-text bg-gradient-to-r from-primary-300 via-accent-300 to-secondary-300">
-                            Vintage
-                        </span>
-                        <span class="block">
-                            Collection
-                        </span>
-                    </h1>
-                    
-                    <p class="text-xl sm:text-2xl text-gray-200 mb-8 leading-relaxed animate-fade-in max-w-2xl mx-auto">
-                        Pièces authentiques et uniques sélectionnées avec passion
-                    </p>
-                    
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
-                        <a href="{{ route('items.index') }}" 
-                           class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-full font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all transform hover:scale-105 shadow-xl">
-                            <span>Explorer</span>
-                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </a>
-                    </div>
-                    
-                    <!-- Stats -->
-                    <div class="flex justify-center gap-12 mt-12 animate-fade-in">
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-white">2,5K+</div>
-                            <div class="text-sm text-primary-200">Articles</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-bold text-white">1,2K+</div>
-                            <div class="text-sm text-primary-200">Clients</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </section>
+    <!-- Hero Carousel Component -->
+    <x-home.hero-carousel :slides="$heroSlides ?? collect()" />
 
-    <!-- Barre de Recherche - Flottante sur Hero -->
-    <section id="search-section" class="relative -mt-32 z-40 container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-gray-800/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-3 hover:shadow-3xl transition-all duration-500 transform hover:scale-[1.02]">
-            <form action="{{ route('items.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1 relative">
-                    <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-                    <input type="search" 
-                           name="q" 
-                           value="{{ request('q') }}" 
-                           placeholder="Rechercher des pièces vintage..." 
-                           class="w-full h-16 pl-14 pr-6 rounded-2xl bg-gray-50 dark:bg-gray-900 border-0 focus:bg-white dark:bg-gray-800 focus:ring-4 focus:ring-primary-100 focus:outline-none transition-all text-base font-medium placeholder:text-gray-400" />
-                </div>
-                
-                <div class="flex gap-3">
-                    <button type="button" 
-                            onclick="toggleFiltersModal()" 
-                            class="h-16 px-6 rounded-2xl border-2 border-gray-200 hover:border-primary-300 hover:bg-primary-50 text-gray-700 dark:text-gray-200 hover:text-primary-700 transition-all flex items-center gap-2 font-medium group">
-                        <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                        </svg>
-                        <span class="hidden sm:inline">Filtres</span>
-                    </button>
-                    
-                    <button type="submit" 
-                            class="h-16 px-8 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-2xl font-bold hover:from-primary-700 hover:to-accent-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-primary-500/30 transform hover:scale-105">
-                        <span class="hidden sm:inline">Rechercher</span>
-                        <svg class="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </section>
+    <!-- Search Bar Component -->
+    <x-home.search-bar />
 
-    <!-- Section Catégories - Optimisée -->
-    <section class="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50">
+    <!-- Categories Grid Component -->
+    <x-home.category-grid :categories="$categories" />
+
+    <!-- Articles Récents Section -->
+    <section id="collection" class="py-20 lg:py-32 bg-white">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
             <!-- En-tête Section -->
             <div class="mb-12">
-                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                    Catégories
-                </h2>
-            </div>
-
-            <!-- Conteneur Catégories - Défilement Horizontal sur tous les écrans -->
-            <div class="relative">
-                <!-- Défilement Horizontal Universel -->
-                <div class="flex overflow-x-auto scrollbar-hide gap-4 lg:gap-6 pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
-                    @php
-                        $icons = ['👔', '👗', '👟', '👜', '⌚', '🕶️', '🧥', '👠', '🎒', '💍'];
-                        $colors = [
-                            'from-primary-100 to-primary-200 border-primary-200',
-                            'from-accent-100 to-accent-200 border-accent-200',
-                            'from-secondary-100 to-secondary-200 border-secondary-200',
-                            'from-green-100 to-green-200 border-green-200',
-                            'from-yellow-100 to-yellow-200 border-yellow-200',
-                            'from-red-100 to-red-200 border-red-200',
-                            'from-indigo-100 to-indigo-200 border-indigo-200',
-                            'from-teal-100 to-teal-200 border-teal-200',
-                            'from-orange-100 to-orange-200 border-orange-200',
-                            'from-cyan-100 to-cyan-200 border-cyan-200'
-                        ];
-                    @endphp
-                    @forelse($categories as $index => $category)
-                        <a href="{{ route('items.index', ['category' => $category->id]) }}" 
-                           class="group relative bg-white dark:bg-gray-800 hover:bg-gradient-to-br {{ $colors[$index % count($colors)] }} border-2 border-transparent hover:border-opacity-50 rounded-2xl lg:rounded-3xl p-4 lg:p-8 text-center transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-2 flex-shrink-0 w-32 lg:w-40"
-                           style="scroll-snap-align: start;">
-                            
-                            <!-- Image de catégorie -->
-                            <div class="mb-3 lg:mb-4 overflow-hidden rounded-xl aspect-square group-hover:scale-110 transition-all duration-300">
-                                @if($category->image_url)
-                                    <img src="{{ $category->image_url }}" 
-                                         alt="{{ $category->name }}" 
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                         loading="lazy"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                                    <div class="w-full h-full bg-gradient-to-br {{ $colors[$index % count($colors)] }} items-center justify-center hidden">
-                                        <span class="text-4xl lg:text-5xl">{{ $icons[$index % count($icons)] }}</span>
-                                    </div>
-                                @else
-                                    <div class="w-full h-full bg-gradient-to-br {{ $colors[$index % count($colors)] }} flex items-center justify-center">
-                                        <span class="text-4xl lg:text-5xl">{{ $icons[$index % count($icons)] }}</span>
-                                    </div>
-                                @endif
-                            </div>
-                            
-                            <!-- Texte -->
-                            <div class="space-y-1">
-                                <h3 class="font-bold text-xs lg:text-sm xl:text-base text-gray-900 dark:text-white group-hover:text-gray-800 dark:text-gray-100 leading-tight">
-                                    {{ $category->name }}
-                                </h3>
-                                <p class="text-xs lg:text-sm text-gray-500 group-hover:text-gray-600 dark:text-gray-300">
-                                    {{ $category->items_count ?? rand(15, 150) }} <span class="hidden lg:inline">articles</span>
-                                </p>
-                            </div>
-                            
-                            <!-- Indicateur hover -->
-                            <div class="absolute top-2 lg:top-3 right-2 lg:right-3 w-5 lg:w-6 h-5 lg:h-6 bg-white dark:bg-gray-800 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center transform scale-75 group-hover:scale-100">
-                                <svg class="w-2 lg:w-3 h-2 lg:h-3 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="text-center py-16 w-full">
-                            <div class="text-6xl lg:text-8xl mb-4 lg:mb-6">📦</div>
-                            <h3 class="text-lg lg:text-xl font-semibold text-gray-600 dark:text-gray-300 mb-2">Catégories à venir</h3>
-                            <p class="text-gray-400">Nos catégories seront bientôt disponibles</p>
-                        </div>
-                    @endforelse
-                </div>
-                
-                <!-- Navigation Arrows - Visible sur desktop uniquement -->
-                <div class="hidden lg:block">
-                    <button id="categoriesPrev" 
-                            class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 w-10 h-10 bg-white dark:bg-gray-800 shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 dark:bg-gray-900 hover:text-gray-800 dark:text-gray-100 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
-                    
-                    <button id="categoriesNext" 
-                            class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 w-10 h-10 bg-white dark:bg-gray-800 shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 dark:bg-gray-900 hover:text-gray-800 dark:text-gray-100 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CSS et JavaScript pour les catégories horizontales -->
-    <style>
-        .scrollbar-hide {
-            -ms-overflow-style: none;  /* Internet Explorer 10+ */
-            scrollbar-width: none;  /* Firefox */
-        }
-        .scrollbar-hide::-webkit-scrollbar { 
-            display: none;  /* Safari and Chrome */
-        }
-        
-        .categories-scroll {
-            scroll-behavior: smooth;
-        }
-    </style>
-
-    <script>
-        // Navigation des catégories
-        document.addEventListener('DOMContentLoaded', function() {
-            const categoriesContainer = document.querySelector('.flex.overflow-x-auto.scrollbar-hide');
-            const prevBtn = document.getElementById('categoriesPrev');
-            const nextBtn = document.getElementById('categoriesNext');
-            
-            if (categoriesContainer && prevBtn && nextBtn) {
-                const scrollAmount = 200; // Pixels à faire défiler
-                
-                prevBtn.addEventListener('click', () => {
-                    categoriesContainer.scrollBy({
-                        left: -scrollAmount,
-                        behavior: 'smooth'
-                    });
-                });
-                
-                nextBtn.addEventListener('click', () => {
-                    categoriesContainer.scrollBy({
-                        left: scrollAmount,
-                        behavior: 'smooth'
-                    });
-                });
-                
-                // Masquer/afficher les boutons selon la position de défilement
-                function updateNavigationButtons() {
-                    const isAtStart = categoriesContainer.scrollLeft <= 0;
-                    const isAtEnd = categoriesContainer.scrollLeft >= 
-                        (categoriesContainer.scrollWidth - categoriesContainer.clientWidth - 10);
-                    
-                    prevBtn.style.opacity = isAtStart ? '0.3' : '0.8';
-                    nextBtn.style.opacity = isAtEnd ? '0.3' : '0.8';
-                    
-                    prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
-                    nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-                }
-                
-                // Mettre à jour les boutons au chargement et au défilement
-                categoriesContainer.addEventListener('scroll', updateNavigationButtons);
-                window.addEventListener('resize', updateNavigationButtons);
-                updateNavigationButtons();
-            }
-        });
-    </script>
-
-    <!-- Section Produits Spotlight - Carrousel Spécial -->
-    @if(isset($spotlightItems) && $spotlightItems->count() > 0)
-    <section class="py-16 lg:py-20 bg-gradient-to-br from-primary-50 via-white to-accent-50 relative overflow-hidden">
-        <!-- Background Decorations -->
-        <div class="absolute inset-0">
-            <div class="absolute top-10 left-10 w-32 h-32 bg-primary-200 rounded-full opacity-20 blur-xl"></div>
-            <div class="absolute bottom-10 right-10 w-40 h-40 bg-accent-200 rounded-full opacity-20 blur-xl"></div>
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-primary-100 to-accent-100 rounded-full opacity-10 blur-3xl"></div>
-        </div>
-
-        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-            <!-- En-tête Section -->
-            <div class="text-center mb-12">
-                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-2xl mb-6 shadow-xl">
-                    <i class="fas fa-lightbulb text-2xl"></i>
-                </div>
-                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                    ⭐ Produits en Spotlight
-                </h2>
-                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                    Découvrez les articles mis en avant spécialement pour vous dans notre carrousel exclusif
-                </p>
-            </div>
-
-            <!-- Carrousel Spotlight -->
-            <div class="relative">
-                <div id="spotlightCarousel" class="overflow-hidden">
-                    <div class="flex transition-transform duration-500 ease-in-out" id="spotlightSlider">
-                        @foreach($spotlightItems as $index => $item)
-                            @php
-                                $images = $item->images ?? [];
-                                $firstImage = count($images) > 0 ? $images[0] : null;
-                                $activeBoost = $item->activeBoosts->first();
-                            @endphp
-                            <div class="w-full sm:w-1/2 lg:w-1/3 xl:w-1/4 flex-shrink-0 px-3">
-                                <article class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border-2 border-primary-200 hover:border-primary-400">
-                                    <!-- Badge Spotlight -->
-                                    <div class="absolute top-4 left-4 z-20">
-                                        <div class="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-accent-600 text-white px-3 py-2 rounded-full text-sm font-bold shadow-lg">
-                                            <i class="fas fa-lightbulb animate-pulse"></i>
-                                            <span>Spotlight</span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Expiration Badge -->
-                                    @if($activeBoost && $activeBoost->expires_at)
-                                        <div class="absolute top-4 right-4 z-20">
-                                            <div class="bg-white dark:bg-gray-800/90 backdrop-blur-sm text-primary-800 px-3 py-1 rounded-full text-xs font-semibold">
-                                                Expire dans {{ $activeBoost->expires_at->diffForHumans(null, true) }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <!-- Image Container -->
-                                    <div class="aspect-[3/4] bg-gradient-to-br from-primary-100 to-accent-100 relative overflow-hidden">
-                                        @if($firstImage && Storage::disk('public')->exists($firstImage))
-                                            <img src="{{ Storage::url($firstImage) }}" 
-                                                 alt="{{ $item->name }}"
-                                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center">
-                                                <i class="fas fa-image text-6xl text-primary-300"></i>
-                                            </div>
-                                        @endif
-                                        
-                                        <!-- Overlay Gradient -->
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                        
-                                        <!-- Action Buttons -->
-                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div class="flex gap-3">
-                                                <a href="{{ route('items.show', $item) }}" 
-                                                   class="w-12 h-12 bg-white dark:bg-gray-800 text-primary-600 rounded-full flex items-center justify-center shadow-lg hover:bg-primary-600 hover:text-white transition-colors">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <button type="button" 
-                                                        onclick="toggleFavorite({{ $item->id }})" 
-                                                        class="w-12 h-12 bg-white dark:bg-gray-800 text-accent-500 rounded-full flex items-center justify-center shadow-lg hover:bg-accent-500 hover:text-white transition-colors">
-                                                    <i class="fas fa-heart"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Product Info -->
-                                    <div class="p-6">
-                                        <div class="mb-3">
-                                            <h3 class="font-semibold text-lg text-gray-900 dark:text-white mb-2 line-clamp-2">
-                                                {{ $item->name }}
-                                            </h3>
-                                            <p class="text-primary-600 text-sm font-medium">
-                                                {{ $item->category->name ?? 'Uncategorized' }}
-                                            </p>
-                                        </div>
-                                        
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex flex-col">
-                                                <span class="text-2xl font-bold text-gray-900 dark:text-white">
-                                                    {{ number_format($item->price, 0, ',', ' ') }} {{ $item->currency ?? 'CDF' }}
-                                                </span>
-                                                <span class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ $item->condition ?? 'Bon �tat' }}
-                                                </span>
-                                            </div>
-                                            <div class="text-right">
-                                                <div class="text-xs text-gray-400">
-                                                    {{ $item->created_at->diffForHumans() }}
-                                                </div>
-                                                @if($item->user)
-                                                    <div class="text-xs text-primary-600 font-medium">
-                                                        {{ $item->user->name }}
-                                                    </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                </article>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Navigation Controls -->
-                <button id="spotlightPrev" 
-                        class="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800 shadow-xl rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                
-                <button id="spotlightNext" 
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white dark:bg-gray-800 shadow-xl rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-
-                <!-- Indicators -->
-                <div class="flex justify-center mt-8 space-x-2" id="spotlightIndicators">
-                    @for($i = 0; $i < ceil($spotlightItems->count() / 4); $i++)
-                        <button class="w-3 h-3 rounded-full transition-all duration-300 spotlight-indicator {{ $i === 0 ? 'bg-primary-600' : 'bg-gray-300' }}" 
-                                data-slide="{{ $i }}"></button>
-                    @endfor
-                </div>
-            </div>
-
-            <!-- CTA Button -->
-            <div class="text-center mt-12">
-                <a href="{{ route('items.index') }}?boost=spotlight" 
-                   class="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-full font-bold text-lg hover:from-primary-700 hover:to-accent-700 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-105">
-                    <i class="fas fa-lightbulb"></i>
-                    <span>Voir tous les produits Spotlight</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // Carrousel Spotlight JavaScript
-        document.addEventListener('DOMContentLoaded', function() {
-            const slider = document.getElementById('spotlightSlider');
-            const prevBtn = document.getElementById('spotlightPrev');
-            const nextBtn = document.getElementById('spotlightNext');
-            const indicators = document.querySelectorAll('.spotlight-indicator');
-            
-            let currentSlide = 0;
-            const itemsPerSlide = window.innerWidth >= 1280 ? 4 : (window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 640 ? 2 : 1));
-            const totalSlides = Math.ceil({{ $spotlightItems->count() }} / itemsPerSlide);
-            
-            function updateSlider() {
-                const offset = -currentSlide * (100 / itemsPerSlide);
-                slider.style.transform = `translateX(${offset}%)`;
-                
-                // Update indicators
-                indicators.forEach((indicator, index) => {
-                    indicator.classList.toggle('bg-primary-600', index === currentSlide);
-                    indicator.classList.toggle('bg-gray-300', index !== currentSlide);
-                });
-            }
-            
-            function nextSlide() {
-                currentSlide = (currentSlide + 1) % totalSlides;
-                updateSlider();
-            }
-            
-            function prevSlide() {
-                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-                updateSlider();
-            }
-            
-            // Event listeners
-            nextBtn?.addEventListener('click', nextSlide);
-            prevBtn?.addEventListener('click', prevSlide);
-            
-            indicators.forEach((indicator, index) => {
-                indicator.addEventListener('click', () => {
-                    currentSlide = index;
-                    updateSlider();
-                });
-            });
-            
-            // Auto-play
-            setInterval(nextSlide, 5000);
-            
-            // Responsive handling
-            window.addEventListener('resize', () => {
-                const newItemsPerSlide = window.innerWidth >= 1280 ? 4 : (window.innerWidth >= 1024 ? 3 : (window.innerWidth >= 640 ? 2 : 1));
-                if (newItemsPerSlide !== itemsPerSlide) {
-                    location.reload(); // Simple solution for responsive changes
-                }
-            });
-        });
-        
-        // Favorite toggle function
-        function toggleFavorite(itemId) {
-            @auth
-                fetch(`/items/${itemId}/favorite`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Show notification or update UI
-                        console.log(data.message);
-                    }
-                });
-            @else
-                window.location.href = "{{ route('login') }}";
-            @endauth
-        }
-    </script>
-    @endif
-
-    <!-- Section Produits Vedettes - Optimisée -->
-    <section id="collection" class="py-20 lg:py-32 bg-white dark:bg-gray-800">
-        <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- En-tête Section -->
-            <div class="mb-12">
-                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
+                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900">
                     Articles Récents
                 </h2>
             </div>
@@ -831,123 +58,14 @@
             <!-- Grille Produits -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
                 @forelse($latestItems as $item)
-                    @php
-                        $images = $item->images ?? [];
-                        $firstImage = count($images) > 0 ? $images[0] : null;
-                        $isNew = $item->created_at->gt(now()->subDays(7));
-                        
-                        // Utiliser la même logique que le carrousel Spotlight
-                        $activeBoost = $item->activeBoosts->first();
-                        $isBoosted = $activeBoost !== null;
-                        $boostType = $activeBoost?->boostType;
-                    @endphp
-                    <article class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden card-hover border-2 {{ $isBoosted ? 'border-primary-300 ring-2 ring-primary-100 shadow-lg shadow-primary-500/20' : 'border-gray-100 hover:border-primary-200' }} transition-all duration-300">
-                        <!-- Image Container -->
-                        <div class="image-wrapper aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
-                            @if($firstImage && Storage::disk('public')->exists($firstImage))
-                                <img src="{{ Storage::url($firstImage) }}" 
-                                     alt="{{ $item->name }}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                                     loading="lazy" />
-                            @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-accent-100">
-                                    <span class="text-6xl text-gray-400 filter drop-shadow-sm">??</span>
-                                </div>
-                            @endif
-                            
-                            <!-- Boost Glow Effect -->
-                            @if($isBoosted)
-                                <div class="absolute inset-0 bg-gradient-to-tr from-primary-400/20 via-transparent to-transparent pointer-events-none"></div>
-                            @endif
-                            
-                            <!-- Overlay Actions -->
-                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
-                                <button class="w-12 h-12 bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white dark:bg-gray-800">
-                                    <svg class="w-5 h-5 text-gray-700 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                                <button class="w-12 h-12 bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 hover:bg-white dark:bg-gray-800">
-                                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                    </svg>
-                                </button>
-                                <button onclick="addToCart({{ $item->id }})" 
-                                        class="w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-200 hover:bg-black">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                            
-                            <!-- Badges -->
-                            <div class="absolute top-4 left-4 flex flex-col gap-2">
-                                @if($isBoosted)
-                                    <div class="relative">
-                                        <span class="px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
-                                            <i class="fas fa-star"></i>
-                                            {{ $boostType?->name ?? 'BOOST' }}
-                                        </span>
-                                        <div class="absolute inset-0 bg-gradient-to-r from-primary-400 to-primary-500 rounded-full animate-ping opacity-75"></div>
-                                    </div>
-                                @endif
-                                @if($isNew)
-                                    <span class="px-3 py-1 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
-                                        NOUVEAU
-                                    </span>
-                                @endif
-                            </div>
-                            
-                            <!-- Prix avec effet boost -->
-                            <div class="absolute top-4 right-4">
-                                <span class="px-4 py-2 {{ $isBoosted ? 'bg-gradient-to-r from-primary-600 to-primary-700 shadow-lg shadow-primary-500/50 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-sm font-bold shadow-lg">
-                                    {{ $item->formatted_price }}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        <!-- Contenu -->
-                        <div class="p-5 lg:p-6 {{ $isBoosted ? 'bg-gradient-to-b from-white to-primary-50/30' : '' }}">
-                            <div class="space-y-3">
-                                <h3 class="font-bold text-base lg:text-lg {{ $isBoosted ? 'text-primary-900' : 'text-gray-900 dark:text-white' }} line-clamp-2 min-h-[3rem] leading-tight">
-                                    {{ $item->name }}
-                                </h3>
-                                
-                                <div class="flex items-center justify-between">
-                                    <span class="px-3 py-1 bg-gradient-to-r {{ $isBoosted ? 'from-primary-100 to-primary-200 text-primary-800' : 'from-primary-100 to-accent-100 text-primary-700' }} rounded-full text-xs font-semibold">
-                                        {{ $item->condition ?? 'Excellent' }}
-                                    </span>
-                                    
-                                    <div class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-                                        @if($isBoosted)
-                                            <div class="flex items-center gap-1 text-primary-600 font-medium">
-                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                                </svg>
-                                                <span>Boost�</span>
-                                            </div>
-                                        @else
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <span>{{ $item->created_at->diffForHumans() }}</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Lien invisible -->
-                        <a href="{{ route('items.show', $item) }}" class="absolute inset-0 z-10" aria-label="Voir {{ $item->name }}"></a>
-                    </article>
+                    <x-home.product-card :item="$item" />
                 @empty
                     <div class="col-span-full text-center py-20">
-                        <div class="text-6xl mb-4">???</div>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Aucun article</h3>
+                        <div class="text-6xl mb-4">📦</div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Aucun article</h3>
                         <a href="{{ route('items.create') ?? '#' }}" 
                            class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-all">
-                            <span>Ajouter</span>
+                            <span>Ajouter un Article</span>
                         </a>
                     </div>
                 @endforelse
@@ -957,7 +75,7 @@
                 <div class="text-center mt-12">
                     <a href="{{ route('items.index') }}" 
                        class="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-all">
-                        <span>Voir Plus</span>
+                        <span>Voir Plus d'Articles</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                         </svg>
@@ -967,158 +85,38 @@
         </div>
     </section>
 
-    <!-- Features - Minimal -->
-    <section class="max-w-[1400px] mx-auto px-6 lg:px-12 py-24">
-        <div class="grid md:grid-cols-4 gap-12">
-            <div class="text-center">
-                <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                    </svg>
-                </div>
-                <h3 class="font-semibold mb-2">Free Shipping</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">On orders over �50</p>
-            </div>
-            <div class="text-center">
-                <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                    </svg>
-                </div>
-                <h3 class="font-semibold mb-2">Secure Payment</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">100% protected</p>
-            </div>
-            <div class="text-center">
-                <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                    </svg>
-                </div>
-                <h3 class="font-semibold mb-2">Easy Returns</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">14 days guarantee</p>
-            </div>
-            <div class="text-center">
-                <div class="w-16 h-16 bg-black rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                </div>
-                <h3 class="font-semibold mb-2">Verified</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400">100% authentic</p>
-            </div>
-        </div>
-    </section>
+    <!-- Features Section Component -->
+    <x-home.features-section />
 
-    <!-- CTA Section - Bold & Minimal -->
-    <section class="max-w-[1400px] mx-auto px-6 lg:px-12 py-24">
-        <div class="bg-black text-white rounded-3xl p-12 lg:p-20 text-center relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-0 right-0 w-96 h-96 bg-white dark:bg-gray-800 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-0 left-0 w-96 h-96 bg-white dark:bg-gray-800 rounded-full blur-3xl"></div>
-            </div>
-            
-            <div class="relative max-w-3xl mx-auto space-y-8">
-                <h2 class="font-display text-4xl lg:text-6xl font-bold leading-tight">
-                    Ready to Build Your
-                    <span class="block italic text-gray-400">Vintage Collection?</span>
-                </h2>
-                <p class="text-lg text-gray-400 max-w-2xl mx-auto">
-                    Join thousands of vintage lovers and discover unique pieces at unbeatable prices
-                </p>
-                <div class="flex flex-wrap gap-4 justify-center pt-4">
-                    <a href="{{ route('items.index') }}" 
-                       class="inline-flex items-center gap-3 px-8 py-4 bg-white dark:bg-gray-800 text-black rounded-full font-medium hover:bg-gray-100 dark:bg-gray-800 transition-all">
-                        Start Shopping
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                    </a>
-                    <a href="{{ route('items.create') ?? '#' }}" 
-                       class="inline-flex items-center gap-3 px-8 py-4 border-2 border-white text-white rounded-full font-medium hover:bg-white dark:bg-gray-800 hover:text-black transition-all">
-                        Sell Your Items
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- CTA Section Component -->
+    <x-home.cta-section />
 
 </div>
 
-<!-- Filter Modal - Minimal -->
-<div id="filterModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-100 px-8 py-6 flex items-center justify-between z-10 rounded-t-3xl">
-            <h3 class="text-2xl font-bold">Filters</h3>
-            <button onclick="toggleFiltersModal()" class="w-10 h-10 rounded-full hover:bg-gray-100 dark:bg-gray-800 flex items-center justify-center transition-colors">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-        
-        <form action="{{ route('items.index') }}" method="GET" id="filterForm" class="p-8 space-y-8">
-            <div>
-                <label class="block text-sm font-semibold mb-3">Category</label>
-                <select name="category" class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-black focus:outline-none transition-all">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            
-            <div>
-                <label class="block text-sm font-semibold mb-3">Price Range</label>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="number" 
-                           name="price_min" 
-                           placeholder="Min" 
-                           value="{{ request('price_min') }}" 
-                           class="px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-black focus:outline-none transition-all" />
-                    <input type="number" 
-                           name="price_max" 
-                           placeholder="Max" 
-                           value="{{ request('price_max') }}" 
-                           class="px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-black focus:outline-none transition-all" />
-                </div>
-            </div>
+<!-- Filter Modal Component -->
+<x-home.filter-modal :categories="$categories" />
 
-            <div>
-                <label class="block text-sm font-semibold mb-3">Sort By</label>
-                <select name="sort" class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-black focus:outline-none transition-all">
-                    <option value="">Relevance</option>
-                    <option value="recent" {{ request('sort') === 'recent' ? 'selected' : '' }}>Newest</option>
-                    <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>Popular</option>
-                    <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                    <option value="price_high" {{ request('sort') === 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                </select>
-            </div>
-            
-            <div class="flex gap-4 pt-4 sticky bottom-0 bg-white dark:bg-gray-800 pb-2">
-                <button type="button" 
-                        onclick="resetFilters()" 
-                        class="flex-1 px-6 py-4 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-50 dark:bg-gray-900 transition-all">
-                    Reset
-                </button>
-                <button type="submit" 
-                        class="flex-1 px-6 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-900 transition-all">
-                    Apply Filters
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+@endsection
 
 @push('scripts')
 <script>
-// Hero Carousel Dynamique
-@if(isset($heroSlides) && $heroSlides->count() > 1)
+// ============ HERO CAROUSEL ============
 let currentSlide = 0;
-const totalSlides = {{ $heroSlides->count() }};
+let totalSlides = 0;
 let autoPlayInterval;
 let isTransitioning = false;
+
+function initCarousel() {
+    const inner = document.getElementById('carouselInner');
+    if (!inner) return;
+    
+    totalSlides = inner.children.length;
+    if (totalSlides <= 1) return;
+    
+    updateDots();
+    startAutoPlay();
+    setupEventListeners();
+}
 
 function goToSlide(index) {
     if (isTransitioning) return;
@@ -1129,11 +127,8 @@ function goToSlide(index) {
     const inner = document.getElementById('carouselInner');
     if (inner) {
         inner.style.transform = `translateX(-${(currentSlide * 100) / totalSlides}%)`;
-        
-        // Update dots
         updateDots();
         
-        // Reset transition lock
         setTimeout(() => {
             isTransitioning = false;
         }, 700);
@@ -1144,14 +139,10 @@ function updateDots() {
     document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
         if (i === currentSlide) {
             dot.classList.add('bg-white');
-            dot.classList.add('dark:bg-gray-800');
             dot.classList.remove('bg-white/40');
-            dot.classList.remove('dark:bg-gray-700');
         } else {
             dot.classList.remove('bg-white');
-            dot.classList.remove('dark:bg-gray-800');
             dot.classList.add('bg-white/40');
-            dot.classList.add('dark:bg-gray-700');
         }
     });
 }
@@ -1166,8 +157,8 @@ function prevSlide() {
     goToSlide(prev);
 }
 
-// Auto-play functionality
 function startAutoPlay() {
+    if (totalSlides <= 1) return;
     autoPlayInterval = setInterval(nextSlide, 6000);
 }
 
@@ -1177,68 +168,95 @@ function stopAutoPlay() {
     }
 }
 
-// Pause on hover
-const heroSection = document.querySelector('section');
-if (heroSection) {
-    heroSection.addEventListener('mouseenter', stopAutoPlay);
-    heroSection.addEventListener('mouseleave', startAutoPlay);
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') {
-        stopAutoPlay();
-        prevSlide();
-        setTimeout(startAutoPlay, 3000);
-    } else if (e.key === 'ArrowRight') {
-        stopAutoPlay();
-        nextSlide();
-        setTimeout(startAutoPlay, 3000);
+function setupEventListeners() {
+    const heroSection = document.querySelector('section');
+    if (heroSection) {
+        heroSection.addEventListener('mouseenter', stopAutoPlay);
+        heroSection.addEventListener('mouseleave', startAutoPlay);
     }
-});
 
-// Touch/Swipe support
-let touchStartX = 0;
-let touchEndX = 0;
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            stopAutoPlay();
+            prevSlide();
+            setTimeout(startAutoPlay, 3000);
+        } else if (e.key === 'ArrowRight') {
+            stopAutoPlay();
+            nextSlide();
+            setTimeout(startAutoPlay, 3000);
+        }
+    });
 
-heroSection.addEventListener('touchstart', (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-    stopAutoPlay();
-});
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-heroSection.addEventListener('touchend', (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-    setTimeout(startAutoPlay, 3000);
-});
+    heroSection.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        stopAutoPlay();
+    });
 
-function handleSwipe() {
-    const swipeThreshold = 50;
-    const diff = touchStartX - touchEndX;
-    
-    if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-            nextSlide(); // Swipe left = next slide
-        } else {
-            prevSlide(); // Swipe right = previous slide
+    heroSection.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+        setTimeout(startAutoPlay, 3000);
+    });
+
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
         }
     }
 }
 
-// Start auto-play on page load
-document.addEventListener('DOMContentLoaded', () => {
-    updateDots();
-    startAutoPlay();
-});
+// ============ CATEGORIES NAVIGATION ============
+function initCategoriesNavigation() {
+    const categoriesContainer = document.querySelector('.flex.overflow-x-auto.scrollbar-hide');
+    const prevBtn = document.getElementById('categoriesPrev');
+    const nextBtn = document.getElementById('categoriesNext');
+    
+    if (categoriesContainer && prevBtn && nextBtn) {
+        const scrollAmount = 200;
+        
+        prevBtn.addEventListener('click', () => {
+            categoriesContainer.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+        
+        nextBtn.addEventListener('click', () => {
+            categoriesContainer.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        });
+        
+        function updateNavigationButtons() {
+            const isAtStart = categoriesContainer.scrollLeft <= 0;
+            const isAtEnd = categoriesContainer.scrollLeft >= 
+                (categoriesContainer.scrollWidth - categoriesContainer.clientWidth - 10);
+            
+            prevBtn.style.opacity = isAtStart ? '0.3' : '0.8';
+            nextBtn.style.opacity = isAtEnd ? '0.3' : '0.8';
+            
+            prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
+            nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
+        }
+        
+        categoriesContainer.addEventListener('scroll', updateNavigationButtons);
+        window.addEventListener('resize', updateNavigationButtons);
+        updateNavigationButtons();
+    }
+}
 
-@else
-// Single slide or no slides
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('VintApp Hero: Single slide mode or no slides available');
-});
-@endif
-
-// Toast Notification
+// ============ TOAST NOTIFICATIONS ============
 function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
@@ -1258,14 +276,13 @@ function closeToast() {
     }
 }
 
-// Filter Modal
+// ============ FILTER MODAL ============
 function toggleFiltersModal() {
     const modal = document.getElementById('filterModal');
     if (modal) {
         modal.classList.toggle('hidden');
         modal.classList.toggle('flex');
         
-        // Prevent body scroll when modal is open
         if (!modal.classList.contains('hidden')) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -1274,33 +291,15 @@ function toggleFiltersModal() {
     }
 }
 
-// Close modal on ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const modal = document.getElementById('filterModal');
-        if (modal && !modal.classList.contains('hidden')) {
-            toggleFiltersModal();
-        }
-    }
-});
-
-// Close modal on outside click
-document.getElementById('filterModal')?.addEventListener('click', function(e) {
-    if (e.target === this) {
-        toggleFiltersModal();
-    }
-});
-
 function resetFilters() {
     document.getElementById('filterForm').reset();
 }
 
-// Add to Cart
+// ============ CART FUNCTIONS ============
 function addToCart(itemId) {
-    showToast('Added to cart successfully!');
+    showToast('Ajouté au panier avec succès !');
     console.log('Item added to cart:', itemId);
     
-    // Animate button
     const button = event.target.closest('button');
     if (button) {
         button.classList.add('scale-90');
@@ -1310,132 +309,6 @@ function addToCart(itemId) {
     }
 }
 
-// Smooth Scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
-
-// Intersection Observer for scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('animate-fade-in');
-            observer.unobserve(entry.target);
-        }
-    });
-}, observerOptions);
-
-// Observe sections on page load
-document.addEventListener('DOMContentLoaded', () => {
-    // Observe all sections except the first one (hero)
-    const sections = document.querySelectorAll('section:not(:first-child)');
-    sections.forEach((section, index) => {
-        section.style.opacity = '0';
-        observer.observe(section);
-    });
-    
-    // Stagger animation for category items
-    const categoryItems = document.querySelectorAll('.category-item');
-    categoryItems.forEach((item, index) => {
-        item.style.animationDelay = `${index * 0.05}s`;
-    });
-    
-    // Stagger animation for product cards
-    const productCards = document.querySelectorAll('.card-hover');
-    productCards.forEach((card, index) => {
-        card.style.animationDelay = `${index * 0.05}s`;
-    });
-});
-
-// Lazy load images
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                }
-                imageObserver.unobserve(img);
-            }
-        });
-    });
-
-    document.querySelectorAll('img[data-src]').forEach(img => {
-        imageObserver.observe(img);
-    });
-}
-
-// Parallax effect for hero section (optional)
-let ticking = false;
-function updateParallax() {
-    const scrolled = window.pageYOffset;
-    const parallaxElements = document.querySelectorAll('.parallax');
-    
-    parallaxElements.forEach(element => {
-        const speed = element.dataset.speed || 0.5;
-        element.style.transform = `translateY(${scrolled * speed}px)`;
-    });
-    
-    ticking = false;
-}
-
-window.addEventListener('scroll', function() {
-    if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
-        ticking = true;
-    }
-});
-
-// Page load animations
-window.addEventListener('load', () => {
-    document.body.classList.add('loaded');
-});
-
-// Add hover effect to product cards
-document.querySelectorAll('.card-hover').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.zIndex = '10';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.zIndex = '1';
-    });
-});
-
-// Shopping cart animation (if you have a cart icon in nav)
-function animateCartIcon() {
-    const cartIcon = document.querySelector('.cart-icon');
-    if (cartIcon) {
-        cartIcon.classList.add('animate-bounce');
-        setTimeout(() => {
-            cartIcon.classList.remove('animate-bounce');
-        }, 600);
-    }
-}
-
-// Call this when adding to cart
-function addToCartWithAnimation(itemId) {
-    addToCart(itemId);
-    animateCartIcon();
-}
-
-// Handle favorite/wishlist toggle
 function toggleFavorite(itemId, event) {
     event.preventDefault();
     event.stopPropagation();
@@ -1443,73 +316,104 @@ function toggleFavorite(itemId, event) {
     const button = event.currentTarget;
     const icon = button.querySelector('svg');
     
-    // Toggle filled state
     if (icon.classList.contains('fill-current')) {
         icon.classList.remove('fill-current', 'text-red-500');
-        showToast('Removed from favorites');
+        showToast('Retiré des favoris');
     } else {
         icon.classList.add('fill-current', 'text-red-500');
-        showToast('Added to favorites');
+        showToast('Ajouté aux favoris');
     }
     
     console.log('Toggle favorite for item:', itemId);
 }
 
-// Search suggestions (optional enhancement)
-const searchInput = document.querySelector('input[name="q"]');
-if (searchInput) {
-    let searchTimeout;
-    searchInput.addEventListener('input', function(e) {
-        clearTimeout(searchTimeout);
-        const query = e.target.value;
-        
-        if (query.length > 2) {
-            searchTimeout = setTimeout(() => {
-                // Here you could fetch search suggestions via AJAX
-                console.log('Searching for:', query);
-            }, 300);
+// ============ SCROLL ANIMATIONS ============
+function initScrollAnimations() {
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    const sections = document.querySelectorAll('section:not(:first-child)');
+    sections.forEach((section) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(30px)';
+        section.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        observer.observe(section);
+    });
+}
+
+// ============ BACK TO TOP BUTTON ============
+function initBackToTop() {
+    const backToTopButton = document.createElement('button');
+    backToTopButton.innerHTML = `
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+    `;
+    backToTopButton.className = 'fixed bottom-8 right-8 w-12 h-12 bg-black text-white rounded-full shadow-lg opacity-0 transition-opacity hover:bg-gray-900 z-40';
+    backToTopButton.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.appendChild(backToTopButton);
+
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 500) {
+            backToTopButton.style.opacity = '1';
+        } else {
+            backToTopButton.style.opacity = '0';
         }
     });
 }
 
-// Add to cart with quantity (optional)
-function addToCartWithQuantity(itemId, quantity = 1) {
-    showToast(`${quantity} item(s) added to cart`);
-    console.log(`Added ${quantity} of item ${itemId} to cart`);
-}
-
-// Quick view modal (optional feature)
-function quickView(itemId) {
-    console.log('Quick view for item:', itemId);
-    // You can implement a quick view modal here
-}
-
-// Back to top button (optional)
-const backToTopButton = document.createElement('button');
-backToTopButton.innerHTML = `
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
-    </svg>
-`;
-backToTopButton.className = 'fixed bottom-8 right-8 w-12 h-12 bg-black text-white rounded-full shadow-lg opacity-0 transition-opacity hover:bg-gray-900 z-40';
-backToTopButton.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-document.body.appendChild(backToTopButton);
-
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 500) {
-        backToTopButton.style.opacity = '1';
-    } else {
-        backToTopButton.style.opacity = '0';
-    }
+// ============ INITIALIZATION ============
+document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+    initCategoriesNavigation();
+    initScrollAnimations();
+    initBackToTop();
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('filterModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                toggleFiltersModal();
+            }
+        }
+    });
+    
+    document.getElementById('filterModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'filterModal') {
+            toggleFiltersModal();
+        }
+    });
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+    
+    console.log('VintApp Home Page - Initialized');
 });
 
-// Log page view analytics (optional)
-console.log('VintApp Home Page Loaded', {
-    timestamp: new Date().toISOString(),
-    items_count: {{ $latestItems->count() ?? 0 }},
-    categories_count: {{ $categories->count() ?? 0 }}
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
 });
 </script>
 @endpush
-
-@endsection
