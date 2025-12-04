@@ -7,9 +7,11 @@ use App\Models\Refund;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Traits\ApiResponses;
 
 class RefundController extends Controller
 {
+    use ApiResponses;
     /**
      * Afficher la liste des demandes de remboursement
      */
@@ -95,5 +97,50 @@ class RefundController extends Controller
 
         // Les vendeurs peuvent voir leurs propres demandes
         return $refund->seller_id === Auth::id();
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get refunds via API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $query = Refund::with(['order.item', 'buyer', 'seller'])
+                          ->orderBy('created_at', 'desc');
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if (!$this->isAdmin()) {
+                $query->where('seller_id', Auth::id());
+            }
+
+            $refunds = $query->paginate($request->per_page ?? 15);
+
+            return $this->paginatedResponse($refunds, 'Demandes de remboursement');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération remboursements', 500);
+        }
+    }
+
+    /**
+     * Get refund details via API
+     */
+    public function apiShow(Refund $refund)
+    {
+        try {
+            if (!$this->canViewRefund($refund)) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            $refund->load(['order.item', 'buyer', 'seller']);
+
+            return $this->successResponse($refund, 'Détails remboursement');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération détails', 500);
+        }
     }
 }

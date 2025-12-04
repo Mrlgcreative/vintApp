@@ -7,9 +7,11 @@ use App\Models\UserWaiting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Traits\ApiResponses;
 
 class WaitingUsersController extends Controller
 {
+    use ApiResponses;
     /**
      * Liste des utilisateurs en attente
      */
@@ -248,5 +250,72 @@ class WaitingUsersController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get waiting users via API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $query = UserWaiting::query()->with('convertedUser');
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+
+            $waitingUsers = $query->paginate($request->per_page ?? 20);
+
+            return $this->paginatedResponse($waitingUsers, 'Utilisateurs en attente');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération', 500);
+        }
+    }
+
+    /**
+     * Get stats via API
+     */
+    public function apiStats()
+    {
+        try {
+            $stats = [
+                'total' => UserWaiting::count(),
+                'pending' => UserWaiting::pending()->count(),
+                'confirmed' => UserWaiting::confirmed()->count(),
+                'approved' => UserWaiting::approved()->count(),
+                'rejected' => UserWaiting::rejected()->count(),
+                'converted' => UserWaiting::converted()->count(),
+                'today' => UserWaiting::whereDate('created_at', today())->count(),
+            ];
+
+            return $this->successResponse($stats, 'Statistiques pré-inscriptions');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération stats', 500);
+        }
+    }
+
+    /**
+     * Approve waiting user via API
+     */
+    public function apiApprove(Request $request, UserWaiting $waitingUser)
+    {
+        try {
+            $notes = $request->input('notes');
+            $waitingUser->approve($notes);
+
+            return $this->successResponse(null, 'Pré-inscription approuvée');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur approbation', 500);
+        }
     }
 }

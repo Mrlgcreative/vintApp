@@ -10,9 +10,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Traits\ApiResponses;
 
 class SupportController extends Controller
 {
+    use ApiResponses;
     /**
      * Afficher la liste des conversations de support
      */
@@ -445,5 +447,64 @@ class SupportController extends Controller
                 }
             ])
             ->get();
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get support chats via API
+     */
+    public function apiIndex(Request $request)
+    {
+        try {
+            $query = SupportChat::with(['user', 'admin', 'lastMessage'])
+                ->orderBy('last_message_at', 'desc');
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            $chats = $query->paginate($request->per_page ?? 20);
+
+            return $this->paginatedResponse($chats, 'Conversations support');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération conversations', 500);
+        }
+    }
+
+    /**
+     * Get chat details via API
+     */
+    public function apiShow(SupportChat $supportChat)
+    {
+        try {
+            $supportChat->load(['user', 'admin', 'messages.user']);
+
+            return $this->successResponse($supportChat, 'Détails conversation');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération détails', 500);
+        }
+    }
+
+    /**
+     * Get support stats via API
+     */
+    public function apiStats()
+    {
+        try {
+            $stats = [
+                'total' => SupportChat::count(),
+                'open' => SupportChat::where('status', 'open')->count(),
+                'in_progress' => SupportChat::where('status', 'in_progress')->count(),
+                'closed_today' => SupportChat::where('status', 'closed')
+                    ->whereDate('closed_at', today())->count(),
+                'unassigned' => SupportChat::whereNull('admin_id')
+                    ->whereIn('status', ['open', 'in_progress'])->count()
+            ];
+
+            return $this->successResponse($stats, 'Statistiques support');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération stats', 500);
+        }
     }
 }

@@ -21,6 +21,15 @@ use App\Http\Controllers\BotController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\SupportController;
 
+// Admin Controllers
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AffiliateController;
+use App\Http\Controllers\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Admin\WaitingUsersController;
+use App\Http\Controllers\Admin\WalletController as AdminWalletController;
+use App\Http\Controllers\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\Admin\MonitoringController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -580,4 +589,78 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
     Route::post('/initiate', [PaymentController::class, 'apiInitiate']);
     Route::post('/refund/{orderId}', [PaymentController::class, 'apiRequestRefund']);
     Route::get('/refund/{refundId}/status', [PaymentController::class, 'apiRefundStatus']);
+});
+
+// ==================== Admin Routes ====================
+Route::prefix('v1/admin')->middleware(['auth:sanctum,web', 'role:admin'])->group(function () {
+    // Dashboard & Stats
+    Route::get('/dashboard', [AdminController::class, 'apiDashboard']);
+    Route::get('/stats/summary', [AdminController::class, 'apiStatsSummary']);
+    Route::get('/notifications', [AdminController::class, 'apiNotifications']);
+    Route::get('/reports', [AdminController::class, 'apiReports']);
+    Route::get('/online-users', [AdminController::class, 'apiOnlineUsers']);
+    
+    // Users Management
+    Route::get('/users', [AdminController::class, 'apiUsers']);
+    Route::get('/users/{userId}', [AdminController::class, 'apiUserShow']);
+    Route::post('/users/{userId}/status', [AdminController::class, 'apiUserUpdateStatus']);
+    
+    // Wallets Management
+    Route::get('/wallets', [AdminController::class, 'apiWallets']);
+    Route::get('/wallets/pending', [AdminController::class, 'apiPendingWallets']);
+    Route::post('/wallets/{walletId}/approve', [AdminController::class, 'apiApproveWallet']);
+    Route::post('/wallets/{walletId}/reject', [AdminController::class, 'apiRejectWallet']);
+    Route::post('/wallets/bulk-approve', [AdminController::class, 'apiBulkApproveWallets']);
+    
+    // Transactions
+    Route::get('/transactions', [AdminController::class, 'apiTransactions']);
+    
+    // Orders
+    Route::get('/orders', [AdminController::class, 'apiOrders']);
+    
+    // Items Management
+    Route::get('/items', [AdminController::class, 'apiItems']);
+    Route::post('/items/{itemId}/status', [AdminController::class, 'apiItemUpdateStatus']);
+    
+    // Brands & Categories
+    Route::get('/brands', [AdminController::class, 'apiBrands']);
+    Route::get('/categories', [AdminController::class, 'apiCategories']);
+    
+    // Support Management
+    Route::get('/support-chats', [AdminController::class, 'apiSupportChats']);
+    
+    // Verification Management
+    Route::get('/verification-checks', [AdminController::class, 'apiVerificationChecks']);
+    
+    // Settings Management
+    Route::get('/settings', [AdminController::class, 'apiSettings']);
+    Route::put('/settings/{key}', [AdminController::class, 'apiUpdateSetting']);
+    
+    // Enterprise Wallets
+    Route::get('/enterprise-wallets', [AdminWalletController::class, 'apiIndex']);
+    Route::get('/enterprise-wallets/{wallet}', [AdminWalletController::class, 'apiShow']);
+    
+    // Support Admin
+    Route::get('/support', [AdminSupportController::class, 'apiIndex']);
+    Route::get('/support/stats', [AdminSupportController::class, 'apiStats']);
+    Route::get('/support/{supportChat}', [AdminSupportController::class, 'apiShow']);
+    
+    // Affiliate Management
+    Route::get('/affiliate/stats', [AffiliateController::class, 'getDashboardStats']);
+    Route::get('/affiliate/top-performers', [AffiliateController::class, 'getTopPerformers']);
+    Route::get('/affiliate/referrers', [AffiliateController::class, 'getReferrers']);
+    Route::get('/affiliate/activity', [AffiliateController::class, 'getRecentActivity']);
+    
+    // Refunds Management
+    Route::get('/refunds', [AdminRefundController::class, 'apiIndex']);
+    Route::get('/refunds/{refund}', [AdminRefundController::class, 'apiShow']);
+    
+    // Waiting Users
+    Route::get('/waiting-users', [WaitingUsersController::class, 'apiIndex']);
+    Route::get('/waiting-users/stats', [WaitingUsersController::class, 'apiStats']);
+    Route::post('/waiting-users/{waitingUser}/approve', [WaitingUsersController::class, 'apiApprove']);
+    
+    // Monitoring
+    Route::get('/monitoring/stats', [MonitoringController::class, 'stats']);
+    Route::get('/monitoring/health', [MonitoringController::class, 'health']);
 });

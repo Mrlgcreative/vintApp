@@ -9,9 +9,11 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Traits\ApiResponses;
 
 class WalletController extends Controller
 {
+    use ApiResponses;
     /**
      * Display a listing of enterprise wallets.
      */
@@ -281,5 +283,56 @@ class WalletController extends Controller
         });
 
         return redirect()->back()->with('success', 'Retrait effectué avec succès !');
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Get enterprise wallets via API
+     */
+    public function apiIndex()
+    {
+        try {
+            $wallets = Wallet::enterprise()
+                ->with(['transactions' => function($query) {
+                    $query->latest()->limit(5);
+                }])
+                ->get();
+
+            $stats = [
+                'total_usd' => Wallet::enterprise()->where('currency', 'USD')->sum('balance'),
+                'total_cdf' => Wallet::enterprise()->where('currency', 'CDF')->sum('balance'),
+                'total_transactions' => WalletTransaction::whereHas('wallet', function($q) {
+                    $q->enterprise();
+                })->count(),
+            ];
+
+            return $this->successResponse([
+                'wallets' => $wallets,
+                'stats' => $stats
+            ], 'Wallets entreprise');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération wallets', 500);
+        }
+    }
+
+    /**
+     * Get wallet details via API
+     */
+    public function apiShow(Wallet $wallet)
+    {
+        try {
+            if (!$wallet->isEnterprise()) {
+                return $this->errorResponse('Wallet non trouvé', 404);
+            }
+
+            $wallet->load(['transactions' => function($query) {
+                $query->latest()->paginate(20);
+            }]);
+
+            return $this->successResponse($wallet, 'Détails wallet');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération détails', 500);
+        }
     }
 }

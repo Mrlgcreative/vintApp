@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\MonitoringService;
 use Illuminate\Http\Request;
+use App\Traits\ApiResponses;
 
 class MonitoringController extends Controller
 {
+    use ApiResponses;
     public function __construct(
         protected MonitoringService $monitoring
     ) {}

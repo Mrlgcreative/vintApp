@@ -12,9 +12,11 @@ use App\Models\Referral;
 use App\Models\AffiliateReward;
 use App\Models\PointTransaction;
 use Carbon\Carbon;
+use App\Traits\ApiResponses;
 
 class AffiliateController extends Controller
 {
+    use ApiResponses;
     /**
      * Afficher la page principale de gestion des affiliations
      */

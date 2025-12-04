@@ -24,9 +24,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Services\StorageSyncService;
+use App\Traits\ApiResponses;
 
 class AdminController extends Controller
 {
+    use ApiResponses;
     /**
      * Dashboard administrateur
      */
@@ -3447,5 +3449,728 @@ class AdminController extends Controller
         ];
 
         return $icons[$type] ?? 'fa-bell';
+    }
+
+    // ==================== API Methods ====================
+
+    /**
+     * Dashboard stats via API
+     */
+    public function apiDashboard()
+    {
+        try {
+            $stats = [
+                'total_users' => User::count(),
+                'new_users_today' => User::whereDate('created_at', today())->count(),
+                'active_users' => User::where('last_seen', '>=', Carbon::now()->subDays(7))->count(),
+                
+                'total_transactions' => Transaction::count(),
+                'transactions_today' => Transaction::whereDate('created_at', today())->count(),
+                'total_revenue_usd' => Transaction::where('status', 'completed')
+                    ->where('currency', 'USD')
+                    ->sum('amount'),
+                'total_revenue_cdf' => Transaction::where('status', 'completed')
+                    ->where('currency', 'CDF')
+                    ->sum('amount'),
+                
+                'pending_wallets' => Wallet::where('type', 'pending')->count(),
+                'total_orders' => Order::count(),
+                'pending_orders' => Order::where('status', 'pending')->count(),
+                'total_items' => Item::count(),
+                'active_items' => Item::where('status', 'active')->count(),
+                
+                'total_support_chats' => SupportChat::count(),
+                'open_support_chats' => SupportChat::where('status', 'open')->count(),
+            ];
+
+            return $this->successResponse($stats, 'Statistiques dashboard admin');
+        } catch (\Exception $e) {
+            Log::error('API Admin Dashboard Error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Erreur récupération stats', 500);
+        }
+    }
+
+    /**
+     * Get users via API
+     */
+    public function apiUsers(Request $request)
+    {
+        try {
+            $query = User::with(['roles', 'wallets']);
+            
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                });
+            }
+            
+            $users = $query->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($users, 'Liste utilisateurs');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération utilisateurs', 500);
+        }
+    }
+
+    /**
+     * Get wallets via API
+     */
+    public function apiWallets(Request $request)
+    {
+        try {
+            $query = Wallet::with(['user']);
+            
+            if ($request->filled('type')) {
+                $query->where('type', $request->type);
+            }
+            
+            $wallets = $query->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($wallets, 'Liste wallets');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération wallets', 500);
+        }
+    }
+
+    /**
+     * Get transactions via API
+     */
+    public function apiTransactions(Request $request)
+    {
+        try {
+            $query = Transaction::with(['user', 'wallet']);
+            
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            $transactions = $query->latest()->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($transactions, 'Liste transactions');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération transactions', 500);
+        }
+    }
+
+    /**
+     * Get orders via API
+     */
+    public function apiOrders(Request $request)
+    {
+        try {
+            $query = Order::with(['buyer', 'seller', 'item']);
+            
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            
+            $orders = $query->latest()->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($orders, 'Liste commandes');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération commandes', 500);
+        }
+    }
+
+    /**
+     * Get pending wallets via API
+     */
+    public function apiPendingWallets()
+    {
+        try {
+            $pendingWallets = Wallet::with(['user'])
+                ->where('type', 'pending')
+                ->orderBy('balance', 'desc')
+                ->paginate(20);
+            
+            return $this->paginatedResponse($pendingWallets, 'Wallets en attente');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération wallets', 500);
+        }
+    }
+
+    /**
+     * Approve wallet via API
+     */
+    public function apiApproveWallet($walletId)
+    {
+        try {
+            $wallet = Wallet::findOrFail($walletId);
+            
+            DB::beginTransaction();
+            
+            $wallet->update([
+                'status' => 'approved',
+                'is_active' => true,
+                'verified_by' => Auth::id()
+            ]);
+            
+            Transaction::create([
+                'user_id' => $wallet->user_id,
+                'wallet_id' => $wallet->id,
+                'type' => 'wallet_approval',
+                'amount' => $wallet->balance,
+                'currency' => $wallet->currency,
+                'status' => 'completed',
+                'processed_by' => Auth::id()
+            ]);
+            
+            DB::commit();
+            
+            return $this->successResponse($wallet, 'Wallet approuvé avec succès');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur approbation wallet', 500);
+        }
+    }
+
+    /**
+     * Reject wallet via API
+     */
+    public function apiRejectWallet(Request $request, $walletId)
+    {
+        $validator = \Validator::make($request->all(), [
+            'reason' => 'required|string|max:500'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $wallet = Wallet::findOrFail($walletId);
+            
+            DB::beginTransaction();
+            
+            $wallet->update([
+                'status' => 'rejected',
+                'rejection_reason' => $request->reason,
+                'verified_by' => Auth::id()
+            ]);
+            
+            Transaction::create([
+                'user_id' => $wallet->user_id,
+                'wallet_id' => $wallet->id,
+                'type' => 'wallet_rejection',
+                'amount' => $wallet->balance,
+                'currency' => $wallet->currency,
+                'status' => 'failed',
+                'failure_reason' => $request->reason,
+                'processed_by' => Auth::id()
+            ]);
+            
+            DB::commit();
+            
+            return $this->successResponse(null, 'Wallet rejeté avec succès');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur rejet wallet', 500);
+        }
+    }
+
+    /**
+     * Get items via API
+     */
+    public function apiItems(Request $request)
+    {
+        try {
+            $query = Item::with(['user', 'category', 'brand']);
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('category')) {
+                $query->where('category_id', $request->category);
+            }
+
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            $items = $query->latest()->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($items, 'Liste articles');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération articles', 500);
+        }
+    }
+
+    /**
+     * Get brands via API
+     */
+    public function apiBrands(Request $request)
+    {
+        try {
+            $brands = Brand::withCount(['items'])
+                ->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($brands, 'Liste marques');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération marques', 500);
+        }
+    }
+
+    /**
+     * Get categories via API
+     */
+    public function apiCategories(Request $request)
+    {
+        try {
+            $categories = Category::withCount(['items'])
+                ->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($categories, 'Liste catégories');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération catégories', 500);
+        }
+    }
+
+    /**
+     * Get support chats via API
+     */
+    public function apiSupportChats(Request $request)
+    {
+        try {
+            $query = SupportChat::with(['user', 'admin', 'messages']);
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            if ($request->filled('priority')) {
+                $query->where('priority', $request->priority);
+            }
+
+            $chats = $query->latest()->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($chats, 'Liste tickets support');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération support', 500);
+        }
+    }
+
+    /**
+     * Get verification checks via API
+     */
+    public function apiVerificationChecks(Request $request)
+    {
+        try {
+            $query = ProductAuthenticityCheck::with(['item', 'vendor', 'expert']);
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+
+            $checks = $query->latest()->paginate($request->per_page ?? 20);
+            
+            return $this->paginatedResponse($checks, 'Liste vérifications authenticité');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération vérifications', 500);
+        }
+    }
+
+    /**
+     * Update user status via API
+     */
+    public function apiUserUpdateStatus(Request $request, $userId)
+    {
+        $validator = \Validator::make($request->all(), [
+            'action' => 'required|in:activate,deactivate,suspend,delete'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $user = User::findOrFail($userId);
+            
+            DB::beginTransaction();
+            
+            switch ($request->action) {
+                case 'activate':
+                    $user->update(['status' => 'active']);
+                    $message = 'Utilisateur activé avec succès';
+                    break;
+                
+                case 'deactivate':
+                    $user->update(['status' => 'inactive']);
+                    $message = 'Utilisateur désactivé avec succès';
+                    break;
+                
+                case 'suspend':
+                    $user->update(['status' => 'suspended']);
+                    $message = 'Utilisateur suspendu avec succès';
+                    break;
+                
+                case 'delete':
+                    $user->delete();
+                    $message = 'Utilisateur supprimé avec succès';
+                    break;
+            }
+            
+            DB::commit();
+            
+            return $this->successResponse(null, $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur action utilisateur', 500);
+        }
+    }
+
+    /**
+     * Get user details via API
+     */
+    public function apiUserShow($userId)
+    {
+        try {
+            $user = User::with(['roles', 'wallets', 'transactions', 'ordersAsBuyer', 'ordersAsSeller'])
+                ->findOrFail($userId);
+            
+            $stats = $user->getStats();
+            
+            return $this->successResponse([
+                'user' => $user,
+                'stats' => $stats
+            ], 'Détails utilisateur');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Utilisateur introuvable', 404);
+        }
+    }
+
+    /**
+     * Update item status via API
+     */
+    public function apiItemUpdateStatus(Request $request, $itemId)
+    {
+        $validator = \Validator::make($request->all(), [
+            'status' => 'required|in:pending,active,sold,inactive'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $item = Item::findOrFail($itemId);
+            $item->update(['status' => $request->status]);
+            
+            return $this->successResponse($item, 'Statut article mis à jour');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur mise à jour statut', 500);
+        }
+    }
+
+    /**
+     * Get reports via API
+     */
+    public function apiReports(Request $request)
+    {
+        try {
+            $period = $request->get('period', 30);
+            $startDate = Carbon::now()->subDays($period);
+            
+            $reports = [
+                'revenue' => $this->getRevenueReport($startDate),
+                'users' => $this->getUsersReport($startDate),
+                'transactions' => $this->getTransactionsReport($startDate),
+                'popular_items' => $this->getPopularItemsReport($startDate)
+            ];
+            
+            return $this->successResponse($reports, 'Rapports statistiques');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur génération rapports', 500);
+        }
+    }
+
+    /**
+     * Get settings via API
+     */
+    public function apiSettings()
+    {
+        try {
+            $settings = Setting::all()->groupBy('category');
+            
+            return $this->successResponse($settings, 'Paramètres système');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération paramètres', 500);
+        }
+    }
+
+    /**
+     * Update setting via API
+     */
+    public function apiUpdateSetting(Request $request, $key)
+    {
+        $validator = \Validator::make($request->all(), [
+            'value' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $setting = Setting::where('key', $key)->first();
+            
+            if (!$setting) {
+                return $this->errorResponse('Paramètre introuvable', 404);
+            }
+            
+            $setting->update(['value' => $request->value]);
+            
+            Cache::forget('settings');
+            
+            return $this->successResponse($setting, 'Paramètre mis à jour');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur mise à jour paramètre', 500);
+        }
+    }
+
+    /**
+     * Get online users via API
+     */
+    public function apiOnlineUsers()
+    {
+        try {
+            $onlineSessions = \App\Models\UserSession::getActiveSessions();
+            
+            $data = $onlineSessions->map(function($session) {
+                return [
+                    'user_id' => $session->user_id,
+                    'user_name' => $session->user->name ?? 'Unknown',
+                    'user_email' => $session->user->email ?? '',
+                    'device_type' => $session->device_type,
+                    'browser' => $session->browser,
+                    'last_activity' => $session->last_activity_at,
+                    'ip_address' => $session->ip_address,
+                    'location' => $session->location
+                ];
+            });
+            
+            $stats = [
+                'total_online' => $onlineSessions->count(),
+                'unique_users' => $onlineSessions->unique('user_id')->count()
+            ];
+            
+            return $this->successResponse([
+                'users' => $data,
+                'stats' => $stats
+            ], 'Utilisateurs connectés');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération utilisateurs en ligne', 500);
+        }
+    }
+
+    /**
+     * Bulk approve wallets via API
+     */
+    public function apiBulkApproveWallets(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'wallet_ids' => 'required|array',
+            'wallet_ids.*' => 'exists:wallets,id'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            DB::beginTransaction();
+            
+            $wallets = Wallet::whereIn('id', $request->wallet_ids)
+                ->where('type', 'pending')
+                ->get();
+            
+            $approvedCount = 0;
+            
+            foreach ($wallets as $wallet) {
+                $wallet->update([
+                    'status' => 'approved',
+                    'is_active' => true,
+                    'verified_by' => Auth::id()
+                ]);
+                
+                Transaction::create([
+                    'user_id' => $wallet->user_id,
+                    'wallet_id' => $wallet->id,
+                    'type' => 'wallet_approval',
+                    'amount' => $wallet->balance,
+                    'currency' => $wallet->currency,
+                    'status' => 'completed',
+                    'processed_by' => Auth::id()
+                ]);
+                
+                $approvedCount++;
+            }
+            
+            DB::commit();
+            
+            return $this->successResponse([
+                'approved_count' => $approvedCount
+            ], "{$approvedCount} wallets approuvés avec succès");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->errorResponse('Erreur approbation en masse', 500);
+        }
+    }
+
+    /**
+     * Get admin notifications via API
+     */
+    public function apiNotifications()
+    {
+        try {
+            $notifications = [];
+            
+            $pendingWallets = Wallet::where('status', 'pending')->count();
+            $pendingOrders = Order::where('status', 'pending')->count();
+            $failedTransactions = Transaction::where('status', 'failed')
+                ->whereDate('created_at', today())
+                ->count();
+            $pendingSupport = SupportChat::whereIn('status', ['open', 'in_progress'])->count();
+            $pendingVerifications = ProductAuthenticityCheck::whereIn('status', ['pending', 'expert_review'])->count();
+            
+            if ($pendingWallets > 0) {
+                $notifications[] = [
+                    'type' => 'pending_wallets',
+                    'title' => 'Wallets en attente',
+                    'message' => "{$pendingWallets} wallet(s) en attente de validation",
+                    'count' => $pendingWallets,
+                    'icon' => 'fa-wallet',
+                    'color' => 'warning',
+                    'url' => route('admin.wallets.pending')
+                ];
+            }
+            
+            if ($pendingOrders > 0) {
+                $notifications[] = [
+                    'type' => 'pending_orders',
+                    'title' => 'Commandes en attente',
+                    'message' => "{$pendingOrders} commande(s) en attente",
+                    'count' => $pendingOrders,
+                    'icon' => 'fa-shopping-cart',
+                    'color' => 'info',
+                    'url' => route('admin.orders.index')
+                ];
+            }
+            
+            if ($failedTransactions > 0) {
+                $notifications[] = [
+                    'type' => 'failed_transactions',
+                    'title' => 'Transactions échouées',
+                    'message' => "{$failedTransactions} transaction(s) échouée(s) aujourd'hui",
+                    'count' => $failedTransactions,
+                    'icon' => 'fa-exclamation-triangle',
+                    'color' => 'danger',
+                    'url' => route('admin.transactions.index')
+                ];
+            }
+
+            if ($pendingSupport > 0) {
+                $notifications[] = [
+                    'type' => 'pending_support',
+                    'title' => 'Tickets support',
+                    'message' => "{$pendingSupport} ticket(s) nécessitent attention",
+                    'count' => $pendingSupport,
+                    'icon' => 'fa-headset',
+                    'color' => 'primary',
+                    'url' => route('admin.support.index')
+                ];
+            }
+
+            if ($pendingVerifications > 0) {
+                $notifications[] = [
+                    'type' => 'pending_verifications',
+                    'title' => 'Vérifications authenticité',
+                    'message' => "{$pendingVerifications} vérification(s) en attente",
+                    'count' => $pendingVerifications,
+                    'icon' => 'fa-certificate',
+                    'color' => 'success',
+                    'url' => route('admin.authenticity.index')
+                ];
+            }
+            
+            return $this->successResponse([
+                'notifications' => $notifications,
+                'total_count' => count($notifications)
+            ], 'Notifications admin');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération notifications', 500);
+        }
+    }
+
+    /**
+     * Get admin stats summary via API
+     */
+    public function apiStatsSummary()
+    {
+        try {
+            $stats = [
+                'users' => [
+                    'total' => User::count(),
+                    'today' => User::whereDate('created_at', today())->count(),
+                    'active_7d' => User::where('last_seen', '>=', Carbon::now()->subDays(7))->count(),
+                    'verified' => User::whereNotNull('email_verified_at')->count()
+                ],
+                'transactions' => [
+                    'total' => Transaction::count(),
+                    'today' => Transaction::whereDate('created_at', today())->count(),
+                    'completed' => Transaction::where('status', 'completed')->count(),
+                    'total_amount_usd' => Transaction::where('status', 'completed')
+                        ->where('currency', 'USD')
+                        ->sum('amount'),
+                    'total_amount_cdf' => Transaction::where('status', 'completed')
+                        ->where('currency', 'CDF')
+                        ->sum('amount')
+                ],
+                'orders' => [
+                    'total' => Order::count(),
+                    'today' => Order::whereDate('created_at', today())->count(),
+                    'pending' => Order::where('status', 'pending')->count(),
+                    'completed' => Order::where('status', 'completed')->count()
+                ],
+                'items' => [
+                    'total' => Item::count(),
+                    'active' => Item::where('status', 'active')->count(),
+                    'pending' => Item::where('status', 'pending')->count(),
+                    'sold' => Item::where('status', 'sold')->count()
+                ],
+                'wallets' => [
+                    'pending' => Wallet::where('type', 'pending')->count(),
+                    'total_balance_usd' => Wallet::where('is_active', true)
+                        ->where('currency', 'USD')
+                        ->sum('balance'),
+                    'total_balance_cdf' => Wallet::where('is_active', true)
+                        ->where('currency', 'CDF')
+                        ->sum('balance')
+                ],
+                'support' => [
+                    'total' => SupportChat::count(),
+                    'open' => SupportChat::where('status', 'open')->count(),
+                    'pending' => SupportChat::whereIn('status', ['open', 'in_progress'])->count(),
+                    'unassigned' => SupportChat::whereNull('admin_id')
+                        ->whereIn('status', ['open', 'in_progress'])
+                        ->count()
+                ],
+                'verifications' => [
+                    'total' => ProductAuthenticityCheck::count(),
+                    'pending' => ProductAuthenticityCheck::whereIn('status', ['pending', 'expert_review'])->count(),
+                    'completed' => ProductAuthenticityCheck::where('payment_completed', true)->count()
+                ]
+            ];
+            
+            return $this->successResponse($stats, 'Résumé statistiques admin');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur récupération statistiques', 500);
+        }
     }
 }
