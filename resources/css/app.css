@@ -1,9 +1,10 @@
- @tailwind base;
+ /* Import du CSS dynamique généré par PHP avec les couleurs actives */
+/* Note: Le fichier est généré automatiquement par AppServiceProvider::boot() */
+@import '../../public/css/vintapp-dynamic.css';
+
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import du CSS dynamique généré par PHP avec les couleurs actives */
-@import url('/css/vintapp-dynamic.css');
 
 /* Variables CSS statiques par défaut (seront écrasées par vintapp-dynamic.css) */
 :root {
@@ -152,6 +153,7 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
 
 
 
@@ -519,6 +521,7 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
 
 
 
