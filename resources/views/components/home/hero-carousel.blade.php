@@ -50,7 +50,7 @@
                                     <div class="relative h-full flex items-center justify-center">
                                         @if($slide->image_url)
                                             <div class="relative w-full max-w-md lg:max-w-lg aspect-square">
-                                                <img src="{{ Storage::url($slide->image_url) }}" 
+                                                <img src="/storage/{{ $slide->image_url }}" 
                                                      alt="{{ $slide->title }}" 
                                                      class="w-full h-full object-contain animate-scale-in" />
                                             </div>
