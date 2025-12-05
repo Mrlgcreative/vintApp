@@ -34,10 +34,18 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('apple', \SocialiteProviders\Apple\Provider::class);
         });
 
-        // Partager les informations de l'app avec toutes les vues
+        // Injecter la palette de couleurs active
         view()->composer('*', function ($view) {
+            // Récupérer le service de palette
+            $colorPaletteService = app(\App\Services\ColorPaletteService::class);
+            $activePalette = $colorPaletteService->getActivePalette();
+            
+            // Partager avec toutes les vues
             $view->with('appName', config('app.name', 'VintApp'));
-            $view->with('appFavicon', config('app.favicon', '/favicon.ico'));
+            $view->with('appFavicon', config('app.favicon', '/favicon.png'));
+            $view->with('activePalette', $activePalette);
+            $view->with('colorPrimary', $activePalette['primary'] ?? '#8B4513');
+            $view->with('colorSecondary', $activePalette['secondary'] ?? '#696969');
         });
     }
 }
