@@ -42,7 +42,7 @@ class PWAManager {
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            // Ne plus afficher le bouton automatiquement
+            // Bouton d'installation désactivé
             // this.showInstallButton();
         });
 
@@ -59,10 +59,7 @@ class PWAManager {
             console.log('🎯 App lancée en mode standalone');
         }
         
-        // BOUTON D'INSTALLATION DÉSACTIVÉ
-        // Le bouton ne s'affichera plus automatiquement
-        // Les utilisateurs peuvent installer via le menu du navigateur
-        
+        // Bouton d'installation désactivé - ne plus afficher automatiquement
         console.log('ℹ️ Bouton d\'installation PWA désactivé');
     }
 
@@ -227,73 +224,21 @@ class PWAManager {
     }
 
     /**
-     * Afficher le bouton d'installation
+     * Afficher le bouton d'installation - DÉSACTIVÉ
      */
     showInstallButton() {
-        // Éviter les doublons
-        if (document.getElementById('pwa-install-button')) {
-            console.log('⚠️ Bouton déjà présent, pas de doublon');
-            return;
-        }
-        
-        console.log('🎯 Création du bouton d\'installation...');
-        
-        const installButton = document.createElement('button');
-        installButton.id = 'pwa-install-button';
-        installButton.className = 'fixed bottom-20 right-4 bg-primary-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-primary-700 transition-all z-50 flex items-center space-x-2 animate-bounce';
-        // Style inline pour forcer la visibilité
-        installButton.style.cssText = 'position: fixed !important; bottom: 5rem !important; right: 1rem !important; z-index: 9999 !important; background-color: #8B5CF6 !important; color: white !important; padding: 0.75rem 1.5rem !important; border-radius: 9999px !important; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1) !important; display: flex !important; align-items: center !important; gap: 0.5rem !important; cursor: pointer !important; border: none !important;';
-        installButton.innerHTML = `
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            <span class="font-medium">Installer l'app</span>
-        `;
-        installButton.addEventListener('click', () => this.installApp());
-
-        document.body.appendChild(installButton);
-        
-        console.log('✅ Bouton d\'installation ajouté au DOM');
-        
-        // Animation d'entrée
-        setTimeout(() => {
-            installButton.style.animation = 'bounce 1s infinite';
-        }, 100);
+        console.log('ℹ️ showInstallButton() désactivée');
+        // Fonctionnalité désactivée
+        return;
     }
     
     /**
-     * Afficher le bouton immédiatement (même sans beforeinstallprompt)
+     * Afficher le bouton immédiatement - DÉSACTIVÉ
      */
     showInstallButtonImmediately() {
-        console.log('📱 showInstallButtonImmediately() appelée');
-        
-        // Vérifier si déjà installé
-        if (this.isInstalled()) {
-            console.log('❌ App déjà installée, bouton non affiché');
-            return;
-        }
-        
-        console.log('✅ App non installée, continue...');
-        
-        // Vérifier si déjà affiché récemment
-        const lastDismissed = localStorage.getItem('pwa-install-dismissed');
-        if (lastDismissed) {
-            const dismissedTime = parseInt(lastDismissed);
-            const hoursSinceDismissed = (Date.now() - dismissedTime) / (1000 * 60 * 60);
-            
-            console.log(`⏰ Dismiss il y a ${hoursSinceDismissed.toFixed(2)} heures`);
-            
-            // Ne pas afficher si dismissed il y a moins de 24h
-            if (hoursSinceDismissed < 24) {
-                console.log('❌ Bouton dismissed récemment, attente 24h');
-                return;
-            }
-        }
-        
-        console.log('✅ Conditions OK, affichage du bouton...');
-        
-        // Afficher le bouton immédiatement
-        this.showInstallButton();
+        console.log('ℹ️ showInstallButtonImmediately() désactivée');
+        // Fonctionnalité désactivée
+        return;
     }
 
     /**
@@ -316,83 +261,21 @@ class PWAManager {
     }
 
     /**
-     * Installer l'application
+     * Installer l'application - DÉSACTIVÉ
      */
     async installApp() {
-        if (!this.deferredPrompt) {
-            // Si pas de deferredPrompt, afficher instructions manuelles
-            this.showManualInstallInstructions();
-            return;
-        }
-
-        this.deferredPrompt.prompt();
-        const { outcome } = await this.deferredPrompt.userChoice;
-
-        console.log('Choix utilisateur:', outcome);
-
-        this.deferredPrompt = null;
-        this.hideInstallButton();
+        console.log('ℹ️ installApp() désactivée');
+        // Fonctionnalité désactivée
+        return;
     }
     
     /**
-     * Afficher les instructions d'installation manuelle
+     * Afficher les instructions d'installation manuelle - DÉSACTIVÉ
      */
     showManualInstallInstructions() {
-        const modal = document.createElement('div');
-        modal.id = 'pwa-install-modal';
-        modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4';
-        modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full p-4 max-h-[90vh] overflow-y-auto">
-                <div class="flex items-start justify-between mb-3">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
-                        📱 Installer VintApp
-                    </h3>
-                    <button onclick="document.getElementById('pwa-install-modal').remove()" 
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded">
-                        <p class="font-semibold text-blue-900 dark:text-blue-100 mb-1">📱 Android</p>
-                        <p class="text-xs">Menu (⋮) → "Installer l'application"</p>
-                    </div>
-                    
-                    <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded">
-                        <p class="font-semibold text-gray-900 dark:text-gray-100 mb-1">🍎 iOS</p>
-                        <p class="text-xs">Partage → "Ajouter à l'écran d'accueil"</p>
-                    </div>
-                    
-                    <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded">
-                        <p class="font-semibold text-purple-900 dark:text-purple-100 mb-1">💻 Desktop</p>
-                        <p class="text-xs">Icône ⊕ dans la barre d'adresse</p>
-                    </div>
-                </div>
-                
-                <div class="mt-4 flex gap-2">
-                    <button onclick="document.getElementById('pwa-install-modal').remove(); pwaManager.dismissInstallButton();" 
-                            class="flex-1 px-3 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-                        Plus tard
-                    </button>
-                    <button onclick="document.getElementById('pwa-install-modal').remove()" 
-                            class="flex-1 px-3 py-2 text-sm bg-primary-600 text-white rounded hover:bg-primary-700">
-                        OK
-                    </button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        // Fermer en cliquant sur le fond
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
+        console.log('ℹ️ showManualInstallInstructions() désactivée');
+        // Fonctionnalité désactivée - les utilisateurs peuvent installer via le menu du navigateur
+        return;
     }
 
     /**
