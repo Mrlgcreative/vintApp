@@ -1,0 +1,87 @@
+/* Splash Screen pour PWA Desktop */
+#vintapp-splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 99999;
+    background: linear-gradient(135deg, #8B4513 0%, #6A340E 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+#vintapp-splash.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#vintapp-splash-logo {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 2rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+#vintapp-splash-text {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+#vintapp-splash-tagline {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    text-align: center;
+    max-width: 400px;
+    padding: 0 1rem;
+}
+
+#vintapp-splash-loader {
+    margin-top: 2rem;
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Pour mobile */
+@media (max-width: 768px) {
+    #vintapp-splash-logo {
+        width: 150px;
+        height: 150px;
+    }
+    
+    #vintapp-splash-text {
+        font-size: 1.5rem;
+    }
+    
+    #vintapp-splash-tagline {
+        font-size: 0.9rem;
+    }
+}

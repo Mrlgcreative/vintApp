@@ -40,6 +40,9 @@
     <!-- Lazy Loading CSS -->
     <link rel="stylesheet" href="{{ asset('css/lazy-loading.css') }}">
 
+    <!-- Splash Screen CSS -->
+    <link rel="stylesheet" href="{{ asset('css/splash-screen.css') }}">
+
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -479,6 +482,9 @@
 
     <!-- PWA Manager -->
     <script src="{{ asset('js/pwa.js') }}?v={{ time() }}" defer></script>
+    
+    <!-- Splash Screen Manager -->
+    <script src="{{ asset('js/splash-screen.js') }}?v={{ time() }}"></script>
     
     <!-- Push Notification Manager -->
     <script type="module" src="{{ asset('js/push-manager.js') }}?v={{ time() }}"></script>
