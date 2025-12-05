@@ -38,12 +38,11 @@ class PWAManager {
             }
         }
 
-        // Gérer le prompt d'installation - DÉSACTIVÉ
+        // Gérer le prompt d'installation
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            // Bouton d'installation désactivé
-            // this.showInstallButton();
+            this.showInstallButton();
         });
 
         // App installée
@@ -224,12 +223,31 @@ class PWAManager {
     }
 
     /**
-     * Afficher le bouton d'installation - DÉSACTIVÉ
+     * Afficher le bouton d'installation
      */
     showInstallButton() {
-        console.log('ℹ️ showInstallButton() désactivée');
-        // Fonctionnalité désactivée
-        return;
+        // Éviter les doublons
+        if (document.getElementById('pwa-install-button')) {
+            console.log('⚠️ Bouton déjà présent, pas de doublon');
+            return;
+        }
+        
+        console.log('🎯 Création du bouton d\'installation...');
+        
+        const installButton = document.createElement('button');
+        installButton.id = 'pwa-install-button';
+        installButton.className = 'fixed bottom-20 right-4 bg-primary-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-primary-700 transition-all z-50 flex items-center space-x-2';
+        installButton.innerHTML = `
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span class="font-medium">Installer l'app</span>
+        `;
+        installButton.addEventListener('click', () => this.installApp());
+
+        document.body.appendChild(installButton);
+        
+        console.log('✅ Bouton d\'installation ajouté au DOM');
     }
     
     /**
@@ -261,12 +279,21 @@ class PWAManager {
     }
 
     /**
-     * Installer l'application - DÉSACTIVÉ
+     * Installer l'application
      */
     async installApp() {
-        console.log('ℹ️ installApp() désactivée');
-        // Fonctionnalité désactivée
-        return;
+        if (!this.deferredPrompt) {
+            console.log('❌ Pas de prompt d\'installation disponible');
+            return;
+        }
+
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+
+        console.log('Choix utilisateur:', outcome);
+
+        this.deferredPrompt = null;
+        this.hideInstallButton();
     }
     
     /**
