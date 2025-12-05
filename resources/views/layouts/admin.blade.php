@@ -9,7 +9,7 @@
         $contextTitle = $isExpert ? 'Expert' : 'Administration';
     @endphp
     <title>@yield('title') - {{ $contextTitle }} {{ $appName ?? 'VintApp' }}</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset($appFavicon ?? '/favicon.png') }}">
     
     <!-- Lazy Loading CSS -->
     <link href="{{ asset('css/lazy-loading.css') }}" rel="stylesheet">

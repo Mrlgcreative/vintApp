@@ -27,7 +27,7 @@
     <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
 
     <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
-    <link rel="icon" type="image/x-icon" href="{{ asset($appFavicon ?? '/favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset($appFavicon ?? '/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-512x512.png') }}">
 
     <!-- Fonts -->
