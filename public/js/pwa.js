@@ -38,11 +38,12 @@ class PWAManager {
             }
         }
 
-        // Gérer le prompt d'installation
+        // Gérer le prompt d'installation - DÉSACTIVÉ
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            this.showInstallButton();
+            // Ne plus afficher le bouton automatiquement
+            // this.showInstallButton();
         });
 
         // App installée
@@ -58,14 +59,11 @@ class PWAManager {
             console.log('🎯 App lancée en mode standalone');
         }
         
-        console.log('⏰ Programmation affichage bouton dans 3 secondes...');
+        // BOUTON D'INSTALLATION DÉSACTIVÉ
+        // Le bouton ne s'affichera plus automatiquement
+        // Les utilisateurs peuvent installer via le menu du navigateur
         
-        // Afficher le bouton immédiatement même sans beforeinstallprompt
-        // (important pour les utilisateurs qui visitent pour la première fois)
-        setTimeout(() => {
-            console.log('⏰ 3 secondes écoulées, affichage du bouton...');
-            this.showInstallButtonImmediately();
-        }, 3000); // Attendre 3 secondes après le chargement de la page
+        console.log('ℹ️ Bouton d\'installation PWA désactivé');
     }
 
     /**
