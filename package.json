@@ -4,7 +4,9 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "build:hostinger": "bash build-assets.sh",
+        "deploy:hostinger": "bash deploy-hostinger.sh"
     },
     "devDependencies": {
         "@inertiajs/vue3": "^2.0.0",

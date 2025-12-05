@@ -11,4 +11,9 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        // Sur Hostinger, public/ est à la racine
+        outDir: process.env.VITE_BUILD_PATH || 'public/build',
+        emptyOutDir: true,
+    },
 });
