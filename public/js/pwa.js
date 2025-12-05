@@ -344,72 +344,44 @@ class PWAManager {
         modal.id = 'pwa-install-modal';
         modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4';
         modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 animate-slide-up">
-                <div class="flex items-center justify-center mb-4">
-                    <img src="/images/icons/icon-192x192.png" alt="VintApp Logo" class="w-24 h-24 rounded-2xl shadow-lg">
-                </div>
-                
-                <div class="flex items-start justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full p-4 max-h-[90vh] overflow-y-auto">
+                <div class="flex items-start justify-between mb-3">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">
                         📱 Installer VintApp
                     </h3>
                     <button onclick="document.getElementById('pwa-install-modal').remove()" 
                             class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
                 
-                <div class="space-y-4 text-gray-700 dark:text-gray-300">
-                    <p class="font-semibold">Pour installer VintApp sur votre appareil :</p>
-                    
-                    <div class="bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
-                        <p class="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-                            📱 Sur Android (Chrome)
-                        </p>
-                        <ol class="list-decimal list-inside space-y-1 text-sm">
-                            <li>Menu (⋮) en haut à droite</li>
-                            <li>Sélectionner "Installer l'application"</li>
-                            <li>Confirmer l'installation</li>
-                        </ol>
+                <div class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                    <div class="bg-blue-50 dark:bg-blue-900 p-3 rounded">
+                        <p class="font-semibold text-blue-900 dark:text-blue-100 mb-1">📱 Android</p>
+                        <p class="text-xs">Menu (⋮) → "Installer l'application"</p>
                     </div>
                     
-                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
-                        <p class="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                            🍎 Sur iOS (Safari)
-                        </p>
-                        <ol class="list-decimal list-inside space-y-1 text-sm">
-                            <li>Bouton Partage (carré avec flèche)</li>
-                            <li>"Ajouter à l'écran d'accueil"</li>
-                            <li>Confirmer</li>
-                        </ol>
+                    <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded">
+                        <p class="font-semibold text-gray-900 dark:text-gray-100 mb-1">🍎 iOS</p>
+                        <p class="text-xs">Partage → "Ajouter à l'écran d'accueil"</p>
                     </div>
                     
-                    <div class="bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
-                        <p class="font-semibold text-purple-900 dark:text-purple-100 mb-2">
-                            💻 Sur Desktop (Chrome/Edge)
-                        </p>
-                        <ol class="list-decimal list-inside space-y-1 text-sm">
-                            <li>Icône ⊕ dans la barre d'adresse</li>
-                            <li>ou Menu → "Installer VintApp"</li>
-                            <li>Confirmer l'installation</li>
-                        </ol>
+                    <div class="bg-purple-50 dark:bg-purple-900 p-3 rounded">
+                        <p class="font-semibold text-purple-900 dark:text-purple-100 mb-1">💻 Desktop</p>
+                        <p class="text-xs">Icône ⊕ dans la barre d'adresse</p>
                     </div>
-                    
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        ℹ️ L'application s'installera sur votre appareil et pourra être lancée même hors ligne.
-                    </p>
                 </div>
                 
-                <div class="mt-6 flex gap-2">
+                <div class="mt-4 flex gap-2">
                     <button onclick="document.getElementById('pwa-install-modal').remove(); pwaManager.dismissInstallButton();" 
-                            class="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">
+                            class="flex-1 px-3 py-2 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
                         Plus tard
                     </button>
                     <button onclick="document.getElementById('pwa-install-modal').remove()" 
-                            class="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
-                        J'ai compris
+                            class="flex-1 px-3 py-2 text-sm bg-primary-600 text-white rounded hover:bg-primary-700">
+                        OK
                     </button>
                 </div>
             </div>

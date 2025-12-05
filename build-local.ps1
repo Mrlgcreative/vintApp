@@ -22,4 +22,4 @@ Write-Host ""
 Write-Host "✅ Build terminé !" -ForegroundColor Green
 Write-Host ""
 Write-Host "📋 Fichiers générés:" -ForegroundColor Cyan
-Get-ChildItem -Path "public\build\assets\*.css" | Select-Object Name, @{Name="Size";Expression={"{0:N2} KB" -f ($_.Length / 1KB)}} | Format-Table -AutoSize
+Get-ChildItem -Path "public\build\assets\*.css" | Select-Object Name, @{Name = "Size"; Expression = { "{0:N2} KB" -f ($_.Length / 1KB) } } | Format-Table -AutoSize
