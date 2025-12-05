@@ -511,8 +511,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             ->name('pending_verification');
         Route::get('/{item}', [App\Http\Controllers\ItemController::class, 'adminShow'])
             ->name('show');
-        Route::post('/{item}/approve', [App\Http\Controllers\ItemController::class, 'approveItem'])
-            ->name('approve');
         Route::post('/{item}/reject', [App\Http\Controllers\ItemController::class, 'rejectItem'])
             ->name('reject');
     });
