@@ -3,26 +3,55 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Gate;
-use Laravel\Telescope\IncomingEntry;
-use Laravel\Telescope\Telescope;
-use Laravel\Telescope\TelescopeApplicationServiceProvider;
+use Illuminate\Support\ServiceProvider;
 
-class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
+class TelescopeServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
+        // Telescope n'est disponible qu'en environnement local
+        if (!$this->app->environment('local')) {
+            return;
+        }
+
+        // Vérifier si Telescope est installé
+        if (!class_exists(\Laravel\Telescope\Telescope::class)) {
+            return;
+        }
+
+        $this->registerTelescope();
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        if (!$this->app->environment('local')) {
+            return;
+        }
+
+        if (class_exists(\Laravel\Telescope\Telescope::class)) {
+            $this->gate();
+        }
+    }
+
+    /**
+     * Enregistrer Telescope (uniquement en local)
+     */
+    protected function registerTelescope(): void
+    {
+        $Telescope = \Laravel\Telescope\Telescope::class;
+        
         // Telescope::night();
 
         $this->hideSensitiveRequestDetails();
 
-        $isLocal = $this->app->environment('local');
-
-        Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
-            return $isLocal ||
-                   $entry->isReportableException() ||
+        $Telescope::filter(function ($entry) {
+            return $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
                    $entry->isFailedJob() ||
                    $entry->isScheduledTask() ||
@@ -35,13 +64,11 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
      */
     protected function hideSensitiveRequestDetails(): void
     {
-        if ($this->app->environment('local')) {
-            return;
-        }
+        $Telescope = \Laravel\Telescope\Telescope::class;
 
-        Telescope::hideRequestParameters(['_token']);
+        $Telescope::hideRequestParameters(['_token']);
 
-        Telescope::hideRequestHeaders([
+        $Telescope::hideRequestHeaders([
             'cookie',
             'x-csrf-token',
             'x-xsrf-token',
@@ -50,18 +77,10 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
     /**
      * Register the Telescope gate.
-     *
-     * This gate determines who can access Telescope in non-local environments.
      */
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            // Permettre l'accès en environnement local
-            if (app()->environment('local')) {
-                return true;
-            }
-            
-            // En production, vérifier si l'utilisateur est admin
             return $user && $user->admin_role == 1;
         });
     }
