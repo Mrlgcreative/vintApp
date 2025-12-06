@@ -176,8 +176,7 @@ Route::get('/newsletter/track/open/{token}', [NewsletterController::class, 'trac
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 
-// Route dashboard commentée - utiliser /home à la place
-// Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
 
 // Routes de test supprimées
 Route::get('/test-create', function() {
