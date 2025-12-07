@@ -86,12 +86,39 @@ class CheckGPSCityAccess
         }
 
         // Rediriger vers la page de validation GPS
+        // Log diagnostic pour aider à comprendre pourquoi un client (ex: iPhone)
+        // ne parvient pas à valider sa position. On enregistre l'IP, l'user-agent
+        // et si la requête attend du JSON. Ceci aidera l'analyse côté serveur.
+        $userAgent = $request->header('User-Agent', 'unknown');
+        $isIos = preg_match('/iPhone|iPad|iPod/i', $userAgent) === 1;
+
+        Log::info('🔒 GPS: validation requise', [
+            'ip' => $request->ip(),
+            'uri' => $request->getRequestUri(),
+            'user_agent' => $userAgent,
+            'is_ios' => $isIos,
+            'expects_json' => $request->expectsJson(),
+        ]);
+
+        $hint = null;
+        if ($isIos) {
+            $hint = 'iOS detected: verifyer les permissions de localisation pour Safari / l\'application PWA dans Réglages > Confidentialité > Service de localisation.';
+        }
+
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => "Veuillez autoriser la géolocalisation pour accéder à VintApp.",
                 'error' => 'location_required',
-                'redirect' => route('location.validate')
+                'redirect' => route('location.validate'),
+                'user_agent' => $userAgent,
+                'hint' => $hint,
             ], 403);
+        }
+
+        // En cas de redirection HTML, on ajoute un message flash pour aider
+        // l'utilisateur et on redirige vers la page de validation.
+        if ($hint) {
+            session()->flash('geo_hint', $hint);
         }
 
         return redirect()->route('location.validate');
