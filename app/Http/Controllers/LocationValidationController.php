@@ -24,7 +24,13 @@ class LocationValidationController extends Controller
             if ($exists) {
                 session(['gps_location_validated' => true, 'user_city' => $cityName, 'validated_at' => now()->toDateTimeString()]);
                 Log::info('🔓 GPS: validation acceptée via city', ['city' => $cityName, 'ip' => $request->ip()]);
-                return response()->json(['ok' => true, 'user_city' => $cityName]);
+                if ($request->expectsJson() || $request->is('api/*')) {
+                    return response()->json(['ok' => true, 'user_city' => $cityName]);
+                }
+
+                // Pour les requêtes web classiques, rediriger vers la page d'accueil
+                session()->flash('geo_success', 'Localisation enregistrée — bienvenue !');
+                return redirect()->intended('/');
             }
 
             return response()->json([
@@ -39,14 +45,36 @@ class LocationValidationController extends Controller
             $coords = sprintf('%s,%s', $data['lat'], $data['lng']);
             session(['gps_location_validated' => true, 'user_city' => null, 'validated_at' => now()->toDateTimeString(), 'gps_coords' => $coords]);
             Log::info('🔓 GPS: validation acceptée via coords', ['coords' => $coords, 'ip' => $request->ip()]);
-            return response()->json(['ok' => true, 'gps_coords' => $coords]);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json(['ok' => true, 'gps_coords' => $coords]);
+            }
+
+            session()->flash('geo_success', 'Localisation enregistrée — bienvenue !');
+            return redirect()->intended('/');
         }
 
         // Rien reçu : renvoyer la liste des villes autorisées pour aider le client
-        return response()->json([
-            'ok' => false,
-            'message' => 'Aucune donnée de localisation fournie',
-            'allowed' => AllowedCity::active()->pluck('name')
-        ], 422);
+        $allowed = AllowedCity::active()->pluck('name');
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Aucune donnée de localisation fournie',
+                'allowed' => $allowed
+            ], 422);
+        }
+
+        // Pour les requêtes web, rediriger vers la page de validation avec la liste
+        return redirect()->route('location.validate')->with('allowed_cities', $allowed)->withErrors(['location' => 'Aucune donnée de localisation fournie']);
+    }
+
+    /**
+     * Affiche la page de validation de localisation (web)
+     */
+    public function showValidatePage(Request $request)
+    {
+        $allowed = session('allowed_cities') ?? AllowedCity::active()->pluck('name');
+        $hint = session('geo_hint');
+        $success = session('geo_success');
+        return view('location.validate', compact('allowed', 'hint', 'success'));
     }
 }

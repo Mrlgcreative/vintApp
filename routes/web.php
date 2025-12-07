@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\LocationValidationController;
 use App\Http\Controllers\ThemeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\LocalDeliveryController;
@@ -67,6 +68,10 @@ Route::get('/splash', function() {
 
 // Page d'accueil avec WelcomeController
 Route::get('/home', [WelcomeController::class, 'index'])->name('home');
+
+// Page de validation de localisation (utilisée par le middleware CheckGPSCityAccess)
+Route::get('/location/validate', [LocationValidationController::class, 'showValidatePage'])->name('location.validate');
+Route::post('/location/validate', [LocationValidationController::class, 'validateLocation']);
 
 // Page offline pour PWA
 Route::get('/offline', function() {
