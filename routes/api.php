@@ -41,6 +41,11 @@ use App\Http\Controllers\Admin\MonitoringController;
 |
 */
 
+use App\Http\Controllers\LocationValidationController;
+
+// Endpoint léger pour valider la position depuis le client (fallback manuel)
+Route::post('/validate-location', [LocationValidationController::class, 'validateLocation']);
+
 // Routes publiques
 Route::middleware(['cache.response:60', 'compress.response'])->group(function () {
     Route::get('/health', function () {
