@@ -270,6 +270,7 @@
                     <div class="space-y-3">
                         <form action="{{ route('admin.items.approve', $item) }}" method="POST">
                             @csrf
+                            @method('PATCH')
                             <button type="submit" 
                                     class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium flex items-center justify-center">
                                 <i class="fas fa-check mr-2"></i>

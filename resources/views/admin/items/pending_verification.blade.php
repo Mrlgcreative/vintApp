@@ -216,6 +216,7 @@
                                 
                                 <form action="{{ route('admin.items.approve', $item) }}" method="POST" class="inline approve-form">
                                     @csrf
+                                    @method('PATCH')
                                     <button type="submit" 
                                             class="approve-btn px-5 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                         <span class="btn-text">✓ Approuver</span>
