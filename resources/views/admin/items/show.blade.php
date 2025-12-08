@@ -120,7 +120,7 @@
                                     @foreach($details['images']['issues'] as $issue)
                                         <li class="flex items-start text-sm text-gray-700 dark:text-gray-300">
                                             <span class="text-red-500 mr-2">⚠️</span>
-                                            <span>{{ $issue }}</span>
+                                            <span>{{ is_array($issue) ? json_encode($issue) : (string)$issue }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -144,7 +144,7 @@
                                     @foreach($details['text']['issues'] as $issue)
                                         <li class="flex items-start text-sm text-gray-700 dark:text-gray-300">
                                             <span class="text-red-500 mr-2">⚠️</span>
-                                            <span>{{ $issue }}</span>
+                                            <span>{{ is_array($issue) ? json_encode($issue) : (string)$issue }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
@@ -168,7 +168,7 @@
                                     @foreach($details['coherence']['issues'] as $issue)
                                         <li class="flex items-start text-sm text-gray-700 dark:text-gray-300">
                                             <span class="text-red-500 mr-2">⚠️</span>
-                                            <span>{{ $issue }}</span>
+                                            <span>{{ is_array($issue) ? json_encode($issue) : (string)$issue }}</span>
                                         </li>
                                     @endforeach
                                 </ul>
