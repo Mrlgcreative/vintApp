@@ -163,6 +163,22 @@
                             <span>Rejetées</span>
                         </a>
 
+                        <a href="{{ route('expert.items.pending') }}" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.items.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                            <i class="fas fa-list-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
+                            <span class="flex-1">Articles à vérifier</span>
+                            @php
+                                $pendingItemsCount = \App\Models\Item::where('verification_status', 'pending')
+                                    ->whereNull('verified_at')
+                                    ->count();
+                            @endphp
+                            @if($pendingItemsCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-purple-500 rounded-full animate-pulse">
+                                    {{ $pendingItemsCount }}
+                                </span>
+                            @endif
+                        </a>
+
                         <!-- Séparateur -->
                         <div class="my-4 h-px bg-white dark:bg-gray-800/10"></div>
 
