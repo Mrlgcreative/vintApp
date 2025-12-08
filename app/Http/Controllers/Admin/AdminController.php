@@ -2036,27 +2036,35 @@ class AdminController extends Controller
     /**
      * Approuver un article
      */
-    public function itemApprove(Item $item)
+    public function itemApprove(Request $request, Item $item)
     {
         $item->update(['status' => 'active']);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Article approuvÃ© avec succÃ¨s.'
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article approuvé avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article approuvé avec succès.');
     }
 
     /**
      * Rejeter un article
      */
-    public function itemReject(Item $item)
+    public function itemReject(Request $request, Item $item)
     {
         $item->update(['status' => 'inactive']);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Article rejetÃ© avec succÃ¨s.'
-        ]);
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article rejeté avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article rejeté avec succès.');
     }
 
     /**
