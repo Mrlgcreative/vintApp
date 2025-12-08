@@ -346,6 +346,8 @@ class ExpertController extends Controller
         try {
             \Illuminate\Support\Facades\DB::beginTransaction();
 
+            $notificationService = new \App\Services\ExpertNotificationService();
+
             if ($validated['decision'] === 'approved') {
                 $item->update([
                     'verification_status' => 'approved',
@@ -357,6 +359,10 @@ class ExpertController extends Controller
                     'item_id' => $item->id,
                     'expert_id' => $expert->id
                 ]);
+
+                // Notifier le vendeur
+                $notificationService->notifyItemApproved($item, $item->user);
+
             } else {
                 $item->update([
                     'verification_status' => 'rejected',
@@ -370,6 +376,9 @@ class ExpertController extends Controller
                     'expert_id' => $expert->id,
                     'reason' => $validated['rejection_reason'] ?? null
                 ]);
+
+                // Notifier le vendeur du rejet
+                $notificationService->notifyItemRejected($item, $item->user, $validated['rejection_reason'] ?? null);
             }
 
             \Illuminate\Support\Facades\DB::commit();
@@ -406,4 +415,88 @@ class ExpertController extends Controller
 
         return round($totalMinutes / $completedChecks->count(), 1);
     }
+
+    /**
+     * Obtenir les notifications non lues de l'expert
+     */
+    public function getNotifications(Request $request)
+    {
+        $expert = Auth::user();
+        $unreadCount = \App\Models\ExpertNotification::where('user_id', $expert->id)
+            ->unread()
+            ->count();
+
+        $notifications = \App\Models\ExpertNotification::where('user_id', $expert->id)
+            ->recent()
+            ->limit(20)
+            ->get()
+            ->map(function ($notification) {
+                return [
+                    'id' => $notification->id,
+                    'type' => $notification->type,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'icon' => $notification->icon ?? 'fa-bell',
+                    'action_url' => $notification->action_url,
+                    'read' => $notification->read,
+                    'read_at' => $notification->read_at,
+                    'created_at' => $notification->created_at->diffForHumans(),
+                    'timestamp' => $notification->created_at->toIso8601String()
+                ];
+            });
+
+        return response()->json([
+            'unread_count' => $unreadCount,
+            'notifications' => $notifications
+        ]);
+    }
+
+    /**
+     * Marquer une notification comme lue
+     */
+    public function markNotificationAsRead(Request $request, $notificationId)
+    {
+        $notification = \App\Models\ExpertNotification::findOrFail($notificationId);
+        
+        // Vérifier que c'est la notification de l'expert
+        if ($notification->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Marquer toutes les notifications comme lues
+     */
+    public function markAllNotificationsAsRead(Request $request)
+    {
+        \App\Models\ExpertNotification::where('user_id', Auth::id())
+            ->unread()
+            ->update(['read' => true, 'read_at' => now()]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Enregistrer le token FCM pour les notifications push
+     */
+    public function registerFCMToken(Request $request)
+    {
+        $validated = $request->validate([
+            'fcm_token' => 'required|string'
+        ]);
+
+        $user = Auth::user();
+        $user->update(['fcm_token' => $validated['fcm_token']]);
+
+        \Illuminate\Support\Facades\Log::info('Expert FCM token registered', [
+            'user_id' => $user->id
+        ]);
+
+        return response()->json(['success' => true]);
+    }
 }
+

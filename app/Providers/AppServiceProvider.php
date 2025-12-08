@@ -34,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('apple', \SocialiteProviders\Apple\Provider::class);
         });
 
+        // Enregistrer les Observers
+        \App\Models\Item::observe(\App\Observers\ItemObserver::class);
+
         // Injecter la palette de couleurs active
         view()->composer('*', function ($view) {
             // Récupérer le service de palette

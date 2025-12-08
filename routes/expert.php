@@ -30,6 +30,12 @@ Route::middleware(['auth', 'expert'])->prefix('expert')->name('expert.')->group(
     Route::get('/items/{item}/verify', [ExpertController::class, 'showItemForVerification'])->name('items.show-for-verification');
     Route::post('/items/{item}/verify', [ExpertController::class, 'submitItemVerification'])->name('items.submit-verification');
     
+    // Notifications
+    Route::get('/notifications', [ExpertController::class, 'getNotifications'])->name('notifications');
+    Route::patch('/notifications/{notification}/read', [ExpertController::class, 'markNotificationAsRead'])->name('notifications.read');
+    Route::patch('/notifications/read-all', [ExpertController::class, 'markAllNotificationsAsRead'])->name('notifications.read-all');
+    Route::post('/fcm-token', [ExpertController::class, 'registerFCMToken'])->name('fcm-token.register');
+    
     // Profil et paramètres
     Route::get('/profile', [ExpertController::class, 'profile'])->name('profile');
     Route::put('/profile', [ExpertController::class, 'updateProfile'])->name('profile.update');
