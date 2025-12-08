@@ -522,7 +522,7 @@ document.addEventListener('DOMContentLoaded', function() {
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 field.classList.add('border-red-500', 'ring-4', 'ring-red-500/20');
-                field.classList.remove('border-gray-200 dark:border-gray-700');
+                field.classList.remove('border-gray-200', 'dark:border-gray-700');
                 isValid = false;
             } else {
                 field.classList.remove('border-red-500', 'ring-4', 'ring-red-500/20');

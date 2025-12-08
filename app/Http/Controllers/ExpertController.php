@@ -272,6 +272,121 @@ class ExpertController extends Controller
     }
 
     /**
+     * Liste des articles en attente de vérification (pas encore assignés à un expert)
+     */
+    public function pendingItems(Request $request)
+    {
+        $expert = Auth::user();
+        $expertProfile = $expert->expertProfile;
+        
+        // Récupérer les articles en attente qui correspondent aux spécialités de l'expert
+        $query = \App\Models\Item::where('status', 'pending')
+            ->whereNull('verified_at')
+            ->with(['user', 'category', 'brand', 'orders', 'reviews']);
+
+        // Filtrer par catégories d'expertise si l'expert a des spécialités
+        if ($expertProfile && !empty($expertProfile->specialties)) {
+            $query->whereHas('category', function($q) use ($expertProfile) {
+                $q->whereIn('name', $expertProfile->specialties);
+            });
+        }
+
+        // Filtres
+        if ($request->filled('category')) {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('id', $request->category);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', $search)
+                  ->orWhere('description', 'like', $search);
+            });
+        }
+
+        $items = $query->orderBy('created_at', 'desc')->paginate(20);
+        
+        // Récupérer les catégories pour le filtre
+        $categories = \App\Models\Category::orderBy('name')->get();
+
+        return view('expert.items.pending', compact('items', 'expertProfile', 'categories'));
+    }
+
+    /**
+     * Afficher les détails d'un article pour vérification
+     */
+    public function showItemForVerification(\App\Models\Item $item)
+    {
+        $expert = Auth::user();
+        $expertProfile = $expert->expertProfile;
+
+        // Vérifier que l'article est en attente et dans les spécialités de l'expert
+        if ($item->status !== 'pending' || $item->verified_at) {
+            return redirect()->route('expert.pending-items')
+                ->with('error', 'Cet article n\'est pas en attente de vérification.');
+        }
+
+        return view('expert.items.show-for-verification', compact('item', 'expertProfile'));
+    }
+
+    /**
+     * Soumettre une vérification pour un article
+     */
+    public function submitItemVerification(Request $request, \App\Models\Item $item)
+    {
+        $expert = Auth::user();
+
+        $validated = $request->validate([
+            'decision' => 'required|in:approved,rejected',
+            'rejection_reason' => 'nullable|required_if:decision,rejected|string|max:500'
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            if ($validated['decision'] === 'approved') {
+                $item->update([
+                    'verification_status' => 'approved',
+                    'verified_at' => now(),
+                    'verified_by' => $expert->id
+                ]);
+
+                \Illuminate\Support\Facades\Log::info("Article approuvé par expert", [
+                    'item_id' => $item->id,
+                    'expert_id' => $expert->id
+                ]);
+            } else {
+                $item->update([
+                    'verification_status' => 'rejected',
+                    'verified_at' => now(),
+                    'verified_by' => $expert->id,
+                    'rejection_reason' => $validated['rejection_reason'] ?? null
+                ]);
+
+                \Illuminate\Support\Facades\Log::info("Article rejeté par expert", [
+                    'item_id' => $item->id,
+                    'expert_id' => $expert->id,
+                    'reason' => $validated['rejection_reason'] ?? null
+                ]);
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()->route('expert.items.pending')
+                ->with('success', 'Vérification soumise avec succès.');
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+            \Illuminate\Support\Facades\Log::error("Erreur lors de la vérification", [
+                'error' => $e->getMessage()
+            ]);
+
+            return redirect()->back()->with('error', 'Une erreur est survenue.');
+        }
+    }
+
+    /**
      * Calculer le temps moyen d'examen
      */
     private function calculateAverageReviewTime(int $expertId): float

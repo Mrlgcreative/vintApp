@@ -1002,7 +1002,7 @@ function filterTransactions(type) {
     // Set active button
     const activeButton = document.getElementById('filter' + type.charAt(0).toUpperCase() + type.slice(1));
     if (activeButton) {
-        activeButton.classList.remove('bg-gray-50 dark:bg-gray-900', 'text-gray-700 dark:text-gray-200');
+        activeButton.classList.remove('bg-gray-50', 'dark:bg-gray-900', 'text-gray-700', 'dark:text-gray-200');
         activeButton.classList.add('bg-gray-800', 'text-white');
     }
     

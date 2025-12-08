@@ -25,6 +25,11 @@ Route::middleware(['auth', 'expert'])->prefix('expert')->name('expert.')->group(
     Route::post('/verifications/{check}/start', [ExpertController::class, 'startReview'])->name('verifications.start');
     Route::post('/verifications/{check}/finalize', [ExpertController::class, 'finalize'])->name('verifications.finalize');
     
+    // Vérification des articles en attente
+    Route::get('/items/pending', [ExpertController::class, 'pendingItems'])->name('items.pending');
+    Route::get('/items/{item}/verify', [ExpertController::class, 'showItemForVerification'])->name('items.show-for-verification');
+    Route::post('/items/{item}/verify', [ExpertController::class, 'submitItemVerification'])->name('items.submit-verification');
+    
     // Profil et paramètres
     Route::get('/profile', [ExpertController::class, 'profile'])->name('profile');
     Route::put('/profile', [ExpertController::class, 'updateProfile'])->name('profile.update');
