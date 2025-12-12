@@ -23,9 +23,9 @@ class SplashScreenManager {
         const splash = document.createElement('div');
         splash.id = 'vintapp-splash';
         splash.innerHTML = `
-            <img id="vintapp-splash-logo" src="/images/icons/icon-512x512.png" alt="VintApp Logo">
+            <img id="vintapp-splash-logo" src="/images/logo.svg" alt="VintApp Logo">
             <div id="vintapp-splash-text">VintApp</div>
-            <div id="vintapp-splash-tagline">Marketplace de Confiance</div>
+            <div id="vintapp-splash-tagline">Vends, achete en confiance</div>
             <div id="vintapp-splash-loader"></div>
         `;
         
