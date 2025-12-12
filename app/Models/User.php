@@ -40,6 +40,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'provider_data',
         'verification_code',
         'verification_code_expires_at',
+        'email_verified_at',
         'wallet_balance',
         'google2fa_secret',
         'google2fa_enabled',
