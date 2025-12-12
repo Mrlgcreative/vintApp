@@ -211,8 +211,16 @@ class ExpertNotificationService
             ->get()
             ->filter(function ($expert) use ($item) {
                 // Vérifier si l'expert a la catégorie parmi ses spécialités
+                // Les specialties sont stockées comme des slugs (ex: 'mode_luxe', 'electronique')
                 $specialties = $expert->specialties ?? [];
-                return in_array($item->category?->name, $specialties);
+                $categorySlug = $item->category?->slug;
+                
+                // Si l'expert n'a pas de spécialités, il accepte tous les articles (généraliste)
+                if (empty($specialties)) {
+                    return true;
+                }
+                
+                return in_array($categorySlug, $specialties);
             });
     }
 
