@@ -324,7 +324,7 @@ class ExpertController extends Controller
         $expertProfile = $expert->expertProfile;
 
         // Vérifier que l'article est en attente et dans les spécialités de l'expert
-        if ($item->status !== 'pending' || $item->verified_at) {
+        if ($item->status !== 'pending_verification' || $item->verification_status !== 'pending' || $item->verified_at) {
             return redirect()->route('expert.pending-items')
                 ->with('error', 'Cet article n\'est pas en attente de vérification.');
         }
