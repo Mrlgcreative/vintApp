@@ -19,8 +19,13 @@ class ItemObserver
      */
     public function updated(Item $item)
     {
-        // Vérifier si le statut vient de passer à 'pending'
+        // Vérifier si le statut vient de passer à 'pending' ou 'pending_verification'
         if ($item->wasChanged('verification_status') && $item->verification_status === 'pending') {
+            $this->notificationService->notifyExpertsForItem($item);
+        }
+        
+        // Aussi vérifier si le statut est pending_verification et verification_status est pending
+        if ($item->wasChanged('status') && $item->status === 'pending_verification' && $item->verification_status === 'pending') {
             $this->notificationService->notifyExpertsForItem($item);
         }
     }
@@ -30,7 +35,8 @@ class ItemObserver
      */
     public function created(Item $item)
     {
-        if ($item->verification_status === 'pending') {
+        // Déclencher la notification si l'article est créé avec le statut pending_verification et verification_status pending
+        if ($item->status === 'pending_verification' && $item->verification_status === 'pending') {
             $this->notificationService->notifyExpertsForItem($item);
         }
     }

@@ -247,8 +247,11 @@ class ItemController extends Controller
                 $item->verification_details = $verification['details'];
                 $item->verified_at = now();
                 
-                // Tous les articles restent en attente de vérification manuelle par l'admin
-                // même si l'IA les approuve automatiquement
+                // Tous les articles restent en attente de vérification manuelle par l'admin ET expert
+                // Mettre le verification_status à 'pending' pour que les experts puissent vérifier
+                if ($item->verification_status !== 'rejected') {
+                    $item->verification_status = 'pending';
+                }
                 $item->status = 'pending_verification';
             } catch (\Exception $e) {
                 // Si la vérification échoue, on met en attente de vérification manuelle

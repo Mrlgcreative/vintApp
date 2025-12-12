@@ -280,7 +280,8 @@ class ExpertController extends Controller
         $expertProfile = $expert->expertProfile;
         
         // Récupérer les articles en attente qui correspondent aux spécialités de l'expert
-        $query = \App\Models\Item::where('status', 'pending')
+        $query = \App\Models\Item::where('status', 'pending_verification')
+            ->where('verification_status', 'pending')
             ->whereNull('verified_at')
             ->with(['user', 'category', 'brand', 'orders', 'reviews']);
 
@@ -490,7 +491,8 @@ class ExpertController extends Controller
         ]);
 
         $user = Auth::user();
-        $user->update(['fcm_token' => $validated['fcm_token']]);
+        $user->fcm_token = $validated['fcm_token'];
+        $user->save();
 
         \Illuminate\Support\Facades\Log::info('Expert FCM token registered', [
             'user_id' => $user->id
