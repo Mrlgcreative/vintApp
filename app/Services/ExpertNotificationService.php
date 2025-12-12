@@ -15,12 +15,35 @@ class ExpertNotificationService
 
     public function __construct()
     {
+        $this->firebase = null;
+
         try {
+            $serviceAccount = config('firebase.service_account');
+            
+            // Vérifier si Firebase est configuré
+            if (empty($serviceAccount)) {
+                Log::warning('Firebase service account not configured');
+                return;
+            }
+
+            // Si c'est un chemin de fichier JSON, le charger
+            if (is_string($serviceAccount) && file_exists($serviceAccount)) {
+                $serviceAccount = json_decode(file_get_contents($serviceAccount), true);
+            }
+
+            if (!is_array($serviceAccount)) {
+                Log::warning('Firebase service account must be array or file path');
+                return;
+            }
+
             $this->firebase = (new Factory)
-                ->withServiceAccount(config('firebase.service_account'))
+                ->withServiceAccount($serviceAccount)
                 ->create();
+                
         } catch (\Exception $e) {
-            Log::warning('Firebase not configured for expert notifications');
+            Log::warning('Firebase initialization failed', [
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
