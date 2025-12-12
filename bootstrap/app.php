@@ -36,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions utilisateurs
             \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Gérer les codes de parrainage
             \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Vérification 2FA globale
+            \App\Http\Middleware\EnsureEmailIsVerified::class, // 📧 Forcer la vérification d'email
             \App\Http\Middleware\CaptureRequests::class, // 🔍 Middleware temporaire pour debug 404
         ]);
 

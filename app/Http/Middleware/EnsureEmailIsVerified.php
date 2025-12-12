@@ -21,20 +21,61 @@ class EnsureEmailIsVerified
     {
         $user = Auth::user();
 
-        Log::info('Middleware EnsureEmailIsVerified appelé', [
-            'user_id' => $user ? $user->id : null,
-            'email_verified_at' => $user ? $user->email_verified_at : null,
-            'route' => $request->route() ? $request->route()->getName() : null
-        ]);
-
         // Si l'utilisateur est connecté et son email n'est pas vérifié
         if ($user && is_null($user->email_verified_at)) {
-            // Ne pas rediriger si on est déjà sur les routes de vérification
-            if (!$request->routeIs('verification.*') && !$request->routeIs('logout')) {
-                Log::info('Redirection vers verification.code car email non vérifié');
-                return redirect()->route('verification.code')
-                    ->with('warning', 'Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
+            // Routes qui ne nécessitent PAS la vérification d'email
+            $allowedRoutes = [
+                // Routes de vérification d'email
+                'verification.code',
+                'verification.code.verify',
+                'verification.code.resend',
+                // Routes d'authentification
+                'logout',
+                'login',
+                'register',
+                // Routes publiques
+                'home',
+                'splash',
+                'offline',
+                'location.validate',
+                'api.fcm-token',
+                // Routes de débogage
+                'debug.check-admin',
+                'debug.test-verification-access',
+                'test.lazy-loading',
+                'test.navigation-skeleton',
+                'test.push',
+                'pwa.debug',
+                'test.background.sync',
+            ];
+
+            $currentRoute = $request->route() ? $request->route()->getName() : null;
+
+            // Autoriser les routes listées ci-dessus
+            if ($currentRoute && in_array($currentRoute, $allowedRoutes)) {
+                return $next($request);
             }
+
+            // Autoriser les routes qui commencent par certains préfixes
+            if ($currentRoute && (
+                str_starts_with($currentRoute, 'verification.') ||
+                str_starts_with($currentRoute, 'auth.') ||
+                str_starts_with($currentRoute, 'password.') ||
+                str_starts_with($currentRoute, 'api.')
+            )) {
+                return $next($request);
+            }
+
+            // Bloquer toutes les autres routes et rediriger vers la vérification d'email
+            Log::info('Utilisateur bloqué - email non vérifié', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'route' => $currentRoute,
+                'path' => $request->path()
+            ]);
+
+            return redirect()->route('verification.code')
+                ->with('warning', 'Veuillez vérifier votre email avant d\'accéder à cette fonctionnalité.');
         }
 
         return $next($request);
