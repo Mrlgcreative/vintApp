@@ -72,35 +72,36 @@ class EmailVerificationController extends Controller
             'email_verified_at_before' => $user->email_verified_at
         ]);
 
-        if ($user->markEmailAsVerifiedWithCode()) {
-            Log::info('Après markEmailAsVerifiedWithCode', [
-                'user_id' => $user->id,
-                'email_verified_at_after' => $user->email_verified_at
-            ]);
+        $user->markEmailAsVerifiedWithCode();
+        
+        // Rafraîchir l'instance de l'utilisateur depuis la base de données
+        $user->refresh();
+        
+        Log::info('Après markEmailAsVerifiedWithCode', [
+            'user_id' => $user->id,
+            'email_verified_at_after' => $user->email_verified_at
+        ]);
 
-            // Récupérer l'utilisateur mis à jour depuis la base de données
-            $freshUser = User::find($user->id);
+        // Récupérer l'utilisateur mis à jour depuis la base de données
+        $freshUser = User::find($user->id);
+        
+        Log::info('Utilisateur récupéré de la DB', [
+            'user_id' => $freshUser->id,
+            'email_verified_at_fresh' => $freshUser->email_verified_at
+        ]);
+        
+        // Forcer la mise à jour de l'utilisateur en session
+        Auth::logout();
+        Auth::login($freshUser, true);
+        
+        Log::info('Email vérifié avec succès pour l\'utilisateur: ' . $freshUser->email, [
+            'user_id' => $freshUser->id,
+            'email_verified_at' => $freshUser->email_verified_at
+        ]);
+        
+        event(new Verified($freshUser));
             
-            Log::info('Utilisateur récupéré de la DB', [
-                'user_id' => $freshUser->id,
-                'email_verified_at_fresh' => $freshUser->email_verified_at
-            ]);
-            
-            // Forcer la mise à jour de l'utilisateur en session
-            Auth::logout();
-            Auth::login($freshUser, true);
-            
-            Log::info('Email vérifié avec succès pour l\'utilisateur: ' . $freshUser->email, [
-                'user_id' => $freshUser->id,
-                'email_verified_at' => $freshUser->email_verified_at
-            ]);
-            
-            event(new Verified($freshUser));
-            
-            return redirect()->route('dashboard')->with('success', 'Email vérifié avec succès ! Bienvenue sur VintApp.');
-        }
-
-        return back()->with('error', 'Erreur lors de la vérification. Veuillez réessayer.');
+        return redirect()->route('dashboard')->with('success', 'Email vérifié avec succès ! Bienvenue sur VintApp.');
     }
 
     /**
