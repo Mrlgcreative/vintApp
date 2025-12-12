@@ -71,7 +71,8 @@ class FirebaseAuthController extends Controller
             $email = $verifiedIdToken->claims()->get('email');
             $name = $verifiedIdToken->claims()->get('name') ?? $request->input('name') ?? 'Utilisateur';
             $avatar = $verifiedIdToken->claims()->get('picture') ?? $request->input('photo_url');
-            $emailVerified = $verifiedIdToken->claims()->get('email_verified', false);
+            // IMPORTANT: Ne pas utiliser email_verified de Firebase, on force notre système de code
+            // $emailVerified = $verifiedIdToken->claims()->get('email_verified', false);
 
             if (!$email) {
                 return response()->json([
@@ -93,20 +94,23 @@ class FirebaseAuthController extends Controller
 
             if ($user) {
                 // Mettre à jour les informations Firebase si nécessaire
+                // IMPORTANT: Ne pas mettre à jour email_verified_at depuis Firebase
+                // Laisser la vérification d'email à notre système de code
                 $user->update([
                     'firebase_uid' => $firebaseUid,
                     'name' => $name,
                     'avatar' => $avatar,
-                    'email_verified_at' => $emailVerified ? now() : $user->email_verified_at,
+                    // email_verified_at n'est pas modifié ici
                 ]);
             } else {
                 // Créer un nouvel utilisateur
+                // IMPORTANT: email_verified_at reste NULL - l'utilisateur doit vérifier via notre code
                 $user = User::create([
                     'name' => $name,
                     'email' => $email,
                     'firebase_uid' => $firebaseUid,
                     'avatar' => $avatar,
-                    'email_verified_at' => $emailVerified ? now() : null,
+                    'email_verified_at' => null, // FORCER NULL - Vérification via code requis
                     'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
                 ]);
             }
@@ -119,7 +123,7 @@ class FirebaseAuthController extends Controller
             // Connecter l'utilisateur
             Auth::login($user, true);
 
-            // Vérifier si l'email doit être vérifié
+            // Vérifier si l'email doit être vérifié (TOUJOURS pour Firebase!)
             if (!$user->email_verified_at) {
                 // Générer et envoyer un code de vérification
                 $this->sendVerificationCode($user);
