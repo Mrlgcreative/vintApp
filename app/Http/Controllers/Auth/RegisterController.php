@@ -77,8 +77,8 @@ class RegisterController extends Controller
         // Connecter automatiquement l'utilisateur
         Auth::login($user);
 
-        // Rediriger vers la page de notification de vérification d'email
-        return redirect()->route('verification.notice')
-            ->with('success', 'Compte créé avec succès ! Veuillez vérifier votre email pour activer votre compte.');
+        // Rediriger vers la page de vérification par code (nouveau système)
+        return redirect()->route('verification.code')
+            ->with('success', 'Compte créé avec succès ! Veuillez vérifier votre email et saisir le code reçu pour activer votre compte.');
     }
 }
