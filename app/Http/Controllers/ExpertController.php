@@ -287,10 +287,13 @@ class ExpertController extends Controller
 
         // Filtrer par catégories d'expertise si l'expert a des spécialités
         if ($expertProfile && !empty($expertProfile->specialties)) {
+            // Les specialties sont stockées comme des slugs, on cherche par slug de catégorie
             $query->whereHas('category', function($q) use ($expertProfile) {
-                $q->whereIn('name', $expertProfile->specialties);
+                $q->whereIn('slug', $expertProfile->specialties);
             });
         }
+        // Si l'expert n'a pas de spécialités, il voit tous les articles en attente
+        // (c'est un admin/expert généraliste)
 
         // Filtres
         if ($request->filled('category')) {

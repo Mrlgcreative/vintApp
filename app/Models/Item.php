@@ -311,6 +311,37 @@ class Item extends Model
         return $type ? $type->canApplyToItem($this->id) : false;
     }
 
+    /**
+     * Obtenir les URLs complètes des images
+     */
+    public function getImageUrls(): array
+    {
+        if (!$this->images || !is_array($this->images)) {
+            return [];
+        }
+
+        return array_map(function ($imagePath) {
+            if (config('app.env') === 'local') {
+                return asset('storage/' . $imagePath);
+            }
+
+            if (file_exists(public_path('storage'))) {
+                return asset('storage/' . $imagePath);
+            }
+
+            return asset('storage/app/public/' . $imagePath);
+        }, $this->images);
+    }
+
+    /**
+     * Obtenir la première image formatée en URL
+     */
+    public function getFirstImageUrl(): ?string
+    {
+        $urls = $this->getImageUrls();
+        return !empty($urls) ? $urls[0] : null;
+    }
+
     // Scope pour les items boostés
     public function scopeBoosted($query)
     {

@@ -109,8 +109,8 @@
                 <div class="flex gap-6">
                     <!-- Image -->
                     <div class="flex-shrink-0">
-                        @if(!empty($item->images) && isset($item->images[0]))
-                            <img src="{{ asset('storage/' . $item->images[0]) }}" 
+                        @if($item->getFirstImageUrl())
+                            <img src="{{ $item->getFirstImageUrl() }}" 
                                  class="w-24 h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
                                  alt="{{ $item->name }}">
                         @else

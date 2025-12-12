@@ -45,13 +45,16 @@
 
                 <div class="p-6">
                     @if(!empty($item->images))
+                        @php
+                            $imageUrls = $item->getImageUrls();
+                        @endphp
                         <div class="space-y-4">
-                            @foreach($item->images as $index => $image)
+                            @foreach($imageUrls as $index => $imageUrl)
                                 <div class="relative group cursor-pointer rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
-                                    <img src="{{ asset('storage/' . $image) }}" 
+                                    <img src="{{ $imageUrl }}" 
                                          class="w-full h-96 object-cover group-hover:brightness-110 transition"
                                          alt="Image {{ $index + 1 }}"
-                                         onclick="openImageModal('{{ asset('storage/' . $image) }}')">
+                                         onclick="openImageModal('{{ $imageUrl }}')">
                                     <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition flex items-center justify-center">
                                         <i class="fas fa-search-plus text-white text-3xl opacity-0 group-hover:opacity-100 transition"></i>
                                     </div>
