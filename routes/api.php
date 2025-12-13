@@ -83,15 +83,98 @@ Route::prefix('payment-callbacks')->group(function () {
         ->name('payment.status');
 });
 
-// Routes d'authentification (si vous utilisez Sanctum)
+// Routes d'authentification API (Sanctum)
 Route::post('/register', function (Request $request) {
-    // Logique d'inscription
-    return response()->json(['message' => 'Register endpoint']);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    $user = \App\Models\User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => bcrypt($request->password),
+    ]);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Inscription réussie',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+        ],
+        'token' => $token,
+        'token_type' => 'Bearer',
+    ], 201);
 });
 
 Route::post('/login', function (Request $request) {
-    // Logique de connexion
-    return response()->json(['message' => 'Login endpoint']);
+    $request->validate([
+        'email' => 'required|string|email',
+        'password' => 'required|string',
+    ]);
+
+    $user = \App\Models\User::where('email', $request->email)->first();
+
+    if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Les informations de connexion fournies sont incorrectes.',
+        ], 401);
+    }
+
+    // Supprimer les anciens tokens si souhaité (optionnel)
+    // $user->tokens()->delete();
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    Log::info('API Login réussi', ['user_id' => $user->id, 'email' => $user->email]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Connexion réussie',
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+            'email_verified_at' => $user->email_verified_at,
+            'role' => $user->role ?? 'user',
+        ],
+        'token' => $token,
+        'token_type' => 'Bearer',
+    ]);
+});
+
+// Route pour déconnexion API
+Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
+    $request->user()->currentAccessToken()->delete();
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Déconnexion réussie'
+    ]);
+});
+
+// Route pour récupérer l'utilisateur authentifié
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    $user = $request->user();
+    return response()->json([
+        'success' => true,
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'avatar' => $user->avatar,
+            'email_verified_at' => $user->email_verified_at,
+            'role' => $user->role ?? 'user',
+        ]
+    ]);
 });
 
 // Routes protégées par authentification
