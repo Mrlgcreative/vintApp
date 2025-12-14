@@ -342,15 +342,7 @@ class Item extends Model
         }
 
         return array_map(function ($imagePath) {
-            if (config('app.env') === 'local') {
-                return asset('storage/' . $imagePath);
-            }
-
-            if (file_exists(public_path('storage'))) {
-                return asset('storage/' . $imagePath);
-            }
-
-            return asset('storage/app/public/' . $imagePath);
+            return asset('storage/' . $imagePath);
         }, $this->images);
     }
 

@@ -122,18 +122,6 @@ class Category extends Model
             return null;
         }
 
-        // En développement local
-        if (config('app.env') === 'local') {
-            return asset('storage/' . $this->image);
-        }
-
-        // En production (Hostinger)
-        // Vérifier si le symlink public/storage existe
-        if (file_exists(public_path('storage'))) {
-            return asset('storage/' . $this->image);
-        }
-
-        // Fallback: accès direct à storage/app/public
-        return asset('storage/app/public/' . $this->image);
+        return asset('storage/' . $this->image);
     }
 }
