@@ -57,9 +57,6 @@ Route::middleware(['cache.response:60', 'compress.response'])->group(function ()
         ]);
     });
     
-    // API publique: Page d'accueil (toutes les données nécessaires)
-    Route::get('/v1/home', [\App\Http\Controllers\WelcomeController::class, 'apiIndex']);
-    
     // API publique: Liste des articles (lecture seule)
     Route::get('/v1/items', [ItemController::class, 'apiIndex']);
     Route::get('/v1/items/{id}', [ItemController::class, 'apiShow']);
@@ -68,6 +65,9 @@ Route::middleware(['cache.response:60', 'compress.response'])->group(function ()
     Route::get('/v1/categories', [CategoryController::class, 'apiIndex']);
     Route::get('/v1/brands', [BrandController::class, 'apiIndex']);
 });
+
+// API publique: Page d'accueil (sans middleware de cache pour compatibilité)
+Route::get('/v1/home', [\App\Http\Controllers\WelcomeController::class, 'apiIndex']);
 
 // Validation de code de parrainage (public pour l'inscription)
 Route::middleware(['throttle:10,1'])->post('/validate-referral-code', [App\Http\Controllers\AffiliateController::class, 'validateReferralCode']);
