@@ -930,28 +930,16 @@ class ItemController extends Controller
         $perPage = min($request->get('per_page', 15), 50);
         $items = $query->paginate($perPage);
 
-        // Nettoyer les caractères UTF-8 malformés
-        $cleanItems = collect($items->items())->map(function ($item) {
-            $itemArray = $item->toArray();
-            array_walk_recursive($itemArray, function (&$value) {
-                if (is_string($value)) {
-                    $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-                    $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value);
-                }
-            });
-            return $itemArray;
-        });
-
         return response()->json([
             'success' => true,
-            'data' => $cleanItems->values(),
+            'data' => $items->items(),
             'pagination' => [
                 'total' => $items->total(),
                 'per_page' => $items->perPage(),
                 'current_page' => $items->currentPage(),
                 'last_page' => $items->lastPage(),
             ]
-        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+        ]);
     }
 
     /**
