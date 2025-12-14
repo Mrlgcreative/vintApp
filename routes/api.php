@@ -57,6 +57,9 @@ Route::middleware(['cache.response:60', 'compress.response'])->group(function ()
         ]);
     });
     
+    // API publique: Page d'accueil (toutes les données nécessaires)
+    Route::get('/v1/home', [\App\Http\Controllers\WelcomeController::class, 'apiIndex']);
+    
     // API publique: Liste des articles (lecture seule)
     Route::get('/v1/items', [ItemController::class, 'apiIndex']);
     Route::get('/v1/items/{id}', [ItemController::class, 'apiShow']);
