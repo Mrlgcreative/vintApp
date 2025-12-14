@@ -455,6 +455,9 @@ class BoostController extends Controller
                     ->select('id', 'name', 'price', 'status', 'images')
                     ->get()
                     ->map(function ($item) {
+                        // Désactiver les appends pour éviter les erreurs
+                        $item->setAppends([]);
+                        
                         // Convertir name en title pour compatibilité JavaScript
                         $item->title = $item->name;
                         
