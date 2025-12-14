@@ -133,9 +133,25 @@ class WelcomeController extends Controller
             'button_secondary' => Setting::get('hero_button_secondary_text', 'Parcourir'),
         ];
 
+        // Fonction pour nettoyer les caractères UTF-8 malformés
+        $cleanUtf8 = function ($data) use (&$cleanUtf8) {
+            if (is_array($data)) {
+                return array_map($cleanUtf8, $data);
+            }
+            if (is_object($data)) {
+                $array = $data instanceof \Illuminate\Database\Eloquent\Model ? $data->toArray() : (array) $data;
+                return array_map($cleanUtf8, $array);
+            }
+            if (is_string($data)) {
+                $data = mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+                return preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $data);
+            }
+            return $data;
+        };
+
         return response()->json([
             'success' => true,
-            'data' => [
+            'data' => $cleanUtf8([
                 'categories' => $categories,
                 'spotlight_items' => $spotlightItems,
                 'boosted_items' => $boostedItems,
@@ -143,7 +159,7 @@ class WelcomeController extends Controller
                 'stats' => $stats,
                 'hero_slides' => $heroSlides,
                 'hero_settings' => $heroSettings,
-            ]
-        ]);
+            ])
+        ], 200, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     }
 } 
