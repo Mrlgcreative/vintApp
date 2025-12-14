@@ -144,6 +144,6 @@ class WelcomeController extends Controller
                 'hero_slides' => $heroSlides,
                 'hero_settings' => $heroSettings,
             ]
-        ]);
+        ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 } 

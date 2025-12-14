@@ -939,7 +939,7 @@ class ItemController extends Controller
                 'current_page' => $items->currentPage(),
                 'last_page' => $items->lastPage(),
             ]
-        ]);
+        ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
