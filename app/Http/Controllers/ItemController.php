@@ -890,7 +890,7 @@ class ItemController extends Controller
     public function apiIndex(Request $request)
     {
         $query = Item::with(['category', 'brand', 'user'])
-            ->where('status', 'approved');
+            ->where('status', 'active');
 
         // Filtres
         if ($request->has('category_id')) {
