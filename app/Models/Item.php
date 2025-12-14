@@ -50,6 +50,27 @@ class Item extends Model
     ];
 
     /**
+     * Attributs à ajouter automatiquement au JSON
+     */
+    protected $appends = ['image_urls', 'first_image_url'];
+
+    /**
+     * Accesseur pour les URLs complètes des images
+     */
+    public function getImageUrlsAttribute(): array
+    {
+        return $this->getImageUrls();
+    }
+
+    /**
+     * Accesseur pour la première image URL
+     */
+    public function getFirstImageUrlAttribute(): ?string
+    {
+        return $this->getFirstImageUrl();
+    }
+
+    /**
      * Get the formatted price with currency
      */
     public function getFormattedPriceAttribute()

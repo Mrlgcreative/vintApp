@@ -26,6 +26,11 @@ class Category extends Model
     ];
 
     /**
+     * Attributs à ajouter automatiquement au JSON
+     */
+    protected $appends = ['image_url'];
+
+    /**
      * Relation avec les articles de cette catégorie.
      */
     public function items()
