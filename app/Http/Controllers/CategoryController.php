@@ -244,10 +244,19 @@ class CategoryController extends Controller
     {
         $categories = Category::with('parent')
             ->withCount(['items' => function($q) {
-                $q->where('status', 'approved');
+                $q->where('status', 'active');
             }])
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->map(function($category) {
+                // Nettoyer les caractères UTF-8 invalides
+                $category->name = mb_convert_encoding($category->name ?? '', 'UTF-8', 'UTF-8');
+                $category->description = mb_convert_encoding($category->description ?? '', 'UTF-8', 'UTF-8');
+                if ($category->parent) {
+                    $category->parent->name = mb_convert_encoding($category->parent->name ?? '', 'UTF-8', 'UTF-8');
+                }
+                return $category;
+            });
 
         return $this->successResponse($categories, 'Catégories récupérées avec succès');
     }
