@@ -15,7 +15,7 @@ trait ApiResponses
         if ($data !== null) {
             $response['data'] = $data;
         }
-        return response()->json($response, $code);
+        return response()->json($response, $code, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -27,7 +27,7 @@ trait ApiResponses
         if ($errors !== null) {
             $response['errors'] = $errors;
         }
-        return response()->json($response, $code);
+        return response()->json($response, $code, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -45,6 +45,6 @@ trait ApiResponses
                 'per_page' => $paginator->perPage(),
                 'total' => $paginator->total(),
             ]
-        ]);
+        ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 }

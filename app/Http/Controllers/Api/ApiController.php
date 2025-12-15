@@ -25,7 +25,7 @@ class ApiController extends Controller
             $response['data'] = $data;
         }
 
-        return response()->json($response, $statusCode);
+        return response()->json($response, $statusCode, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -45,7 +45,7 @@ class ApiController extends Controller
                 'from' => $paginator->firstItem(),
                 'to' => $paginator->lastItem(),
             ]
-        ]);
+        ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -62,7 +62,7 @@ class ApiController extends Controller
             $response['errors'] = $errors;
         }
 
-        return response()->json($response, $statusCode);
+        return response()->json($response, $statusCode, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -116,7 +116,7 @@ class ApiController extends Controller
             ];
         }
 
-        return response()->json($response, 500);
+        return response()->json($response, 500, [], JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
