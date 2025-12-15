@@ -314,32 +314,28 @@
                                        title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <div class="dropdown">
+                                    <div class="relative">
                                         <button class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-600 hover:bg-gray-50 dark:bg-gray-900 transition-colors" 
                                                 type="button" 
-                                                data-bs-toggle="dropdown">
+                                                onclick="toggleActionDropdown({{ $brand->id }})">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0">
-                                            <li>
-                                                <button class="dropdown-item" onclick="toggleBrandStatus({{ $brand->id }})">
-                                                    <i class="fas fa-{{ $brand->is_active ? 'pause' : 'play' }} me-2 text-{{ $brand->is_active ? 'warning' : 'success' }}"></i>
+                                        <div id="action-dropdown-{{ $brand->id }}" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-20">
+                                            <div class="py-1">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="toggleBrandStatus({{ $brand->id }})">
+                                                    <i class="fas fa-{{ $brand->is_active ? 'pause' : 'play' }} mr-2 text-{{ $brand->is_active ? 'yellow' : 'green' }}-500"></i>
                                                     {{ $brand->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
-                                            </li>
-                                            <li>
-                                                <button class="dropdown-item" onclick="toggleBrandFeatured({{ $brand->id }})">
-                                                    <i class="fas fa-star me-2 text-yellow-500"></i>
+                                                <button class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" onclick="toggleBrandFeatured({{ $brand->id }})">
+                                                    <i class="fas fa-star mr-2 text-yellow-500"></i>
                                                     {{ $brand->is_featured ? 'Retirer de la vedette' : 'Mettre en vedette' }}
                                                 </button>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <button class="dropdown-item text-danger" onclick="deleteBrand({{ $brand->id }}, '{{ $brand->name }}')">
-                                                    <i class="fas fa-trash me-2"></i>Supprimer
+                                                <hr class="my-1 border-gray-200 dark:border-gray-600">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20" onclick="deleteBrand({{ $brand->id }}, '{{ $brand->name }}')">
+                                                    <i class="fas fa-trash mr-2"></i>Supprimer
                                                 </button>
-                                            </li>
-                                        </ul>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -608,10 +604,26 @@ function toggleDropdown(dropdownId) {
     dropdown.classList.toggle('hidden');
 }
 
+// Gestion des dropdowns d'action dans le tableau
+function toggleActionDropdown(brandId) {
+    const dropdown = document.getElementById(`action-dropdown-${brandId}`);
+    const allDropdowns = document.querySelectorAll('[id^="action-dropdown-"]');
+    
+    // Fermer tous les autres dropdowns
+    allDropdowns.forEach(d => {
+        if (d.id !== `action-dropdown-${brandId}`) {
+            d.classList.add('hidden');
+        }
+    });
+    
+    // Toggle le dropdown actuel
+    dropdown.classList.toggle('hidden');
+}
+
 // Fermer les dropdowns en cliquant en dehors
 document.addEventListener('click', function(event) {
-    if (!event.target.closest('button[onclick*="toggleDropdown"]')) {
-        const allDropdowns = document.querySelectorAll('[id$="-dropdown"]');
+    if (!event.target.closest('button[onclick*="toggleDropdown"]') && !event.target.closest('button[onclick*="toggleActionDropdown"]')) {
+        const allDropdowns = document.querySelectorAll('[id$="-dropdown"], [id^="action-dropdown-"]');
         allDropdowns.forEach(d => d.classList.add('hidden'));
     }
 });
@@ -658,13 +670,16 @@ document.addEventListener('change', function(e) {
 
 // Changer le statut d'une marque
 function toggleBrandStatus(brandId) {
+    const row = document.querySelector(`tr[data-brand-id="${brandId}"]`) || document.querySelector(`div[data-brand-id="${brandId}"]`);
+    const isCurrentlyInactive = row ? row.classList.contains('opacity-60') : false;
+    
     fetch(`/admin/brands/${brandId}/status`, {
         method: 'PATCH',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ is_active: !document.querySelector(`tr[data-brand-id="${brandId}"]`).classList.contains('table-secondary') })
+        body: JSON.stringify({ is_active: isCurrentlyInactive })
     })
     .then(response => response.json())
     .then(data => {
@@ -743,7 +758,7 @@ function bulkAction(action) {
 // Afficher/masquer les marques inactives
 function toggleInactive() {
     const showInactive = document.getElementById('showInactive').checked;
-    const inactiveRows = document.querySelectorAll('.table-secondary');
+    const inactiveRows = document.querySelectorAll('[data-brand-id].opacity-60');
     
     inactiveRows.forEach(row => {
         row.style.display = showInactive ? '' : 'none';
