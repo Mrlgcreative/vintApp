@@ -183,7 +183,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Routes protégées par authentification
-Route::middleware(['auth:sanctum,web', 'compress.response'])->group(function () {
+// NOTE: compress.response supprimé car il corrompt le JSON sur cet hébergement
+Route::middleware(['auth:sanctum,web'])->group(function () {
     
     // ==================== API V1 Routes ====================
     Route::prefix('v1')->group(function () {
