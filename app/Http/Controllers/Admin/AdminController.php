@@ -1138,12 +1138,12 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher les dÃ©tails d'une marque
+     * Afficher les détails d'une marque
      */
     public function brandShow(Brand $brand)
     {
         $brand->load(['items' => function($query) {
-            $query->with('category', 'images')->latest()->take(10);
+            $query->with('category')->latest()->take(10);
         }]);
 
         // Statistiques de la marque
@@ -1330,12 +1330,12 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher les dÃ©tails d'une catÃ©gorie
+     * Afficher les détails d'une catégorie
      */
     public function categoryShow(Category $category)
     {
         $category->load(['parent', 'children', 'items' => function($query) {
-            $query->with('brand', 'images')->latest()->take(10);
+            $query->with('brand')->latest()->take(10);
         }]);
 
         // Statistiques de la catÃ©gorie
@@ -3291,6 +3291,262 @@ class AdminController extends Controller
         });
 
         return round($totalMinutes / $completedChecks->count(), 1);
+    }
+
+    // =============================================
+    // GESTION DES ADMINS
+    // =============================================
+
+    /**
+     * Afficher la liste des candidats à administrateur
+     */
+    public function adminCandidates(Request $request)
+    {
+        $query = User::whereNotIn('id', function ($subquery) {
+            $subquery->select('user_id')
+                ->from('role_user')
+                ->where('role_id', function ($q) {
+                    $q->select('id')->from('roles')->where('slug', 'admin');
+                });
+        })
+        ->with(['roles']);
+
+        // Filtrer par statut
+        if ($request->filled('status')) {
+            $status = $request->status;
+            if ($status === 'verified') {
+                $query->whereNotNull('email_verified_at');
+            } elseif ($status === 'unverified') {
+                $query->whereNull('email_verified_at');
+            }
+        }
+
+        // Recherche
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $candidates = $query->latest()->paginate(20);
+
+        return view('admin.admins.candidates', compact('candidates'));
+    }
+
+    /**
+     * Afficher les détails d'un candidat à administrateur
+     */
+    public function adminCandidateShow(User $user)
+    {
+        // Vérifier que l'utilisateur n'est pas déjà admin
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin.admins.candidates')
+                ->with('error', 'Cet utilisateur est déjà administrateur.');
+        }
+
+        $user->load(['roles', 'wallets', 'transactions', 'ordersAsBuyer', 'ordersAsSeller']);
+        
+        $stats = [
+            'total_items' => $user->items()->count(),
+            'active_items' => $user->items()->where('status', 'active')->count(),
+            'total_orders_bought' => $user->ordersAsBuyer()->count(),
+            'total_orders_sold' => $user->ordersAsSeller()->count(),
+            'completed_orders' => $user->ordersAsBuyer()
+                ->where('status', 'completed')
+                ->count() + $user->ordersAsSeller()->where('status', 'completed')->count(),
+            'total_transactions' => $user->transactions()->count(),
+            'account_age_days' => $user->created_at->diffInDays(now()),
+            'email_verified' => !is_null($user->email_verified_at),
+            'phone_verified' => !is_null($user->phone),
+        ];
+
+        return view('admin.admins.candidate-show', compact('user', 'stats'));
+    }
+
+    /**
+     * Afficher le formulaire de désignation d'un administrateur
+     */
+    public function designateAdminForm(User $user)
+    {
+        // Vérifier que l'utilisateur n'est pas déjà admin
+        if ($user->hasRole('admin')) {
+            return redirect()->route('admin.admins.candidates')
+                ->with('error', 'Cet utilisateur est déjà administrateur.');
+        }
+
+        return view('admin.admins.designate', compact('user'));
+    }
+
+    /**
+     * Désigner un utilisateur comme administrateur
+     */
+    public function designateAdmin(Request $request, User $user)
+    {
+        // Vérifier que l'utilisateur n'est pas déjà admin
+        if ($user->hasRole('admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet utilisateur est déjà administrateur.'
+            ], 422);
+        }
+
+        $request->validate([
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'string|in:manage_users,manage_items,manage_wallets,manage_transactions,manage_orders,manage_experts,manage_admins,manage_settings,manage_support,view_analytics,full_access',
+            'reason' => 'nullable|string|max:500'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Assigner le rôle admin
+            $adminRole = Role::where('slug', 'admin')->first();
+            if (!$adminRole) {
+                // Créer le rôle s'il n'existe pas
+                $adminRole = Role::create([
+                    'name' => 'Administrator',
+                    'slug' => 'admin',
+                    'description' => 'Administrateur de la plateforme'
+                ]);
+            }
+
+            $user->roles()->attach($adminRole);
+
+            // Enregistrer la désignation dans le log
+            Log::info("Nouvel administrateur désigné", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'permissions' => $request->permissions,
+                'reason' => $request->reason,
+                'designated_by' => Auth::id(),
+                'designated_at' => now()
+            ]);
+
+            // Notifier l'utilisateur
+            $user->notify(new \App\Notifications\AdminDesignationNotification(Auth::user()));
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "{$user->name} a été désigné comme administrateur avec succès."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erreur lors de la désignation d'administrateur", [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la désignation.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Révoquer les droits d'administrateur
+     */
+    public function revokeAdmin(Request $request, User $user)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
+        if (!$user->hasRole('admin')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet utilisateur n\'est pas administrateur.'
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Retirer le rôle admin
+            $adminRole = Role::where('slug', 'admin')->first();
+            if ($adminRole) {
+                $user->roles()->detach($adminRole);
+            }
+
+            // Enregistrer dans le log
+            Log::info("Droits d'administrateur révoqués", [
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'reason' => $request->reason,
+                'revoked_by' => Auth::id(),
+                'revoked_at' => now()
+            ]);
+
+            // Notifier l'utilisateur
+            $user->notify(new \App\Notifications\AdminRevocationNotification(Auth::user(), $request->reason));
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Les droits d'administrateur de {$user->name} ont été révoqués avec succès."
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Erreur lors de la révocation d'administrateur", [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'admin_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la révocation.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Afficher la liste des administrateurs actuels
+     */
+    public function admins(Request $request)
+    {
+        $query = User::whereHas('roles', function ($q) {
+            $q->where('slug', 'admin');
+        })->with(['roles']);
+
+        // Recherche
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $admins = $query->latest()->paginate(20);
+
+        return view('admin.admins.index', compact('admins'));
+    }
+
+    /**
+     * Afficher les détails d'un administrateur
+     */
+    public function adminShow(User $user)
+    {
+        if (!$user->hasRole('admin')) {
+            return redirect()->route('admin.admins.index')
+                ->with('error', 'Cet utilisateur n\'est pas administrateur.');
+        }
+
+        $user->load(['roles']);
+
+        return view('admin.admins.show', compact('user'));
     }
 
     // =============================================
