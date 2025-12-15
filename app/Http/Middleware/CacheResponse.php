@@ -74,13 +74,34 @@ class CacheResponse
         // Exécuter la requête
         $response = $next($request);
 
-        // Cacher seulement les réponses réussies
+        // Cacher seulement les réponses réussies (et non compressées!)
         if ($response->isSuccessful()) {
-            Cache::put($cacheKey, [
-                'content' => $response->getContent(),
-                'status' => $response->getStatusCode(),
-                'headers' => $this->getCacheableHeaders($response),
-            ], $duration);
+            // IMPORTANT: Ne pas cacher les réponses compressées - cela cause des corruptions
+            $contentEncoding = $response->headers->get('Content-Encoding');
+            if (empty($contentEncoding)) {
+                $content = $response->getContent();
+                
+                // Validation JSON avant mise en cache
+                if ($this->isJsonResponse($response)) {
+                    $decoded = json_decode($content);
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        // JSON invalide - ne pas cacher
+                        \Log::warning('CacheResponse: Invalid JSON detected, skipping cache', [
+                            'path' => $request->path(),
+                            'error' => json_last_error_msg()
+                        ]);
+                        return $response->withHeaders([
+                            'X-Cache' => 'SKIP-INVALID-JSON',
+                        ]);
+                    }
+                }
+                
+                Cache::put($cacheKey, [
+                    'content' => $content,
+                    'status' => $response->getStatusCode(),
+                    'headers' => $this->getCacheableHeaders($response),
+                ], $duration);
+            }
         }
 
         return $response->withHeaders([
@@ -158,5 +179,14 @@ class CacheResponse
         }
 
         return $headers;
+    }
+
+    /**
+     * Vérifier si la réponse est du JSON
+     */
+    protected function isJsonResponse(Response $response): bool
+    {
+        $contentType = $response->headers->get('Content-Type', '');
+        return str_contains($contentType, 'application/json');
     }
 }

@@ -47,7 +47,9 @@ use App\Http\Controllers\LocationValidationController;
 Route::post('/validate-location', [LocationValidationController::class, 'validateLocation']);
 
 // Routes publiques
-Route::middleware(['cache.response:60', 'compress.response'])->group(function () {
+// NOTE: Ne pas utiliser compress.response avec cache.response pour éviter la corruption
+// La compression peut être gérée au niveau du serveur web (nginx/apache)
+Route::middleware(['cache.response:60'])->group(function () {
     Route::get('/health', function () {
         return response()->json([
             'status' => 'success',
