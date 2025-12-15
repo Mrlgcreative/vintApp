@@ -14,7 +14,7 @@
 @endsection
 
 @section('content')
-<form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+<form action="{{ route('admin.brands.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
     
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -438,11 +438,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validation du formulaire
     const form = document.querySelector('.needs-validation');
     form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
+        // Retirer novalidate pour permettre la soumission native
+        // La validation sera gérée côté serveur
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Création en cours...';
         }
-        form.classList.add('was-validated');
     });
 });
 
