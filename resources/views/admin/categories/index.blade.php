@@ -22,10 +22,10 @@
             </div>
         </div>
     </div>
-    <button onclick="openModal()" 
-            class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
+    <a href="{{ route('admin.categories.create') }}" 
+       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
         <i class="fas fa-plus mr-2"></i>Nouvelle Catégorie
-    </button>
+    </a>
 </div>
 @endsection
 
@@ -265,9 +265,9 @@
                 </div>
                 <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune catégorie enregistrée</h5>
                 <p class="text-gray-500 dark:text-gray-400 mb-4">Commencez par ajouter des catégories pour organiser vos articles.</p>
-                <button onclick="openModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                <a href="{{ route('admin.categories.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                     <i class="fas fa-plus mr-2"></i>Ajouter une catégorie
-                </button>
+                </a>
             </div>
         @endif
     </div>
