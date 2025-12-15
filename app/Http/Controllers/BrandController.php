@@ -156,9 +156,10 @@ class BrandController extends Controller
      */
     public function apiIndex()
     {
-        $brands = Brand::withCount(['items' => function($q) {
+        $brands = Brand::withCount(['items as items_count' => function($q) {
                 $q->where('status', 'approved');
             }])
+            ->withCount(['items as total_items_count'])
             ->where('is_active', true)
             ->orderBy('name')
             ->get();

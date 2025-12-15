@@ -455,6 +455,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('/{expert}/revoke', [App\Http\Controllers\Admin\AdminController::class, 'expertRevoke'])->name('revoke');
     });
 
+    // Gestion des administrateurs
+    Route::prefix('admins')->name('admins.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'admins'])->name('index');
+        Route::get('/candidates', [App\Http\Controllers\Admin\AdminController::class, 'adminCandidates'])->name('candidates');
+        Route::get('/candidates/{user}', [App\Http\Controllers\Admin\AdminController::class, 'adminCandidateShow'])->name('candidate-show');
+        Route::get('/designate/{user}/form', [App\Http\Controllers\Admin\AdminController::class, 'designateAdminForm'])->name('designate-form');
+        Route::post('/designate/{user}', [App\Http\Controllers\Admin\AdminController::class, 'designateAdmin'])->name('designate');
+        Route::post('/{user}/revoke', [App\Http\Controllers\Admin\AdminController::class, 'revokeAdmin'])->name('revoke');
+        Route::get('/{user}', [App\Http\Controllers\Admin\AdminController::class, 'adminShow'])->name('show');
+    });
+
     // Gestion des wallets
     Route::prefix('wallets')->name('wallets.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\WalletController::class, 'index'])->name('index');
