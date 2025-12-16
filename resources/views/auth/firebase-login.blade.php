@@ -351,8 +351,26 @@ window.signInWithGoogle = async () => {
         await handleFirebaseAuth(result.user);
     } catch (error) {
         console.error('Erreur Google:', error);
-        showToast('Erreur de connexion Google', 'error');
         showLoading(false);
+        
+        // Gérer les erreurs spécifiques
+        if (error.code === 'auth/popup-closed-by-user') {
+            // L'utilisateur a fermé le popup - ne rien afficher
+            console.log('Connexion annulée par l\'utilisateur');
+            return;
+        }
+        
+        if (error.code === 'auth/cancelled-popup-request') {
+            // Popup annulé car un autre était déjà ouvert
+            return;
+        }
+        
+        if (error.code === 'auth/popup-blocked') {
+            showToast('Le popup a été bloqué. Autorisez les popups pour ce site.', 'error');
+            return;
+        }
+        
+        showToast('Erreur de connexion Google', 'error');
     }
 };
 
@@ -364,8 +382,20 @@ window.signInWithFacebook = async () => {
         await handleFirebaseAuth(result.user);
     } catch (error) {
         console.error('Erreur Facebook:', error);
-        showToast('Erreur de connexion Facebook', 'error');
         showLoading(false);
+        
+        // Gérer les erreurs spécifiques
+        if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
+            console.log('Connexion annulée par l\'utilisateur');
+            return;
+        }
+        
+        if (error.code === 'auth/popup-blocked') {
+            showToast('Le popup a été bloqué. Autorisez les popups pour ce site.', 'error');
+            return;
+        }
+        
+        showToast('Erreur de connexion Facebook', 'error');
     }
 };
 

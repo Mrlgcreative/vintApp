@@ -342,7 +342,7 @@ const NOTIFICATION_TYPES = {
 
 ---
 
-## �📱 API V1 - Routes Principales
+## 📱 API V1 - Routes Principales
 
 ### 🛍️ Items (Articles)
 
@@ -354,6 +354,46 @@ const NOTIFICATION_TYPES = {
 | `PUT`    | `/api/v1/items/{id}` | Modifier un article  | ✅   |
 | `DELETE` | `/api/v1/items/{id}` | Supprimer un article | ✅   |
 
+#### Champs pour créer un article (`POST /api/v1/items`)
+
+| Champ                     | Type       | Requis | Description                                      |
+| ------------------------- | ---------- | ------ | ------------------------------------------------ |
+| `name`                    | `string`   | ✅     | Nom du produit (3-255 caractères)                |
+| `description`             | `string`   | ✅     | Description détaillée (10-5000 caractères)       |
+| `price`                   | `number`   | ✅     | Prix (0 - 999999999.99)                          |
+| `currency`                | `string`   | ✅     | Devise: `USD`, `EUR`, `XAF`, `XOF`               |
+| `category_id`             | `integer`  | ✅     | ID de la catégorie                               |
+| `condition`               | `string`   | ✅     | État: `new`, `like_new`, `good`, `fair`, `poor`  |
+| `quantity`                | `integer`  | ✅     | Quantité disponible (1-10000)                    |
+| `images`                  | `File[]`   | ✅     | Images du produit (3-10 images, max 5MB chacune) |
+| `brand_id`                | `integer`  | ❌     | ID de la marque (optionnel)                      |
+| `size`                    | `string`   | ❌     | Taille du produit (max 50 caractères)            |
+| `color`                   | `string`   | ❌     | Couleur du produit (max 50 caractères)           |
+| `item_number`             | `string`   | ❌     | Numéro de référence (max 100 caractères)         |
+| `material`                | `string`   | ❌     | Matériau (max 100 caractères)                    |
+| `location`                | `string`   | ❌     | Localisation (max 255 caractères)                |
+| `authenticity_guaranteed` | `boolean`  | ❌     | Authenticité garantie par le vendeur             |
+| `tags`                    | `string[]` | ❌     | Tags/mots-clés (max 10 tags, 50 car. chacun)     |
+
+#### Valeurs possibles pour `condition`
+
+| Valeur     | Description                            |
+| ---------- | -------------------------------------- |
+| `new`      | Neuf - Jamais utilisé                  |
+| `like_new` | Comme neuf - Utilisé très peu          |
+| `good`     | Bon état - Légères traces d'usage      |
+| `fair`     | État correct - Traces d'usure visibles |
+| `poor`     | État passable - Usure importante       |
+
+#### Valeurs possibles pour `currency`
+
+| Valeur | Description          |
+| ------ | -------------------- |
+| `USD`  | Dollar américain ($) |
+| `EUR`  | Euro (€)             |
+| `XAF`  | Franc CFA CEMAC      |
+| `XOF`  | Franc CFA UEMOA      |
+
 ```javascript
 // Exemple: Récupérer tous les articles
 const getItems = async () => {
@@ -361,18 +401,75 @@ const getItems = async () => {
     return response.json();
 };
 
-// Exemple: Créer un article
-const createItem = async (itemData, token) => {
+// Exemple: Créer un article avec FormData (pour upload d'images)
+const createItem = async (itemData, images, token) => {
+    const formData = new FormData();
+
+    // Ajouter les champs texte
+    formData.append('name', itemData.name);
+    formData.append('description', itemData.description);
+    formData.append('price', itemData.price.toString());
+    formData.append('currency', itemData.currency);
+    formData.append('category_id', itemData.category_id.toString());
+    formData.append('condition', itemData.condition);
+    formData.append('quantity', itemData.quantity.toString());
+
+    // Champs optionnels
+    if (itemData.brand_id) formData.append('brand_id', itemData.brand_id.toString());
+    if (itemData.size) formData.append('size', itemData.size);
+    if (itemData.color) formData.append('color', itemData.color);
+    if (itemData.location) formData.append('location', itemData.location);
+
+    // Ajouter les images (minimum 3 requises)
+    images.forEach((image, index) => {
+        formData.append(`images[${index}]`, {
+            uri: image.uri,
+            type: image.type || 'image/jpeg',
+            name: image.name || `image_${index}.jpg`,
+        });
+    });
+
     const response = await fetch(`${API_URL}/items`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            // Ne pas mettre Content-Type avec FormData
         },
-        body: JSON.stringify(itemData),
+        body: formData,
     });
     return response.json();
 };
+
+// Exemple de réponse succès
+{
+    "success": true,
+    "message": "Article créé avec succès",
+    "data": {
+        "id": 123,
+        "name": "iPhone 13 Pro",
+        "description": "iPhone 13 Pro 256GB en excellent état...",
+        "price": "850.00",
+        "currency": "USD",
+        "status": "pending_verification",
+        "images": ["items/abc123.jpg", "items/def456.jpg", "items/ghi789.jpg"],
+        "image_urls": [
+            "https://vitapp.mykenyastudentprocess.com/storage/items/abc123.jpg",
+            "https://vitapp.mykenyastudentprocess.com/storage/items/def456.jpg",
+            "https://vitapp.mykenyastudentprocess.com/storage/items/ghi789.jpg"
+        ],
+        "created_at": "2025-12-15T10:30:00.000000Z"
+    }
+}
+
+// Exemple d'erreur validation
+{
+    "success": false,
+    "message": "Erreur de validation",
+    "errors": {
+        "name": ["Le nom du produit est obligatoire"],
+        "images": ["Minimum 3 images requises pour une meilleure vérification"]
+    }
+}
 ```
 
 ---

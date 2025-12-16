@@ -652,13 +652,14 @@ public function uploadAvatar(Request $request)
             $user = $request->user();
             
             $items = $user->items()
-                         ->with(['category', 'brand', 'primaryImage'])
+                         ->with(['category', 'brand'])
                          ->orderBy('created_at', 'desc')
                          ->paginate($request->per_page ?? 12);
 
             return $this->paginatedResponse($items, 'Articles récupérés avec succès');
         } catch (\Exception $e) {
-            return $this->errorResponse('Erreur lors de la récupération des articles', 500);
+            \Log::error('apiGetItems error: ' . $e->getMessage());
+            return $this->errorResponse('Erreur lors de la récupération des articles: ' . $e->getMessage(), 500);
         }
     }
 
