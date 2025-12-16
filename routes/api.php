@@ -66,6 +66,29 @@ Route::middleware(['cache.response:60'])->group(function () {
     // API publique: Catégories et marques
     Route::get('/v1/categories', [CategoryController::class, 'apiIndex']);
     Route::get('/v1/brands', [BrandController::class, 'apiIndex']);
+    
+    // API publique: Devises supportées
+    Route::get('/v1/currencies', function () {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                [
+                    'code' => 'USD',
+                    'name' => 'Dollar américain',
+                    'symbol' => '$',
+                    'flag' => '🇺🇸'
+                ],
+                [
+                    'code' => 'CDF',
+                    'name' => 'Franc congolais',
+                    'symbol' => 'FC',
+                    'flag' => '🇨🇩'
+                ],
+              
+               
+            ]
+        ], 200, [], JSON_UNESCAPED_UNICODE);
+    });
 });
 
 // API publique: Page d'accueil (sans middleware de cache pour compatibilité)
