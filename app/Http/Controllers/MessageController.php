@@ -568,19 +568,86 @@ class MessageController extends Controller
         try {
             $user = $request->user();
             
-            $vendorContacts = $this->getVendorContacts($user);
-            $receivedConversations = $this->getReceivedConversations($user);
+            // Récupérer tous les utilisateurs avec qui on a échangé des messages
+            $conversations = collect();
             
-            $allContacts = $vendorContacts->merge($receivedConversations)
-                ->unique(function($contact) {
-                    return $contact->vendor_id . '-' . ($contact->item_id ?? 'general');
-                })
-                ->sortByDesc('last_message.created_at')
-                ->values();
+            // Messages envoyés
+            $sentMessages = Message::where('sender_id', $user->id)
+                ->select('receiver_id')
+                ->distinct()
+                ->pluck('receiver_id');
+            
+            // Messages reçus
+            $receivedMessages = Message::where('receiver_id', $user->id)
+                ->select('sender_id')
+                ->distinct()
+                ->pluck('sender_id');
+            
+            // Fusionner et obtenir les IDs uniques
+            $contactIds = $sentMessages->merge($receivedMessages)->unique();
+            
+            foreach ($contactIds as $contactId) {
+                // Récupérer le dernier message de la conversation
+                $lastMessage = Message::where(function($query) use ($user, $contactId) {
+                    $query->where('sender_id', $user->id)
+                          ->where('receiver_id', $contactId);
+                })->orWhere(function($query) use ($user, $contactId) {
+                    $query->where('sender_id', $contactId)
+                          ->where('receiver_id', $user->id);
+                })->with(['item'])
+                  ->orderBy('created_at', 'desc')
+                  ->first();
+                
+                if (!$lastMessage) continue;
+                
+                // Compter les messages non lus
+                $unreadCount = Message::where('sender_id', $contactId)
+                                     ->where('receiver_id', $user->id)
+                                     ->where('is_read', false)
+                                     ->count();
+                
+                // Récupérer l'utilisateur contact
+                $contact = User::find($contactId);
+                if (!$contact) continue;
+                
+                $conversations->push([
+                    'id' => $contactId,
+                    'contact_id' => $contactId,
+                    'contact' => [
+                        'id' => $contact->id,
+                        'name' => $contact->name,
+                        'avatar' => $contact->avatar,
+                        'avatar_url' => $contact->avatar ? asset('storage/' . $contact->avatar) : null,
+                    ],
+                    'last_message' => [
+                        'id' => $lastMessage->id,
+                        'content' => $lastMessage->content,
+                        'created_at' => $lastMessage->created_at,
+                        'is_mine' => $lastMessage->sender_id === $user->id,
+                        'is_read' => $lastMessage->is_read,
+                    ],
+                    'item' => $lastMessage->item ? [
+                        'id' => $lastMessage->item->id,
+                        'name' => $lastMessage->item->name,
+                        'image' => $lastMessage->item->first_image_url,
+                    ] : null,
+                    'unread_count' => $unreadCount,
+                    'updated_at' => $lastMessage->created_at,
+                ]);
+            }
+            
+            // Trier par dernier message
+            $sortedConversations = $conversations->sortByDesc('updated_at')->values();
 
-            return $this->successResponse($allContacts, 'Conversations récupérées avec succès');
+            return response()->json([
+                'success' => true,
+                'message' => 'Conversations récupérées avec succès',
+                'data' => $sortedConversations
+            ], 200, [], JSON_UNESCAPED_UNICODE);
+            
         } catch (\Exception $e) {
-            return $this->errorResponse('Erreur lors de la récupération des conversations', 500);
+            \Log::error('apiIndex messages error: ' . $e->getMessage());
+            return $this->errorResponse('Erreur lors de la récupération des conversations: ' . $e->getMessage(), 500);
         }
     }
 
