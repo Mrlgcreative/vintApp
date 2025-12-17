@@ -876,17 +876,109 @@ class OrderController extends Controller
      */
     public function apiStore(CreateOrderRequest $request)
     {
+        $startTime = microtime(true);
+        $monitoring = app(MonitoringService::class);
+        
         try {
-            $result = $this->store($request);
+            $user = $request->user();
             
-            if ($result instanceof \Illuminate\Http\RedirectResponse) {
-                $order = Order::latest()->first();
-                return $this->successResponse($order, 'Commande créée avec succès', 201);
+            if (!$user) {
+                return $this->errorResponse('Utilisateur non authentifié', 401);
             }
             
-            return $this->errorResponse('Erreur lors de la création de la commande');
+            $item = Item::findOrFail($request->item_id);
+
+            // Vérifications
+            if ($item->user_id === $user->id) {
+                return $this->errorResponse('Vous ne pouvez pas acheter votre propre article.', 400);
+            }
+
+            if ($item->status !== 'active') {
+                return $this->errorResponse('Cet article n\'est plus disponible.', 400);
+            }
+
+            $quantity = $request->quantity ?? 1;
+            if ($quantity > $item->quantity) {
+                return $this->errorResponse('La quantité demandée dépasse le stock disponible.', 400);
+            }
+
+            DB::beginTransaction();
+
+            // Créer la commande avec le buyer_id explicitement défini
+            $order = new Order();
+            $order->buyer_id = $user->id;
+            $order->seller_id = $item->user_id;
+            $order->item_id = $item->id;
+            $order->quantity = $quantity;
+            $order->unit_price = $item->price;
+            $order->total_amount = $item->price * $quantity;
+            $order->currency = $item->currency;
+            $order->status = 'pending';
+            $order->shipping_address = $request->shipping_address;
+            $order->shipping_city = $request->shipping_city;
+            $order->shipping_phone = $request->shipping_phone;
+            $order->delivery_address_id = $request->delivery_address_id;
+            $order->notes = $request->notes;
+            $order->save();
+
+            // Mettre à jour le stock
+            $item->quantity -= $quantity;
+            if ($item->quantity <= 0) {
+                $item->status = 'sold';
+            }
+            $item->save();
+
+            DB::commit();
+
+            // Charger les relations pour la réponse
+            $order->load(['item', 'seller', 'buyer', 'deliveryAddress']);
+
+            // Enregistrer la métrique business
+            $monitoring->recordBusinessMetric('order_created', $order->total_amount, [
+                'order_id' => $order->id,
+                'buyer_id' => $order->buyer_id,
+                'seller_id' => $order->seller_id,
+                'item_id' => $order->item_id,
+                'currency' => $order->currency,
+            ]);
+
+            // Enregistrer la performance
+            $duration = microtime(true) - $startTime;
+            $monitoring->recordPerformance('order.store', $duration, [
+                'buyer_id' => $order->buyer_id,
+                'total_amount' => $order->total_amount,
+            ]);
+
+            // 🔔 Envoyer notification au vendeur (nouvelle commande)
+            try {
+                broadcast(new OrderNotification(
+                    $order,
+                    'new_order',
+                    "🛒 Nouvelle commande de {$order->buyer->name}",
+                    $item->user_id
+                ))->toOthers();
+            } catch (\Exception $e) {
+                Log::warning('Notification broadcast failed: ' . $e->getMessage());
+            }
+
+            Log::info('Commande API créée avec succès', [
+                'order_id' => $order->id,
+                'buyer_id' => $order->buyer_id,
+                'item_id' => $order->item_id,
+            ]);
+
+            return $this->successResponse($order, 'Commande créée avec succès', 201);
+
         } catch (\Exception $e) {
-            return $this->errorResponse($e->getMessage(), 500);
+            DB::rollBack();
+            
+            Log::error('Erreur lors de la création de la commande API: ' . $e->getMessage(), [
+                'user_id' => $request->user()?->id,
+                'item_id' => $request->item_id,
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return $this->errorResponse('Une erreur est survenue lors de la création de la commande: ' . $e->getMessage(), 500);
         }
     }
 

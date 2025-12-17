@@ -25,8 +25,8 @@ class UserController extends Controller
         $stats = [
             'total_items' => $user->items()->count(),
             'active_items' => $user->items()->where('status', 'active')->count(),
-            'total_sales' => $user->sellerOrders()->where('status', 'delivered')->count(),
-            'total_purchases' => $user->buyerOrders()->where('status', 'delivered')->count(),
+            'total_sales' => $user->ordersAsSeller()->where('status', 'delivered')->count(),
+            'total_purchases' => $user->ordersAsBuyer()->where('status', 'delivered')->count(),
             'average_rating' => round($user->receivedReviews()->avg('rating'), 1),
             'total_reviews' => $user->receivedReviews()->count(),
         ];
@@ -201,10 +201,10 @@ public function uploadAvatar(Request $request)
             'total_items' => $user->items()->count(),
             'active_items' => $user->items()->where('status', 'active')->count(),
             'sold_items' => $user->items()->where('status', 'sold')->count(),
-            'total_sales' => $user->sellerOrders()->where('status', 'delivered')->count(),
-            'total_purchases' => $user->buyerOrders()->where('status', 'delivered')->count(),
-            'total_revenue' => $user->sellerOrders()->where('status', 'delivered')->sum('total_price'),
-            'total_spent' => $user->buyerOrders()->where('status', 'delivered')->sum('total_price'),
+            'total_sales' => $user->ordersAsSeller()->where('status', 'delivered')->count(),
+            'total_purchases' => $user->ordersAsBuyer()->where('status', 'delivered')->count(),
+            'total_revenue' => $user->ordersAsSeller()->where('status', 'delivered')->sum('total_price'),
+            'total_spent' => $user->ordersAsBuyer()->where('status', 'delivered')->sum('total_price'),
             'average_rating' => round($user->receivedReviews()->avg('rating'), 1),
             'total_reviews' => $user->receivedReviews()->count(),
             'favorites_count' => $user->favorites()->count(),
@@ -241,7 +241,7 @@ public function uploadAvatar(Request $request)
     {
         $user = $request->user();
         
-        $orders = $user->buyerOrders()
+        $orders = $user->ordersAsBuyer()
                       ->with(['item', 'seller'])
                       ->orderBy('created_at', 'desc')
                       ->paginate(10);
@@ -259,7 +259,7 @@ public function uploadAvatar(Request $request)
     {
         $user = $request->user();
         
-        $sales = $user->sellerOrders()
+        $sales = $user->ordersAsSeller()
                      ->with(['item', 'buyer'])
                      ->orderBy('created_at', 'desc')
                      ->paginate(10);
@@ -628,10 +628,10 @@ public function uploadAvatar(Request $request)
                 'total_items' => $user->items()->count(),
                 'active_items' => $user->items()->where('status', 'active')->count(),
                 'sold_items' => $user->items()->where('status', 'sold')->count(),
-                'total_sales' => $user->sellerOrders()->where('status', 'delivered')->count(),
-                'total_purchases' => $user->buyerOrders()->where('status', 'delivered')->count(),
-                'total_revenue' => $user->sellerOrders()->where('status', 'delivered')->sum('total_price'),
-                'total_spent' => $user->buyerOrders()->where('status', 'delivered')->sum('total_price'),
+                'total_sales' => $user->ordersAsSeller()->where('status', 'delivered')->count(),
+                'total_purchases' => $user->ordersAsBuyer()->where('status', 'delivered')->count(),
+                'total_revenue' => $user->ordersAsSeller()->where('status', 'delivered')->sum('total_price'),
+                'total_spent' => $user->ordersAsBuyer()->where('status', 'delivered')->sum('total_price'),
                 'average_rating' => round($user->receivedReviews()->avg('rating'), 1),
                 'total_reviews' => $user->receivedReviews()->count(),
                 'favorites_count' => $user->favorites()->count(),
@@ -671,7 +671,7 @@ public function uploadAvatar(Request $request)
         try {
             $user = $request->user();
             
-            $orders = $user->buyerOrders()
+            $orders = $user->ordersAsBuyer()
                           ->with(['item', 'seller'])
                           ->orderBy('created_at', 'desc')
                           ->paginate($request->per_page ?? 10);
@@ -690,7 +690,7 @@ public function uploadAvatar(Request $request)
         try {
             $user = $request->user();
             
-            $sales = $user->sellerOrders()
+            $sales = $user->ordersAsSeller()
                          ->with(['item', 'buyer'])
                          ->orderBy('created_at', 'desc')
                          ->paginate($request->per_page ?? 10);
