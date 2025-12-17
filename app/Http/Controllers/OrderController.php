@@ -914,11 +914,12 @@ class OrderController extends Controller
             $order->total_amount = $item->price * $quantity;
             $order->currency = $item->currency;
             $order->status = 'pending';
-            $order->shipping_address = $request->shipping_address;
-            $order->shipping_city = $request->shipping_city;
-            $order->shipping_phone = $request->shipping_phone;
+            // Support des deux formats: shipping_* et delivery_*
+            $order->shipping_address = $request->shipping_address ?? $request->delivery_address;
+            $order->shipping_city = $request->shipping_city ?? $request->delivery_city;
+            $order->shipping_phone = $request->shipping_phone ?? $request->delivery_phone;
             $order->delivery_address_id = $request->delivery_address_id;
-            $order->notes = $request->notes;
+            $order->notes = $request->notes ?? $request->delivery_notes;
             $order->save();
 
             // Mettre à jour le stock
