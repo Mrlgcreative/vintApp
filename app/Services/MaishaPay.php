@@ -544,14 +544,25 @@ class MaishaPay
     public function mapOperator(string $provider): ?string
     {
         $mapping = [
+            // Format VintApp (lowercase avec underscore)
             'orange_money' => 'ORANGE',
             'airtel_money' => 'AIRTEL',
-            'mpesa' => 'VODACOM',
+            'mpesa' => 'MPESA',
             'africell' => 'AFRICELL',
             'illicocash' => null, // Non supporté par MaishaPay
+            // Format détecté (uppercase)
+            'ORANGE' => 'ORANGE',
+            'AIRTEL' => 'AIRTEL',
+            'VODACOM' => 'MPESA',
+            'MPESA' => 'MPESA',
+            'AFRICELL' => 'AFRICELL',
+            // Format mixte
+            'vodacom' => 'MPESA',
+            'orange' => 'ORANGE',
+            'airtel' => 'AIRTEL',
         ];
 
-        return $mapping[$provider] ?? null;
+        return $mapping[strtolower($provider)] ?? $mapping[strtoupper($provider)] ?? $mapping[$provider] ?? null;
     }
 
     /**
