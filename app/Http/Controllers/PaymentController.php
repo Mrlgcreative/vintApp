@@ -1998,10 +1998,10 @@ class PaymentController extends Controller
     public function initiateMaishaPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric|min:100',
+            'amount' => 'required|numeric|min:0.01',
             'phone' => 'required|string|min:9|max:12',
             'currency' => 'sometimes|string|in:CDF,USD',
-            'operator' => 'sometimes|string|in:vodacom,airtel,orange,africell',
+            'operator' => 'sometimes|string|in:VODACOM,AIRTEL,ORANGE,AFRICELL,vodacom,airtel,orange,africell',
             'purpose' => 'sometimes|string|max:255',
         ]);
 
