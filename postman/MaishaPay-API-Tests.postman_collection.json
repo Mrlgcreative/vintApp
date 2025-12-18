@@ -1,0 +1,314 @@
+{
+	"info": {
+		"_postman_id": "maishapay-tests-collection",
+		"name": "VintApp - MaishaPay API",
+		"description": "Collection de tests pour l'intégration MaishaPay",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000",
+			"type": "string"
+		},
+		{
+			"key": "api_token",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Login (Get Token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 200) {",
+							"    var jsonData = pm.response.json();",
+							"    if (jsonData.token) {",
+							"        pm.collectionVariables.set('api_token', jsonData.token);",
+							"        console.log('Token saved:', jsonData.token);",
+							"    }",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/auth/login",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "auth", "login"]
+				}
+			}
+		},
+		{
+			"name": "2. MaishaPay - Initiate Payment (Vodacom)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 5000,\n    \"phone\": \"812345678\",\n    \"currency\": \"CDF\",\n    \"operator\": \"vodacom\",\n    \"purpose\": \"Test paiement Vodacom M-Pesa\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay"]
+				}
+			}
+		},
+		{
+			"name": "3. MaishaPay - Initiate Payment (Airtel)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10000,\n    \"phone\": \"971234567\",\n    \"currency\": \"CDF\",\n    \"operator\": \"airtel\",\n    \"purpose\": \"Test paiement Airtel Money\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay"]
+				}
+			}
+		},
+		{
+			"name": "4. MaishaPay - Initiate Payment (Orange)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 15000,\n    \"phone\": \"841234567\",\n    \"currency\": \"CDF\",\n    \"operator\": \"orange\",\n    \"purpose\": \"Test paiement Orange Money\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay"]
+				}
+			}
+		},
+		{
+			"name": "5. MaishaPay - Initiate Payment (USD)",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount\": 10,\n    \"phone\": \"812345678\",\n    \"currency\": \"USD\",\n    \"operator\": \"vodacom\",\n    \"purpose\": \"Test paiement en USD\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay"]
+				}
+			}
+		},
+		{
+			"name": "6. MaishaPay - Check Status",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay/status/1",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay", "status", "1"]
+				}
+			}
+		},
+		{
+			"name": "7. MaishaPay - Webhook Callback (Test)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "X-MaishaPay-Signature",
+						"value": "test-signature-sandbox"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"reference\": \"MP-SIM-TESTREF\",\n    \"transaction_id\": \"MP-SIM-TESTREF\",\n    \"status\": \"SUCCESS\",\n    \"amount\": 5000,\n    \"currency\": \"CDF\",\n    \"phone\": \"243812345678\",\n    \"operator\": \"VODACOM\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/maishapay/callback",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "maishapay", "callback"]
+				}
+			}
+		},
+		{
+			"name": "8. Get Payment History",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments"]
+				}
+			}
+		},
+		{
+			"name": "9. Get Payment Stats",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{api_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/payments/stats",
+					"host": ["{{base_url}}"],
+					"path": ["api", "v1", "payments", "stats"]
+				}
+			}
+		}
+	]
+}

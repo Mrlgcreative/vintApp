@@ -178,4 +178,17 @@ return [
         'credentials' => env('FIREBASE_CREDENTIALS', storage_path('firebase/serviceAccountKey.json')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | MaishaPay Configuration
+    |--------------------------------------------------------------------------
+    */
+    'maishapay' => [
+        'api_key' => env('MAISHAPAY_API_KEY'),
+        'secret_key' => env('MAISHAPAY_SECRET_KEY'),
+        'merchant_id' => env('MAISHAPAY_MERCHANT_ID'),
+        'environment' => env('MAISHAPAY_ENVIRONMENT', 'sandbox'),
+        'enabled' => env('MAISHAPAY_ENABLED', false),
+    ],
+
 ];

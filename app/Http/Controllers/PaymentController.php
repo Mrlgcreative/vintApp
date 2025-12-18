@@ -1943,5 +1943,241 @@ class PaymentController extends Controller
             return $this->errorResponse('Erreur lors de la récupération', 500);
         }
     }
+
+    // ==========================================
+    // MAISHAPAY INTEGRATION
+    // ==========================================
+
+    /**
+     * Initier un paiement MaishaPay via API
+     */
+    public function initiateMaishaPayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:100',
+            'phone' => 'required|string|min:9|max:12',
+            'currency' => 'sometimes|string|in:CDF,USD',
+            'operator' => 'sometimes|string|in:vodacom,airtel,orange,africell',
+            'purpose' => 'sometimes|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Données invalides',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $maishaPay = new \App\Services\MaishaPay();
+
+            if (!$maishaPay->isConfigured()) {
+                Log::error('MaishaPay non configuré');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Service de paiement non disponible',
+                ], 503);
+            }
+
+            $buyerId = $request->user()->id ?? $request->input('buyer_id');
+
+            // Créer la transaction dans la base
+            $transaction = Transaction::create([
+                'user_id' => $buyerId,
+                'amount' => $request->amount,
+                'currency' => $request->input('currency', 'CDF'),
+                'provider' => 'maishapay',
+                'status' => 'pending',
+                'purpose' => $request->input('purpose', 'Paiement VintApp'),
+                'phone_number' => $request->phone,
+                'metadata' => json_encode([
+                    'operator' => $request->input('operator'),
+                    'gateway' => 'maishapay',
+                ]),
+            ]);
+
+            // Mode sandbox = simulation
+            if (config('services.maishapay.environment') === 'sandbox') {
+                $result = $maishaPay->simulatePayment([
+                    'amount' => $request->amount,
+                    'phone' => $request->phone,
+                    'currency' => $request->input('currency', 'CDF'),
+                    'operator' => $request->input('operator'),
+                ]);
+
+                if ($result['success']) {
+                    $transaction->update([
+                        'status' => 'completed',
+                        'transaction_ref' => $result['transaction_id'],
+                    ]);
+
+                    return response()->json([
+                        'success' => true,
+                        'status' => 'success',
+                        'transaction_id' => $transaction->id,
+                        'reference' => $result['transaction_id'],
+                        'message' => $result['message'],
+                        'simulated' => true,
+                    ]);
+                }
+            }
+
+            // Mode production
+            $result = $maishaPay->initiatePayment([
+                'amount' => $request->amount,
+                'phone' => $request->phone,
+                'currency' => $request->input('currency', 'CDF'),
+                'operator' => $request->input('operator'),
+                'buyer_id' => $buyerId,
+                'description' => $request->input('purpose', 'Paiement VintApp'),
+            ]);
+
+            if ($result['success']) {
+                $transaction->update([
+                    'transaction_ref' => $result['transaction_id'],
+                    'metadata' => json_encode(array_merge(
+                        json_decode($transaction->metadata ?? '{}', true),
+                        ['maishapay_id' => $result['maishapay_id'] ?? null]
+                    )),
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'status' => 'pending',
+                    'transaction_id' => $transaction->id,
+                    'reference' => $result['transaction_id'],
+                    'message' => $result['message'],
+                ]);
+            }
+
+            $transaction->update(['status' => 'failed']);
+
+            return response()->json([
+                'success' => false,
+                'status' => 'failed',
+                'message' => $result['message'] ?? 'Erreur lors du paiement',
+            ], 400);
+
+        } catch (\Exception $e) {
+            Log::error('MaishaPay Exception', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur interne du service de paiement',
+            ], 500);
+        }
+    }
+
+    /**
+     * Callback MaishaPay (webhook)
+     */
+    public function handleMaishaCallback(Request $request)
+    {
+        Log::info('MaishaPay Callback reçu', $request->all());
+
+        $signature = $request->header('X-MaishaPay-Signature');
+        $payload = $request->getContent();
+
+        $maishaPay = new \App\Services\MaishaPay();
+
+        // Vérifier la signature en production
+        if (config('services.maishapay.environment') !== 'sandbox') {
+            if (!$maishaPay->verifyWebhookSignature($payload, $signature ?? '')) {
+                Log::warning('MaishaPay: Signature webhook invalide');
+                return response()->json(['error' => 'Invalid signature'], 401);
+            }
+        }
+
+        $data = $request->all();
+        $reference = $data['reference'] ?? $data['transaction_id'] ?? null;
+        $status = strtolower($data['status'] ?? '');
+
+        if (!$reference) {
+            return response()->json(['error' => 'Missing reference'], 400);
+        }
+
+        $transaction = Transaction::where('transaction_ref', $reference)->first();
+
+        if (!$transaction) {
+            Log::warning('MaishaPay: Transaction non trouvée', ['reference' => $reference]);
+            return response()->json(['error' => 'Transaction not found'], 404);
+        }
+
+        // Mettre à jour le statut
+        $newStatus = match($status) {
+            'success', 'completed', 'successful' => 'completed',
+            'failed', 'declined', 'cancelled' => 'failed',
+            default => 'pending',
+        };
+
+        $transaction->update([
+            'status' => $newStatus,
+            'metadata' => json_encode(array_merge(
+                json_decode($transaction->metadata ?? '{}', true),
+                ['callback_data' => $data, 'callback_at' => now()->toISOString()]
+            )),
+        ]);
+
+        Log::info('MaishaPay: Transaction mise à jour', [
+            'reference' => $reference,
+            'status' => $newStatus,
+        ]);
+
+        return response()->json(['success' => true, 'status' => $newStatus]);
+    }
+
+    /**
+     * Vérifier le statut d'une transaction MaishaPay
+     */
+    public function checkMaishaStatus(Request $request, $transactionId)
+    {
+        $transaction = Transaction::find($transactionId);
+
+        if (!$transaction) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction introuvable',
+            ], 404);
+        }
+
+        // Si déjà complété ou échoué, retourner le statut
+        if (in_array($transaction->status, ['completed', 'failed'])) {
+            return response()->json([
+                'success' => true,
+                'status' => $transaction->status,
+                'transaction_id' => $transaction->id,
+            ]);
+        }
+
+        // Sinon vérifier auprès de MaishaPay
+        if ($transaction->transaction_ref) {
+            $maishaPay = new \App\Services\MaishaPay();
+            $result = $maishaPay->checkStatus($transaction->transaction_ref);
+
+            if ($result['success'] && isset($result['status'])) {
+                $newStatus = match(strtolower($result['status'])) {
+                    'success', 'completed', 'successful' => 'completed',
+                    'failed', 'declined', 'cancelled' => 'failed',
+                    default => 'pending',
+                };
+
+                if ($newStatus !== $transaction->status) {
+                    $transaction->update(['status' => $newStatus]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'status' => $newStatus,
+                    'transaction_id' => $transaction->id,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $transaction->status,
+            'transaction_id' => $transaction->id,
+        ]);
+    }
 }
 

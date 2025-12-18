@@ -832,6 +832,10 @@ Route::prefix('payments')->group(function () {
     Route::post('/simulate', [PaymentController::class, 'simulatePayment'])->name('payments.simulate');
     Route::post('/callback', [PaymentController::class, 'handleCallback'])->name('payments.callback');
     
+    // MaishaPay routes
+    Route::post('/maishapay/initiate', [PaymentController::class, 'initiateMaishaPayment'])->name('payments.maishapay.initiate');
+    Route::get('/maishapay/status/{transaction}', [PaymentController::class, 'checkMaishaStatus'])->name('payments.maishapay.status');
+    
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {
         $transaction = \App\Models\Transaction::findOrFail($transactionId);
@@ -948,6 +952,11 @@ Route::middleware(['auth'])->group(function () {
             ->name('provider')
             ->withoutMiddleware(['auth']);
     });
+
+    // MaishaPay Webhook (PUBLIC - pas d'auth)
+    Route::post('/payments/maishapay/callback', [PaymentController::class, 'handleMaishaCallback'])
+        ->name('payments.maishapay.callback')
+        ->withoutMiddleware(['auth', 'web']);
 
     // Routes Transactions
     Route::prefix('admin/transactions')->name('admin.transactions.')->middleware(['auth', 'admin'])->group(function () {
