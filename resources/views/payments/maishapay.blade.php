@@ -89,6 +89,16 @@
                                 </span>
                             </div>
                         </div>
+                        
+                        <!-- Avertissement frais opérateur -->
+                        <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-amber-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                                <p class="text-xs text-amber-700 dark:text-amber-300">
+                                    <strong>Note :</strong> Des frais de transaction de l'opérateur mobile money (environ 3-4%) peuvent s'ajouter au montant ci-dessus lors du paiement.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 @endif
                 
