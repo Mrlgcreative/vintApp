@@ -1147,4 +1147,262 @@ class WalletController extends Controller
             return $this->errorResponse('Erreur lors de la conversion', 500);
         }
     }
+
+    /**
+     * Withdraw funds via MaishaPay API (unified payout)
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiWithdrawMaishaPay(Request $request)
+    {
+        try {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+                'wallet_id' => 'required|exists:wallets,id',
+                'amount' => 'required|numeric|min:100',
+                'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/'],
+                'operator' => 'nullable|string|in:VODACOM,ORANGE,AIRTEL,AFRICELL',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+            }
+
+            $wallet = Wallet::findOrFail($request->wallet_id);
+
+            if ($wallet->user_id !== $request->user()->id) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            if ($request->amount > $wallet->balance) {
+                return $this->errorResponse('Solde insuffisant', 400);
+            }
+
+            // Vérifier que MaishaPay est activé
+            if (!config('services.maishapay.enabled')) {
+                return $this->errorResponse('Service MaishaPay non disponible', 503);
+            }
+
+            $maishaPay = new \App\Services\MaishaPay();
+            
+            if (!$maishaPay->isConfigured()) {
+                return $this->errorResponse('MaishaPay non configuré', 503);
+            }
+
+            // Détecter l'opérateur si non fourni
+            $operator = $request->operator ?? $maishaPay->detectOperator($request->phone_number);
+            
+            if (!$operator) {
+                return $this->errorResponse('Impossible de détecter l\'opérateur pour ce numéro', 400);
+            }
+
+            DB::beginTransaction();
+
+            $reference = 'WTH-MP-' . time() . '-' . rand(1000, 9999);
+
+            $metadata = [
+                'phone_number' => $request->phone_number,
+                'payment_method' => 'maishapay',
+                'operator' => $operator,
+                'withdrawal_date' => now()->toDateTimeString(),
+            ];
+
+            $transaction = $wallet->transactions()->create([
+                'type' => 'debit',
+                'amount' => $request->amount,
+                'balance_after' => $wallet->balance,
+                'description' => "Retrait MaishaPay vers {$request->phone_number} ({$operator})",
+                'reference' => $reference,
+                'status' => 'processing',
+                'provider' => 'maishapay',
+                'metadata' => json_encode($metadata)
+            ]);
+
+            $withdrawalRequest = WithdrawalRequest::create([
+                'wallet_transaction_id' => $transaction->id,
+                'phone_number' => $request->phone_number,
+                'payment_method' => 'maishapay',
+                'amount' => $request->amount,
+                'currency' => $wallet->currency,
+                'status' => 'processing',
+            ]);
+
+            $wallet->decrement('balance', $request->amount);
+            $transaction->update(['balance_after' => $wallet->fresh()->balance]);
+
+            DB::commit();
+
+            // Initier le payout via MaishaPay
+            try {
+                $payoutResult = $maishaPay->initiatePayout([
+                    'phone' => $request->phone_number,
+                    'amount' => $request->amount,
+                    'currency' => $wallet->currency,
+                    'operator' => $operator,
+                    'reference' => $reference,
+                    'description' => "Retrait VintApp - {$reference}",
+                    'user_id' => $request->user()->id,
+                    'transaction_id' => $transaction->id,
+                    'purpose' => 'withdrawal',
+                ]);
+
+                $withdrawalRequest->update([
+                    'provider_reference' => $payoutResult['provider_reference'] ?? $payoutResult['transaction_id'] ?? null,
+                    'provider_response' => json_encode($payoutResult),
+                    'status' => $payoutResult['success'] ? 'processing' : 'failed',
+                ]);
+
+                $transaction->update([
+                    'status' => $payoutResult['success'] ? 'processing' : 'failed'
+                ]);
+
+                if ($payoutResult['success']) {
+                    return $this->successResponse([
+                        'withdrawal' => $withdrawalRequest->fresh(),
+                        'transaction' => $transaction->fresh(),
+                        'maishapay_reference' => $payoutResult['transaction_id'] ?? null,
+                        'operator' => $operator,
+                    ], $payoutResult['message'] ?? 'Retrait initié avec succès');
+                } else {
+                    // Rembourser en cas d'échec immédiat
+                    DB::transaction(function () use ($wallet, $transaction, $request) {
+                        $wallet->increment('balance', $request->amount);
+                        $wallet->transactions()->create([
+                            'type' => 'credit',
+                            'amount' => $request->amount,
+                            'balance_after' => $wallet->fresh()->balance,
+                            'description' => 'Remboursement - Échec MaishaPay payout',
+                            'reference' => 'REFUND-' . $transaction->reference,
+                            'status' => 'completed',
+                        ]);
+                    });
+
+                    return $this->errorResponse($payoutResult['message'] ?? 'Échec du payout MaishaPay', 400);
+                }
+            } catch (\Exception $apiError) {
+                Log::error('MaishaPay payout API error', [
+                    'error' => $apiError->getMessage(),
+                    'reference' => $reference,
+                ]);
+                
+                $withdrawalRequest->update(['status' => 'pending']);
+                $transaction->update(['status' => 'pending']);
+
+                return $this->successResponse([
+                    'withdrawal' => $withdrawalRequest->fresh(),
+                    'message' => 'Demande enregistrée. Traitement en cours.'
+                ], 'Retrait en attente de traitement', 202);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('MaishaPay withdrawal error', ['error' => $e->getMessage()]);
+            return $this->errorResponse('Erreur lors du retrait', 500);
+        }
+    }
+
+    /**
+     * Check MaishaPay payout status
+     * 
+     * @param string $transactionId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiWithdrawMaishaPayStatus(Request $request, string $transactionId)
+    {
+        try {
+            $transaction = WalletTransaction::where('reference', $transactionId)
+                ->orWhere('id', $transactionId)
+                ->first();
+
+            if (!$transaction) {
+                return $this->errorResponse('Transaction non trouvée', 404);
+            }
+
+            // Vérifier que l'utilisateur est propriétaire
+            if ($transaction->wallet->user_id !== $request->user()->id) {
+                return $this->errorResponse('Accès non autorisé', 403);
+            }
+
+            $withdrawalRequest = WithdrawalRequest::where('wallet_transaction_id', $transaction->id)->first();
+
+            // Si le statut est toujours en processing, vérifier via MaishaPay
+            if ($transaction->status === 'processing' && config('services.maishapay.enabled')) {
+                try {
+                    $maishaPay = new \App\Services\MaishaPay();
+                    $providerRef = $withdrawalRequest->provider_reference ?? $transaction->reference;
+                    $statusResult = $maishaPay->checkPayoutStatus($providerRef);
+
+                    if ($statusResult['success'] && $statusResult['status'] !== 'processing') {
+                        $transaction->update(['status' => $statusResult['status']]);
+                        $withdrawalRequest?->update(['status' => $statusResult['status']]);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('MaishaPay status check failed', ['error' => $e->getMessage()]);
+                }
+            }
+
+            return $this->successResponse([
+                'transaction_id' => $transaction->id,
+                'reference' => $transaction->reference,
+                'amount' => $transaction->amount,
+                'status' => $transaction->status,
+                'provider_reference' => $withdrawalRequest->provider_reference ?? null,
+                'created_at' => $transaction->created_at,
+                'updated_at' => $transaction->updated_at,
+            ], 'Statut récupéré');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Erreur lors de la vérification', 500);
+        }
+    }
+
+    /**
+     * Get available payout operators
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function apiGetPayoutOperators(Request $request)
+    {
+        $operators = [
+            [
+                'code' => 'VODACOM',
+                'name' => 'M-Pesa (Vodacom)',
+                'prefixes' => ['81', '82', '83'],
+                'supported_via_maishapay' => true,
+                'min_amount' => 100,
+                'max_amount' => 5000000,
+            ],
+            [
+                'code' => 'ORANGE',
+                'name' => 'Orange Money',
+                'prefixes' => ['84', '85', '89'],
+                'supported_via_maishapay' => true,
+                'min_amount' => 100,
+                'max_amount' => 5000000,
+            ],
+            [
+                'code' => 'AIRTEL',
+                'name' => 'Airtel Money',
+                'prefixes' => ['97', '98', '99'],
+                'supported_via_maishapay' => true,
+                'min_amount' => 100,
+                'max_amount' => 5000000,
+            ],
+            [
+                'code' => 'AFRICELL',
+                'name' => 'Africell Money',
+                'prefixes' => ['90', '91'],
+                'supported_via_maishapay' => true,
+                'min_amount' => 100,
+                'max_amount' => 5000000,
+            ],
+        ];
+
+        $maishaPayEnabled = config('services.maishapay.enabled', false);
+
+        return $this->successResponse([
+            'operators' => $operators,
+            'maishapay_enabled' => $maishaPayEnabled,
+            'country_code' => '+243',
+            'country' => 'RDC',
+        ], 'Opérateurs disponibles');
+    }
 }

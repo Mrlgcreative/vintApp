@@ -123,40 +123,24 @@
                                 </small>
                             </div>
 
-                            <!-- Méthode de paiement -->
+                            <!-- Méthode de paiement - MaishaPay uniquement -->
                             <div class="mb-4">
-                                <label for="payment_method" class="form-label fw-semibold">
+                                <label class="form-label fw-semibold">
                                     <i class="fas fa-credit-card me-1"></i>
-                                    Opérateur Mobile Money
-                                    <span class="text-danger">*</span>
+                                    Opérateur de retrait
                                 </label>
-                                <select class="form-select form-select-lg @error('payment_method') is-invalid @enderror" 
-                                        id="payment_method" 
-                                        name="payment_method" 
-                                        required>
-                                    <option value="" disabled selected>Choisir l'opérateur</option>
-                                    <option value="orange_money" {{ old('payment_method') === 'orange_money' ? 'selected' : '' }}>
-                                        🟠 Orange Money
-                                    </option>
-                                    <option value="airtel_money" {{ old('payment_method') === 'airtel_money' ? 'selected' : '' }}>
-                                        🔴 Airtel Money
-                                    </option>
-                                    <option value="mpesa" {{ old('payment_method') === 'mpesa' ? 'selected' : '' }}>
-                                        🟢 M-Pesa (Vodacom)
-                                    </option>
-                                    <option value="africell" {{ old('payment_method') === 'africell' ? 'selected' : '' }}>
-                                        🔵 Africell Money
-                                    </option>
-                                    <option value="illicocash" {{ old('payment_method') === 'illicocash' ? 'selected' : '' }}>
-                                        💳 Illicocash
-                                    </option>
-                                </select>
-                                @error('payment_method')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                                <div class="alert alert-success d-flex align-items-center" role="alert">
+                                    <i class="fas fa-bolt fa-2x me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold">MaishaPay</h6>
+                                        <small>Tous opérateurs Mobile Money RDC (Orange, M-Pesa, Airtel, Africell)</small>
+                                    </div>
+                                    <span class="badge bg-success">Actif</span>
+                                </div>
+                                <input type="hidden" name="payment_method" value="maishapay">
                                 <small class="form-text text-muted">
                                     <i class="fas fa-info-circle me-1"></i>
-                                    L'opérateur correspondant à votre numéro de téléphone
+                                    MaishaPay détecte automatiquement votre opérateur à partir de votre numéro
                                 </small>
                             </div>
 
@@ -212,13 +196,13 @@
                                 </div>
                             </div>
 
-                            <!-- Information sur le traitement automatique -->
+                            <!-- Information sur le traitement MaishaPay -->
                             <div class="alert alert-info" role="alert">
                                 <div class="d-flex">
-                                    <i class="fas fa-robot me-3 mt-1"></i>
+                                    <i class="fas fa-bolt me-3 mt-1"></i>
                                     <div>
-                                        <h6 class="mb-1">💰 Décaissement automatique</h6>
-                                        <small>Votre retrait sera traité automatiquement via l'API mobile money. Les fonds seront envoyés directement vers votre compte mobile sous quelques minutes.</small>
+                                        <h6 class="mb-1">⚡ Traitement MaishaPay</h6>
+                                        <small>Votre retrait sera traité automatiquement via MaishaPay. Les fonds seront envoyés directement vers votre compte mobile sous quelques minutes (2-10 min selon l'opérateur).</small>
                                     </div>
                                 </div>
                             </div>
@@ -284,47 +268,40 @@
                 </div>
             </div>
 
-            <!-- Informations sur les opérateurs -->
-            <div class="card border-0 shadow-sm mt-3">
+            <!-- Opérateurs supportés par MaishaPay -->
+            <div class="card border-0 shadow-sm mt-4">
                 <div class="card-body">
-                    <h6 class="text-primary mb-3">
-                        <i class="fas fa-info-circle me-2"></i>
-                        Opérateurs supportés
+                    <h6 class="text-success mb-3">
+                        <i class="fas fa-bolt me-2"></i>
+                        Opérateurs supportés par MaishaPay
                     </h6>
                     <div class="row g-2">
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <div class="p-2 bg-light rounded text-center">
                                 <div class="fs-4 mb-1">🟠</div>
                                 <small class="fw-semibold">Orange Money</small>
-                                <div><small class="text-muted">0897...</small></div>
+                                <div><small class="text-muted">084/085/089</small></div>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="p-2 bg-light rounded text-center">
-                                <div class="fs-4 mb-1">🔴</div>
-                                <small class="fw-semibold">Airtel Money</small>
-                                <div><small class="text-muted">0970...</small></div>
-                            </div>
-                        </div>
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
                             <div class="p-2 bg-light rounded text-center">
                                 <div class="fs-4 mb-1">🟢</div>
                                 <small class="fw-semibold">M-Pesa</small>
-                                <div><small class="text-muted">0810...</small></div>
+                                <div><small class="text-muted">081/082/083</small></div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-6 col-md-3">
+                            <div class="p-2 bg-light rounded text-center">
+                                <div class="fs-4 mb-1">🔴</div>
+                                <small class="fw-semibold">Airtel Money</small>
+                                <div><small class="text-muted">097/098/099</small></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3">
                             <div class="p-2 bg-light rounded text-center">
                                 <div class="fs-4 mb-1">🔵</div>
                                 <small class="fw-semibold">Africell</small>
-                                <div><small class="text-muted">0990...</small></div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="p-2 bg-light rounded text-center">
-                                <div class="fs-4 mb-1">💳</div>
-                                <small class="fw-semibold">Illicocash</small>
-                                <div><small class="text-muted">Multi-opérateurs</small></div>
+                                <div><small class="text-muted">090/091/092</small></div>
                             </div>
                         </div>
                     </div>
@@ -419,7 +396,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const amountInput = document.getElementById('amount');
     const phoneInput = document.getElementById('phone_number');
-    const paymentMethodSelect = document.getElementById('payment_method');
     const confirmBtn = document.getElementById('confirmBtn');
     const preview = document.getElementById('preview');
     const withdrawAmountSpan = document.getElementById('withdrawAmount');
@@ -427,20 +403,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentBalance = {{ $wallet->balance }};
     const currency = '{{ $wallet->currency }}';
     
-    // Fonction de validation du formulaire
+    // Fonction de validation du formulaire (MaishaPay toujours sélectionné)
     function validateForm() {
         const amount = parseFloat(amountInput.value) || 0;
         const phone = phoneInput.value.trim();
-        const paymentMethod = paymentMethodSelect.value;
         
         const isAmountValid = amount > 0 && amount <= currentBalance;
         const isPhoneValid = phone.length >= 9 && /^(\+?243|0)?[0-9]{9}$/.test(phone);
-        const isPaymentMethodValid = paymentMethod !== '';
         
-        confirmBtn.disabled = !(isAmountValid && isPhoneValid && isPaymentMethodValid);
+        confirmBtn.disabled = !(isAmountValid && isPhoneValid);
         
         return {
-            isValid: isAmountValid && isPhoneValid && isPaymentMethodValid,
+            isValid: isAmountValid && isPhoneValid,
             amount: amount
         };
     }
@@ -463,17 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.classList.remove('is-valid', 'is-invalid');
             }
             
-            validateForm();
-        });
-    }
-    
-    // Validation de l'opérateur
-    if (paymentMethodSelect) {
-        paymentMethodSelect.addEventListener('change', function() {
-            if (this.value) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            }
             validateForm();
         });
     }
@@ -531,12 +494,11 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const phone = phoneInput.value.trim();
             const amount = parseFloat(amountInput.value);
-            const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
             
-            const confirmMessage = `🔄 RETRAIT AUTOMATIQUE\n\n` +
+            const confirmMessage = `🔄 RETRAIT VIA MAISHAPAY\n\n` +
                 `Montant : ${currency === 'CDF' ? amount.toLocaleString('fr-FR') + ' FC' : '$' + amount.toLocaleString('en-US')}\n` +
                 `Vers : ${phone}\n` +
-                `Opérateur : ${paymentMethod}\n\n` +
+                `Opérateur : MaishaPay (détection automatique)\n\n` +
                 `⚡ Le transfert sera traité automatiquement dans les 2-10 minutes.\n` +
                 `💰 Votre wallet sera débité immédiatement.\n` +
                 `🔄 Remboursement automatique en cas d'échec.\n\n` +

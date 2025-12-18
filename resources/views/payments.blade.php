@@ -4,10 +4,18 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="bg-blue-600 text-white px-6 py-4 text-center">
+            <!-- En-tête MaishaPay -->
+            <div class="bg-green-600 text-white px-6 py-5 text-center">
                 <h4 class="text-xl font-semibold flex items-center justify-center">
-                    <i class="fas fa-mobile-alt mr-3"></i>Paiement Mobile Money
+                    <i class="fas fa-bolt mr-3"></i>Paiement MaishaPay
                 </h4>
+                <p class="text-green-100 text-sm mt-1">Tous opérateurs Mobile Money RDC</p>
+                <div class="flex items-center justify-center gap-4 mt-3">
+                    <img src="/images/operators/orange.png" alt="Orange" class="h-8 w-8 rounded-full bg-white p-1">
+                    <img src="/images/operators/mpesa.png" alt="M-Pesa" class="h-8 w-8 rounded-full bg-white p-1">
+                    <img src="/images/operators/airtel.png" alt="Airtel" class="h-8 w-8 rounded-full bg-white p-1">
+                    <img src="/images/operators/africell.png" alt="Africell" class="h-8 w-8 rounded-full bg-white p-1">
+                </div>
             </div>
             <div class="p-6">
                 @if(isset($cart) && !empty($cart))
@@ -161,8 +169,8 @@
                     <input type="hidden" id="purpose" name="purpose" value="Paiement commande">
                     
                     <button type="submit" 
-                            class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
-                        <i class="fas fa-paper-plane mr-2"></i>Payer maintenant
+                            class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
+                        <i class="fas fa-bolt mr-2"></i>Payer avec MaishaPay
                     </button>
                 </form>
                 
@@ -531,8 +539,8 @@ document.getElementById('payment-form').addEventListener('submit', async functio
     } finally {
         // Réactiver le bouton et restaurer son texte original
         submitButton.disabled = false;
-        submitButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Payer maintenant';
-        submitButton.className = 'w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg';
+        submitButton.innerHTML = '<i class="fas fa-bolt mr-2"></i>Payer avec MaishaPay';
+        submitButton.className = 'w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg';
     }
 });
 </script>
