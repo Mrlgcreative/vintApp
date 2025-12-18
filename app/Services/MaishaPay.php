@@ -12,6 +12,7 @@ class MaishaPay
     protected string $secretKey;
     protected string $merchantId;
     protected string $baseUrl;
+    protected string $collectUrl;
     protected bool $sandbox;
 
     public function __construct()
@@ -20,9 +21,16 @@ class MaishaPay
         $this->secretKey = config('services.maishapay.secret_key') ?? '';
         $this->merchantId = config('services.maishapay.merchant_id') ?? '';
         $this->sandbox = config('services.maishapay.environment', 'sandbox') === 'sandbox';
+        
+        // URLs de l'API MaishaPay
         $this->baseUrl = $this->sandbox 
             ? 'https://sandbox.maishapay.net/api/v2'
-            : 'https://api.maishapay.net/api/v2';
+            : 'https://marchand.maishapay.online/api';
+            
+        // URL spécifique pour la collecte Mobile Money v2
+        $this->collectUrl = $this->sandbox
+            ? 'https://sandbox.maishapay.net/api/v2/payments/mobile-money'
+            : 'https://marchand.maishapay.online/api/collect/v2/store/mobileMoney';
     }
 
     /**
@@ -94,7 +102,7 @@ class MaishaPay
     }
 
     /**
-     * Initier un paiement Mobile Money
+     * Initier un paiement Mobile Money (Collecte v2)
      */
     public function initiatePayment(array $data): array
     {
@@ -102,48 +110,43 @@ class MaishaPay
         $phone = $this->formatPhone($data['phone']);
         $operator = $data['operator'] ?? $this->detectOperator($phone);
 
+        // Payload selon la documentation MaishaPay Collect v2
         $payload = [
             'amount' => (float) $data['amount'],
-            'currency' => $data['currency'] ?? 'CDF',
+            'currency' => strtoupper($data['currency'] ?? 'CDF'),
             'phone' => $phone,
-            'operator' => $operator,
+            'gateway' => strtoupper($operator), // VODACOM, AIRTEL, ORANGE, AFRICELL
             'reference' => $transactionId,
             'description' => $data['description'] ?? 'Paiement VintApp',
-            'callback_url' => $data['callback_url'] ?? route('payments.maishapay.callback'),
-            'return_url' => $data['return_url'] ?? route('payments.maishapay.return'),
-            'cancel_url' => $data['cancel_url'] ?? route('payments.maishapay.cancel'),
-            'metadata' => [
-                'buyer_id' => $data['buyer_id'] ?? null,
-                'order_id' => $data['order_id'] ?? null,
-                'purpose' => $data['purpose'] ?? 'purchase',
-            ],
+            'callbackUrl' => $data['callback_url'] ?? route('payments.maishapay.callback'),
         ];
 
-        Log::info('MaishaPay: Initiation paiement', [
+        Log::info('MaishaPay: Initiation paiement v2', [
             'reference' => $transactionId,
             'amount' => $payload['amount'],
             'currency' => $payload['currency'],
             'phone' => $phone,
-            'operator' => $operator,
+            'gateway' => $payload['gateway'],
+            'url' => $this->collectUrl,
         ]);
 
         try {
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(30)
-                ->post($this->baseUrl . '/payments/mobile-money', $payload);
+                ->post($this->collectUrl, $payload);
 
             $result = $response->json();
 
-            Log::info('MaishaPay: Réponse API', [
+            Log::info('MaishaPay: Réponse API v2', [
                 'status' => $response->status(),
                 'response' => $result,
             ]);
 
-            if ($response->successful() && isset($result['success']) && $result['success']) {
+            if ($response->successful() && ($result['success'] ?? false)) {
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'maishapay_id' => $result['data']['transaction_id'] ?? null,
+                    'maishapay_id' => $result['data']['transactionId'] ?? $result['transactionId'] ?? null,
                     'status' => 'pending',
                     'message' => $result['message'] ?? 'Paiement initié. Confirmez sur votre téléphone.',
                     'data' => $result['data'] ?? [],
@@ -155,7 +158,7 @@ class MaishaPay
                 'transaction_id' => $transactionId,
                 'status' => 'failed',
                 'message' => $result['message'] ?? 'Erreur lors de l\'initiation du paiement',
-                'error' => $result['error'] ?? null,
+                'error' => $result['error'] ?? $result['errors'] ?? null,
             ];
 
         } catch (\Exception $e) {
