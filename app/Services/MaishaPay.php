@@ -16,9 +16,9 @@ class MaishaPay
 
     public function __construct()
     {
-        $this->apiKey = config('services.maishapay.api_key', '');
-        $this->secretKey = config('services.maishapay.secret_key', '');
-        $this->merchantId = config('services.maishapay.merchant_id', '');
+        $this->apiKey = config('services.maishapay.api_key') ?? '';
+        $this->secretKey = config('services.maishapay.secret_key') ?? '';
+        $this->merchantId = config('services.maishapay.merchant_id') ?? '';
         $this->sandbox = config('services.maishapay.environment', 'sandbox') === 'sandbox';
         $this->baseUrl = $this->sandbox 
             ? 'https://sandbox.maishapay.net/api/v2'
