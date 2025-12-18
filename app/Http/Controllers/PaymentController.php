@@ -2038,7 +2038,7 @@ class PaymentController extends Controller
                 'provider' => 'maishapay',
                 'status' => 'pending',
                 'purpose' => $request->input('purpose', 'Paiement VintApp'),
-                'phone_number' => $request->phone,
+                'phone' => $request->phone,
                 'metadata' => json_encode([
                     'operator' => $request->input('operator'),
                     'gateway' => 'maishapay',
