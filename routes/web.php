@@ -954,10 +954,10 @@ Route::middleware(['auth'])->group(function () {
             ->withoutMiddleware(['auth']);
     });
 
-    // MaishaPay Webhook (PUBLIC - pas d'auth)
-    Route::post('/payments/maishapay/callback', [PaymentController::class, 'handleMaishaCallback'])
+    // MaishaPay Webhook (PUBLIC - pas d'auth) - Supporte GET et POST
+    Route::match(['get', 'post'], '/payments/maishapay/callback', [PaymentController::class, 'handleMaishaCallback'])
         ->name('payments.maishapay.callback')
-        ->withoutMiddleware(['auth', 'web']);
+        ->withoutMiddleware(['auth', 'web', 'csrf']);
 
     // Routes Transactions
     Route::prefix('admin/transactions')->name('admin.transactions.')->middleware(['auth', 'admin'])->group(function () {

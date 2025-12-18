@@ -2131,30 +2131,38 @@ class PaymentController extends Controller
     }
 
     /**
-     * Callback MaishaPay (webhook)
+     * Callback MaishaPay (webhook) - Supporte GET et POST
      */
     public function handleMaishaCallback(Request $request)
     {
-        Log::info('MaishaPay Callback reçu', $request->all());
+        Log::info('MaishaPay Callback reçu', [
+            'method' => $request->method(),
+            'data' => $request->all(),
+            'query' => $request->query(),
+        ]);
+
+        // MaishaPay peut envoyer les données en query string (GET) ou body (POST)
+        $data = $request->isMethod('get') ? $request->query() : $request->all();
 
         $signature = $request->header('X-MaishaPay-Signature');
         $payload = $request->getContent();
 
         $maishaPay = new \App\Services\MaishaPay();
 
-        // Vérifier la signature en production
-        if (config('services.maishapay.environment') !== 'sandbox') {
-            if (!$maishaPay->verifyWebhookSignature($payload, $signature ?? '')) {
+        // Vérifier la signature en production (seulement pour POST avec signature)
+        if ($request->isMethod('post') && config('services.maishapay.environment') !== 'sandbox') {
+            if ($signature && !$maishaPay->verifyWebhookSignature($payload, $signature)) {
                 Log::warning('MaishaPay: Signature webhook invalide');
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
         }
 
-        $data = $request->all();
-        $reference = $data['reference'] ?? $data['transaction_id'] ?? null;
-        $status = strtolower($data['status'] ?? '');
+        // $data est déjà défini plus haut (GET query ou POST body)
+        $reference = $data['reference'] ?? $data['transaction_id'] ?? $data['transactionReference'] ?? null;
+        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? '');
 
         if (!$reference) {
+            Log::warning('MaishaPay Callback: Référence manquante', ['data' => $data]);
             return response()->json(['error' => 'Missing reference'], 400);
         }
 
