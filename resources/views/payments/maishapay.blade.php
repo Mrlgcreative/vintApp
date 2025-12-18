@@ -326,7 +326,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
     statusDiv.classList.remove('hidden');
     
     try {
-        const response = await fetch('{{ route("api.v1.payments.maishapay.initiate") }}', {
+        const response = await fetch('{{ route("payments.maishapay.initiate") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
