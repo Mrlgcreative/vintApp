@@ -713,8 +713,10 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
     Route::get('/refund/{refundId}/status', [PaymentController::class, 'apiRefundStatus']);
     
     // MaishaPay routes
-    Route::post('/maishapay', [PaymentController::class, 'initiateMaishaPayment']);
-    Route::get('/maishapay/status/{transactionId}', [PaymentController::class, 'checkMaishaStatus']);
+    Route::post('/maishapay', [PaymentController::class, 'initiateMaishaPayment'])
+        ->name('api.v1.payments.maishapay.initiate');
+    Route::get('/maishapay/status/{transactionId}', [PaymentController::class, 'checkMaishaStatus'])
+        ->name('api.v1.payments.maishapay.status');
 });
 
 // MaishaPay webhook (public - no auth)
