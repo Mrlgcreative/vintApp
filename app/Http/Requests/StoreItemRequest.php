@@ -23,7 +23,7 @@ class StoreItemRequest extends FormRequest
             'name' => ['required', 'string', 'min:3', 'max:255'],
             'description' => ['required', 'string', 'min:10', 'max:5000'],
             'price' => ['required', 'numeric', 'min:0', 'max:999999999.99'],
-            'currency' => ['required', 'string', 'in:USD,EUR,XAF,XOF'],
+            'currency' => ['required', 'string', 'in:USD,EUR,XAF,XOF,CDF'],
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'condition' => ['required', 'in:new,like_new,good,fair,poor'],

@@ -24,7 +24,7 @@ class UpdateItemRequest extends FormRequest
             'name' => ['sometimes', 'string', 'min:3', 'max:255'],
             'description' => ['sometimes', 'string', 'min:10', 'max:5000'],
             'price' => ['sometimes', 'numeric', 'min:0', 'max:999999999.99'],
-            'currency' => ['sometimes', 'string', 'in:USD,EUR,XAF,XOF'],
+            'currency' => ['sometimes', 'string', 'in:USD,EUR,XAF,XOF,CDF'],
             'category_id' => ['sometimes', 'integer', 'exists:categories,id'],
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'condition' => ['sometimes', 'in:new,like_new,good,fair,poor'],
