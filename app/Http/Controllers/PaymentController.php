@@ -2032,11 +2032,16 @@ class PaymentController extends Controller
             // Générer un ID de transaction unique
             $transactionId = 'MP-' . strtoupper(\Illuminate\Support\Str::random(12)) . '-' . time();
 
+            // Stocker le panier dans les métadonnées pour le callback
+            $cartData = session('cart', []);
+            $deliveryAddressId = session('maishapay_checkout.delivery_address_id');
+
             // Créer la transaction dans la base
             $transaction = Transaction::create([
                 'user_id' => $buyerId,
                 'buyer_id' => $buyerId,
                 'transaction_id' => $transactionId,
+                'transaction_ref' => $transactionId, // Pour le callback
                 'amount' => $request->amount,
                 'currency' => $request->input('currency', 'CDF'),
                 'provider' => 'maishapay',
@@ -2046,6 +2051,8 @@ class PaymentController extends Controller
                 'metadata' => json_encode([
                     'operator' => $request->input('operator'),
                     'gateway' => 'maishapay',
+                    'cart' => $cartData,
+                    'delivery_address_id' => $deliveryAddressId,
                 ]),
             ]);
 
@@ -2151,7 +2158,10 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Missing reference'], 400);
         }
 
-        $transaction = Transaction::where('transaction_ref', $reference)->first();
+        // Chercher par transaction_ref ou transaction_id
+        $transaction = Transaction::where('transaction_ref', $reference)
+            ->orWhere('transaction_id', $reference)
+            ->first();
 
         if (!$transaction) {
             Log::warning('MaishaPay: Transaction non trouvée', ['reference' => $reference]);
@@ -2165,6 +2175,8 @@ class PaymentController extends Controller
             default => 'pending',
         };
 
+        $previousStatus = $transaction->status;
+
         $transaction->update([
             'status' => $newStatus,
             'metadata' => json_encode(array_merge(
@@ -2173,12 +2185,129 @@ class PaymentController extends Controller
             )),
         ]);
 
+        // Si le paiement vient d'être confirmé, créer les commandes
+        if ($newStatus === 'completed' && $previousStatus !== 'completed') {
+            $this->createOrdersFromCallback($transaction);
+        }
+
         Log::info('MaishaPay: Transaction mise à jour', [
             'reference' => $reference,
             'status' => $newStatus,
         ]);
 
         return response()->json(['success' => true, 'status' => $newStatus]);
+    }
+
+    /**
+     * Créer les commandes à partir du callback (données stockées dans metadata)
+     */
+    private function createOrdersFromCallback($transaction)
+    {
+        $metadata = json_decode($transaction->metadata ?? '{}', true);
+        $cart = $metadata['cart'] ?? [];
+        $deliveryAddressId = $metadata['delivery_address_id'] ?? null;
+        $buyerId = $transaction->buyer_id ?? $transaction->user_id;
+        $phone = $transaction->phone ?? null;
+
+        if (empty($cart)) {
+            Log::warning('MaishaPay Callback: Panier vide dans les métadonnées', [
+                'transaction_id' => $transaction->id
+            ]);
+            return [];
+        }
+
+        $orders = [];
+        
+        // Récupérer l'adresse de livraison
+        $deliveryAddress = $deliveryAddressId 
+            ? \App\Models\DeliveryAddress::find($deliveryAddressId)
+            : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
+
+        foreach ($cart as $itemId => $cartItem) {
+            $item = \App\Models\Item::find($itemId);
+            
+            if (!$item) {
+                Log::warning('Article non trouvé dans le panier callback', ['item_id' => $itemId]);
+                continue;
+            }
+
+            $orderAmount = $item->price * $cartItem['quantity'];
+            
+            // Créer ou récupérer le wallet "pending" du vendeur
+            $seller = \App\Models\User::find($item->user_id);
+            if (!$seller) {
+                Log::warning('Vendeur non trouvé', ['seller_id' => $item->user_id]);
+                continue;
+            }
+
+            $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
+                [
+                    'user_id' => $seller->id,
+                    'type' => 'pending',
+                    'currency' => $item->currency
+                ],
+                [
+                    'balance' => 0,
+                    'status' => 'active',
+                    'is_active' => true
+                ]
+            );
+            
+            // Ajouter le montant au wallet pending du vendeur
+            $sellerPendingWallet->increment('balance', $orderAmount);
+            
+            // Préparer les données de commande
+            $orderData = [
+                'buyer_id' => $buyerId,
+                'seller_id' => $item->user_id,
+                'item_id' => $item->id,
+                'quantity' => $cartItem['quantity'],
+                'unit_price' => $item->price,
+                'total_amount' => $orderAmount,
+                'currency' => $item->currency,
+                'status' => 'confirmed',
+                'paid_at' => now(),
+                'notes' => 'Paiement via MaishaPay - Transaction #' . $transaction->id,
+            ];
+            
+            // Ajouter l'adresse de livraison si disponible
+            if ($deliveryAddress) {
+                $orderData['delivery_address_id'] = $deliveryAddress->id;
+                $orderData['shipping_address'] = $deliveryAddress->address;
+                $orderData['shipping_city'] = $deliveryAddress->city;
+                $orderData['shipping_phone'] = $deliveryAddress->phone;
+            } else {
+                $orderData['shipping_address'] = 'À définir';
+                $orderData['shipping_city'] = 'À définir';
+                $orderData['shipping_phone'] = $phone ?? 'N/A';
+            }
+            
+            // Créer la commande
+            $order = \App\Models\Order::create($orderData);
+            $orders[] = $order;
+            
+            // Mettre à jour le stock
+            $item->quantity -= $cartItem['quantity'];
+            if ($item->quantity <= 0) {
+                $item->status = 'sold';
+            }
+            $item->save();
+            
+            Log::info("Commande créée via MaishaPay Callback", [
+                'order_id' => $order->id,
+                'seller_id' => $seller->id,
+                'amount' => $orderAmount,
+                'currency' => $item->currency,
+            ]);
+        }
+        
+        Log::info('Commandes créées via callback', [
+            'buyer_id' => $buyerId,
+            'transaction_id' => $transaction->id,
+            'orders_count' => count($orders),
+        ]);
+        
+        return $orders;
     }
 
     /**
