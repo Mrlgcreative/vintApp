@@ -2026,9 +2026,13 @@ class PaymentController extends Controller
 
             $buyerId = $request->user()->id ?? $request->input('buyer_id');
 
+            // Générer un ID de transaction unique
+            $transactionId = 'MP-' . strtoupper(\Illuminate\Support\Str::random(12)) . '-' . time();
+
             // Créer la transaction dans la base
             $transaction = Transaction::create([
                 'user_id' => $buyerId,
+                'transaction_id' => $transactionId,
                 'amount' => $request->amount,
                 'currency' => $request->input('currency', 'CDF'),
                 'provider' => 'maishapay',

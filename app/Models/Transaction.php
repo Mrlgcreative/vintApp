@@ -30,7 +30,9 @@ class Transaction extends Model
         'transaction_id',
         'provider',
         'phone',
+        'phone_number',
         'purpose',
+        'metadata',
     ];
 
     /**
