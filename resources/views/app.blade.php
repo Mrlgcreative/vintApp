@@ -483,9 +483,6 @@
     <!-- PWA Manager -->
     <script src="{{ asset('js/pwa.js') }}?v={{ time() }}" defer></script>
     
-    <!-- Splash Screen Manager -->
-    <script src="{{ asset('js/splash-screen.js') }}?v={{ time() }}"></script>
-    
     <!-- Push Notification Manager -->
     <script type="module" src="{{ asset('js/push-manager.js') }}?v={{ time() }}"></script>
     
