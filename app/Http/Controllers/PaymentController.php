@@ -572,7 +572,10 @@ class PaymentController extends Controller
     
     public function paymentSuccess($transaction_id)
     {
-        $transaction = \App\Models\Transaction::where('transaction_id', $transaction_id)->first();
+        // Chercher par ID numérique ou par transaction_id
+        $transaction = \App\Models\Transaction::where('id', $transaction_id)
+            ->orWhere('transaction_id', $transaction_id)
+            ->first();
         
         if (!$transaction) {
             return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
