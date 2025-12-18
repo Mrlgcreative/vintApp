@@ -29,22 +29,22 @@
                     </h5>
                     <div class="grid grid-cols-4 gap-3">
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-green-500 transition-colors">
-                            <img src="/images/operators/mpesa.png" alt="M-Pesa" class="w-10 h-10 object-contain mb-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/512px-M-PESA_LOGO-01.svg.png" alt="M-Pesa" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">M-Pesa</span>
                             <span class="text-xs text-gray-400">81/82/83</span>
                         </div>
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-orange-500 transition-colors">
-                            <img src="/images/operators/orange.png" alt="Orange" class="w-10 h-10 object-contain mb-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/512px-Orange_logo.svg.png" alt="Orange" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Orange</span>
                             <span class="text-xs text-gray-400">84/85/89</span>
                         </div>
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-red-500 transition-colors">
-                            <img src="/images/operators/airtel.png" alt="Airtel" class="w-10 h-10 object-contain mb-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Airtel_logo.svg/512px-Airtel_logo.svg.png" alt="Airtel" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Airtel</span>
                             <span class="text-xs text-gray-400">97/98/99</span>
                         </div>
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors">
-                            <img src="/images/operators/africell.png" alt="Africell" class="w-10 h-10 object-contain mb-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Africell_logo.svg/512px-Africell_logo.svg.png" alt="Africell" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Africell</span>
                             <span class="text-xs text-gray-400">90/91</span>
                         </div>
@@ -230,17 +230,17 @@ const buyerId = {{ Auth::id() ?? 'null' }};
 
 // Configuration des opérateurs MaishaPay
 const operators = {
-    '81': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '/images/operators/mpesa.png' },
-    '82': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '/images/operators/mpesa.png' },
-    '83': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '/images/operators/mpesa.png' },
-    '84': { name: 'Orange Money', code: 'ORANGE', logo: '/images/operators/orange.png' },
-    '85': { name: 'Orange Money', code: 'ORANGE', logo: '/images/operators/orange.png' },
-    '89': { name: 'Orange Money', code: 'ORANGE', logo: '/images/operators/orange.png' },
-    '97': { name: 'Airtel Money', code: 'AIRTEL', logo: '/images/operators/airtel.png' },
-    '98': { name: 'Airtel Money', code: 'AIRTEL', logo: '/images/operators/airtel.png' },
-    '99': { name: 'Airtel Money', code: 'AIRTEL', logo: '/images/operators/airtel.png' },
-    '90': { name: 'Africell Money', code: 'AFRICELL', logo: '/images/operators/africell.png' },
-    '91': { name: 'Africell Money', code: 'AFRICELL', logo: '/images/operators/africell.png' },
+    '81': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/512px-M-PESA_LOGO-01.svg.png' },
+    '82': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/512px-M-PESA_LOGO-01.svg.png' },
+    '83': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/M-PESA_LOGO-01.svg/512px-M-PESA_LOGO-01.svg.png' },
+    '84': { name: 'Orange Money', code: 'ORANGE', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/512px-Orange_logo.svg.png' },
+    '85': { name: 'Orange Money', code: 'ORANGE', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/512px-Orange_logo.svg.png' },
+    '89': { name: 'Orange Money', code: 'ORANGE', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/512px-Orange_logo.svg.png' },
+    '97': { name: 'Airtel Money', code: 'AIRTEL', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Airtel_logo.svg/512px-Airtel_logo.svg.png' },
+    '98': { name: 'Airtel Money', code: 'AIRTEL', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Airtel_logo.svg/512px-Airtel_logo.svg.png' },
+    '99': { name: 'Airtel Money', code: 'AIRTEL', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Airtel_logo.svg/512px-Airtel_logo.svg.png' },
+    '90': { name: 'Africell Money', code: 'AFRICELL', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Africell_logo.svg/512px-Africell_logo.svg.png' },
+    '91': { name: 'Africell Money', code: 'AFRICELL', logo: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Africell_logo.svg/512px-Africell_logo.svg.png' },
 };
 
 // Détection de l'opérateur
