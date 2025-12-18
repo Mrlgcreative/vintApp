@@ -834,6 +834,7 @@ Route::prefix('payments')->group(function () {
     
     // MaishaPay routes
     Route::post('/maishapay/initiate', [PaymentController::class, 'initiateMaishaPayment'])->name('payments.maishapay.initiate');
+    Route::post('/maishapay/checkout', [PaymentController::class, 'maishapayCheckout'])->name('payments.maishapay.checkout');
     Route::get('/maishapay/status/{transaction}', [PaymentController::class, 'checkMaishaStatus'])->name('payments.maishapay.status');
     
     // Page de suivi du paiement en temps réel

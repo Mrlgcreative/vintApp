@@ -311,68 +311,41 @@
 
                     <!-- Bouton de paiement (masqué par défaut) -->
                     <div id="paymentButtonContainer" class="hidden mt-6">
-                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                             <div class="flex items-start">
-                                <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
-                                </svg>
+                                <i class="fas fa-bolt text-green-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
                                 <div>
-                                    <h3 class="font-semibold text-blue-900 text-sm mb-1">Paiement sécurisé</h3>
-                                    <p class="text-blue-800 text-sm">Choisissez votre moyen de paiement préféré.</p>
+                                    <h3 class="font-semibold text-green-900 text-sm mb-1">Paiement sécurisé via MaishaPay</h3>
+                                    <p class="text-green-800 text-sm">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Choix du moyen de paiement -->
-                        <div class="mb-4 space-y-3">
-                            <!-- CinetPay -->
-                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
-                                <input type="radio" name="payment_gateway" value="cinetpay" class="mr-3" checked>
-                                <div class="flex-1">
-                                    <div class="font-semibold text-gray-900">CinetPay</div>
-                                    <div class="text-xs text-gray-600">Carte bancaire & Mobile Money</div>
+                        <!-- Opérateurs supportés -->
+                        <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center">Opérateurs acceptés :</p>
+                            <div class="flex justify-center items-center gap-3">
+                                <div class="text-center">
+                                    <span class="text-lg">🟠</span>
+                                    <p class="text-xs text-gray-600">Orange</p>
                                 </div>
-                                <div class="flex gap-1">
-                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded">💳</span>
-                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded">📱</span>
+                                <div class="text-center">
+                                    <span class="text-lg">🟢</span>
+                                    <p class="text-xs text-gray-600">M-Pesa</p>
                                 </div>
-                            </label>
-
-                            <!-- AfribaPay -->
-                            <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-green-500 has-[:checked]:border-green-600 has-[:checked]:bg-green-50">
-                                <input type="radio" name="payment_gateway" value="afribapay" class="mr-3">
-                                <div class="flex-1">
-                                    <div class="font-semibold text-gray-900 flex items-center gap-2">
-                                        AfribaPay
-                                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">RDC</span>
-                                    </div>
-                                    <div class="text-xs text-gray-600">Mobile Money CDF, USD, XOF...</div>
+                                <div class="text-center">
+                                    <span class="text-lg">🔴</span>
+                                    <p class="text-xs text-gray-600">Airtel</p>
                                 </div>
-                                <div class="flex gap-1">
-                                    <span class="text-xs bg-gray-100 px-2 py-1 rounded">📱</span>
+                                <div class="text-center">
+                                    <span class="text-lg">🟡</span>
+                                    <p class="text-xs text-gray-600">Africell</p>
                                 </div>
-                            </label>
+                            </div>
                         </div>
 
-                        <!-- Formulaire CinetPay -->
-                        <form action="{{ route('payments.checkout.initiate') }}" method="POST" id="cinetpayForm" class="payment-gateway-form">
-                            @csrf
-                            <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
-                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
-                            <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $item['currency'] ?? 'XOF' }}">
-                            
-                            <button type="submit" 
-                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                </svg>
-                                Payer avec CinetPay
-                            </button>
-                        </form>
-
-                        <!-- Formulaire AfribaPay (caché par défaut) -->
-                        <form action="{{ route('payments.afribapay.form') }}" method="POST" id="afribapayForm" class="payment-gateway-form hidden">
+                        <!-- Formulaire MaishaPay -->
+                        <form action="{{ route('payments.maishapay.checkout') }}" method="POST" id="maishapayForm" class="payment-gateway-form">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
                             <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
@@ -381,10 +354,8 @@
                             
                             <button type="submit" 
                                     class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
-                                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                Continuer avec AfribaPay
+                                <i class="fas fa-bolt mr-2"></i>
+                                Payer {{ number_format($total, 2) }} {{ $item['currency'] ?? 'CDF' }} avec MaishaPay
                             </button>
                         </form>
 
@@ -394,6 +365,7 @@
                             <div class="flex justify-center items-center space-x-2 flex-wrap gap-2">
                                 <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">🔒 SSL</div>
                                 <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">✅ Vérifié</div>
+                                <div class="bg-green-100 dark:bg-green-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300">⚡ MaishaPay</div>
                             </div>
                         </div>
                     </div>
@@ -659,27 +631,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Gestion du changement de gateway
-    const paymentGatewayInputs = document.querySelectorAll('input[name="payment_gateway"]');
-    const cinetpayForm = document.getElementById('cinetpayForm');
-    const afribapayForm = document.getElementById('afribapayForm');
-    
-    paymentGatewayInputs.forEach(input => {
-        input.addEventListener('change', function() {
-            if (this.value === 'cinetpay') {
-                cinetpayForm.classList.remove('hidden');
-                afribapayForm.classList.add('hidden');
-            } else if (this.value === 'afribapay') {
-                cinetpayForm.classList.add('hidden');
-                afribapayForm.classList.remove('hidden');
-            }
-        });
-    });
-
-    // Ajout d'un listener sur tous les formulaires de paiement pour inclure l'ID de l'adresse
-    const paymentForms = document.querySelectorAll('.payment-gateway-form');
-    paymentForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
+    // Gestion du formulaire de paiement MaishaPay
+    const maishapayForm = document.getElementById('maishapayForm');
+    if (maishapayForm) {
+        maishapayForm.addEventListener('submit', function(e) {
             if (savedAddressId) {
                 const addressInput = this.querySelector('.delivery_address_id_input');
                 if (addressInput) {
@@ -694,9 +649,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Afficher un loader sur le bouton
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection en cours...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection vers MaishaPay...';
+            submitBtn.className = 'w-full bg-gray-400 text-white py-3 px-6 rounded-lg cursor-not-allowed font-medium text-lg flex items-center justify-center';
         });
-    });
+    }
 });
 </script>
 @endpush

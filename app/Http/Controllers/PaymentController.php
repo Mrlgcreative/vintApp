@@ -1949,6 +1949,50 @@ class PaymentController extends Controller
     // ==========================================
 
     /**
+     * Checkout via MaishaPay - Affiche le formulaire de paiement MaishaPay
+     */
+    public function maishapayCheckout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|string',
+            'total_amount' => 'required|numeric|min:1',
+            'currency' => 'sometimes|string|in:CDF,USD',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $cart = json_decode($request->cart_items, true);
+        $total = $request->total_amount;
+        $currency = $request->input('currency', 'CDF');
+        $deliveryAddressId = $request->delivery_address_id;
+
+        // Récupérer l'adresse de livraison
+        $deliveryAddress = \App\Models\DeliveryAddress::findOrFail($deliveryAddressId);
+
+        // Stocker les données en session pour le formulaire MaishaPay
+        session([
+            'maishapay_checkout' => [
+                'cart' => $cart,
+                'total' => $total,
+                'currency' => $currency,
+                'delivery_address_id' => $deliveryAddressId,
+                'delivery_address' => $deliveryAddress,
+            ]
+        ]);
+
+        // Rediriger vers la vue de paiement MaishaPay
+        return view('payments.maishapay', [
+            'cart' => $cart,
+            'total' => $total,
+            'currency' => $currency,
+            'deliveryAddress' => $deliveryAddress,
+        ]);
+    }
+
+    /**
      * Initier un paiement MaishaPay via API
      */
     public function initiateMaishaPayment(Request $request)

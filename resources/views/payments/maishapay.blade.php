@@ -159,6 +159,24 @@
                     <!-- Description -->
                     <input type="hidden" id="description" name="description" value="Paiement VintApp">
                     <input type="hidden" id="buyer_id" name="buyer_id" value="{{ Auth::id() }}">
+                    @if(isset($deliveryAddress))
+                        <input type="hidden" name="delivery_address_id" value="{{ $deliveryAddress->id }}">
+                    @endif
+                    
+                    @if(isset($deliveryAddress))
+                    <!-- Adresse de livraison -->
+                    <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <h6 class="font-semibold text-blue-800 dark:text-blue-200 mb-2 flex items-center">
+                            <i class="fas fa-truck mr-2"></i>Livraison à
+                        </h6>
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            <strong>{{ $deliveryAddress->full_name }}</strong><br>
+                            {{ $deliveryAddress->address }}, {{ $deliveryAddress->commune }}<br>
+                            {{ $deliveryAddress->city }}<br>
+                            <i class="fas fa-phone mr-1"></i>{{ $deliveryAddress->phone }}
+                        </p>
+                    </div>
+                    @endif
                     
                     <!-- Bouton de paiement -->
                     <button type="submit" 
