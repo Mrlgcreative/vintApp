@@ -76,15 +76,16 @@
                         </div>
                         
                         @php
-                            $total = isset($totalInPriority) ? $totalInPriority : (isset($total) ? $total : 0);
-                            $currency = isset($priorityCurrency) ? $priorityCurrency : 'CDF';
+                            $displayTotal = isset($total) ? $total : (isset($totalInPriority) ? $totalInPriority : 0);
+                            // Déterminer la devise depuis le panier ou la variable passée
+                            $displayCurrency = isset($currency) ? $currency : (isset($priorityCurrency) ? $priorityCurrency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD'));
                         @endphp
                         
                         <div class="border-t-2 border-green-500 pt-3">
                             <div class="flex justify-between items-center">
                                 <span class="text-lg font-bold text-gray-900 dark:text-white">Total à payer</span>
                                 <span class="text-2xl font-bold text-green-600">
-                                    {{ number_format($total, 2) }} {{ $currency }}
+                                    {{ number_format($displayTotal, 2) }} {{ $displayCurrency }}
                                 </span>
                             </div>
                         </div>
@@ -148,12 +149,12 @@
                                    step="0.01" 
                                    required 
                                    readonly
-                                   value="{{ $total ?? '' }}">
+                                   value="{{ $displayTotal ?? $total ?? '' }}">
                             <span class="inline-flex items-center px-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 rounded-r-lg font-medium text-gray-700 dark:text-gray-200">
-                                {{ $currency ?? 'CDF' }}
+                                {{ $displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}
                             </span>
                         </div>
-                        <input type="hidden" name="currency" value="{{ $currency ?? 'CDF' }}">
+                        <input type="hidden" name="currency" value="{{ $displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}">
                     </div>
 
                     <!-- Description -->
