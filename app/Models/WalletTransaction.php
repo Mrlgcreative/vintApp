@@ -17,6 +17,8 @@ class WalletTransaction extends Model
         'description',
         'reference',
         'status',
+        'provider',
+        'metadata',
     ];
 
     protected $casts = [
