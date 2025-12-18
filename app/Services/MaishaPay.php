@@ -141,7 +141,7 @@ class MaishaPay
                 'channel' => 'MOBILEMONEY',
                 'provider' => $provider,
                 'walletID' => '+' . $phone,
-                'callbackUrl' => $data['callback_url'] ?? route('payments.maishapay.callback'),
+                'callbackUrl' => $data['callback_url'] ?? route('payments.maishapay.callback', ['reference' => $transactionId]),
             ],
         ];
 

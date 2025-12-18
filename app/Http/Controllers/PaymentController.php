@@ -2132,17 +2132,33 @@ class PaymentController extends Controller
 
     /**
      * Callback MaishaPay (webhook) - Supporte GET et POST
+     * @param Request $request
+     * @param string|null $reference - Référence de transaction depuis l'URL
      */
-    public function handleMaishaCallback(Request $request)
+    public function handleMaishaCallback(Request $request, ?string $reference = null)
     {
         Log::info('MaishaPay Callback reçu', [
             'method' => $request->method(),
+            'url_reference' => $reference,
             'data' => $request->all(),
             'query' => $request->query(),
+            'full_url' => $request->fullUrl(),
         ]);
 
         // MaishaPay peut envoyer les données en query string (GET) ou body (POST)
         $data = $request->isMethod('get') ? $request->query() : $request->all();
+        
+        // La référence peut être dans l'URL, les paramètres, ou le body
+        $transactionRef = $reference 
+            ?? $data['reference'] 
+            ?? $data['transaction_id'] 
+            ?? $data['transactionReference'] 
+            ?? $data['transactionId']
+            ?? $data['orderNumber']
+            ?? $data['order_number']
+            ?? $data['ref']
+            ?? $data['id']
+            ?? null;
 
         $signature = $request->header('X-MaishaPay-Signature');
         $payload = $request->getContent();
@@ -2157,29 +2173,17 @@ class PaymentController extends Controller
             }
         }
 
-        // $data est déjà défini plus haut (GET query ou POST body)
-        // MaishaPay peut utiliser différentes clés selon le contexte
-        $reference = $data['reference'] 
-            ?? $data['transaction_id'] 
-            ?? $data['transactionReference'] 
-            ?? $data['transactionId']
-            ?? $data['orderNumber']
-            ?? $data['order_number']
-            ?? $data['ref']
-            ?? $data['id']
-            ?? null;
-            
-        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? $data['transaction_status'] ?? $data['state'] ?? '');
+        // Extraire le statut des données
+        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? $data['transaction_status'] ?? $data['state'] ?? 'success');
 
         // Log complet pour debug
-        Log::info('MaishaPay Callback - Données reçues:', [
-            'reference_trouvee' => $reference,
-            'status_trouve' => $status,
+        Log::info('MaishaPay Callback - Traitement:', [
+            'reference' => $transactionRef,
+            'status' => $status,
             'toutes_cles' => array_keys($data),
-            'donnees_completes' => $data,
         ]);
 
-        if (!$reference) {
+        if (!$transactionRef) {
             Log::error('MaishaPay Callback: Référence manquante - Toutes les données:', [
                 'data' => $data,
                 'query_string' => $request->getQueryString(),
@@ -2189,12 +2193,12 @@ class PaymentController extends Controller
         }
 
         // Chercher par transaction_ref ou transaction_id
-        $transaction = Transaction::where('transaction_ref', $reference)
-            ->orWhere('transaction_id', $reference)
+        $transaction = Transaction::where('transaction_ref', $transactionRef)
+            ->orWhere('transaction_id', $transactionRef)
             ->first();
 
         if (!$transaction) {
-            Log::warning('MaishaPay: Transaction non trouvée', ['reference' => $reference]);
+            Log::warning('MaishaPay: Transaction non trouvée', ['reference' => $transactionRef]);
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 

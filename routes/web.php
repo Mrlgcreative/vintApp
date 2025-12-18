@@ -955,7 +955,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     // MaishaPay Webhook (PUBLIC - pas d'auth) - Supporte GET et POST
-    Route::match(['get', 'post'], '/payments/maishapay/callback', [PaymentController::class, 'handleMaishaCallback'])
+    // La référence peut être dans l'URL ou les paramètres
+    Route::match(['get', 'post'], '/payments/maishapay/callback/{reference?}', [PaymentController::class, 'handleMaishaCallback'])
         ->name('payments.maishapay.callback')
         ->withoutMiddleware(['auth', 'web', 'csrf']);
 
