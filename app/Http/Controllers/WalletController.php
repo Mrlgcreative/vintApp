@@ -159,8 +159,8 @@ class WalletController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01|max:' . $wallet->balance,
             'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
-            // Ajout du mode 'agent' pour permettre le décaissement via un agent mobile money
-            'payment_method' => 'required|string|in:orange_money,airtel_money,mpesa,africell,illicocash,agent',
+            // Ajout de maishapay comme méthode principale de décaissement
+            'payment_method' => 'required|string|in:maishapay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
             // Si payment_method == agent, on attend l'id de l'agent ou son numéro
             'agent_id' => 'nullable|integer',
             'agent_phone' => ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15', 'required_if:payment_method,agent'],
@@ -227,6 +227,15 @@ class WalletController extends Controller
                     $cashOutResponse = $this->mobileMoneyService->cashOutAgent(
                         $agentId,
                         $agentPhone,
+                        $validated['amount'],
+                        $wallet->currency,
+                        $transaction
+                    );
+                } elseif ($validated['payment_method'] === 'maishapay') {
+                    // Décaissement via MaishaPay B2C (détection automatique de l'opérateur)
+                    $cashOutResponse = $this->mobileMoneyService->cashOut(
+                        'maishapay',
+                        $validated['phone_number'],
                         $validated['amount'],
                         $wallet->currency,
                         $transaction

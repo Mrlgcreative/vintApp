@@ -13,6 +13,7 @@ class MaishaPay
     protected string $merchantId;
     protected string $baseUrl;
     protected string $collectUrl;
+    protected string $payoutUrl;
     protected bool $sandbox;
 
     public function __construct()
@@ -31,6 +32,11 @@ class MaishaPay
         $this->collectUrl = $this->sandbox
             ? 'https://sandbox.maishapay.net/api/v2/payments/mobile-money'
             : 'https://marchand.maishapay.online/api/collect/v2/store/mobileMoney';
+            
+        // URL spécifique pour les transferts B2C (décaissement/payout)
+        $this->payoutUrl = $this->sandbox
+            ? 'https://sandbox.maishapay.net/api/v2/payouts/mobile-money'
+            : 'https://marchand.maishapay.online/api/b2c/store/transfert/mobilemoney';
     }
 
     /**
@@ -110,28 +116,49 @@ class MaishaPay
         $phone = $this->formatPhone($data['phone']);
         $operator = $data['operator'] ?? $this->detectOperator($phone);
 
-        // Payload selon la documentation MaishaPay Collect v2
+        // Mapper l'opérateur vers le format MaishaPay
+        $providerMap = [
+            'VODACOM' => 'MPESA',
+            'ORANGE' => 'ORANGE',
+            'AIRTEL' => 'AIRTEL',
+            'AFRICELL' => 'AFRICELL',
+        ];
+        $provider = $providerMap[strtoupper($operator)] ?? strtoupper($operator);
+
+        // Payload selon la documentation MaishaPay Collect v2 Production
         $payload = [
-            'amount' => (float) $data['amount'],
-            'currency' => strtoupper($data['currency'] ?? 'CDF'),
-            'phone' => $phone,
-            'gateway' => strtoupper($operator), // VODACOM, AIRTEL, ORANGE, AFRICELL
-            'reference' => $transactionId,
-            'description' => $data['description'] ?? 'Paiement VintApp',
-            'callbackUrl' => $data['callback_url'] ?? route('payments.maishapay.callback'),
+            'transactionReference' => $transactionId,
+            'gatewayMode' => $this->sandbox ? '0' : '1',
+            'publicApiKey' => $this->apiKey,
+            'secretApiKey' => $this->secretKey,
+            'order' => [
+                'amount' => (string) $data['amount'],
+                'currency' => strtoupper($data['currency'] ?? 'USD'),
+                'customerFullName' => $data['customer_name'] ?? ($data['user_name'] ?? 'Client VintApp'),
+                'customerEmailAdress' => $data['customer_email'] ?? '',
+            ],
+            'paymentChannel' => [
+                'channel' => 'MOBILEMONEY',
+                'provider' => $provider,
+                'walletID' => '+' . $phone,
+                'callbackUrl' => $data['callback_url'] ?? route('payments.maishapay.callback'),
+            ],
         ];
 
         Log::info('MaishaPay: Initiation paiement v2', [
             'reference' => $transactionId,
-            'amount' => $payload['amount'],
-            'currency' => $payload['currency'],
-            'phone' => $phone,
-            'gateway' => $payload['gateway'],
+            'amount' => $payload['order']['amount'],
+            'currency' => $payload['order']['currency'],
+            'phone' => '+' . $phone,
+            'provider' => $provider,
             'url' => $this->collectUrl,
         ]);
 
         try {
-            $response = Http::withHeaders($this->getHeaders())
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
                 ->timeout(30)
                 ->post($this->collectUrl, $payload);
 
@@ -142,14 +169,15 @@ class MaishaPay
                 'response' => $result,
             ]);
 
-            if ($response->successful() && ($result['success'] ?? false)) {
+            // Succès si status 200/201 et pas d'erreurs
+            if ($response->successful() && !isset($result['errors'])) {
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
                     'maishapay_id' => $result['data']['transactionId'] ?? $result['transactionId'] ?? null,
                     'status' => 'pending',
                     'message' => $result['message'] ?? 'Paiement initié. Confirmez sur votre téléphone.',
-                    'data' => $result['data'] ?? [],
+                    'data' => $result['data'] ?? $result,
                 ];
             }
 
@@ -157,8 +185,8 @@ class MaishaPay
                 'success' => false,
                 'transaction_id' => $transactionId,
                 'status' => 'failed',
-                'message' => $result['message'] ?? 'Erreur lors de l\'initiation du paiement',
-                'error' => $result['error'] ?? $result['errors'] ?? null,
+                'message' => $result['title'] ?? $result['message'] ?? 'Erreur lors de l\'initiation du paiement',
+                'error' => $result['errors'] ?? $result['error'] ?? null,
             ];
 
         } catch (\Exception $e) {
@@ -308,7 +336,7 @@ class MaishaPay
     }
 
     /**
-     * Initier un décaissement (payout/transfert sortant)
+     * Initier un décaissement (payout/transfert sortant) - API B2C MaishaPay
      * 
      * @param array $data Données du décaissement
      * @return array Résultat de l'opération
@@ -319,27 +347,42 @@ class MaishaPay
         $phone = $this->formatPhone($data['phone']);
         $operator = $data['operator'] ?? $this->detectOperator($phone);
 
+        // Mapper l'opérateur vers le format MaishaPay
+        $providerMap = [
+            'VODACOM' => 'MPESA',
+            'ORANGE' => 'ORANGE',
+            'AIRTEL' => 'AIRTEL',
+            'AFRICELL' => 'AFRICELL',
+        ];
+        $provider = $providerMap[strtoupper($operator)] ?? strtoupper($operator);
+
+        // Payload selon la documentation MaishaPay B2C (transfert sortant)
         $payload = [
-            'amount' => (float) $data['amount'],
-            'currency' => $data['currency'] ?? 'CDF',
-            'phone' => $phone,
-            'operator' => $operator,
-            'reference' => $data['reference'] ?? $transactionId,
-            'description' => $data['description'] ?? 'Décaissement VintApp',
-            'callback_url' => $data['callback_url'] ?? route('withdrawals.webhook.provider', ['provider' => 'maishapay']),
-            'metadata' => [
-                'user_id' => $data['user_id'] ?? null,
-                'transaction_id' => $data['transaction_id'] ?? null,
-                'purpose' => $data['purpose'] ?? 'withdrawal',
+            'transactionReference' => $transactionId,
+            'gatewayMode' => $this->sandbox ? '0' : '1',
+            'publicApiKey' => $this->apiKey,
+            'secretApiKey' => $this->secretKey,
+            'order' => [
+                'motif' => $data['description'] ?? 'Retrait VintApp',
+                'amount' => (string) $data['amount'],
+                'currency' => strtoupper($data['currency'] ?? 'USD'),
+                'customerFullName' => $data['customer_name'] ?? 'Client VintApp',
+                'customerEmailAdress' => $data['customer_email'] ?? '',
+            ],
+            'paymentChannel' => [
+                'provider' => $provider,
+                'walletID' => '+' . $phone,
+                'callbackUrl' => $data['callback_url'] ?? route('withdrawals.webhook.provider', ['provider' => 'maishapay']),
             ],
         ];
 
-        Log::info('MaishaPay: Initiation décaissement', [
+        Log::info('MaishaPay: Initiation décaissement B2C', [
             'reference' => $transactionId,
-            'amount' => $payload['amount'],
-            'currency' => $payload['currency'],
-            'phone' => substr($phone, 0, 7) . '***',
-            'operator' => $operator,
+            'amount' => $payload['order']['amount'],
+            'currency' => $payload['order']['currency'],
+            'phone' => '+' . substr($phone, 0, 7) . '***',
+            'provider' => $provider,
+            'url' => $this->payoutUrl,
         ]);
 
         // En mode sandbox, simuler le payout
@@ -348,26 +391,30 @@ class MaishaPay
         }
 
         try {
-            $response = Http::withHeaders($this->getHeaders())
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
                 ->timeout(30)
-                ->post($this->baseUrl . '/payouts/mobile-money', $payload);
+                ->post($this->payoutUrl, $payload);
 
             $result = $response->json();
 
-            Log::info('MaishaPay: Réponse payout API', [
+            Log::info('MaishaPay: Réponse payout API B2C', [
                 'status' => $response->status(),
                 'response' => $result,
             ]);
 
-            if ($response->successful() && isset($result['success']) && $result['success']) {
+            // Succès si status 200/201 et pas d'erreurs
+            if ($response->successful() && !isset($result['errors'])) {
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'maishapay_id' => $result['data']['transaction_id'] ?? null,
-                    'provider_reference' => $result['data']['provider_reference'] ?? $transactionId,
+                    'maishapay_id' => $result['data']['transactionId'] ?? $result['transactionId'] ?? null,
+                    'provider_reference' => $result['data']['transactionId'] ?? $transactionId,
                     'status' => 'processing',
                     'message' => $result['message'] ?? 'Décaissement initié avec succès',
-                    'data' => $result['data'] ?? [],
+                    'data' => $result['data'] ?? $result,
                 ];
             }
 
@@ -375,12 +422,12 @@ class MaishaPay
                 'success' => false,
                 'transaction_id' => $transactionId,
                 'status' => 'failed',
-                'message' => $result['message'] ?? 'Erreur lors du décaissement',
-                'error' => $result['error'] ?? null,
+                'message' => $result['title'] ?? $result['message'] ?? 'Erreur lors du décaissement',
+                'error' => $result['errors'] ?? $result['error'] ?? null,
             ];
 
         } catch (\Exception $e) {
-            Log::error('MaishaPay: Exception payout', [
+            Log::error('MaishaPay: Exception payout B2C', [
                 'message' => $e->getMessage(),
                 'reference' => $transactionId,
             ]);

@@ -119,11 +119,6 @@ class MobileMoneyService
         WalletTransaction $transaction
     ): array {
         try {
-            // Validation du provider
-            if (!isset($this->providers[$provider])) {
-                throw new Exception("Opérateur mobile money invalide : {$provider}");
-            }
-
             // Normaliser le numéro de téléphone
             $normalizedPhone = $this->normalizePhoneNumber($phoneNumber);
 
@@ -137,10 +132,22 @@ class MobileMoneyService
                 'use_maishapay' => $this->useMaishaPayAggregator,
             ]);
 
-            // Utiliser MaishaPay comme agrégateur si disponible et opérateur supporté
-            if ($this->useMaishaPayAggregator && $this->maishaPay && $this->maishaPay->isOperatorSupported($provider)) {
+            // Si maishapay est spécifié directement, utiliser l'API B2C MaishaPay
+            if ($provider === 'maishapay') {
+                if (!$this->maishaPay) {
+                    throw new Exception("MaishaPay n'est pas configuré");
+                }
+                // MaishaPay détecte automatiquement l'opérateur via le numéro
+                $detectedOperator = $this->maishaPay->detectOperator($normalizedPhone);
+                $result = $this->cashOutViaMaishaPay($detectedOperator ?? 'VODACOM', $normalizedPhone, $amount, $currency, $transaction);
+            } elseif ($this->useMaishaPayAggregator && $this->maishaPay && $this->maishaPay->isOperatorSupported($provider)) {
+                // Utiliser MaishaPay comme agrégateur pour les autres providers
                 $result = $this->cashOutViaMaishaPay($provider, $normalizedPhone, $amount, $currency, $transaction);
             } else {
+                // Validation du provider pour API directe
+                if (!isset($this->providers[$provider])) {
+                    throw new Exception("Opérateur mobile money invalide : {$provider}");
+                }
                 // Fallback vers les APIs directes des opérateurs
                 $result = match ($provider) {
                     'orange_money' => $this->cashOutOrangeMoney($normalizedPhone, $amount, $currency, $transaction),
