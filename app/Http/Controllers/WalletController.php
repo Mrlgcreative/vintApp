@@ -499,8 +499,8 @@ class WalletController extends Controller
         ]);
 
         try {
-            // Valider le provider
-            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash'];
+            // Valider le provider (inclut maishapay comme agrégateur)
+            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'maishapay'];
             if (!in_array($provider, $validProviders)) {
                 Log::warning('Invalid provider in webhook', ['provider' => $provider]);
                 return response()->json(['status' => 'error', 'message' => 'Provider invalide'], 400);
@@ -520,10 +520,15 @@ class WalletController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Référence introuvable'], 400);
             }
 
-            // Trouver la transaction
+            // Trouver la transaction (pour maishapay, chercher aussi dans les transactions avec aggregator)
             $transaction = WalletTransaction::where('reference', $reference)
                 ->where('type', 'debit')
-                ->where('provider', $provider)
+                ->when($provider === 'maishapay', function ($query) {
+                    // Pour MaishaPay, chercher les transactions avec n'importe quel provider mobile money
+                    return $query->whereIn('provider', ['orange_money', 'airtel_money', 'mpesa', 'africell', 'maishapay']);
+                }, function ($query) use ($provider) {
+                    return $query->where('provider', $provider);
+                })
                 ->first();
 
             if (!$transaction) {

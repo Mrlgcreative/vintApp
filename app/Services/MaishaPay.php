@@ -303,4 +303,212 @@ class MaishaPay
             ],
         ];
     }
+
+    /**
+     * Initier un décaissement (payout/transfert sortant)
+     * 
+     * @param array $data Données du décaissement
+     * @return array Résultat de l'opération
+     */
+    public function initiatePayout(array $data): array
+    {
+        $transactionId = 'MP-OUT-' . strtoupper(Str::random(10));
+        $phone = $this->formatPhone($data['phone']);
+        $operator = $data['operator'] ?? $this->detectOperator($phone);
+
+        $payload = [
+            'amount' => (float) $data['amount'],
+            'currency' => $data['currency'] ?? 'CDF',
+            'phone' => $phone,
+            'operator' => $operator,
+            'reference' => $data['reference'] ?? $transactionId,
+            'description' => $data['description'] ?? 'Décaissement VintApp',
+            'callback_url' => $data['callback_url'] ?? route('withdrawals.webhook.provider', ['provider' => 'maishapay']),
+            'metadata' => [
+                'user_id' => $data['user_id'] ?? null,
+                'transaction_id' => $data['transaction_id'] ?? null,
+                'purpose' => $data['purpose'] ?? 'withdrawal',
+            ],
+        ];
+
+        Log::info('MaishaPay: Initiation décaissement', [
+            'reference' => $transactionId,
+            'amount' => $payload['amount'],
+            'currency' => $payload['currency'],
+            'phone' => substr($phone, 0, 7) . '***',
+            'operator' => $operator,
+        ]);
+
+        // En mode sandbox, simuler le payout
+        if ($this->sandbox) {
+            return $this->simulatePayout($payload, $transactionId);
+        }
+
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(30)
+                ->post($this->baseUrl . '/payouts/mobile-money', $payload);
+
+            $result = $response->json();
+
+            Log::info('MaishaPay: Réponse payout API', [
+                'status' => $response->status(),
+                'response' => $result,
+            ]);
+
+            if ($response->successful() && isset($result['success']) && $result['success']) {
+                return [
+                    'success' => true,
+                    'transaction_id' => $transactionId,
+                    'maishapay_id' => $result['data']['transaction_id'] ?? null,
+                    'provider_reference' => $result['data']['provider_reference'] ?? $transactionId,
+                    'status' => 'processing',
+                    'message' => $result['message'] ?? 'Décaissement initié avec succès',
+                    'data' => $result['data'] ?? [],
+                ];
+            }
+
+            return [
+                'success' => false,
+                'transaction_id' => $transactionId,
+                'status' => 'failed',
+                'message' => $result['message'] ?? 'Erreur lors du décaissement',
+                'error' => $result['error'] ?? null,
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('MaishaPay: Exception payout', [
+                'message' => $e->getMessage(),
+                'reference' => $transactionId,
+            ]);
+
+            return [
+                'success' => false,
+                'transaction_id' => $transactionId,
+                'status' => 'error',
+                'message' => 'Erreur de connexion au service de paiement',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Simuler un décaissement (mode sandbox uniquement)
+     */
+    protected function simulatePayout(array $payload, string $transactionId): array
+    {
+        Log::info('MaishaPay: Simulation décaissement', [
+            'transaction_id' => $transactionId,
+            'amount' => $payload['amount'],
+            'phone' => $payload['phone'],
+        ]);
+
+        // Simuler un délai de traitement
+        usleep(300000); // 0.3 seconde
+
+        // 95% de réussite en simulation
+        $success = rand(1, 100) <= 95;
+
+        if ($success) {
+            return [
+                'success' => true,
+                'transaction_id' => $transactionId,
+                'provider_reference' => 'MP-SIM-OUT-' . strtoupper(Str::random(8)),
+                'status' => 'processing',
+                'message' => 'Décaissement simulé en cours (sandbox)',
+                'data' => [
+                    'amount' => $payload['amount'],
+                    'currency' => $payload['currency'],
+                    'phone' => $payload['phone'],
+                    'operator' => $payload['operator'],
+                    'simulated' => true,
+                ],
+            ];
+        }
+
+        return [
+            'success' => false,
+            'transaction_id' => $transactionId,
+            'status' => 'failed',
+            'message' => 'Simulation échec décaissement (test)',
+        ];
+    }
+
+    /**
+     * Vérifier le statut d'un décaissement
+     */
+    public function checkPayoutStatus(string $transactionId): array
+    {
+        // Si c'est une simulation
+        if (str_starts_with($transactionId, 'MP-SIM-')) {
+            return [
+                'success' => true,
+                'transaction_id' => $transactionId,
+                'status' => 'completed',
+                'message' => 'Décaissement simulé complété',
+            ];
+        }
+
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(15)
+                ->get($this->baseUrl . '/payouts/' . $transactionId . '/status');
+
+            $result = $response->json();
+
+            if ($response->successful()) {
+                return [
+                    'success' => true,
+                    'transaction_id' => $transactionId,
+                    'status' => $result['data']['status'] ?? 'unknown',
+                    'message' => $result['message'] ?? '',
+                    'data' => $result['data'] ?? [],
+                ];
+            }
+
+            return [
+                'success' => false,
+                'transaction_id' => $transactionId,
+                'status' => 'unknown',
+                'message' => $result['message'] ?? 'Impossible de vérifier le statut',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('MaishaPay: Erreur vérification statut payout', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'transaction_id' => $transactionId,
+                'status' => 'error',
+                'message' => 'Erreur de connexion',
+            ];
+        }
+    }
+
+    /**
+     * Mapper un opérateur VintApp vers un opérateur MaishaPay
+     */
+    public function mapOperator(string $provider): ?string
+    {
+        $mapping = [
+            'orange_money' => 'ORANGE',
+            'airtel_money' => 'AIRTEL',
+            'mpesa' => 'VODACOM',
+            'africell' => 'AFRICELL',
+            'illicocash' => null, // Non supporté par MaishaPay
+        ];
+
+        return $mapping[$provider] ?? null;
+    }
+
+    /**
+     * Vérifier si un opérateur est supporté pour les payouts
+     */
+    public function isOperatorSupported(string $provider): bool
+    {
+        return $this->mapOperator($provider) !== null;
+    }
 }
