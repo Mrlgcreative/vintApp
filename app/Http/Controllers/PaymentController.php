@@ -2082,11 +2082,12 @@ class PaymentController extends Controller
                         'message' => $result['message'],
                         'simulated' => true,
                     ]);
-                }
+            }
             }
 
-            // Mode production
+            // Mode production - passer notre transactionId au service
             $result = $maishaPay->initiatePayment([
+                'transaction_id' => $transactionId, // Utiliser notre ID
                 'amount' => $request->amount,
                 'phone' => $request->phone,
                 'currency' => $request->input('currency', 'CDF'),

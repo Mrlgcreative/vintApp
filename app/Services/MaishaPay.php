@@ -112,7 +112,8 @@ class MaishaPay
      */
     public function initiatePayment(array $data): array
     {
-        $transactionId = 'MP-' . strtoupper(Str::random(12));
+        // Utiliser l'ID fourni ou en générer un
+        $transactionId = $data['transaction_id'] ?? ('MP-' . strtoupper(Str::random(12)));
         $phone = $this->formatPhone($data['phone']);
         $operator = $data['operator'] ?? $this->detectOperator($phone);
 
