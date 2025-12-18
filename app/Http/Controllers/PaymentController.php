@@ -2158,12 +2158,34 @@ class PaymentController extends Controller
         }
 
         // $data est déjà défini plus haut (GET query ou POST body)
-        $reference = $data['reference'] ?? $data['transaction_id'] ?? $data['transactionReference'] ?? null;
-        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? '');
+        // MaishaPay peut utiliser différentes clés selon le contexte
+        $reference = $data['reference'] 
+            ?? $data['transaction_id'] 
+            ?? $data['transactionReference'] 
+            ?? $data['transactionId']
+            ?? $data['orderNumber']
+            ?? $data['order_number']
+            ?? $data['ref']
+            ?? $data['id']
+            ?? null;
+            
+        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? $data['transaction_status'] ?? $data['state'] ?? '');
+
+        // Log complet pour debug
+        Log::info('MaishaPay Callback - Données reçues:', [
+            'reference_trouvee' => $reference,
+            'status_trouve' => $status,
+            'toutes_cles' => array_keys($data),
+            'donnees_completes' => $data,
+        ]);
 
         if (!$reference) {
-            Log::warning('MaishaPay Callback: Référence manquante', ['data' => $data]);
-            return response()->json(['error' => 'Missing reference'], 400);
+            Log::error('MaishaPay Callback: Référence manquante - Toutes les données:', [
+                'data' => $data,
+                'query_string' => $request->getQueryString(),
+                'full_url' => $request->fullUrl(),
+            ]);
+            return response()->json(['error' => 'Référence manquante', 'received_keys' => array_keys($data)], 400);
         }
 
         // Chercher par transaction_ref ou transaction_id
