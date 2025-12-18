@@ -36,17 +36,17 @@
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-orange-500 transition-colors">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/512px-Orange_logo.svg.png" alt="Orange" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Orange</span>
-                            <span class="text-xs text-gray-400">84/85/89</span>
+                            
                         </div>
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-red-500 transition-colors">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Airtel_logo.svg/512px-Airtel_logo.svg.png" alt="Airtel" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Airtel</span>
-                            <span class="text-xs text-gray-400">97/98/99</span>
+                            
                         </div>
                         <div class="flex flex-col items-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 transition-colors">
                             <img src="https://upload.wikimedia.org/wikipedia/en/thumb/c/cf/Africell_logo.svg/512px-Africell_logo.svg.png" alt="Africell" class="w-10 h-10 object-contain mb-2">
                             <span class="text-xs text-gray-600 dark:text-gray-300">Africell</span>
-                            <span class="text-xs text-gray-400">90/91</span>
+                           
                         </div>
                     </div>
                 </div>

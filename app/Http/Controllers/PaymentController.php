@@ -2032,6 +2032,7 @@ class PaymentController extends Controller
             // Créer la transaction dans la base
             $transaction = Transaction::create([
                 'user_id' => $buyerId,
+                'buyer_id' => $buyerId,
                 'transaction_id' => $transactionId,
                 'amount' => $request->amount,
                 'currency' => $request->input('currency', 'CDF'),
