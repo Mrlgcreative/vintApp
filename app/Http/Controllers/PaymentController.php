@@ -2058,7 +2058,7 @@ class PaymentController extends Controller
                 if ($result['success']) {
                     $transaction->update([
                         'status' => 'completed',
-                        'transaction_ref' => $result['transaction_id'],
+                        'description' => 'Ref: ' . $result['transaction_id'],
                     ]);
 
                     return response()->json([
@@ -2084,10 +2084,10 @@ class PaymentController extends Controller
 
             if ($result['success']) {
                 $transaction->update([
-                    'transaction_ref' => $result['transaction_id'],
+                    'description' => 'Ref: ' . $result['transaction_id'],
                     'metadata' => json_encode(array_merge(
                         json_decode($transaction->metadata ?? '{}', true),
-                        ['maishapay_id' => $result['maishapay_id'] ?? null]
+                        ['maishapay_id' => $result['maishapay_id'] ?? null, 'ref' => $result['transaction_id']]
                     )),
                 ]);
 
