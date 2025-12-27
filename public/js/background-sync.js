@@ -45,18 +45,15 @@ class BackgroundSyncManager {
             const request = indexedDB.open(this.dbName, this.dbVersion);
 
             request.onerror = () => {
-                console.error('❌ IndexedDB: Erreur ouverture', request.error);
                 reject(request.error);
             };
             
             request.onsuccess = () => {
                 this.db = request.result;
-                console.log('✅ IndexedDB: Base de données ouverte');
                 resolve();
             };
 
             request.onupgradeneeded = (event) => {
-                console.log('🔧 IndexedDB: Mise à jour du schéma...');
                 const db = event.target.result;
 
                 // Créer le store si nécessaire
@@ -70,8 +67,6 @@ class BackgroundSyncManager {
                     objectStore.createIndex('type', 'type', { unique: false });
                     objectStore.createIndex('timestamp', 'timestamp', { unique: false });
                     objectStore.createIndex('retryCount', 'retryCount', { unique: false });
-                    
-                    console.log('✅ IndexedDB: Store créé avec succès');
                 }
             };
         });
@@ -141,7 +136,6 @@ class BackgroundSyncManager {
         return new Promise((resolve, reject) => {
             const addRequest = objectStore.add(requestData);
             addRequest.onsuccess = () => {
-                console.log(`✅ Requête "${type}" ajoutée à la queue`, addRequest.result);
                 this.showQueuedNotification(type);
                 resolve(addRequest.result);
             };
@@ -178,24 +172,16 @@ class BackgroundSyncManager {
             const pendingRequests = await this.getPendingRequests();
 
             if (pendingRequests.length === 0) {
-                console.log('ℹ️ Aucune requête en attente');
                 this.syncInProgress = false;
                 return;
             }
-
-            console.log(`🔄 Synchronisation de ${pendingRequests.length} requête(s)...`);
-
-            let successCount = 0;
-            let failCount = 0;
 
             for (const req of pendingRequests) {
                 try {
                     await this.executeRequest(req);
                     await this.removeFromQueue(req.id);
                     successCount++;
-                    console.log(`✅ Requête ${req.id} synchronisée`);
                 } catch (error) {
-                    console.error(`❌ Erreur requête ${req.id}:`, error);
                     
                     // Incrémenter le compteur de retry
                     req.retryCount++;
@@ -216,7 +202,7 @@ class BackgroundSyncManager {
             this.showSyncCompleteNotification(successCount, failCount);
 
         } catch (error) {
-            console.error('❌ Erreur synchronisation:', error);
+            // Erreur silencieuse
         } finally {
             this.syncInProgress = false;
             this.hideSyncNotification();

@@ -31,8 +31,6 @@ class NavigationSkeletonManager {
         
         // Écouter les changements de hash
         window.addEventListener('hashchange', () => this.handleHashChange());
-        
-        console.log('✅ Navigation Skeleton Manager initialisé');
     }
 
     handleLinkClick(e) {
@@ -115,7 +113,6 @@ class NavigationSkeletonManager {
             window.location.href = href;
 
         } catch (error) {
-            console.error('❌ Erreur lors de la navigation:', error);
             // En cas d'erreur, naviguer quand même
             window.location.href = href;
         }
@@ -153,7 +150,6 @@ class NavigationSkeletonManager {
     async showSkeleton(type) {
         // Créer une instance de PageSkeletonLoader
         if (!window.PageSkeletonLoader) {
-            console.warn('⚠️ PageSkeletonLoader non disponible');
             return;
         }
 
@@ -192,8 +188,6 @@ class NavigationSkeletonManager {
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        console.log(`📱 Skeleton affiché: ${type}`);
     }
 
     showProfileSkeleton() {

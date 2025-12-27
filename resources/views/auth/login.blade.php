@@ -272,8 +272,6 @@ window.signInWithGoogle = async function() {
             throw new Error('Aucune information utilisateur reçue');
         }
         
-        console.log('Utilisateur Google connecté:', user);
-        
         // Obtenir le token Firebase pour Laravel
         const idToken = await user.getIdToken();
         
@@ -301,13 +299,10 @@ window.signInWithGoogle = async function() {
         try {
             const contentType = response.headers.get('content-type');
             if (!contentType || !contentType.includes('application/json')) {
-                const responseText = await response.text();
-                console.error('Réponse non-JSON reçue:', responseText.substring(0, 200));
                 throw new Error('Le serveur a retourné une réponse invalide. Veuillez réessayer.');
             }
             data = await response.json();
         } catch (parseError) {
-            console.error('Erreur de parsing JSON:', parseError);
             if (parseError.message.includes('invalide')) {
                 throw parseError;
             }
@@ -328,7 +323,6 @@ window.signInWithGoogle = async function() {
         
     } catch (error) {
         showLoading(false);
-        console.error('Erreur détaillée lors de la connexion Google:', error);
         
         let errorMessage = 'Erreur lors de la connexion Google';
         
@@ -369,7 +363,6 @@ window.signInWithFacebook = async function() {
         
     } catch (error) {
         showLoading(false);
-        console.error('Erreur lors de la connexion Facebook:', error);
         
         let errorMessage = 'Erreur lors de la connexion Facebook';
         if (error.code === 'auth/popup-closed-by-user') {
@@ -546,22 +539,14 @@ const firebaseConfig = {
 try {
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
-        console.log('Firebase initialisé avec succès');
-    } else {
-        console.log('Firebase déjà initialisé');
     }
     
     // Test de connexion
     firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            console.log('Utilisateur connecté:', user.email);
-        } else {
-            console.log('Aucun utilisateur connecté');
-        }
+        // Silencieux
     });
     
 } catch (error) {
-    console.error('Erreur d\'initialisation Firebase:', error);
     showToast('Erreur de configuration Firebase. Contactez l\'administrateur.', 'error');
 }
 </script>

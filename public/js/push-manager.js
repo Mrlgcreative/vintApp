@@ -37,17 +37,13 @@ class PushNotificationManager {
             const app = initializeApp(firebaseConfig);
             this.messaging = getMessaging(app);
 
-            console.log('✅ Firebase Messaging initialisé');
-
             // Écouter les messages en foreground
             onMessage(this.messaging, (payload) => {
-                console.log('📬 Message reçu (foreground):', payload);
                 this.showForegroundNotification(payload);
             });
 
             return true;
         } catch (error) {
-            console.error('❌ Erreur init Firebase Messaging:', error);
             return false;
         }
     }
@@ -90,16 +86,13 @@ class PushNotificationManager {
             });
 
             if (token) {
-                console.log('✅ FCM Token obtenu:', token);
                 this.currentToken = token;
                 await this.saveTokenToServer(token);
                 return token;
             } else {
-                console.warn('⚠️ Aucun token FCM disponible');
                 return null;
             }
         } catch (error) {
-            console.error('❌ Erreur abonnement notifications:', error);
             throw error;
         }
     }
@@ -115,10 +108,8 @@ class PushNotificationManager {
             await this.removeTokenFromServer();
             
             this.currentToken = null;
-            console.log('✅ Désabonnement réussi');
             return true;
         } catch (error) {
-            console.error('❌ Erreur désabonnement:', error);
             return false;
         }
     }
@@ -146,11 +137,9 @@ class PushNotificationManager {
             }
 
             const data = await response.json();
-            console.log('✅ Token sauvegardé sur serveur:', data);
             localStorage.setItem('fcm_token', token);
             return data;
         } catch (error) {
-            console.error('❌ Erreur sauvegarde token serveur:', error);
             throw error;
         }
     }
@@ -172,9 +161,8 @@ class PushNotificationManager {
             });
 
             localStorage.removeItem('fcm_token');
-            console.log('✅ Token supprimé du serveur');
         } catch (error) {
-            console.error('❌ Erreur suppression token serveur:', error);
+            // Erreur silencieuse
         }
     }
 
