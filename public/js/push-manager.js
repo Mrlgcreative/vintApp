@@ -16,7 +16,6 @@ class PushNotificationManager {
      */
     async init() {
         if (!this.isSupported) {
-            console.warn('⚠️ Notifications push non supportées');
             return false;
         }
 
@@ -70,7 +69,6 @@ class PushNotificationManager {
         }
 
         const permission = await Notification.requestPermission();
-        console.log('🔔 Permission notifications:', permission);
 
         if (permission === 'granted') {
             await this.subscribeToNotifications();
@@ -361,5 +359,3 @@ setTimeout(() => {
 
 // Export pour utilisation globale
 window.pushManager = pushManager;
-
-console.log('🔔 Push Notification Manager chargé');

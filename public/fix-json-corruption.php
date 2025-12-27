@@ -37,12 +37,12 @@ function checkFileForWhitespace($filepath) {
         return 'whitespace_before_php';
     }
     
-    // Vérifier après ?>
+    // Vérifier après 
     if (preg_match('/\?>\s*\S/', $content)) {
         return 'content_after_closing_tag';
     }
     
-    // Vérifier ?> suivi d'espaces/newlines
+    // Vérifier  suivi d'espaces/newlines
     if (preg_match('/\?>[\s\n\r]+$/', $content)) {
         return 'whitespace_after_closing_tag';
     }
@@ -96,7 +96,7 @@ foreach ($criticalFiles as $file) {
             // Nettoyer les espaces avant <?php
             $content = preg_replace('/^[\s\n\r]+(<\?php)/', '$1', $content);
             
-            // Supprimer ?> en fin de fichier (recommandé PSR)
+            // Supprimer en fin de fichier (recommandé PSR)
             $content = preg_replace('/\?>\s*$/', '', $content);
             
             if ($content !== $originalContent) {

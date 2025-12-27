@@ -28,13 +28,6 @@ class NetworkSpeedAdapter {
         
         // Appliquer les optimisations
         this.applyOptimizations();
-        
-        console.log('📡 Network Speed Adapter initialisé:', {
-            speedCategory: this.speedCategory,
-            effectiveType: this.effectiveType,
-            downlink: this.downlink,
-            rtt: this.rtt
-        });
     }
 
     detectConnection() {
@@ -109,7 +102,6 @@ class NetworkSpeedAdapter {
         
         if (connection) {
             connection.addEventListener('change', () => {
-                console.log('📡 Connexion changée, re-détection...');
                 this.detectConnection();
                 this.applyOptimizations();
             });
@@ -143,10 +135,7 @@ class NetworkSpeedAdapter {
             } else {
                 this.speedCategory = 'slow';
             }
-            
-            console.log('⏱️ Vitesse mesurée:', duration.toFixed(0) + 'ms', '→', this.speedCategory);
         } catch (error) {
-            console.warn('⚠️ Impossible de mesurer la vitesse, utilisation de la détection API');
             // Fallback sur la détection via Network Information API uniquement
         }
     }
@@ -183,8 +172,6 @@ class NetworkSpeedAdapter {
                 config: config
             }
         }));
-        
-        console.log('⚙️ Optimisations appliquées pour:', this.speedCategory);
     }
 
     getOptimizedConfig() {

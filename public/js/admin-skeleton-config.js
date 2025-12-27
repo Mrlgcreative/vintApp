@@ -9,7 +9,6 @@
     // Attendre que PageSkeletonLoader soit chargé
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof PageSkeletonLoader === 'undefined') {
-            console.warn('⚠️ PageSkeletonLoader non chargé');
             return;
         }
 
@@ -275,9 +274,6 @@
             }
         };
 
-        // Initialiser le skeleton avec configuration admin
-        console.log('🎨 Configuration Admin Skeleton activée');
-        
         // Exposer globalement pour l'utiliser dans navigation-skeleton.js
         window.AdminPageDetector = AdminPageDetector;
         window.AdminSkeletonTemplates = AdminSkeletonTemplates;

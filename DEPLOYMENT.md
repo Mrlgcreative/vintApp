@@ -1,4 +1,4 @@
-# 🚀 Guide de Déploiement VintApp sur Hostinger
+ls -la public/ | grep storage# 🚀 Guide de Déploiement VintApp sur Hostinger
 
 ## ⚠️ NE PAS TOUT SUPPRIMER !
 

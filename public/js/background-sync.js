@@ -17,14 +17,10 @@ class BackgroundSyncManager {
      * Initialiser le manager
      */
     async init() {
-        console.log('🔄 Background Sync: Début initialisation...');
-        
         // Initialiser IndexedDB
         try {
             await this.initDB();
-            console.log('✅ Background Sync: IndexedDB initialisée');
         } catch (error) {
-            console.error('❌ Background Sync: Erreur IndexedDB', error);
             throw error;
         }
 
@@ -39,16 +35,12 @@ class BackgroundSyncManager {
         if (this.isOnline) {
             await this.syncPendingRequests();
         }
-
-        console.log('✅ Background Sync Manager initialisé');
     }
 
     /**
      * Initialiser IndexedDB
      */
     async initDB() {
-        console.log('📦 IndexedDB: Ouverture de la base de données...');
-        
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, this.dbVersion);
 
@@ -89,7 +81,6 @@ class BackgroundSyncManager {
      * Gérer le passage en ligne
      */
     async handleOnline() {
-        console.log('🌐 Connexion rétablie');
         this.isOnline = true;
         this.updateConnectionStatus();
         
@@ -101,7 +92,6 @@ class BackgroundSyncManager {
      * Gérer le passage hors ligne
      */
     handleOffline() {
-        console.log('📴 Connexion perdue');
         this.isOnline = false;
         this.updateConnectionStatus();
     }
@@ -407,12 +397,10 @@ window.syncManager = null;
 
 async function initializeSyncManager() {
     try {
-        console.log('🚀 Démarrage de l\'initialisation du Background Sync Manager...');
         window.syncManager = new BackgroundSyncManager();
         await window.syncManager.init();
-        console.log('🎉 Background Sync Manager complètement initialisé et prêt !');
     } catch (error) {
-        console.error('❌ Erreur lors de l\'initialisation du Background Sync Manager:', error);
+        // Erreur silencieuse
     }
 }
 
@@ -458,5 +446,3 @@ if (document.readyState === 'loading') {
     `;
     document.head.appendChild(syncStyle);
 })();
-
-console.log('🔄 Background Sync Manager chargé');
