@@ -289,13 +289,48 @@ class ExpertController extends Controller
 
         // Filtrer par catégories d'expertise si l'expert a des spécialités
         if ($expertProfile && !empty($expertProfile->specialties)) {
-            // Les specialties sont stockées comme des slugs, on cherche par slug de catégorie
-            $query->whereHas('category', function($q) use ($expertProfile) {
-                $q->whereIn('slug', $expertProfile->specialties);
-            });
+            $specialties = $expertProfile->specialties;
+            
+            // Mapping des spécialités vers les slugs de catégories réelles
+            $specialtyToCategoryMap = [
+                'mode_luxe' => ['vetements', 'beaute'],
+                'electronique' => ['electronique', 'informatique'],
+                'bijoux' => ['beaute', 'collection'],
+                'montres' => ['collection', 'beaute'],
+                'sacs_maroquinerie' => ['vetements', 'beaute'],
+                'vetements-femmes' => ['vetements'],
+                'vetements-hommes' => ['vetements'],
+                'vareuse' => ['vetements'],
+                'general' => [], // Généraliste = tous les articles
+            ];
+            
+            // Collecter tous les slugs de catégories correspondants
+            $categorySlugs = [];
+            $isGeneralist = false;
+            
+            foreach ($specialties as $specialty) {
+                if ($specialty === 'general') {
+                    $isGeneralist = true;
+                    break;
+                }
+                if (isset($specialtyToCategoryMap[$specialty])) {
+                    $categorySlugs = array_merge($categorySlugs, $specialtyToCategoryMap[$specialty]);
+                } else {
+                    // Si la spécialité correspond directement à un slug de catégorie
+                    $categorySlugs[] = $specialty;
+                }
+            }
+            
+            // Appliquer le filtre seulement si l'expert n'est pas généraliste et a des catégories
+            if (!$isGeneralist && !empty($categorySlugs)) {
+                $categorySlugs = array_unique($categorySlugs);
+                $query->whereHas('category', function($q) use ($categorySlugs) {
+                    $q->whereIn('slug', $categorySlugs);
+                });
+            }
+            // Si généraliste ou pas de correspondance, l'expert voit tout
         }
         // Si l'expert n'a pas de spécialités, il voit tous les articles en attente
-        // (c'est un admin/expert généraliste)
 
         // Filtres
         if ($request->filled('category')) {
