@@ -241,11 +241,11 @@ class ItemController extends Controller
                     'score' => $verification['score']
                 ]);
                 
-                // Appliquer le résultat de la vérification
+                // Appliquer le résultat de la vérification IA (pré-vérification)
                 $item->verification_status = $verification['status'];
                 $item->verification_score = $verification['score'];
                 $item->verification_details = $verification['details'];
-                $item->verified_at = now();
+                // Note: verified_at sera défini par l'expert lors de la vérification manuelle
                 
                 // Tous les articles restent en attente de vérification manuelle par l'admin ET expert
                 // Mettre le verification_status à 'pending' pour que les experts puissent vérifier
@@ -482,20 +482,18 @@ class ItemController extends Controller
                 $category->name ?? null
             );
             
-            // Appliquer le résultat de la vérification
+            // Appliquer le résultat de la vérification IA (pré-vérification)
             $item->verification_status = $verification['status'];
             $item->verification_score = $verification['score'];
             $item->verification_details = $verification['details'];
-            $item->verified_at = now();
+            // Note: verified_at sera défini par l'expert lors de la vérification manuelle
             
-            // Ajuster le statut
-            if ($verification['status'] === 'approved') {
-                $item->status = 'active';
-            } elseif ($verification['status'] === 'pending') {
-                $item->status = 'pending_verification';
-            } else {
-                $item->status = 'inactive';
+            // Tous les articles doivent passer par l'expert, peu importe le résultat IA
+            // Le verification_status garde le résultat IA mais status force pending_verification
+            if ($verification['status'] !== 'rejected') {
+                $item->verification_status = 'pending'; // En attente de l'expert
             }
+            $item->status = 'pending_verification';
         }
 
         $item->save();
