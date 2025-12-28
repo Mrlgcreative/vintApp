@@ -20,6 +20,7 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\VintPassController;
 
 // 🔍 Route de débogage pour vérifier les permissions admin
 Route::get('/debug/check-admin', function() {
@@ -173,6 +174,22 @@ Route::get('/', function() {
 
 // Routes Newsletter publiques
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+
+// ==================== VintPass Routes ====================
+// Page publique de vérification (accessible sans authentification)
+Route::get('/verify/{shortCode}', [VintPassController::class, 'verify'])->name('vintpass.verify');
+
+// Routes VintPass authentifiées
+Route::middleware(['auth'])->prefix('vintpass')->name('vintpass.')->group(function() {
+    Route::get('/', [VintPassController::class, 'myPasses'])->name('index');
+    Route::get('/{vintPass}', [VintPassController::class, 'show'])->name('show');
+    Route::get('/{vintPass}/scans', [VintPassController::class, 'scanHistory'])->name('scans');
+    Route::get('/{vintPass}/transfers', [VintPassController::class, 'transferHistory'])->name('transfers');
+    Route::get('/{vintPass}/download-qr', [VintPassController::class, 'downloadQR'])->name('download-qr');
+    Route::post('/request/{item}', [VintPassController::class, 'requestPass'])->name('request');
+});
+// ==================== End VintPass Routes ====================
+
 Route::get('/newsletter/unsubscribe/{token}', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 Route::get('/newsletter/preferences/{token}', [NewsletterController::class, 'preferences'])->name('newsletter.preferences');
 Route::put('/newsletter/preferences/{token}', [NewsletterController::class, 'updatePreferences'])->name('newsletter.preferences.update');

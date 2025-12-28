@@ -20,6 +20,7 @@ use App\Http\Controllers\AuthenticityController;
 use App\Http\Controllers\BotController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\SupportController;
+use App\Http\Controllers\VintPassController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\AdminController;
@@ -66,6 +67,9 @@ Route::middleware(['cache.response:60'])->group(function () {
     // API publique: Catégories et marques
     Route::get('/v1/categories', [CategoryController::class, 'apiIndex']);
     Route::get('/v1/brands', [BrandController::class, 'apiIndex']);
+    
+    // API publique: Vérification VintPass (accessible sans authentification)
+    Route::get('/v1/vintpass/verify/{shortCode}', [VintPassController::class, 'apiVerify']);
     
     // API publique: Devises supportées
     Route::get('/v1/currencies', function () {
@@ -310,6 +314,13 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
             Route::post('/withdraw/maishapay', [WalletController::class, 'apiWithdrawMaishaPay']);
             Route::get('/withdraw/maishapay/status/{transactionId}', [WalletController::class, 'apiWithdrawMaishaPayStatus']);
             Route::get('/withdraw/operators', [WalletController::class, 'apiGetPayoutOperators']);
+        });
+
+        // VintPass API
+        Route::prefix('vintpass')->group(function () {
+            Route::get('/', [VintPassController::class, 'apiMyPasses']);
+            Route::get('/{vintPass}', [VintPassController::class, 'apiShow']);
+            Route::post('/request/{item}', [VintPassController::class, 'apiRequestPass']);
         });
     });
     

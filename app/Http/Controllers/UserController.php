@@ -658,7 +658,7 @@ public function uploadAvatar(Request $request)
 
             return $this->paginatedResponse($items, 'Articles récupérés avec succès');
         } catch (\Exception $e) {
-            \Log::error('apiGetItems error: ' . $e->getMessage());
+            Log::error('apiGetItems error: ' . $e->getMessage());
             return $this->errorResponse('Erreur lors de la récupération des articles: ' . $e->getMessage(), 500);
         }
     }
