@@ -797,7 +797,8 @@
                 // En cas d'erreur, masquer le badge
                 const badge = document.getElementById('notification-badge');
                 if (badge) badge.classList.add('hidden');
-
+            });
+        }
 
         // Rafraîchir les notifications toutes les 30 secondes
         if (typeof $ !== 'undefined') {
