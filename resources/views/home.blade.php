@@ -298,7 +298,6 @@ function resetFilters() {
 // ============ CART FUNCTIONS ============
 function addToCart(itemId) {
     showToast('Ajouté au panier avec succès !');
-    console.log('Item added to cart:', itemId);
     
     const button = event.target.closest('button');
     if (button) {
@@ -323,8 +322,6 @@ function toggleFavorite(itemId, event) {
         icon.classList.add('fill-current', 'text-red-500');
         showToast('Ajouté aux favoris');
     }
-    
-    console.log('Toggle favorite for item:', itemId);
 }
 
 // ============ SCROLL ANIMATIONS ============
@@ -408,8 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-    
-    console.log('VintApp Home Page - Initialized');
 });
 
 window.addEventListener('load', () => {

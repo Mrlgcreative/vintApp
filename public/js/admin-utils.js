@@ -255,5 +255,4 @@ function enableLiveSearch(searchInputId, resultsContainerId, searchUrl) {
 document.addEventListener('DOMContentLoaded', function() {
     // Initialiser les tooltips si nécessaire
     // Initialiser les composants interactifs
-    console.log('Admin utils loaded successfully');
 });
