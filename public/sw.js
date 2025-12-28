@@ -23,8 +23,6 @@ try {
     
     // Gestion des messages en arrière-plan
     messaging.onBackgroundMessage((payload) => {
-        console.log('📬 Firebase: Message reçu en arrière-plan:', payload);
-
         const notificationTitle = payload.notification?.title || payload.data?.title || 'VintApp';
         const notificationOptions = {
             body: payload.notification?.body || payload.data?.body || 'Vous avez une nouvelle notification',
@@ -44,10 +42,8 @@ try {
 
         return self.registration.showNotification(notificationTitle, notificationOptions);
     });
-    
-    console.log('🔥 Firebase Messaging intégré');
 } catch (error) {
-    console.warn('⚠️ Firebase Messaging non disponible (mode offline/dégradé):', error);
+    // Firebase Messaging non disponible (mode offline/dégradé)
 }
 
 const CACHE_VERSION = 'vintapp-v1.0.3';
@@ -67,17 +63,13 @@ const CACHE_LIFETIME = 7 * 24 * 60 * 60 * 1000;
  * Installation du Service Worker
  */
 self.addEventListener('install', (event) => {
-    console.log('🔧 Service Worker v1.0.3: Installation démarrage...');
-    
     // Forcer l'installation immédiate sans mettre en cache
     event.waitUntil(
         Promise.resolve()
             .then(() => {
-                console.log('✅ Service Worker: Installation sans cache initial (mode simplifié)');
                 return self.skipWaiting();
             })
             .catch((error) => {
-                console.error('❌ Service Worker: Erreur installation', error);
                 // Continuer quand même
                 return self.skipWaiting();
             })
@@ -88,8 +80,6 @@ self.addEventListener('install', (event) => {
  * Activation du Service Worker
  */
 self.addEventListener('activate', (event) => {
-    console.log('🚀 Service Worker: Activation...');
-    
     event.waitUntil(
         caches.keys()
             .then((cacheNames) => {
@@ -102,13 +92,11 @@ self.addEventListener('activate', (event) => {
                                    cacheName !== IMAGE_CACHE;
                         })
                         .map((cacheName) => {
-                            console.log('🗑️ Service Worker: Suppression cache obsolète', cacheName);
                             return caches.delete(cacheName);
                         })
                 );
             })
             .then(() => {
-                console.log('✅ Service Worker: Activation terminée');
                 return self.clients.claim();
             })
     );
@@ -119,7 +107,6 @@ self.addEventListener('activate', (event) => {
  */
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
-        console.log('⏭️ Service Worker: SKIP_WAITING reçu');
         self.skipWaiting();
     }
 });
@@ -232,10 +219,7 @@ function isAPIRequest(url) {
  * Notifications Push - Configuration avancée
  */
 self.addEventListener('push', (event) => {
-    console.log('📬 Push reçu:', event);
-    
     if (!event.data) {
-        console.log('❌ Push sans données');
         return;
     }
 
@@ -243,7 +227,6 @@ self.addEventListener('push', (event) => {
     try {
         data = event.data.json();
     } catch (e) {
-        console.warn('⚠️ Données push non-JSON:', e);
         data = {
             title: 'VintApp',
             body: event.data.text(),
@@ -277,26 +260,19 @@ self.addEventListener('push', (event) => {
 
     event.waitUntil(
         self.registration.showNotification(title, options)
-            .then(() => console.log('✅ Notification affichée:', title))
-            .catch(err => console.error('❌ Erreur notification:', err))
     );
 });
 
 self.addEventListener('notificationclick', (event) => {
-    console.log('🖱️ Click notification:', event.action, event.notification.tag);
-    
     event.notification.close();
 
     if (event.action === 'close') {
-        console.log('🚪 Notification fermée par l\'utilisateur');
         return;
     }
 
     const urlToOpen = event.notification.data?.url || '/';
     const orderId = event.notification.data?.orderId;
     const finalUrl = orderId ? `/orders/${orderId}` : urlToOpen;
-
-    console.log('🔗 Navigation vers:', finalUrl);
 
     event.waitUntil(
         clients.matchAll({ 
@@ -305,7 +281,6 @@ self.addEventListener('notificationclick', (event) => {
         }).then((clientList) => {
             for (const client of clientList) {
                 if (client.url.includes(self.location.origin) && 'focus' in client) {
-                    console.log('🎯 Focus sur fenêtre existante');
                     return client.focus()
                         .then(() => client.navigate(finalUrl))
                         .catch(() => clients.openWindow(finalUrl));
@@ -313,16 +288,13 @@ self.addEventListener('notificationclick', (event) => {
             }
             
             if (clients.openWindow) {
-                console.log('🆕 Ouverture nouvelle fenêtre');
                 return clients.openWindow(finalUrl);
             }
-        }).catch(err => console.error('❌ Erreur click notification:', err))
+        }).catch(() => {})
     );
 });
 
 self.addEventListener('notificationclose', (event) => {
-    console.log('🔕 Notification fermée:', event.notification.tag);
-    
     event.waitUntil(
         fetch('/api/notifications/closed', {
             method: 'POST',
@@ -340,8 +312,6 @@ self.addEventListener('notificationclose', (event) => {
  * Synchroniser les requêtes en attente quand la connexion est rétablie
  */
 self.addEventListener('sync', (event) => {
-    console.log('🔄 Service Worker: Événement sync -', event.tag);
-
     if (event.tag === 'sync-pending-requests') {
         event.waitUntil(syncPendingRequests());
     }
@@ -352,18 +322,13 @@ self.addEventListener('sync', (event) => {
  */
 async function syncPendingRequests() {
     try {
-        console.log('🔄 Synchronisation des requêtes en attente...');
-
         // Ouvrir IndexedDB
         const db = await openDatabase();
         const requests = await getAllPendingRequests(db);
 
         if (requests.length === 0) {
-            console.log('ℹ️ Aucune requête en attente');
             return;
         }
-
-        console.log(`📋 ${requests.length} requête(s) à synchroniser`);
 
         let successCount = 0;
         let failCount = 0;
@@ -373,17 +338,13 @@ async function syncPendingRequests() {
                 await executeRequest(req);
                 await deleteRequest(db, req.id);
                 successCount++;
-                console.log(`✅ Requête ${req.id} synchronisée`);
             } catch (error) {
-                console.error(`❌ Erreur requête ${req.id}:`, error);
-                
                 // Incrémenter le retry count
                 req.retryCount++;
                 
                 if (req.retryCount >= req.maxRetries) {
                     await deleteRequest(db, req.id);
                     failCount++;
-                    console.log(`❌ Requête ${req.id} abandonnée`);
                 } else {
                     await updateRequest(db, req);
                     failCount++;
@@ -401,10 +362,7 @@ async function syncPendingRequests() {
             });
         }
 
-        console.log(`✅ Sync terminée: ${successCount} succès, ${failCount} échecs`);
-
     } catch (error) {
-        console.error('❌ Erreur synchronisation:', error);
         throw error;
     }
 }
@@ -483,5 +441,3 @@ function updateRequest(db, req) {
         request.onerror = () => reject(request.error);
     });
 }
-
-console.log('🎯 Service Worker chargé - Version:', CACHE_VERSION);
