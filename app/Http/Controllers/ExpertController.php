@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\ProductAuthenticityCheck;
 use App\Models\VerificationImage;
 use App\Models\AuthenticityAuditLog;
+use App\Models\VintPass;
 use App\Services\AuthenticityVerificationService;
+use App\Services\VintPassService;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -356,13 +358,31 @@ class ExpertController extends Controller
                 $item->update([
                     'verification_status' => 'approved',
                     'verified_at' => now(),
-                    'verified_by' => $expert->id
+                    'verified_by' => $expert->id,
+                    'authenticity_verified' => true
                 ]);
 
                 \Illuminate\Support\Facades\Log::info("Article approuvé par expert", [
                     'item_id' => $item->id,
                     'expert_id' => $expert->id
                 ]);
+
+                // Créer automatiquement un VintPass pour l'article approuvé
+                try {
+                    if (!VintPass::where('item_id', $item->id)->exists()) {
+                        $vintPassService = app(VintPassService::class);
+                        $vintPass = $vintPassService->createVintPass($item, null, $expert);
+                        \Illuminate\Support\Facades\Log::info("VintPass créé automatiquement", [
+                            'item_id' => $item->id,
+                            'vintpass_id' => $vintPass->pass_id
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning("Échec création VintPass", [
+                        'item_id' => $item->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
 
                 // Notifier le vendeur
                 $notificationService->notifyItemApproved($item, $item->user);

@@ -254,6 +254,27 @@
                         </div>
                     </a>
 
+                    <!-- Mes VintPass - Certificats d'authenticité -->
+                    <a href="{{ route('vintpass.index') }}" class="group relative overflow-hidden bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-2xl border-2 border-indigo-200 dark:border-indigo-800 p-6 hover:shadow-2xl hover:scale-105 hover:border-indigo-400 dark:hover:border-indigo-600 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-bl-full transform translate-x-8 -translate-y-8"></div>
+                        <div class="absolute -bottom-2 -left-2 text-6xl opacity-10">🏆</div>
+                        <div class="relative">
+                            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                                <span class="text-2xl">🏆</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Mes VintPass</h3>
+                            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+                                Certificats d'authenticité blockchain
+                            </p>
+                            <div class="flex items-center text-indigo-600 dark:text-indigo-400 font-semibold text-sm group-hover:translate-x-2 transition-transform duration-300">
+                                <span>Voir mes certificats</span>
+                                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </a>
+
                     <!-- Messages -->
                     <a href="{{ route('messages.index') }}" class="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-2 border-purple-200 dark:border-purple-800 p-6 hover:shadow-2xl hover:scale-105 hover:border-purple-400 dark:hover:border-purple-600 transition-all duration-300">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-bl-full transform translate-x-8 -translate-y-8"></div>
