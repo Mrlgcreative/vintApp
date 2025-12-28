@@ -392,12 +392,13 @@ class ExpertController extends Controller
             if ($validated['decision'] === 'approved') {
                 $item->update([
                     'verification_status' => 'approved',
+                    'status' => 'active', // Publication directe par l'expert
                     'verified_at' => now(),
                     'verified_by' => $expert->id,
                     'authenticity_verified' => true
                 ]);
 
-                \Illuminate\Support\Facades\Log::info("Article approuvé par expert", [
+                \Illuminate\Support\Facades\Log::info("Article approuvé et publié par expert", [
                     'item_id' => $item->id,
                     'expert_id' => $expert->id
                 ]);
@@ -425,6 +426,7 @@ class ExpertController extends Controller
             } else {
                 $item->update([
                     'verification_status' => 'rejected',
+                    'status' => 'inactive', // Article rejeté = inactif
                     'verified_at' => now(),
                     'verified_by' => $expert->id,
                     'rejection_reason' => $validated['rejection_reason'] ?? null
