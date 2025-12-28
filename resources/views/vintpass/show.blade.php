@@ -77,9 +77,13 @@
                                 @if($vintPass->item_snapshot['brand'] ?? false)
                                 <p class="text-blue-400 mb-2">{{ $vintPass->item_snapshot['brand'] }}</p>
                                 @endif
-                                @if($vintPass->item_snapshot['price'] ?? $vintPass->item?->price)
+                                @if($vintPass->item)
                                 <p class="text-green-400 font-bold text-lg">
-                                    {{ number_format($vintPass->item_snapshot['price'] ?? $vintPass->item->price, 0, ',', ' ') }} FC
+                                    {{ $vintPass->item->formatted_price }}
+                                </p>
+                                @elseif($vintPass->item_snapshot['price'] ?? false)
+                                <p class="text-green-400 font-bold text-lg">
+                                    {{ $vintPass->item_snapshot['currency_symbol'] ?? 'FC' }} {{ number_format($vintPass->item_snapshot['price'], 0, ',', ' ') }}
                                 </p>
                                 @endif
                                 
