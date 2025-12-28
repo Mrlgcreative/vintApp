@@ -263,7 +263,7 @@ let messaging = null;
 try {
     messaging = getMessaging(app);
 } catch (error) {
-    console.warn('FCM not supported:', error);
+    // FCM not supported
 }
 
 // Providers
@@ -319,7 +319,6 @@ window.signInWithEmail = async (mode) => {
         
         await handleFirebaseAuth(userCredential.user);
     } catch (error) {
-        console.error('Erreur email/password:', error);
         let message = 'Erreur de connexion';
         
         switch (error.code) {
@@ -350,13 +349,11 @@ window.signInWithGoogle = async () => {
         const result = await signInWithPopup(auth, googleProvider);
         await handleFirebaseAuth(result.user);
     } catch (error) {
-        console.error('Erreur Google:', error);
         showLoading(false);
         
         // Gérer les erreurs spécifiques
         if (error.code === 'auth/popup-closed-by-user') {
             // L'utilisateur a fermé le popup - ne rien afficher
-            console.log('Connexion annulée par l\'utilisateur');
             return;
         }
         
@@ -381,12 +378,10 @@ window.signInWithFacebook = async () => {
         const result = await signInWithPopup(auth, facebookProvider);
         await handleFirebaseAuth(result.user);
     } catch (error) {
-        console.error('Erreur Facebook:', error);
         showLoading(false);
         
         // Gérer les erreurs spécifiques
         if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
-            console.log('Connexion annulée par l\'utilisateur');
             return;
         }
         
@@ -416,7 +411,7 @@ async function handleFirebaseAuth(user) {
                     vapidKey: "{{ config('firebase.messaging.vapid_key', '') }}" || undefined
                 });
             } catch (fcmError) {
-                console.warn('Impossible d\'obtenir le token FCM:', fcmError);
+                // Token FCM non disponible
             }
         }
         
@@ -446,7 +441,6 @@ async function handleFirebaseAuth(user) {
             showLoading(false);
         }
     } catch (error) {
-        console.error('Erreur lors de l\'authentification:', error);
         showToast('Erreur lors de l\'authentification', 'error');
         showLoading(false);
     }
@@ -512,7 +506,7 @@ onAuthStateChanged(auth, (user) => {
                     window.location.href = '{{ route("home") }}';
                 }
             })
-            .catch(console.error);
+            .catch(() => {});
     }
 });
 </script>

@@ -261,7 +261,6 @@ document.getElementById('verify2FAForm').addEventListener('submit', async functi
             document.getElementById('code').focus();
         }
     } catch (error) {
-        console.error('Erreur lors de la vérification 2FA:', error);
         loadingOverlay.classList.add('hidden');
         verifyButton.disabled = false;
         errorText.textContent = 'Erreur de connexion. Veuillez réessayer.';
@@ -319,7 +318,6 @@ async function verifyRecoveryCode() {
             document.getElementById('recoveryCode').focus();
         }
     } catch (error) {
-        console.error('Erreur lors de la vérification du code de récupération:', error);
         loadingOverlay.classList.add('hidden');
         errorText.textContent = 'Erreur de connexion. Veuillez réessayer.';
         errorMessage.classList.remove('hidden');

@@ -64,8 +64,6 @@
             } else {
                 document.documentElement.classList.remove('dark');
             }
-            
-            console.log('Thème appliqué:', theme);
         }
     </script>
 </head>
@@ -657,7 +655,6 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 VintApp chargé avec Tailwind CSS');
             const theme = getPreferredTheme();
             applyTheme(theme);
             
@@ -700,27 +697,21 @@
 
         async function initFirebasePushNotifications() {
             try {
-                console.log('📱 Initialisation des notifications push...');
-
                 // Vérifier si le navigateur supporte les notifications
                 if (!('Notification' in window)) {
-                    console.log('⚠️ Ce navigateur ne supporte pas les notifications');
                     return;
                 }
 
                 // Vérifier si le Service Worker est supporté
                 if (!('serviceWorker' in navigator)) {
-                    console.log('⚠️ Service Worker non supporté');
                     return;
                 }
 
                 // Enregistrer le Service Worker principal (qui inclut Firebase)
                 let registration = await navigator.serviceWorker.register('/sw.js');
-                console.log('✅ Service Worker enregistré:', registration);
 
                 // Attendre que le Service Worker soit actif
                 if (registration.installing) {
-                    console.log('⏳ Service Worker en cours d\'installation...');
                     await new Promise((resolve) => {
                         registration.installing.addEventListener('statechange', (e) => {
                             if (e.target.state === 'activated') {
@@ -729,16 +720,13 @@
                         });
                     });
                 } else if (registration.waiting) {
-                    console.log('⏳ Service Worker en attente...');
                     await navigator.serviceWorker.ready;
                 } else if (!registration.active) {
-                    console.log('⏳ Attente activation Service Worker...');
                     await navigator.serviceWorker.ready;
                 }
 
                 // S'assurer qu'on a bien un Service Worker actif
                 registration = await navigator.serviceWorker.ready;
-                console.log('✅ Service Worker actif et prêt');
 
                 // Demander la permission de notification
                 const permission = await requestNotificationPermission();
@@ -751,33 +739,25 @@
                     });
 
                     if (currentToken) {
-                        console.log('✅ Token FCM obtenu:', currentToken);
                         await saveFCMToken(currentToken);
-                    } else {
-                        console.log('⚠️ Aucun token FCM disponible');
                     }
 
                     // Écouter les messages en premier plan (app ouverte)
                     messaging.onMessage((payload) => {
-                        console.log('📬 Message reçu en premier plan:', payload);
                         displayForegroundNotification(payload);
                     });
-                } else {
-                    console.log('❌ Permission de notification refusée');
                 }
 
             } catch (error) {
-                console.error('❌ Erreur initialisation FCM:', error);
+                // Erreur silencieuse
             }
         }
 
         async function requestNotificationPermission() {
             try {
                 const permission = await Notification.requestPermission();
-                console.log('🔔 Permission notifications:', permission);
                 return permission;
             } catch (error) {
-                console.error('Erreur demande permission:', error);
                 return 'denied';
             }
         }
@@ -799,16 +779,10 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    console.log('✅ Token FCM enregistré sur le serveur');
                     localStorage.setItem('fcm_token', token);
-                } else {
-                    console.error('❌ Erreur enregistrement token:', data.message);
                 }
             } catch (error) {
-                console.error('❌ Erreur sauvegarde token:', error);
-            }
-        }
-
+                // Erreur silencieuse
         function displayForegroundNotification(payload) {
             const title = payload.notification?.title || payload.data?.title || 'VintApp';
             const options = {
@@ -845,11 +819,10 @@
                 const savedToken = localStorage.getItem('fcm_token');
                 
                 if (currentToken && currentToken !== savedToken) {
-                    console.log('🔄 Token FCM mis à jour');
                     await saveFCMToken(currentToken);
                 }
             } catch (error) {
-                console.error('Erreur rafraîchissement token:', error);
+                // Erreur silencieuse
             }
         }, 24 * 60 * 60 * 1000); // 24 heures
     </script>

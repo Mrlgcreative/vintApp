@@ -584,8 +584,6 @@
     <script>
         // Attendre que le DOM et jQuery soient complètement chargés
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 Admin layout JavaScript chargé');
-
             // Initialisation des composants jQuery
             if (typeof $ !== 'undefined') {
                 // Select2
@@ -613,14 +611,7 @@
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             const mainContent = document.getElementById('main-content');
-            
-            console.log('🔍 Éléments sidebar:', {
-                toggle: !!sidebarToggle,
-                sidebar: !!sidebar,
-                overlay: !!sidebarOverlay,
-                mainContent: !!mainContent
-            });
-            
+
             // État initial basé sur la taille de l'écran
             function initSidebar() {
                 if (window.innerWidth >= 1024) {
@@ -661,7 +652,6 @@
             // Toggle du sidebar
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
-                    console.log('🔘 Sidebar toggle cliqué');
                     const isActive = sidebar.classList.toggle('active');
                     
                     if (window.innerWidth >= 1024) {
@@ -694,14 +684,11 @@
                         }
                     }
                 });
-            } else {
-                console.error('❌ Bouton sidebar-toggle non trouvé');
             }
 
             // Fermer le sidebar sur clic overlay (mobile uniquement)
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function() {
-                    console.log('🔘 Overlay cliqué');
                     sidebar.classList.remove('active');
                     sidebar.style.transform = 'translateX(-100%)';
                     sidebarOverlay.style.opacity = '0';
@@ -734,35 +721,22 @@
             const userDropdown = document.getElementById('userDropdown');
             const userDropdownMenu = document.getElementById('user-dropdown');
 
-            console.log('🔍 Éléments dropdowns:', {
-                notificationsDropdown: !!notificationsDropdown,
-                notificationsDropdownMenu: !!notificationsDropdownMenu,
-                userDropdown: !!userDropdown,
-                userDropdownMenu: !!userDropdownMenu
-            });
-
             // Toggle notifications dropdown
             if (notificationsDropdown && notificationsDropdownMenu) {
                 notificationsDropdown.addEventListener('click', function(e) {
-                    console.log('🔔 Dropdown notifications cliqué');
                     e.stopPropagation();
                     notificationsDropdownMenu.classList.toggle('hidden');
                     userDropdownMenu.classList.add('hidden');
                 });
-            } else {
-                console.error('❌ Dropdown notifications non trouvé');
             }
 
             // Toggle user dropdown
             if (userDropdown && userDropdownMenu) {
                 userDropdown.addEventListener('click', function(e) {
-                    console.log('👤 Dropdown profil cliqué');
                     e.stopPropagation();
                     userDropdownMenu.classList.toggle('hidden');
                     notificationsDropdownMenu.classList.add('hidden');
                 });
-            } else {
-                console.error('❌ Dropdown profil non trouvé');
             }
 
             // Fermer les dropdowns en cliquant ailleurs
@@ -775,14 +749,12 @@
         // Gestion des notifications
         function fetchNotifications() {
             if (typeof $ === 'undefined') {
-                console.error('❌ jQuery non chargé');
                 return;
             }
 
             // Vérifier si on a un token CSRF (indicateur d'authentification)
             const csrfToken = $('meta[name="csrf-token"]').attr('content');
             if (!csrfToken) {
-                console.warn('⚠️ Pas de token CSRF - utilisateur possiblement non authentifié');
                 return;
             }
 
@@ -822,17 +794,10 @@
                     container.innerHTML = notificationsHtml;
                 }
             }).fail(function(xhr, status, error) {
-                // En cas d'erreur, masquer le badge et logger l'erreur
-                console.warn('⚠️ Erreur lors du chargement des notifications:', status, error);
+                // En cas d'erreur, masquer le badge
                 const badge = document.getElementById('notification-badge');
                 if (badge) badge.classList.add('hidden');
-                
-                // Si 401/403, ne pas retry automatiquement (problème d'auth)
-                if (xhr.status === 401 || xhr.status === 403) {
-                    console.warn('🚫 Problème d\'authentification pour les notifications');
-                }
-            });
-        }
+
 
         // Rafraîchir les notifications toutes les 30 secondes
         if (typeof $ !== 'undefined') {
@@ -861,9 +826,6 @@
         // S'assurer que PageSkeletonLoader est disponible globalement
         if (typeof PageSkeletonLoader !== 'undefined') {
             window.PageSkeletonLoader = PageSkeletonLoader;
-            console.log('✅ PageSkeletonLoader chargé et disponible');
-        } else {
-            console.error('❌ PageSkeletonLoader non disponible');
         }
     </script>
     <script src="{{ asset('js/admin-skeleton-config.js') }}"></script>
