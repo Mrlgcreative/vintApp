@@ -215,21 +215,11 @@ class Item extends Model
 
     public function canRequestVerification(): bool
     {
-        // Vérifier si le produit est dans une catégorie éligible
-        $eligibleCategories = [
-            'mode_luxe',
-            'electronique', 
-            'bijoux',
-            'montres',
-            'sacs_maroquinerie',
-            'vetements-femmes',
-            'vetements-hommes',
-            'vareuse'
-        ];
-        
+        // Tous les articles peuvent demander une vérification s'ils n'en ont pas déjà une
+        // et s'ils ont une catégorie active
         return !$this->authenticity_requested && 
                $this->category && 
-               in_array($this->category->slug ?? '', $eligibleCategories);
+               $this->category->is_active;
     }
 
     public function getAuthenticityBadgeHtml(): string
