@@ -664,9 +664,8 @@
                     applyTheme('auto');
                 }
             });
-            
-            @auth
-            // Les notifications FCM seront initialisées dans le script Firebase ci-dessous
+        });
+    </script>
 
     @auth
     <!-- Firebase SDK pour notifications push -->
