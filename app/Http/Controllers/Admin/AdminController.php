@@ -3006,7 +3006,10 @@ class AdminController extends Controller
                 return $user;
             });
 
-        return view('admin.experts.candidates', compact('candidates'));
+        // Récupérer les catégories pour les spécialisations
+        $categories = \App\Models\Category::where('is_active', true)->orderBy('name')->get();
+
+        return view('admin.experts.candidates', compact('candidates', 'categories'));
     }
 
     /**
@@ -3014,9 +3017,13 @@ class AdminController extends Controller
      */
     public function designateExpert(Request $request, User $user)
     {
+        // Récupérer les slugs valides des catégories + 'general' pour les généralistes
+        $validCategorySlugs = \App\Models\Category::pluck('slug')->toArray();
+        $validCategorySlugs[] = 'general'; // Ajouter l'option généraliste
+        
         $request->validate([
             'specialties' => 'required|array|min:1',
-            'specialties.*' => 'required|string|in:mode_luxe,electronique,bijoux,montres,sacs_maroquinerie,vetements-femmes,vetements-hommes,vareuse,general',
+            'specialties.*' => 'required|string|in:' . implode(',', $validCategorySlugs),
             'certification_level' => 'required|string|in:junior,senior,master',
             'bio' => 'nullable|string|max:500'
         ]);

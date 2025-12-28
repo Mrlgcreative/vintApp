@@ -342,38 +342,19 @@
                         Spécialisations <span class="text-red-500">*</span>
                     </label>
                     <div class="grid grid-cols-2 gap-3">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="mode_luxe" class="mr-2">
-                            <span class="text-sm">Mode & Luxe</span>
+                        <!-- Option Généraliste -->
+                        <label class="flex items-center col-span-2 p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <input type="checkbox" name="specialties[]" value="general" class="mr-2" id="generalSpecialty">
+                            <span class="text-sm font-semibold text-blue-700 dark:text-blue-300">🌐 Généraliste (toutes catégories)</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="electronique" class="mr-2">
-                            <span class="text-sm">Électronique</span>
+                        
+                        <!-- Catégories dynamiques -->
+                        @foreach($categories as $category)
+                        <label class="flex items-center category-checkbox">
+                            <input type="checkbox" name="specialties[]" value="{{ $category->slug }}" class="mr-2">
+                            <span class="text-sm">{{ $category->name }}</span>
                         </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="bijoux" class="mr-2">
-                            <span class="text-sm">Bijoux</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="montres" class="mr-2">
-                            <span class="text-sm">Montres</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="sacs_maroquinerie" class="mr-2">
-                            <span class="text-sm">Sacs & Maroquinerie</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="vetements-femmes" class="mr-2">
-                            <span class="text-sm">Vêtements Femmes</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="vetements-hommes" class="mr-2">
-                            <span class="text-sm">Vêtements Hommes</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="specialties[]" value="vareuse" class="mr-2">
-                            <span class="text-sm">Vareuse</span>
-                        </label>
+                        @endforeach
                     </div>
                     <div id="specialtyError" class="text-red-500 text-sm mt-1 hidden">
                         Veuillez sélectionner au moins une spécialisation.
@@ -521,6 +502,39 @@ document.addEventListener('DOMContentLoaded', function() {
         defaultRadio.closest('label').classList.add('border-blue-500', 'bg-blue-50');
         defaultRadio.closest('label').classList.remove('border-gray-300 dark:border-gray-600');
     }
+    
+    // Gestion du checkbox Généraliste
+    const generalCheckbox = document.getElementById('generalSpecialty');
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox input[type="checkbox"]');
+    
+    // Quand on coche "Généraliste", décocher les autres
+    generalCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            categoryCheckboxes.forEach(function(cb) {
+                cb.checked = false;
+                cb.disabled = true;
+                cb.closest('label').classList.add('opacity-50');
+            });
+        } else {
+            categoryCheckboxes.forEach(function(cb) {
+                cb.disabled = false;
+                cb.closest('label').classList.remove('opacity-50');
+            });
+        }
+    });
+    
+    // Quand on coche une catégorie, décocher Généraliste
+    categoryCheckboxes.forEach(function(cb) {
+        cb.addEventListener('change', function() {
+            if (this.checked && generalCheckbox.checked) {
+                generalCheckbox.checked = false;
+                categoryCheckboxes.forEach(function(c) {
+                    c.disabled = false;
+                    c.closest('label').classList.remove('opacity-50');
+                });
+            }
+        });
+    });
 });
 </script>
 @endsection
