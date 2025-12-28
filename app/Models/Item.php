@@ -205,6 +205,14 @@ class Item extends Model
      */
     public function isVerified(): bool
     {
+        // Un article est vérifié si:
+        // 1. authenticity_verified est true ET verification_status est approved (vérifié par expert)
+        // OU
+        // 2. Il a un authenticityCheck approuvé (ancien système)
+        if ($this->authenticity_verified && $this->verification_status === 'approved') {
+            return true;
+        }
+        
         return $this->authenticity_verified && $this->authenticityCheck && $this->authenticityCheck->isApproved();
     }
 
@@ -215,9 +223,15 @@ class Item extends Model
 
     public function canRequestVerification(): bool
     {
+        // Ne peut pas demander si déjà vérifié
+        if ($this->isVerified()) {
+            return false;
+        }
+        
         // Tous les articles peuvent demander une vérification s'ils n'en ont pas déjà une
         // et s'ils ont une catégorie active
         return !$this->authenticity_requested && 
+               !$this->authenticity_verified &&
                $this->category && 
                $this->category->is_active;
     }
