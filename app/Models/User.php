@@ -846,4 +846,23 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->productBoosts()->where('status', 'active');
     }
+
+    /**
+     * Accesseur pour l'URL de l'avatar
+     * Gère automatiquement les URLs externes (Google, Facebook, etc.)
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+
+        // Si c'est déjà une URL externe, la retourner directement
+        if (str_starts_with($this->avatar, 'http://') || str_starts_with($this->avatar, 'https://')) {
+            return $this->avatar;
+        }
+
+        // Sinon, utiliser Storage::url pour les fichiers locaux
+        return \Illuminate\Support\Facades\Storage::url($this->avatar);
+    }
 }

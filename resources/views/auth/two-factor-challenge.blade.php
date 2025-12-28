@@ -22,8 +22,8 @@
             <div class="px-8 py-8">
                 <!-- Info User -->
                 <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                    @if($user->avatar)
-                        <img src="{{ Storage::url($user->avatar) }}" 
+                    @if($user->avatar_url)
+                        <img src="{{ $user->avatar_url }}" 
                              alt="{{ $user->name }}" 
                              class="w-12 h-12 rounded-full object-cover">
                     @else
