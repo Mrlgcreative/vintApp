@@ -591,19 +591,20 @@ class ItemController extends Controller
 
     /**
      * Liste les items en attente de vérification (admin)
+     * L'admin ne voit que les articles DÉJÀ vérifiés par un expert
      */
     public function pendingVerificationList(Request $request)
     {
         // La vérification admin est déjà faite par le middleware
-        // Pas besoin de re-vérifier ici
         
-        // Filtrer par status 'pending_verification' pour inclure tous les articles
-        // en attente de validation admin (peu importe le score IA)
-        // Trier par score IA décroissant pour prioriser les meilleurs articles
+        // L'admin ne voit que les articles qui ont été vérifiés par un expert
+        // et qui attendent maintenant l'approbation finale admin
+        // verification_status = 'approved' (expert a approuvé) mais status = 'pending_verification' (admin doit valider)
         $items = Item::where('status', 'pending_verification')
-            ->with(['user', 'category', 'brand'])
-            ->orderBy('verification_score', 'desc')
-            ->orderBy('created_at', 'desc')
+            ->where('verification_status', 'approved') // Seulement ceux approuvés par expert
+            ->whereNotNull('verified_at') // Qui ont été vérifiés
+            ->with(['user', 'category', 'brand', 'verifiedBy'])
+            ->orderBy('verified_at', 'desc') // Les plus récemment vérifiés en premier
             ->paginate(20);
 
         return view('admin.items.pending_verification', compact('items'));
