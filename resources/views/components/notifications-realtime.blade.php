@@ -22,7 +22,7 @@ if (typeof window.Echo !== 'undefined' && window.Echo) {
             updateNotificationBadge();
         });
 } else {
-    console.log('📡 Laravel Echo non disponible - notifications temps réel désactivées');
+    // Laravel Echo non disponible - notifications temps réel désactivées
 }
 @endif
 

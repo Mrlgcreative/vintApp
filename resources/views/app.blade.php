@@ -666,11 +666,7 @@
             });
             
             @auth
-            // Initialiser les notifications push Firebase
-            initFirebasePushNotifications();
-            @endauth
-        });
-    </script>
+            // Les notifications FCM seront initialisées dans le script Firebase ci-dessous
 
     @auth
     <!-- Firebase SDK pour notifications push -->
@@ -777,12 +773,15 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.success) {
                     localStorage.setItem('fcm_token', token);
                 }
             } catch (error) {
                 // Erreur silencieuse
+            }
+        }
+
         function displayForegroundNotification(payload) {
             const title = payload.notification?.title || payload.data?.title || 'VintApp';
             const options = {
@@ -825,6 +824,13 @@
                 // Erreur silencieuse
             }
         }, 24 * 60 * 60 * 1000); // 24 heures
+
+        // Initialiser les notifications push au chargement
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initFirebasePushNotifications);
+        } else {
+            initFirebasePushNotifications();
+        }
     </script>
     @endauth
 </body>
