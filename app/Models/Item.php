@@ -92,6 +92,14 @@ class Item extends Model
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Relation avec l'expert/admin qui a vérifié l'article
+     */
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
