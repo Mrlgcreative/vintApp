@@ -19,6 +19,9 @@
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/admin-components.css') }}" rel="stylesheet">
     
+    <!-- Color Palette Variables (loaded before Tailwind to define CSS variables) -->
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    
     <!-- Tailwind CSS compilé avec Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     

@@ -43,6 +43,9 @@
     <!-- Splash Screen CSS -->
     <link rel="stylesheet" href="{{ asset('css/splash-screen.css') }}">
 
+    <!-- Color Palette Variables (loaded before Tailwind to define CSS variables) -->
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

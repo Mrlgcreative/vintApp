@@ -7,6 +7,9 @@
     <meta name="description" content="Inscrivez-vous dès maintenant à VintApp et bénéficiez d'un accès prioritaire à notre plateforme innovante.">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
+    <!-- Color Palette Variables -->
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Preconnect pour optimiser le chargement Firebase -->
