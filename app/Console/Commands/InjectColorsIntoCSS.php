@@ -34,40 +34,33 @@ class InjectColorsIntoCSS extends Command
         $this->info('📝 Génération des variables CSS...');
         $cssVariables = $colorService->generateCSSVariables();
         
-        // Lire le fichier app.css actuel
-        $appCssPath = resource_path('css/app.css');
-        $currentContent = File::get($appCssPath);
+        // Écrire directement dans public/css/dynamic-colors.css
+        // Ce fichier est chargé séparément et n'est pas affecté par la minification Vite
+        $dynamicCssPath = public_path('css/dynamic-colors.css');
         
-        // Remplacer la section :root avec les nouvelles variables
-        $pattern = '/(:root\s*\{[^}]*\})/s';
-        $newContent = preg_replace($pattern, $cssVariables, $currentContent);
-        
-        // Si aucun remplacement n'a été fait, ajouter les variables au début
-        if ($newContent === $currentContent) {
-            $newContent = $cssVariables . "\n\n" . $currentContent;
+        // S'assurer que le répertoire existe
+        if (!File::isDirectory(dirname($dynamicCssPath))) {
+            File::makeDirectory(dirname($dynamicCssPath), 0755, true);
         }
         
-        // Sauvegarder le fichier modifié
-        File::put($appCssPath, $newContent);
-        $this->line('✅ Variables CSS injectées dans app.css');
+        // Créer le contenu du fichier avec un header informatif
+        $fileContent = "/* Variables CSS dynamiques VintApp - Générées automatiquement */\n";
+        $fileContent .= "/* Palette active: {$activePaletteName} */\n";
+        $fileContent .= "/* Dernière mise à jour: " . now()->format('Y-m-d H:i:s') . " */\n\n";
+        $fileContent .= $cssVariables;
         
-        // Optionnel : Recompiler Tailwind
-        if ($this->option('build')) {
-            $this->info('🔨 Recompilation de Tailwind CSS...');
-            $result = $this->call('build:assets');
-            
-            if ($result === 0) {
-                $this->line('✅ CSS recompilé avec succès');
-            } else {
-                $this->error('❌ Erreur lors de la recompilation CSS');
-            }
-        }
+        // Sauvegarder le fichier
+        File::put($dynamicCssPath, $fileContent);
+        $this->line('✅ Variables CSS écrites dans public/css/dynamic-colors.css');
+        
+        // Vider le cache des vues pour forcer le rechargement
+        $this->call('view:clear');
+        $this->line('✅ Cache des vues vidé');
         
         $this->info('🎉 Injection terminée !');
         $this->line('');
-        $this->line('Pour voir les changements :');
-        $this->line('1. Exécutez : npm run build');
-        $this->line('2. Rechargez votre navigateur');
+        $this->line('Les couleurs sont maintenant actives.');
+        $this->line('Le fichier dynamic-colors.css est chargé directement par le navigateur.');
         
         return 0;
     }
