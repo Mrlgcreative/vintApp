@@ -16,9 +16,9 @@ class TrustProxies extends Middleware
     
     public function __construct()
     {
-        // En développement : faire confiance uniquement à localhost et ngrok
+        // En développement : faire confiance à localhost et Docker
         if (app()->environment('local', 'development')) {
-            $this->proxies = ['127.0.0.1', '::1'];
+            $this->proxies = ['127.0.0.1', '::1', '172.18.0.0/16', '172.17.0.0/16'];
         } 
         // En production : utiliser la variable d'environnement TRUSTED_PROXIES
         else {

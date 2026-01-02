@@ -1,0 +1,42 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Node modules
+node_modules
+
+# Vendor (sera installé dans le container)
+vendor
+
+# Storage (sera monté en volume)
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Docker
+.docker
+docker-compose*.yml
+Dockerfile
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+
+# Docs
+docs
+*.md
+!README.md
+
+# Autres
+.env.example
+.env.docker
+*.log
