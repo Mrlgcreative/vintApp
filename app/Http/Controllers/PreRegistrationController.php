@@ -16,7 +16,7 @@ class PreRegistrationController extends Controller
     public function index()
     {
         // Vérifier si la pré-inscription est activée
-        $enabled = Setting::get('preregistration_enabled', true);
+        $enabled = Setting::get('preregistration_enabled', false);
         
         if (!$enabled) {
             $message = Setting::get('preregistration_closed_message', 'Les pré-inscriptions sont actuellement fermées.');
@@ -42,7 +42,7 @@ class PreRegistrationController extends Controller
     public function store(Request $request)
     {
         // Vérifier si la pré-inscription est activée
-        $enabled = Setting::get('preregistration_enabled', true);
+        $enabled = Setting::get('preregistration_enabled', false);
         
         if (!$enabled) {
             return response()->json([

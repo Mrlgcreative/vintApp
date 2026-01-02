@@ -307,7 +307,7 @@
                         </div>
                         
                         @php
-                            $preregEnabled = \App\Models\Setting::get('preregistration_enabled', true);
+                            $preregEnabled = \App\Models\Setting::get('preregistration_enabled', false);
                             $preregCount = \App\Models\UserWaiting::count();
                             $preregLimit = \App\Models\Setting::get('preregistration_limit', 0);
                         @endphp

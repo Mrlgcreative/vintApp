@@ -121,7 +121,7 @@
                     </div>
                     <div class="card-body">
                         @php
-                            $isEnabled = Setting::get('preregistration_enabled', true);
+                            $isEnabled = Setting::get('preregistration_enabled', false);
                         @endphp
                         
                         <div class="d-flex justify-content-between align-items-center">
