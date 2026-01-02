@@ -19,11 +19,11 @@
     <!-- Custom Admin Styles -->
     <link href="{{ asset('css/admin-components.css') }}" rel="stylesheet">
     
-    <!-- Color Palette Variables (loaded before Tailwind to define CSS variables) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
-    
     <!-- Tailwind CSS compilé avec Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
