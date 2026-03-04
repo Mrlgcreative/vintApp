@@ -508,7 +508,7 @@ class AuthenticityController extends Controller
         try {
             $check = ProductAuthenticityCheck::findOrFail($checkId);
 
-            // TODO: Vérifier que l'utilisateur est expert
+            //  Vérifier que l'utilisateur est expert
             
             $validator = Validator::make($request->all(), [
                 'status' => 'required|in:expert_approved,expert_rejected',

@@ -646,7 +646,7 @@ class MessageController extends Controller
             ], 200, [], JSON_UNESCAPED_UNICODE);
             
         } catch (\Exception $e) {
-            \Log::error('apiIndex messages error: ' . $e->getMessage());
+            Log::error('apiIndex messages error: ' . $e->getMessage());
             return $this->errorResponse('Erreur lors de la récupération des conversations: ' . $e->getMessage(), 500);
         }
     }
