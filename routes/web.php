@@ -62,6 +62,11 @@ Route::get('/test-navigation-skeleton', function() {
     return view('test-navigation-skeleton');
 });
 
+// Documentation API
+Route::get('/docs/api', function() {
+    return view('docs.api');
+})->name('docs.api');
+
 // Page de démarrage
 Route::get('/splash', function() {
     return view('splash');

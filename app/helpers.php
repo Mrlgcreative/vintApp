@@ -34,7 +34,7 @@ if (!function_exists('settings')) {
      * @param mixed $default
      * @return \Illuminate\Support\Collection
      */
-    function settings(array $keys = null, $default = null)
+    function settings(?array $keys = null, $default = null)
     {
         $settingService = app(SettingService::class);
         

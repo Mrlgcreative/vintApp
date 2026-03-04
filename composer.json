@@ -17,6 +17,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
+        "paragonie/sodium_compat": "^2.5",
         "pragmarx/google2fa-laravel": "^2.3",
         "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
@@ -88,6 +89,10 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0",
+            "ext-sodium": "8.3.0"
         }
     },
     "minimum-stability": "stable",

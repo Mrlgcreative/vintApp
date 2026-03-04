@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="user-id" data-user-id="{{ Auth::id() }}">
-    <meta name="is-expert" data-is-expert="{{ auth()->check() && auth()->user()->isExpert() ? 'true' : 'false' }}">
-    @php
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <meta name="user-id" data-user-id="<?php echo e(Auth::id()); ?>">
+    <meta name="is-expert" data-is-expert="<?php echo e(auth()->check() && auth()->user()->isExpert() ? 'true' : 'false'); ?>">
+    <?php
         $isExpert = auth()->check() && auth()->user()->isExpert();
         $contextTitle = $isExpert ? 'Expert' : 'Administration';
-    @endphp
-    <title>@yield('title') - {{ $contextTitle }} {{ $appName ?? 'VintApp' }}</title>
-    <link rel="icon" type="image/png" href="{{ asset($appFavicon ?? '/favicon.png') }}">
+    ?>
+    <title><?php echo $__env->yieldContent('title'); ?> - <?php echo e($contextTitle); ?> <?php echo e($appName ?? 'VintApp'); ?></title>
+    <link rel="icon" type="image/png" href="<?php echo e(asset($appFavicon ?? '/favicon.png')); ?>">
     
     <!-- Lazy Loading CSS -->
-    <link href="{{ asset('css/lazy-loading.css') }}" rel="stylesheet">
+    <link href="<?php echo e(asset('css/lazy-loading.css')); ?>" rel="stylesheet">
     
     <!-- Custom Admin Styles -->
-    <link href="{{ asset('css/admin-components.css') }}" rel="stylesheet">
+    <link href="<?php echo e(asset('css/admin-components.css')); ?>" rel="stylesheet">
     
     <!-- Tailwind CSS compilé avec Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('css/dynamic-colors.css')); ?>">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     
     <!-- Custom Page Styles -->
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
     
 
     
@@ -98,97 +98,112 @@
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-sm leading-relaxed text-gray-900 dark:text-white">
     <div class="flex min-h-screen">
-        @php
+        <?php
             // Détecter si l'utilisateur est un expert
             $isExpert = auth()->check() && auth()->user()->isExpert();
-        @endphp
+        ?>
 
         <!-- Sidebar -->
         <nav class="fixed left-0 top-0 z-50 h-screen w-72 bg-gradient-primary-sidebar shadow-2xl transition-transform duration-300 ease-in-out" id="sidebar">
             <div class="flex h-full flex-col">
                 <!-- Brand -->
                 <div class="relative border-b border-white/10 bg-white/5 p-6">
-                    <x-app-brand 
-                        :show-logo="true"
-                        :show-name="true"
-                        logo-height="30px"
-                        logo-width="100px"
-                        name-size="1.25rem"
-                        name-class="text-white font-bold"
-                    />
+                    <?php if (isset($component)) { $__componentOriginalac37604bae5cded3771d6931140b8398 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginalac37604bae5cded3771d6931140b8398 = $attributes; } ?>
+<?php $component = App\View\Components\AppBrand::resolve(['showLogo' => true,'showName' => true,'logoHeight' => '30px','logoWidth' => '100px','nameSize' => '1.25rem','nameClass' => 'text-white font-bold'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('app-brand'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\AppBrand::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $attributes = $__attributesOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__attributesOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginalac37604bae5cded3771d6931140b8398)): ?>
+<?php $component = $__componentOriginalac37604bae5cded3771d6931140b8398; ?>
+<?php unset($__componentOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php endif; ?>
                     <div class="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
                 </div>
 
                 <!-- Navigation -->
                 <nav class="flex-1 space-y-1 p-4 custom-scrollbar overflow-y-auto">
-                    @if($isExpert)
+                    <?php if($isExpert): ?>
                         <!-- Menu Expert -->
-                        <a href="{{ route('expert.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.dashboard*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.dashboard')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.dashboard*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-shield-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Dashboard Expert</span>
                         </a>
 
-                        <a href="{{ route('expert.verifications.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.verifications.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-search w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Mes Vérifications</span>
-                            @php
+                            <?php
                                 $pendingVerifications = \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())
                                     ->where('status', 'expert_review')
                                     ->count();
-                            @endphp
-                            @if($pendingVerifications > 0)
+                            ?>
+                            <?php if($pendingVerifications > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
-                                    {{ $pendingVerifications }}
+                                    <?php echo e($pendingVerifications); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_review']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_review'])); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">En attente d'examen</span>
-                            @if($pendingVerifications > 0)
+                            <?php if($pendingVerifications > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full animate-pulse">
-                                    {{ $pendingVerifications }}
+                                    <?php echo e($pendingVerifications); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_approved']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_approved'])); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-check-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Approuvées</span>
                         </a>
 
-                        <a href="{{ route('expert.verifications.index', ['status' => 'expert_rejected']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.verifications.index', ['status' => 'expert_rejected'])); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected'): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-times-circle w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rejetées</span>
                         </a>
 
-                        <a href="{{ route('expert.items.pending') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.items.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.items.pending')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.items.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Articles à vérifier</span>
-                            @php
+                            <?php
                                 $pendingItemsCount = \App\Models\Item::where('verification_status', 'pending')
                                     ->whereNull('verified_at')
                                     ->count();
-                            @endphp
-                            @if($pendingItemsCount > 0)
+                            ?>
+                            <?php if($pendingItemsCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-purple-500 rounded-full animate-pulse">
-                                    {{ $pendingItemsCount }}
+                                    <?php echo e($pendingItemsCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <!-- Séparateur -->
                         <div class="my-4 h-px bg-white dark:bg-gray-800/10"></div>
 
-                        <a href="{{ route('expert.profile') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('expert.profile*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('expert.profile')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('expert.profile*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Mon Profil Expert</span>
                         </a>
@@ -196,234 +211,241 @@
                         <!-- Statistiques rapides -->
                         <div class="mt-6 rounded-xl bg-white/5 p-4">
                             <h4 class="text-sm font-semibold text-white/80 mb-3">Statistiques</h4>
-                            @php
+                            <?php
                                 $expertStats = [
                                     'total' => \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())->count(),
                                     'completed_today' => \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())
                                         ->whereDate('expert_completed_at', today())->count(),
                                     'approval_rate' => auth()->user()->expertProfile->approval_rate ?? 0
                                 ];
-                            @endphp
+                            ?>
                             <div class="space-y-2 text-xs">
                                 <div class="flex justify-between text-white/60">
                                     <span>Total traité</span>
-                                    <span class="text-white font-medium">{{ $expertStats['total'] }}</span>
+                                    <span class="text-white font-medium"><?php echo e($expertStats['total']); ?></span>
                                 </div>
                                 <div class="flex justify-between text-white/60">
                                     <span>Aujourd'hui</span>
-                                    <span class="text-green-400 font-medium">{{ $expertStats['completed_today'] }}</span>
+                                    <span class="text-green-400 font-medium"><?php echo e($expertStats['completed_today']); ?></span>
                                 </div>
                                 <div class="flex justify-between text-white/60">
                                     <span>Taux succès</span>
-                                    <span class="text-blue-400 font-medium">{{ number_format($expertStats['approval_rate'], 1) }}%</span>
+                                    <span class="text-blue-400 font-medium"><?php echo e(number_format($expertStats['approval_rate'], 1)); ?>%</span>
                                 </div>
                             </div>
                         </div>
 
-                    @else
+                    <?php else: ?>
                         <!-- Menu Admin -->
-                        <a href="{{ route('admin.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.dashboard')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.dashboard')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-tachometer-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Tableau de bord</span>
                         </a>
 
-                        <a href="{{ route('admin.users.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.users.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-users w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs</span>
-                            @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
+                            <?php if(isset($pendingUsersCount) && $pendingUsersCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                                    {{ $pendingUsersCount }}
+                                    <?php echo e($pendingUsersCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <!-- 🆕 Menu Utilisateurs Connectés -->
-                        <a href="{{ route('admin.users.online') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.users.online')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.users.online')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.users.online')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-check w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Utilisateurs Connectés</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
                         </a>
 
                         <!-- 🎯 Menu Gestion des Experts -->
-                        <a href="{{ route('admin.experts.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.experts.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.experts.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.experts.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-user-graduate w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Experts</span>
-                            @php
+                            <?php
                                 $totalExperts = \App\Models\ExpertProfile::count();
                                 $activeExperts = \App\Models\ExpertProfile::where('is_active', true)->count();
-                            @endphp
-                            @if($totalExperts > 0)
+                            ?>
+                            <?php if($totalExperts > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-primary-500 rounded-full">
-                                    {{ $activeExperts }}/{{ $totalExperts }}
+                                    <?php echo e($activeExperts); ?>/<?php echo e($totalExperts); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('admin.transactions.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.transactions.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.transactions.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.transactions.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-exchange-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Transactions</span>
                         </a>
 
-                        <a href="{{ route('admin.wallets.pending') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.wallets.pending')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.wallets.pending')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.wallets.pending')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-clock w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Wallets en attente</span>
-                            @if(isset($pendingWalletsCount) && $pendingWalletsCount > 0)
+                            <?php if(isset($pendingWalletsCount) && $pendingWalletsCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 dark:text-gray-100 bg-yellow-400 rounded-full">
-                                    {{ $pendingWalletsCount }}
+                                    <?php echo e($pendingWalletsCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('admin.orders.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.orders.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-shopping-cart w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Commandes</span>
                         </a>
 
                         <!-- 🆕 Menu Vérification Items IA -->
-                        <a href="{{ route('admin.items.pending_verification') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.items.pending_verification')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.items.pending_verification')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.items.pending_verification')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-search-plus w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Vérification IA</span>
-                            @php
+                            <?php
                                 $pendingItemsCount = \App\Models\Item::where('verification_status', 'pending')->count();
-                            @endphp
-                            @if($pendingItemsCount > 0)
+                            ?>
+                            <?php if($pendingItemsCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-purple-500 rounded-full animate-pulse">
-                                    {{ $pendingItemsCount }}
+                                    <?php echo e($pendingItemsCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <!-- 🆕 Menu Remboursements -->
-                        <a href="{{ route('admin.refunds.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.refunds.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.refunds.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.refunds.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-undo w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Remboursements</span>
-                            @php
+                            <?php
                                 $pendingRefundsCount = \App\Models\Refund::where('status', 'pending')->count();
-                            @endphp
-                            @if($pendingRefundsCount > 0)
+                            ?>
+                            <?php if($pendingRefundsCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full animate-pulse">
-                                    {{ $pendingRefundsCount }}
+                                    <?php echo e($pendingRefundsCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <!-- 🆕 Menu Traçage GPS -->
-                        <a href="{{ route('admin.orders.tracking.list') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.orders.tracking.list')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.orders.tracking*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-map-marker-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Traçage GPS</span>
                             <span class="inline-flex items-center justify-center w-3 h-3 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
-                        <a href="{{ route('admin.brands.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.brands.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.brands.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.brands.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-tags w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Marques</span>
                         </a>
 
-                        <a href="{{ route('admin.categories.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.categories.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.categories.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.categories.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Catégories</span>
                         </a>
 
-                        <a href="{{ route('admin.support.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.support.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.support.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.support.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-headset w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Support Client</span>
-                            @php
+                            <?php
                                 $unassignedSupport = \App\Models\SupportChat::whereNull('admin_id')
                                     ->whereIn('status', ['open', 'in_progress'])->count();
-                            @endphp
-                            @if($unassignedSupport > 0)
+                            ?>
+                            <?php if($unassignedSupport > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-orange-500 rounded-full">
-                                    {{ $unassignedSupport }}
+                                    <?php echo e($unassignedSupport); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
                         <!-- 🎯 Menu Affiliation et Récompenses -->
-                        <a href="{{ route('admin.affiliate.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.affiliate.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.affiliate.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.affiliate.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-users-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Affiliation</span>
-                            @php
+                            <?php
                                 $topPerformersCount = \App\Models\User::whereHas('referrals', function($q) {
                                     $q->whereDate('created_at', '>=', now()->subDays(30));
                                 })->count();
-                            @endphp
-                            @if($topPerformersCount > 0)
+                            ?>
+                            <?php if($topPerformersCount > 0): ?>
                                 <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-gray-800 dark:text-gray-100 bg-yellow-400 rounded-full">
-                                    {{ $topPerformersCount }}
+                                    <?php echo e($topPerformersCount); ?>
+
                                 </span>
-                            @endif
+                            <?php endif; ?>
                         </a>
 
-                        <a href="{{ route('admin.reports') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.reports')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.reports')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.reports')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-chart-bar w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Rapports</span>
                         </a>
 
-                        <a href="{{ route('admin.monitoring.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.monitoring.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.monitoring.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.monitoring.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-heartbeat w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Monitoring</span>
                             <span class="inline-flex items-center justify-center w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></span>
                         </a>
 
-                        <a href="{{ route('admin.logs') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.logs')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.logs')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.logs')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-list-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Logs système</span>
                         </a>
 
-                        <a href="{{ route('admin.settings.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.settings.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-cog w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Paramètres</span>
                         </a>
 
-                        <a href="{{ route('admin.locations.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.locations.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.locations.index')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.locations.*')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-map-marked-alt w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span>Zones autorisées</span>
                         </a>
 
                         <!-- 🔔 Broadcast Notifications FCM -->
-                        <a href="{{ route('admin.broadcast.fcm') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 @if(request()->routeIs('admin.broadcast.fcm')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 @endif">
+                        <a href="<?php echo e(route('admin.broadcast.fcm')); ?>" 
+                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-300 hover:translate-x-1 hover:bg-white/10 hover:text-white/90 <?php if(request()->routeIs('admin.broadcast.fcm')): ?> bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-1 <?php endif; ?>">
                             <i class="fas fa-bullhorn w-5 text-center mr-3 transition-transform group-hover:scale-110"></i>
                             <span class="flex-1">Broadcast Push</span>
                             <span class="inline-flex items-center justify-center w-2 h-2 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/50"></span>
                         </a>
-                    @endif
+                    <?php endif; ?>
                 </nav>
 
                 <!-- Footer -->
                 <div class="mt-auto p-4 space-y-2">
-                    <a href="{{ route('home') }}" 
+                    <a href="<?php echo e(route('home')); ?>" 
                        class="flex w-full items-center justify-center rounded-xl border border-white/20 bg-transparent px-4 py-3 text-white/80 transition-all duration-300 hover:bg-white/10 hover:text-white">
                         <i class="fas fa-arrow-left mr-2"></i>
                         Retour au site
                     </a>
-                    @if($isExpert)
+                    <?php if($isExpert): ?>
                         <!-- Actions spécifiques expert -->
                         <div class="text-center text-xs text-white/50 py-2">
                             Interface Expert VintApp
                         </div>
-                    @endif
-                    <form action="{{ route('logout') }}" method="POST" class="w-full">
-                        @csrf
+                    <?php endif; ?>
+                    <form action="<?php echo e(route('logout')); ?>" method="POST" class="w-full">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" 
                                 class="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-3 text-white transition-all duration-300 hover:from-red-600 hover:to-red-700 hover:shadow-lg">
                             <i class="fas fa-sign-out-alt mr-2"></i>
@@ -449,7 +471,7 @@
                                 aria-label="Toggle sidebar">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h1 class="text-xl font-bold text-white dark:text-white lg:text-2xl">@yield('page-title')</h1>
+                        <h1 class="text-xl font-bold text-white dark:text-white lg:text-2xl"><?php echo $__env->yieldContent('page-title'); ?></h1>
                     </div>
                     
                     <div class="flex items-center space-x-4">
@@ -483,25 +505,27 @@
                         <div class="relative">
                             <button class="flex items-center rounded-lg p-2 text-white dark:text-gray-300 transition-colors hover:bg-primary-700 dark:hover:bg-gray-700" 
                                     type="button" id="userDropdown">
-                                @if(auth()->user()->avatar)
-                                    @php
+                                <?php if(auth()->user()->avatar): ?>
+                                    <?php
                                         $avatarUrl = filter_var(auth()->user()->avatar, FILTER_VALIDATE_URL) 
                                             ? auth()->user()->avatar 
                                             : asset('storage/' . auth()->user()->avatar);
-                                    @endphp
-                                    <img src="{{ $avatarUrl }}" 
-                                         alt="{{ auth()->user()->name }}" 
+                                    ?>
+                                    <img src="<?php echo e($avatarUrl); ?>" 
+                                         alt="<?php echo e(auth()->user()->name); ?>" 
                                          class="h-8 w-8 rounded-full object-cover border-2 border-white mr-2"
                                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="mr-2 hidden h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 text-white text-sm font-semibold">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-cyan-400 text-white text-sm font-semibold">
-                                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                        <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                                     </div>
-                                @endif
-                                <span class="hidden text-sm font-medium text-white dark:text-white lg:block">{{ auth()->user()->name }}</span>
+                                <?php endif; ?>
+                                <span class="hidden text-sm font-medium text-white dark:text-white lg:block"><?php echo e(auth()->user()->name); ?></span>
                                 <i class="fas fa-chevron-down ml-2 text-xs text-white dark:text-gray-500"></i>
                             </button>
                             
@@ -509,14 +533,14 @@
                             <div class="absolute right-0 top-full mt-2 hidden w-48 origin-top-right rounded-xl bg-white dark:bg-gray-800 shadow-xl ring-1 ring-black/5" 
                                  id="user-dropdown">
                                 <div class="p-1">
-                                    <a href="{{ route('profile.edit') }}" 
+                                    <a href="<?php echo e(route('profile.edit')); ?>" 
                                        class="flex items-center rounded-lg px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <i class="fas fa-user mr-3 w-4 text-center text-gray-400"></i>
                                         Mon profil
                                     </a>
                                     <div class="my-1 h-px bg-gray-100 dark:bg-gray-700"></div>
-                                    <form action="{{ route('logout') }}" method="POST">
-                                        @csrf
+                                    <form action="<?php echo e(route('logout')); ?>" method="POST">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" 
                                                 class="flex w-full items-center rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                                             <i class="fas fa-sign-out-alt mr-3 w-4 text-center"></i>
@@ -531,48 +555,48 @@
             </header>
 
             <!-- Actions de page -->
-            @hasSection('page-actions')
+            <?php if (! empty(trim($__env->yieldContent('page-actions')))): ?>
                 <div class="p-4 border-b border-gray-200 dark:border-gray-700">
-                    @yield('page-actions')
+                    <?php echo $__env->yieldContent('page-actions'); ?>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Alertes -->
             <div class="p-4 space-y-4">
-                @if(session('success'))
+                <?php if(session('success')): ?>
                     <div class="flex items-center rounded-xl bg-green-50 p-4 text-green-800 animate-fade-in" role="alert">
                         <i class="fas fa-check-circle mr-3 text-green-500"></i>
-                        <span class="flex-1">{{ session('success') }}</span>
+                        <span class="flex-1"><?php echo e(session('success')); ?></span>
                         <button type="button" class="ml-4 text-green-500 hover:text-green-700" onclick="this.parentElement.remove()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('error'))
+                <?php if(session('error')): ?>
                     <div class="flex items-center rounded-xl bg-red-50 p-4 text-red-800 animate-fade-in" role="alert">
                         <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
-                        <span class="flex-1">{{ session('error') }}</span>
+                        <span class="flex-1"><?php echo e(session('error')); ?></span>
                         <button type="button" class="ml-4 text-red-500 hover:text-red-700" onclick="this.parentElement.remove()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('warning'))
+                <?php if(session('warning')): ?>
                     <div class="flex items-center rounded-xl bg-yellow-50 p-4 text-yellow-800 animate-fade-in" role="alert">
                         <i class="fas fa-exclamation-triangle mr-3 text-yellow-500"></i>
-                        <span class="flex-1">{{ session('warning') }}</span>
+                        <span class="flex-1"><?php echo e(session('warning')); ?></span>
                         <button type="button" class="ml-4 text-yellow-500 hover:text-yellow-700" onclick="this.parentElement.remove()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Contenu principal -->
             <div class="flex-1 p-4 lg:p-8" data-page-type="dashboard">
-                @yield('content')
+                <?php echo $__env->yieldContent('content'); ?>
             </div>
         </main>
     </div>
@@ -818,30 +842,31 @@
     </script>
 
     <!-- Network Speed Adapter (doit être chargé en premier) -->
-    <script src="{{ asset('js/network-adapter.js') }}?v={{ filemtime(public_path('js/network-adapter.js')) }}"></script>
+    <script src="<?php echo e(asset('js/network-adapter.js')); ?>?v=<?php echo e(filemtime(public_path('js/network-adapter.js'))); ?>"></script>
 
     <!-- Admin Utils JavaScript -->
-    <script src="{{ asset('js/admin-utils.js') }}"></script>
+    <script src="<?php echo e(asset('js/admin-utils.js')); ?>"></script>
 
     <!-- Lazy Loading & PWA Scripts (dans le bon ordre) -->
-    <script src="{{ asset('js/content-visibility.js') }}"></script>
-    <script src="{{ asset('js/page-skeleton.js') }}"></script>
+    <script src="<?php echo e(asset('js/content-visibility.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/page-skeleton.js')); ?>"></script>
     <script>
         // S'assurer que PageSkeletonLoader est disponible globalement
         if (typeof PageSkeletonLoader !== 'undefined') {
             window.PageSkeletonLoader = PageSkeletonLoader;
         }
     </script>
-    <script src="{{ asset('js/admin-skeleton-config.js') }}"></script>
-    <script src="{{ asset('js/navigation-skeleton.js') }}"></script>
-    <script src="{{ asset('js/lazy-loading.js') }}" defer></script>
+    <script src="<?php echo e(asset('js/admin-skeleton-config.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/navigation-skeleton.js')); ?>"></script>
+    <script src="<?php echo e(asset('js/lazy-loading.js')); ?>" defer></script>
 
     <!-- Expert Notifications System -->
-    @if(auth()->check() && auth()->user()->isExpert())
-    <script src="{{ asset('js/expert-notifications.js') }}"></script>
-    @endif
+    <?php if(auth()->check() && auth()->user()->isExpert()): ?>
+    <script src="<?php echo e(asset('js/expert-notifications.js')); ?>"></script>
+    <?php endif; ?>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
 
+<?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/layouts/admin.blade.php ENDPATH**/ ?>

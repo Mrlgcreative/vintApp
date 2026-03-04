@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VintApp — Documentation API</title>
-    <link rel="icon" type="image/png" href="{{ asset('/favicon.png') }}">
+    <link rel="icon" type="image/png" href="<?php echo e(asset('/favicon.png')); ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap');
@@ -46,7 +46,7 @@
 </head>
 <body class="bg-gray-950 text-gray-200 min-h-screen">
 
-    {{-- Header --}}
+    
     <header class="fixed top-0 left-0 right-0 z-50 bg-gray-900/95 backdrop-blur border-b border-gray-800">
         <div class="flex items-center justify-between px-4 lg:px-6 h-16">
             <div class="flex items-center gap-3">
@@ -68,10 +68,10 @@
         </div>
     </header>
 
-    {{-- Sidebar overlay (mobile) --}}
+    
     <div id="sidebar-overlay" class="fixed inset-0 z-40 sidebar-overlay hidden lg:hidden" onclick="toggleSidebar()"></div>
 
-    {{-- Sidebar --}}
+    
     <aside id="sidebar" class="sidebar fixed top-16 left-0 bottom-0 w-72 bg-gray-900 border-r border-gray-800 overflow-y-auto z-40 transform -translate-x-full lg:translate-x-0 transition-transform">
         <nav class="py-4 px-3">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-2">Général</p>
@@ -111,32 +111,32 @@
         </nav>
     </aside>
 
-    {{-- Main Content --}}
+    
     <main class="lg:ml-72 pt-16">
         <div class="max-w-4xl mx-auto px-4 lg:px-8 py-10">
 
-            {{-- Hero --}}
+            
             <div class="mb-12">
                 <h1 class="text-4xl font-bold text-white mb-3">Documentation API</h1>
                 <p class="text-gray-400 text-lg mb-6">Référence complète de l'API VintApp — +150 endpoints pour intégrer votre marketplace.</p>
                 <div class="flex flex-wrap gap-3">
                     <div class="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 text-sm">
                         <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                        Base URL: <code class="text-indigo-300">{{ url('/api') }}</code>
+                        Base URL: <code class="text-indigo-300"><?php echo e(url('/api')); ?></code>
                     </div>
                     <div class="bg-gray-800 rounded-lg px-3 py-2 text-sm">Auth: <span class="text-yellow-300">Bearer Token (Sanctum)</span></div>
                     <div class="bg-gray-800 rounded-lg px-3 py-2 text-sm">Format: <span class="text-blue-300">JSON</span></div>
                 </div>
             </div>
 
-            {{-- ==================== 1. Informations générales ==================== --}}
+            
             <section id="info" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">📋</span> 1. Informations générales
                 </h2>
 
                 <div class="space-y-6">
-                    {{-- Headers requis --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">Headers requis</h3>
                         <div class="overflow-x-auto">
@@ -155,7 +155,7 @@
                         </div>
                     </div>
 
-                    {{-- Devises --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">Devises supportées</h3>
                         <div class="grid grid-cols-2 gap-4">
@@ -171,37 +171,37 @@
                         <p class="mt-3 text-sm text-gray-400">💱 Taux de conversion : <span class="text-white font-medium">1 USD = 2 500 CDF</span></p>
                     </div>
 
-                    {{-- Rate Limiting --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">⚡ Rate Limiting</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            @php
+                            <?php
                                 $limits = [
                                     ['Lecture articles', '100/min'], ['Écriture articles', '20/min'], ['Utilisateurs', '60/min'],
                                     ['Commandes', '40/min'], ['Messages', '50/min'], ['Avis', '20/min'],
                                     ['Notifications', '60/min'], ['Dashboard', '30/min'], ['Affiliation', '30/min'],
                                     ['Callbacks', '100/min'],
                                 ];
-                            @endphp
-                            @foreach($limits as $limit)
+                            ?>
+                            <?php $__currentLoopData = $limits; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $limit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="bg-gray-800 rounded-lg px-3 py-2 text-sm flex justify-between">
-                                <span class="text-gray-400">{{ $limit[0] }}</span>
-                                <span class="text-amber-300 font-mono">{{ $limit[1] }}</span>
+                                <span class="text-gray-400"><?php echo e($limit[0]); ?></span>
+                                <span class="text-amber-300 font-mono"><?php echo e($limit[1]); ?></span>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {{-- ==================== 2. Authentification ==================== --}}
+            
             <section id="auth" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">🔑</span> 2. Authentification
                 </h2>
                 <p class="text-gray-400 mb-6">L'API utilise <span class="text-white font-medium">Laravel Sanctum</span> avec des tokens Bearer.</p>
 
-                {{-- Register --}}
+                
                 <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6 mb-4">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="method-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
@@ -231,7 +231,7 @@
                     </div>
                 </div>
 
-                {{-- Login --}}
+                
                 <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6 mb-4">
                     <div class="flex items-center gap-3 mb-4">
                         <span class="method-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
@@ -259,7 +259,7 @@
                     </div>
                 </div>
 
-                {{-- Logout --}}
+                
                 <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6 mb-4">
                     <div class="flex items-center gap-3 mb-3">
                         <span class="method-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
@@ -269,7 +269,7 @@
                     <pre class="bg-gray-950 rounded-lg p-4 text-sm"><code class="text-blue-300">{ "success": true, "message": "Déconnexion réussie" }</code></pre>
                 </div>
 
-                {{-- Current user --}}
+                
                 <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6">
                     <div class="flex items-center gap-3 mb-3">
                         <span class="method-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
@@ -284,7 +284,7 @@
                 </div>
             </section>
 
-            {{-- ==================== 3. Format des réponses ==================== --}}
+            
             <section id="responses" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">📦</span> 3. Format des réponses
@@ -324,7 +324,7 @@
                 </div>
             </section>
 
-            {{-- ==================== 4. Routes publiques ==================== --}}
+            
             <section id="public" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">🌐</span> 4. Routes publiques
@@ -380,14 +380,14 @@
                 </div>
             </section>
 
-            {{-- ==================== 5. Utilisateurs ==================== --}}
+            
             <section id="users" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">👤</span> 5. Utilisateurs
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 60 req/min</p>
                 <div class="space-y-4">
-                    @php
+                    <?php
                         $userEndpoints = [
                             ['GET', '/api/v1/user/profile', 'Profil utilisateur'],
                             ['PUT', '/api/v1/user/profile', 'Mettre à jour le profil'],
@@ -400,14 +400,14 @@
                             ['GET', '/api/v1/user/reviews', 'Avis reçus (?per_page=10)'],
                             ['DELETE', '/api/v1/user/account', 'Supprimer le compte'],
                         ];
-                    @endphp
-                    @foreach($userEndpoints as $ep)
+                    ?>
+                    <?php $__currentLoopData = $userEndpoints; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-sm font-semibold text-gray-300 mb-3">Exemple — PUT /api/v1/user/profile</h3>
@@ -432,7 +432,7 @@
                 </div>
             </section>
 
-            {{-- ==================== 6. Articles ==================== --}}
+            
             <section id="items" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">📦</span> 6. Articles (Items)
@@ -440,7 +440,7 @@
                 <p class="text-gray-400 text-sm mb-6">⏱️ Cache 60s pour les routes publiques · ⚡ 20 req/min pour l'écriture</p>
 
                 <div class="space-y-4">
-                    {{-- List items --}}
+                    
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="method-get text-xs font-bold px-2.5 py-1 rounded">GET</span>
@@ -472,7 +472,7 @@
                         <span class="text-xs text-gray-500">🌐 Détails d'un article</span>
                     </div>
 
-                    {{-- Create item --}}
+                    
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <span class="method-post text-xs font-bold px-2.5 py-1 rounded">POST</span>
@@ -501,24 +501,24 @@
                         <p class="text-xs text-amber-300 mt-3">⚠️ L'article est créé avec le statut <code>pending_verification</code> et doit être approuvé par un admin.</p>
                     </div>
 
-                    @foreach([['PUT', '/api/v1/items/{id}', 'Modifier (propriétaire)'], ['DELETE', '/api/v1/items/{id}', 'Supprimer (propriétaire)'], ['POST', '/api/items/{item}/favorite', 'Toggle favori (⚡ 30/min)'], ['GET', '/api/items/search', 'Recherche (?q=iphone&category=1&min_price=100)']] as $ep)
+                    <?php $__currentLoopData = [['PUT', '/api/v1/items/{id}', 'Modifier (propriétaire)'], ['DELETE', '/api/v1/items/{id}', 'Supprimer (propriétaire)'], ['POST', '/api/items/{item}/favorite', 'Toggle favori (⚡ 30/min)'], ['GET', '/api/items/search', 'Recherche (?q=iphone&category=1&min_price=100)']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 7. Commandes ==================== --}}
+            
             <section id="orders" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🛒</span> 7. Commandes (Orders)
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 40 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/orders', 'Mes commandes (acheteur)'],
                         ['GET', '/api/v1/orders/sales', 'Mes ventes (vendeur)'],
                         ['POST', '/api/v1/orders', 'Créer une commande'],
@@ -527,15 +527,15 @@
                         ['POST', '/api/v1/orders/{id}/mark-shipped', 'Marquer comme expédiée'],
                         ['POST', '/api/v1/orders/{id}/mark-delivered', 'Marquer comme livrée'],
                         ['POST', '/api/v1/orders/{id}/confirm-delivery', 'Confirmer la réception'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                    {{-- Create order body --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-sm font-semibold text-gray-300 mb-3">Body — POST /api/v1/orders</h3>
                         <div class="overflow-x-auto">
@@ -557,14 +557,14 @@
                 </div>
             </section>
 
-            {{-- ==================== 8. Messages ==================== --}}
+            
             <section id="messages" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">💬</span> 8. Messages
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 50 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/messages', 'Liste des conversations'],
                         ['GET', '/api/v1/messages/{userId}', 'Messages d\'une conversation'],
                         ['POST', '/api/v1/messages', 'Envoyer un message'],
@@ -572,48 +572,48 @@
                         ['GET', '/api/v1/messages/unread/count', 'Nombre de non lus'],
                         ['POST', '/api/v1/messages/discount/apply', 'Appliquer une réduction'],
                         ['GET', '/api/v1/messages/discounts/{itemId}', 'Réductions disponibles'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 9. Avis ==================== --}}
+            
             <section id="reviews" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">⭐</span> 9. Avis (Reviews)
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 20 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/reviews', 'Tous les avis'],
                         ['GET', '/api/v1/reviews/item/{itemId}', 'Avis d\'un article'],
                         ['GET', '/api/v1/reviews/seller/{sellerId}', 'Avis d\'un vendeur'],
                         ['POST', '/api/v1/reviews', 'Créer un avis (order_id, rating 1-5, comment)'],
                         ['PUT', '/api/v1/reviews/{reviewId}', 'Modifier un avis (auteur)'],
                         ['DELETE', '/api/v1/reviews/{reviewId}', 'Supprimer un avis (auteur)'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 10. Portefeuille ==================== --}}
+            
             <section id="wallet" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">💰</span> 10. Portefeuille (Wallet)
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/wallet', 'Consulter les soldes (USD + CDF)'],
                         ['GET', '/api/v1/wallet/transactions', 'Historique des transactions'],
                         ['POST', '/api/v1/wallet/add-funds', 'Recharger le portefeuille'],
@@ -622,37 +622,37 @@
                         ['GET', '/api/v1/wallet/withdraw/maishapay/status/{id}', 'Statut retrait MaishaPay'],
                         ['GET', '/api/v1/wallet/withdraw/operators', 'Opérateurs de payout'],
                         ['POST', '/api/v1/wallet/convert', 'Convertir entre devises'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
-                    {{-- Opérateurs --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-sm font-semibold text-gray-300 mb-3">📱 Opérateurs Mobile Money</h3>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                            @foreach([['mpesa', 'M-Pesa / Vodacom', '081-083'], ['orange_money', 'Orange Money', '084-085'], ['airtel_money', 'Airtel Money', '097, 099'], ['africell', 'Africell', '090-091'], ['illicocash', 'Illicocash', '—']] as $op)
+                            <?php $__currentLoopData = [['mpesa', 'M-Pesa / Vodacom', '081-083'], ['orange_money', 'Orange Money', '084-085'], ['airtel_money', 'Airtel Money', '097, 099'], ['africell', 'Africell', '090-091'], ['illicocash', 'Illicocash', '—']]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $op): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="bg-gray-800 rounded-lg px-3 py-2">
-                                <p class="text-white text-sm font-medium">{{ $op[1] }}</p>
-                                <p class="text-xs text-gray-400"><code>{{ $op[0] }}</code> · {{ $op[2] }}</p>
+                                <p class="text-white text-sm font-medium"><?php echo e($op[1]); ?></p>
+                                <p class="text-xs text-gray-400"><code><?php echo e($op[0]); ?></code> · <?php echo e($op[2]); ?></p>
                             </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {{-- ==================== 11. Paiements ==================== --}}
+            
             <section id="payments" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">💳</span> 11. Paiements
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/payments', 'Historique des paiements'],
                         ['GET', '/api/v1/payments/{transactionId}', 'Détails d\'un paiement'],
                         ['GET', '/api/v1/payments/stats', 'Statistiques de paiement'],
@@ -661,25 +661,25 @@
                         ['GET', '/api/v1/payments/maishapay/status/{id}', 'Statut MaishaPay'],
                         ['POST', '/api/v1/payments/refund/{orderId}', 'Demander un remboursement'],
                         ['GET', '/api/v1/payments/refund/{refundId}/status', 'Statut d\'un remboursement'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     <p class="text-xs text-amber-300">⚠️ Les remboursements doivent être demandés dans les <strong>30 jours</strong> suivant la commande.</p>
                 </div>
             </section>
 
-            {{-- ==================== 12. Notifications ==================== --}}
+            
             <section id="notifications" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🔔</span> 12. Notifications
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 60 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/notifications', 'Liste des notifications'],
                         ['GET', '/api/v1/notifications/unread', 'Notifications non lues'],
                         ['GET', '/api/v1/notifications/unread/count', 'Nombre de non lues'],
@@ -687,151 +687,151 @@
                         ['POST', '/api/v1/notifications/mark-all-read', 'Marquer toutes comme lues'],
                         ['DELETE', '/api/v1/notifications/{id}', 'Supprimer une notification'],
                         ['DELETE', '/api/v1/notifications/read/all', 'Supprimer toutes les lues'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 13. Support ==================== --}}
+            
             <section id="support" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🎧</span> 13. Support
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/support', 'Mes tickets'],
                         ['POST', '/api/v1/support', 'Créer un ticket'],
                         ['GET', '/api/v1/support/{id}', 'Détails d\'un ticket'],
                         ['POST', '/api/v1/support/{id}/reply', 'Répondre à un ticket'],
                         ['POST', '/api/v1/support/{id}/close', 'Fermer un ticket'],
                         ['GET', '/api/v1/support/stats', 'Statistiques support'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-sm font-semibold text-gray-300 mb-3">Catégories :</h3>
                         <div class="flex flex-wrap gap-2">
-                            @foreach(['technical' => 'Technique', 'account' => 'Compte', 'payment' => 'Paiement', 'order' => 'Commande', 'general' => 'Général'] as $k => $v)
-                            <span class="text-xs bg-gray-800 px-3 py-1 rounded-full"><code>{{ $k }}</code> — {{ $v }}</span>
-                            @endforeach
+                            <?php $__currentLoopData = ['technical' => 'Technique', 'account' => 'Compte', 'payment' => 'Paiement', 'order' => 'Commande', 'general' => 'Général']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <span class="text-xs bg-gray-800 px-3 py-1 rounded-full"><code><?php echo e($k); ?></code> — <?php echo e($v); ?></span>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {{-- ==================== 14. Catégories ==================== --}}
+            
             <section id="categories" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">📂</span> 14. Catégories
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🌐 Public (cache 60s) · 🔒 Admin pour CRUD</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/categories', '🌐 Liste des catégories'],
                         ['GET', '/api/v1/categories/{id}', '🌐 Détails'],
                         ['GET', '/api/v1/categories/{id}/items', '🌐 Articles d\'une catégorie'],
                         ['POST', '/api/v1/categories', '🔒 Créer (admin)'],
                         ['PUT', '/api/v1/categories/{id}', '🔒 Modifier (admin)'],
                         ['DELETE', '/api/v1/categories/{id}', '🔒 Supprimer (admin)'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 15. Marques ==================== --}}
+            
             <section id="brands" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🏷️</span> 15. Marques (Brands)
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🌐 Public (cache 60s) · 🔒 Auth pour CRUD</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/brands', '🌐 Liste des marques'],
                         ['GET', '/api/v1/brands/{id}', '🌐 Détails'],
                         ['GET', '/api/v1/brands/{id}/items', '🌐 Articles d\'une marque'],
                         ['POST', '/api/v1/brands', '🔒 Créer'],
                         ['PUT', '/api/v1/brands/{id}', '🔒 Modifier'],
                         ['DELETE', '/api/v1/brands/{id}', '🔒 Supprimer'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 16. Authenticité ==================== --}}
+            
             <section id="authenticity" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">✅</span> 16. Vérification d'authenticité
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/items/{item}/authenticity/can-verify', 'Vérifier l\'éligibilité'],
                         ['POST', '/api/v1/items/{item}/authenticity/submit', 'Soumettre une demande (⚡ 20/min)'],
                         ['GET', '/api/v1/items/{item}/authenticity/status', 'Statut de la vérification'],
                         ['POST', '/api/v1/authenticity/{check}/confirm-payment', 'Confirmer le paiement'],
                         ['GET', '/api/v1/authenticity/dashboard', 'Dashboard des vérifications'],
                         ['PUT', '/api/v1/authenticity/{check}/update-status', 'Mettre à jour (expert)'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 17. VintPass ==================== --}}
+            
             <section id="vintpass" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🎫</span> 17. VintPass
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">Certificat d'authenticité numérique</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/vintpass/verify/{shortCode}', '🌐 Public — Vérifier un VintPass'],
                         ['GET', '/api/v1/vintpass', '🔒 Mes VintPass'],
                         ['GET', '/api/v1/vintpass/{vintPassId}', '🔒 Détails'],
                         ['POST', '/api/v1/vintpass/request/{item}', '🔒 Demander un VintPass'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 18. Affiliation ==================== --}}
+            
             <section id="affiliate" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🤝</span> 18. Programme d'affiliation
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 30 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/affiliate/dashboard', 'Dashboard affiliation'],
                         ['GET', '/api/affiliate/referral-codes', 'Liste des codes'],
                         ['POST', '/api/affiliate/referral-codes', 'Générer un code auto'],
@@ -843,38 +843,38 @@
                         ['POST', '/api/affiliate/calculate-conversion', 'Simuler la conversion'],
                         ['POST', '/api/affiliate/apply-referral-code', 'Appliquer un code'],
                         ['GET', '/api/affiliate/generate-link', 'Générer un lien'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 19. Dashboard ==================== --}}
+            
             <section id="dashboard" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">📊</span> 19. Dashboard
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise · ⚡ 30 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/dashboard/analytics', 'Analytics'],
                         ['GET', '/api/dashboard/user', 'Dashboard utilisateur'],
                         ['GET', '/api/dashboard/data', 'Données dashboard (JSON)'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 20. Chatbot ==================== --}}
+            
             <section id="chatbot" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🤖</span> 20. Chatbot
@@ -895,13 +895,13 @@
                 </div>
             </section>
 
-            {{-- ==================== 21. FCM ==================== --}}
+            
             <section id="fcm" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">📲</span> 21. Notifications Push (FCM)
                 </h2>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['POST', '/api/fcm-token', 'Enregistrer un token FCM'],
                         ['POST', '/api/test-fcm-notification', '🔒 Tester une notification'],
                         ['POST', '/api/notifications/subscribe', 'S\'abonner'],
@@ -910,24 +910,24 @@
                         ['POST', '/api/notifications/broadcast-test', 'Test broadcast'],
                         ['POST', '/api/admin/broadcast-fcm-test', '🔒 Admin — Broadcast FCM'],
                         ['GET', '/api/admin/fcm-stats', '🔒 Admin — Stats FCM'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 22. Administration ==================== --}}
+            
             <section id="admin" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">⚙️</span> 22. Administration
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🔒 Auth requise + Rôle <code>admin</code> · Préfixe: <code>/api/v1/admin</code></p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['GET', '/api/v1/admin/dashboard', 'Dashboard admin'],
                         ['GET', '/api/v1/admin/stats/summary', 'Résumé statistiques'],
                         ['GET', '/api/v1/admin/notifications', 'Alertes admin'],
@@ -959,39 +959,39 @@
                         ['GET', '/api/v1/admin/waiting-users', 'Utilisateurs en attente'],
                         ['GET', '/api/v1/admin/monitoring/stats', 'Monitoring — Stats'],
                         ['GET', '/api/v1/admin/monitoring/health', 'Monitoring — Health'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-3 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm truncate">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline whitespace-nowrap">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm truncate"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline whitespace-nowrap"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 23. Callbacks ==================== --}}
+            
             <section id="callbacks" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
                     <span class="text-indigo-400">🔄</span> 23. Callbacks de paiement
                 </h2>
                 <p class="text-gray-400 text-sm mb-6">🌐 Routes publiques (appelées par les opérateurs) · ⚡ 100 req/min</p>
                 <div class="space-y-4">
-                    @foreach([
+                    <?php $__currentLoopData = [
                         ['POST', '/api/payment-callbacks/{provider}', 'Callback universel (mpesa, orange_money, ...)'],
                         ['GET', '/api/payment-callbacks/status', 'Vérifier statut (?transaction_id=TX-123)'],
                         ['POST', '/api/v1/payments/maishapay/callback', 'Webhook MaishaPay'],
                         ['POST', '/api/v1/wallet/withdrawals/maishapay/callback', 'Webhook retrait MaishaPay'],
-                    ] as $ep)
+                    ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ep): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
-                        <span class="method-{{ strtolower($ep[0]) }} text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap">{{ $ep[0] }}</span>
-                        <code class="text-white font-mono text-sm">{{ $ep[1] }}</code>
-                        <span class="text-xs text-gray-500 hidden sm:inline">{{ $ep[2] }}</span>
+                        <span class="method-<?php echo e(strtolower($ep[0])); ?> text-xs font-bold px-2.5 py-1 rounded whitespace-nowrap"><?php echo e($ep[0]); ?></span>
+                        <code class="text-white font-mono text-sm"><?php echo e($ep[1]); ?></code>
+                        <span class="text-xs text-gray-500 hidden sm:inline"><?php echo e($ep[2]); ?></span>
                     </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </section>
 
-            {{-- ==================== 24. Codes d'erreur ==================== --}}
+            
             <section id="errors" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">❌</span> 24. Codes d'erreur
@@ -1004,18 +1004,18 @@
                                 <th class="text-left py-2">Signification</th>
                             </tr></thead>
                             <tbody class="text-gray-300">
-                                @foreach([
+                                <?php $__currentLoopData = [
                                     [200, 'Succès', 'green'], [201, 'Ressource créée', 'green'],
                                     [400, 'Requête invalide', 'yellow'], [401, 'Non authentifié', 'yellow'],
                                     [403, 'Accès interdit', 'yellow'], [404, 'Ressource non trouvée', 'yellow'],
                                     [422, 'Erreur de validation', 'red'], [429, 'Trop de requêtes', 'red'],
                                     [500, 'Erreur serveur', 'red'],
-                                ] as $err)
+                                ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $err): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <tr class="border-b border-gray-800">
-                                    <td class="py-2 text-center"><span class="text-{{ $err[2] }}-400 font-mono font-bold">{{ $err[0] }}</span></td>
-                                    <td class="py-2">{{ $err[1] }}</td>
+                                    <td class="py-2 text-center"><span class="text-<?php echo e($err[2]); ?>-400 font-mono font-bold"><?php echo e($err[0]); ?></span></td>
+                                    <td class="py-2"><?php echo e($err[1]); ?></td>
                                 </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </tbody>
                         </table>
                     </div>
@@ -1049,34 +1049,34 @@
                 </div>
             </section>
 
-            {{-- ==================== Annexes ==================== --}}
+            
             <section id="annexes" class="mb-16">
                 <h2 class="text-2xl font-bold text-white mb-6 flex items-center gap-2">
                     <span class="text-indigo-400">📎</span> Annexes
                 </h2>
 
                 <div class="space-y-6">
-                    {{-- États des articles --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">États des articles</h3>
                         <div class="flex flex-wrap gap-2">
-                            @foreach(['pending_verification' => 'En attente vérification', 'pending' => 'En attente', 'active' => 'Actif', 'sold' => 'Vendu', 'inactive' => 'Désactivé'] as $k => $v)
-                            <span class="text-xs bg-gray-800 px-3 py-1.5 rounded-lg"><code class="text-pink-300">{{ $k }}</code> → {{ $v }}</span>
-                            @endforeach
+                            <?php $__currentLoopData = ['pending_verification' => 'En attente vérification', 'pending' => 'En attente', 'active' => 'Actif', 'sold' => 'Vendu', 'inactive' => 'Désactivé']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <span class="text-xs bg-gray-800 px-3 py-1.5 rounded-lg"><code class="text-pink-300"><?php echo e($k); ?></code> → <?php echo e($v); ?></span>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
-                    {{-- États des commandes --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">États des commandes</h3>
                         <div class="flex flex-wrap gap-2">
-                            @foreach(['pending' => 'En attente', 'paid' => 'Payée', 'shipped' => 'Expédiée', 'delivered' => 'Livrée', 'confirmed' => 'Confirmée', 'cancelled' => 'Annulée'] as $k => $v)
-                            <span class="text-xs bg-gray-800 px-3 py-1.5 rounded-lg"><code class="text-pink-300">{{ $k }}</code> → {{ $v }}</span>
-                            @endforeach
+                            <?php $__currentLoopData = ['pending' => 'En attente', 'paid' => 'Payée', 'shipped' => 'Expédiée', 'delivered' => 'Livrée', 'confirmed' => 'Confirmée', 'cancelled' => 'Annulée']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $k => $v): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <span class="text-xs bg-gray-800 px-3 py-1.5 rounded-lg"><code class="text-pink-300"><?php echo e($k); ?></code> → <?php echo e($v); ?></span>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
                     </div>
 
-                    {{-- Opérateurs Mobile Money --}}
+                    
                     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
                         <h3 class="text-lg font-semibold text-white mb-4">Opérateurs Mobile Money — 🇨🇩 RDC</h3>
                         <div class="overflow-x-auto">
@@ -1099,7 +1099,7 @@
                 </div>
             </section>
 
-            {{-- Footer --}}
+            
             <footer class="border-t border-gray-800 pt-8 pb-12 text-center">
                 <p class="text-gray-500 text-sm">📖 VintApp API Documentation — v1.0.0 — Mars 2026</p>
                 <p class="text-gray-600 text-xs mt-2">+150 endpoints · Laravel Sanctum · Mobile Money RDC</p>
@@ -1161,3 +1161,4 @@
     </script>
 </body>
 </html>
+<?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/docs/api.blade.php ENDPATH**/ ?>
