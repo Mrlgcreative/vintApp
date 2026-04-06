@@ -574,6 +574,9 @@
             <div class="flex-1 p-4 lg:p-8" data-page-type="dashboard">
                 @yield('content')
             </div>
+
+            <!-- Footer Admin -->
+            <x-footer variant="admin" :show-newsletter="false" :show-social="true" />
         </main>
     </div>
 

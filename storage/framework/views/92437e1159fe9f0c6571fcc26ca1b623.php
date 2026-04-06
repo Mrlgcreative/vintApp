@@ -1,6 +1,4 @@
-@extends('app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- En-tête de la conversation -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6">
@@ -8,12 +6,12 @@
             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('admin.support.index') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                        <a href="<?php echo e(route('admin.support.index')); ?>" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
                             <i class="fas fa-arrow-left text-xl"></i>
                         </a>
                         <div>
-                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $supportChat->reference }}</h1>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">{{ $supportChat->subject ?: 'Demande d\'assistance' }}</p>
+                            <h1 class="text-xl font-bold text-gray-900 dark:text-white"><?php echo e($supportChat->reference); ?></h1>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm"><?php echo e($supportChat->subject ?: 'Demande d\'assistance'); ?></p>
                         </div>
                     </div>
                 </div>
@@ -22,24 +20,24 @@
                     <!-- Statut -->
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Statut:</label>
-                        <select id="statusSelect" data-chat-id="{{ $supportChat->id }}" 
+                        <select id="statusSelect" data-chat-id="<?php echo e($supportChat->id); ?>" 
                                 class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="open" {{ $supportChat->status === 'open' ? 'selected' : '' }}>Ouvert</option>
-                            <option value="in_progress" {{ $supportChat->status === 'in_progress' ? 'selected' : '' }}>En cours</option>
-                            <option value="waiting_user" {{ $supportChat->status === 'waiting_user' ? 'selected' : '' }}>En attente utilisateur</option>
-                            <option value="closed" {{ $supportChat->status === 'closed' ? 'selected' : '' }}>Fermé</option>
+                            <option value="open" <?php echo e($supportChat->status === 'open' ? 'selected' : ''); ?>>Ouvert</option>
+                            <option value="in_progress" <?php echo e($supportChat->status === 'in_progress' ? 'selected' : ''); ?>>En cours</option>
+                            <option value="waiting_user" <?php echo e($supportChat->status === 'waiting_user' ? 'selected' : ''); ?>>En attente utilisateur</option>
+                            <option value="closed" <?php echo e($supportChat->status === 'closed' ? 'selected' : ''); ?>>Fermé</option>
                         </select>
                     </div>
                     
                     <!-- Priorité -->
                     <div class="flex items-center gap-2">
                         <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Priorité:</label>
-                        <select id="prioritySelect" data-chat-id="{{ $supportChat->id }}" 
+                        <select id="prioritySelect" data-chat-id="<?php echo e($supportChat->id); ?>" 
                                 class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            <option value="low" {{ $supportChat->priority === 'low' ? 'selected' : '' }}>Faible</option>
-                            <option value="normal" {{ $supportChat->priority === 'normal' ? 'selected' : '' }}>Normale</option>
-                            <option value="high" {{ $supportChat->priority === 'high' ? 'selected' : '' }}>Élevée</option>
-                            <option value="urgent" {{ $supportChat->priority === 'urgent' ? 'selected' : '' }}>Urgente</option>
+                            <option value="low" <?php echo e($supportChat->priority === 'low' ? 'selected' : ''); ?>>Faible</option>
+                            <option value="normal" <?php echo e($supportChat->priority === 'normal' ? 'selected' : ''); ?>>Normale</option>
+                            <option value="high" <?php echo e($supportChat->priority === 'high' ? 'selected' : ''); ?>>Élevée</option>
+                            <option value="urgent" <?php echo e($supportChat->priority === 'urgent' ? 'selected' : ''); ?>>Urgente</option>
                         </select>
                     </div>
                 </div>
@@ -48,67 +46,67 @@
             <!-- Informations sur l'utilisateur et l'assignation -->
             <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="flex items-center gap-3">
-                    @if($supportChat->user?->avatar)
+                    <?php if($supportChat->user?->avatar): ?>
                         <img class="w-10 h-10 rounded-full object-cover" 
-                             src="{{ $supportChat->user->avatar_url }}" 
+                             src="<?php echo e($supportChat->user->avatar_url); ?>" 
                              alt="">
-                    @else
+                    <?php else: ?>
                         <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
                             <i class="fas fa-user text-gray-500 dark:text-gray-400"></i>
                         </div>
-                    @endif
+                    <?php endif; ?>
                     <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $supportChat->user?->name ?? 'Utilisateur supprimé' }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $supportChat->user?->email ?? '-' }}</p>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white"><?php echo e($supportChat->user?->name ?? 'Utilisateur supprimé'); ?></p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($supportChat->user?->email ?? '-'); ?></p>
                     </div>
                 </div>
                 
                 <div>
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Catégorie</p>
-                    <p class="text-sm text-gray-900 dark:text-white">{{ $supportChat->formatted_category }}</p>
+                    <p class="text-sm text-gray-900 dark:text-white"><?php echo e($supportChat->formatted_category); ?></p>
                 </div>
                 
                 <div>
                     <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Assigné à</p>
-                    @if($supportChat->admin)
+                    <?php if($supportChat->admin): ?>
                         <div class="flex items-center gap-2">
-                            @if($supportChat->admin->avatar)
+                            <?php if($supportChat->admin->avatar): ?>
                                 <img class="w-6 h-6 rounded-full object-cover" 
-                                     src="{{ $supportChat->admin->avatar_url }}" 
+                                     src="<?php echo e($supportChat->admin->avatar_url); ?>" 
                                      alt="">
-                            @else
+                            <?php else: ?>
                                 <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                                     <i class="fas fa-user text-blue-600 dark:text-blue-400 text-xs"></i>
                                 </div>
-                            @endif
-                            <span class="text-sm text-gray-900 dark:text-white">{{ $supportChat->admin->name }}</span>
+                            <?php endif; ?>
+                            <span class="text-sm text-gray-900 dark:text-white"><?php echo e($supportChat->admin->name); ?></span>
                         </div>
-                    @else
+                    <?php else: ?>
                         <p class="text-sm text-gray-400 dark:text-gray-500 italic">Non assigné</p>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
             
             <!-- Métadonnées si disponibles -->
-            @if($supportChat->metadata)
+            <?php if($supportChat->metadata): ?>
                 <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                     <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Informations système:</p>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 dark:text-gray-400">
-                        @if(isset($supportChat->metadata['browser']))
-                            <div><span class="font-medium">Navigateur:</span> {{ $supportChat->metadata['browser'] }}</div>
-                        @endif
-                        @if(isset($supportChat->metadata['os']))
-                            <div><span class="font-medium">OS:</span> {{ $supportChat->metadata['os'] }}</div>
-                        @endif
-                        @if(isset($supportChat->metadata['ip']))
-                            <div><span class="font-medium">IP:</span> {{ $supportChat->metadata['ip'] }}</div>
-                        @endif
-                        @if(isset($supportChat->metadata['url']))
-                            <div><span class="font-medium">Page:</span> {{ Str::limit($supportChat->metadata['url'], 30) }}</div>
-                        @endif
+                        <?php if(isset($supportChat->metadata['browser'])): ?>
+                            <div><span class="font-medium">Navigateur:</span> <?php echo e($supportChat->metadata['browser']); ?></div>
+                        <?php endif; ?>
+                        <?php if(isset($supportChat->metadata['os'])): ?>
+                            <div><span class="font-medium">OS:</span> <?php echo e($supportChat->metadata['os']); ?></div>
+                        <?php endif; ?>
+                        <?php if(isset($supportChat->metadata['ip'])): ?>
+                            <div><span class="font-medium">IP:</span> <?php echo e($supportChat->metadata['ip']); ?></div>
+                        <?php endif; ?>
+                        <?php if(isset($supportChat->metadata['url'])): ?>
+                            <div><span class="font-medium">Page:</span> <?php echo e(Str::limit($supportChat->metadata['url'], 30)); ?></div>
+                        <?php endif; ?>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
         </div>
     </div>
 
@@ -119,76 +117,77 @@
                 <!-- En-tête des messages -->
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-base font-semibold text-gray-900 dark:text-white">Conversation</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }} message(s)</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($supportChat->messages->count()); ?> message(s)</p>
                 </div>
                 
                 <!-- Liste des messages -->
                 <div class="p-6">
                     <div class="flex flex-col gap-4 max-h-[500px] overflow-y-auto" id="messagesContainer">
-                        @forelse($supportChat->messages as $message)
-                            <div class="flex {{ $message->is_admin ? 'justify-end' : 'justify-start' }}">
+                        <?php $__empty_1 = true; $__currentLoopData = $supportChat->messages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $message): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                            <div class="flex <?php echo e($message->is_admin ? 'justify-end' : 'justify-start'); ?>">
                                 <div class="max-w-[70%]">
-                                    <div class="flex items-start gap-3 {{ $message->is_admin ? 'flex-row-reverse' : '' }}">
+                                    <div class="flex items-start gap-3 <?php echo e($message->is_admin ? 'flex-row-reverse' : ''); ?>">
                                         <!-- Avatar -->
                                         <div class="flex-shrink-0">
-                                            @if($message->user?->avatar)
+                                            <?php if($message->user?->avatar): ?>
                                                 <img class="w-8 h-8 rounded-full object-cover" 
-                                                     src="{{ $message->user->avatar_url }}" 
+                                                     src="<?php echo e($message->user->avatar_url); ?>" 
                                                      alt="">
-                                            @else
-                                                <div class="w-8 h-8 rounded-full {{ $message->is_admin ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-200 dark:bg-gray-600' }} flex items-center justify-center">
-                                                    <i class="fas fa-user {{ $message->is_admin ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400' }} text-xs"></i>
+                                            <?php else: ?>
+                                                <div class="w-8 h-8 rounded-full <?php echo e($message->is_admin ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-200 dark:bg-gray-600'); ?> flex items-center justify-center">
+                                                    <i class="fas fa-user <?php echo e($message->is_admin ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'); ?> text-xs"></i>
                                                 </div>
-                                            @endif
+                                            <?php endif; ?>
                                         </div>
                                         
                                         <!-- Message -->
-                                        <div class="flex flex-col {{ $message->is_admin ? 'items-end' : 'items-start' }}">
-                                            <div class="px-4 py-3 rounded-2xl {{ $message->is_admin ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' }}">
-                                                <p class="text-sm whitespace-pre-wrap">{{ $message->message }}</p>
+                                        <div class="flex flex-col <?php echo e($message->is_admin ? 'items-end' : 'items-start'); ?>">
+                                            <div class="px-4 py-3 rounded-2xl <?php echo e($message->is_admin ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'); ?>">
+                                                <p class="text-sm whitespace-pre-wrap"><?php echo e($message->message); ?></p>
                                                 
                                                 <!-- Pièces jointes -->
-                                                @if($message->hasAttachments())
+                                                <?php if($message->hasAttachments()): ?>
                                                     <div class="mt-2 flex flex-col gap-1">
-                                                        @foreach($message->attachments as $attachment)
-                                                            <a href="{{ asset('storage/' . $attachment['path']) }}" 
+                                                        <?php $__currentLoopData = $message->attachments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attachment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <a href="<?php echo e(asset('storage/' . $attachment['path'])); ?>" 
                                                                target="_blank"
-                                                               class="text-sm {{ $message->is_admin ? 'text-blue-100 hover:text-white' : 'text-blue-600 dark:text-blue-400 hover:underline' }}">
-                                                                <i class="fas fa-paperclip mr-1"></i>{{ $attachment['name'] }}
+                                                               class="text-sm <?php echo e($message->is_admin ? 'text-blue-100 hover:text-white' : 'text-blue-600 dark:text-blue-400 hover:underline'); ?>">
+                                                                <i class="fas fa-paperclip mr-1"></i><?php echo e($attachment['name']); ?>
+
                                                             </a>
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                             
                                             <!-- Métadonnées du message -->
                                             <div class="flex items-center gap-2 mt-1">
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $message->sender_name }}</span>
-                                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $message->created_at->format('d/m/Y H:i') }}</span>
-                                                @if($message->is_read)
+                                                <span class="text-xs text-gray-500 dark:text-gray-400"><?php echo e($message->sender_name); ?></span>
+                                                <span class="text-xs text-gray-400 dark:text-gray-500"><?php echo e($message->created_at->format('d/m/Y H:i')); ?></span>
+                                                <?php if($message->is_read): ?>
                                                     <i class="fas fa-check-double text-xs text-green-500" title="Lu"></i>
-                                                @else
+                                                <?php else: ?>
                                                     <i class="fas fa-check text-xs text-gray-400" title="Envoyé"></i>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="text-center py-12">
                                 <i class="fas fa-comments text-5xl text-gray-300 dark:text-gray-600 mb-4"></i>
                                 <p class="text-gray-500 dark:text-gray-400">Aucun message dans cette conversation</p>
                             </div>
-                        @endforelse
+                        <?php endif; ?>
                     </div>
                 </div>
                 
                 <!-- Formulaire de réponse -->
-                @if($supportChat->status !== 'closed')
+                <?php if($supportChat->status !== 'closed'): ?>
                     <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700">
-                        <form action="{{ route('admin.support.reply', $supportChat) }}" method="POST" enctype="multipart/form-data">
-                            @csrf
+                        <form action="<?php echo e(route('admin.support.reply', $supportChat)); ?>" method="POST" enctype="multipart/form-data">
+                            <?php echo csrf_field(); ?>
                             <div class="space-y-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Votre réponse</label>
@@ -218,16 +217,16 @@
                             </div>
                         </form>
                     </div>
-                @else
+                <?php else: ?>
                     <div class="px-6 py-8 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 text-center">
                         <i class="fas fa-lock text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
                         <p class="text-gray-500 dark:text-gray-400 mb-3">Cette conversation est fermée</p>
-                        <button onclick="reopenChat({{ $supportChat->id }})" 
+                        <button onclick="reopenChat(<?php echo e($supportChat->id); ?>)" 
                                 class="text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm font-medium">
                             Rouvrir la conversation
                         </button>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
         
@@ -239,29 +238,29 @@
                     <div class="p-5">
                         <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Actions rapides</h3>
                         <div class="flex flex-col gap-3">
-                            @if($supportChat->status !== 'closed')
-                                <button onclick="closeChat({{ $supportChat->id }})" 
+                            <?php if($supportChat->status !== 'closed'): ?>
+                                <button onclick="closeChat(<?php echo e($supportChat->id); ?>)" 
                                         class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors">
                                     <i class="fas fa-times-circle mr-2"></i>Fermer la conversation
                                 </button>
                                 
-                                @if(!$supportChat->admin_id || $supportChat->admin_id !== auth()->id())
-                                    <button onclick="assignToMe({{ $supportChat->id }})" 
+                                <?php if(!$supportChat->admin_id || $supportChat->admin_id !== auth()->id()): ?>
+                                    <button onclick="assignToMe(<?php echo e($supportChat->id); ?>)" 
                                             class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
                                         <i class="fas fa-user-check mr-2"></i>M'assigner
                                     </button>
-                                @endif
+                                <?php endif; ?>
                                 
                                 <button onclick="showAssignModal()" 
                                         class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
                                     <i class="fas fa-user-plus mr-2"></i>Assigner à un autre admin
                                 </button>
-                            @else
-                                <button onclick="reopenChat({{ $supportChat->id }})" 
+                            <?php else: ?>
+                                <button onclick="reopenChat(<?php echo e($supportChat->id); ?>)" 
                                         class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors">
                                     <i class="fas fa-undo mr-2"></i>Rouvrir
                                 </button>
-                            @endif
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -273,24 +272,24 @@
                         <div class="flex flex-col gap-4 text-sm">
                             <div>
                                 <span class="font-medium text-gray-900 dark:text-white block mb-1">Créé le:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->created_at->format('d/m/Y à H:i') }}</p>
+                                <p class="text-gray-500 dark:text-gray-400"><?php echo e($supportChat->created_at->format('d/m/Y à H:i')); ?></p>
                             </div>
                             
-                            @if($supportChat->closed_at)
+                            <?php if($supportChat->closed_at): ?>
                                 <div>
                                     <span class="font-medium text-gray-900 dark:text-white block mb-1">Fermé le:</span>
-                                    <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->closed_at->format('d/m/Y à H:i') }}</p>
+                                    <p class="text-gray-500 dark:text-gray-400"><?php echo e($supportChat->closed_at->format('d/m/Y à H:i')); ?></p>
                                 </div>
-                            @endif
+                            <?php endif; ?>
                             
                             <div>
                                 <span class="font-medium text-gray-900 dark:text-white block mb-1">Dernière activité:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->last_message_at ? $supportChat->last_message_at->diffForHumans() : 'Aucune' }}</p>
+                                <p class="text-gray-500 dark:text-gray-400"><?php echo e($supportChat->last_message_at ? $supportChat->last_message_at->diffForHumans() : 'Aucune'); ?></p>
                             </div>
                             
                             <div>
                                 <span class="font-medium text-gray-900 dark:text-white block mb-1">Nombre de messages:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }}</p>
+                                <p class="text-gray-500 dark:text-gray-400"><?php echo e($supportChat->messages->count()); ?></p>
                             </div>
                         </div>
                     </div>
@@ -404,7 +403,7 @@ function assignToMe(chatId) {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ admin_id: {{ auth()->id() }} })
+        body: JSON.stringify({ admin_id: <?php echo e(auth()->id()); ?> })
     })
     .then(response => response.json())
     .then(data => {
@@ -416,4 +415,5 @@ function assignToMe(chatId) {
     });
 }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/admin/support/show.blade.php ENDPATH**/ ?>

@@ -1,73 +1,73 @@
-﻿@extends('app')
+﻿
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900" data-page-type="product-detail">
     <div class="container mx-auto px-4 py-8 lg:py-16">
         <!-- Breadcrumb -->
         <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Accueil</a>
+            <a href="<?php echo e(route('home')); ?>" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Accueil</a>
             <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <a href="{{ route('items.index') }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Produits</a>
+            <a href="<?php echo e(route('items.index')); ?>" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Produits</a>
             <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <span class="text-gray-900 dark:text-white font-medium">{{ Str::limit($item->name, 30) }}</span>
+            <span class="text-gray-900 dark:text-white font-medium"><?php echo e(Str::limit($item->name, 30)); ?></span>
         </nav>
 
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
             <!-- Galerie d'images verticale -->
             <div class="hidden xl:block xl:col-span-1">
-                @if($item->images && count($item->images) > 0)
+                <?php if($item->images && count($item->images) > 0): ?>
                     <div class="sticky top-20 flex flex-col items-center gap-2">
-                        @foreach($item->images as $index => $image)
+                        <?php $__currentLoopData = $item->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="thumbnail-item w-14 h-14 lg:w-16 lg:h-16 rounded-xl overflow-hidden border-2 transition-all duration-300 cursor-pointer relative 
-                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-primary-300' }}"
-                                data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
-                                <img src="{{ Storage::url($image) }}" 
+                                <?php echo e($index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25 scale-105' : 'border-gray-200 dark:border-gray-700 hover:border-primary-300'); ?>"
+                                data-index="<?php echo e($index); ?>" onclick="changeMainImage('<?php echo e(Storage::url($image)); ?>', this)">
+                                <img src="<?php echo e(Storage::url($image)); ?>" 
                                      class="w-full h-full object-cover transition-transform duration-300 hover:scale-110" 
-                                     alt="Miniature {{ $index + 1 }}">
+                                     alt="Miniature <?php echo e($index + 1); ?>">
                                 <div class="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-primary-700/15 opacity-0 transition-opacity duration-300
-                                    {{ $index === 0 ? 'opacity-100' : 'hover:opacity-100' }}"></div>
+                                    <?php echo e($index === 0 ? 'opacity-100' : 'hover:opacity-100'); ?>"></div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Images mobiles horizontales -->
             <div class="xl:hidden mb-4">
-                @if($item->images && count($item->images) > 0)
+                <?php if($item->images && count($item->images) > 0): ?>
                     <div class="flex gap-2 overflow-x-auto pb-2">
-                        @foreach($item->images as $index => $image)
+                        <?php $__currentLoopData = $item->images; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $image): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="thumbnail-item flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 cursor-pointer 
-                                {{ $index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25' : 'border-gray-200 dark:border-gray-700' }}"
-                                data-index="{{ $index }}" onclick="changeMainImage('{{ Storage::url($image) }}', this)">
-                                <img src="{{ Storage::url($image) }}" 
+                                <?php echo e($index === 0 ? 'border-primary-600 shadow-lg shadow-primary-600/25' : 'border-gray-200 dark:border-gray-700'); ?>"
+                                data-index="<?php echo e($index); ?>" onclick="changeMainImage('<?php echo e(Storage::url($image)); ?>', this)">
+                                <img src="<?php echo e(Storage::url($image)); ?>" 
                                      class="w-full h-full object-cover transition-transform duration-300" 
-                                     alt="Miniature {{ $index + 1 }}">
+                                     alt="Miniature <?php echo e($index + 1); ?>">
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
 
             <!-- Image principale -->
             <div class="xl:col-span-6 order-2 xl:order-1">
                 <div class="relative bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-4 lg:p-6 shadow-xl shadow-primary-600/10 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                    @if($item->images && count($item->images) > 0)
+                    <?php if($item->images && count($item->images) > 0): ?>
                         <img id="mainProductImg" 
-                             data-src="{{ Storage::url($item->images[0]) }}" 
+                             data-src="<?php echo e(Storage::url($item->images[0])); ?>" 
                              src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%23e5e7eb' width='800' height='600'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%239ca3af' font-size='20'%3EChargement...%3C/text%3E%3C/svg%3E"
                              loading="eager"
                              class="w-full h-64 sm:h-80 lg:h-[400px] xl:h-[500px] object-contain rounded-xl lg:rounded-2xl transition-all duration-300" 
-                             alt="{{ $item->name }}">
+                             alt="<?php echo e($item->name); ?>">
                         <div class="absolute inset-4 lg:inset-6 bg-black/70 backdrop-blur-sm rounded-xl lg:rounded-2xl flex items-center justify-center opacity-0 hover:opacity-100 transition-all duration-300 cursor-zoom-in">
                             <svg class="w-12 h-12 lg:w-16 lg:h-16 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/></svg>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div class="h-64 sm:h-80 lg:h-[400px] xl:h-[500px] flex flex-col items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-xl lg:rounded-2xl text-gray-500 dark:text-gray-400">
                             <svg class="w-16 h-16 lg:w-24 lg:h-24 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <p class="text-base lg:text-lg font-medium">Aucune image disponible</p>
                         </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -77,79 +77,83 @@
                     <!-- En-tête avec titre et bouton favori -->
                     <div class="flex justify-between items-start mb-6">
                         <div class="flex-1 pr-3 lg:pr-4">
-                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-3 lg:mb-4">{{ $item->name }}</h1>
+                            <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-3 lg:mb-4"><?php echo e($item->name); ?></h1>
                             <div class="flex flex-wrap gap-2">
                                 <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-                                    {{ $item->category->name }}
+                                    <?php echo e($item->category->name); ?>
+
                                 </span>
-                                @if($item->brand)
+                                <?php if($item->brand): ?>
                                     <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
-                                        {{ $item->brand->name }}
+                                        <?php echo e($item->brand->name); ?>
+
                                     </span>
-                                @endif
-                                @php
+                                <?php endif; ?>
+                                <?php
                                     $conditionClass = match($item->condition) {
                                         'new' => 'from-emerald-50 to-emerald-100 text-emerald-600 border-emerald-200/50',
                                         'used', 'like_new' => 'from-amber-50 to-amber-100 text-amber-600 border-amber-200/50',
                                         default => 'from-gray-50 to-gray-100 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700/50'
                                     };
-                                @endphp
-                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r {{ $conditionClass }} text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                ?>
+                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r <?php echo e($conditionClass); ?> text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                     <i class="fas fa-certificate mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
-                                    {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                                    <?php echo e(ucfirst(str_replace('_', ' ', $item->condition))); ?>
+
                                 </span>
                                 
-                                {{-- Badge d'authenticité --}}
-                                @if($item->isVerified())
+                                
+                                <?php if($item->isVerified()): ?>
                                     <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-green-50 to-emerald-100 text-green-700 border border-green-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <i class="fas fa-shield-alt mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
-                                        @if($item->authenticity_badge_type === 'expert_certified')
+                                        <?php if($item->authenticity_badge_type === 'expert_certified'): ?>
                                             Certifié Expert
-                                        @else
+                                        <?php else: ?>
                                             Vérifié VintApp
-                                        @endif
+                                        <?php endif; ?>
                                     </span>
-                                @elseif($item->authenticityCheck && $item->authenticityCheck->status === 'pending')
+                                <?php elseif($item->authenticityCheck && $item->authenticityCheck->status === 'pending'): ?>
                                     <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-yellow-50 to-amber-100 text-yellow-700 border border-yellow-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <i class="fas fa-clock mr-1.5 lg:mr-2 text-xs lg:text-sm animate-pulse"></i>
                                         Vérification en cours
                                     </span>
-                                @elseif($item->canRequestVerification())
+                                <?php elseif($item->canRequestVerification()): ?>
                                     <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 border border-blue-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <i class="fas fa-question-circle mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
                                         Non vérifié
                                     </span>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
-                        @auth
+                        <?php if(auth()->guard()->check()): ?>
                             <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white dark:bg-gray-800 flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
-                                data-item-id="{{ $item->id }}">
+                                data-item-id="<?php echo e($item->id); ?>">
                                 <i class="fas fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
                             </button>
-                        @endauth
+                        <?php endif; ?>
                     </div>
 
                     <!-- Section prix -->
                     <div class="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-blue-200/30 dark:border-blue-700/30 mb-4 lg:mb-6">
                         <div class="flex items-center justify-between flex-wrap gap-3 lg:gap-4">
                             <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                {{ $item->formatted_price }}
+                                <?php echo e($item->formatted_price); ?>
+
                             </span>
                             <div class="flex items-center">
-                                @if($item->quantity > 0)
+                                <?php if($item->quantity > 0): ?>
                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm font-semibold">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                         En stock
                                     </span>
-                                @else
+                                <?php else: ?>
                                     <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-sm font-semibold">
                                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                         Rupture de stock
                                     </span>
-                                @endif
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -163,7 +167,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Vues</p>
-                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->views }}</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base"><?php echo e($item->views); ?></p>
                                 </div>
                             </div>
                             
@@ -173,23 +177,23 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Quantité</p>
-                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->quantity }}</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base"><?php echo e($item->quantity); ?></p>
                                 </div>
                             </div>
 
-                            @if($item->color)
+                            <?php if($item->color): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Couleur</p>
-                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->color }}</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base"><?php echo e($item->color); ?></p>
                                 </div>
                             </div>
-                            @endif
+                            <?php endif; ?>
 
-                            @if($item->size)
+                            <?php if($item->size): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
@@ -198,24 +202,25 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Taille</p>
                                     <div class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">
                                         <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                                            {{ $item->size }}
+                                            <?php echo e($item->size); ?>
+
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                            @endif
+                            <?php endif; ?>
 
-                            @if($item->item_number)
+                            <?php if($item->item_number): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">N° Article</p>
-                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->item_number }}</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base"><?php echo e($item->item_number); ?></p>
                                 </div>
                             </div>
-                            @endif
+                            <?php endif; ?>
 
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
                                 <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -223,7 +228,7 @@
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Publié le</p>
-                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">{{ $item->created_at->format('d/m/Y') }}</p>
+                                    <p class="text-gray-900 dark:text-white font-bold text-sm lg:text-base"><?php echo e($item->created_at->format('d/m/Y')); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -231,8 +236,8 @@
 
                     <!-- Section panier -->
                     <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
-                        <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm">
-                            @csrf
+                        <form method="POST" action="<?php echo e(route('cart.add', $item->id)); ?>" id="addToCartForm">
+                            <?php echo csrf_field(); ?>
                             <div class="mb-4">
                                 <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Quantité</label>
                                 <div class="flex items-center max-w-xs">
@@ -240,24 +245,24 @@
                                         class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-blue-200/50 dark:border-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-105">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
                                     </button>
-                                    <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="{{ max($item->quantity, 1) }}" 
-                                        class="flex-1 h-11 border-2 border-blue-200/50 dark:border-gray-600 dark:bg-gray-800 text-center font-bold text-gray-900 dark:text-white text-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300" {{ $item->quantity == 0 ? 'disabled' : '' }}>
+                                    <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="<?php echo e(max($item->quantity, 1)); ?>" 
+                                        class="flex-1 h-11 border-2 border-blue-200/50 dark:border-gray-600 dark:bg-gray-800 text-center font-bold text-gray-900 dark:text-white text-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300" <?php echo e($item->quantity == 0 ? 'disabled' : ''); ?>>
                                     <button type="button" onclick="incrementQuantity()" 
                                         class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-blue-200/50 dark:border-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-105">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                     </button>
                                 </div>
-                                @if($item->quantity == 0)
+                                <?php if($item->quantity == 0): ?>
                                     <p class="text-red-500 text-sm mt-2 font-medium flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                         Article en rupture de stock
                                     </p>
-                                @elseif($item->quantity <= 5)
+                                <?php elseif($item->quantity <= 5): ?>
                                     <p class="text-amber-500 text-sm mt-2 font-medium flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                        Attention : plus que {{ $item->quantity }} en stock
+                                        Attention : plus que <?php echo e($item->quantity); ?> en stock
                                     </p>
-                                @endif
+                                <?php endif; ?>
                             </div>
                             <button type="submit" id="addToCartBtn" 
                                 class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group flex items-center justify-center">
@@ -268,10 +273,10 @@
                         </form>
                     </div>
 
-                    {{-- Section de vérification d'authenticité --}}
-                    @auth
-                        @if($item->user_id === auth()->id())
-                            @if($item->canRequestVerification())
+                    
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if($item->user_id === auth()->id()): ?>
+                            <?php if($item->canRequestVerification()): ?>
                                 <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl border border-blue-200/50 dark:border-blue-700/30 mb-6">
                                     <div class="flex items-start space-x-4">
                                         <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
@@ -284,50 +289,52 @@
                                                 pour rassurer les acheteurs et vendre plus rapidement.
                                             </p>
                                             <div class="flex flex-wrap gap-3">
-                                                <a href="{{ route('authenticity.request', $item) }}" 
+                                                <a href="<?php echo e(route('authenticity.request', $item)); ?>" 
                                                    class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                                                     Demander la vérification
                                                 </a>
                                                 <span class="text-sm text-gray-600 dark:text-gray-300 flex items-center">
-                                                    À partir de ${{ number_format(5.00, 2) }}
+                                                    À partir de $<?php echo e(number_format(5.00, 2)); ?>
+
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @elseif($item->authenticityCheck)
+                            <?php elseif($item->authenticityCheck): ?>
                                 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-6 rounded-2xl mb-6">
                                     <div class="flex items-start justify-between">
                                         <div class="flex items-start space-x-4">
                                             <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center flex-shrink-0">
-                                                @if($item->authenticityCheck->isApproved())
+                                                <?php if($item->authenticityCheck->isApproved()): ?>
                                                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                @elseif($item->authenticityCheck->isRejected())
+                                                <?php elseif($item->authenticityCheck->isRejected()): ?>
                                                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                @else
+                                                <?php else: ?>
                                                     <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                             <div>
                                                 <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Vérification d'authenticité</h4>
-                                                <p class="text-gray-600 dark:text-gray-300 mb-2">{{ $item->authenticityCheck->getStatusLabel() }}</p>
-                                                @if($item->authenticityCheck->final_decision_at)
+                                                <p class="text-gray-600 dark:text-gray-300 mb-2"><?php echo e($item->authenticityCheck->getStatusLabel()); ?></p>
+                                                <?php if($item->authenticityCheck->final_decision_at): ?>
                                                     <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                        Terminée le {{ $item->authenticityCheck->final_decision_at->format('d/m/Y') }}
+                                                        Terminée le <?php echo e($item->authenticityCheck->final_decision_at->format('d/m/Y')); ?>
+
                                                     </p>
-                                                @endif
+                                                <?php endif; ?>
                                             </div>
                                         </div>
-                                        <a href="{{ route('authenticity.status', $item) }}" 
+                                        <a href="<?php echo e(route('authenticity.status', $item)); ?>" 
                                            class="text-blue-600 hover:text-blue-800 font-medium text-sm">
                                             Voir détails →
                                         </a>
                                     </div>
                                 </div>
-                            @endif
-                        @endif
-                    @endauth
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    <?php endif; ?>
 
                     <!-- Description -->
                     <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border-l-4 border-blue-600 mb-6">
@@ -335,26 +342,26 @@
                             <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                             Description
                         </h5>
-                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed">{{ $item->description }}</p>
+                        <p class="text-gray-600 dark:text-gray-300 leading-relaxed"><?php echo e($item->description); ?></p>
                     </div>
 
                     <!-- Spécifications -->
-                    @if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0)
+                    <?php if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0): ?>
                         <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
                             <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
                                 <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                                 Spécifications
                             </h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                @foreach($item->specifications as $key => $value)
+                                <?php $__currentLoopData = $item->specifications; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <div class="bg-white dark:bg-gray-800 p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:shadow-md hover:translate-x-1">
-                                        <span class="font-semibold text-gray-600 dark:text-gray-300 text-sm">{{ is_string($key) ? ucfirst($key) : '' }}</span>
-                                        <span class="font-bold text-gray-900 dark:text-white">{{ is_string($value) ? $value : (is_array($value) ? json_encode($value) : '') }}</span>
+                                        <span class="font-semibold text-gray-600 dark:text-gray-300 text-sm"><?php echo e(is_string($key) ? ucfirst($key) : ''); ?></span>
+                                        <span class="font-bold text-gray-900 dark:text-white"><?php echo e(is_string($value) ? $value : (is_array($value) ? json_encode($value) : '')); ?></span>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Vendeur -->
                     <div class="bg-gradient-to-r from-blue-50/30 to-indigo-50/30 dark:from-blue-900/10 dark:to-indigo-900/10 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
@@ -368,26 +375,27 @@
                                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 </div>
                                 <div class="flex-1">
-                                    <div class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ $item->user->name }}</div>
+                                    <div class="text-lg font-bold text-gray-900 dark:text-white mb-1"><?php echo e($item->user->name); ?></div>
                                     <small class="text-gray-500 dark:text-gray-400 text-sm flex items-center">
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        Membre depuis {{ $item->user->created_at?->format('M Y') ?? 'N/A' }}
+                                        Membre depuis <?php echo e($item->user->created_at?->format('M Y') ?? 'N/A'); ?>
+
                                     </small>
                                 </div>
                                 <div class="flex items-center text-lg font-bold text-gray-900 dark:text-white">
                                     <svg class="w-5 h-5 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                    <span>{{ $averageRating > 0 ? $averageRating : 'Aucun avis' }}</span>
-                                    @if($totalReviews > 0)
-                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">({{ $totalReviews }} avis)</span>
-                                    @endif
+                                    <span><?php echo e($averageRating > 0 ? $averageRating : 'Aucun avis'); ?></span>
+                                    <?php if($totalReviews > 0): ?>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-2">(<?php echo e($totalReviews); ?> avis)</span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Réductions disponibles -->
-                    @auth
-                        @if(Auth::id() !== $item->user_id)
+                    <?php if(auth()->guard()->check()): ?>
+                        <?php if(Auth::id() !== $item->user_id): ?>
                             <div id="discountSection" class="hidden bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/30 border-2 border-emerald-300/50 dark:border-emerald-700/30 rounded-2xl p-6 mb-6 animate-fade-in">
                                 <div class="flex gap-4 mb-4">
                                     <div class="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl flex-shrink-0">
@@ -404,16 +412,16 @@
                                     Appliquer la réduction
                                 </button>
                             </div>
-                        @endif
-                    @endauth
+                        <?php endif; ?>
+                    <?php endif; ?>
 
                     <!-- Boutons d'action -->
                     <div class="space-y-4">
-                        @auth
-                            @if(Auth::id() !== $item->user_id)
+                        <?php if(auth()->guard()->check()): ?>
+                            <?php if(Auth::id() !== $item->user_id): ?>
                                 <!-- Bouton demande de réduction -->
-                                <form id="contactForm" method="POST" action="{{ route('contact.seller', $item) }}">
-                                    @csrf
+                                <form id="contactForm" method="POST" action="<?php echo e(route('contact.seller', $item)); ?>">
+                                    <?php echo csrf_field(); ?>
                                     <button type="button" onclick="openModal('contactModal')"
                                         class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3 flex items-center justify-center">
                                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/></svg>
@@ -427,9 +435,9 @@
                                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     Contacter le vendeur
                                 </button>
-                            @else
+                            <?php else: ?>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <a href="{{ route('items.edit', $item) }}" 
+                                    <a href="<?php echo e(route('items.edit', $item)); ?>" 
                                         class="bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold py-4 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg inline-flex items-center justify-center">
                                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                         Modifier
@@ -440,21 +448,21 @@
                                         Supprimer
                                     </button>
                                 </div>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" 
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <a href="<?php echo e(route('login')); ?>" 
                                 class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
                                 <svg class="w-5 h-5 mr-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                                 Se connecter pour acheter
                             </a>
-                        @endauth
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Section des commentaires et avis -->
-        @if($reviews->count() > 0 || $totalReviews > 0)
+        <?php if($reviews->count() > 0 || $totalReviews > 0): ?>
             <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 p-6 lg:p-8 mb-8 lg:mb-12">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
@@ -463,21 +471,22 @@
                     </h2>
                     <div class="text-right">
                         <div class="text-2xl font-bold text-gray-900 dark:text-white">
-                            {{ $averageRating > 0 ? $averageRating : '0' }}/5
+                            <?php echo e($averageRating > 0 ? $averageRating : '0'); ?>/5
                         </div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ $totalReviews }} avis</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400"><?php echo e($totalReviews); ?> avis</div>
                     </div>
                 </div>
 
-                @if($reviews->count() > 0)
+                <?php if($reviews->count() > 0): ?>
                     <div class="space-y-6">
-                        @foreach($reviews as $review)
+                        <?php $__currentLoopData = $reviews; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $review): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <div class="border border-gray-100 rounded-2xl p-6 bg-gradient-to-br from-gray-50/50 to-white">
                                 <div class="flex items-start space-x-4">
                                     <!-- Avatar utilisateur -->
                                     <div class="flex-shrink-0">
                                         <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-semibold text-lg">
-                                            {{ strtoupper(substr($review->reviewer->name ?? 'U', 0, 1)) }}
+                                            <?php echo e(strtoupper(substr($review->reviewer->name ?? 'U', 0, 1))); ?>
+
                                         </div>
                                     </div>
                                     
@@ -485,42 +494,45 @@
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between mb-3">
                                             <h4 class="font-semibold text-gray-900 dark:text-white">
-                                                {{ $review->reviewer->name ?? 'Utilisateur anonyme' }}
+                                                <?php echo e($review->reviewer->name ?? 'Utilisateur anonyme'); ?>
+
                                             </h4>
                                             <div class="flex items-center space-x-2">
                                                 <!-- Étoiles -->
                                                 <div class="flex items-center">
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        @if($i <= $review->rating)
+                                                    <?php for($i = 1; $i <= 5; $i++): ?>
+                                                        <?php if($i <= $review->rating): ?>
                                                             <i class="fas fa-star text-yellow-400 text-sm"></i>
-                                                        @else
+                                                        <?php else: ?>
                                                             <i class="far fa-star text-gray-300 text-sm"></i>
-                                                        @endif
-                                                    @endfor
+                                                        <?php endif; ?>
+                                                    <?php endfor; ?>
                                                 </div>
                                                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ $review->created_at->diffForHumans() }}
+                                                    <?php echo e($review->created_at->diffForHumans()); ?>
+
                                                 </span>
                                             </div>
                                         </div>
                                         
-                                        @if($review->comment)
-                                            <p class="text-gray-700 dark:text-gray-200 leading-relaxed">{{ $review->comment }}</p>
-                                        @endif
+                                        <?php if($review->comment): ?>
+                                            <p class="text-gray-700 dark:text-gray-200 leading-relaxed"><?php echo e($review->comment); ?></p>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
 
-                    @if($totalReviews > 2)
+                    <?php if($totalReviews > 2): ?>
                         <div class="mt-6 text-center">
                             <p class="text-gray-500 dark:text-gray-400 text-sm">
-                                Affichage de 2 avis sur {{ $totalReviews }}
+                                Affichage de 2 avis sur <?php echo e($totalReviews); ?>
+
                             </p>
                         </div>
-                    @endif
-                @else
+                    <?php endif; ?>
+                <?php else: ?>
                     <div class="text-center py-8">
                         <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-comment-alt text-gray-400 text-xl"></i>
@@ -528,12 +540,12 @@
                         <p class="text-gray-500 dark:text-gray-400">Aucun commentaire pour le moment</p>
                         <p class="text-sm text-gray-400 mt-2">Soyez le premier à donner votre avis après achat</p>
                     </div>
-                @endif
+                <?php endif; ?>
             </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Articles similaires -->
-        @if($similarItems->count() > 0)
+        <?php if($similarItems->count() > 0): ?>
             <div class="mt-12 lg:mt-20 bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl p-6 lg:p-12 shadow-xl shadow-primary-600/5">
                 <div class="text-center mb-6 lg:mb-8">
                     <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2">
@@ -543,21 +555,21 @@
                     <p class="text-gray-600 dark:text-gray-300 text-base lg:text-lg">Découvrez d'autres articles similaires</p>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-                    @foreach($similarItems as $similarItem)
+                    <?php $__currentLoopData = $similarItems; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $similarItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <div class="bg-white dark:bg-gray-800 rounded-xl lg:rounded-2xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 group">
                             <div class="relative overflow-hidden h-32 sm:h-40 lg:h-48 bg-gray-100 dark:bg-gray-800">
-                                @if($similarItem->images && count($similarItem->images) > 0)
-                                    <img src="{{ Storage::url($similarItem->images[0]) }}" 
+                                <?php if($similarItem->images && count($similarItem->images) > 0): ?>
+                                    <img src="<?php echo e(Storage::url($similarItem->images[0])); ?>" 
                                          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" 
-                                         alt="{{ $similarItem->name }}"
+                                         alt="<?php echo e($similarItem->name); ?>"
                                          loading="lazy">
-                                @else
+                                <?php else: ?>
                                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-2xl lg:text-4xl">
                                         <i class="fas fa-image"></i>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                                 <div class="absolute inset-0 bg-primary-600/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                    <a href="{{ route('items.show', $similarItem) }}" 
+                                    <a href="<?php echo e(route('items.show', $similarItem)); ?>" 
                                         class="w-8 h-8 lg:w-12 lg:h-12 bg-white dark:bg-gray-800 text-primary-600 rounded-full flex items-center justify-center text-sm lg:text-lg transition-transform duration-300 hover:scale-125">
                                         <i class="fas fa-eye"></i>
                                     </a>
@@ -565,29 +577,31 @@
                             </div>
                             <div class="p-3 lg:p-5">
                                 <h6 class="font-bold text-gray-900 dark:text-white mb-2 lg:mb-3 min-h-[2rem] lg:min-h-[2.5rem] leading-tight text-sm lg:text-base">
-                                    {{ Str::limit($similarItem->name, 35) }}
+                                    <?php echo e(Str::limit($similarItem->name, 35)); ?>
+
                                 </h6>
                                 <div class="flex justify-between items-center">
                                     <span class="text-base lg:text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                                        {{ $similarItem->formatted_price }}
+                                        <?php echo e($similarItem->formatted_price); ?>
+
                                     </span>
-                                    <a href="{{ route('items.show', $similarItem) }}" 
+                                    <a href="<?php echo e(route('items.show', $similarItem)); ?>" 
                                         class="text-primary-600 font-semibold text-xs lg:text-sm transition-all duration-300 hover:text-primary-800 hover:translate-x-1">
                                         Voir <i class="fas fa-arrow-right ml-1"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </div>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
 <!-- Modal de demande de réduction -->
-@auth
-    @if(Auth::id() !== $item->user_id)
+<?php if(auth()->guard()->check()): ?>
+    <?php if(Auth::id() !== $item->user_id): ?>
         <!-- Overlay Background -->
         <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
             <!-- Modal Container -->
@@ -613,23 +627,25 @@
                     <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 rounded-xl lg:rounded-2xl mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
                             <div>
-                                @if($item->images && count($item->images) > 0)
-                                    <img src="{{ Storage::url($item->images[0]) }}" 
+                                <?php if($item->images && count($item->images) > 0): ?>
+                                    <img src="<?php echo e(Storage::url($item->images[0])); ?>" 
                                          class="w-full h-24 lg:h-32 object-cover rounded-lg lg:rounded-xl" 
-                                         alt="{{ $item->name }}"
+                                         alt="<?php echo e($item->name); ?>"
                                          loading="lazy">
-                                @endif
+                                <?php endif; ?>
                             </div>
                             <div class="md:col-span-2">
-                                <h6 class="font-bold text-gray-900 dark:text-white mb-2 text-sm lg:text-base">{{ $item->name }}</h6>
-                                <p class="text-gray-600 dark:text-gray-300 text-xs lg:text-sm mb-4">{{ Str::limit($item->description, 120) }}</p>
+                                <h6 class="font-bold text-gray-900 dark:text-white mb-2 text-sm lg:text-base"><?php echo e($item->name); ?></h6>
+                                <p class="text-gray-600 dark:text-gray-300 text-xs lg:text-sm mb-4"><?php echo e(Str::limit($item->description, 120)); ?></p>
                                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                                     <span class="text-lg lg:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
-                                        {{ $item->formatted_price }}
+                                        <?php echo e($item->formatted_price); ?>
+
                                     </span>
                                     <span class="bg-primary-100 text-primary-700 px-2 py-1 lg:px-3 lg:py-1 rounded-lg lg:rounded-xl text-xs lg:text-sm font-semibold w-fit">
                                         <i class="fas fa-tag mr-1"></i>
-                                        {{ $item->category->name }}
+                                        <?php echo e($item->category->name); ?>
+
                                     </span>
                                 </div>
                             </div>
@@ -695,8 +711,8 @@
                 </div>
             </div>
         </div>
-    @endif
-@endauth
+    <?php endif; ?>
+<?php endif; ?>
 
 <script>
 // ===== GESTION DU MODAL TAILWIND =====
@@ -795,7 +811,7 @@ function decrementQuantity() {
 
 // ===== CONTACT VENDEUR =====
 function contactSeller() {
-    window.location.href = `/messages/conversation/{{ $item->user_id }}?item={{ $item->id }}`;
+    window.location.href = `/messages/conversation/<?php echo e($item->user_id); ?>?item=<?php echo e($item->id); ?>`;
 }
 
 // ===== DEMANDE DE RÉDUCTION =====
@@ -827,14 +843,14 @@ function submitDiscountRequest() {
 }
 
 // ===== VÉRIFIER LES RÉDUCTIONS DISPONIBLES =====
-@auth
-    @if(Auth::id() !== $item->user_id)
+<?php if(auth()->guard()->check()): ?>
+    <?php if(Auth::id() !== $item->user_id): ?>
         document.addEventListener('DOMContentLoaded', function() {
             checkAvailableDiscounts();
         });
         
         function checkAvailableDiscounts() {
-            fetch(`/discounts/item/{{ $item->id }}/available`)
+            fetch(`/discounts/item/<?php echo e($item->id); ?>/available`)
                 .then(response => response.json())
                 .then(discounts => {
                     if (discounts.length > 0) {
@@ -854,7 +870,7 @@ function submitDiscountRequest() {
             const savings = discount.original_price - discount.final_price;
             const formattedSavings = new Intl.NumberFormat('fr-FR').format(savings);
             const formattedFinalPrice = new Intl.NumberFormat('fr-FR').format(discount.final_price);
-            const currencySymbol = '{{ $item->currency_symbol }}';
+            const currencySymbol = '<?php echo e($item->currency_symbol); ?>';
             
             info.innerHTML = `
                 <div class="mb-2">
@@ -902,10 +918,10 @@ function submitDiscountRequest() {
                 if (data.success) {
                     const priceElement = document.querySelector('.bg-gradient-to-r.from-primary-600.to-primary-800.bg-clip-text.text-transparent');
                     if (priceElement && priceElement.parentElement) {
-                        const currencySymbol = '{{ $item->currency_symbol }}';
+                        const currencySymbol = '<?php echo e($item->currency_symbol); ?>';
                         priceElement.parentElement.innerHTML = `
                             <div class="flex items-baseline justify-between flex-wrap gap-4">
-                                <span class="text-2xl lg:text-3xl line-through text-gray-400">{{ $item->formatted_price }}</span>
+                                <span class="text-2xl lg:text-3xl line-through text-gray-400"><?php echo e($item->formatted_price); ?></span>
                                 <span class="text-4xl lg:text-5xl font-black text-emerald-600">
                                     ${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(data.final_price)}
                                 </span>
@@ -928,13 +944,13 @@ function submitDiscountRequest() {
                 showNotification('Une erreur est survenue', 'danger');
             });
         }
-    @endif
-@endauth
+    <?php endif; ?>
+<?php endif; ?>
 
 // ===== SUPPRESSION D'ARTICLE =====
 function deleteItem() {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.')) {
-        fetch(`/items/{{ $item->id }}`, {
+        fetch(`/items/<?php echo e($item->id); ?>`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -1095,4 +1111,5 @@ document.head.insertAdjacentHTML('beforeend', `
 </style>
 `);
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/items/show.blade.php ENDPATH**/ ?>

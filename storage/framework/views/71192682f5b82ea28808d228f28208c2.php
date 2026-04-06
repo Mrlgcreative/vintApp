@@ -1,6 +1,6 @@
-﻿@extends('app')
+﻿
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <!-- Toast notification -->
 <div class="fixed bottom-4 right-4 z-50">
     <div id="mainToast" class="hidden bg-primary-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
@@ -20,12 +20,12 @@
                     <i class="fas fa-box mr-3 text-primary-600"></i>
                     Articles disponibles
                 </h1>
-                @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('items.create')); ?>" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre un article
                     </a>
-                @endauth
+                <?php endif; ?>
             </div>
         </div>
 
@@ -34,13 +34,13 @@
             <div class="max-w-3xl mx-auto">
                 <div class="flex gap-4 p-2 bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-2xl shadow-xl border border-primary-100 hover:shadow-2xl transition-all duration-300">
                     <!-- Formulaire de recherche -->
-                    <form method="GET" action="{{ route('items.index') }}" class="flex-1">
+                    <form method="GET" action="<?php echo e(route('items.index')); ?>" class="flex-1">
                         <div class="relative">
                             <input type="search" 
                                    name="search" 
                                    class="w-full pl-5 pr-32 py-4 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-xl text-gray-900 placeholder-gray-500 font-medium focus:bg-white dark:bg-gray-800 focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                    placeholder="🔍 Rechercher un article..." 
-                                   value="{{ request('search') }}"
+                                   value="<?php echo e(request('search')); ?>"
                                    autocomplete="off">
                             <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 px-6 py-2.5 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
                                 <i class="fas fa-search mr-2"></i>
@@ -78,7 +78,7 @@
 
                         <!-- Contenu du modal -->
                         <div class="px-6 py-6 bg-gray-50 dark:bg-gray-900">
-                            <form method="GET" action="{{ route('items.index') }}" id="filterForm" class="space-y-6">
+                            <form method="GET" action="<?php echo e(route('items.index')); ?>" id="filterForm" class="space-y-6">
                                 <!-- Recherche par mot-clé -->
                                 <div>
                                     <label for="filterSearch" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
@@ -89,7 +89,7 @@
                                            name="search" 
                                            class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                            placeholder="Ex: iPhone, Nike, Vêtements..." 
-                                           value="{{ request('search') }}">
+                                           value="<?php echo e(request('search')); ?>">
                                 </div>
 
                                 <!-- Catégorie -->
@@ -99,11 +99,12 @@
                                     </label>
                                     <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les catégories</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
+                                        <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($category->id); ?>" <?php echo e(request('category') == $category->id ? 'selected' : ''); ?>>
+                                                <?php echo e($category->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
 
@@ -114,11 +115,12 @@
                                     </label>
                                     <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Toutes les marques</option>
-                                        @foreach($brands as $brand)
-                                            <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
-                                                {{ $brand->name }}
+                                        <?php $__currentLoopData = $brands; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $brand): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($brand->id); ?>" <?php echo e(request('brand') == $brand->id ? 'selected' : ''); ?>>
+                                                <?php echo e($brand->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </select>
                                 </div>
 
@@ -132,14 +134,14 @@
                                                name="min_price" 
                                                class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Min" 
-                                               value="{{ request('min_price') }}" 
+                                               value="<?php echo e(request('min_price')); ?>" 
                                                min="0" 
                                                step="0.01">
                                         <input type="number" 
                                                name="max_price" 
                                                class="px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300" 
                                                placeholder="Max" 
-                                               value="{{ request('max_price') }}" 
+                                               value="<?php echo e(request('max_price')); ?>" 
                                                min="0" 
                                                step="0.01">
                                     </div>
@@ -152,11 +154,11 @@
                                     </label>
                                     <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 rounded-xl text-gray-900 dark:text-white focus:border-primary-600 focus:ring-4 focus:ring-primary-100 transition-all duration-300">
                                         <option value="">Tous les états</option>
-                                        <option value="new" {{ request('condition') == 'new' ? 'selected' : '' }}>🆕 Neuf</option>
-                                        <option value="like_new" {{ request('condition') == 'like_new' ? 'selected' : '' }}>✨ Comme neuf</option>
-                                        <option value="good" {{ request('condition') == 'good' ? 'selected' : '' }}>👍 Bon état</option>
-                                        <option value="fair" {{ request('condition') == 'fair' ? 'selected' : '' }}>👌 État correct</option>
-                                        <option value="poor" {{ request('condition') == 'poor' ? 'selected' : '' }}>⚠️ Usé</option>
+                                        <option value="new" <?php echo e(request('condition') == 'new' ? 'selected' : ''); ?>>🆕 Neuf</option>
+                                        <option value="like_new" <?php echo e(request('condition') == 'like_new' ? 'selected' : ''); ?>>✨ Comme neuf</option>
+                                        <option value="good" <?php echo e(request('condition') == 'good' ? 'selected' : ''); ?>>👍 Bon état</option>
+                                        <option value="fair" <?php echo e(request('condition') == 'fair' ? 'selected' : ''); ?>>👌 État correct</option>
+                                        <option value="poor" <?php echo e(request('condition') == 'poor' ? 'selected' : ''); ?>>⚠️ Usé</option>
                                     </select>
                                 </div>
                             </form>
@@ -177,10 +179,10 @@
         </div>
 
         <!-- Résultats -->
-        @if($items->count() > 0)
+        <?php if($items->count() > 0): ?>
             <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="items-grid">
-                @foreach($items as $loop_index => $item)
-                    @php
+                <?php $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $loop_index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $firstImage = is_string($item->images) ? json_decode($item->images, true)[0] ?? null : ($item->images[0] ?? null);
                         $isNew = $item->created_at->gt(now()->subDays(7));
                         
@@ -188,93 +190,99 @@
                         $activeBoost = $item->activeBoosts->first();
                         $isBoosted = $activeBoost !== null;
                         $boostType = $activeBoost?->boostType;
-                    @endphp
-                    <div class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 transition-all duration-300 border border-gray-100 overflow-hidden {{ $isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-200 shadow-' . ($boostType?->color ?? 'primary') . '-500/20' : '' }}">
+                    ?>
+                    <div class="group relative bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transform hover:-translate-y-1 hover:scale-102 transition-all duration-300 border border-gray-100 overflow-hidden <?php echo e($isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-200 shadow-' . ($boostType?->color ?? 'primary') . '-500/20' : ''); ?>">
                         <!-- Image -->
                         <div class="relative">
-                            @if($isBoosted)
-                                <div class="absolute inset-0 bg-gradient-to-tr from-{{ $boostType?->color ?? 'primary' }}-400/10 to-transparent pointer-events-none z-0"></div>
-                            @endif
+                            <?php if($isBoosted): ?>
+                                <div class="absolute inset-0 bg-gradient-to-tr from-<?php echo e($boostType?->color ?? 'primary'); ?>-400/10 to-transparent pointer-events-none z-0"></div>
+                            <?php endif; ?>
                             
-                            <a href="{{ route('items.show', $item) }}" class="block lazy-container">
-                                @if($item->images && count($item->images) > 0)
-                                    <img data-src="{{ Storage::url($item->images[0]) }}" 
+                            <a href="<?php echo e(route('items.show', $item)); ?>" class="block lazy-container">
+                                <?php if($item->images && count($item->images) > 0): ?>
+                                    <img data-src="<?php echo e(Storage::url($item->images[0])); ?>" 
                                          src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200'%3E%3Crect fill='%23e5e7eb' width='300' height='200'/%3E%3C/svg%3E"
                                          loading="lazy"
-                                         class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 {{ $isBoosted ? 'filter brightness-105' : '' }}" 
-                                         alt="{{ $item->name }}">
-                                @else
+                                         class="w-full h-32 object-cover hover:scale-105 transition-transform duration-300 <?php echo e($isBoosted ? 'filter brightness-105' : ''); ?>" 
+                                         alt="<?php echo e($item->name); ?>">
+                                <?php else: ?>
                                     <div class="w-full h-32 bg-gray-100 dark:bg-gray-800 flex items-center justify-content-center hover:bg-gray-200 dark:bg-gray-700 transition-colors">
                                         <i class="fas fa-image text-2xl text-gray-400"></i>
                                     </div>
-                                @endif
+                                <?php endif; ?>
                             </a>
                             
                             <!-- Badges -->
                             <div class="absolute top-2 left-2 flex flex-col gap-1 z-20">
-                                @if($isBoosted)
+                                <?php if($isBoosted): ?>
                                     <div class="relative">
-                                        <span class="px-2 py-0.5 bg-gradient-to-r from-{{ $boostType?->color ?? 'primary' }}-500 to-{{ $boostType?->color ?? 'primary' }}-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
-                                            <i class="{{ $boostType?->icon ?? 'fas fa-star' }} text-xs"></i>
-                                            {{ $boostType?->name ?? 'BOOST' }}
+                                        <span class="px-2 py-0.5 bg-gradient-to-r from-<?php echo e($boostType?->color ?? 'primary'); ?>-500 to-<?php echo e($boostType?->color ?? 'primary'); ?>-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
+                                            <i class="<?php echo e($boostType?->icon ?? 'fas fa-star'); ?> text-xs"></i>
+                                            <?php echo e($boostType?->name ?? 'BOOST'); ?>
+
                                         </span>
-                                        <div class="absolute inset-0 bg-gradient-to-r from-{{ $boostType?->color ?? 'primary' }}-400 to-{{ $boostType?->color ?? 'primary' }}-500 rounded-full animate-ping opacity-75"></div>
+                                        <div class="absolute inset-0 bg-gradient-to-r from-<?php echo e($boostType?->color ?? 'primary'); ?>-400 to-<?php echo e($boostType?->color ?? 'primary'); ?>-500 rounded-full animate-ping opacity-75"></div>
                                     </div>
-                                @endif
-                                @if($isNew)
+                                <?php endif; ?>
+                                <?php if($isNew): ?>
                                     <span class="px-2 py-0.5 bg-emerald-500 text-white text-xs font-bold rounded-full shadow-lg">
                                         NOUVEAU
                                     </span>
-                                @else
+                                <?php else: ?>
                                     <span class="px-2 py-0.5 text-xs font-semibold bg-white dark:bg-gray-800/90 backdrop-blur-sm text-primary-600 rounded shadow-md">
-                                        {{ ucfirst(str_replace('_', ' ', $item->condition)) }}
+                                        <?php echo e(ucfirst(str_replace('_', ' ', $item->condition))); ?>
+
                                     </span>
-                                @endif
+                                <?php endif; ?>
                             </div>
 
                             <!-- Prix avec effet boost -->
                             <div class="absolute top-2 right-2 z-20">
-                                @auth
+                                <?php if(auth()->guard()->check()): ?>
                                     <div class="flex flex-col gap-1 items-end">
-                                        <span class="px-2 py-1 {{ $isBoosted ? 'bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-gray-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-xs font-bold shadow-lg">
-                                            {{ $item->formatted_price }}
+                                        <span class="px-2 py-1 <?php echo e($isBoosted ? 'bg-gradient-to-r from-gray-800 to-gray-900 shadow-lg shadow-gray-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900'); ?> text-white rounded-full text-xs font-bold shadow-lg">
+                                            <?php echo e($item->formatted_price); ?>
+
                                         </span>
                                         <button class="w-8 h-8 bg-white dark:bg-gray-800/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white dark:bg-gray-800 hover:shadow-lg transition-all duration-200 favorite-btn"
-                                                data-item-id="{{ $item->id }}">
+                                                data-item-id="<?php echo e($item->id); ?>">
                                             <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-xs"></i>
                                         </button>
                                     </div>
-                                @else
-                                    <span class="px-2 py-1 {{ $isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900' }} text-white rounded-full text-xs font-bold shadow-lg">
-                                        {{ $item->formatted_price }}
+                                <?php else: ?>
+                                    <span class="px-2 py-1 <?php echo e($isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/50 ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400 animate-pulse' : 'bg-gray-900'); ?> text-white rounded-full text-xs font-bold shadow-lg">
+                                        <?php echo e($item->formatted_price); ?>
+
                                     </span>
-                                @endauth
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <!-- Contenu -->
-                        <div class="p-3 flex flex-col h-full {{ $isBoosted ? 'bg-gradient-to-b from-white to-' . ($boostType?->color ?? 'primary') . '-50/30' : '' }}">
-                            <a href="{{ route('items.show', $item) }}" class="block hover:text-primary-600 transition-colors">
-                                <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-primary-600 {{ $isBoosted ? 'text-' . ($boostType?->color ?? 'primary') . '-900' : '' }}">{{ Str::limit($item->name, 40) }}</h3>
+                        <div class="p-3 flex flex-col h-full <?php echo e($isBoosted ? 'bg-gradient-to-b from-white to-' . ($boostType?->color ?? 'primary') . '-50/30' : ''); ?>">
+                            <a href="<?php echo e(route('items.show', $item)); ?>" class="block hover:text-primary-600 transition-colors">
+                                <h3 class="text-sm font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 hover:text-primary-600 <?php echo e($isBoosted ? 'text-' . ($boostType?->color ?? 'primary') . '-900' : ''); ?>"><?php echo e(Str::limit($item->name, 40)); ?></h3>
                             </a>
                             
                             <div class="flex flex-wrap gap-1 mb-2">
-                                <span class="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded">{{ $item->category->name }}</span>
-                                @if($item->brand)
-                                    <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded">{{ $item->brand->name }}</span>
-                                @endif
+                                <span class="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-700 rounded"><?php echo e($item->category->name); ?></span>
+                                <?php if($item->brand): ?>
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded"><?php echo e($item->brand->name); ?></span>
+                                <?php endif; ?>
                             </div>
 
                             <p class="text-gray-600 dark:text-gray-300 text-xs mb-3 line-clamp-2 flex-grow">
-                                {{ Str::limit($item->description, 60) }}
+                                <?php echo e(Str::limit($item->description, 60)); ?>
+
                             </p>
 
                             <div class="mt-auto space-y-2">
                                 <div class="flex justify-between items-center">
-                                    <p class="text-lg font-bold text-primary-600">{{ $item->formatted_price }}</p>
+                                    <p class="text-lg font-bold text-primary-600"><?php echo e($item->formatted_price); ?></p>
                                     <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center">
                                         <i class="fas fa-eye mr-1"></i>
-                                        {{ $item->views }}
+                                        <?php echo e($item->views); ?>
+
                                     </span>
                                 </div>
 
@@ -282,40 +290,43 @@
                                     <div class="flex items-center justify-between">
                                         <span class="flex items-center">
                                             <i class="fas fa-user mr-1"></i>
-                                            {{ $item->user->name }}
+                                            <?php echo e($item->user->name); ?>
+
                                         </span>
-                                        <span>{{ $item->created_at->diffForHumans() }}</span>
+                                        <span><?php echo e($item->created_at->diffForHumans()); ?></span>
                                     </div>
                                 </div>
 
-                                <a href="{{ route('items.show', $item) }}" 
-                                   class="block w-full text-center px-3 py-2 text-sm {{ $isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/40' : 'bg-gradient-to-r from-primary-600 to-accent-600' }} text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
+                                <a href="<?php echo e(route('items.show', $item)); ?>" 
+                                   class="block w-full text-center px-3 py-2 text-sm <?php echo e($isBoosted ? 'bg-gradient-to-r from-' . ($boostType?->color ?? 'primary') . '-600 to-' . ($boostType?->color ?? 'primary') . '-700 shadow-lg shadow-' . ($boostType?->color ?? 'primary') . '-500/40' : 'bg-gradient-to-r from-primary-600 to-accent-600'); ?> text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300">
                                     <i class="fas fa-eye mr-1"></i>
-                                    {{ $isBoosted ? 'Voir ✨' : 'Voir' }}
+                                    <?php echo e($isBoosted ? 'Voir ✨' : 'Voir'); ?>
+
                                 </a>
                             </div>
                         </div>
                     </div>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
 
             <!-- Pagination -->
             <div class="mt-12 flex justify-center">
-                {{ $items->appends(request()->query())->links() }}
+                <?php echo e($items->appends(request()->query())->links()); ?>
+
             </div>
-        @else
+        <?php else: ?>
             <div class="text-center py-16">
                 <i class="fas fa-search text-6xl text-gray-300 mb-6"></i>
                 <h4 class="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-4">Aucun article trouvé</h4>
                 <p class="text-gray-500 dark:text-gray-400 mb-8">Essayez de modifier vos critères de recherche.</p>
-                @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+                <?php if(auth()->guard()->check()): ?>
+                    <a href="<?php echo e(route('items.create')); ?>" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre votre premier article
                     </a>
-                @endauth
+                <?php endif; ?>
             </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
@@ -541,4 +552,5 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', adjustMobileLayout);
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/items/index.blade.php ENDPATH**/ ?>

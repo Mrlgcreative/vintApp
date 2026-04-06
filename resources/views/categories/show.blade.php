@@ -1,7 +1,7 @@
 ﻿@extends('app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête de la catégorie -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl shadow-primary-600/10 border border-gray-100/50 overflow-hidden mb-8">

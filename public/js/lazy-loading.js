@@ -6,20 +6,20 @@
 class LazyLoadingManager {
     constructor(options = {}) {
         this.options = {
-            rootMargin: options.rootMargin || '50px',
+            rootMargin: options.rootMargin || "50px",
             threshold: options.threshold || 0.01,
-            loadingClass: options.loadingClass || 'lazy-loading',
-            loadedClass: options.loadedClass || 'lazy-loaded',
-            errorClass: options.errorClass || 'lazy-error',
-            placeholderClass: options.placeholderClass || 'lazy-placeholder',
-            ...options
+            loadingClass: options.loadingClass || "lazy-loading",
+            loadedClass: options.loadedClass || "lazy-loaded",
+            errorClass: options.errorClass || "lazy-error",
+            placeholderClass: options.placeholderClass || "lazy-placeholder",
+            ...options,
         };
 
         this.observer = null;
         this.images = [];
         this.iframes = [];
         this.backgroundImages = [];
-        
+
         this.init();
     }
 
@@ -27,7 +27,7 @@ class LazyLoadingManager {
      * Initialise le système de lazy loading
      */
     init() {
-        if ('IntersectionObserver' in window) {
+        if ("IntersectionObserver" in window) {
             this.setupIntersectionObserver();
         } else {
             // Fallback pour les navigateurs non supportés
@@ -37,7 +37,7 @@ class LazyLoadingManager {
         this.setupImageObservers();
         this.setupIframeObservers();
         this.setupBackgroundImageObservers();
-        
+
         // Écouter les changements DOM pour de nouvelles images
         this.observeDOMChanges();
     }
@@ -46,17 +46,20 @@ class LazyLoadingManager {
      * Configure l'Intersection Observer
      */
     setupIntersectionObserver() {
-        this.observer = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.loadElement(entry.target);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, {
-            rootMargin: this.options.rootMargin,
-            threshold: this.options.threshold
-        });
+        this.observer = new IntersectionObserver(
+            (entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        this.loadElement(entry.target);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            },
+            {
+                rootMargin: this.options.rootMargin,
+                threshold: this.options.threshold,
+            },
+        );
     }
 
     /**
@@ -64,14 +67,18 @@ class LazyLoadingManager {
      */
     setupImageObservers() {
         // Images avec data-src
-        const lazyImages = document.querySelectorAll('img[data-src]:not(.lazy-loaded)');
-        lazyImages.forEach(img => {
+        const lazyImages = document.querySelectorAll(
+            "img[data-src]:not(.lazy-loaded)",
+        );
+        lazyImages.forEach((img) => {
             this.observeImage(img);
         });
 
         // Images avec loading="lazy" natif
-        const nativeLazyImages = document.querySelectorAll('img[loading="lazy"]:not([data-src])');
-        nativeLazyImages.forEach(img => {
+        const nativeLazyImages = document.querySelectorAll(
+            'img[loading="lazy"]:not([data-src])',
+        );
+        nativeLazyImages.forEach((img) => {
             img.classList.add(this.options.loadedClass);
         });
     }
@@ -80,8 +87,10 @@ class LazyLoadingManager {
      * Configure l'observation des iframes
      */
     setupIframeObservers() {
-        const lazyIframes = document.querySelectorAll('iframe[data-src]:not(.lazy-loaded)');
-        lazyIframes.forEach(iframe => {
+        const lazyIframes = document.querySelectorAll(
+            "iframe[data-src]:not(.lazy-loaded)",
+        );
+        lazyIframes.forEach((iframe) => {
             this.observeIframe(iframe);
         });
     }
@@ -90,8 +99,10 @@ class LazyLoadingManager {
      * Configure l'observation des images de fond
      */
     setupBackgroundImageObservers() {
-        const lazyBackgrounds = document.querySelectorAll('[data-bg]:not(.lazy-loaded)');
-        lazyBackgrounds.forEach(element => {
+        const lazyBackgrounds = document.querySelectorAll(
+            "[data-bg]:not(.lazy-loaded)",
+        );
+        lazyBackgrounds.forEach((element) => {
             this.observeBackgroundImage(element);
         });
     }
@@ -100,15 +111,32 @@ class LazyLoadingManager {
      * Observer une image
      */
     observeImage(img) {
+        // Vérifier si déjà traitée
+        if (
+            img.classList.contains(this.options.loadedClass) ||
+            img.dataset.lazyObserved
+        ) {
+            return;
+        }
+
+        // Marquer comme observée
+        img.dataset.lazyObserved = "true";
+
         // Ajouter un placeholder si nécessaire
-        if (!img.src && !img.classList.contains(this.options.placeholderClass)) {
-            img.src = this.createPlaceholder(img.dataset.width || 300, img.dataset.height || 200);
+        if (
+            !img.src &&
+            !img.classList.contains(this.options.placeholderClass)
+        ) {
+            img.src = this.createPlaceholder(
+                img.dataset.width || 300,
+                img.dataset.height || 200,
+            );
             img.classList.add(this.options.placeholderClass);
         }
 
         img.classList.add(this.options.loadingClass);
         this.images.push(img);
-        
+
         if (this.observer) {
             this.observer.observe(img);
         }
@@ -120,7 +148,7 @@ class LazyLoadingManager {
     observeIframe(iframe) {
         iframe.classList.add(this.options.loadingClass);
         this.iframes.push(iframe);
-        
+
         if (this.observer) {
             this.observer.observe(iframe);
         }
@@ -132,7 +160,7 @@ class LazyLoadingManager {
     observeBackgroundImage(element) {
         element.classList.add(this.options.loadingClass);
         this.backgroundImages.push(element);
-        
+
         if (this.observer) {
             this.observer.observe(element);
         }
@@ -142,9 +170,9 @@ class LazyLoadingManager {
      * Charge un élément
      */
     loadElement(element) {
-        if (element.tagName === 'IMG') {
+        if (element.tagName === "IMG") {
             this.loadImage(element);
-        } else if (element.tagName === 'IFRAME') {
+        } else if (element.tagName === "IFRAME") {
             this.loadIframe(element);
         } else if (element.dataset.bg) {
             this.loadBackgroundImage(element);
@@ -162,36 +190,43 @@ class LazyLoadingManager {
 
         // Créer une nouvelle image pour précharger
         const tempImg = new Image();
-        
+
         tempImg.onload = () => {
             img.src = src;
             if (srcset) {
                 img.srcset = srcset;
             }
-            
-            img.classList.remove(this.options.loadingClass, this.options.placeholderClass);
+
+            img.classList.remove(
+                this.options.loadingClass,
+                this.options.placeholderClass,
+            );
             img.classList.add(this.options.loadedClass);
-            
-            // Animation de fondu
-            img.style.opacity = '0';
-            setTimeout(() => {
-                img.style.transition = 'opacity 0.3s ease-in-out';
-                img.style.opacity = '1';
-            }, 10);
+
+            // Animation de fondu avec requestAnimationFrame pour de meilleures performances
+            img.style.opacity = "0";
+            img.style.transition = "opacity 0.3s ease-in-out";
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    img.style.opacity = "1";
+                });
+            });
 
             // Événement personnalisé
-            img.dispatchEvent(new CustomEvent('lazyloaded', { detail: { src } }));
+            img.dispatchEvent(
+                new CustomEvent("lazyloaded", { detail: { src } }),
+            );
         };
 
         tempImg.onerror = () => {
             img.classList.remove(this.options.loadingClass);
             img.classList.add(this.options.errorClass);
-            
+
             // Image par défaut en cas d'erreur
             img.src = this.createErrorPlaceholder();
-            img.alt = 'Image non disponible';
+            img.alt = "Image non disponible";
 
-            console.error('Erreur de chargement lazy:', src);
+            console.error("Erreur de chargement lazy:", src);
         };
 
         tempImg.src = src;
@@ -211,7 +246,9 @@ class LazyLoadingManager {
         iframe.classList.remove(this.options.loadingClass);
         iframe.classList.add(this.options.loadedClass);
 
-        iframe.dispatchEvent(new CustomEvent('lazyloaded', { detail: { src } }));
+        iframe.dispatchEvent(
+            new CustomEvent("lazyloaded", { detail: { src } }),
+        );
     }
 
     /**
@@ -227,54 +264,56 @@ class LazyLoadingManager {
             element.classList.remove(this.options.loadingClass);
             element.classList.add(this.options.loadedClass);
 
-            element.dispatchEvent(new CustomEvent('lazyloaded', { detail: { bg } }));
+            element.dispatchEvent(
+                new CustomEvent("lazyloaded", { detail: { bg } }),
+            );
         };
 
         img.onerror = () => {
             element.classList.remove(this.options.loadingClass);
             element.classList.add(this.options.errorClass);
-            console.error('Erreur de chargement background:', bg);
+            console.error("Erreur de chargement background:", bg);
         };
 
         img.src = bg;
     }
 
     /**
+     * Encode une chaîne en base64 (compatible unicode)
+     */
+    safeBase64Encode(str) {
+        try {
+            return btoa(unescape(encodeURIComponent(str)));
+        } catch (e) {
+            // Fallback simple pour les navigateurs anciens
+            return btoa(str.replace(/[^\x00-\x7F]/g, ""));
+        }
+    }
+
+    /**
      * Crée un placeholder SVG
      */
     createPlaceholder(width = 300, height = 200) {
-        const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-                <rect width="100%" height="100%" fill="#e5e7eb"/>
-                <text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#9ca3af" text-anchor="middle" dy=".3em">
-                    Chargement...
-                </text>
-            </svg>
-        `;
-        return 'data:image/svg+xml;base64,' + btoa(svg);
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="#e5e7eb"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#9ca3af" text-anchor="middle" dy=".3em">Chargement...</text></svg>`;
+        return "data:image/svg+xml;base64," + this.safeBase64Encode(svg);
     }
 
     /**
      * Crée un placeholder d'erreur
      */
     createErrorPlaceholder() {
-        const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200">
-                <rect width="100%" height="100%" fill="#fee2e2"/>
-                <text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#dc2626" text-anchor="middle" dy=".3em">
-                    Image non disponible
-                </text>
-            </svg>
-        `;
-        return 'data:image/svg+xml;base64,' + btoa(svg);
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="100%" height="100%" fill="#fee2e2"/><text x="50%" y="50%" font-family="sans-serif" font-size="14" fill="#dc2626" text-anchor="middle" dy=".3em">Image non disponible</text></svg>`;
+        return "data:image/svg+xml;base64," + this.safeBase64Encode(svg);
     }
 
     /**
      * Charge toutes les images immédiatement (fallback)
      */
     loadAllImagesImmediately() {
-        const allLazyImages = document.querySelectorAll('img[data-src], iframe[data-src], [data-bg]');
-        allLazyImages.forEach(element => {
+        const allLazyImages = document.querySelectorAll(
+            "img[data-src], iframe[data-src], [data-bg]",
+        );
+        allLazyImages.forEach((element) => {
             this.loadElement(element);
         });
     }
@@ -283,34 +322,58 @@ class LazyLoadingManager {
      * Observer les changements DOM pour de nouvelles images
      */
     observeDOMChanges() {
-        if ('MutationObserver' in window) {
+        if ("MutationObserver" in window) {
             const mutationObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.addedNodes.length) {
                         mutation.addedNodes.forEach((node) => {
-                            if (node.nodeType === 1) { // Element node
-                                // Vérifier si c'est une image lazy
-                                if (node.tagName === 'IMG' && node.dataset.src) {
-                                    this.observeImage(node);
-                                }
-                                // Vérifier si c'est un iframe lazy
-                                if (node.tagName === 'IFRAME' && node.dataset.src) {
-                                    this.observeIframe(node);
-                                }
-                                // Vérifier si c'est un élément avec background lazy
-                                if (node.dataset.bg) {
-                                    this.observeBackgroundImage(node);
-                                }
-                                // Vérifier les enfants
-                                const lazyImages = node.querySelectorAll('img[data-src]:not(.lazy-loaded)');
-                                lazyImages.forEach(img => this.observeImage(img));
-                                
-                                const lazyIframes = node.querySelectorAll('iframe[data-src]:not(.lazy-loaded)');
-                                lazyIframes.forEach(iframe => this.observeIframe(iframe));
-                                
-                                const lazyBackgrounds = node.querySelectorAll('[data-bg]:not(.lazy-loaded)');
-                                lazyBackgrounds.forEach(el => this.observeBackgroundImage(el));
+                            // Vérifier que c'est un élément DOM valide
+                            if (node.nodeType !== 1) return; // Ignorer les nœuds non-éléments
+
+                            // Vérifier si c'est une image lazy
+                            if (
+                                node.tagName === "IMG" &&
+                                node.dataset &&
+                                node.dataset.src
+                            ) {
+                                this.observeImage(node);
                             }
+                            // Vérifier si c'est un iframe lazy
+                            if (
+                                node.tagName === "IFRAME" &&
+                                node.dataset &&
+                                node.dataset.src
+                            ) {
+                                this.observeIframe(node);
+                            }
+                            // Vérifier si c'est un élément avec background lazy
+                            if (node.dataset && node.dataset.bg) {
+                                this.observeBackgroundImage(node);
+                            }
+
+                            // Vérifier que querySelectorAll existe
+                            if (typeof node.querySelectorAll !== "function")
+                                return;
+
+                            // Vérifier les enfants
+                            const lazyImages = node.querySelectorAll(
+                                "img[data-src]:not(.lazy-loaded):not([data-lazy-observed])",
+                            );
+                            lazyImages.forEach((img) => this.observeImage(img));
+
+                            const lazyIframes = node.querySelectorAll(
+                                "iframe[data-src]:not(.lazy-loaded)",
+                            );
+                            lazyIframes.forEach((iframe) =>
+                                this.observeIframe(iframe),
+                            );
+
+                            const lazyBackgrounds = node.querySelectorAll(
+                                "[data-bg]:not(.lazy-loaded)",
+                            );
+                            lazyBackgrounds.forEach((el) =>
+                                this.observeBackgroundImage(el),
+                            );
                         });
                     }
                 });
@@ -318,7 +381,7 @@ class LazyLoadingManager {
 
             mutationObserver.observe(document.body, {
                 childList: true,
-                subtree: true
+                subtree: true,
             });
         }
     }
@@ -327,7 +390,7 @@ class LazyLoadingManager {
      * Précharge une liste d'images
      */
     preloadImages(urls) {
-        urls.forEach(url => {
+        urls.forEach((url) => {
             const img = new Image();
             img.src = url;
         });
@@ -337,9 +400,11 @@ class LazyLoadingManager {
      * Force le chargement de toutes les images
      */
     loadAll() {
-        [...this.images, ...this.iframes, ...this.backgroundImages].forEach(element => {
-            this.loadElement(element);
-        });
+        [...this.images, ...this.iframes, ...this.backgroundImages].forEach(
+            (element) => {
+                this.loadElement(element);
+            },
+        );
     }
 
     /**
@@ -356,21 +421,32 @@ class LazyLoadingManager {
 }
 
 // Initialisation automatique
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        window.lazyLoader = new LazyLoadingManager({
-            rootMargin: '100px',
-            threshold: 0.01
-        });
-    });
-} else {
+function initLazyLoader() {
+    // Éviter double initialisation
+    if (window.lazyLoader) return;
+
     window.lazyLoader = new LazyLoadingManager({
-        rootMargin: '100px',
-        threshold: 0.01
+        rootMargin: "100px",
+        threshold: 0.01,
+    });
+
+    // Charger immédiatement les images above-the-fold
+    const viewportHeight = window.innerHeight;
+    document.querySelectorAll("img[data-src]").forEach((img) => {
+        const rect = img.getBoundingClientRect();
+        if (rect.top < viewportHeight && rect.bottom > 0) {
+            window.lazyLoader.loadElement(img);
+        }
     });
 }
 
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initLazyLoader);
+} else {
+    initLazyLoader();
+}
+
 // Export pour utilisation en module
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
     module.exports = LazyLoadingManager;
 }

@@ -244,6 +244,168 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Mode Jour/Nuit Automatique Multi-Palettes -->
+                        <div>
+                            <h4 class="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <i class="fas fa-sun text-yellow-500"></i>
+                                <i class="fas fa-moon text-indigo-400 -ml-1"></i>
+                                Mode Jour / Nuit Automatique
+                            </h4>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                Change automatiquement les couleurs selon l'heure. Choisissez une palette pour le jour et une pour la nuit.
+                            </p>
+                            <div class="space-y-3">
+                                <label class="flex items-center p-3 bg-gradient-to-r from-yellow-50 to-indigo-50 dark:from-gray-700 dark:to-gray-700 rounded-lg hover:from-yellow-100 hover:to-indigo-100 dark:hover:from-gray-600 dark:hover:to-gray-600 transition-colors cursor-pointer">
+                                    <input type="checkbox" id="dayNightToggle" 
+                                           onchange="toggleDayNightMode()"
+                                           {{ config('colors.day_night.enabled', false) ? 'checked' : '' }}
+                                           class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                    <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Activer le mode jour/nuit automatique
+                                    </span>
+                                </label>
+
+                                <div id="dayNightSettings" class="{{ config('colors.day_night.enabled', false) ? '' : 'hidden' }}">
+                                    <!-- Aperçu mode actuel -->
+                                    <div id="dayNightPreview" class="p-4 rounded-lg border-2 mb-3 transition-all duration-300">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <span id="dayNightCurrentIcon" class="text-2xl"></span>
+                                                <span id="dayNightCurrentLabel" class="ml-2 font-semibold text-sm"></span>
+                                            </div>
+                                            <span id="dayNightNextSwitch" class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Horaires -->
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="p-3 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                                            <label class="block text-xs font-medium text-yellow-700 dark:text-yellow-300 mb-1">
+                                                <i class="fas fa-sun mr-1"></i> Début du jour
+                                            </label>
+                                            <select id="dayStartHour" onchange="updateDayNightSchedule()" 
+                                                    class="w-full text-sm border-yellow-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md">
+                                                @for($h = 4; $h <= 10; $h++)
+                                                    <option value="{{ $h }}" {{ config('colors.day_night.day_start', 7) == $h ? 'selected' : '' }}>
+                                                        {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                        <div class="p-3 bg-indigo-50 dark:bg-gray-700 rounded-lg">
+                                            <label class="block text-xs font-medium text-indigo-700 dark:text-indigo-300 mb-1">
+                                                <i class="fas fa-moon mr-1"></i> Début de la nuit
+                                            </label>
+                                            <select id="nightStartHour" onchange="updateDayNightSchedule()" 
+                                                    class="w-full text-sm border-indigo-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md">
+                                                @for($h = 17; $h <= 22; $h++)
+                                                    <option value="{{ $h }}" {{ config('colors.day_night.night_start', 19) == $h ? 'selected' : '' }}>
+                                                        {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
+                                                    </option>
+                                                @endfor
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- ============================================ -->
+                                    <!-- SÉLECTEUR DE PALETTES JOUR                   -->
+                                    <!-- ============================================ -->
+                                    @php
+                                        // Fallback si les variables n'ont pas été passées par le contrôleur
+                                        if (!isset($dayPalettes)) {
+                                            $dayNightSvc = app(\App\Services\DayNightService::class);
+                                            $dayPalettes = config('colors.day_night.day_palettes', []);
+                                            $nightPalettes = config('colors.day_night.night_palettes', []);
+                                            $activeDayKey = $dayNightSvc->getActiveDayKey();
+                                            $activeNightKey = $dayNightSvc->getActiveNightKey();
+                                        }
+                                    @endphp
+                                    
+                                    <div class="mt-4">
+                                        <h5 class="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-2 flex items-center gap-1">
+                                            <i class="fas fa-sun"></i> Palettes de Jour
+                                        </h5>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="dayPaletteGrid">
+                                            @foreach($dayPalettes as $key => $palette)
+                                                <button type="button" 
+                                                        onclick="selectDayPalette('{{ $key }}')" 
+                                                        id="dayPalette_{{ $key }}"
+                                                        class="palette-card p-3 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeDayKey === $key ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 ring-2 ring-yellow-300' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-yellow-300' }}">
+                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeDayKey === $key ? 'text-yellow-700 dark:text-yellow-300' : 'text-gray-700 dark:text-gray-300' }}">
+                                                        {{ $palette['name'] ?? $key }}
+                                                    </div>
+                                                    <div class="flex flex-wrap gap-0.5">
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['primary'] }}" title="Primary"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['accent'] }}" title="Accent"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['success'] }}" title="Success"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['danger'] }}" title="Danger"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['warning'] }}" title="Warning"></div>
+                                                        <div class="w-5 h-5 rounded-sm border border-gray-200" style="background-color: {{ $palette['background'] }}" title="Background"></div>
+                                                    </div>
+                                                    @if($activeDayKey === $key)
+                                                        <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1 font-medium">
+                                                            <i class="fas fa-check-circle"></i> Active
+                                                        </div>
+                                                    @endif
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- ============================================ -->
+                                    <!-- SÉLECTEUR DE PALETTES NUIT                   -->
+                                    <!-- ============================================ -->
+                                    <div class="mt-4">
+                                        <h5 class="text-sm font-semibold text-indigo-700 dark:text-indigo-300 mb-2 flex items-center gap-1">
+                                            <i class="fas fa-moon"></i> Palettes de Nuit
+                                        </h5>
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="nightPaletteGrid">
+                                            @foreach($nightPalettes as $key => $palette)
+                                                <button type="button" 
+                                                        onclick="selectNightPalette('{{ $key }}')" 
+                                                        id="nightPalette_{{ $key }}"
+                                                        class="palette-card p-3 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeNightKey === $key ? 'border-indigo-500 bg-indigo-900/20 ring-2 ring-indigo-400' : 'border-gray-600 bg-gray-800 hover:border-indigo-400' }}">
+                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeNightKey === $key ? 'text-indigo-300' : 'text-gray-300' }}">
+                                                        {{ $palette['name'] ?? $key }}
+                                                    </div>
+                                                    <div class="flex flex-wrap gap-0.5">
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['primary'] }}" title="Primary"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['accent'] }}" title="Accent"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['success'] }}" title="Success"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['danger'] }}" title="Danger"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['warning'] }}" title="Warning"></div>
+                                                        <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['background'] }}" title="Background"></div>
+                                                    </div>
+                                                    @if($activeNightKey === $key)
+                                                        <div class="text-xs text-indigo-400 mt-1 font-medium">
+                                                            <i class="fas fa-check-circle"></i> Active
+                                                        </div>
+                                                    @endif
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <!-- Boutons de test -->
+                                    <div class="flex gap-2 mt-3">
+                                        <button onclick="testDayMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded-lg transition-colors">
+                                            <i class="fas fa-sun mr-1"></i> Tester Jour
+                                        </button>
+                                        <button onclick="testNightMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-lg transition-colors">
+                                            <i class="fas fa-moon mr-1"></i> Tester Nuit
+                                        </button>
+                                        <button onclick="resetDayNightAuto()" class="flex-1 px-3 py-2 text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
+                                            <i class="fas fa-sync mr-1"></i> Auto
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="dayNightStatus" class="text-xs text-gray-500 dark:text-gray-400 pl-3">
+                                    <!-- Status sera affiché dynamiquement -->
+                                </div>
+                            </div>
+                        </div>
                         
                         <!-- Couleurs par Rôle -->
                         <div>
@@ -782,6 +944,307 @@ document.addEventListener('click', function(e) {
     if (e.target === importModal) {
         closeImportModal();
     }
+});
+
+// ============================================
+// MODE JOUR / NUIT MULTI-PALETTES
+// ============================================
+
+// État local des palettes sélectionnées
+let selectedDayPalette = '{{ $activeDayKey ?? "ciel" }}';
+let selectedNightPalette = '{{ $activeNightKey ?? "indigo" }}';
+
+// Toggle du mode jour/nuit
+function toggleDayNightMode() {
+    const isEnabled = document.getElementById('dayNightToggle').checked;
+    const settingsDiv = document.getElementById('dayNightSettings');
+    
+    if (isEnabled) {
+        settingsDiv.classList.remove('hidden');
+        if (window.VintAppDayNight) {
+            window.VintAppDayNight.enabled = true;
+        }
+        updateDayNightPreview();
+    } else {
+        settingsDiv.classList.add('hidden');
+        if (window.VintAppDayNight) {
+            window.VintAppDayNight.enabled = false;
+        }
+        document.documentElement.setAttribute('data-theme', 'day');
+        document.documentElement.classList.remove('dark');
+    }
+    
+    saveDayNightSettings(isEnabled);
+    updateDayNightStatus();
+    showToast('success', 'Mode jour/nuit ' + (isEnabled ? 'activé' : 'désactivé'));
+}
+
+// Sélectionner une palette de jour
+function selectDayPalette(key) {
+    selectedDayPalette = key;
+    
+    // Mettre à jour le visuel des cartes
+    document.querySelectorAll('#dayPaletteGrid button').forEach(function(btn) {
+        btn.classList.remove('border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/20', 'ring-2', 'ring-yellow-300');
+        btn.classList.add('border-gray-200', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+        
+        // Retirer l'indicateur "Active"
+        const activeIndicator = btn.querySelector('.active-indicator');
+        if (activeIndicator) activeIndicator.remove();
+        
+        // Remettre la couleur de titre par défaut
+        const title = btn.querySelector('div:first-child');
+        if (title) {
+            title.classList.remove('text-yellow-700', 'dark:text-yellow-300');
+            title.classList.add('text-gray-700', 'dark:text-gray-300');
+        }
+    });
+    
+    // Activer la carte sélectionnée
+    const selectedCard = document.getElementById('dayPalette_' + key);
+    if (selectedCard) {
+        selectedCard.classList.remove('border-gray-200', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+        selectedCard.classList.add('border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/20', 'ring-2', 'ring-yellow-300');
+        
+        const title = selectedCard.querySelector('div:first-child');
+        if (title) {
+            title.classList.remove('text-gray-700', 'dark:text-gray-300');
+            title.classList.add('text-yellow-700', 'dark:text-yellow-300');
+        }
+        
+        // Ajouter indicateur
+        if (!selectedCard.querySelector('.active-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'active-indicator text-xs text-yellow-600 dark:text-yellow-400 mt-1 font-medium';
+            indicator.innerHTML = '<i class="fas fa-check-circle"></i> Active';
+            selectedCard.appendChild(indicator);
+        }
+    }
+    
+    // Appliquer la palette via le JS dynamique
+    if (window.VintAppDayNight && window.VintAppDayNight.setDayPalette) {
+        window.VintAppDayNight.setDayPalette(key);
+    }
+    
+    // Sauvegarder côté serveur
+    saveDayNightSettings(document.getElementById('dayNightToggle').checked);
+    showToast('success', '☀️ Palette jour changée : ' + key);
+}
+
+// Sélectionner une palette de nuit
+function selectNightPalette(key) {
+    selectedNightPalette = key;
+    
+    // Mettre à jour le visuel des cartes
+    document.querySelectorAll('#nightPaletteGrid button').forEach(function(btn) {
+        btn.classList.remove('border-indigo-500', 'bg-indigo-900/20', 'ring-2', 'ring-indigo-400');
+        btn.classList.add('border-gray-600', 'bg-gray-800');
+        
+        const activeIndicator = btn.querySelector('.active-indicator');
+        if (activeIndicator) activeIndicator.remove();
+        
+        const title = btn.querySelector('div:first-child');
+        if (title) {
+            title.classList.remove('text-indigo-300');
+            title.classList.add('text-gray-300');
+        }
+    });
+    
+    const selectedCard = document.getElementById('nightPalette_' + key);
+    if (selectedCard) {
+        selectedCard.classList.remove('border-gray-600', 'bg-gray-800');
+        selectedCard.classList.add('border-indigo-500', 'bg-indigo-900/20', 'ring-2', 'ring-indigo-400');
+        
+        const title = selectedCard.querySelector('div:first-child');
+        if (title) {
+            title.classList.remove('text-gray-300');
+            title.classList.add('text-indigo-300');
+        }
+        
+        if (!selectedCard.querySelector('.active-indicator')) {
+            const indicator = document.createElement('div');
+            indicator.className = 'active-indicator text-xs text-indigo-400 mt-1 font-medium';
+            indicator.innerHTML = '<i class="fas fa-check-circle"></i> Active';
+            selectedCard.appendChild(indicator);
+        }
+    }
+    
+    if (window.VintAppDayNight && window.VintAppDayNight.setNightPalette) {
+        window.VintAppDayNight.setNightPalette(key);
+    }
+    
+    saveDayNightSettings(document.getElementById('dayNightToggle').checked);
+    showToast('success', '🌙 Palette nuit changée : ' + key);
+}
+
+// Mettre à jour l'aperçu du mode actuel
+function updateDayNightPreview() {
+    const preview = document.getElementById('dayNightPreview');
+    const iconEl = document.getElementById('dayNightCurrentIcon');
+    const labelEl = document.getElementById('dayNightCurrentLabel');
+    const nextEl = document.getElementById('dayNightNextSwitch');
+    
+    if (!preview) return;
+    
+    const hour = new Date().getHours();
+    const dayStart = parseInt(document.getElementById('dayStartHour')?.value || 7);
+    const nightStart = parseInt(document.getElementById('nightStartHour')?.value || 19);
+    const isDay = hour >= dayStart && hour < nightStart;
+    
+    if (isDay) {
+        preview.className = 'p-4 rounded-lg border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200';
+        iconEl.textContent = '☀️';
+        labelEl.textContent = 'Mode Jour — ' + selectedDayPalette;
+        labelEl.className = 'ml-2 font-semibold text-sm text-yellow-800';
+        const nextSwitch = nightStart > hour ? nightStart + ':00' : 'demain';
+        nextEl.textContent = 'Nuit à ' + nextSwitch;
+    } else {
+        preview.className = 'p-4 rounded-lg border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-indigo-900 to-purple-900 border-indigo-500/30';
+        iconEl.textContent = '🌙';
+        labelEl.textContent = 'Mode Nuit — ' + selectedNightPalette;
+        labelEl.className = 'ml-2 font-semibold text-sm text-indigo-200';
+        const nextSwitch = dayStart > hour ? dayStart + ':00' : 'demain ' + dayStart + ':00';
+        nextEl.textContent = 'Jour à ' + nextSwitch;
+        nextEl.className = 'text-xs text-indigo-300';
+    }
+}
+
+// Mettre à jour les horaires
+function updateDayNightSchedule() {
+    const dayStart = parseInt(document.getElementById('dayStartHour').value);
+    const nightStart = parseInt(document.getElementById('nightStartHour').value);
+    
+    if (window.VintAppDayNight) {
+        window.VintAppDayNight.setDayStart(dayStart);
+        window.VintAppDayNight.setNightStart(nightStart);
+    }
+
+    localStorage.setItem('vintapp_day_start', dayStart);
+    localStorage.setItem('vintapp_night_start', nightStart);
+    
+    updateDayNightPreview();
+    updateDayNightStatus();
+    saveDayNightSettings(document.getElementById('dayNightToggle').checked);
+    showToast('info', 'Horaires mis à jour : jour à ' + dayStart + 'h, nuit à ' + nightStart + 'h');
+}
+
+// Tester le mode jour
+function testDayMode() {
+    if (window.VintAppDayNight && window.VintAppDayNight.setDayPalette) {
+        window.VintAppDayNight.setDayPalette(selectedDayPalette);
+    }
+    document.documentElement.setAttribute('data-theme', 'day');
+    document.documentElement.classList.remove('dark');
+    showToast('info', '☀️ Aperçu du mode jour — ' + selectedDayPalette);
+}
+
+// Tester le mode nuit
+function testNightMode() {
+    if (window.VintAppDayNight && window.VintAppDayNight.setNightPalette) {
+        window.VintAppDayNight.setNightPalette(selectedNightPalette);
+    }
+    document.documentElement.setAttribute('data-theme', 'night');
+    document.documentElement.classList.add('dark');
+    showToast('info', '🌙 Aperçu du mode nuit — ' + selectedNightPalette);
+}
+
+// Réinitialiser au mode automatique
+function resetDayNightAuto() {
+    localStorage.removeItem('vintapp_day_night_manual');
+    if (window.VintAppDayNight && window.VintAppDayNight.resetAuto) {
+        window.VintAppDayNight.resetAuto();
+    } else {
+        const hour = new Date().getHours();
+        const dayStart = parseInt(document.getElementById('dayStartHour')?.value || 7);
+        const nightStart = parseInt(document.getElementById('nightStartHour')?.value || 19);
+        const isDay = hour >= dayStart && hour < nightStart;
+        
+        document.documentElement.setAttribute('data-theme', isDay ? 'day' : 'night');
+        if (!isDay) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }
+    updateDayNightPreview();
+    showToast('success', '🔄 Mode automatique réactivé');
+}
+
+// Mettre à jour le statut jour/nuit
+function updateDayNightStatus() {
+    const statusDiv = document.getElementById('dayNightStatus');
+    if (!statusDiv) return;
+    
+    const isEnabled = document.getElementById('dayNightToggle')?.checked;
+    
+    if (!isEnabled) {
+        statusDiv.innerHTML = '<i class="fas fa-info-circle mr-1"></i> Mode jour/nuit désactivé';
+        return;
+    }
+    
+    const hour = new Date().getHours();
+    const dayStart = parseInt(document.getElementById('dayStartHour')?.value || 7);
+    const nightStart = parseInt(document.getElementById('nightStartHour')?.value || 19);
+    const isDay = hour >= dayStart && hour < nightStart;
+    const manual = localStorage.getItem('vintapp_day_night_manual');
+    
+    let statusText = '';
+    if (manual) {
+        statusText = '<i class="fas fa-hand-pointer mr-1"></i> Mode ' + (manual === 'day' ? 'jour (' + selectedDayPalette + ')' : 'nuit (' + selectedNightPalette + ')') + ' forcé manuellement';
+    } else if (isDay) {
+        statusText = '<i class="fas fa-sun mr-1 text-yellow-500"></i> Jour actif — palette: <strong>' + selectedDayPalette + '</strong> (' + hour + 'h) — nuit à ' + nightStart + 'h';
+    } else {
+        statusText = '<i class="fas fa-moon mr-1 text-indigo-400"></i> Nuit active — palette: <strong>' + selectedNightPalette + '</strong> (' + hour + 'h) — jour à ' + dayStart + 'h';
+    }
+    
+    statusDiv.innerHTML = statusText;
+}
+
+// Sauvegarder les paramètres jour/nuit côté serveur (avec palettes)
+function saveDayNightSettings(enabled) {
+    const dayStart = parseInt(document.getElementById('dayStartHour')?.value || 7);
+    const nightStart = parseInt(document.getElementById('nightStartHour')?.value || 19);
+    
+    fetch('/admin/settings/colors/day-night', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            enabled: enabled,
+            day_start: dayStart,
+            night_start: nightStart,
+            active_day_palette: selectedDayPalette,
+            active_night_palette: selectedNightPalette
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('[VintApp] Paramètres jour/nuit + palettes sauvegardés');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur sauvegarde jour/nuit:', error);
+    });
+}
+
+// Initialiser l'aperçu au chargement
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('dayNightToggle')?.checked) {
+        updateDayNightPreview();
+    }
+    updateDayNightStatus();
+    
+    // Rafraîchir toutes les minutes
+    setInterval(function() {
+        if (document.getElementById('dayNightToggle')?.checked) {
+            updateDayNightPreview();
+            updateDayNightStatus();
+        }
+    }, 60000);
 });
 </script>
 @endsection

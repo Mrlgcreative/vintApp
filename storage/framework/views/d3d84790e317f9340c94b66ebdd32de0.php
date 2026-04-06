@@ -340,7 +340,8 @@
 <?php unset($__componentOriginal40a3de7997c05e5562c4104d90e9b634); ?>
 <?php endif; ?>
 
-    <?php if (isset($component)) { $__componentOriginal1e2fb8a385bff5b6574eeb687cee100b = $component; } ?>
+    <?php if(! app()->runningUnitTests() && ! app()->runningInConsole()): ?>
+        <?php if (isset($component)) { $__componentOriginal1e2fb8a385bff5b6574eeb687cee100b = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal1e2fb8a385bff5b6574eeb687cee100b = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'laravel-exceptions-renderer::components.section-container','data' => ['class' => 'pb-0 sm:pb-0']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('laravel-exceptions-renderer::section-container'); ?>
@@ -350,7 +351,7 @@
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes(['class' => 'pb-0 sm:pb-0']); ?>
-        <?php if (isset($component)) { $__componentOriginal00da9961ee0aae6b56664f2b481f9f2e = $component; } ?>
+            <?php if (isset($component)) { $__componentOriginal00da9961ee0aae6b56664f2b481f9f2e = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal00da9961ee0aae6b56664f2b481f9f2e = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'laravel-exceptions-renderer::components.laravel-ascii-spotlight','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('laravel-exceptions-renderer::laravel-ascii-spotlight'); ?>
@@ -370,7 +371,7 @@
 <?php $component = $__componentOriginal00da9961ee0aae6b56664f2b481f9f2e; ?>
 <?php unset($__componentOriginal00da9961ee0aae6b56664f2b481f9f2e); ?>
 <?php endif; ?>
-     <?php echo $__env->renderComponent(); ?>
+         <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal1e2fb8a385bff5b6574eeb687cee100b)): ?>
 <?php $attributes = $__attributesOriginal1e2fb8a385bff5b6574eeb687cee100b; ?>
@@ -380,6 +381,7 @@
 <?php $component = $__componentOriginal1e2fb8a385bff5b6574eeb687cee100b; ?>
 <?php unset($__componentOriginal1e2fb8a385bff5b6574eeb687cee100b); ?>
 <?php endif; ?>
+    <?php endif; ?>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginalbbd4eeea836234825f7514ed20d2d52d)): ?>

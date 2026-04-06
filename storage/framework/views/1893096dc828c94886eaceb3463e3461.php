@@ -1,53 +1,53 @@
-﻿@extends('app')
+﻿
 
-@section('title', 'Booster vos Produits')
+<?php $__env->startSection('title', 'Booster vos Produits'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
         <div class="mb-4 lg:mb-0">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Booster vos Produits</h1>
             <p class="text-gray-600 dark:text-gray-300">Augmentez la visibilité de vos produits et boostez vos ventes</p>
-            @if(request()->has('item_id'))
-                @php
+            <?php if(request()->has('item_id')): ?>
+                <?php
                     $preselectedItem = \App\Models\Item::find(request('item_id'));
-                @endphp
-                @if($preselectedItem)
+                ?>
+                <?php if($preselectedItem): ?>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 flex items-start">
                         <i class="fas fa-info-circle text-green-600 mt-0.5 mr-3"></i>
                         <div>
                             <span class="font-semibold text-green-800">Article présélectionné :</span>
-                            <span class="text-green-700">"{{ $preselectedItem->name }}" - Choisissez un type de boost pour cet article.</span>
+                            <span class="text-green-700">"<?php echo e($preselectedItem->name); ?>" - Choisissez un type de boost pour cet article.</span>
                         </div>
                     </div>
-                @endif
-            @endif
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
-        <a href="{{ route('boost.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors duration-200">
+        <a href="<?php echo e(route('boost.dashboard')); ?>" class="inline-flex items-center px-4 py-2 border border-blue-600 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors duration-200">
             <i class="fas fa-chart-bar mr-2"></i>Mon Dashboard
         </a>
     </div>
 
     <!-- Solde du portefeuille -->
-    @php
+    <?php
         $walletBalance = auth()->user()->wallet_balance ?? 0;
         $isLowBalance = $walletBalance < 1000; // Considérer comme faible si < 1000 CDF
-    @endphp
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 flex flex-col sm:flex-row sm:items-center {{ $isLowBalance ? 'bg-red-50 border-red-200' : '' }}">
+    ?>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8 flex flex-col sm:flex-row sm:items-center <?php echo e($isLowBalance ? 'bg-red-50 border-red-200' : ''); ?>">
         <div class="flex items-center flex-grow">
             <div class="flex-shrink-0 mr-4">
-                <i class="fas fa-wallet text-3xl {{ $isLowBalance ? 'text-red-600' : 'text-blue-600' }}"></i>
+                <i class="fas fa-wallet text-3xl <?php echo e($isLowBalance ? 'text-red-600' : 'text-blue-600'); ?>"></i>
             </div>
             <div>
-                <h3 class="text-lg font-semibold {{ $isLowBalance ? 'text-red-900' : 'text-blue-900' }} mb-1">Solde de votre portefeuille</h3>
-                <span class="text-2xl font-bold {{ $isLowBalance ? 'text-red-700' : 'text-blue-700' }}">{{ number_format($walletBalance, 0, ',', ' ') }} CDF</span>
-                @if($isLowBalance)
+                <h3 class="text-lg font-semibold <?php echo e($isLowBalance ? 'text-red-900' : 'text-blue-900'); ?> mb-1">Solde de votre portefeuille</h3>
+                <span class="text-2xl font-bold <?php echo e($isLowBalance ? 'text-red-700' : 'text-blue-700'); ?>"><?php echo e(number_format($walletBalance, 0, ',', ' ')); ?> CDF</span>
+                <?php if($isLowBalance): ?>
                     <p class="text-sm text-red-600 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Solde faible - Rechargez pour acheter des boosts</p>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-6">
-            <a href="#" class="inline-flex items-center px-4 py-2 {{ $isLowBalance ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700' }} text-white font-medium rounded-lg transition-colors duration-200">
+            <a href="#" class="inline-flex items-center px-4 py-2 <?php echo e($isLowBalance ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'); ?> text-white font-medium rounded-lg transition-colors duration-200">
                 <i class="fas fa-plus mr-2"></i>Recharger
             </a>
         </div>
@@ -55,82 +55,84 @@
 
     <!-- Types de boost disponibles -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @forelse($boostTypes as $boostType)
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 boost-card flex flex-col" data-boost-type="{{ $boostType->id }}">
-            <div class="p-6 text-white relative" style="background: {{ $boostType->color ?? '#3B82F6' }};">
+        <?php $__empty_1 = true; $__currentLoopData = $boostTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $boostType): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-200 boost-card flex flex-col" data-boost-type="<?php echo e($boostType->id); ?>">
+            <div class="p-6 text-white relative" style="background: <?php echo e($boostType->color ?? '#3B82F6'); ?>;">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xl font-bold mb-0 flex items-center">
-                        <i class="{{ $boostType->icon ?? 'fas fa-star' }} mr-3"></i>
-                        {{ $boostType->display_name }}
+                        <i class="<?php echo e($boostType->icon ?? 'fas fa-star'); ?> mr-3"></i>
+                        <?php echo e($boostType->display_name); ?>
+
                     </h3>
-                    @if($boostType->is_premium)
+                    <?php if($boostType->is_premium): ?>
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500 text-yellow-900">
                         <i class="fas fa-crown mr-1"></i> Premium
                     </span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="p-6 flex-grow flex flex-col">
-                <p class="text-gray-600 dark:text-gray-300 mb-4">{{ $boostType->description }}</p>
+                <p class="text-gray-600 dark:text-gray-300 mb-4"><?php echo e($boostType->description); ?></p>
                     
                 <!-- Prix -->
                 <div class="mb-4">
-                    @php
+                    <?php
                         // Détecter la devise préférée de l'utilisateur (CDF par défaut)
                         $userCurrency = auth()->user()->preferred_currency ?? 'CDF';
                         $price = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
                         $currencySymbol = $userCurrency === 'USD' ? '$' : 'CDF';
-                    @endphp
+                    ?>
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-gray-500 dark:text-gray-400 text-sm">Prix de base:</span>
                         <span class="text-lg font-semibold text-gray-900 dark:text-white">
-                            @if($userCurrency === 'USD')
-                                ${{ number_format($price, 2) }}
-                            @else
-                                {{ number_format($price, 0, ',', ' ') }} CDF
-                            @endif
+                            <?php if($userCurrency === 'USD'): ?>
+                                $<?php echo e(number_format($price, 2)); ?>
+
+                            <?php else: ?>
+                                <?php echo e(number_format($price, 0, ',', ' ')); ?> CDF
+                            <?php endif; ?>
                         </span>
                     </div>
-                    @if($boostType->price_per_day > 0)
+                    <?php if($boostType->price_per_day > 0): ?>
                     <div class="flex justify-between items-center">
                         <span class="text-gray-500 dark:text-gray-400 text-sm">Par jour:</span>
-                        <span class="text-sm text-gray-700 dark:text-gray-200">+{{ number_format($boostType->price_per_day, 0, ',', ' ') }} {{ $currencySymbol }}</span>
+                        <span class="text-sm text-gray-700 dark:text-gray-200">+<?php echo e(number_format($boostType->price_per_day, 0, ',', ' ')); ?> <?php echo e($currencySymbol); ?></span>
                     </div>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
                 <!-- Durée -->
                 <div class="mb-4">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-500 dark:text-gray-400 text-sm">Durée:</span>
-                        <span class="text-gray-900 dark:text-white">{{ $boostType->min_duration }} - {{ $boostType->max_duration }} jours</span>
+                        <span class="text-gray-900 dark:text-white"><?php echo e($boostType->min_duration); ?> - <?php echo e($boostType->max_duration); ?> jours</span>
                     </div>
                 </div>
 
                 <!-- Avantages -->
-                @if($boostType->benefits)
+                <?php if($boostType->benefits): ?>
                 <div class="mb-4">
                     <h6 class="text-gray-500 dark:text-gray-400 text-sm font-medium mb-3">Avantages:</h6>
                     <ul class="space-y-2">
-                        @foreach(json_decode($boostType->benefits, true) as $benefit)
+                        <?php $__currentLoopData = json_decode($boostType->benefits, true); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $benefit): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <li class="flex items-start">
                             <i class="fas fa-check text-green-500 mr-2 mt-0.5 text-sm"></i>
-                            <span class="text-sm text-gray-700 dark:text-gray-200">{{ $benefit }}</span>
+                            <span class="text-sm text-gray-700 dark:text-gray-200"><?php echo e($benefit); ?></span>
                         </li>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
             
             <!-- Footer avec bouton -->
             <div class="px-6 pb-6">
-                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center select-boost-btn" data-boost-type-id="{{ $boostType->id }}">
+                <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center select-boost-btn" data-boost-type-id="<?php echo e($boostType->id); ?>">
                     <i class="fas fa-rocket mr-2"></i>Choisir ce boost
                 </button>
             </div>
         </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div class="col-span-full">
             <div class="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg">
                 <i class="fas fa-exclamation-circle text-5xl text-gray-400 mb-4"></i>
@@ -138,7 +140,7 @@
                 <p class="text-gray-500 dark:text-gray-400">Veuillez contacter l'administrateur.</p>
             </div>
         </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 </div>
 
@@ -163,7 +165,7 @@
             <div class="p-6">
                 <!-- Formulaire de boost -->
                 <form id="boostForm" class="hidden">
-                    @csrf
+                    <?php echo csrf_field(); ?>
                     <input type="hidden" id="selectedBoostType" name="boost_type_id">
                     <input type="hidden" id="selectedItemId" name="item_id">
                     
@@ -203,9 +205,9 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
 <style>
 /* Styles personnalisés pour le modal et interactions */
 .product-item {
@@ -250,12 +252,12 @@
     opacity: 1;
 }
 </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     // Variables globales
-    const WALLET_BALANCE = {{ auth()->user()->wallet_balance ?? 0 }};
+    const WALLET_BALANCE = <?php echo e(auth()->user()->wallet_balance ?? 0); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
     let selectedBoostTypeId = null;
@@ -385,7 +387,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const preselectedItemId = urlParams.get('item_id');
 
         // Charger les produits via API
-        fetch('{{ route("boost.user-items") }}', {
+        fetch('<?php echo e(route("boost.user-items")); ?>', {
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             }
@@ -579,7 +581,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function calculatePrice() {
         const duration = document.getElementById('boostDuration').value;
         
-        fetch('{{ route("boost.calculate-price") }}', {
+        fetch('<?php echo e(route("boost.calculate-price")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -657,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Traitement...';
         submitBtn.disabled = true;
 
-        fetch('{{ route("boost.purchase") }}', {
+        fetch('<?php echo e(route("boost.purchase")); ?>', {
             method: 'POST',
             body: formData,
             headers: {
@@ -705,4 +707,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\gloir\Desktop\vintApp\resources\views/boost/index.blade.php ENDPATH**/ ?>

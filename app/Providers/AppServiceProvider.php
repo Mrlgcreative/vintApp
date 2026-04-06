@@ -27,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Vite::usePreloadTagAttributes(function (string $src, string $url, ?array $chunk, ?array $manifest) {
+            // Ne pas preload les fichiers CSS (évite le warning navigateur)
+            if (str_ends_with($src, '.css')) {
+                return false;
+            }
+            return [];
+        });
         Vite::prefetch(concurrency: 3);
 
         // Enregistrer le provider Apple pour Socialite

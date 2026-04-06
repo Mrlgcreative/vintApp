@@ -49,12 +49,24 @@
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
     <link rel="stylesheet" href="<?php echo e(asset('css/dynamic-colors.css')); ?>">
 
+    <!-- Day/Night Theme (système automatique jour/nuit) -->
+    <?php if(config('colors.day_night.enabled', false)): ?>
+        <link rel="stylesheet" href="<?php echo e(asset('css/day-night-theme.css')); ?>">
+    <?php endif; ?>
+
     <!-- Custom Styles -->
     <?php echo $__env->yieldPushContent('styles'); ?>
     
     <script>
         window.userTheme = "<?php echo e(addslashes(Auth::user()?->theme_preference ?? '')); ?>";
         window.isAuthenticated = <?php echo e(Auth::check() ? 'true' : 'false'); ?>;
+
+        // Configuration jour/nuit multi-palettes (injectée côté serveur)
+        <?php
+            $dayNightService = app(\App\Services\DayNightService::class);
+            $dayNightClientConfig = $dayNightService->getClientConfig();
+        ?>
+        window.VintAppDayNightConfig = <?php echo json_encode($dayNightClientConfig, 15, 512) ?>;
         
         // Fonction pour appliquer le thème
         function applyTheme(theme) {
@@ -62,7 +74,7 @@
             localStorage.setItem('theme', theme);
             
             // Gérer la classe dark pour Tailwind
-            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (theme === 'dark' || theme === 'night' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
@@ -368,106 +380,26 @@
 
     <!-- Footer -->
     <?php if(!request()->routeIs('messages.*')): ?>
-        <footer class="bg-gray-800 text-gray-300 py-12 mt-8">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <!-- À propos -->
-                    <div class="col-span-2 md:col-span-1">
-                        <h5 class="font-semibold text-white mb-4">
-                            <?php if (isset($component)) { $__componentOriginalac37604bae5cded3771d6931140b8398 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginalac37604bae5cded3771d6931140b8398 = $attributes; } ?>
-<?php $component = App\View\Components\AppBrand::resolve(['showLogo' => true,'showName' => true,'logoHeight' => '24px','logoWidth' => '80px','nameSize' => '1.25rem','nameClass' => 'text-white'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('app-brand'); ?>
+        <?php if (isset($component)) { $__componentOriginal8a8716efb3c62a45938aca52e78e0322 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal8a8716efb3c62a45938aca52e78e0322 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.footer','data' => []] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('footer'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\App\View\Components\AppBrand::ignoredParameterNames()); ?>
+<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginalac37604bae5cded3771d6931140b8398)): ?>
-<?php $attributes = $__attributesOriginalac37604bae5cded3771d6931140b8398; ?>
-<?php unset($__attributesOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php if (isset($__attributesOriginal8a8716efb3c62a45938aca52e78e0322)): ?>
+<?php $attributes = $__attributesOriginal8a8716efb3c62a45938aca52e78e0322; ?>
+<?php unset($__attributesOriginal8a8716efb3c62a45938aca52e78e0322); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginalac37604bae5cded3771d6931140b8398)): ?>
-<?php $component = $__componentOriginalac37604bae5cded3771d6931140b8398; ?>
-<?php unset($__componentOriginalac37604bae5cded3771d6931140b8398); ?>
+<?php if (isset($__componentOriginal8a8716efb3c62a45938aca52e78e0322)): ?>
+<?php $component = $__componentOriginal8a8716efb3c62a45938aca52e78e0322; ?>
+<?php unset($__componentOriginal8a8716efb3c62a45938aca52e78e0322); ?>
 <?php endif; ?>
-                        </h5>
-                        <p class="text-sm text-gray-400">
-                            <?php echo e($appDescription ?? 'La marketplace de confiance pour acheter et vendre des articles d\'occasion.'); ?>
-
-                        </p>
-                    </div>
-                    
-                    <!-- Navigation -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Navigation</h6>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="<?php echo e(route('items.index')); ?>" class="hover:text-white transition-colors">Articles</a></li>
-                            <li><a href="<?php echo e(route('categories.index')); ?>" class="hover:text-white transition-colors">Catégories</a></li>
-                            <li><a href="<?php echo e(route('brands.index')); ?>" class="hover:text-white transition-colors">Marques</a></li>
-                            <?php if(auth()->guard()->check()): ?>
-                                <li><a href="<?php echo e(route('items.my-items')); ?>" class="hover:text-white transition-colors">Mes articles</a></li>
-                            <?php endif; ?>
-                        </ul>
-                    </div>
-                    
-                    <!-- Support -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Support</h6>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="<?php echo e(route('help.index')); ?>" class="hover:text-white transition-colors">Centre d'aide</a></li>
-                            <li><a href="<?php echo e(route('help.index')); ?>#contact" class="hover:text-white transition-colors">Contact</a></li>
-                            <li><a href="<?php echo e(route('terms')); ?>" class="hover:text-white transition-colors">CGU</a></li>
-                            <li><a href="<?php echo e(route('privacy')); ?>" class="hover:text-white transition-colors">Confidentialité</a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Réseaux sociaux -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Suivez-nous</h6>
-                        <div class="flex space-x-3">
-                            <a href="https://facebook.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-facebook-f text-lg"></i>
-                            </a>
-                            <a href="https://twitter.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-twitter text-lg"></i>
-                            </a>
-                            <a href="https://instagram.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-instagram text-lg"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Newsletter -->
-                <div class="border-t border-gray-700 mt-8 pt-8">
-                    <div class="text-center max-w-md mx-auto">
-                        <h5 class="font-semibold text-white mb-3">📧 Newsletter</h5>
-                        <p class="text-sm text-gray-400 mb-4">Recevez nos dernières offres et nouveautés.</p>
-                        <form id="newsletterForm" class="flex gap-2">
-                            <?php echo csrf_field(); ?>
-                            <input type="email" id="newsletterEmail" 
-                                   class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
-                                   placeholder="Votre email" required>
-                            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                        <div id="newsletterMessage" class="mt-2 text-sm"></div>
-                    </div>
-                </div>
-                
-                <!-- Copyright -->
-                <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                    <p class="text-sm text-gray-400">
-                        © <?php echo e(date('Y')); ?> <?php echo e($appName ?? config('app.name', 'VintApp')); ?>. Tous droits réservés.
-                    </p>
-                </div>
-            </div>
-        </footer>
     <?php endif; ?>
 
     <!-- Navigation mobile (bottom) -->
@@ -881,6 +813,11 @@
             initFirebasePushNotifications();
         }
     </script>
+    <?php endif; ?>
+
+    <!-- Système Jour/Nuit automatique -->
+    <?php if(config('colors.day_night.enabled', false)): ?>
+        <script src="<?php echo e(asset('js/day-night.js')); ?>" defer></script>
     <?php endif; ?>
 </body>
 </html>

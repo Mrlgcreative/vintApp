@@ -33,7 +33,17 @@ class ColorSettingsController extends Controller
         $activePaletteName = $this->colorService->getActivePaletteName();
         $currentColors = $this->colorService->getAllColors();
 
-        return view('admin.settings.colors', compact('palettes', 'activePaletteName', 'currentColors'));
+        // Multi-palettes jour/nuit
+        $dayNightService = new \App\Services\DayNightService();
+        $dayPalettes = $dayNightService->getDayPalettes();
+        $nightPalettes = $dayNightService->getNightPalettes();
+        $activeDayKey = $dayNightService->getActiveDayKey();
+        $activeNightKey = $dayNightService->getActiveNightKey();
+
+        return view('admin.settings.colors', compact(
+            'palettes', 'activePaletteName', 'currentColors',
+            'dayPalettes', 'nightPalettes', 'activeDayKey', 'activeNightKey'
+        ));
     }
 
     /**
@@ -345,5 +355,116 @@ class ColorSettingsController extends Controller
         $css .= "}\n";
         
         return $css;
+    }
+
+    /**
+     * Mettre à jour les paramètres du mode jour/nuit
+     */
+    public function updateDayNight(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'enabled' => 'required|boolean',
+                'day_start' => 'required|integer|min:4|max:10',
+                'night_start' => 'required|integer|min:17|max:22',
+                'active_day_palette' => 'nullable|string|max:50',
+                'active_night_palette' => 'nullable|string|max:50',
+            ]);
+
+            // Palettes disponibles pour validation
+            $dayPaletteKeys = array_keys(config('colors.day_night.day_palettes', []));
+            $nightPaletteKeys = array_keys(config('colors.day_night.night_palettes', []));
+
+            // Sauvegarder dans la table settings
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'day_night_enabled'],
+                [
+                    'value' => $validated['enabled'] ? 'true' : 'false',
+                    'label' => 'Mode jour/nuit activé',
+                    'description' => 'Active le basculement automatique des couleurs jour/nuit',
+                    'category' => 'appearance',
+                    'type' => 'boolean',
+                    'is_public' => true,
+                    'is_encrypted' => false
+                ]
+            );
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'day_night_day_start'],
+                [
+                    'value' => (string) $validated['day_start'],
+                    'label' => 'Heure de début du jour',
+                    'category' => 'appearance',
+                    'type' => 'number',
+                    'is_public' => true,
+                    'is_encrypted' => false
+                ]
+            );
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'day_night_night_start'],
+                [
+                    'value' => (string) $validated['night_start'],
+                    'label' => 'Heure de début de la nuit',
+                    'category' => 'appearance',
+                    'type' => 'number',
+                    'is_public' => true,
+                    'is_encrypted' => false
+                ]
+            );
+
+            // Sauvegarder la palette jour active
+            if (!empty($validated['active_day_palette']) && in_array($validated['active_day_palette'], $dayPaletteKeys)) {
+                \App\Models\Setting::updateOrCreate(
+                    ['key' => 'day_night_active_day'],
+                    [
+                        'value' => $validated['active_day_palette'],
+                        'label' => 'Palette jour active',
+                        'description' => 'Clé de la palette de couleurs active pour le mode jour',
+                        'category' => 'appearance',
+                        'type' => 'string',
+                        'is_public' => true,
+                        'is_encrypted' => false
+                    ]
+                );
+            }
+
+            // Sauvegarder la palette nuit active
+            if (!empty($validated['active_night_palette']) && in_array($validated['active_night_palette'], $nightPaletteKeys)) {
+                \App\Models\Setting::updateOrCreate(
+                    ['key' => 'day_night_active_night'],
+                    [
+                        'value' => $validated['active_night_palette'],
+                        'label' => 'Palette nuit active',
+                        'description' => 'Clé de la palette de couleurs active pour le mode nuit',
+                        'category' => 'appearance',
+                        'type' => 'string',
+                        'is_public' => true,
+                        'is_encrypted' => false
+                    ]
+                );
+            }
+
+            // Regénérer le CSS jour/nuit si activé
+            if ($validated['enabled']) {
+                $dayNightService = new \App\Services\DayNightService();
+                $dayNightService->publishCSS();
+            }
+
+            // Vider le cache
+            Cache::forget('vintapp_day_night_css');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Paramètres jour/nuit mis à jour',
+                'active_day' => $validated['active_day_palette'] ?? null,
+                'active_night' => $validated['active_night_palette'] ?? null
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur : ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

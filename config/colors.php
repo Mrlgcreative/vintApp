@@ -239,5 +239,250 @@ return [
             'start' => '19:00',
             'end' => '07:00'
         ]
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mode Jour / Nuit (couleurs dynamiques)
+    |--------------------------------------------------------------------------
+    |
+    | Système automatique qui change les couleurs de l'interface selon
+    | l'heure de la journée. Fonctionne côté client (JavaScript) pour
+    | une transition fluide sans rechargement de page.
+    |
+    | Périodes :
+    |   - Jour   : 07:00 - 18:59 (couleurs vives et claires)
+    |   - Nuit   : 19:00 - 06:59 (couleurs douces et sombres)
+    |
+    */
+    'day_night' => [
+        'enabled' => env('VINTAPP_DAY_NIGHT_MODE', true),
+
+        // Heures de transition (format 24h)
+        'day_start' => 7,    // 07:00
+        'night_start' => 19, // 19:00
+
+        // Durée de la transition en millisecondes (côté JS)
+        'transition_duration' => 800,
+
+        // Palettes sélectionnées (clés des tableaux ci-dessous)
+        'active_day' => env('VINTAPP_DAY_PALETTE', 'ciel'),
+        'active_night' => env('VINTAPP_NIGHT_PALETTE', 'indigo'),
+
+        // =============================================
+        // PALETTES DE JOUR (couleurs vives & claires)
+        // =============================================
+        'day_palettes' => [
+            'ciel' => [
+                'name' => '☀️ Ciel Bleu',
+                'primary' => '#3B82F6',
+                'secondary' => '#6B7280',
+                'success' => '#10B981',
+                'danger' => '#EF4444',
+                'warning' => '#F59E0B',
+                'info' => '#06B6D4',
+                'light' => '#F8FAFC',
+                'dark' => '#1F2937',
+                'accent' => '#8B5CF6',
+                'background' => '#FFFFFF',
+                'surface' => '#F9FAFB',
+                'text' => '#111827',
+                'text_muted' => '#6B7280',
+                'border' => '#E5E7EB',
+            ],
+            'soleil' => [
+                'name' => '🌅 Soleil Doré',
+                'primary' => '#D97706',
+                'secondary' => '#78716C',
+                'success' => '#059669',
+                'danger' => '#DC2626',
+                'warning' => '#F59E0B',
+                'info' => '#0891B2',
+                'light' => '#FFFBEB',
+                'dark' => '#292524',
+                'accent' => '#EA580C',
+                'background' => '#FFFDF7',
+                'surface' => '#FEF3C7',
+                'text' => '#1C1917',
+                'text_muted' => '#78716C',
+                'border' => '#FDE68A',
+            ],
+            'emeraude' => [
+                'name' => '🌿 Émeraude Frais',
+                'primary' => '#059669',
+                'secondary' => '#6B7280',
+                'success' => '#10B981',
+                'danger' => '#EF4444',
+                'warning' => '#F59E0B',
+                'info' => '#06B6D4',
+                'light' => '#ECFDF5',
+                'dark' => '#064E3B',
+                'accent' => '#14B8A6',
+                'background' => '#F0FDF9',
+                'surface' => '#D1FAE5',
+                'text' => '#064E3B',
+                'text_muted' => '#6B7280',
+                'border' => '#A7F3D0',
+            ],
+            'corail' => [
+                'name' => '🌺 Corail Tropical',
+                'primary' => '#F43F5E',
+                'secondary' => '#6B7280',
+                'success' => '#10B981',
+                'danger' => '#E11D48',
+                'warning' => '#F59E0B',
+                'info' => '#06B6D4',
+                'light' => '#FFF1F2',
+                'dark' => '#4C0519',
+                'accent' => '#FB923C',
+                'background' => '#FFFFFF',
+                'surface' => '#FFE4E6',
+                'text' => '#1F2937',
+                'text_muted' => '#6B7280',
+                'border' => '#FECDD3',
+            ],
+            'lavande' => [
+                'name' => '💜 Lavande Douce',
+                'primary' => '#7C3AED',
+                'secondary' => '#6B7280',
+                'success' => '#10B981',
+                'danger' => '#EF4444',
+                'warning' => '#F59E0B',
+                'info' => '#06B6D4',
+                'light' => '#F5F3FF',
+                'dark' => '#2E1065',
+                'accent' => '#A78BFA',
+                'background' => '#FEFCFF',
+                'surface' => '#EDE9FE',
+                'text' => '#1F2937',
+                'text_muted' => '#6B7280',
+                'border' => '#DDD6FE',
+            ],
+            'ocean' => [
+                'name' => '🌊 Océan Lumineux',
+                'primary' => '#0EA5E9',
+                'secondary' => '#64748B',
+                'success' => '#22C55E',
+                'danger' => '#EF4444',
+                'warning' => '#EAB308',
+                'info' => '#06B6D4',
+                'light' => '#F0F9FF',
+                'dark' => '#0C4A6E',
+                'accent' => '#38BDF8',
+                'background' => '#FFFFFF',
+                'surface' => '#E0F2FE',
+                'text' => '#0F172A',
+                'text_muted' => '#64748B',
+                'border' => '#BAE6FD',
+            ],
+        ],
+
+        // =============================================
+        // PALETTES DE NUIT (couleurs douces & sombres)
+        // =============================================
+        'night_palettes' => [
+            'indigo' => [
+                'name' => '🌙 Indigo Nuit',
+                'primary' => '#818CF8',
+                'secondary' => '#9CA3AF',
+                'success' => '#34D399',
+                'danger' => '#F87171',
+                'warning' => '#FBBF24',
+                'info' => '#22D3EE',
+                'light' => '#1F2937',
+                'dark' => '#F9FAFB',
+                'accent' => '#A78BFA',
+                'background' => '#0F172A',
+                'surface' => '#1E293B',
+                'text' => '#F1F5F9',
+                'text_muted' => '#94A3B8',
+                'border' => '#334155',
+            ],
+            'midnight' => [
+                'name' => '🌌 Midnight Blue',
+                'primary' => '#60A5FA',
+                'secondary' => '#94A3B8',
+                'success' => '#4ADE80',
+                'danger' => '#FB7185',
+                'warning' => '#FCD34D',
+                'info' => '#67E8F9',
+                'light' => '#1E293B',
+                'dark' => '#F8FAFC',
+                'accent' => '#38BDF8',
+                'background' => '#020617',
+                'surface' => '#0F172A',
+                'text' => '#E2E8F0',
+                'text_muted' => '#64748B',
+                'border' => '#1E293B',
+            ],
+            'aurora' => [
+                'name' => '🌌 Aurora Boréale',
+                'primary' => '#34D399',
+                'secondary' => '#94A3B8',
+                'success' => '#4ADE80',
+                'danger' => '#F87171',
+                'warning' => '#FBBF24',
+                'info' => '#22D3EE',
+                'light' => '#1A2332',
+                'dark' => '#F0FDF4',
+                'accent' => '#2DD4BF',
+                'background' => '#0A1628',
+                'surface' => '#132237',
+                'text' => '#D1FAE5',
+                'text_muted' => '#6EE7B7',
+                'border' => '#1E3A4F',
+            ],
+            'violet' => [
+                'name' => '💫 Violet Stellaire',
+                'primary' => '#C084FC',
+                'secondary' => '#A1A1AA',
+                'success' => '#4ADE80',
+                'danger' => '#FB7185',
+                'warning' => '#FDE68A',
+                'info' => '#67E8F9',
+                'light' => '#27233A',
+                'dark' => '#FAF5FF',
+                'accent' => '#E879F9',
+                'background' => '#0D0A1A',
+                'surface' => '#1C1730',
+                'text' => '#F3E8FF',
+                'text_muted' => '#A78BFA',
+                'border' => '#2E2545',
+            ],
+            'charbon' => [
+                'name' => '🖤 Charbon Élégant',
+                'primary' => '#E5E5E5',
+                'secondary' => '#A3A3A3',
+                'success' => '#86EFAC',
+                'danger' => '#FCA5A5',
+                'warning' => '#FDE68A',
+                'info' => '#A5F3FC',
+                'light' => '#262626',
+                'dark' => '#FAFAFA',
+                'accent' => '#D4D4D8',
+                'background' => '#0A0A0A',
+                'surface' => '#171717',
+                'text' => '#FAFAFA',
+                'text_muted' => '#737373',
+                'border' => '#262626',
+            ],
+            'rose' => [
+                'name' => '🌹 Rose de Minuit',
+                'primary' => '#FB7185',
+                'secondary' => '#A1A1AA',
+                'success' => '#4ADE80',
+                'danger' => '#F87171',
+                'warning' => '#FBBF24',
+                'info' => '#67E8F9',
+                'light' => '#2A1520',
+                'dark' => '#FFF1F2',
+                'accent' => '#F472B6',
+                'background' => '#120810',
+                'surface' => '#1F0F18',
+                'text' => '#FECDD3',
+                'text_muted' => '#FDA4AF',
+                'border' => '#3B1A2B',
+            ],
+        ],
+    ],
 ];

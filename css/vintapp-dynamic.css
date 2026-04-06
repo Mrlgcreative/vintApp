@@ -1,13 +1,626 @@
-/* Généré automatiquement par VintApp - Ne pas modifier manuellement */
-:root {
-    --color-name: Tons Naturels;
-    --color-primary: #8B4513;
-    --color-secondary: #696969;
-    --color-success: #228B22;
-    --color-danger: #B22222;
-    --color-warning: #FF8C00;
-    --color-info: #20B2AA;
-    --color-light: #F5F5DC;
-    --color-dark: #2F4F2F;
-    --color-accent: #CD853F;
+/*
+ * ============================================================================
+ * VintApp Dynamic Theme - Day/Night Mode
+ * ============================================================================
+ * Généré automatiquement par DayNightService
+ * Ne pas modifier manuellement - Ce fichier est régénéré à chaque changement.
+ *
+ * Palettes : Day (07:00-18:59) / Night (19:00-06:59)
+ * Transition : 800ms
+ * ============================================================================
+ */
+
+/* ==========================================================================
+   1. DAY THEME (default)
+   ========================================================================== */
+
+:root,
+[data-theme="day"] {
+    /* --- Palette Name --- */
+    --color-name: Mode Jour;
+
+    /* --- Core Colors --- */
+    --color-primary: #3b82f6;
+    --color-secondary: #6b7280;
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-info: #06b6d4;
+    --color-light: #f8fafc;
+    --color-dark: #1f2937;
+    --color-accent: #8b5cf6;
+
+    /* --- Semantic Colors --- */
+    --color-background: #ffffff;
+    --color-surface: #f9fafb;
+    --color-text: #111827;
+    --color-text-muted: #6b7280;
+    --color-border: #e5e7eb;
+
+    /* --- Primary Shades --- */
+    --color-primary-50: #f5f9ff;
+    --color-primary-100: #ebf3fe;
+    --color-primary-200: #d8e6fd;
+    --color-primary-300: #b1cdfb;
+    --color-primary-400: #89b4fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #3575dd;
+    --color-primary-700: #2f68c5;
+    --color-primary-800: #295bac;
+    --color-primary-900: #234e94;
+
+    /* --- Secondary Shades --- */
+    --color-secondary-50: #f8f8f9;
+    --color-secondary-100: #f0f1f2;
+    --color-secondary-200: #e1e3e6;
+    --color-secondary-300: #c4c7cc;
+    --color-secondary-400: #a6aab3;
+    --color-secondary-500: #6b7280;
+    --color-secondary-600: #606773;
+    --color-secondary-700: #565b66;
+    --color-secondary-800: #4b505a;
+    --color-secondary-900: #40444d;
+
+    /* --- Success Shades --- */
+    --color-success-50: #f3fcf9;
+    --color-success-100: #e7f8f2;
+    --color-success-200: #cff1e6;
+    --color-success-300: #9fe3cd;
+    --color-success-400: #70d5b3;
+    --color-success-500: #10b981;
+    --color-success-600: #0ea774;
+    --color-success-700: #0d9467;
+    --color-success-800: #0b825a;
+    --color-success-900: #0a6f4d;
+
+    /* --- Danger Shades --- */
+    --color-danger-50: #fef6f6;
+    --color-danger-100: #fdecec;
+    --color-danger-200: #fcdada;
+    --color-danger-300: #f9b4b4;
+    --color-danger-400: #f58f8f;
+    --color-danger-500: #ef4444;
+    --color-danger-600: #d73d3d;
+    --color-danger-700: #bf3636;
+    --color-danger-800: #a73030;
+    --color-danger-900: #8f2929;
+
+    /* --- Warning Shades --- */
+    --color-warning-50: #fffaf3;
+    --color-warning-100: #fef5e7;
+    --color-warning-200: #fdecce;
+    --color-warning-300: #fbd89d;
+    --color-warning-400: #f9c56d;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #dd8e0a;
+    --color-warning-700: #c47e09;
+    --color-warning-800: #ac6f08;
+    --color-warning-900: #935f07;
+
+    /* --- Info Shades --- */
+    --color-info-50: #f3fbfd;
+    --color-info-100: #e6f8fb;
+    --color-info-200: #cdf0f6;
+    --color-info-300: #9be2ee;
+    --color-info-400: #6ad3e5;
+    --color-info-500: #06b6d4;
+    --color-info-600: #05a4bf;
+    --color-info-700: #0592aa;
+    --color-info-800: #047f94;
+    --color-info-900: #046d7f;
+
+    /* --- Accent Shades --- */
+    --color-accent-50: #f9f7ff;
+    --color-accent-100: #f3effe;
+    --color-accent-200: #e8defd;
+    --color-accent-300: #d1befb;
+    --color-accent-400: #b99dfa;
+    --color-accent-500: #8b5cf6;
+    --color-accent-600: #7d53dd;
+    --color-accent-700: #6f4ac5;
+    --color-accent-800: #6140ac;
+    --color-accent-900: #533794;
+}
+
+/* ==========================================================================
+   2. NIGHT THEME
+   ========================================================================== */
+
+[data-theme="night"] {
+    /* --- Palette Name --- */
+    --color-name: Mode Nuit;
+
+    /* --- Core Colors --- */
+    --color-primary: #818cf8;
+    --color-secondary: #9ca3af;
+    --color-success: #34d399;
+    --color-danger: #f87171;
+    --color-warning: #fbbf24;
+    --color-info: #22d3ee;
+    --color-light: #1f2937;
+    --color-dark: #f9fafb;
+    --color-accent: #a78bfa;
+
+    /* --- Semantic Colors --- */
+    --color-background: #0f172a;
+    --color-surface: #1e293b;
+    --color-text: #f1f5f9;
+    --color-text-muted: #94a3b8;
+    --color-border: #334155;
+
+    /* --- Primary Shades --- */
+    --color-primary-50: #f9f9ff;
+    --color-primary-100: #f2f4fe;
+    --color-primary-200: #e6e8fe;
+    --color-primary-300: #cdd1fc;
+    --color-primary-400: #b3bafb;
+    --color-primary-500: #818cf8;
+    --color-primary-600: #747edf;
+    --color-primary-700: #6770c6;
+    --color-primary-800: #5a62ae;
+    --color-primary-900: #4d5495;
+
+    /* --- Secondary Shades --- */
+    --color-secondary-50: #fafafb;
+    --color-secondary-100: #f5f6f7;
+    --color-secondary-200: #ebedef;
+    --color-secondary-300: #d7dadf;
+    --color-secondary-400: #c4c8cf;
+    --color-secondary-500: #9ca3af;
+    --color-secondary-600: #8c939e;
+    --color-secondary-700: #7d828c;
+    --color-secondary-800: #6d727b;
+    --color-secondary-900: #5e6269;
+
+    /* --- Success Shades --- */
+    --color-success-50: #f5fdfa;
+    --color-success-100: #ebfbf5;
+    --color-success-200: #d6f6eb;
+    --color-success-300: #aeedd6;
+    --color-success-400: #85e5c2;
+    --color-success-500: #34d399;
+    --color-success-600: #2fbe8a;
+    --color-success-700: #2aa97a;
+    --color-success-800: #24946b;
+    --color-success-900: #1f7f5c;
+
+    /* --- Danger Shades --- */
+    --color-danger-50: #fff8f8;
+    --color-danger-100: #fef1f1;
+    --color-danger-200: #fee3e3;
+    --color-danger-300: #fcc6c6;
+    --color-danger-400: #fbaaaa;
+    --color-danger-500: #f87171;
+    --color-danger-600: #df6666;
+    --color-danger-700: #c65a5a;
+    --color-danger-800: #ae4f4f;
+    --color-danger-900: #954444;
+
+    /* --- Warning Shades --- */
+    --color-warning-50: #fffcf4;
+    --color-warning-100: #fff9e9;
+    --color-warning-200: #fef2d3;
+    --color-warning-300: #fde5a7;
+    --color-warning-400: #fdd97c;
+    --color-warning-500: #fbbf24;
+    --color-warning-600: #e2ac20;
+    --color-warning-700: #c9991d;
+    --color-warning-800: #b08619;
+    --color-warning-900: #977316;
+
+    /* --- Info Shades --- */
+    --color-info-50: #f4fdfe;
+    --color-info-100: #e9fbfd;
+    --color-info-200: #d3f6fc;
+    --color-info-300: #a7edf8;
+    --color-info-400: #7ae5f5;
+    --color-info-500: #22d3ee;
+    --color-info-600: #1fbed6;
+    --color-info-700: #1ba9be;
+    --color-info-800: #1894a7;
+    --color-info-900: #147f8f;
+
+    /* --- Accent Shades --- */
+    --color-accent-50: #fbf9ff;
+    --color-accent-100: #f6f3ff;
+    --color-accent-200: #ede8fe;
+    --color-accent-300: #dcd1fd;
+    --color-accent-400: #cab9fc;
+    --color-accent-500: #a78bfa;
+    --color-accent-600: #967de1;
+    --color-accent-700: #866fc8;
+    --color-accent-800: #7561af;
+    --color-accent-900: #645396;
+}
+
+/* ==========================================================================
+   3. TRANSITION CSS (800ms)
+   ========================================================================== */
+
+:root,
+[data-theme="day"],
+[data-theme="night"] {
+    --theme-transition-duration: 800ms;
+}
+
+*,
+*::before,
+*::after {
+    transition:
+        background-color var(--theme-transition-duration) ease,
+        border-color var(--theme-transition-duration) ease,
+        color var(--theme-transition-duration) ease,
+        box-shadow var(--theme-transition-duration) ease,
+        fill var(--theme-transition-duration) ease,
+        stroke var(--theme-transition-duration) ease;
+}
+
+/* Disable transition on page load to prevent flash */
+.no-transition *,
+.no-transition *::before,
+.no-transition *::after {
+    transition: none !important;
+}
+
+/* ==========================================================================
+   4. UTILITY CLASSES — Apply theme variables
+   ========================================================================== */
+
+/* Background */
+.bg-primary {
+    background-color: var(--color-primary) !important;
+}
+.bg-secondary {
+    background-color: var(--color-secondary) !important;
+}
+.bg-success {
+    background-color: var(--color-success) !important;
+}
+.bg-danger {
+    background-color: var(--color-danger) !important;
+}
+.bg-warning {
+    background-color: var(--color-warning) !important;
+}
+.bg-info {
+    background-color: var(--color-info) !important;
+}
+.bg-accent {
+    background-color: var(--color-accent) !important;
+}
+
+/* Text */
+.text-primary {
+    color: var(--color-primary) !important;
+}
+.text-secondary {
+    color: var(--color-secondary) !important;
+}
+.text-success {
+    color: var(--color-success) !important;
+}
+.text-danger {
+    color: var(--color-danger) !important;
+}
+.text-warning {
+    color: var(--color-warning) !important;
+}
+.text-info {
+    color: var(--color-info) !important;
+}
+.text-accent {
+    color: var(--color-accent) !important;
+}
+
+/* Borders */
+.border-primary {
+    border-color: var(--color-primary) !important;
+}
+.border-secondary {
+    border-color: var(--color-secondary) !important;
+}
+.border-success {
+    border-color: var(--color-success) !important;
+}
+.border-danger {
+    border-color: var(--color-danger) !important;
+}
+.border-warning {
+    border-color: var(--color-warning) !important;
+}
+.border-info {
+    border-color: var(--color-info) !important;
+}
+.border-accent {
+    border-color: var(--color-accent) !important;
+}
+
+/* ==========================================================================
+   5. NIGHT MODE — Tailwind Class Overrides
+   ========================================================================== */
+
+[data-theme="night"] .bg-white {
+    background-color: var(--color-background) !important;
+}
+
+[data-theme="night"] .bg-gray-50 {
+    background-color: var(--color-surface) !important;
+}
+
+[data-theme="night"] .bg-gray-100 {
+    background-color: #1e293b !important;
+}
+
+[data-theme="night"] .bg-gray-200 {
+    background-color: #334155 !important;
+}
+
+[data-theme="night"] .text-gray-900 {
+    color: var(--color-text) !important;
+}
+
+[data-theme="night"] .text-gray-800 {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="night"] .text-gray-700 {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="night"] .text-gray-600 {
+    color: var(--color-text-muted) !important;
+}
+
+[data-theme="night"] .text-gray-500 {
+    color: #94a3b8 !important;
+}
+
+[data-theme="night"] .text-gray-400 {
+    color: #64748b !important;
+}
+
+[data-theme="night"] .text-black {
+    color: var(--color-text) !important;
+}
+
+[data-theme="night"] .border-gray-200 {
+    border-color: var(--color-border) !important;
+}
+
+[data-theme="night"] .border-gray-300 {
+    border-color: #475569 !important;
+}
+
+[data-theme="night"] .border-gray-100 {
+    border-color: #1e293b !important;
+}
+
+[data-theme="night"] .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: var(--color-border) !important;
+}
+
+/* Shadow overrides – softer in night mode */
+[data-theme="night"] .shadow,
+[data-theme="night"] .shadow-md,
+[data-theme="night"] .shadow-lg,
+[data-theme="night"] .shadow-xl {
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.4),
+        0 2px 4px -2px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="night"] .shadow-sm {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-theme="night"] .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Ring overrides */
+[data-theme="night"] .ring-gray-200 {
+    --tw-ring-color: var(--color-border) !important;
+}
+
+[data-theme="night"] .ring-gray-300 {
+    --tw-ring-color: #475569 !important;
+}
+
+/* Card / surface backgrounds */
+[data-theme="night"] .bg-white\/80,
+[data-theme="night"] .bg-white\/90,
+[data-theme="night"] .bg-white\/95 {
+    background-color: rgba(30, 41, 59, 0.95) !important;
+}
+
+/* Placeholder color */
+[data-theme="night"] ::placeholder {
+    color: #64748b !important;
+}
+
+/* Input / form elements */
+[data-theme="night"] input,
+[data-theme="night"] textarea,
+[data-theme="night"] select {
+    background-color: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+}
+
+[data-theme="night"] input:focus,
+[data-theme="night"] textarea:focus,
+[data-theme="night"] select:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25) !important;
+}
+
+/* Table rows */
+[data-theme="night"] .even\:bg-gray-50:nth-child(even) {
+    background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+[data-theme="night"] .hover\:bg-gray-50:hover {
+    background-color: var(--color-surface) !important;
+}
+
+[data-theme="night"] .hover\:bg-gray-100:hover {
+    background-color: #1e293b !important;
+}
+
+/* ==========================================================================
+   6. DAY/NIGHT INDICATOR BUTTON
+   ========================================================================== */
+
+.day-night-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 2px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition:
+        background-color var(--theme-transition-duration) ease,
+        border-color var(--theme-transition-duration) ease,
+        color var(--theme-transition-duration) ease,
+        box-shadow var(--theme-transition-duration) ease,
+        transform 200ms ease;
+}
+
+.day-night-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.day-night-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Sun icon (day) */
+.day-night-toggle .icon-sun {
+    display: inline-block;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Moon icon (night) */
+.day-night-toggle .icon-moon {
+    display: inline-block;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Show/hide based on active theme */
+[data-theme="day"] .day-night-toggle .icon-sun {
+    display: inline-block;
+}
+[data-theme="day"] .day-night-toggle .icon-moon {
+    display: none;
+}
+
+[data-theme="night"] .day-night-toggle .icon-sun {
+    display: none;
+}
+[data-theme="night"] .day-night-toggle .icon-moon {
+    display: inline-block;
+}
+
+/* Day button appearance */
+[data-theme="day"] .day-night-toggle {
+    background-color: #fef3c7;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
+/* Night button appearance */
+[data-theme="night"] .day-night-toggle {
+    background-color: #1e293b;
+    border-color: #818cf8;
+    color: #c7d2fe;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="night"] .day-night-toggle:hover {
+    box-shadow: 0 6px 20px rgba(129, 140, 248, 0.3);
+}
+
+/* Toggle label (optional text next to icon) */
+.day-night-toggle__label {
+    position: absolute;
+    right: 3.5rem;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 0.375rem;
+    background-color: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(8px);
+    transition:
+        opacity 200ms ease,
+        transform 200ms ease;
+}
+
+.day-night-toggle:hover .day-night-toggle__label {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Pulse animation when switching */
+@keyframes theme-switch-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(129, 140, 248, 0.5);
+    }
+    70% {
+        box-shadow: 0 0 0 12px rgba(129, 140, 248, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(129, 140, 248, 0);
+    }
+}
+
+.day-night-toggle.switching {
+    animation: theme-switch-pulse 800ms ease-out;
+}
+
+/* ==========================================================================
+   7. BODY DEFAULTS
+   ========================================================================== */
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+}
+
+/* ==========================================================================
+   8. SCROLLBAR (Night mode)
+   ========================================================================== */
+
+[data-theme="night"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+[data-theme="night"] ::-webkit-scrollbar-track {
+    background: var(--color-background);
+}
+
+[data-theme="night"] ::-webkit-scrollbar-thumb {
+    background: #475569;
+    border-radius: 4px;
+}
+
+[data-theme="night"] ::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
 }

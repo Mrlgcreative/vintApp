@@ -157,14 +157,14 @@ unset($__defined_vars, $__key, $__value); ?>
     <?php if($snippet = $frame->snippet()): ?>
         <?php if (isset($component)) { $__componentOriginala7df34c267a7ce6efa01f63b793ef234 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginala7df34c267a7ce6efa01f63b793ef234 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'laravel-exceptions-renderer::components.frame-code','data' => ['code' => $snippet,'highlightedLine' => $frame->line(),'xShow' => 'expanded']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'laravel-exceptions-renderer::components.frame-code','data' => ['code' => $snippet,'highlightedLine' => $frame->line(),'xShow' => 'expanded','xCloak' => !$frame->isMain()]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('laravel-exceptions-renderer::frame-code'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
 <?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
 <?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
 <?php endif; ?>
-<?php $component->withAttributes(['code' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($snippet),'highlightedLine' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($frame->line()),'x-show' => 'expanded']); ?>
+<?php $component->withAttributes(['code' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($snippet),'highlightedLine' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($frame->line()),'x-show' => 'expanded','x-cloak' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(!$frame->isMain())]); ?>
 <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginala7df34c267a7ce6efa01f63b793ef234)): ?>

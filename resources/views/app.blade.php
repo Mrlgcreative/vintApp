@@ -49,12 +49,24 @@
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
     <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
 
+    <!-- Day/Night Theme (système automatique jour/nuit) -->
+    @if(config('colors.day_night.enabled', false))
+        <link rel="stylesheet" href="{{ asset('css/day-night-theme.css') }}">
+    @endif
+
     <!-- Custom Styles -->
     @stack('styles')
     
     <script>
         window.userTheme = "{{ addslashes(Auth::user()?->theme_preference ?? '') }}";
         window.isAuthenticated = {{ Auth::check() ? 'true' : 'false' }};
+
+        // Configuration jour/nuit multi-palettes (injectée côté serveur)
+        @php
+            $dayNightService = app(\App\Services\DayNightService::class);
+            $dayNightClientConfig = $dayNightService->getClientConfig();
+        @endphp
+        window.VintAppDayNightConfig = @json($dayNightClientConfig);
         
         // Fonction pour appliquer le thème
         function applyTheme(theme) {
@@ -62,7 +74,7 @@
             localStorage.setItem('theme', theme);
             
             // Gérer la classe dark pour Tailwind
-            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            if (theme === 'dark' || theme === 'night' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             } else {
                 document.documentElement.classList.remove('dark');
@@ -334,93 +346,7 @@
 
     <!-- Footer -->
     @if(!request()->routeIs('messages.*'))
-        <footer class="bg-gray-800 text-gray-300 py-12 mt-8">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <!-- À propos -->
-                    <div class="col-span-2 md:col-span-1">
-                        <h5 class="font-semibold text-white mb-4">
-                            <x-app-brand 
-                                :show-logo="true"
-                                :show-name="true"
-                                logo-height="24px"
-                                logo-width="80px"
-                                name-size="1.25rem"
-                                name-class="text-white"
-                            />
-                        </h5>
-                        <p class="text-sm text-gray-400">
-                            {{ $appDescription ?? 'La marketplace de confiance pour acheter et vendre des articles d\'occasion.' }}
-                        </p>
-                    </div>
-                    
-                    <!-- Navigation -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Navigation</h6>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="{{ route('items.index') }}" class="hover:text-white transition-colors">Articles</a></li>
-                            <li><a href="{{ route('categories.index') }}" class="hover:text-white transition-colors">Catégories</a></li>
-                            <li><a href="{{ route('brands.index') }}" class="hover:text-white transition-colors">Marques</a></li>
-                            @auth
-                                <li><a href="{{ route('items.my-items') }}" class="hover:text-white transition-colors">Mes articles</a></li>
-                            @endauth
-                        </ul>
-                    </div>
-                    
-                    <!-- Support -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Support</h6>
-                        <ul class="space-y-2 text-sm">
-                            <li><a href="{{ route('help.index') }}" class="hover:text-white transition-colors">Centre d'aide</a></li>
-                            <li><a href="{{ route('help.index') }}#contact" class="hover:text-white transition-colors">Contact</a></li>
-                            <li><a href="{{ route('terms') }}" class="hover:text-white transition-colors">CGU</a></li>
-                            <li><a href="{{ route('privacy') }}" class="hover:text-white transition-colors">Confidentialité</a></li>
-                        </ul>
-                    </div>
-                    
-                    <!-- Réseaux sociaux -->
-                    <div>
-                        <h6 class="font-semibold text-white mb-4">Suivez-nous</h6>
-                        <div class="flex space-x-3">
-                            <a href="https://facebook.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-facebook-f text-lg"></i>
-                            </a>
-                            <a href="https://twitter.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-twitter text-lg"></i>
-                            </a>
-                            <a href="https://instagram.com/vintapp" target="_blank" class="text-gray-400 hover:text-white transition-colors">
-                                <i class="fab fa-instagram text-lg"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Newsletter -->
-                <div class="border-t border-gray-700 mt-8 pt-8">
-                    <div class="text-center max-w-md mx-auto">
-                        <h5 class="font-semibold text-white mb-3">📧 Newsletter</h5>
-                        <p class="text-sm text-gray-400 mb-4">Recevez nos dernières offres et nouveautés.</p>
-                        <form id="newsletterForm" class="flex gap-2">
-                            @csrf
-                            <input type="email" id="newsletterEmail" 
-                                   class="flex-1 px-3 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
-                                   placeholder="Votre email" required>
-                            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
-                        </form>
-                        <div id="newsletterMessage" class="mt-2 text-sm"></div>
-                    </div>
-                </div>
-                
-                <!-- Copyright -->
-                <div class="border-t border-gray-700 mt-8 pt-8 text-center">
-                    <p class="text-sm text-gray-400">
-                        © {{ date('Y') }} {{ $appName ?? config('app.name', 'VintApp') }}. Tous droits réservés.
-                    </p>
-                </div>
-            </div>
-        </footer>
+        <x-footer />
     @endif
 
     <!-- Navigation mobile (bottom) -->
@@ -835,5 +761,10 @@
         }
     </script>
     @endauth
+
+    <!-- Système Jour/Nuit automatique -->
+    @if(config('colors.day_night.enabled', false))
+        <script src="{{ asset('js/day-night.js') }}" defer></script>
+    @endif
 </body>
 </html>

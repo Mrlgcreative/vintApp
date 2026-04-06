@@ -614,6 +614,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('/colors/custom/{palette}', [App\Http\Controllers\Admin\ColorSettingsController::class, 'deleteCustom'])->name('colors.custom.delete');
         Route::get('/colors/export', [App\Http\Controllers\Admin\ColorSettingsController::class, 'export'])->name('colors.export');
         Route::post('/colors/import', [App\Http\Controllers\Admin\ColorSettingsController::class, 'import'])->name('colors.import');
+        Route::post('/colors/day-night', [App\Http\Controllers\Admin\ColorSettingsController::class, 'updateDayNight'])->name('colors.day-night');
         Route::get('/colors/test', function () {
             return view('admin.colors.test');
         })->name('colors.test');
