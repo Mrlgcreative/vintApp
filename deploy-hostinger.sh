@@ -19,7 +19,7 @@ npm install
 
 # 4. Vider les caches
 echo "🧹 Nettoyage des caches..."
-php artisan cache:clear
+php artisan cache:clear 2>/dev/null || true
 php artisan config:clear
 php artisan route:clear
 php artisan view:clear
@@ -47,8 +47,9 @@ fi
 echo "⚡ Optimisation Laravel..."
 php artisan optimize
 
-# 10. Migrations (optionnel - décommenter si nécessaire)
-# php artisan migrate --force
+# 10. Migrations
+echo "📦 Migrations..."
+php artisan migrate --force
 
 echo ""
 echo "✅ Déploiement terminé !"
