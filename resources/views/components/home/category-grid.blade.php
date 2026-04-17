@@ -38,17 +38,11 @@
                        class="group relative bg-white hover:bg-gradient-to-br {{ $colors[$index % count($colors)] }} border-2 border-transparent hover:border-opacity-50 rounded-2xl lg:rounded-3xl p-4 lg:p-8 text-center transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-2 flex-shrink-0 w-32 lg:w-40"
                        style="scroll-snap-align: start;">
                         
-                        <!-- Image de catégorie -->
+                        <!-- Icône de catégorie -->
                         <div class="mb-3 lg:mb-4 overflow-hidden rounded-xl aspect-square group-hover:scale-110 transition-all duration-300">
-                            @if($category->image_url)
-                                <img src="{{ $category->image_url }}" 
-                                     alt="{{ $category->name }}" 
-                                     class="w-full h-full object-cover" />
-                            @else
-                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
-                                    <i class="{{ $icons[$index % count($icons)] }} text-3xl {{ $iconColors[$index % count($iconColors)] }}"></i>
-                                </div>
-                            @endif
+                            <div class="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+                                <i class="{{ $category->icon ?? $icons[$index % count($icons)] }} text-3xl {{ $iconColors[$index % count($iconColors)] }}"></i>
+                            </div>
                         </div>
                         
                         <!-- Texte -->
