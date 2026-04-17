@@ -456,6 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
     window.viewUserDetails = function(id) {
         window.location.href = '/admin/users/' + id;
     };
+
+    // Démarrer l'auto-refresh après que tout soit défini
+    let refreshInterval = setInterval(refreshData, 10000);
+    window.addEventListener('beforeunload', () => clearInterval(refreshInterval));
 });
 </script>
 <?php $__env->stopPush(); ?>

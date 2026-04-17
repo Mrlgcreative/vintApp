@@ -28,33 +28,33 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
+<?php
+    $imageSizeMap = [
+        'small' => '250px',
+        'medium' => '350px',
+        'large' => '450px',
+        'full' => '100%',
+    ];
+    $slideDurations = $slides ? $slides->pluck('display_duration')->toArray() : [];
+?>
+
 <section class="relative h-[90vh] min-h-[600px] overflow-hidden">
     <?php if($slides && $slides->count() > 0): ?>
         <!-- Carrousel Container -->
         <div class="relative h-full">
             <!-- Slides -->
-            <div id="carouselInner" class="flex h-full transition-transform duration-700 ease-in-out" 
-                 style="width: <?php echo e($slides->count() * 100); ?>%;">
+            <div id="carouselInner" class="relative h-full">
                 <?php $__currentLoopData = $slides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                    <div class="relative w-full h-full flex-shrink-0" 
-                         style="width: <?php echo e(100 / $slides->count()); ?>%;">
+                    <div class="carousel-slide absolute inset-0 flex items-center transition-opacity duration-700 ease-in-out <?php echo e($index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0'); ?>"
+                         data-slide-index="<?php echo e($index); ?>"
+                         data-duration="<?php echo e($slide->display_duration ?? 6); ?>"
+                         style="background-color: <?php echo e($slide->background_color ?? '#6A0DAD'); ?>;">
                         
-                        <!-- Image de fond plein écran -->
-                        <?php if($slide->image_url): ?>
-                            <div class="absolute inset-0">
-                                <img src="/storage/<?php echo e($slide->image_url); ?>" 
-                                     alt="<?php echo e($slide->title); ?>" 
-                                     class="w-full h-full object-cover" />
-                            </div>
-                        <?php endif; ?>
-                        
-                        <!-- Overlay gradient -->
-                        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
-                        
-                        <div class="relative z-10 h-full flex items-center">
-                            <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-                                <div class="max-w-2xl space-y-6">
+                        <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
+                            <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 <?php echo e(($slide->image_position ?? 'right') === 'left' ? 'md:flex-row-reverse' : ''); ?>">
+                                
+                                <!-- Texte -->
+                                <div class="flex-1 space-y-6 <?php echo e(($slide->text_position ?? 'left') === 'center' ? 'text-center' : (($slide->text_position ?? 'left') === 'right' ? 'text-right' : 'text-left')); ?>">
                                     <?php if($slide->subtitle): ?>
                                         <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
                                             <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
@@ -67,29 +67,35 @@ unset($__defined_vars, $__key, $__value); ?>
 
                                     </h1>
                                     
-                                    <?php if($slide->description): ?>
-                                        <p class="text-lg sm:text-xl text-white/80 leading-relaxed max-w-lg">
-                                            <?php echo e($slide->description); ?>
-
-                                        </p>
-                                    <?php endif; ?>
-                                    
-                                    <?php if($slide->cta_text && $slide->cta_link): ?>
-                                        <div class="flex flex-wrap items-center gap-4 pt-2">
-                                            <a href="<?php echo e($slide->cta_link); ?>" 
+                                    <div class="flex flex-wrap gap-4 pt-2 <?php echo e(($slide->text_position ?? 'left') === 'center' ? 'justify-center' : (($slide->text_position ?? 'left') === 'right' ? 'justify-end' : 'justify-start')); ?>">
+                                        <?php if($slide->button_primary_text): ?>
+                                            <a href="<?php echo e($slide->button_primary_url ?? '#'); ?>" 
                                                class="group inline-flex items-center gap-3 px-7 py-3.5 bg-white text-gray-900 rounded-full font-bold text-base hover:bg-purple-50 transition-all duration-300 shadow-xl shadow-black/20">
-                                                <span><?php echo e($slide->cta_text); ?></span>
+                                                <span><?php echo e($slide->button_primary_text); ?></span>
                                                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                                 </svg>
                                             </a>
-                                            <a href="<?php echo e(route('items.index')); ?>" 
+                                        <?php endif; ?>
+                                        <?php if($slide->button_secondary_text): ?>
+                                            <a href="<?php echo e($slide->button_secondary_url ?? '#'); ?>" 
                                                class="inline-flex items-center gap-2 px-7 py-3.5 border-2 border-white/30 text-white rounded-full font-semibold text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
-                                                Explorer
+                                                <?php echo e($slide->button_secondary_text); ?>
+
                                             </a>
-                                        </div>
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
+                                
+                                <!-- Image -->
+                                <?php if($slide->image_url): ?>
+                                    <div class="flex-1 flex justify-center">
+                                        <img src="/storage/<?php echo e($slide->image_url); ?>" 
+                                             alt="<?php echo e($slide->title); ?>"
+                                             class="object-contain drop-shadow-2xl rounded-lg"
+                                             style="max-height: <?php echo e($imageSizeMap[$slide->image_size ?? 'medium'] ?? '350px'); ?>;" />
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -113,7 +119,7 @@ unset($__defined_vars, $__key, $__value); ?>
                 </button>
             <?php endif; ?>
             
-            <!-- Bottom Bar: Dots + Slide Counter -->
+            <!-- Bottom Bar: Dots -->
             <?php if($slides->count() > 1): ?>
                 <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20">
                     <div class="flex items-center gap-2 px-4 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">

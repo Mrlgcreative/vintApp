@@ -240,14 +240,14 @@
 // ============ HERO CAROUSEL ============
 let currentSlide = 0;
 let totalSlides = 0;
-let autoPlayInterval;
+let autoPlayTimeout;
 let isTransitioning = false;
 
 function initCarousel() {
     const inner = document.getElementById('carouselInner');
     if (!inner) return;
     
-    totalSlides = inner.children.length;
+    totalSlides = inner.querySelectorAll('.carousel-slide').length;
     if (totalSlides <= 1) return;
     
     updateDots();
@@ -261,15 +261,21 @@ function goToSlide(index) {
     isTransitioning = true;
     currentSlide = index;
     
-    const inner = document.getElementById('carouselInner');
-    if (inner) {
-        inner.style.transform = `translateX(-${(currentSlide * 100) / totalSlides}%)`;
-        updateDots();
-        
-        setTimeout(() => {
-            isTransitioning = false;
-        }, 700);
-    }
+    const slides = document.querySelectorAll('.carousel-slide');
+    slides.forEach((slide, i) => {
+        if (i === index) {
+            slide.classList.add('opacity-100', 'z-10');
+            slide.classList.remove('opacity-0', 'z-0');
+        } else {
+            slide.classList.remove('opacity-100', 'z-10');
+            slide.classList.add('opacity-0', 'z-0');
+        }
+    });
+    updateDots();
+    
+    setTimeout(() => {
+        isTransitioning = false;
+    }, 700);
 }
 
 function updateDots() {
@@ -294,14 +300,23 @@ function prevSlide() {
     goToSlide(prev);
 }
 
+function getCurrentSlideDuration() {
+    const slide = document.querySelector(`.carousel-slide[data-slide-index="${currentSlide}"]`);
+    return (slide ? parseInt(slide.dataset.duration) || 6 : 6) * 1000;
+}
+
 function startAutoPlay() {
     if (totalSlides <= 1) return;
-    autoPlayInterval = setInterval(nextSlide, 6000);
+    stopAutoPlay();
+    autoPlayTimeout = setTimeout(function autoNext() {
+        nextSlide();
+        autoPlayTimeout = setTimeout(autoNext, getCurrentSlideDuration());
+    }, getCurrentSlideDuration());
 }
 
 function stopAutoPlay() {
-    if (autoPlayInterval) {
-        clearInterval(autoPlayInterval);
+    if (autoPlayTimeout) {
+        clearTimeout(autoPlayTimeout);
     }
 }
 

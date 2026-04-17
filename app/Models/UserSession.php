@@ -53,10 +53,12 @@ class UserSession extends Model
         $agent = new Agent();
         $agent->setUserAgent($request ? $request->userAgent() : request()->userAgent());
 
+        $ip = $request ? $request->ip() : request()->ip();
+
         $data = [
             'user_id' => $userId,
             'session_id' => $sessionId,
-            'ip_address' => $request ? $request->ip() : request()->ip(),
+            'ip_address' => $ip,
             'user_agent' => $agent->getUserAgent(),
             'device_type' => static::getDeviceType($agent),
             'browser' => $agent->browser(),
@@ -65,10 +67,53 @@ class UserSession extends Model
             'is_active' => true,
         ];
 
-        return static::updateOrCreate(
+        $session = static::updateOrCreate(
             ['session_id' => $sessionId],
             $data
         );
+
+        // Géolocaliser si latitude/longitude vide (une seule fois par session)
+        if (empty($session->latitude) && !static::isLocalIp($ip)) {
+            static::geolocateSession($session, $ip);
+        }
+
+        return $session;
+    }
+
+    /**
+     * Géolocaliser une session via l'IP (api gratuite ip-api.com)
+     */
+    protected static function geolocateSession($session, $ip)
+    {
+        try {
+            $ctx = stream_context_create(['http' => ['timeout' => 2]]);
+            $response = @file_get_contents("http://ip-api.com/json/{$ip}?fields=status,lat,lon,city,country", false, $ctx);
+
+            if ($response) {
+                $geo = json_decode($response, true);
+                if (isset($geo['status']) && $geo['status'] === 'success') {
+                    $session->update([
+                        'latitude' => $geo['lat'] ?? null,
+                        'longitude' => $geo['lon'] ?? null,
+                        'city' => $geo['city'] ?? null,
+                        'country' => $geo['country'] ?? null,
+                    ]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silencieux: la géolocalisation est optionnelle
+        }
+    }
+
+    /**
+     * Vérifier si l'IP est locale (pas géolocalisable)
+     */
+    protected static function isLocalIp($ip)
+    {
+        return in_array($ip, ['127.0.0.1', '::1', 'localhost'])
+            || str_starts_with($ip, '192.168.')
+            || str_starts_with($ip, '10.')
+            || str_starts_with($ip, '172.');
     }
 
     /**
