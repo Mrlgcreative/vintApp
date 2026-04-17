@@ -12,6 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Exclure les routes Firebase de la vérification CSRF (protégées par idToken Firebase)
+        $middleware->validateCsrfTokens(except: [
+            'firebase/*',
+            'auth/firebase/*',
+            'payments/callback',
+            'wallet/withdrawals/webhook/*',
+        ]);
+
         // Global Middleware
         $middleware->use([
             \App\Http\Middleware\TrustProxies::class,
@@ -71,8 +79,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
             '2fa' => \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Authentification à deux facteurs
             'force.json' => \App\Http\Middleware\ForceJsonResponse::class, // 🔥 Force JSON response pour Firebase
+            'redirect.role' => \App\Http\Middleware\RedirectAdminToDashboard::class, // 🔄 Redirige admin/agent vers leur dashboard
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->renderable(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Session expirée. Veuillez rafraîchir la page.'], 419);
+            }
+
+            return redirect()->back()
+                ->withInput($request->except('_token'))
+                ->with('error', 'Votre session a expiré. Veuillez réessayer.');
+        });
     })->create();

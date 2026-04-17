@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\ColorPaletteService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Artisan;
 
 class ColorSettingsController extends Controller
 {
@@ -75,15 +76,17 @@ class ColorSettingsController extends Controller
                 Cache::forget('vintapp_active_palette_css');
                 
                 // Injecter automatiquement les couleurs dans le CSS
-                \Artisan::call('colors:inject');
+                Artisan::call('colors:inject');
                 
                 // Compiler automatiquement avec npm run build
                 try {
-                    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                        exec('cd ' . base_path() . ' && npm run build > nul 2>&1 &');
-                    } else {
-                        exec('cd ' . base_path() . ' && npm run build > /dev/null 2>&1 &');
+                    $basePath = base_path();
+                    if (!is_dir($basePath)) {
+                        throw new \RuntimeException('Invalid base path');
                     }
+                    $process = new \Symfony\Component\Process\Process(['npm', 'run', 'build'], $basePath);
+                    $process->setOptions(['create_new_console' => true]);
+                    $process->start();
                 } catch (\Exception $e) {
                     // Ignorer les erreurs de compilation
                 }

@@ -67,8 +67,8 @@
                             
                             <!-- Avatar vendeur -->
                             <div class="relative flex-shrink-0">
-                                @if($contact->vendor->avatar)
-                                    <img src="{{ Storage::url($contact->vendor->avatar) }}" 
+                                @if($contact->vendor->avatar_url)
+                                    <img src="{{ $contact->vendor->avatar_url }}" 
                                          alt="{{ $contact->vendor->name }}" 
                                          class="w-14 h-14 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700">
                                 @else

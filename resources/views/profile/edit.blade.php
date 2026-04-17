@@ -17,8 +17,8 @@
                 <!-- Profile Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
                     <div class="p-6 text-center">
-                        @if($user->avatar)
-                            <img src="{{ Storage::url($user->avatar) }}" 
+                        @if($user->avatar_url)
+                            <img src="{{ $user->avatar_url }}" 
                                  alt="{{ $user->name }}" 
                                  class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-primary-100 dark:border-primary-900">
                         @else

@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use App\Services\StorageSyncService;
 use App\Traits\ApiResponses;
+use Illuminate\Support\Facades\Cache;
 
 class BrandController extends Controller
 {
@@ -45,7 +46,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:100|unique:brands,name',
             'description' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'country' => 'nullable|string|max:100',
             'type' => 'nullable|string|max:50',
         ]);
@@ -67,6 +68,7 @@ class BrandController extends Controller
 
         try {
             $brand = Brand::create($validated);
+            Cache::forget('api.brands.list');
             return redirect()->route('brands.index')->with('success', 'Marque ajoutée avec succès !');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Erreur lors de l\'enregistrement : ' . $e->getMessage());
@@ -104,7 +106,7 @@ class BrandController extends Controller
             'name' => 'required|string|max:100|unique:brands,name,' . $brand->id,
             'description' => 'nullable|string|max:255',
             'website' => 'nullable|url|max:255',
-            'logo' => 'nullable|image|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'country' => 'nullable|string|max:100',
             'type' => 'nullable|string|max:50',
         ]);
@@ -130,6 +132,7 @@ class BrandController extends Controller
         }
         $validated['is_active'] = $request->has('is_active');
         $brand->update($validated);
+        Cache::forget('api.brands.list');
         return redirect()->route('brands.index')->with('success', 'Marque modifiée avec succès !');
     }
 
@@ -156,13 +159,15 @@ class BrandController extends Controller
      */
     public function apiIndex()
     {
-        $brands = Brand::withCount(['items as items_count' => function($q) {
-                $q->where('status', 'approved');
-            }])
-            ->withCount(['items as total_items_count'])
-            ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $brands = Cache::remember('api.brands.list', 3600, function () {
+            return Brand::withCount(['items as items_count' => function($q) {
+                    $q->where('status', 'approved');
+                }])
+                ->withCount(['items as total_items_count'])
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+        });
 
         return $this->successResponse($brands, 'Marques récupérées avec succès');
     }

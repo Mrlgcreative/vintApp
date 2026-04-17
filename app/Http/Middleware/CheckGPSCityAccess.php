@@ -23,6 +23,8 @@ class CheckGPSCityAccess
         'city-restricted',
         'api/validate-location',
         'location/validate',
+        'preregistration',
+        'preregistration/*',
         'test-geo',
         'auth/firebase/*',
         'firebase/*',

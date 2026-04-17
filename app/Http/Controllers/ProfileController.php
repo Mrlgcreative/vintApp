@@ -207,7 +207,7 @@ class ProfileController extends Controller
         
         if ($request->hasFile('avatar')) {
             $avatar = $request->file('avatar');
-            $filename = time() . '_' . $user->id . '.' . $avatar->getClientOriginalExtension();
+            $filename = time() . '_' . $user->id . '.' . $avatar->guessExtension();
             
             // Stocker l'image dans le dossier public/avatars
             $avatar->storeAs('avatars', $filename, 'public');

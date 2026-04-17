@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Mail\VerificationCodeMail;
 use App\Models\User;
@@ -61,42 +62,39 @@ class EmailVerificationController extends Controller
 
         $user = Auth::user();
 
+        // Protection anti brute-force: max 5 tentatives
+        $cacheKey = 'otp_attempts_' . $user->id;
+        $attempts = (int) Cache::get($cacheKey, 0);
+        if ($attempts >= 5) {
+            // Invalider le code actuel
+            $user->update(['verification_code' => null, 'verification_code_expires_at' => null]);
+            return back()->with('error', 'Trop de tentatives. Veuillez demander un nouveau code.');
+        }
+        Cache::put($cacheKey, $attempts + 1, now()->addMinutes(15));
+
         // Vérifier si le code est valide
         if (!$user->isValidVerificationCode($request->verification_code)) {
             return back()->with('error', 'Code invalide ou expiré. Veuillez demander un nouveau code.');
         }
 
-        // Marquer l'email comme vérifié
-        Log::info('Avant markEmailAsVerifiedWithCode', [
-            'user_id' => $user->id,
-            'email_verified_at_before' => $user->email_verified_at
-        ]);
+        // Reset compteur de tentatives
+        Cache::forget($cacheKey);
 
+        // Marquer l'email comme vérifié
         $user->markEmailAsVerifiedWithCode();
         
         // Rafraîchir l'instance de l'utilisateur depuis la base de données
         $user->refresh();
-        
-        Log::info('Après markEmailAsVerifiedWithCode', [
-            'user_id' => $user->id,
-            'email_verified_at_after' => $user->email_verified_at
-        ]);
 
         // Récupérer l'utilisateur mis à jour depuis la base de données
         $freshUser = User::find($user->id);
-        
-        Log::info('Utilisateur récupéré de la DB', [
-            'user_id' => $freshUser->id,
-            'email_verified_at_fresh' => $freshUser->email_verified_at
-        ]);
         
         // Forcer la mise à jour de l'utilisateur en session
         Auth::logout();
         Auth::login($freshUser, true);
         
-        Log::info('Email vérifié avec succès pour l\'utilisateur: ' . $freshUser->email, [
+        Log::info('Email vérifié avec succès', [
             'user_id' => $freshUser->id,
-            'email_verified_at' => $freshUser->email_verified_at
         ]);
         
         event(new Verified($freshUser));

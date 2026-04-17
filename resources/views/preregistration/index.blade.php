@@ -455,16 +455,6 @@
         
         let auth, db;
         
-        // Vérification de la configuration au chargement
-        console.log('Firebase Config:', {
-            apiKey: firebaseConfig.apiKey ? '✓ Défini' : '✗ Manquant',
-            authDomain: firebaseConfig.authDomain ? '✓ Défini' : '✗ Manquant',
-            projectId: firebaseConfig.projectId ? '✓ Défini' : '✗ Manquant',
-            storageBucket: firebaseConfig.storageBucket ? '✓ Défini' : '✗ Manquant',
-            messagingSenderId: firebaseConfig.messagingSenderId ? '✓ Défini' : '✗ Manquant',
-            appId: firebaseConfig.appId ? '✓ Défini' : '✗ Manquant'
-        });
-        
         // Initialiser Firebase quand les scripts sont chargés
         function initializeFirebase() {
             if (typeof firebase === 'undefined') {
@@ -486,7 +476,7 @@
                 firebase.initializeApp(firebaseConfig);
                 auth = firebase.auth();
                 db = firebase.firestore();
-                console.log('✅ Firebase initialisé avec succès');
+
                 return true;
             } catch (error) {
                 console.error('❌ Erreur d\'initialisation Firebase:', error);

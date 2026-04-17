@@ -3622,6 +3622,8 @@ class AdminController extends Controller
                 'os' => $session->os,
                 'ip_address' => $session->ip_address,
                 'location' => $session->location_text,
+                'latitude' => $session->latitude,
+                'longitude' => $session->longitude,
                 'last_activity' => $session->last_activity_text,
                 'last_activity_raw' => $session->last_activity->toIso8601String(),
             ];

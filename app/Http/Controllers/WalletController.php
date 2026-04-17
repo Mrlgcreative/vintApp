@@ -167,14 +167,18 @@ class WalletController extends Controller
             'description' => 'nullable|string|max:255',
         ]);
 
-        if ($validated['amount'] > $wallet->balance) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Solde insuffisant pour effectuer ce retrait.');
-        }
-
         try {
             DB::beginTransaction();
+
+            // Vérifier le solde avec un lock pessimiste pour éviter les double-retraits
+            $wallet = Wallet::where('id', $wallet->id)->lockForUpdate()->first();
+
+            if ($validated['amount'] > $wallet->balance) {
+                DB::rollBack();
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Solde insuffisant pour effectuer ce retrait.');
+            }
 
             // 1. Créer la transaction de retrait
             // Construire les métadonnées du retrait (inclut info agent si fournie)
@@ -718,10 +722,11 @@ class WalletController extends Controller
             $sellerId = $request->seller_id;
             $currency = $request->currency;
 
-            // Récupérer le wallet entreprise pour cette devise
+            // Récupérer le wallet entreprise pour cette devise (avec lock)
             $enterpriseWallet = Wallet::where('type', 'enterprise')
                 ->where('currency', $currency)
                 ->whereNull('user_id')
+                ->lockForUpdate()
                 ->first();
 
             if (!$enterpriseWallet) {
@@ -731,10 +736,11 @@ class WalletController extends Controller
                 ], 404);
             }
 
-            // Récupérer le wallet pending du vendeur
+            // Récupérer le wallet pending du vendeur (avec lock)
             $pendingWallet = Wallet::where('user_id', $sellerId)
                 ->where('type', 'pending')
                 ->where('currency', $currency)
+                ->lockForUpdate()
                 ->first();
 
             if (!$pendingWallet) {
@@ -744,10 +750,11 @@ class WalletController extends Controller
                 ], 404);
             }
 
-            // Récupérer le wallet principal du vendeur
+            // Récupérer le wallet principal du vendeur (avec lock)
             $sellerWallet = Wallet::where('user_id', $sellerId)
                 ->where('type', 'main')
                 ->where('currency', $currency)
+                ->lockForUpdate()
                 ->first();
 
             if (!$sellerWallet) {

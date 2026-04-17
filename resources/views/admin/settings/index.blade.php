@@ -50,20 +50,20 @@
         </div>
 
         <!-- Navigation par onglets -->
-        <div class="border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
-            <nav class="flex space-x-4 px-4 sm:px-6" aria-label="Paramètres">
+        <div class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+            <nav class="flex space-x-1 px-4 sm:px-6 overflow-x-auto" aria-label="Paramètres">
                 <a href="{{ route('admin.settings.index') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-blue-500 text-sm font-medium text-blue-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-gray-800/60 rounded-t-lg whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-sliders-h mr-2"></i>
                     Général
                 </a>
                 <a href="{{ route('admin.settings.colors') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 rounded-t-lg whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-palette mr-2"></i>
                     Couleurs
                 </a>
                 <a href="{{ route('admin.settings.preregistration') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 rounded-t-lg whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-user-clock mr-2"></i>
                     Préinscription
                 </a>
@@ -78,11 +78,46 @@
                     @if(isset($settings) && (is_array($settings) ? count($settings) : $settings->count()) > 0)
                         @foreach($categories as $category)
                             @if(isset($settings[$category]))
-                                <div class="bg-gray-50 dark:bg-gray-900 rounded-lg sm:rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200">
+                                @php
+                                    $catIcons = [
+                                        'general' => 'fa-sliders-h',
+                                        'général' => 'fa-sliders-h',
+                                        'app' => 'fa-mobile-alt',
+                                        'application' => 'fa-mobile-alt',
+                                        'seo' => 'fa-search',
+                                        'social' => 'fa-share-alt',
+                                        'payment' => 'fa-credit-card',
+                                        'paiement' => 'fa-credit-card',
+                                        'email' => 'fa-envelope',
+                                        'notification' => 'fa-bell',
+                                        'security' => 'fa-shield-alt',
+                                        'sécurité' => 'fa-shield-alt',
+                                    ];
+                                    $catIcon = $catIcons[strtolower($category)] ?? 'fa-cog';
+                                    $catColors = [
+                                        'general' => 'from-blue-50 to-indigo-50 border-blue-200',
+                                        'général' => 'from-blue-50 to-indigo-50 border-blue-200',
+                                        'app' => 'from-purple-50 to-pink-50 border-purple-200',
+                                        'application' => 'from-purple-50 to-pink-50 border-purple-200',
+                                        'seo' => 'from-green-50 to-teal-50 border-green-200',
+                                        'social' => 'from-cyan-50 to-blue-50 border-cyan-200',
+                                        'payment' => 'from-amber-50 to-orange-50 border-amber-200',
+                                        'paiement' => 'from-amber-50 to-orange-50 border-amber-200',
+                                        'email' => 'from-rose-50 to-pink-50 border-rose-200',
+                                        'notification' => 'from-yellow-50 to-amber-50 border-yellow-200',
+                                        'security' => 'from-red-50 to-orange-50 border-red-200',
+                                        'sécurité' => 'from-red-50 to-orange-50 border-red-200',
+                                    ];
+                                    $catColor = $catColors[strtolower($category)] ?? 'from-gray-50 to-slate-50 border-gray-200';
+                                @endphp
+                                <div class="group bg-gradient-to-br {{ $catColor }} dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 rounded-xl border p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
                                     <div class="mb-4 sm:mb-6">
                                         <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                            <i class="fas fa-cog mr-2 sm:mr-3 text-gray-600 dark:text-gray-300 text-sm sm:text-base"></i>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white dark:bg-gray-700 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas {{ $catIcon }} text-gray-600 dark:text-gray-300 text-sm"></i>
+                                            </span>
                                             {{ ucfirst($category) }}
+                                            <span class="ml-auto text-xs text-gray-400 font-normal">{{ count($settings[$category]) }} param.</span>
                                         </h3>
                                     </div>
                                     <div class="space-y-3 sm:space-y-4">
@@ -179,10 +214,12 @@
                         @endforeach
                     @else
                         <div class="col-span-2">
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                                <i class="fas fa-info-circle text-blue-600 text-2xl mb-3"></i>
-                                <h3 class="text-lg font-medium text-blue-900 mb-2">Aucun paramètre trouvé</h3>
-                                <p class="text-blue-700">Veuillez exécuter les migrations et seeders.</p>
+                            <div class="text-center py-16 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl border-2 border-dashed border-blue-200 dark:border-gray-600">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+                                    <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-2xl"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-blue-900 dark:text-white mb-2">Aucun paramètre trouvé</h3>
+                                <p class="text-blue-700 dark:text-gray-300">Veuillez exécuter les migrations et seeders.</p>
                             </div>
                         </div>
                     @endif
@@ -190,10 +227,12 @@
                 
                 <!-- Section Mode Maintenance -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div class="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200 p-6">
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-orange-200 dark:border-orange-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-tools mr-3 text-orange-600"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900 mr-3">
+                                    <i class="fas fa-tools text-orange-600 dark:text-orange-400"></i>
+                                </span>
                                 Mode Maintenance
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -241,10 +280,12 @@
                 
                 <!-- Section Restrictions Géographiques -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-map-marked-alt mr-3 text-blue-600"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
+                                    <i class="fas fa-map-marked-alt text-blue-600 dark:text-blue-400"></i>
+                                </span>
                                 Restrictions Géographiques
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -295,10 +336,12 @@
                 
                 <!-- Section Pré-inscription -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-user-plus mr-3 text-primary-600"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
+                                    <i class="fas fa-user-plus text-primary-600 dark:text-primary-400"></i>
+                                </span>
                                 Mode Pré-inscription
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -338,31 +381,31 @@
                             
                             <!-- Statistiques -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="text-sm text-gray-600 dark:text-gray-300">Total inscriptions</p>
                                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregCount }}</p>
                                         </div>
-                                        <div class="p-3 bg-blue-100 rounded-lg">
-                                            <i class="fas fa-users text-blue-600 text-xl"></i>
+                                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
+                                            <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="text-sm text-gray-600 dark:text-gray-300">Limite configurée</p>
                                             <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
                                         </div>
-                                        <div class="p-3 bg-yellow-100 rounded-lg">
-                                            <i class="fas fa-chart-line text-yellow-600 text-xl"></i>
+                                        <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-xl">
+                                            <i class="fas fa-chart-line text-yellow-600 dark:text-yellow-400 text-xl"></i>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
                                             <p class="text-sm text-gray-600 dark:text-gray-300">Places restantes</p>
@@ -374,8 +417,8 @@
                                                 @endif
                                             </p>
                                         </div>
-                                        <div class="p-3 bg-green-100 rounded-lg">
-                                            <i class="fas fa-ticket-alt text-green-600 text-xl"></i>
+                                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-xl">
+                                            <i class="fas fa-ticket-alt text-green-600 dark:text-green-400 text-xl"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -430,10 +473,12 @@
                 
                 <!-- Section Carrousel Hero (Page d'Accueil) -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl border border-primary-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-images text-primary-600 mr-3"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
+                                    <i class="fas fa-images text-primary-600 dark:text-primary-400"></i>
+                                </span>
                                 Carrousel Hero - Page d'Accueil
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -476,10 +521,12 @@
                 
                 <!-- Section Newsletter -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-200 p-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-envelope text-blue-600 mr-3"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
+                                    <i class="fas fa-envelope text-blue-600 dark:text-blue-400"></i>
+                                </span>
                                 Newsletter
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -529,11 +576,13 @@
                 
                 <!-- Section Wallet Entreprise (Commissions) -->
                 <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 rounded-xl border border-primary-200 p-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <i class="fas fa-building text-primary-600 mr-3"></i>
-                                Wallet Entreprise - Commissions de la Plateforme
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
+                                    <i class="fas fa-building text-primary-600 dark:text-primary-400"></i>
+                                </span>
+                                Wallet Entreprise - Commissions
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                 Gestion des commissions collectées sur chaque vente ({{ $enterpriseWallets['commission_rate'] }}% par défaut)
@@ -673,12 +722,12 @@
                 </div>
                 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>
                         Enregistrer les modifications
                     </button>
                     
-                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200" onclick="resetForm()">
+                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl shadow-sm transition-all duration-200" onclick="resetForm()">
                         <i class="fas fa-undo mr-2"></i>
                         Réinitialiser
                     </button>
@@ -1336,17 +1385,19 @@ function updateLocationRestrictionsUI(enabled) {
 </script>
 
 <!-- Modal pour activer le mode maintenance -->
-<div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 px-4">
-    <div class="relative top-10 sm:top-20 mx-auto p-4 sm:p-5 border w-full max-w-md sm:w-96 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+<div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
+    <div class="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
         <div class="mt-2 sm:mt-3">
-            <div class="flex items-center justify-between mb-3 sm:mb-4">
+            <div class="flex items-center justify-between mb-4 sm:mb-5">
                 <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <i class="fas fa-tools mr-2 text-orange-600 text-sm sm:text-base"></i>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900 mr-3">
+                        <i class="fas fa-tools text-orange-600 dark:text-orange-400 text-sm"></i>
+                    </span>
                     <span class="hidden sm:inline">Activer le Mode Maintenance</span>
                     <span class="sm:hidden">Mode Maintenance</span>
                 </h3>
-                <button onclick="hideMaintenanceModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300">
-                    <i class="fas fa-times text-lg sm:text-xl"></i>
+                <button onclick="hideMaintenanceModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
             

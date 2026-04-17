@@ -193,7 +193,7 @@
             <p>Nous sommes ravis de vous présenter une <strong>offre exceptionnelle</strong> spécialement sélectionnée pour vous sur VintApp, votre marketplace de référence pour les objets d'occasion de qualité.</p>
 
             <div class="highlight-box">
-                {!! $emailContent !!}
+                {{ $emailContent }}
             </div>
 
             <h2>🌟 Pourquoi choisir VintApp ?</h2>

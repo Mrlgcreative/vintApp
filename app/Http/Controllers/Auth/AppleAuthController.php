@@ -83,6 +83,7 @@ class AppleAuthController extends Controller
 
             // Connecter l'utilisateur
             Auth::login($user, true);
+            session()->regenerate();
 
             // Rediriger vers le dashboard
             return redirect()->intended('/dashboard')->with('success', 'Connexion réussie avec Apple !');

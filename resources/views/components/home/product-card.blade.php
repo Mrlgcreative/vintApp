@@ -19,7 +19,9 @@
                  loading="lazy" />
         @else
             <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-pink-100">
-                <span class="text-6xl text-gray-400 filter drop-shadow-sm">👜</span>
+                <svg class="w-16 h-16 text-purple-400 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
             </div>
         @endif
         

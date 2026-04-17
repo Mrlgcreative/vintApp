@@ -15,7 +15,6 @@ class SupportMessage extends Model
         'user_id',
         'message',
         'attachments',
-        'is_admin',
         'is_read',
         'read_at'
     ];
@@ -59,13 +58,13 @@ class SupportMessage extends Model
      */
     public static function createNew($supportChatId, $userId, $message, $isAdmin = false, $attachments = null)
     {
-        $supportMessage = self::create([
-            'support_chat_id' => $supportChatId,
-            'user_id' => $userId,
-            'message' => $message,
-            'is_admin' => $isAdmin,
-            'attachments' => $attachments
-        ]);
+        $supportMessage = new self();
+        $supportMessage->support_chat_id = $supportChatId;
+        $supportMessage->user_id = $userId;
+        $supportMessage->message = $message;
+        $supportMessage->is_admin = $isAdmin;
+        $supportMessage->attachments = $attachments;
+        $supportMessage->save();
 
         // Mettre à jour la conversation avec le timestamp du dernier message
         SupportChat::find($supportChatId)->update([

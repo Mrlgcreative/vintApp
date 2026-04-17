@@ -137,8 +137,8 @@ return [
     |
     */
     'cinetpay' => [
-        'site_id' => env('CINETPAY_SITE_ID', '124598'),
-        'api_key' => env('CINETPAY_API_KEY', '39955468c7a8c0cef1.68322505'),
+        'site_id' => env('CINETPAY_SITE_ID'),
+        'api_key' => env('CINETPAY_API_KEY'),
         'platform' => env('CINETPAY_PLATFORM', 'TEST'), // TEST or PROD
         'version' => env('CINETPAY_VERSION', 'V2'), // V1 or V2
     ],

@@ -155,6 +155,7 @@ use Illuminate\Support\Facades\Storage;
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
                                         </a>
+                                        @if(auth()->check() && auth()->user()->isAdmin())
                                         <a href="{{ route('categories.edit', $category) }}" 
                                            class="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors"
                                            title="Modifier">
@@ -176,6 +177,7 @@ use Illuminate\Support\Facades\Storage;
                                                 </svg>
                                             </button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -258,6 +260,7 @@ use Illuminate\Support\Facades\Storage;
                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                                         Voir
                                     </a>
+                                    @if(auth()->check() && auth()->user()->isAdmin())
                                     <a href="{{ route('categories.edit', $category) }}" 
                                        class="flex-1 inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 rounded-lg hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
                                         Modifier
@@ -269,6 +272,7 @@ use Illuminate\Support\Facades\Storage;
                                             Supprimer
                                         </button>
                                     </form>
+                                    @endif
                                 </div>
                             </div>
                         </div>

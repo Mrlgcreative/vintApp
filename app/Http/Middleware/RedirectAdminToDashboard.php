@@ -27,6 +27,13 @@ class RedirectAdminToDashboard
                     return redirect()->route('admin.dashboard');
                 }
             }
+
+            // Si l'utilisateur est agent support, rediriger vers l'espace agent
+            if (method_exists($user, 'hasRole') && $user->hasRole('support') && !$user->hasRole('admin')) {
+                if ($request->routeIs('dashboard')) {
+                    return redirect()->route('agent.dashboard');
+                }
+            }
         }
 
         return $next($request);

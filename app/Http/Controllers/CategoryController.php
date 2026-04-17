@@ -7,6 +7,7 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use App\Traits\ApiResponses;
 
 class CategoryController extends Controller
@@ -60,7 +61,7 @@ class CategoryController extends Controller
         // Gérer l'upload d'image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->guessExtension();
             $imagePath = $image->storeAs('categories', $imageName, 'public');
             $validated['image'] = $imagePath;
         }
@@ -83,6 +84,7 @@ class CategoryController extends Controller
 
         try {
             $category = Category::create($validated);
+            Cache::forget('api.categories.list');
             return redirect()->route('categories.index')
                 ->with('success', 'Catégorie créée avec succès !');
         } catch (\Exception $e) {
@@ -172,7 +174,7 @@ class CategoryController extends Controller
             }
             
             $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->guessExtension();
             $imagePath = $image->storeAs('categories', $imageName, 'public');
             $validated['image'] = $imagePath;
         }
@@ -197,6 +199,7 @@ class CategoryController extends Controller
 
         try {
             $category->update($validated);
+            Cache::forget('api.categories.list');
             return redirect()->route('categories.index')
                 ->with('success', 'Catégorie mise à jour avec succès !');
         } catch (\Exception $e) {
@@ -227,6 +230,7 @@ class CategoryController extends Controller
 
         try {
             $category->delete();
+            Cache::forget('api.categories.list');
             return redirect()->route('categories.index')
                 ->with('success', 'Catégorie supprimée avec succès !');
         } catch (\Exception $e) {
@@ -242,12 +246,14 @@ class CategoryController extends Controller
      */
     public function apiIndex()
     {
-        $categories = Category::with('parent')
-            ->withCount(['items' => function($q) {
-                $q->where('status', 'active');
-            }])
-            ->orderBy('name')
-            ->get();
+        $categories = Cache::remember('api.categories.list', 3600, function () {
+            return Category::with('parent')
+                ->withCount(['items' => function($q) {
+                    $q->where('status', 'active');
+                }])
+                ->orderBy('name')
+                ->get();
+        });
 
         // Réponse JSON directe sans traitement supplémentaire
         return response()->json([
@@ -276,7 +282,7 @@ class CategoryController extends Controller
             // Gérer l'upload d'image
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
-                $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+                $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->guessExtension();
                 $imagePath = $image->storeAs('categories', $imageName, 'public');
                 $validated['image'] = $imagePath;
             }
@@ -352,7 +358,7 @@ class CategoryController extends Controller
                 }
                 
                 $image = $request->file('image');
-                $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+                $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->guessExtension();
                 $imagePath = $image->storeAs('categories', $imageName, 'public');
                 $validated['image'] = $imagePath;
             }

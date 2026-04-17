@@ -155,28 +155,6 @@ class Item extends Model
     }
 
     /**
-     * Accesseur pour s'assurer que specifications est toujours un tableau
-     */
-    public function getSpecificationsAttribute($value)
-    {
-        if (is_string($value)) {
-            return json_decode($value, true) ?: [];
-        }
-        return is_array($value) ? $value : [];
-    }
-
-    /**
-     * Accesseur pour s'assurer que images est toujours un tableau
-     */
-    public function getImagesAttribute($value)
-    {
-        if (is_string($value)) {
-            return json_decode($value, true) ?: [];
-        }
-        return is_array($value) ? $value : [];
-    }
-
-    /**
      * Relation avec les réductions
      */
     public function discounts()

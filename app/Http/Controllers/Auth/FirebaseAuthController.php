@@ -117,11 +117,15 @@ class FirebaseAuthController extends Controller
 
             // Enregistrer le token FCM si fourni
             if ($request->filled('fcmToken')) {
-                $user->update(['fcm_token' => $request->fcmToken]);
+                $user->fcm_token = $request->fcmToken;
+                $user->save();
             }
 
             // Connecter l'utilisateur
             Auth::login($user, true);
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
 
             // Vérifier si l'email doit être vérifié (TOUJOURS pour Firebase!)
             if (!$user->email_verified_at) {
@@ -264,10 +268,14 @@ class FirebaseAuthController extends Controller
 
                 // Enregistrer le token FCM si fourni
                 if ($request->filled('fcmToken')) {
-                    $existingUser->update(['fcm_token' => $request->fcmToken]);
+                    $existingUser->fcm_token = $request->fcmToken;
+                    $existingUser->save();
                 }
 
                 Auth::login($existingUser, true);
+                if ($request->hasSession()) {
+                    $request->session()->regenerate();
+                }
 
                 // Vérifier si 2FA est activé
                 if ($existingUser->google2fa_enabled) {
@@ -327,11 +335,15 @@ class FirebaseAuthController extends Controller
 
             // Enregistrer le token FCM si fourni
             if ($request->filled('fcmToken')) {
-                $user->update(['fcm_token' => $request->fcmToken]);
+                $user->fcm_token = $request->fcmToken;
+                $user->save();
             }
 
             // Connecter l'utilisateur
             Auth::login($user, true);
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
 
             return response()->json([
                 'success' => true,
@@ -368,7 +380,9 @@ class FirebaseAuthController extends Controller
         try {
             // Supprimer le token FCM
             if (Auth::check()) {
-                Auth::user()->update(['fcm_token' => null]);
+                $authUser = Auth::user();
+                $authUser->fcm_token = null;
+                $authUser->save();
             }
 
             Auth::logout();

@@ -658,6 +658,12 @@ class MessageController extends Controller
     {
         try {
             $currentUser = $request->user();
+
+            // Vérifier que l'utilisateur cible existe
+            $otherUser = User::find($userId);
+            if (!$otherUser) {
+                return $this->errorResponse('Utilisateur introuvable', 404);
+            }
             
             $messages = Message::where(function($query) use ($currentUser, $userId) {
                 $query->where('sender_id', $currentUser->id)
@@ -674,12 +680,10 @@ class MessageController extends Controller
                    ->where('receiver_id', $currentUser->id)
                    ->where('is_read', false)
                    ->update(['read_at' => now(), 'is_read' => true]);
-            
-            $otherUser = User::find($userId);
 
             return $this->successResponse([
                 'messages' => $messages,
-                'other_user' => $otherUser
+                'other_user' => $otherUser->only(['id', 'name', 'avatar', 'avatar_url'])
             ], 'Messages récupérés avec succès');
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de la récupération des messages', 500);

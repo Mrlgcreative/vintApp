@@ -95,8 +95,14 @@ class AuthenticityVerificationService
             $file = $imageData['file'];
             $type = $imageData['type'];
 
-            // Générer un nom de fichier unique
-            $filename = 'verification_' . $check->id . '_' . $type . '_' . time() . '.' . $file->getClientOriginalExtension();
+            // Générer un nom de fichier unique avec extension validée côté serveur
+            $allowedMimes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+            $mime = $file->getMimeType();
+            $ext = $allowedMimes[$mime] ?? null;
+            if (!$ext) {
+                throw new \InvalidArgumentException("Type de fichier non autorisé: {$mime}");
+            }
+            $filename = 'verification_' . $check->id . '_' . $type . '_' . time() . '.' . $ext;
             
             // Sauvegarder le fichier
             $path = $file->storeAs('verification_images', $filename, 'public');

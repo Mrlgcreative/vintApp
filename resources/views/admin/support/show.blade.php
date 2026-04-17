@@ -1,7 +1,9 @@
-@extends('app')
+@extends('layouts.support')
+
+@section('title', 'Conversation Support')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+<div>
     <!-- En-tête de la conversation -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6">
         <div class="p-6 border-b border-gray-200 dark:border-gray-700">

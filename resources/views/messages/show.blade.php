@@ -5,15 +5,15 @@
 @section('content')
 <div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden z-50 pb-16 md:pb-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 10px);">
     <!-- En-tête style WhatsApp -->
-    <div class="bg-primary-600 text-white shadow-lg">
+    <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg">
         <div class="flex items-center px-4 py-3 gap-3">
-            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
+            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white/10 p-2 rounded-full transition-all duration-200">
                 <i class="fas fa-arrow-left text-xl"></i>
             </a>
             <div class="flex items-center flex-1 gap-3 cursor-pointer">
                 <div class="relative">
-                    @if($otherUser->avatar)
-                        <img src="{{ Storage::url($otherUser->avatar) }}" 
+                    @if($otherUser->avatar_url)
+                        <img src="{{ $otherUser->avatar_url }}" 
                              alt="{{ $otherUser->name }}" 
                              class="w-10 h-10 rounded-full object-cover">
                     @else
@@ -21,33 +21,33 @@
                             {{ strtoupper(substr($otherUser->name, 0, 1)) }}
                         </div>
                     @endif
-                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-primary-600 rounded-full ring-2 ring-green-400/30"></div>
                 </div>
                 <div class="flex-1">
-                    <h6 class="font-medium text-white">{{ $otherUser->name }}</h6>
-                    <p class="text-sm text-white text-opacity-80">En ligne</p>
+                    <h6 class="font-semibold text-white">{{ $otherUser->name }}</h6>
+                    <p class="text-xs text-white/70 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> En ligne</p>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
-                    <i class="fas fa-phone"></i>
+            <div class="flex gap-1">
+                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200">
+                    <i class="fas fa-phone text-sm"></i>
                 </button>
-                <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors">
-                    <i class="fas fa-video"></i>
+                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200">
+                    <i class="fas fa-video text-sm"></i>
                 </button>
                 <div class="relative">
-                    <button class="text-white hover:bg-white dark:bg-gray-800 hover:bg-opacity-10 p-2 rounded-full transition-colors" onclick="toggleDropdown()">
-                        <i class="fas fa-ellipsis-v"></i>
+                    <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200" onclick="toggleDropdown()">
+                        <i class="fas fa-ellipsis-v text-sm"></i>
                     </button>
-                    <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 hidden z-10">
-                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                            <i class="fas fa-search mr-3"></i>Rechercher
+                    <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 hidden z-10">
+                        <a href="#" class="flex items-center px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-search mr-3 text-gray-400"></i>Rechercher
                         </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                            <i class="fas fa-ban mr-3"></i>Bloquer
+                        <a href="#" class="flex items-center px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-ban mr-3 text-gray-400"></i>Bloquer
                         </a>
-                        <hr class="my-2">
-                        <a href="#" class="flex items-center px-4 py-2 text-red-600 hover:bg-gray-100 dark:bg-gray-800">
+                        <hr class="my-1.5 border-gray-100 dark:border-gray-700">
+                        <a href="#" class="flex items-center px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                             <i class="fas fa-trash mr-3"></i>Supprimer
                         </a>
                     </div>
@@ -58,18 +58,18 @@
 
     <!-- Badge produit concerné -->
     @if($item)
-        <div class="bg-yellow-100 border-b border-yellow-200 px-4 py-3">
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800/50 px-4 py-3">
             <div class="flex items-center gap-3">
                 @if($item->images && count($item->images) > 0)
                     <img src="{{ Storage::url($item->images[0]) }}" 
                          alt="{{ $item->name }}" 
-                         class="w-12 h-12 rounded-lg object-cover">
+                         class="w-14 h-14 rounded-xl object-cover shadow-sm ring-1 ring-black/5">
                 @endif
-                <div class="flex-1">
-                    <span class="font-semibold text-gray-900 dark:text-white block">{{ $item->name }}</span>
-                    <span class="text-primary-600 font-bold">{{ $item->formatted_price }}</span>
+                <div class="flex-1 min-w-0">
+                    <span class="font-semibold text-gray-900 dark:text-white block truncate">{{ $item->name }}</span>
+                    <span class="text-primary-600 dark:text-primary-400 font-bold text-lg">{{ $item->formatted_price }}</span>
                 </div>
-                <a href="{{ route('items.show', $item) }}" class="text-primary-600 hover:text-primary-700 p-2">
+                <a href="{{ route('items.show', $item) }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 p-2.5 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-800/30 transition-colors">
                     <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
@@ -77,19 +77,21 @@
 
         <!-- Panel de réduction pour le vendeur -->
         @if($item->user_id === Auth::id())
-            <div class="bg-green-50 border-b border-green-200" id="discountPanel">
-                <div class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-green-100 transition-colors" onclick="toggleDiscountPanel()">
-                    <div class="flex items-center text-green-700">
-                        <i class="fas fa-percent text-green-600 mr-2"></i>
+            <div class="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800/50" id="discountPanel">
+                <div class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-green-100 dark:hover:bg-green-800/30 transition-colors" onclick="toggleDiscountPanel()">
+                    <div class="flex items-center text-green-700 dark:text-green-400">
+                        <div class="w-8 h-8 bg-green-100 dark:bg-green-800/40 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-percent text-green-600 dark:text-green-400 text-sm"></i>
+                        </div>
                         <span class="font-semibold">Proposer une réduction</span>
                     </div>
-                    <button class="text-gray-500 hover:text-gray-700 dark:text-gray-200">
+                    <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                         <i class="fas fa-chevron-down transition-transform" id="discountToggleIcon"></i>
                     </button>
                 </div>
                 
                 <div class="px-4 pb-4 hidden" id="discountContent">
-                    <div class="border-t border-green-200 pt-4">
+                    <div class="border-t border-green-200 dark:border-green-800/50 pt-4">
                         <div class="bg-white dark:bg-gray-800 rounded-lg p-3 mb-4 border border-gray-200 dark:border-gray-700 flex justify-between items-center">
                             <span class="text-gray-600 dark:text-gray-300 font-medium">Prix actuel:</span>
                             <span class="text-primary-600 font-bold text-lg">{{ $item->formatted_price }}</span>
@@ -147,15 +149,15 @@
     @endif
 
     <!-- Zone des messages -->
-    <div class="flex-1 overflow-y-auto px-4 py-4 pb-24 md:pb-4" id="messagesContainer" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M20 20c0-11.046-8.954-20-20-20s-20 8.954-20 20 8.954 20 20 20 20-8.954 20-20zm-30 0c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10z'/%3E%3C/g%3E%3C/svg%3E&quot;);">
-        <div class="max-w-4xl mx-auto">
+    <div class="flex-1 overflow-y-auto px-4 py-4 pb-24 md:pb-4 bg-gray-50 dark:bg-gray-900/50" id="messagesContainer">
+        <div class="max-w-4xl mx-auto space-y-1">
             @if($messages->count() > 0)
                 @foreach($messages as $message)
-                    <div class="mb-2 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-100' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br' : 'rounded-bl' }} px-3 py-2 shadow-sm animate-fade-in">
+                    <div class="mb-1.5 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br-sm' : 'rounded-bl-sm' }} px-3.5 py-2.5 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
                             @if($message->subject)
-                                <div class="bg-black bg-opacity-10 rounded-xl px-2 py-1 mb-2 text-sm font-semibold flex items-center gap-1">
-                                    <i class="fas fa-tag"></i>
+                                <div class="bg-black/5 dark:bg-white/5 rounded-lg px-2.5 py-1.5 mb-2 text-xs font-semibold flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
+                                    <i class="fas fa-tag text-primary-500"></i>
                                     {{ $message->subject }}
                                 </div>
                             @endif
@@ -171,14 +173,17 @@
                                     @if(Str::startsWith($message->attachment, 'items/') || in_array(pathinfo($message->attachment, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
                                         <img src="{{ Storage::url($message->attachment) }}" 
                                              alt="Image jointe" 
-                                             class="max-w-48 max-h-48 rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                                             class="max-w-48 max-h-48 rounded-xl cursor-pointer hover:scale-[1.02] transition-transform shadow-sm"
                                              onclick="showImageModal('{{ Storage::url($message->attachment) }}')">
                                     @else
                                         <a href="{{ Storage::url($message->attachment) }}" 
                                            target="_blank" 
-                                           class="flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-primary-600 hover:bg-opacity-10 transition-colors">
-                                            <i class="fas fa-paperclip"></i>
-                                            <span class="text-sm">Fichier joint</span>
+                                           class="flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-3 text-primary-600 dark:text-primary-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                                            <div class="w-9 h-9 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-file text-primary-600 dark:text-primary-400"></i>
+                                            </div>
+                                            <span class="text-sm font-medium">Fichier joint</span>
+                                            <i class="fas fa-download ml-auto text-xs opacity-50"></i>
                                         </a>
                                     @endif
                                 </div>
@@ -200,26 +205,26 @@
                     </div>
                 @endforeach
             @else
-                <div class="text-center py-16 text-gray-500 dark:text-gray-400">
-                    <div class="mb-4">
-                        <i class="fas fa-comments text-6xl opacity-30"></i>
+                <div class="text-center py-20 text-gray-500 dark:text-gray-400">
+                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <i class="fas fa-comments text-3xl text-gray-300 dark:text-gray-600"></i>
                     </div>
-                    <p class="text-lg">Aucun message dans cette conversation</p>
-                    <p class="text-sm">Envoyez un message pour commencer</p>
+                    <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Démarrez la conversation</p>
+                    <p class="text-sm mt-1 text-gray-400">Envoyez un message à {{ $otherUser->name }}</p>
                 </div>
             @endif
         </div>
     </div>
 
     <!-- Zone de saisie style WhatsApp -->
-    <div class="bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 pb-20 md:pb-4 fixed md:relative bottom-0 left-0 right-0 z-40">
+    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 p-3 pb-20 md:pb-3 fixed md:relative bottom-0 left-0 right-0 z-40">
         <form id="messageForm" method="POST" action="{{ route('messages.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_id" value="{{ $otherUser->id }}">
             
-            <div class="flex items-end gap-2 bg-white dark:bg-gray-800 rounded-3xl px-3 py-2 shadow-sm">
-                <button type="button" class="text-gray-500 dark:text-gray-400 hover:text-primary-600 p-2 rounded-full hover:bg-gray-100 dark:bg-gray-800 transition-colors" onclick="document.getElementById('attachmentInput').click()">
-                    <i class="fas fa-paperclip text-xl"></i>
+            <div class="flex items-end gap-2 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-3 py-2 border border-gray-200/50 dark:border-gray-600/50 focus-within:border-primary-300 dark:focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 transition-all">
+                <button type="button" class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" onclick="document.getElementById('attachmentInput').click()">
+                    <i class="fas fa-paperclip text-lg"></i>
                 </button>
                 
                 <div class="flex-1 relative">
@@ -236,17 +241,19 @@
                            accept="image/*,.pdf,.doc,.docx">
                 </div>
                 
-                <button type="submit" class="bg-primary-600 text-white p-2 rounded-full hover:bg-primary-700 hover:scale-105 transition-all min-w-10 h-10 flex items-center justify-center">
-                    <i class="fas fa-paper-plane"></i>
+                <button type="submit" class="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all min-w-10 h-10 flex items-center justify-center shadow-sm">
+                    <i class="fas fa-paper-plane text-sm"></i>
                 </button>
             </div>
             
             <div id="attachmentPreview" class="mt-2 hidden">
-                <div class="bg-primary-100 border border-primary-600 rounded-lg p-3 flex items-center gap-2 text-primary-700">
-                    <i class="fas fa-paperclip"></i>
-                    <span id="attachmentName" class="text-sm flex-1"></span>
-                    <button type="button" onclick="removeAttachment()" class="text-red-500 hover:text-red-700 hover:bg-red-100 p-1 rounded-full transition-colors">
-                        <i class="fas fa-times"></i>
+                <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/50 rounded-xl p-3 flex items-center gap-3 text-primary-700 dark:text-primary-300">
+                    <div class="w-8 h-8 bg-primary-100 dark:bg-primary-800/40 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-paperclip text-sm"></i>
+                    </div>
+                    <span id="attachmentName" class="text-sm flex-1 truncate font-medium"></span>
+                    <button type="button" onclick="removeAttachment()" class="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 p-1.5 rounded-full transition-colors">
+                        <i class="fas fa-times text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -255,12 +262,12 @@
 </div>
 
 <!-- Modal pour l'affichage des images -->
-<div class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50" id="imageModal" onclick="closeImageModal()">
+<div class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity" id="imageModal" onclick="closeImageModal()">
     <div class="relative max-w-4xl max-h-full p-4">
-        <button onclick="closeImageModal()" class="absolute top-2 right-2 text-white hover:text-gray-300 bg-black bg-opacity-50 rounded-full p-2 z-10">
-            <i class="fas fa-times text-xl"></i>
+        <button onclick="closeImageModal()" class="absolute -top-2 -right-2 text-white hover:text-gray-300 bg-black/60 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center z-10 transition-colors shadow-lg">
+            <i class="fas fa-times text-lg"></i>
         </button>
-        <img id="modalImage" src="" alt="Image" class="max-w-full max-h-full object-contain rounded-lg">
+        <img id="modalImage" src="" alt="Image" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl">
     </div>
 </div>
 
@@ -286,34 +293,35 @@ main.min-vh-100 {
 @keyframes fade-in {
     from {
         opacity: 0;
-        transform: scale(0.9) translateY(10px);
+        transform: translateY(8px);
     }
     to {
         opacity: 1;
-        transform: scale(1) translateY(0);
+        transform: translateY(0);
     }
 }
 
 .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
+    animation: fade-in 0.25s ease-out;
 }
 
 /* Style pour les options de réduction sélectionnées */
 .rate-option.selected {
-    @apply border-primary-600 bg-primary-600 text-white shadow-lg;
+    @apply border-primary-600 bg-primary-600 text-white shadow-lg scale-[1.02];
 }
 
 .rate-option.selected .text-green-600 {
     @apply text-green-100;
 }
 
-.rate-option.selected .text-gray-500 dark:text-gray-400 {
-    @apply text-white text-opacity-80;
+.rate-option.selected .text-gray-500,
+.rate-option.selected .dark\:text-gray-400 {
+    @apply text-white/80;
 }
 
 /* Style pour la barre de défilement */
 #messagesContainer::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
 }
 
 #messagesContainer::-webkit-scrollbar-track {
@@ -321,12 +329,21 @@ main.min-vh-100 {
 }
 
 #messagesContainer::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.2);
-    border-radius: 3px;
+    background: rgba(0,0,0,0.15);
+    border-radius: 10px;
 }
 
 #messagesContainer::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.25);
+}
+
+@media (prefers-color-scheme: dark) {
+    #messagesContainer::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.15);
+    }
+    #messagesContainer::-webkit-scrollbar-thumb:hover {
+        background: rgba(255,255,255,0.25);
+    }
 }
 
 /* Responsive pour mobile */
@@ -396,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContainer.className = `mb-2 flex ${isAuthor ? 'justify-end' : 'justify-start'}`;
         
         const messageBubble = document.createElement('div');
-        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-100' : 'bg-white dark:bg-gray-800'} rounded-2xl ${isAuthor ? 'rounded-br' : 'rounded-bl'} px-3 py-2 shadow-sm animate-fade-in`;
+        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800'} rounded-2xl ${isAuthor ? 'rounded-br-sm' : 'rounded-bl-sm'} px-3.5 py-2.5 shadow-sm animate-fade-in`;
         
         // Contenu du message
         if (message.content) {
@@ -414,13 +431,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (message.attachment.match(/\.(jpg|jpeg|png|gif)$/i)) {
                 const img = document.createElement('img');
                 img.src = message.attachment;
-                img.className = 'max-w-48 max-h-48 rounded-lg cursor-pointer hover:scale-105 transition-transform';
+                img.className = 'max-w-48 max-h-48 rounded-xl cursor-pointer hover:scale-[1.02] transition-transform shadow-sm';
                 img.onclick = () => showImageModal(message.attachment);
                 attachmentDiv.appendChild(img);
             } else {
                 const link = document.createElement('a');
                 link.href = message.attachment;
-                link.className = 'flex items-center gap-2 bg-black bg-opacity-5 rounded-lg p-3 text-primary-600 hover:bg-opacity-10 transition-colors';
+                link.className = 'flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-3 text-primary-600 dark:text-primary-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
                 link.innerHTML = `<i class="fas fa-paperclip"></i><span class="text-sm">Fichier joint</span>`;
                 attachmentDiv.appendChild(link);
             }
@@ -548,7 +565,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('expires_hours', 24);
             formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
             
-            fetch('/discounts/apply', {
+            fetch('{{ route('discounts.apply-message') }}', {
                 method: 'POST',
                 body: formData,
                 headers: {

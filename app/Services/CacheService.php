@@ -236,4 +236,87 @@ class CacheService
             Cache::tags($tags)->flush();
         }
     }
+
+    /**
+     * Récupérer les données de la page d'accueil avec cache
+     */
+    public function getHomepageData(): array
+    {
+        return Cache::remember('homepage.data', self::CACHE_ITEMS_LIST, function () {
+            $categories = \App\Models\Category::withCount(['items' => function ($q) {
+                $q->where('status', 'active');
+            }])->where('is_active', true)->orderBy('sort_order')->get();
+
+            $spotlightItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+                ->whereHas('activeBoosts', function ($query) {
+                    $query->whereHas('boostType', function ($subQuery) {
+                        $subQuery->where('name', 'spotlight');
+                    })->where('status', 'active')->where('expires_at', '>', now());
+                })
+                ->where('status', 'active')
+                ->orderBy('created_at', 'desc')
+                ->limit(6)
+                ->get();
+
+            $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+                ->whereHas('activeBoosts')
+                ->where('status', 'active')
+                ->orderBy('created_at', 'desc')
+                ->limit(8)
+                ->get();
+
+            $regularItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+                ->whereDoesntHave('activeBoosts')
+                ->where('status', 'active')
+                ->orderBy('created_at', 'desc')
+                ->limit(8)
+                ->get();
+
+            $latestItems = $boostedItems->concat($regularItems)->take(12);
+
+            $stats = [
+                'users' => \App\Models\User::count(),
+                'items' => Item::where('status', 'active')->count(),
+                'categories' => \App\Models\Category::where('is_active', true)->count(),
+                'boosted_items' => Item::whereHas('activeBoosts')->where('status', 'active')->count(),
+            ];
+
+            return compact('categories', 'spotlightItems', 'boostedItems', 'regularItems', 'latestItems', 'stats');
+        });
+    }
+
+    /**
+     * Invalider le cache de la page d'accueil
+     */
+    public function forgetHomepage()
+    {
+        Cache::forget('homepage.data');
+    }
+
+    /**
+     * Récupérer les stats du dashboard utilisateur avec cache
+     */
+    public function getDashboardStats(int $userId): array
+    {
+        return Cache::remember("dashboard.stats.{$userId}", self::CACHE_USER_STATS, function () use ($userId) {
+            return [
+                'total_items' => Item::where('user_id', $userId)->count(),
+                'active_items' => Item::where('user_id', $userId)->where('status', 'active')->count(),
+                'total_sales' => \App\Models\Order::where('seller_id', $userId)->where('status', 'completed')->count(),
+                'total_revenue' => \App\Models\Payment::where('seller_id', $userId)->where('status', 'completed')->sum('amount'),
+                'unread_messages' => \App\Models\Message::where('receiver_id', $userId)->whereNull('read_at')->count(),
+                'unread_notifications' => \App\Models\Notification::where('user_id', $userId)->whereNull('read_at')->count(),
+                'average_rating' => \App\Models\Review::where('seller_id', $userId)->avg('rating') ?? 0,
+                'total_reviews' => \App\Models\Review::where('seller_id', $userId)->count(),
+            ];
+        });
+    }
+
+    /**
+     * Invalider le cache du dashboard utilisateur
+     */
+    public function forgetDashboardStats(int $userId)
+    {
+        Cache::forget("dashboard.stats.{$userId}");
+    }
 }

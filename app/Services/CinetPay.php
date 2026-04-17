@@ -430,8 +430,8 @@ class CinetPay
                         "cache-control: no-cache",
                         "content-type: application/x-www-form-urlencoded",
                     ),
-                    CURLOPT_SSL_VERIFYPEER => false,
-                    CURLOPT_SSL_VERIFYHOST => false,
+                    CURLOPT_SSL_VERIFYPEER => true,
+                    CURLOPT_SSL_VERIFYHOST => 2,
                     CURLOPT_FOLLOWLOCATION => true,
                 ));
                 $response = curl_exec($curl);

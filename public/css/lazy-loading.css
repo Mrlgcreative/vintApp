@@ -1,6 +1,10 @@
 /**
  * Styles Lazy Loading avec Tailwind CSS
  * VintApp PWA
+ * - GPU-accelerated transitions (will-change, transform)
+ * - prefers-reduced-motion support
+ * - Dark mode complet
+ * - Animations fluides avec cubic-bezier
  */
 
 @tailwind base;
@@ -8,70 +12,130 @@
 @tailwind utilities;
 
 @layer components {
-    /* Images en cours de chargement */
+    /* ─── Images en cours de chargement ─── */
     .lazy-loading {
-        @apply opacity-60 blur-[5px] transition-all duration-300 ease-in-out;
+        @apply opacity-0 blur-sm scale-[0.98];
+        transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity, filter, transform;
     }
 
-    /* Images chargées */
+    /* ─── Images chargées ─── */
     .lazy-loaded {
-        @apply opacity-100 blur-0;
+        @apply opacity-100 blur-0 scale-100;
+        will-change: auto;
     }
 
-    /* Images avec erreur */
+    /* ─── Images avec erreur ─── */
     .lazy-error {
-        @apply opacity-50 border-2 border-dashed border-red-500;
+        @apply opacity-60 border-2 border-dashed border-red-400 dark:border-red-600 rounded;
     }
 
-    /* Placeholder */
+    /* ─── Placeholder shimmer ─── */
     .lazy-placeholder {
-        @apply animate-shimmer bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100;
-        background-size: 200% 100%;
+        @apply animate-shimmer;
+        background: linear-gradient(
+            110deg,
+            #e5e7eb 30%,
+            #f3f4f6 50%,
+            #e5e7eb 70%
+        );
+        background-size: 300% 100%;
     }
 
-    /* Container pour lazy loading */
+    .dark .lazy-placeholder {
+        background: linear-gradient(
+            110deg,
+            #374151 30%,
+            #4b5563 50%,
+            #374151 70%
+        );
+        background-size: 300% 100%;
+    }
+
+    /* ─── Container lazy loading avec spinner ─── */
     .lazy-container {
         @apply relative overflow-hidden;
     }
 
     .lazy-container::before {
         content: '';
-        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-               w-10 h-10 border-4 border-primary-100 border-t-primary-600 
-               rounded-full animate-spin z-10;
+        @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2
+               w-8 h-8 border-[3px] border-gray-200 border-t-primary-600
+               rounded-full z-10;
+        animation: lazy-spin 0.7s linear infinite;
+    }
+
+    .dark .lazy-container::before {
+        @apply border-gray-700 border-t-primary-400;
     }
 
     .lazy-container.lazy-loaded::before {
         @apply hidden;
     }
 
-    /* Skeleton loader de base */
+    /* ─── Skeleton loader ─── */
     .skeleton-loader {
-        @apply relative overflow-hidden rounded-lg animate-shimmer
-               bg-gradient-to-r from-gray-100 via-gray-200 to-gray-100
-               dark:from-gray-700 dark:via-gray-600 dark:to-gray-700;
-        background-size: 200% 100%;
+        @apply relative overflow-hidden rounded-lg;
+        background: linear-gradient(
+            110deg,
+            #f3f4f6 30%,
+            #e5e7eb 50%,
+            #f3f4f6 70%
+        );
+        background-size: 300% 100%;
+        animation: shimmer 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
-    /* Effet de brillance supplémentaire */
+    .dark .skeleton-loader {
+        background: linear-gradient(
+            110deg,
+            #1f2937 30%,
+            #374151 50%,
+            #1f2937 70%
+        );
+        background-size: 300% 100%;
+    }
+
+    /* Effet de brillance overlay */
     .skeleton-loader::after {
         content: '';
-        @apply absolute inset-0 -translate-x-full animate-shimmer-overlay
-               bg-gradient-to-r from-transparent via-white/30 to-transparent
-               dark:via-white/10;
+        @apply absolute inset-0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.15) 50%,
+            transparent 100%
+        );
+        animation: shimmer-overlay 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        transform: translateX(-100%);
     }
 
-    /* Variantes de skeleton */
+    .dark .skeleton-loader::after {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.05) 50%,
+            transparent 100%
+        );
+    }
+
+    /* ─── Variantes skeleton ─── */
     .skeleton-text {
-        @apply h-4 mb-2;
+        @apply h-4 mb-2 rounded;
+    }
+
+    .skeleton-text:last-child {
+        @apply w-3/4;
     }
 
     .skeleton-title {
-        @apply h-6 w-3/5 mb-4;
+        @apply h-6 w-3/5 mb-4 rounded;
     }
 
     .skeleton-image {
-        @apply h-48 w-full;
+        @apply h-48 w-full rounded-lg;
     }
 
     .skeleton-avatar {
@@ -82,23 +146,26 @@
         @apply h-10 w-24 rounded-lg;
     }
 
-    /* Page Skeleton Overlay */
+    /* ─── Page Skeleton Overlay ─── */
     .page-skeleton {
         @apply animate-fadeIn;
     }
 
-    /* Progressive image loading */
+    /* ─── Progressive image loading ─── */
     .progressive-image {
         @apply relative overflow-hidden;
     }
 
     .progressive-image__placeholder {
-        @apply absolute inset-0 w-full h-full object-cover 
-               blur-[20px] scale-110 transition-opacity duration-300;
+        @apply absolute inset-0 w-full h-full object-cover;
+        filter: blur(20px);
+        transform: scale(1.1);
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .progressive-image__full {
-        @apply opacity-0 transition-opacity duration-300;
+        @apply opacity-0;
+        transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .progressive-image__full.loaded {
@@ -106,19 +173,22 @@
     }
 
     .progressive-image.loaded .progressive-image__placeholder {
-        @apply opacity-0;
+        @apply opacity-0 pointer-events-none;
     }
 
-    /* Blur up effect */
+    /* ─── Blur up effect ─── */
     .blur-up {
-        @apply blur-[20px] transition-[filter] duration-400 ease-in-out;
+        filter: blur(20px);
+        transition: filter 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: filter;
     }
 
     .blur-up.loaded {
-        @apply blur-0;
+        filter: blur(0);
+        will-change: auto;
     }
 
-    /* Aspect ratio containers */
+    /* ─── Aspect ratio containers ─── */
     .aspect-ratio-16-9 {
         @apply relative pb-[56.25%];
     }
@@ -137,17 +207,22 @@
         @apply absolute inset-0 w-full h-full object-cover;
     }
 
-    /* Fade in animation */
+    /* ─── Fade in animation ─── */
     .fade-in {
         @apply animate-fadeIn;
     }
 
-    /* Pulse loading */
+    /* ─── Scale + fade reveal (nouveau) ─── */
+    .scale-fade-in {
+        animation: scaleFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+
+    /* ─── Pulse loading ─── */
     .pulse-loading {
         @apply animate-pulse;
     }
 
-    /* Grid skeleton */
+    /* ─── Grid skeleton ─── */
     .grid-skeleton {
         @apply grid gap-4 grid-cols-[repeat(auto-fill,minmax(250px,1fr))];
     }
@@ -155,28 +230,38 @@
     .skeleton-card {
         @apply bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm;
     }
+
+    .skeleton-card > * + * {
+        @apply mt-3;
+    }
 }
 
 @layer utilities {
     /* Responsive spinner */
     @screen sm {
         .lazy-container::before {
-            @apply w-8 h-8 border-[3px];
+            @apply w-6 h-6 border-2;
         }
     }
 }
 
-/* Animations personnalisées */
+/* ═══════════════════════════════════════
+   Keyframes
+   ═══════════════════════════════════════ */
+
 @keyframes shimmer {
     0% {
-        background-position: -200% 0;
+        background-position: 300% 0;
     }
     100% {
-        background-position: 200% 0;
+        background-position: -300% 0;
     }
 }
 
 @keyframes shimmer-overlay {
+    0% {
+        transform: translateX(-100%);
+    }
     100% {
         transform: translateX(100%);
     }
@@ -185,7 +270,7 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
+        transform: translateY(8px);
     }
     to {
         opacity: 1;
@@ -193,17 +278,84 @@
     }
 }
 
-/* Configuration Tailwind pour les animations */
+@keyframes scaleFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes lazy-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ═══════════════════════════════════════
+   Utility animations
+   ═══════════════════════════════════════ */
+
 @layer utilities {
     .animate-shimmer {
-        animation: shimmer 1.5s infinite;
+        animation: shimmer 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     .animate-shimmer-overlay {
-        animation: shimmer-overlay 2s infinite;
+        animation: shimmer-overlay 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     .animate-fadeIn {
-        animation: fadeIn 0.2s ease-in;
+        animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animate-scaleFadeIn {
+        animation: scaleFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+}
+
+/* ═══════════════════════════════════════
+   prefers-reduced-motion : accessibilité
+   ═══════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+    .lazy-loading {
+        @apply blur-0 scale-100;
+        transition-duration: 0.01ms !important;
+    }
+
+    .lazy-loaded {
+        transition-duration: 0.01ms !important;
+    }
+
+    .skeleton-loader,
+    .lazy-placeholder {
+        animation: none !important;
+    }
+
+    .skeleton-loader::after {
+        animation: none !important;
+    }
+
+    .lazy-container::before {
+        animation-duration: 2s;
+    }
+
+    .blur-up {
+        filter: none;
+        transition-duration: 0.01ms !important;
+    }
+
+    .progressive-image__placeholder {
+        filter: none;
+        transition-duration: 0.01ms !important;
+    }
+
+    .fade-in,
+    .scale-fade-in {
+        animation-duration: 0.01ms !important;
     }
 }

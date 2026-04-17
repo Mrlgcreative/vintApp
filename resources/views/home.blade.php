@@ -61,7 +61,11 @@
                     <x-home.product-card :item="$item" />
                 @empty
                     <div class="col-span-full text-center py-20">
-                        <div class="text-6xl mb-4">📦</div>
+                        <div class="mb-4 flex justify-center">
+                            <svg class="w-16 h-16 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Aucun article</h3>
                         <a href="{{ route('items.create') ?? '#' }}" 
                            class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-all">
@@ -138,11 +142,11 @@ function goToSlide(index) {
 function updateDots() {
     document.querySelectorAll('.carousel-dot').forEach((dot, i) => {
         if (i === currentSlide) {
-            dot.classList.add('bg-white');
-            dot.classList.remove('bg-white/40');
+            dot.classList.add('bg-white', 'w-8');
+            dot.classList.remove('bg-white/40', 'w-2.5');
         } else {
-            dot.classList.remove('bg-white');
-            dot.classList.add('bg-white/40');
+            dot.classList.remove('bg-white', 'w-8');
+            dot.classList.add('bg-white/40', 'w-2.5');
         }
     });
 }

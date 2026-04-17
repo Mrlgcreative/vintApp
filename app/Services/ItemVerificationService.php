@@ -331,7 +331,11 @@ class ItemVerificationService
         ];
 
         try {
-            $exif = @exif_read_data($fullPath);
+            if (!function_exists('exif_read_data')) {
+                return $result;
+            }
+
+            $exif = @\exif_read_data($fullPath);
             
             if ($exif) {
                 // Vérifier si modifié avec un logiciel d'édition

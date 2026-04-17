@@ -1,12 +1,14 @@
 <?php
 /**
  * Script de diagnostic et réparation UTF-8 pour VintApp
- * Uploadez ce fichier dans public/ et accédez-y via le navigateur
- * SUPPRIMEZ CE FICHIER APRÈS UTILISATION !
+ * BLOQUÉ EN PRODUCTION - Exécuter uniquement en local via: php public/fix-utf8.php
  */
 
-// Désactiver l'affichage HTML pour avoir du texte brut
-header('Content-Type: text/plain; charset=UTF-8');
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    echo 'Accès interdit. Exécutez ce script en ligne de commande.';
+    exit(1);
+}
 
 echo "=== VintApp UTF-8 Diagnostic & Fix Script ===\n\n";
 

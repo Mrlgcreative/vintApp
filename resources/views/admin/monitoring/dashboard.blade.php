@@ -4,25 +4,29 @@
 <div class="py-6" id="monitoring-app">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">📈 Monitoring & Métriques</h1>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">📈 Monitoring & Métriques</h1>
+                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Dernière mise à jour: <span id="last-update">{{ now()->format('d/m/Y H:i:s') }}</span>
+                    <span id="refresh-indicator" class="ml-2 hidden">
+                        <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    </span>
                 </p>
             </div>
             
-            <div class="flex gap-3">
+            <div class="flex gap-2 sm:gap-3">
                 <button
                     id="toggle-refresh"
-                    class="px-4 py-2 rounded-lg font-medium transition bg-green-600 text-white hover:bg-green-700"
+                    class="px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition bg-green-600 text-white hover:bg-green-700"
                 >
-                    🔄 Auto-refresh ON
+                    🔄 <span class="hidden sm:inline">Auto-refresh</span> ON
                 </button>
                 
                 <button
+                    id="refresh-btn"
                     onclick="refreshStats()"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    class="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg text-sm sm:text-base hover:bg-blue-700 transition"
                 >
                     🔄 Actualiser
                 </button>
@@ -31,25 +35,37 @@
 
         <!-- Health Status -->
         <div class="mb-6">
-            <div id="health-status" class="px-6 py-4 rounded-lg font-semibold text-lg flex items-center justify-between">
+            <div id="health-status" class="px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center justify-between bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 animate-pulse">
                 État du système: <span class="uppercase">Chargement...</span>
             </div>
             
             <!-- Health Checks Details -->
-            <div id="health-checks" class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                <!-- Sera rempli par JavaScript -->
+            <div id="health-checks" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-4">
+                <!-- Skeleton placeholders -->
+                @for($i = 0; $i < 3; $i++)
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 animate-pulse">
+                    <div class="flex items-center justify-between">
+                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
+                    </div>
+                    <div class="mt-3 space-y-2">
+                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+                    </div>
+                </div>
+                @endfor
             </div>
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
             <!-- Database Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Base de données</h3>
-                    <span class="text-3xl">🗄️</span>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Base de données</h3>
+                    <span class="text-xl sm:text-3xl">🗄️</span>
                 </div>
-                <div id="db-stats" class="space-y-2">
+                <div id="db-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
                         <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
                     </div>
@@ -57,26 +73,26 @@
             </div>
 
             <!-- Revenue Today -->
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-6 text-white">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold">Revenus Aujourd'hui</h3>
-                    <span class="text-3xl">💰</span>
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-md p-3 sm:p-6 text-white">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold">Revenus <span class="hidden sm:inline">Aujourd'hui</span></h3>
+                    <span class="text-xl sm:text-3xl">💰</span>
                 </div>
-                <div id="revenue-today" class="space-y-2">
-                    <div class="text-2xl font-bold">Chargement...</div>
+                <div id="revenue-today" class="space-y-1.5 sm:space-y-2">
+                    <div class="text-lg sm:text-2xl font-bold">Chargement...</div>
                 </div>
-                <p id="orders-today" class="text-sm mt-3 opacity-90">
+                <p id="orders-today" class="text-xs sm:text-sm mt-2 sm:mt-3 opacity-90">
                     0 commandes
                 </p>
             </div>
 
             <!-- Cache Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Cache</h3>
-                    <span class="text-3xl">⚡</span>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Cache</h3>
+                    <span class="text-xl sm:text-3xl">⚡</span>
                 </div>
-                <div id="cache-stats" class="space-y-2">
+                <div id="cache-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
                         <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
                     </div>
@@ -84,12 +100,12 @@
             </div>
 
             <!-- Performance Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Performance</h3>
-                    <span class="text-3xl">📊</span>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Performance</h3>
+                    <span class="text-xl sm:text-3xl">📊</span>
                 </div>
-                <div id="performance-stats" class="space-y-2">
+                <div id="performance-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
                         <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
                     </div>
@@ -98,14 +114,14 @@
         </div>
 
         <!-- Business Events & Errors -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
             <!-- Business Events -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
                     <span class="mr-2">📈</span>
                     Événements Business
                 </h3>
-                <div id="business-events" class="space-y-3">
+                <div id="business-events" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
                     </div>
@@ -113,12 +129,12 @@
             </div>
 
             <!-- Errors -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
                     <span class="mr-2">🚨</span>
                     Erreurs
                 </h3>
-                <div id="errors-section" class="space-y-3">
+                <div id="errors-section" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
                     </div>
@@ -127,21 +143,21 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Actions Rapides</h3>
-            <div class="flex flex-wrap gap-3">
+        <div class="mt-4 sm:mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
+            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4">Actions Rapides</h3>
+            <div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 sm:gap-3">
                 <a href="/telescope" target="_blank" 
-                   class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition">
+                   class="px-4 py-2.5 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm sm:text-base text-center">
                     🔭 Ouvrir Telescope
                 </a>
-                <form action="/admin/monitoring/reset" method="POST" class="inline">
+                <form action="/admin/monitoring/reset" method="POST">
                     @csrf
-                    <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                    <button type="submit" class="w-full px-4 py-2.5 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm sm:text-base">
                         🔄 Réinitialiser métriques
                     </button>
                 </form>
                 <a href="/admin/monitoring/health" target="_blank"
-                   class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                   class="px-4 py-2.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm sm:text-base text-center">
                     🏥 Health Check API
                 </a>
             </div>
@@ -177,14 +193,19 @@ function formatCurrency(amount, currency = 'XAF') {
 
 function getHealthColor(status) {
     const colors = {
-        healthy: 'text-green-600 bg-green-100',
-        degraded: 'text-yellow-600 bg-yellow-100',
-        unhealthy: 'text-red-600 bg-red-100',
+        healthy: 'text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/40',
+        degraded: 'text-yellow-700 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900/40',
+        unhealthy: 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/40',
     };
-    return colors[status] || 'text-gray-600 bg-gray-100';
+    return colors[status] || 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700';
 }
 
 async function refreshStats() {
+    const btn = document.getElementById('refresh-btn');
+    const indicator = document.getElementById('refresh-indicator');
+    btn && (btn.disabled = true);
+    indicator && indicator.classList.remove('hidden');
+    
     try {
         const response = await fetch('/admin/monitoring/stats', {
             method: 'GET',
@@ -209,9 +230,15 @@ async function refreshStats() {
     } catch (error) {
         console.error('Erreur lors du rafraîchissement:', error);
         autoRefresh = false;
-        document.getElementById('toggle-refresh').textContent = '⏸️ Auto-refresh OFF';
-        document.getElementById('toggle-refresh').classList.remove('bg-green-600');
-        document.getElementById('toggle-refresh').classList.add('bg-gray-300', 'text-gray-700');
+        const toggleBtn = document.getElementById('toggle-refresh');
+        toggleBtn.innerHTML = '\u23f8\ufe0f <span class="hidden sm:inline">Auto-refresh</span> OFF';
+        toggleBtn.classList.remove('bg-green-600');
+        toggleBtn.classList.add('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+    } finally {
+        const btn = document.getElementById('refresh-btn');
+        const indicator = document.getElementById('refresh-indicator');
+        btn && (btn.disabled = false);
+        indicator && indicator.classList.add('hidden');
     }
 }
 
@@ -223,10 +250,10 @@ function updateDashboard(data) {
     
     // Update health status
     const healthStatus = document.getElementById('health-status');
-    healthStatus.className = `px-6 py-4 rounded-lg font-semibold text-lg flex items-center justify-between ${getHealthColor(health.status)}`;
+    healthStatus.className = `px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center justify-between ${getHealthColor(health.status)}`;
     healthStatus.innerHTML = `
         <span>État du système: <span class="uppercase">${health.status}</span></span>
-        <span class="text-2xl">${health.status === 'healthy' ? '✅' : health.status === 'degraded' ? '⚠️' : '❌'}</span>
+        <span class="text-xl sm:text-2xl">${health.status === 'healthy' ? '\u2705' : health.status === 'degraded' ? '\u26a0\ufe0f' : '\u274c'}</span>
     `;
     
     // Update health checks
@@ -234,22 +261,25 @@ function updateDashboard(data) {
     healthChecks.innerHTML = Object.entries(health.checks).map(([name, check]) => `
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
             <div class="flex items-center justify-between">
-                <h3 class="font-medium text-gray-700 dark:text-gray-300 capitalize">${name}</h3>
-                <span class="px-2 py-1 text-xs rounded ${
-                    check.status === 'ok' ? 'bg-green-100 text-green-700' :
-                    check.status === 'warning' ? 'bg-yellow-100 text-yellow-700' :
-                    'bg-red-100 text-red-700'
+                <h3 class="font-medium text-gray-700 dark:text-gray-300 capitalize text-sm sm:text-base">${name}</h3>
+                <span class="px-2 py-1 text-xs rounded ${  
+                    check.status === 'ok' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
+                    check.status === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
+                    'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                 }">
                     ${check.status}
                 </span>
             </div>
             ${check.usage_percent ? `
-                <div class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <div class="mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <p>Utilisation: ${check.usage_percent}%</p>
-                    <p>Espace libre: ${check.free_gb} GB</p>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-1">
+                        <div class="h-1.5 rounded-full transition-all ${check.usage_percent > 90 ? 'bg-red-500' : check.usage_percent > 70 ? 'bg-yellow-500' : 'bg-green-500'}" style="width: ${check.usage_percent}%"></div>
+                    </div>
+                    <p class="mt-1">Libre: ${check.free_gb} GB</p>
                 </div>
             ` : ''}
-            ${check.error ? `<p class="mt-2 text-xs text-red-600">${check.error}</p>` : ''}
+            ${check.error ? `<p class="mt-2 text-xs text-red-600 dark:text-red-400">${check.error}</p>` : ''}
         </div>
     `).join('');
     
@@ -274,16 +304,15 @@ function updateDashboard(data) {
     const revenueData = stats.database.revenue_today;
     
     if (typeof revenueData === 'object' && Object.keys(revenueData).length > 0) {
-        // Afficher les revenus par devise
         revenueTodayElement.innerHTML = Object.entries(revenueData).map(([currency, amount]) => `
-            <div class="flex justify-between items-baseline">
-                <span class="text-sm opacity-80">${currency}:</span>
-                <span class="text-2xl font-bold">${formatCurrency(amount, currency)}</span>
+            <div class="flex justify-between items-baseline gap-2">
+                <span class="text-xs sm:text-sm opacity-80">${currency}:</span>
+                <span class="text-base sm:text-2xl font-bold truncate">${formatCurrency(amount, currency)}</span>
             </div>
         `).join('');
     } else {
         // Aucun revenu aujourd'hui
-        revenueTodayElement.innerHTML = '<div class="text-2xl font-bold">Aucun revenu</div>';
+        revenueTodayElement.innerHTML = '<div class="text-lg sm:text-2xl font-bold">Aucun revenu</div>';
     }
     
     document.getElementById('orders-today').textContent = `${formatNumber(stats.database.total_orders_today)} commandes`;
@@ -365,14 +394,16 @@ function updateDashboard(data) {
 // Toggle auto-refresh
 document.getElementById('toggle-refresh').addEventListener('click', function() {
     autoRefresh = !autoRefresh;
-    this.textContent = autoRefresh ? '🔄 Auto-refresh ON' : '⏸️ Auto-refresh OFF';
+    this.innerHTML = autoRefresh 
+        ? '\ud83d\udd04 <span class="hidden sm:inline">Auto-refresh</span> ON' 
+        : '\u23f8\ufe0f <span class="hidden sm:inline">Auto-refresh</span> OFF';
     
     if (autoRefresh) {
-        this.classList.remove('bg-gray-300', 'text-gray-700');
+        this.classList.remove('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
         this.classList.add('bg-green-600', 'text-white');
     } else {
         this.classList.remove('bg-green-600', 'text-white');
-        this.classList.add('bg-gray-300', 'text-gray-700');
+        this.classList.add('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
     }
 });
 

@@ -16,7 +16,7 @@
 
             <!-- Contenu -->
             <div class="card-body p-4 p-md-5">
-                <!-- ⚠️ Message d'avertissement FORT -->
+                <!--  Message d'avertissement FORT -->
                 <div class="alert alert-danger border-danger shadow-sm mb-4" role="alert">
                     <div class="d-flex align-items-start">
                         <div class="flex-shrink-0">

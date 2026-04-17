@@ -69,9 +69,10 @@ return new class extends Migration
             try {
                 DB::statement($sql);
             } catch (\Exception $e) {
-                // Ignorer les erreurs de doublons ou d'index existants
+                // Ignorer les erreurs de doublons, d'index existants ou de colonnes manquantes
                 if (strpos($e->getMessage(), 'Duplicate key') === false && 
-                    strpos($e->getMessage(), 'already exists') === false) {
+                    strpos($e->getMessage(), 'already exists') === false &&
+                    strpos($e->getMessage(), "doesn't exist in table") === false) {
                     throw $e;
                 }
             }

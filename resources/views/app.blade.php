@@ -85,90 +85,87 @@
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
     
     <!-- Header avec barre de profil -->
-    <header class="bg-primary lg:bg-white dark:bg-gray-800 shadow-sm border-b border-primary-700 lg:border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div class="flex items-center justify-between px-4 py-3 max-w-7xl lg:mx-auto">
+    <header class="bg-primary lg:bg-white dark:bg-gray-800/95 dark:backdrop-blur-md shadow-sm border-b border-primary-700 lg:border-gray-200 dark:border-gray-700/50 sticky top-0 z-50 transition-colors duration-300">
+        <div class="flex items-center justify-between px-4 py-2.5 max-w-7xl lg:mx-auto">
             @auth
                 <!-- Profil utilisateur connecté -->
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ route('profile.index') }}" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                            @if(Auth::user()->avatar)
-                                @php
-                                    $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
-                                        ? Auth::user()->avatar 
-                                        : asset('storage/' . Auth::user()->avatar);
-                                @endphp
-                                <img src="{{ $avatarUrl }}" 
-                                     alt="{{ Auth::user()->name }}" 
-                                     class="w-10 h-10 rounded-full object-cover border-2 border-white lg:border-primary-200"
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary-600 to-accent-400 items-center justify-center text-white font-bold text-sm hidden">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                                </div>
-                            @else
-                                <div class="w-10 h-10 rounded-full bg-white lg:bg-gradient-to-r lg:from-primary-600 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-sm border-2 border-white lg:border-0">
-                                    {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
-                                </div>
-                            @endif
-                            <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm sm:text-base">{{ Auth::user()->name }}</span>
-                        </a>
-                    </div>
-                    
-                    <!-- Actions utilisateur connecté -->
-                    <div class="flex items-center space-x-2">
-                        <!-- Notifications -->
-                        <button class="relative p-2.5 hover:bg-primary-700 lg:hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors" onclick="toggleNotifications()">
-                            <i class="fas fa-bell text-white lg:text-gray-700 dark:text-gray-200 text-lg"></i>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('profile.index') }}" class="group flex items-center gap-2.5" aria-label="Mon profil">
+                        @if(Auth::user()->avatar)
                             @php
-                                $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
+                                $avatarUrl = filter_var(Auth::user()->avatar, FILTER_VALIDATE_URL) 
+                                    ? Auth::user()->avatar 
+                                    : asset('storage/' . Auth::user()->avatar);
                             @endphp
-                            @if($unreadNotifications > 0)
-                                <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-                            @endif
-                        </button>
-                        
-                        <!-- Panier -->
-                        <a href="{{ route('cart.index') }}" class="relative p-2.5 hover:bg-primary-700 lg:hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
-                            <i class="fas fa-shopping-cart text-white lg:text-gray-700 dark:text-gray-200 text-lg"></i>
-                            @if(session('cart') && count(session('cart')) > 0)
-                                <span class="absolute -top-0.5 -right-0.5 w-5 h-5 bg-white lg:bg-primary-600 text-primary-600 lg:text-white text-xs rounded-full flex items-center justify-center font-bold border-2 border-primary-600 lg:border-0">
-                                    {{ count(session('cart')) }}
-                                </span>
-                            @endif
-                        </a>
-                    </div>
-                @else
-                    <!-- Logo pour utilisateur non connecté -->
-                    <div class="flex items-center space-x-3">
-                        <a href="{{ url('/') }}" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-                            <div class="w-10 h-10 rounded-full bg-white lg:bg-gradient-to-r lg:from-primary-600 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-sm border-2 border-white lg:border-0">
-                                <i class="fas fa-home"></i>
+                            <img src="{{ $avatarUrl }}" 
+                                 alt="{{ Auth::user()->name }}" 
+                                 class="w-9 h-9 rounded-full object-cover ring-2 ring-white/80 lg:ring-primary-200 group-hover:ring-white lg:group-hover:ring-primary-400 transition-all duration-200"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-400 items-center justify-center text-white font-bold text-xs hidden shadow-inner">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                             </div>
-                            <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm sm:text-base">{{ config('app.name', 'VintApp') }}</span>
-                        </a>
-                    </div>
+                        @else
+                            <div class="w-9 h-9 rounded-full bg-white/90 lg:bg-gradient-to-br lg:from-primary-500 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-xs ring-2 ring-white/60 lg:ring-0 shadow-inner">
+                                {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+                            </div>
+                        @endif
+                        <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm truncate max-w-[140px] group-hover:opacity-80 transition-opacity">{{ Auth::user()->name }}</span>
+                    </a>
+                </div>
+                
+                <!-- Actions utilisateur connecté -->
+                <div class="flex items-center gap-1">
+                    <!-- Notifications -->
+                    <button class="relative p-2 hover:bg-white/10 lg:hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 active:scale-95" onclick="toggleNotifications()" aria-label="Notifications">
+                        <svg class="w-5 h-5 text-white lg:text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+                        </svg>
+                        @php
+                            $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
+                        @endphp
+                        @if($unreadNotifications > 0)
+                            <span class="absolute top-1 right-1 flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 ring-2 ring-primary lg:ring-white dark:ring-gray-800"></span>
+                            </span>
+                        @endif
+                    </button>
                     
-                    <!-- Boutons de connexion -->
-                    <!-- <div class="flex items-center space-x-2">
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-primary-600 hover:bg-primary-50 rounded-full font-semibold text-sm transition-colors border border-primary-200 hover:border-primary-300">
-                            <i class="fas fa-sign-in-alt mr-1"></i>
-                            Se connecter
-                        </a>
-                        <a href="{{ route('register') }}" class="px-4 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-full font-semibold text-sm transition-colors">
-                            <i class="fas fa-user-plus mr-1"></i>
-                            S'inscrire
-                        </a>
-                    </div> -->
-                @endauth
+                    <!-- Panier -->
+                    <a href="{{ route('cart.index') }}" class="relative p-2 hover:bg-white/10 lg:hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 active:scale-95" aria-label="Panier">
+                        <svg class="w-5 h-5 text-white lg:text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                        </svg>
+                        @if(session('cart') && count(session('cart')) > 0)
+                            <span class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold ring-2 ring-primary lg:ring-white dark:ring-gray-800">
+                                {{ count(session('cart')) }}
+                            </span>
+                        @endif
+                    </a>
+                </div>
+            @else
+                <!-- Logo pour utilisateur non connecté -->
+                <div class="flex items-center">
+                    <a href="{{ url('/') }}" class="group flex items-center gap-2.5" aria-label="Accueil">
+                        <div class="w-9 h-9 rounded-xl bg-white/90 lg:bg-gradient-to-br lg:from-primary-500 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white shadow-sm group-hover:shadow-md transition-all duration-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
+                            </svg>
+                        </div>
+                        <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm group-hover:opacity-80 transition-opacity">{{ config('app.name', 'VintApp') }}</span>
+                    </a>
+                </div>
+            @endauth
         </div>
 
         <!-- Navigation principale (desktop seulement) -->
-        <nav class="bg-primary hidden lg:block">
+        <nav class="bg-primary hidden lg:block" role="navigation" aria-label="Navigation principale">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center justify-between h-16">
+                <div class="flex items-center justify-between h-14">
                     <!-- Logo et navigation gauche -->
-                    <div class="flex items-center space-x-8">
+                    <div class="flex items-center gap-8">
                         <!-- Logo -->
-                        <a href="{{ url('/') }}" class="flex items-center space-x-2 text-white hover:opacity-80 transition-opacity">
+                        <a href="{{ url('/') }}" class="flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
                             <x-app-brand 
                                 :show-logo="true"
                                 :show-name="true"
@@ -181,108 +178,118 @@
                         </a>
                         
                         <!-- Navigation links -->
-                        <div class="flex items-center space-x-6">
-                            <a href="{{ route('dashboard') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('dashboard') ? 'bg-primary-700' : '' }}">
-                                <i class="fas fa-tachometer-alt mr-1"></i>
-                                Dashboard
-                            </a>
-                            <a href="{{ route('items.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('items.index') ? 'bg-primary-700' : '' }}">
-                                <i class="fas fa-box mr-1"></i>
-                                Articles
-                            </a>
-                            <a href="{{ route('categories.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('categories.*') ? 'bg-primary-700' : '' }}">
-                                <i class="fas fa-layer-group mr-1"></i>
-                                Catégories
-                            </a>
-                            <a href="{{ route('brands.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('brands.*') ? 'bg-primary-700' : '' }}">
-                                <i class="fas fa-tags mr-1"></i>
-                                Marques
-                            </a>
+                        <div class="flex items-center gap-1">
+                            @php
+                                $desktopNavLinks = [
+                                    ['route' => 'dashboard', 'label' => 'Dashboard', 'active' => request()->routeIs('dashboard'), 'icon' => 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z', 'auth' => false],
+                                    ['route' => 'items.index', 'label' => 'Articles', 'active' => request()->routeIs('items.index'), 'icon' => 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z', 'auth' => false],
+                                    ['route' => 'categories.index', 'label' => 'Catégories', 'active' => request()->routeIs('categories.*'), 'icon' => 'M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3', 'auth' => false],
+                                    ['route' => 'brands.index', 'label' => 'Marques', 'active' => request()->routeIs('brands.*'), 'icon' => 'M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z', 'auth' => false],
+                                ];
+                                $authNavLinks = [
+                                    ['route' => 'items.my-items', 'label' => 'Mes Articles', 'active' => request()->routeIs('items.my-items'), 'icon' => 'M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'],
+                                    ['route' => 'orders.index', 'label' => 'Commandes', 'active' => request()->routeIs('orders.index'), 'icon' => 'M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.002-.895 1.924-2.013l-.553-7.72a.75.75 0 00-.746-.687H6.154a.75.75 0 00-.746.687l-.553 7.72a1.924 1.924 0 001.924 2.013zm12.75 3a3 3 0 00-3-3m3 3v.008h-.008V17.25h.008zm-3 0v.008h-.008V17.25h.008z'],
+                                    ['route' => 'wallet.index', 'label' => 'Wallet', 'active' => request()->routeIs('wallet.*'), 'icon' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.008A2.25 2.25 0 0021 6.008V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v.008c0 1.243 1.007 2.25 2.25 2.25H15a3 3 0 010 6H5.25A2.25 2.25 0 003 16.5v1.245c0 1.243 1.007 2.25 2.25 2.248h13.5A2.25 2.25 0 0021 17.745V12z'],
+                                ];
+                            @endphp
+                            
+                            @foreach($desktopNavLinks as $link)
+                                <a href="{{ route($link['route']) }}" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ $link['active'] ? 'text-white bg-white/15' : 'text-white/75 hover:text-white hover:bg-white/10' }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $link['icon'] }}"/></svg>
+                                    {{ $link['label'] }}
+                                    @if($link['active'])<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-full"></span>@endif
+                                </a>
+                            @endforeach
                             
                             @auth
-                                <a href="{{ route('items.my-items') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('items.my-items') ? 'bg-primary-700' : '' }}">
-                                    <i class="fas fa-list mr-1"></i>
-                                    Mes Articles
-                                </a>
-                                <a href="{{ route('orders.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('orders.index') ? 'bg-primary-700' : '' }}">
-                                    <i class="fas fa-shopping-cart mr-1"></i>
-                                    Commandes
-                                </a>
-                                <a href="{{ route('wallet.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('wallet.*') ? 'bg-primary-700' : '' }}">
-                                    <i class="fas fa-wallet mr-1"></i>
-                                    Wallet
-                                </a>
+                                @foreach($authNavLinks as $link)
+                                    <a href="{{ route($link['route']) }}" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ $link['active'] ? 'text-white bg-white/15' : 'text-white/75 hover:text-white hover:bg-white/10' }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $link['icon'] }}"/></svg>
+                                        {{ $link['label'] }}
+                                        @if($link['active'])<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-full"></span>@endif
+                                    </a>
+                                @endforeach
                             @endauth
                             
-                            <a href="{{ route('help.index') }}" class="text-white hover:text-primary-200 px-3 py-2 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('help.*') ? 'bg-primary-700' : '' }}">
-                                <i class="fas fa-question-circle mr-1"></i>
+                            <a href="{{ route('help.index') }}" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('help.*') ? 'text-white bg-white/15' : 'text-white/75 hover:text-white hover:bg-white/10' }}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/></svg>
                                 Aide
+                                @if(request()->routeIs('help.*'))<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-full"></span>@endif
                             </a>
                         </div>
                     </div>
                     
                     <!-- Barre de recherche et menu utilisateur -->
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-3">
                         <!-- Barre de recherche -->
                         <form class="flex items-center" method="GET" action="{{ route('items.search') }}">
-                            <div class="relative">
+                            <div class="relative group">
                                 <input type="search" 
                                        name="q" 
                                        placeholder="Rechercher un article..." 
                                        value="{{ request('q') }}"
-                                       class="w-80 px-4 py-2 pl-10 pr-4 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent">
-                                <i class="fas fa-search absolute left-3 top-2.5 text-gray-400"></i>
-                                <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-primary-500 text-white rounded-full hover:bg-primary-600 transition-colors">
-                                    <i class="fas fa-search text-xs"></i>
-                                </button>
+                                       class="w-72 px-4 py-2 pl-10 text-sm bg-white/10 text-white placeholder-white/50 border border-white/20 rounded-xl focus:outline-none focus:bg-white/20 focus:border-white/40 focus:ring-0 transition-all duration-200">
+                                <svg class="w-4 h-4 absolute left-3 top-2.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
                             </div>
                         </form>
                         
                         @auth
                             <!-- Menu utilisateur -->
                             <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="flex items-center space-x-2 text-white hover:text-primary-200 transition-colors">
+                                <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-primary-200 transition-colors p-1.5 rounded-lg hover:bg-white/10" aria-label="Menu utilisateur">
                                     @if(Auth::user()->avatar)
-                                        <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}" class="w-8 h-8 rounded-full object-cover">
+                                        <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-lg object-cover ring-2 ring-white/30">
                                     @else
-                                        <div class="w-8 h-8 rounded-full bg-primary-700 flex items-center justify-center text-white font-bold text-xs">
+                                        <div class="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-white font-bold text-xs">
                                             {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                                         </div>
                                     @endif
-                                    <i class="fas fa-chevron-down text-xs"></i>
+                                    <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
                                 </button>
                                 
                                 <!-- Dropdown menu -->
-                                <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
-                                    <div class="px-4 py-2 text-xs text-gray-500 dark:text-gray-400 border-b">Profil & Paramètres</div>
-                                    <a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                                        <i class="fas fa-user mr-2"></i> Mon Profil
+                                <div x-show="open" @click.away="open = false"
+                                     x-transition:enter="transition ease-out duration-150"
+                                     x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-100"
+                                     x-transition:leave-start="opacity-100 scale-100"
+                                     x-transition:leave-end="opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 py-1 z-50 overflow-hidden">
+                                    <div class="px-4 py-2.5 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Profil & Paramètres</div>
+                                    <a href="{{ route('profile.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                        Mon Profil
                                     </a>
-                                    <a href="{{ route('settings.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                                        <i class="fas fa-cog mr-2"></i> Paramètres
+                                    <a href="{{ route('settings.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Paramètres
                                     </a>
-                                    <a href="{{ route('messages.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                                        <i class="fas fa-comments mr-2"></i> Messages
+                                    <a href="{{ route('messages.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg>
+                                        Messages
                                     </a>
-                                    <a href="{{ route('admin.refunds.index') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800">
-                                        <i class="fas fa-undo mr-2"></i> Remboursements
+                                    <a href="{{ route('admin.refunds.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
+                                        Remboursements
                                     </a>
-                                    <div class="border-t my-1"></div>
+                                    <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
-                                        <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:bg-gray-800">
-                                            <i class="fas fa-sign-out-alt mr-2"></i> Déconnexion
+                                        <button type="submit" class="flex items-center gap-2.5 w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                                            Déconnexion
                                         </button>
                                     </form>
                                 </div>
                             </div>
                         @else
-                            <div class="flex items-center space-x-2">
-                                <a href="{{ route('login') }}" class="text-white hover:text-primary-200 px-3 py-2 text-sm font-medium">
-                                    <i class="fas fa-sign-in-alt mr-1"></i> Connexion
+                            <div class="flex items-center gap-2">
+                                <a href="{{ route('login') }}" class="text-white/80 hover:text-white px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-white/10 transition-all duration-200">
+                                    Connexion
                                 </a>
-                                <a href="{{ route('register') }}" class="bg-white dark:bg-gray-800 text-primary-600 hover:bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full text-sm font-medium transition-colors">
-                                    <i class="fas fa-user-plus mr-1"></i> S'inscrire
+                                <a href="{{ route('register') }}" class="bg-white text-primary-600 hover:bg-white/90 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm">
+                                    S'inscrire
                                 </a>
                             </div>
                         @endauth
@@ -294,44 +301,41 @@
 
     <!-- Fil d'Ariane -->
     @if(!request()->routeIs('welcome'))
-        <nav class="bg-gray-100 dark:bg-gray-800 py-2 hidden lg:block">
+        <nav class="bg-gray-50 dark:bg-gray-800/50 py-2 hidden lg:block border-b border-gray-100 dark:border-gray-700/30" aria-label="Fil d'Ariane">
             <div class="max-w-7xl mx-auto px-4">
-                <div class="flex items-center space-x-2 text-sm">
-                    <a href="{{ url('/') }}" class="text-primary-600 hover:text-primary-800">
-                        <i class="fas fa-home mr-1"></i> Accueil
-                    </a>
+                <ol class="flex items-center gap-1.5 text-sm">
+                    <li>
+                        <a href="{{ url('/') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
+                            Accueil
+                        </a>
+                    </li>
+                    @php
+                        $chevronSvg = '<svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>';
+                    @endphp
                     @if(request()->routeIs('dashboard'))
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-gray-600 dark:text-gray-300">Dashboard</span>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">Dashboard</span></li>
                     @elseif(request()->routeIs('categories.*'))
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('categories.index') }}" class="text-primary-600 hover:text-primary-800">Catégories</a>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('categories.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Catégories</a></li>
                         @if(request()->routeIs('categories.show'))
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600 dark:text-gray-300">{{ $category->name ?? 'Détails' }}</span>
+                            <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $category->name ?? 'Détails' }}</span></li>
                         @endif
                     @elseif(request()->routeIs('brands.*'))
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('brands.index') }}" class="text-primary-600 hover:text-primary-800">Marques</a>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('brands.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Marques</a></li>
                         @if(request()->routeIs('brands.show'))
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600 dark:text-gray-300">{{ $brand->name ?? 'Détails' }}</span>
+                            <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $brand->name ?? 'Détails' }}</span></li>
                         @endif
                     @elseif(request()->routeIs('items.*'))
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{{ route('items.index') }}" class="text-primary-600 hover:text-primary-800">Articles</a>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('items.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Articles</a></li>
                         @if(request()->routeIs('items.show'))
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600 dark:text-gray-300">{{ $item->name ?? 'Détails' }}</span>
+                            <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $item->name ?? 'Détails' }}</span></li>
                         @elseif(request()->routeIs('items.my-items'))
-                            <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                            <span class="text-gray-600 dark:text-gray-300">Mes articles</span>
+                            <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">Mes articles</span></li>
                         @endif
                     @elseif(request()->routeIs('wallet.*'))
-                        <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <span class="text-gray-600 dark:text-gray-300">Wallet</span>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">Wallet</span></li>
                     @endif
-                </div>
+                </ol>
             </div>
         </nav>
     @endif
@@ -350,37 +354,83 @@
     @endif
 
     <!-- Navigation mobile (bottom) -->
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 bg-primary dark:bg-gray-800 border-t border-primary-700 dark:border-gray-700 z-50">
-        <div class="grid grid-cols-5 h-16">
-            <a href="{{ url('/') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white {{ request()->is('/') ? 'text-white font-bold' : '' }}">
-                <i class="fas fa-home text-lg"></i>
-                <span class="text-xs mt-1">Accueil</span>
-            </a>
-            <a href="{{ route('items.create') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white {{ request()->routeIs('items.create') ? 'text-white font-bold' : '' }}">
-                <i class="fas fa-plus-circle text-lg"></i>
-                <span class="text-xs mt-1">Vendre</span>
-            </a>
-            <a href="{{ route('items.index') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white {{ request()->routeIs('items.index') ? 'text-white font-bold' : '' }}">
-                <i class="fas fa-box text-lg"></i>
-                <span class="text-xs mt-1">Articles</span>
-            </a>
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50" role="navigation" aria-label="Navigation mobile">
+        <!-- Fond avec blur -->
+        <div class="absolute inset-0 bg-white/80 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/60 dark:border-gray-700/50"></div>
+        
+        <div class="relative grid grid-cols-5 h-16 max-w-lg mx-auto px-2 safe-area-bottom">
+            @php
+                $mobileNav = [
+                    ['url' => url('/'), 'label' => 'Accueil', 'active' => request()->is('/'),
+                     'icon' => 'M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25',
+                     'iconFilled' => 'M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z'],
+                    ['url' => route('items.create'), 'label' => 'Vendre', 'active' => request()->routeIs('items.create'),
+                     'icon' => 'M12 4.5v15m7.5-7.5h-15',
+                     'iconFilled' => 'M12 4.5v15m7.5-7.5h-15', 'special' => true],
+                    ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
+                     'icon' => 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z',
+                     'iconFilled' => 'M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375zm0 0 M3.087 9l.54 9.176A3 3 0 006.62 21h10.757a3 3 0 002.995-2.824L20.913 9H3.087zm6.163 3.75A.75.75 0 0110 12h4a.75.75 0 010 1.5h-4a.75.75 0 01-.75-.75z'],
+                ];
+            @endphp
+            
+            @foreach($mobileNav as $item)
+                <a href="{{ $item['url'] }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="{{ $item['label'] }}">
+                    @if(!empty($item['special']))
+                        {{-- Bouton Vendre spécial --}}
+                        <div class="w-10 h-10 -mt-3 rounded-xl flex items-center justify-center transition-all duration-200 {{ $item['active'] ? 'bg-primary-600 shadow-lg shadow-primary-500/30' : 'bg-primary-500 shadow-md shadow-primary-500/20 group-active:scale-90' }}">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                        </div>
+                        <span class="text-[10px] font-semibold {{ $item['active'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                    @else
+                        <div class="relative p-1">
+                            @if($item['active'])
+                                <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" viewBox="0 0 24 24" fill="currentColor">@foreach(explode(' M', $item['iconFilled']) as $i => $path)<path d="{{ $i > 0 ? 'M' : '' }}{{ $path }}"/>@endforeach</svg>
+                            @else
+                                <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
+                            @endif
+                        </div>
+                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        @if($item['active'])
+                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary-500 rounded-full"></span>
+                        @endif
+                    @endif
+                </a>
+            @endforeach
+            
             @auth
-                <a href="{{ route('wallet.index') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white {{ request()->routeIs('wallet.*') ? 'text-white font-bold' : '' }}">
-                    <i class="fas fa-wallet text-lg"></i>
-                    <span class="text-xs mt-1">Wallet</span>
-                </a>
-                <a href="{{ route('settings.index') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white {{ request()->routeIs('settings.*') ? 'text-white font-bold' : '' }}">
-                    <i class="fas fa-cog text-lg"></i>
-                    <span class="text-xs mt-1">Profil</span>
-                </a>
+                @php
+                    $authMobileNav = [
+                        ['url' => route('wallet.index'), 'label' => 'Wallet', 'active' => request()->routeIs('wallet.*'),
+                         'icon' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.75a.75.75 0 000-1.5H15a4.5 4.5 0 000 9h3.75A.75.75 0 0019.5 12v0a.75.75 0 00-.75-.75H15a3 3 0 100 6h3.75A2.25 2.25 0 0021 15V12zM3 5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25v13.5A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75V5.25z',
+                         'iconSimple' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.008A2.25 2.25 0 0021 6.008V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v.008c0 1.243 1.007 2.25 2.25 2.25H15a3 3 0 010 6H5.25A2.25 2.25 0 003 16.5v1.245c0 1.243 1.007 2.25 2.25 2.248h13.5A2.25 2.25 0 0021 17.745V12z'],
+                        ['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
+                         'icon' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z',
+                         'iconSimple' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'],
+                    ];
+                @endphp
+                @foreach($authMobileNav as $item)
+                    <a href="{{ $item['url'] }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="{{ $item['label'] }}">
+                        <div class="relative p-1">
+                            <svg class="w-5 h-5 transition-colors {{ $item['active'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300' }}" fill="{{ $item['active'] ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['active'] ? ($item['iconSimple'] ?? $item['icon']) : $item['icon'] }}"/></svg>
+                        </div>
+                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        @if($item['active'])
+                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary-500 rounded-full"></span>
+                        @endif
+                    </a>
+                @endforeach
             @else
-                <a href="{{ route('login') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white">
-                    <i class="fas fa-sign-in-alt text-lg"></i>
-                    <span class="text-xs mt-1">Connexion</span>
+                <a href="{{ route('login') }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="Connexion">
+                    <div class="relative p-1">
+                        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/></svg>
+                    </div>
+                    <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400">Connexion</span>
                 </a>
-                <a href="{{ route('register') }}" class="flex flex-col items-center justify-center text-primary-100 dark:text-gray-400 hover:text-white">
-                    <i class="fas fa-user-plus text-lg"></i>
-                    <span class="text-xs mt-1">S'inscrire</span>
+                <a href="{{ route('register') }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="S'inscrire">
+                    <div class="relative p-1">
+                        <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"/></svg>
+                    </div>
+                    <span class="text-[10px] font-medium text-gray-500 dark:text-gray-400">S'inscrire</span>
                 </a>
             @endauth
         </div>

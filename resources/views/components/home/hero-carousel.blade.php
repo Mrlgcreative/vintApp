@@ -1,6 +1,6 @@
 @props(['slides'])
 
-<section class="relative h-screen overflow-hidden">
+<section class="relative h-[90vh] min-h-[600px] overflow-hidden">
     @if($slides && $slides->count() > 0)
         <!-- Carrousel Container -->
         <div class="relative h-full">
@@ -9,85 +9,56 @@
                  style="width: {{ $slides->count() * 100 }}%;">
                 @foreach($slides as $index => $slide)
                     <div class="relative w-full h-full flex-shrink-0" 
-                         style="width: {{ 100 / $slides->count() }}%; background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
+                         style="width: {{ 100 / $slides->count() }}%;">
                         
-                        <!-- Image de fond avec opacité 20% -->
+                        <!-- Image de fond plein écran -->
                         @if($slide->image_url)
-                            <div class="absolute inset-0 opacity-20">
+                            <div class="absolute inset-0">
                                 <img src="/storage/{{ $slide->image_url }}" 
                                      alt="{{ $slide->title }}" 
                                      class="w-full h-full object-cover" />
                             </div>
                         @endif
                         
+                        <!-- Overlay gradient -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"></div>
+                        
                         <div class="relative z-10 h-full flex items-center">
-                            <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center h-full min-h-[600px]">
+                            <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                                <div class="max-w-2xl space-y-6">
+                                    @if($slide->subtitle)
+                                        <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
+                                            <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                                            <span class="text-sm font-semibold text-white/90 tracking-wide uppercase">{{ $slide->subtitle }}</span>
+                                        </div>
+                                    @endif
                                     
-                                    <!-- Left Content -->
-                                    <div class="text-left space-y-6 lg:space-y-8">
-                                        @if($slide->subtitle)
-                                            <p class="text-sm sm:text-base font-bold tracking-widest uppercase animate-fade-in">
-                                                <span class="inline-block px-4 py-2 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-500 text-white rounded-full shadow-lg">
-                                                    {{ $slide->subtitle }}
-                                                </span>
-                                            </p>
-                                        @endif
-                                        
-                                        <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-black leading-tight animate-slide-up">
-                                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-white via-yellow-200 to-orange-300 drop-shadow-[0_4px_12px_rgba(255,255,255,0.3)]">
-                                                {{ $slide->title }}
-                                            </span>
-                                        </h1>
-                                        
-                                        @if($slide->description)
-                                            <p class="text-lg sm:text-xl leading-relaxed animate-fade-in max-w-xl">
-                                                <span class="text-white/95 font-medium drop-shadow-lg">
-                                                    {{ $slide->description }}
-                                                </span>
-                                            </p>
-                                        @endif
-                                        
-                                        @if($slide->cta_text && $slide->cta_link)
-                                            <div class="animate-scale-in flex gap-4">
-                                                <a href="{{ $slide->cta_link }}" 
-                                                   class="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-yellow-400 via-orange-500 to-pink-500 text-white rounded-full font-bold text-lg hover:from-yellow-500 hover:via-orange-600 hover:to-pink-600 transition-all transform hover:scale-105 shadow-2xl hover:shadow-orange-500/50">
-                                                    <span>{{ $slide->cta_text }}</span>
-                                                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                                                    </svg>
-                                                </a>
-                                            </div>
-                                        @endif
-                                    </div>
+                                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight">
+                                        {{ $slide->title }}
+                                    </h1>
                                     
-                                    <!-- Right Content - Image -->
-                                    <div class="relative h-full flex items-center justify-center">
-                                        @if($slide->image_url)
-                                            <div class="relative w-full max-w-md lg:max-w-lg aspect-square group">
-                                                <!-- Cadre décoratif extérieur avec effet vintage -->
-                                                <div class="absolute -inset-4 bg-gradient-to-br from-white/20 via-white/10 to-transparent rounded-3xl backdrop-blur-sm transform rotate-3 group-hover:rotate-6 transition-transform duration-500"></div>
-                                                
-                                                <!-- Cadre décoratif intérieur -->
-                                                <div class="absolute -inset-2 bg-white/30 rounded-2xl backdrop-blur-sm transform -rotate-2 group-hover:-rotate-3 transition-transform duration-500"></div>
-                                                
-                                                <!-- Container principal de l'image -->
-                                                <div class="relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-white/50 backdrop-blur-md transform group-hover:scale-105 transition-all duration-500">
-                                                    <!-- Effet de brillance vintage -->
-                                                    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                                    
-                                                    <!-- Image -->
-                                                    <img src="/storage/{{ $slide->image_url }}" 
-                                                         alt="{{ $slide->title }}" 
-                                                         class="w-full h-full object-cover animate-scale-in" />
-                                                    
-                                                    <!-- Overlay avec effet vignette -->
-                                                    <div class="absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.1)] pointer-events-none"></div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                    </div>
+                                    @if($slide->description)
+                                        <p class="text-lg sm:text-xl text-white/80 leading-relaxed max-w-lg">
+                                            {{ $slide->description }}
+                                        </p>
+                                    @endif
                                     
+                                    @if($slide->cta_text && $slide->cta_link)
+                                        <div class="flex flex-wrap items-center gap-4 pt-2">
+                                            <a href="{{ $slide->cta_link }}" 
+                                               class="group inline-flex items-center gap-3 px-7 py-3.5 bg-white text-gray-900 rounded-full font-bold text-base hover:bg-purple-50 transition-all duration-300 shadow-xl shadow-black/20">
+                                                <span>{{ $slide->cta_text }}</span>
+                                                <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                                </svg>
+                                            </a>
+                                            <a href="{{ route('items.index') }}" 
+                                               class="inline-flex items-center gap-2 px-7 py-3.5 border-2 border-white/30 text-white rounded-full font-semibold text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
+                                                Explorer
+                                            </a>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -98,80 +69,95 @@
             <!-- Navigation Arrows -->
             @if($slides->count() > 1)
                 <button onclick="prevSlide()" 
-                        class="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all z-20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="absolute left-6 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 z-20 group">
+                    <svg class="w-5 h-5 text-white group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </button>
                 
                 <button onclick="nextSlide()" 
-                        class="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full flex items-center justify-center transition-all z-20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="absolute right-6 top-1/2 -translate-y-1/2 w-11 h-11 bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-300 z-20 group">
+                    <svg class="w-5 h-5 text-white group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
             @endif
             
-            <!-- Dots Indicator -->
+            <!-- Bottom Bar: Dots + Slide Counter -->
             @if($slides->count() > 1)
-                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-                    @foreach($slides as $index => $slide)
-                        <button onclick="goToSlide({{ $index }})" 
-                                class="carousel-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white' : 'bg-white/40 hover:bg-white/60' }}">
-                        </button>
-                    @endforeach
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20">
+                    <div class="flex items-center gap-2 px-4 py-2.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
+                        @foreach($slides as $index => $slide)
+                            <button onclick="goToSlide({{ $index }})" 
+                                    class="carousel-dot rounded-full transition-all duration-300 {{ $index === 0 ? 'w-8 h-2.5 bg-white' : 'w-2.5 h-2.5 bg-white/40 hover:bg-white/60' }}">
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
             @endif
-            
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-8 right-8 animate-bounce z-20">
-                <div class="w-6 h-10 border-2 border-white/60 rounded-full flex justify-center">
-                    <div class="w-1 h-3 bg-white/80 rounded-full mt-2 animate-pulse"></div>
-                </div>
-            </div>
         </div>
     @else
         <!-- Fallback Hero -->
-        <div class="relative h-full bg-gradient-to-br from-purple-900 via-pink-800 to-indigo-900 flex items-center justify-center">
-            <div class="absolute inset-0 opacity-20">
-                <div class="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,_rgba(120,119,198,0.3)_2px,_transparent_0),radial-gradient(circle_at_75%_75%,_rgba(245,158,11,0.3)_2px,_transparent_0)] bg-[length:100px_100px]"></div>
+        <div class="relative h-full bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center overflow-hidden">
+            <!-- Motif décoratif -->
+            <div class="absolute inset-0 opacity-30">
+                <div class="absolute top-1/4 -left-20 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl"></div>
+                <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-pink-600/20 rounded-full blur-3xl"></div>
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl"></div>
             </div>
             
-            <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-                <p class="text-purple-300 text-sm sm:text-base font-semibold tracking-wide uppercase mb-4">
-                    Découvrez Notre
-                </p>
+            <!-- Grille subtile -->
+            <div class="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(255,255,255,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.1)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+            
+            <div class="container max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8">
+                    <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                    <span class="text-sm font-semibold text-white/80 tracking-wide uppercase">Bienvenue sur VintApp</span>
+                </div>
                 
-                <h1 class="font-display text-5xl sm:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight">
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300">
-                        Vintage
+                <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+                    Trouvez des Pièces
+                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400">
+                        Vintage Uniques
                     </span>
-                    <span class="block">Collection</span>
                 </h1>
                 
-                <p class="text-xl sm:text-2xl text-gray-200 mb-8 leading-relaxed max-w-2xl mx-auto">
-                    Pièces authentiques et uniques sélectionnées avec passion
+                <p class="text-lg sm:text-xl text-white/60 mb-10 leading-relaxed max-w-2xl mx-auto">
+                    Des articles authentiques sélectionnés avec soin, pour un style qui vous ressemble
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('items.index') }}" 
-                       class="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-gray-900 rounded-full font-bold text-lg hover:bg-gray-100 transition-all transform hover:scale-105 shadow-xl">
-                        <span>Explorer</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-gray-900 rounded-full font-bold text-base hover:bg-purple-50 transition-all duration-300 shadow-xl shadow-black/20">
+                        <span>Explorer la Collection</span>
+                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
+                    </a>
+                    <a href="{{ route('items.create') ?? '#' }}" 
+                       class="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white/20 text-white rounded-full font-semibold text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                        Vendre un Article
                     </a>
                 </div>
                 
                 <!-- Stats -->
-                <div class="flex justify-center gap-12 mt-12">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-white">2,5K+</div>
-                        <div class="text-sm text-purple-200">Articles</div>
+                <div class="flex justify-center gap-10 mt-14">
+                    <div class="text-center px-6">
+                        <div class="text-3xl font-bold text-white mb-1">2,5K+</div>
+                        <div class="text-sm text-white/40 font-medium">Articles</div>
                     </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-white">1,2K+</div>
-                        <div class="text-sm text-purple-200">Clients</div>
+                    <div class="w-px h-12 bg-white/10"></div>
+                    <div class="text-center px-6">
+                        <div class="text-3xl font-bold text-white mb-1">1,2K+</div>
+                        <div class="text-sm text-white/40 font-medium">Clients</div>
+                    </div>
+                    <div class="w-px h-12 bg-white/10"></div>
+                    <div class="text-center px-6">
+                        <div class="text-3xl font-bold text-white mb-1">98%</div>
+                        <div class="text-sm text-white/40 font-medium">Satisfaction</div>
                     </div>
                 </div>
             </div>

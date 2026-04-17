@@ -14,5 +14,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'payments/callback',  // Webhook des opérateurs mobile money (Orange, Airtel, M-Pesa, Africell, Illicocash)
         'wallet/withdrawals/webhook/*',  // Webhooks de décaissement mobile money
+        'firebase/*',  // Firebase Auth routes (protégées par vérification idToken côté serveur)
+        'auth/firebase/*',  // Firebase Auth alias routes
     ];
 }

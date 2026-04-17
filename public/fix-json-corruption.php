@@ -1,17 +1,14 @@
 <?php
 /**
  * Script de diagnostic et correction de la corruption JSON
- * À uploader dans public_html et exécuter une seule fois
- * SUPPRIMER APRÈS UTILISATION
+ * BLOQUÉ EN PRODUCTION - Exécuter uniquement en local via: php public/fix-json-corruption.php
  */
 
-// Désactiver complètement le output buffering pour éviter toute corruption
-while (ob_get_level()) {
-    ob_end_clean();
+if (php_sapi_name() !== 'cli') {
+    http_response_code(403);
+    echo 'Accès interdit. Exécutez ce script en ligne de commande.';
+    exit(1);
 }
-
-header('Content-Type: application/json; charset=UTF-8');
-header('X-Content-Type-Options: nosniff');
 
 $results = [
     'timestamp' => date('Y-m-d H:i:s'),

@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Refund;
 use App\Services\PaymentService;
 use App\Services\NotificationService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -39,7 +40,7 @@ class PaymentController extends Controller
     {
         $request->validate([
             'provider' => 'required|string|in:orange_money,mpesa,airtel_money,africell,illicocash',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'phone' => 'required|string|min:9|max:9',
             'purpose' => 'required|string',
             'buyer_id' => 'required|exists:users,id'
@@ -48,13 +49,13 @@ class PaymentController extends Controller
         try {
             $paymentData = $request->only(['amount', 'phone', 'purpose', 'buyer_id']);
             
-            // Sélectionner la méthode de paiement appropriée
+            // SÃ©lectionner la mÃ©thode de paiement appropriÃ©e
             $methodName = 'payWith' . str_replace('_', '', ucfirst($request->provider));
             if (!method_exists($this->paymentService, $methodName)) {
-                throw new \Exception('Méthode de paiement non supportée');
+                throw new \Exception('MÃ©thode de paiement non supportÃ©e');
             }
 
-            // Créer la transaction initiale
+            // CrÃ©er la transaction initiale
             $transaction = Transaction::create([
                 'user_id' => $request->buyer_id,
                 'amount' => $request->amount,
@@ -95,18 +96,18 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'purpose' => 'required|string',
         ]);
         if (!config('payments.providers.illicocash.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'Illicocash désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Illicocash dÃ©sactivÃ©.'], 403);
         }
-        // Préparer les données pour l'API Illicocash
+        // PrÃ©parer les donnÃ©es pour l'API Illicocash
         $apiKey = config('payments.providers.illicocash.api_key');
         $apiSecret = config('payments.providers.illicocash.api_secret');
         // TODO: Appel API Illicocash ici (Http::withToken($apiKey)->post(...))
-        // TODO: Créer la transaction avec status 'pending'
-        // TODO: Retourner la réponse de l'API ou un message d'attente
+        // TODO: CrÃ©er la transaction avec status 'pending'
+        // TODO: Retourner la rÃ©ponse de l'API ou un message d'attente
         return response()->json(['status' => 'pending', 'message' => 'Paiement Illicocash en cours...', 'provider' => 'illicocash']);
     }
 
@@ -115,16 +116,16 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'purpose' => 'required|string',
         ]);
         if (!config('payments.providers.orange_money.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'Orange Money désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Orange Money dÃ©sactivÃ©.'], 403);
         }
         $apiKey = config('payments.providers.orange_money.api_key');
         $apiSecret = config('payments.providers.orange_money.api_secret');
         // TODO: Appel API Orange Money ici
-        // TODO: Créer la transaction avec status 'pending'
+        // TODO: CrÃ©er la transaction avec status 'pending'
         return response()->json(['status' => 'pending', 'message' => 'Paiement Orange Money en cours...', 'provider' => 'orange_money']);
     }
 
@@ -133,16 +134,16 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'purpose' => 'required|string',
         ]);
         if (!config('payments.providers.airtel_money.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'Airtel Money désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Airtel Money dÃ©sactivÃ©.'], 403);
         }
         $apiKey = config('payments.providers.airtel_money.api_key');
         $apiSecret = config('payments.providers.airtel_money.api_secret');
         // TODO: Appel API Airtel Money ici
-        // TODO: Créer la transaction avec status 'pending'
+        // TODO: CrÃ©er la transaction avec status 'pending'
         return response()->json(['status' => 'pending', 'message' => 'Paiement Airtel Money en cours...', 'provider' => 'airtel_money']);
     }
 
@@ -151,14 +152,14 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'currency' => 'required|string|in:USD,CDF',
             'phone' => 'required|string|regex:/^[0-9]{9}$/',
             'purpose' => 'required|string',
         ]);
 
         if (!config('payments.providers.mpesa.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'M-Pesa désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'M-Pesa dÃ©sactivÃ©.'], 403);
         }
 
         $apiKey = config('payments.providers.mpesa.api_key');
@@ -168,10 +169,10 @@ class PaymentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Configuration M-Pesa manquante.'], 500);
         }
 
-        // Récupérer le panier pour traitement des commandes
+        // RÃ©cupÃ©rer le panier pour traitement des commandes
         $cart = session('cart', []);
         
-        // Déterminer la devise prioritaire et calculer le montant total
+        // DÃ©terminer la devise prioritaire et calculer le montant total
         $totalAmount = 0;
         $priorityCurrency = $request->currency ?? 'USD';
         
@@ -186,13 +187,13 @@ class PaymentController extends Controller
                 }
             }
             
-            // Déterminer la devise prioritaire (la plus fréquente)
+            // DÃ©terminer la devise prioritaire (la plus frÃ©quente)
             if (!empty($currencyCounts)) {
                 arsort($currencyCounts);
                 $priorityCurrency = array_key_first($currencyCounts);
             }
             
-            // Récupérer le taux de change
+            // RÃ©cupÃ©rer le taux de change
             $exchangeRate = \Illuminate\Support\Facades\Cache::remember('usd_cdf_rate', 3600, function () {
                 try {
                     $controller = new ExchangeRateController();
@@ -200,7 +201,7 @@ class PaymentController extends Controller
                     $data = $response->getData(true);
                     return $data['rate'] ?? 2650.00;
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Erreur récupération taux: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Erreur rÃ©cupÃ©ration taux: ' . $e->getMessage());
                     return 2650.00;
                 }
             });
@@ -212,7 +213,7 @@ class PaymentController extends Controller
                     $itemTotal = $item->price * $cartItem['quantity'];
                     $itemCurrency = $item->currency ?? 'USD';
                     
-                    // Convertir si nécessaire
+                    // Convertir si nÃ©cessaire
                     if ($itemCurrency !== $priorityCurrency) {
                         if ($priorityCurrency === 'USD' && $itemCurrency === 'CDF') {
                             $itemTotal = $itemTotal / $exchangeRate;
@@ -230,18 +231,18 @@ class PaymentController extends Controller
             $totalAmount = $request->amount;
         }
 
-        // Générer un ID de transaction unique
+        // GÃ©nÃ©rer un ID de transaction unique
         $transaction_id = 'MPESA-' . strtoupper(\Illuminate\Support\Str::random(12));
         
         try {
-            // Préparer la requête M-Pesa
+            // PrÃ©parer la requÃªte M-Pesa
             $mpesaData = [
                 'BusinessShortCode' => config('payments.providers.mpesa.shortcode', '174379'),
                 'Password' => base64_encode(config('payments.providers.mpesa.shortcode', '174379') . config('payments.providers.mpesa.passkey', '') . now()->format('YmdHis')),
                 'Timestamp' => now()->format('YmdHis'),
                 'TransactionType' => 'CustomerPayBillOnline',
                 'Amount' => (int)$totalAmount,
-                'PartyA' => '243' . $request->phone, // Numéro client avec code pays
+                'PartyA' => '243' . $request->phone, // NumÃ©ro client avec code pays
                 'PartyB' => config('payments.providers.mpesa.shortcode', '174379'),
                 'PhoneNumber' => '243' . $request->phone,
                 'CallBackURL' => route('payment.callback', ['provider' => 'mpesa']),
@@ -269,7 +270,7 @@ class PaymentController extends Controller
 
             $responseData = $paymentResponse->json();
 
-            // Créer la transaction en base avec statut pending
+            // CrÃ©er la transaction en base avec statut pending
             $user = \App\Models\User::find($request->buyer_id);
             $wallet = $user->wallet ?? \App\Models\Wallet::firstOrCreate(
                 ['user_id' => $user->id],
@@ -302,7 +303,7 @@ class PaymentController extends Controller
 
             return response()->json([
                 'status' => 'pending',
-                'message' => 'Paiement M-Pesa initié. Veuillez confirmer sur votre téléphone.',
+                'message' => 'Paiement M-Pesa initiÃ©. Veuillez confirmer sur votre tÃ©lÃ©phone.',
                 'transaction_id' => $transaction_id,
                 'provider' => 'mpesa',
                 'checkout_request_id' => $responseData['CheckoutRequestID'] ?? null
@@ -323,26 +324,26 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'purpose' => 'required|string',
         ]);
         if (!config('payments.providers.africell.enabled')) {
-            return response()->json(['status' => 'error', 'message' => 'Africell Money désactivé.'], 403);
+            return response()->json(['status' => 'error', 'message' => 'Africell Money dÃ©sactivÃ©.'], 403);
         }
         $apiKey = config('payments.providers.africell.api_key');
         $apiSecret = config('payments.providers.africell.api_secret');
         // TODO: Appel API Africell Money ici
-        // TODO: Créer la transaction avec status 'pending'
+        // TODO: CrÃ©er la transaction avec status 'pending'
         return response()->json(['status' => 'pending', 'message' => 'Paiement Africell Money en cours...', 'provider' => 'africell']);
     }
 
-    // Callback générique pour tous les opérateurs
+    // Callback gÃ©nÃ©rique pour tous les opÃ©rateurs
     public function handleCallback(Request $request)
     {
-        // TODO: Identifier l'opérateur, vérifier la transaction, mettre à jour le statut
-        // TODO: Si succès, appeler PaymentService::distributeFunds et enregistrer la distribution
-        // TODO: Retourner un message JSON clair avec le détail de la distribution
-        return response()->json(['status' => 'success', 'message' => 'Callback reçu', 'distribution' => null]);
+        // TODO: Identifier l'opÃ©rateur, vÃ©rifier la transaction, mettre Ã  jour le statut
+        // TODO: Si succÃ¨s, appeler PaymentService::distributeFunds et enregistrer la distribution
+        // TODO: Retourner un message JSON clair avec le dÃ©tail de la distribution
+        return response()->json(['status' => 'success', 'message' => 'Callback reÃ§u', 'distribution' => null]);
     }
 
     // Simulation de paiement mobile (pour tests)
@@ -350,19 +351,19 @@ class PaymentController extends Controller
     {
         $request->validate([
             'buyer_id' => 'required|exists:users,id',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'currency' => 'required|string|in:USD,CDF',
             'purpose' => 'required|string',
             'provider' => 'nullable|string',
             'phone' => 'nullable|string',
         ]);
         
-        // Récupérer le panier
+        // RÃ©cupÃ©rer le panier
         $cart = session('cart', []);
         
-        // Déterminer la devise prioritaire et calculer le montant total
+        // DÃ©terminer la devise prioritaire et calculer le montant total
         $totalAmount = 0;
-        $priorityCurrency = 'USD'; // Devise par défaut
+        $priorityCurrency = 'USD'; // Devise par dÃ©faut
         
         if (!empty($cart)) {
             // Compter les devises dans le panier
@@ -375,13 +376,13 @@ class PaymentController extends Controller
                 }
             }
             
-            // Déterminer la devise prioritaire (la plus fréquente)
+            // DÃ©terminer la devise prioritaire (la plus frÃ©quente)
             if (!empty($currencyCounts)) {
                 arsort($currencyCounts);
                 $priorityCurrency = array_key_first($currencyCounts);
             }
             
-            // Récupérer le taux de change depuis l'API
+            // RÃ©cupÃ©rer le taux de change depuis l'API
             $exchangeRate = \Illuminate\Support\Facades\Cache::remember('usd_cdf_rate', 3600, function () {
                 try {
                     $controller = new ExchangeRateController();
@@ -389,7 +390,7 @@ class PaymentController extends Controller
                     $data = $response->getData(true);
                     return $data['rate'] ?? 2650.00; // Taux de secours
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Erreur récupération taux: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error('Erreur rÃ©cupÃ©ration taux: ' . $e->getMessage());
                     return 2650.00; // Taux de secours
                 }
             });
@@ -401,7 +402,7 @@ class PaymentController extends Controller
                     $itemTotal = $item->price * $cartItem['quantity'];
                     $itemCurrency = $item->currency ?? 'USD';
                     
-                    // Convertir si nécessaire
+                    // Convertir si nÃ©cessaire
                     if ($itemCurrency !== $priorityCurrency) {
                         if ($priorityCurrency === 'USD' && $itemCurrency === 'CDF') {
                             // CDF vers USD
@@ -418,22 +419,22 @@ class PaymentController extends Controller
             
             $totalAmount = round($totalAmount, 2);
         } else {
-            // Si pas de panier, utiliser les données de la requête
+            // Si pas de panier, utiliser les donnÃ©es de la requÃªte
             $totalAmount = $request->amount;
             $priorityCurrency = $request->currency;
         }
         
-        // Simuler un délai de traitement (3-5 secondes)
+        // Simuler un dÃ©lai de traitement (3-5 secondes)
         sleep(rand(3, 5));
         
-        // 80% de chance de succès
+        // 80% de chance de succÃ¨s
         $success = rand(1, 100) <= 80;
         
-        // Générer un ID de transaction unique
+        // GÃ©nÃ©rer un ID de transaction unique
         $transaction_id = 'TXN-' . strtoupper(\Illuminate\Support\Str::random(12));
         
         if ($success) {
-            // Récupérer ou créer le wallet de l'utilisateur
+            // RÃ©cupÃ©rer ou crÃ©er le wallet de l'utilisateur
             $user = \App\Models\User::find($request->buyer_id);
             $wallet = $user->wallet ?? \App\Models\Wallet::firstOrCreate(
                 ['user_id' => $user->id],
@@ -444,11 +445,11 @@ class PaymentController extends Controller
                 ]
             );
             
-            // Créer une transaction simulée
+            // CrÃ©er une transaction simulÃ©e
             $transaction = \App\Models\Transaction::create([
                 'transaction_id' => $transaction_id,
                 'user_id' => $request->buyer_id,
-                'buyer_id' => $request->buyer_id, // Pour compatibilité avec l'ancienne structure
+                'buyer_id' => $request->buyer_id, // Pour compatibilitÃ© avec l'ancienne structure
                 'wallet_id' => $wallet->id,
                 'amount' => $totalAmount, // Montant total dans la devise prioritaire
                 'currency' => $priorityCurrency, // Devise prioritaire du panier
@@ -457,12 +458,12 @@ class PaymentController extends Controller
                 'purpose' => $request->purpose,
                 'status' => 'completed',
                 'type' => 'deposit',
-                'payment_method' => 'orange_money', // Par défaut
+                'payment_method' => 'orange_money', // Par dÃ©faut
             ]);
             
-            // Créer automatiquement les commandes depuis le panier
+            // CrÃ©er automatiquement les commandes depuis le panier
             if (!empty($cart)) {
-                // Récupérer l'adresse de livraison par défaut du client
+                // RÃ©cupÃ©rer l'adresse de livraison par dÃ©faut du client
                 $defaultDeliveryAddress = \App\Models\DeliveryAddress::where('user_id', $request->buyer_id)
                     ->where('is_default', true)
                     ->first();
@@ -472,7 +473,7 @@ class PaymentController extends Controller
                     if ($item) {
                         $orderAmount = $item->price * $cartItem['quantity'];
                         
-                        // Créer ou récupérer le wallet "pending" du vendeur
+                        // CrÃ©er ou rÃ©cupÃ©rer le wallet "pending" du vendeur
                         $seller = \App\Models\User::find($item->user_id);
                         $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
                             [
@@ -490,7 +491,7 @@ class PaymentController extends Controller
                         // Ajouter le montant au wallet pending du vendeur
                         $sellerPendingWallet->increment('balance', $orderAmount);
                         
-                        // Préparer les données de commande avec l'adresse de livraison si disponible
+                        // PrÃ©parer les donnÃ©es de commande avec l'adresse de livraison si disponible
                         $orderData = [
                             'buyer_id' => $request->buyer_id,
                             'seller_id' => $item->user_id,
@@ -499,9 +500,9 @@ class PaymentController extends Controller
                             'unit_price' => $item->price,
                             'total_amount' => $orderAmount,
                             'currency' => $item->currency, // Devise originale de l'article
-                            'status' => 'confirmed', // Paiement effectué, prêt pour expédition
+                            'status' => 'confirmed', // Paiement effectuÃ©, prÃªt pour expÃ©dition
                             'paid_at' => now(),
-                            'notes' => 'Paiement effectué via ' . ($request->provider ?? 'Mobile Money') . ' - Transaction: ' . $transaction_id . ' - Montant en attente dans le wallet pending du vendeur',
+                            'notes' => 'Paiement effectuÃ© via ' . ($request->provider ?? 'Mobile Money') . ' - Transaction: ' . $transaction_id . ' - Montant en attente dans le wallet pending du vendeur',
                         ];
                         
                         // Ajouter l'adresse de livraison si disponible
@@ -511,24 +512,24 @@ class PaymentController extends Controller
                             $orderData['shipping_city'] = $defaultDeliveryAddress->city;
                             $orderData['shipping_phone'] = $defaultDeliveryAddress->phone;
                         } else {
-                            // Valeurs par défaut si pas d'adresse de livraison
-                            $orderData['shipping_address'] = 'À définir';
-                            $orderData['shipping_city'] = 'À définir';
+                            // Valeurs par dÃ©faut si pas d'adresse de livraison
+                            $orderData['shipping_address'] = 'Ã€ dÃ©finir';
+                            $orderData['shipping_city'] = 'Ã€ dÃ©finir';
                             $orderData['shipping_phone'] = $request->phone ?? 'N/A';
                         }
                         
-                        // Créer la commande
+                        // CrÃ©er la commande
                         $order = \App\Models\Order::create($orderData);
                         
-                        // Mettre à jour le stock
+                        // Mettre Ã  jour le stock
                         $item->quantity -= $cartItem['quantity'];
                         if ($item->quantity <= 0) {
                             $item->status = 'sold';
                         }
                         $item->save();
                         
-                        // Log pour traçabilité
-                        \Illuminate\Support\Facades\Log::info("Paiement ajouté au wallet pending", [
+                        // Log pour traÃ§abilitÃ©
+                        \Illuminate\Support\Facades\Log::info("Paiement ajoutÃ© au wallet pending", [
                             'seller_id' => $seller->id,
                             'order_id' => $order->id,
                             'amount' => $orderAmount,
@@ -538,14 +539,14 @@ class PaymentController extends Controller
                     }
                 }
                 
-                // Vider le panier après la création des commandes
+                // Vider le panier aprÃ¨s la crÃ©ation des commandes
                 session()->forget('cart');
             }
             
             return response()->json([
                 'status' => 'success',
                 'transaction_id' => $transaction_id,
-                'message' => 'Paiement réussi',
+                'message' => 'Paiement rÃ©ussi',
                 'amount' => $totalAmount,
                 'currency' => $priorityCurrency,
                 'distribution' => [
@@ -557,10 +558,10 @@ class PaymentController extends Controller
         } else {
             $errors = [
                 'Solde insuffisant',
-                'Numéro de téléphone invalide',
-                'Délai d\'attente dépassé',
-                'Transaction refusée par l\'opérateur',
-                'Erreur de réseau'
+                'NumÃ©ro de tÃ©lÃ©phone invalide',
+                'DÃ©lai d\'attente dÃ©passÃ©',
+                'Transaction refusÃ©e par l\'opÃ©rateur',
+                'Erreur de rÃ©seau'
             ];
             
             return response()->json([
@@ -572,7 +573,7 @@ class PaymentController extends Controller
     
     public function paymentSuccess($transaction_id)
     {
-        // Chercher par ID numérique ou par transaction_id
+        // Chercher par ID numÃ©rique ou par transaction_id
         $transaction = \App\Models\Transaction::where('id', $transaction_id)
             ->orWhere('transaction_id', $transaction_id)
             ->first();
@@ -581,14 +582,14 @@ class PaymentController extends Controller
             return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
         }
 
-        // Récupérer les commandes liées à cette transaction
+        // RÃ©cupÃ©rer les commandes liÃ©es Ã  cette transaction
         $orders = \App\Models\Order::where('buyer_id', $transaction->user_id)
             ->where('status', 'confirmed')
             ->whereDate('paid_at', now()->toDateString())
             ->with(['seller', 'item'])
             ->get();
 
-        // Vérifier si l'utilisateur a déjà noté ces vendeurs
+        // VÃ©rifier si l'utilisateur a dÃ©jÃ  notÃ© ces vendeurs
         $unratedOrders = $orders->filter(function ($order) {
             return !\App\Models\Review::where('order_id', $order->id)
                 ->where('reviewer_id', $order->buyer_id)
@@ -637,22 +638,22 @@ class PaymentController extends Controller
             ], 422);
         }
 
-        // Charger les relations nécessaires
+        // Charger les relations nÃ©cessaires
         $order->load(['buyer', 'seller', 'item']);
         
-        // Vérifier que l'utilisateur est bien l'acheteur
+        // VÃ©rifier que l'utilisateur est bien l'acheteur
         if ($order->buyer_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
-                'error' => 'Vous n\'êtes pas autorisé à demander un remboursement pour cette commande'
+                'error' => 'Vous n\'Ãªtes pas autorisÃ© Ã  demander un remboursement pour cette commande'
             ], 403);
         }
 
-        // Vérifier que la commande est éligible au remboursement
+        // VÃ©rifier que la commande est Ã©ligible au remboursement
         if (!$this->isRefundEligible($order)) {
             return response()->json([
                 'success' => false,
-                'error' => 'Cette commande n\'est plus éligible au remboursement'
+                'error' => 'Cette commande n\'est plus Ã©ligible au remboursement'
             ], 400);
         }
 
@@ -671,7 +672,7 @@ class PaymentController extends Controller
             ? $order->total_amount 
             : min($request->refund_amount ?? $order->total_amount, $order->total_amount);
 
-        // Créer la demande de remboursement
+        // CrÃ©er la demande de remboursement
         $refund = \App\Models\Refund::create([
             'order_id' => $order->id,
             'buyer_id' => $order->buyer_id,
@@ -691,7 +692,7 @@ class PaymentController extends Controller
         $this->notifySellerOfRefundRequest($order, $refund);
 
         // Log de la demande
-        \Illuminate\Support\Facades\Log::info('Demande de remboursement créée', [
+        \Illuminate\Support\Facades\Log::info('Demande de remboursement crÃ©Ã©e', [
             'refund_id' => $refund->id,
             'order_id' => $order->id,
             'buyer_id' => $order->buyer_id,
@@ -702,7 +703,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Votre demande de remboursement a été soumise avec succès',
+            'message' => 'Votre demande de remboursement a Ã©tÃ© soumise avec succÃ¨s',
             'refund_id' => $refund->id,
             'refund' => $refund
         ]);
@@ -719,19 +720,19 @@ class PaymentController extends Controller
             'counter_offer_amount' => 'nullable|numeric|min:0'
         ]);
 
-        // Charger les relations nécessaires
+        // Charger les relations nÃ©cessaires
         $refund->load(['order.buyer', 'order.seller']);
         
-        // Vérifier les autorisations
+        // VÃ©rifier les autorisations
         if (!$this->canProcessRefund($refund, Auth::user())) {
             if (request()->expectsJson()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Vous n\'êtes pas autorisé à traiter cette demande'
+                    'message' => 'Vous n\'Ãªtes pas autorisÃ© Ã  traiter cette demande'
                 ], 403);
             } else {
                 return redirect()->route('admin.refunds.index')
-                    ->with('error', 'Vous n\'êtes pas autorisé à traiter cette demande');
+                    ->with('error', 'Vous n\'Ãªtes pas autorisÃ© Ã  traiter cette demande');
             }
         }
 
@@ -748,12 +749,12 @@ class PaymentController extends Controller
     }
 
     /**
-     * Approuver et exécuter le remboursement
+     * Approuver et exÃ©cuter le remboursement
      */
     private function approveRefund($refund, $adminNotes = null)
     {
         try {
-            // Récupérer la transaction originale
+            // RÃ©cupÃ©rer la transaction originale
             $originalTransaction = \App\Models\Transaction::where('transaction_id', $refund->transaction_id)->first();
             
             if (!$originalTransaction) {
@@ -763,7 +764,7 @@ class PaymentController extends Controller
                 ], 404);
             }
 
-            // Créer la transaction de remboursement
+            // CrÃ©er la transaction de remboursement
             $refundTransactionId = 'REFUND-' . strtoupper(\Illuminate\Support\Str::random(12));
             
             $refundTransaction = \App\Models\Transaction::create([
@@ -779,7 +780,7 @@ class PaymentController extends Controller
                 'status' => 'completed',
                 'type' => 'refund',
                 'payment_method' => 'wallet',
-                'description' => 'Remboursement approuvé pour la commande #' . $refund->order->order_number,
+                'description' => 'Remboursement approuvÃ© pour la commande #' . $refund->order->order_number,
                 'metadata' => json_encode([
                     'original_transaction_id' => $originalTransaction->transaction_id,
                     'refund_id' => $refund->id,
@@ -787,13 +788,13 @@ class PaymentController extends Controller
                 ])
             ]);
 
-            // Créditer le wallet de l'acheteur
+            // CrÃ©diter le wallet de l'acheteur
             $buyerWallet = \App\Models\Wallet::where('user_id', $refund->buyer_id)->first();
             if ($buyerWallet) {
                 $buyerWallet->increment('balance', $refund->refund_amount);
             }
 
-            // Débiter le wallet pending du vendeur
+            // DÃ©biter le wallet pending du vendeur
             $sellerPendingWallet = \App\Models\Wallet::where([
                 'user_id' => $refund->seller_id,
                 'type' => 'pending',
@@ -804,7 +805,7 @@ class PaymentController extends Controller
                 $sellerPendingWallet->decrement('balance', $refund->refund_amount);
             }
 
-            // Mettre à jour le statut de la demande de remboursement
+            // Mettre Ã  jour le statut de la demande de remboursement
             $refund->update([
                 'status' => 'approved',
                 'approved_at' => now(),
@@ -813,50 +814,50 @@ class PaymentController extends Controller
                 'processed_by' => Auth::id()
             ]);
 
-            // Mettre à jour le statut de la commande
+            // Mettre Ã  jour le statut de la commande
             $refund->order->update([
                 'status' => 'refunded',
-                'notes' => ($refund->order->notes ?? '') . ' | Remboursement approuvé: ' . $refund->refund_amount . ' ' . $refund->currency
+                'notes' => ($refund->order->notes ?? '') . ' | Remboursement approuvÃ©: ' . $refund->refund_amount . ' ' . $refund->currency
             ]);
 
             // Notifier l'acheteur et le vendeur
             $this->notifyRefundApproval($refund, $refundTransaction);
 
             // Log du remboursement
-            \Illuminate\Support\Facades\Log::info('Remboursement approuvé et exécuté', [
+            \Illuminate\Support\Facades\Log::info('Remboursement approuvÃ© et exÃ©cutÃ©', [
                 'refund_id' => $refund->id,
                 'transaction_id' => $refundTransactionId,
                 'amount' => $refund->refund_amount,
                 'currency' => $refund->currency
             ]);
 
-            // Déterminer le type de réponse selon la provenance de la requête
+            // DÃ©terminer le type de rÃ©ponse selon la provenance de la requÃªte
             if (request()->expectsJson()) {
-                // Requête AJAX - retourner JSON
+                // RequÃªte AJAX - retourner JSON
                 return response()->json([
                     'status' => 'success',
-                    'message' => 'Remboursement approuvé et exécuté avec succès',
+                    'message' => 'Remboursement approuvÃ© et exÃ©cutÃ© avec succÃ¨s',
                     'refund_transaction_id' => $refundTransactionId,
                     'refund' => $refund->fresh()
                 ]);
             } else {
-                // Requête normale depuis l'interface admin - rediriger avec message
+                // RequÃªte normale depuis l'interface admin - rediriger avec message
                 return redirect()->route('admin.refunds.index')
-                    ->with('success', 'Remboursement approuvé et exécuté avec succès ! Transaction ID: ' . $refundTransactionId);
+                    ->with('success', 'Remboursement approuvÃ© et exÃ©cutÃ© avec succÃ¨s ! Transaction ID: ' . $refundTransactionId);
             }
 
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Erreur lors du remboursement: ' . $e->getMessage());
             
-            // Déterminer le type de réponse selon la provenance de la requête
+            // DÃ©terminer le type de rÃ©ponse selon la provenance de la requÃªte
             if (request()->expectsJson()) {
-                // Requête AJAX - retourner JSON
+                // RequÃªte AJAX - retourner JSON
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Erreur lors du traitement du remboursement: ' . $e->getMessage()
                 ], 500);
             } else {
-                // Requête normale depuis l'interface admin - rediriger avec erreur
+                // RequÃªte normale depuis l'interface admin - rediriger avec erreur
                 return redirect()->route('admin.refunds.index')
                     ->with('error', 'Erreur lors du traitement du remboursement: ' . $e->getMessage());
             }
@@ -878,23 +879,23 @@ class PaymentController extends Controller
         // Notifier l'acheteur du rejet
         $this->notifyRefundRejection($refund);
 
-        // Déterminer le type de réponse selon la provenance de la requête
+        // DÃ©terminer le type de rÃ©ponse selon la provenance de la requÃªte
         if (request()->expectsJson()) {
-            // Requête AJAX - retourner JSON
+            // RequÃªte AJAX - retourner JSON
             return response()->json([
                 'status' => 'success',
-                'message' => 'Demande de remboursement rejetée',
+                'message' => 'Demande de remboursement rejetÃ©e',
                 'refund' => $refund->fresh()
             ]);
         } else {
-            // Requête normale depuis l'interface admin - rediriger avec message
+            // RequÃªte normale depuis l'interface admin - rediriger avec message
             return redirect()->route('admin.refunds.index')
-                ->with('success', 'Demande de remboursement rejetée avec succès');
+                ->with('success', 'Demande de remboursement rejetÃ©e avec succÃ¨s');
         }
     }
 
     /**
-     * Négocier le montant du remboursement
+     * NÃ©gocier le montant du remboursement
      */
     private function negotiateRefund($refund, $counterOfferAmount, $adminNotes = null)
     {
@@ -908,39 +909,39 @@ class PaymentController extends Controller
         // Notifier l'acheteur de la contre-proposition
         $this->notifyRefundNegotiation($refund);
 
-        // Déterminer le type de réponse selon la provenance de la requête
+        // DÃ©terminer le type de rÃ©ponse selon la provenance de la requÃªte
         if (request()->expectsJson()) {
-            // Requête AJAX - retourner JSON
+            // RequÃªte AJAX - retourner JSON
             return response()->json([
                 'status' => 'success',
-                'message' => 'Contre-proposition envoyée à l\'acheteur',
+                'message' => 'Contre-proposition envoyÃ©e Ã  l\'acheteur',
                 'refund' => $refund->fresh()
             ]);
         } else {
-            // Requête normale depuis l'interface admin - rediriger avec message
+            // RequÃªte normale depuis l'interface admin - rediriger avec message
             return redirect()->route('admin.refunds.index')
-                ->with('success', 'Contre-proposition envoyée à l\'acheteur avec succès');
+                ->with('success', 'Contre-proposition envoyÃ©e Ã  l\'acheteur avec succÃ¨s');
         }
     }
 
     /**
-     * Vérifier si une commande est éligible au remboursement
+     * VÃ©rifier si une commande est Ã©ligible au remboursement
      */
     private function isRefundEligible($order)
     {
-        // La commande doit être confirmée par l'acheteur (réception confirmée)
+        // La commande doit Ãªtre confirmÃ©e par l'acheteur (rÃ©ception confirmÃ©e)
         if (!$order->confirmed_by_buyer_at) {
             Log::info('Refund not eligible: no buyer confirmation', ['order' => $order->order_number]);
             return false;
         }
 
-        // Vérifier qu'il n'y a pas déjà une demande de remboursement
+        // VÃ©rifier qu'il n'y a pas dÃ©jÃ  une demande de remboursement
         if ($order->refunds()->exists()) {
             Log::info('Refund not eligible: refund already exists', ['order' => $order->order_number]);
             return false;
         }
 
-        // Délai de 30 jours après confirmation de réception (étendu pour test)
+        // DÃ©lai de 30 jours aprÃ¨s confirmation de rÃ©ception (Ã©tendu pour test)
         $daysSinceConfirmation = $order->confirmed_by_buyer_at->diffInDays(now());
         if ($daysSinceConfirmation > 30) {
             Log::info('Refund not eligible: too old', [
@@ -960,7 +961,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Vérifier si un utilisateur peut traiter une demande de remboursement
+     * VÃ©rifier si un utilisateur peut traiter une demande de remboursement
      */
     private function canProcessRefund($refund, $user)
     {
@@ -974,7 +975,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Vérifier si un utilisateur est admin
+     * VÃ©rifier si un utilisateur est admin
      */
     private function isAdmin($user)
     {
@@ -986,7 +987,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Récupérer l'ID de transaction pour une commande
+     * RÃ©cupÃ©rer l'ID de transaction pour une commande
      */
     private function getTransactionIdForOrder($order)
     {
@@ -999,7 +1000,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Notifications (à implémenter selon vos besoins)
+     * Notifications (Ã  implÃ©menter selon vos besoins)
      */
     private function notifySellerOfRefundRequest($order, $refund)
     {
@@ -1010,13 +1011,13 @@ class PaymentController extends Controller
     {
         try {
             $this->notificationService->createRefundApprovedNotification($refund);
-            Log::info('Notifications de remboursement approuvé envoyées', [
+            Log::info('Notifications de remboursement approuvÃ© envoyÃ©es', [
                 'refund_id' => $refund->id,
                 'buyer_id' => $refund->buyer_id,
                 'seller_id' => $refund->seller_id
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'envoi des notifications de remboursement approuvé: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'envoi des notifications de remboursement approuvÃ©: ' . $e->getMessage());
         }
     }
 
@@ -1024,13 +1025,13 @@ class PaymentController extends Controller
     {
         try {
             $this->notificationService->createRefundRejectedNotification($refund);
-            Log::info('Notifications de remboursement rejeté envoyées', [
+            Log::info('Notifications de remboursement rejetÃ© envoyÃ©es', [
                 'refund_id' => $refund->id,
                 'buyer_id' => $refund->buyer_id,
                 'seller_id' => $refund->seller_id
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'envoi des notifications de remboursement rejeté: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'envoi des notifications de remboursement rejetÃ©: ' . $e->getMessage());
         }
     }
 
@@ -1038,14 +1039,14 @@ class PaymentController extends Controller
     {
         try {
             $this->notificationService->createRefundNegotiationNotification($refund);
-            Log::info('Notifications de négociation de remboursement envoyées', [
+            Log::info('Notifications de nÃ©gociation de remboursement envoyÃ©es', [
                 'refund_id' => $refund->id,
                 'buyer_id' => $refund->buyer_id,
                 'seller_id' => $refund->seller_id,
                 'counter_offer' => $refund->counter_offer_amount
             ]);
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'envoi des notifications de négociation: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'envoi des notifications de nÃ©gociation: ' . $e->getMessage());
         }
     }
 
@@ -1069,14 +1070,14 @@ class PaymentController extends Controller
         $totalAmount = $request->total_amount;
         $currency = $request->currency ?? 'XOF';
         
-        // Générer l'ID de transaction unique
-        $transactionId = 'CHECKOUT-' . date('YmdHis') . '-' . auth()->id();
+        // GÃ©nÃ©rer l'ID de transaction unique
+        $transactionId = 'CHECKOUT-' . date('YmdHis') . '-' . Auth::id();
 
-        // Créer l'enregistrement de paiement
+        // CrÃ©er l'enregistrement de paiement
         $payment = \App\Models\Payment::create([
             'transaction_id' => $transactionId,
-            'user_id' => auth()->id(),
-            'buyer_id' => auth()->id(),
+            'user_id' => Auth::id(),
+            'buyer_id' => Auth::id(),
             'amount' => $totalAmount,
             'currency' => $currency,
             'designation' => "Paiement panier - " . count($cartItems) . " article(s)",
@@ -1103,7 +1104,7 @@ class PaymentController extends Controller
             ->setDesignation($payment->designation)
             ->setCurrency($currency)
             ->setCustom(json_encode([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'payment_id' => $payment->id,
                 'type' => 'checkout',
                 'delivery_address_id' => $request->delivery_address_id,
@@ -1129,24 +1130,24 @@ class PaymentController extends Controller
      */
     public function initiateOrderPayment(Request $request, Order $order)
     {
-        // Vérifier que la commande appartient à l'utilisateur
+        // VÃ©rifier que la commande appartient Ã  l'utilisateur
         if ($order->buyer_id !== Auth::id()) {
-            abort(403, 'Accès non autorisé');
+            abort(403, 'AccÃ¨s non autorisÃ©');
         }
 
-        // Vérifier que la commande n'est pas déjà payée
+        // VÃ©rifier que la commande n'est pas dÃ©jÃ  payÃ©e
         if ($order->payment_status === 'paid') {
             return redirect()->route('orders.show', $order)
-                ->with('error', 'Cette commande est déjà payée');
+                ->with('error', 'Cette commande est dÃ©jÃ  payÃ©e');
         }
 
-        // Générer l'ID de transaction unique
+        // GÃ©nÃ©rer l'ID de transaction unique
         $transactionId = 'VIN-' . date('YmdHis') . '-' . $order->id;
 
-        // Créer l'enregistrement de paiement
+        // CrÃ©er l'enregistrement de paiement
         $payment = \App\Models\Payment::create([
             'transaction_id' => $transactionId,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'order_id' => $order->id,
             'amount' => $order->total_amount,
             'currency' => 'XOF',
@@ -1155,7 +1156,7 @@ class PaymentController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
-        // Mettre à jour la commande
+        // Mettre Ã  jour la commande
         $order->update([
             'payment_transaction_id' => $transactionId,
             'payment_status' => 'pending',
@@ -1174,7 +1175,7 @@ class PaymentController extends Controller
             ->setAmount($order->total_amount)
             ->setDesignation($payment->designation)
             ->setCustom(json_encode([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'order_id' => $order->id,
                 'payment_id' => $payment->id,
             ]))
@@ -1192,15 +1193,15 @@ class PaymentController extends Controller
     }
 
     /**
-     * Webhook de notification IPN (appelé par CinetPay)
-     * C'est le SEUL endroit où la base de données doit être mise à jour
+     * Webhook de notification IPN (appelÃ© par CinetPay)
+     * C'est le SEUL endroit oÃ¹ la base de donnÃ©es doit Ãªtre mise Ã  jour
      */
     public function handleNotification(Request $request)
     {
         Log::info('CinetPay IPN Notification', $request->all());
 
         try {
-            // Récupérer l'ID de transaction
+            // RÃ©cupÃ©rer l'ID de transaction
             $transactionId = $request->input('cpm_trans_id');
 
             if (!$transactionId) {
@@ -1208,7 +1209,7 @@ class PaymentController extends Controller
                 return response('Transaction ID manquant', 400);
             }
 
-            // Vérifier le statut du paiement via l'API CinetPay
+            // VÃ©rifier le statut du paiement via l'API CinetPay
             $cinetPay = new \App\Services\CinetPay(
                 config('services.cinetpay.site_id'),
                 config('services.cinetpay.api_key'),
@@ -1218,32 +1219,32 @@ class PaymentController extends Controller
 
             $cinetPay->setTransId($transactionId)->getPayStatus();
 
-            // Récupérer le paiement
+            // RÃ©cupÃ©rer le paiement
             $payment = \App\Models\Payment::where('transaction_id', $transactionId)->firstOrFail();
 
-            // Prévention de fraude : vérifier le montant
+            // PrÃ©vention de fraude : vÃ©rifier le montant
             $apiAmount = floatval($cinetPay->_cpm_amount);
             $dbAmount = floatval($payment->amount);
 
             if (abs($apiAmount - $dbAmount) > 0.01) {
-                Log::error("CinetPay Fraud Alert: Montant incohérent", [
+                Log::error("CinetPay Fraud Alert: Montant incohÃ©rent", [
                     'transaction_id' => $transactionId,
                     'api_amount' => $apiAmount,
                     'db_amount' => $dbAmount,
                 ]);
-                return response('Montant incohérent', 400);
+                return response('Montant incohÃ©rent', 400);
             }
 
-            // Éviter le traitement en double
+            // Ã‰viter le traitement en double
             if ($payment->status === 'completed') {
-                Log::info("CinetPay: Paiement déjà traité - {$transactionId}");
+                Log::info("CinetPay: Paiement dÃ©jÃ  traitÃ© - {$transactionId}");
                 return response('OK', 200);
             }
 
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             try {
-                // Paiement réussi
+                // Paiement rÃ©ussi
                 if ($cinetPay->_cpm_result == '00') {
                     $payment->markAsCompleted([
                         'cpm_result' => $cinetPay->_cpm_result,
@@ -1261,7 +1262,7 @@ class PaymentController extends Controller
                         ],
                     ]);
 
-                    // Mettre à jour la commande
+                    // Mettre Ã  jour la commande
                     if ($payment->order_id) {
                         $payment->order->update([
                             'payment_status' => 'paid',
@@ -1269,14 +1270,14 @@ class PaymentController extends Controller
                         ]);
                     }
 
-                    // Si c'est un paiement de checkout (panier), créer les commandes
+                    // Si c'est un paiement de checkout (panier), crÃ©er les commandes
                     if (!$payment->order_id && isset($payment->metadata['cart_items'])) {
                         $this->createOrdersFromCheckout($payment);
                     }
 
-                    Log::info("CinetPay: Paiement confirmé - {$transactionId}");
+                    Log::info("CinetPay: Paiement confirmÃ© - {$transactionId}");
                 } else {
-                    // Paiement échoué
+                    // Paiement Ã©chouÃ©
                     $payment->markAsFailed($cinetPay->_cpm_result);
 
                     if ($payment->order_id) {
@@ -1285,16 +1286,16 @@ class PaymentController extends Controller
                         ]);
                     }
 
-                    Log::warning("CinetPay: Paiement échoué - {$transactionId}", [
+                    Log::warning("CinetPay: Paiement Ã©chouÃ© - {$transactionId}", [
                         'result' => $cinetPay->_cpm_result,
                         'status' => $cinetPay->_cpm_trans_status,
                     ]);
                 }
 
-                \DB::commit();
+                DB::commit();
                 return response('OK', 200);
             } catch (\Exception $e) {
-                \DB::rollBack();
+                DB::rollBack();
                 throw $e;
             }
         } catch (\Exception $e) {
@@ -1307,8 +1308,8 @@ class PaymentController extends Controller
     }
 
     /**
-     * Page de retour après paiement (redirection utilisateur)
-     * NE DOIT PAS mettre à jour la base de données
+     * Page de retour aprÃ¨s paiement (redirection utilisateur)
+     * NE DOIT PAS mettre Ã  jour la base de donnÃ©es
      */
     public function handleReturn(Request $request)
     {
@@ -1331,7 +1332,7 @@ class PaymentController extends Controller
         // Rediriger en fonction du statut
         if ($payment->isCompleted()) {
             return redirect()->route('orders.show', $payment->order_id)
-                ->with('success', 'Paiement effectué avec succès !');
+                ->with('success', 'Paiement effectuÃ© avec succÃ¨s !');
         } else {
             return redirect()->route('orders.show', $payment->order_id)
                 ->with('warning', 'Paiement en cours de traitement. Vous recevrez une notification.');
@@ -1348,15 +1349,15 @@ class PaymentController extends Controller
         ]);
 
         $amount = $request->input('amount');
-        $transactionId = 'WALLET-' . date('YmdHis') . '-' . auth()->id();
+        $transactionId = 'WALLET-' . date('YmdHis') . '-' . Auth::id();
 
-        // Créer le paiement
+        // CrÃ©er le paiement
         $payment = \App\Models\Payment::create([
             'transaction_id' => $transactionId,
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'amount' => $amount,
             'currency' => 'XOF',
-            'designation' => "Rechargement wallet - " . auth()->user()->name,
+            'designation' => "Rechargement wallet - " . Auth::user()->name,
             'status' => 'pending',
             'ip_address' => $request->ip(),
         ]);
@@ -1373,7 +1374,7 @@ class PaymentController extends Controller
             ->setAmount($amount)
             ->setDesignation($payment->designation)
             ->setCustom(json_encode([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'payment_id' => $payment->id,
                 'type' => 'wallet_topup',
             ]))
@@ -1390,7 +1391,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Créer les commandes à partir du panier après paiement réussi
+     * CrÃ©er les commandes Ã  partir du panier aprÃ¨s paiement rÃ©ussi
      */
     private function createOrdersFromCheckout(\App\Models\Payment $payment)
     {
@@ -1399,14 +1400,14 @@ class PaymentController extends Controller
 
         foreach ($cartItems as $item) {
             try {
-                // Récupérer l'article
+                // RÃ©cupÃ©rer l'article
                 $itemModel = \App\Models\Item::find($item['id']);
                 if (!$itemModel) {
                     Log::warning("Item not found: {$item['id']}");
                     continue;
                 }
 
-                // Créer la commande
+                // CrÃ©er la commande
                 $order = \App\Models\Order::create([
                     'order_number' => 'ORD-' . strtoupper(uniqid()),
                     'buyer_id' => $payment->user_id,
@@ -1421,14 +1422,14 @@ class PaymentController extends Controller
                     'delivery_address_id' => $deliveryAddressId,
                 ]);
 
-                // Lier le paiement à la première commande créée
+                // Lier le paiement Ã  la premiÃ¨re commande crÃ©Ã©e
                 if (!$payment->order_id) {
                     $payment->update(['order_id' => $order->id]);
                 }
 
-                // TODO: Logique métier
-                // - Réduire le stock de l'article
-                // - Créer une transaction wallet pour le vendeur
+                // TODO: Logique mÃ©tier
+                // - RÃ©duire le stock de l'article
+                // - CrÃ©er une transaction wallet pour le vendeur
                 // - Envoyer notification au vendeur et acheteur
 
                 Log::info("Order created from checkout", [
@@ -1488,16 +1489,16 @@ class PaymentController extends Controller
         $cartItems = json_decode($request->cart_items, true);
         $totalAmount = $request->total_amount;
         $currency = $request->currency;
-        $countryCode = $request->country_code ?? 'CD'; // Par défaut RDC
+        $countryCode = $request->country_code ?? 'CD'; // Par dÃ©faut RDC
 
-        // Générer la référence de transaction
+        // GÃ©nÃ©rer la rÃ©fÃ©rence de transaction
         $reference = \App\Services\AfribaPay::generateReference('AFRIBA-CHECKOUT');
 
-        // Créer l'enregistrement de paiement
+        // CrÃ©er l'enregistrement de paiement
         $payment = \App\Models\Payment::create([
             'transaction_id' => $reference,
-            'user_id' => auth()->id(),
-            'buyer_id' => auth()->id(),
+            'user_id' => Auth::id(),
+            'buyer_id' => Auth::id(),
             'amount' => $totalAmount,
             'currency' => $currency,
             'designation' => "Paiement panier AfribaPay - " . count($cartItems) . " article(s)",
@@ -1517,7 +1518,7 @@ class PaymentController extends Controller
             // Initialiser AfribaPay
             $afribaPay = new \App\Services\AfribaPay();
 
-            // Formater le numéro de téléphone
+            // Formater le numÃ©ro de tÃ©lÃ©phone
             $phoneNumber = $afribaPay->formatPhoneNumber(
                 $request->phone_number,
                 $countryCode
@@ -1534,11 +1535,11 @@ class PaymentController extends Controller
                 'description' => $payment->designation,
                 'callback_url' => route('payments.afribapay.notify'),
                 'return_url' => route('payments.afribapay.return'),
-                'customer_name' => auth()->user()->name,
-                'customer_email' => auth()->user()->email,
+                'customer_name' => Auth::user()->name,
+                'customer_email' => Auth::user()->email,
             ]);
 
-            // Mettre à jour le paiement avec les infos AfribaPay
+            // Mettre Ã  jour le paiement avec les infos AfribaPay
             $payment->update([
                 'metadata' => array_merge($payment->metadata ?? [], [
                     'afribapay_transaction_id' => $paymentData['data']['transaction_id'] ?? null,
@@ -1546,7 +1547,7 @@ class PaymentController extends Controller
                 ]),
             ]);
 
-            // Vérifier si OTP est requis
+            // VÃ©rifier si OTP est requis
             if ($afribaPay->requiresOTP($countryCode, $currency, $request->operator_code)) {
                 return view('payments.afribapay-otp', [
                     'payment' => $payment,
@@ -1566,12 +1567,12 @@ class PaymentController extends Controller
 
             $payment->markAsFailed($e->getMessage());
 
-            return back()->with('error', 'Échec de l\'initiation du paiement: ' . $e->getMessage());
+            return back()->with('error', 'Ã‰chec de l\'initiation du paiement: ' . $e->getMessage());
         }
     }
 
     /**
-     * Vérifier l'OTP AfribaPay
+     * VÃ©rifier l'OTP AfribaPay
      */
     public function verifyAfribaOTP(Request $request, \App\Models\Payment $payment)
     {
@@ -1588,10 +1589,10 @@ class PaymentController extends Controller
                 throw new \Exception("Transaction AfribaPay introuvable");
             }
 
-            // Vérifier l'OTP
+            // VÃ©rifier l'OTP
             $otpResult = $afribaPay->verifyOTP($afribaTransactionId, $request->otp);
 
-            // Mettre à jour le paiement
+            // Mettre Ã  jour le paiement
             $payment->update([
                 'metadata' => array_merge($payment->metadata ?? [], [
                     'otp_verified' => true,
@@ -1599,13 +1600,13 @@ class PaymentController extends Controller
                 ]),
             ]);
 
-            // Vérifier le statut du paiement
+            // VÃ©rifier le statut du paiement
             $status = $afribaPay->checkStatus($afribaTransactionId);
 
             if (($status['data']['status'] ?? '') === 'SUCCESS') {
                 $this->processSuccessfulAfribaPayment($payment, $status);
                 return redirect()->route('payments.afribapay.return', ['payment' => $payment->id])
-                    ->with('success', 'Paiement effectué avec succès !');
+                    ->with('success', 'Paiement effectuÃ© avec succÃ¨s !');
             }
 
             return redirect()->route('payments.afribapay.status', ['payment' => $payment->id]);
@@ -1615,7 +1616,7 @@ class PaymentController extends Controller
                 'payment_id' => $payment->id,
             ]);
 
-            return back()->with('error', 'Vérification OTP échouée: ' . $e->getMessage());
+            return back()->with('error', 'VÃ©rification OTP Ã©chouÃ©e: ' . $e->getMessage());
         }
     }
 
@@ -1627,7 +1628,7 @@ class PaymentController extends Controller
         Log::info('AfribaPay notification received', $request->all());
 
         try {
-            // Récupérer le paiement par référence
+            // RÃ©cupÃ©rer le paiement par rÃ©fÃ©rence
             $reference = $request->input('reference');
             $payment = \App\Models\Payment::where('transaction_id', $reference)->first();
 
@@ -1636,7 +1637,7 @@ class PaymentController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Payment not found'], 404);
             }
 
-            // Vérifier le statut
+            // VÃ©rifier le statut
             $status = $request->input('status');
 
             if ($status === 'SUCCESS') {
@@ -1667,7 +1668,7 @@ class PaymentController extends Controller
             return redirect()->route('cart.index')->with('error', 'Paiement introuvable');
         }
 
-        // Vérifier le statut final
+        // VÃ©rifier le statut final
         try {
             $afribaPay = new \App\Services\AfribaPay();
             $afribaTransactionId = $payment->metadata['afribapay_transaction_id'] ?? null;
@@ -1699,7 +1700,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * API pour vérifier le statut AfribaPay (AJAX)
+     * API pour vÃ©rifier le statut AfribaPay (AJAX)
      */
     public function checkAfribaStatus(\App\Models\Payment $payment)
     {
@@ -1734,23 +1735,23 @@ class PaymentController extends Controller
     }
 
     /**
-     * Traiter un paiement AfribaPay réussi
+     * Traiter un paiement AfribaPay rÃ©ussi
      */
     protected function processSuccessfulAfribaPayment(\App\Models\Payment $payment, array $data)
     {
         if ($payment->isCompleted()) {
-            return; // Déjà traité
+            return; // DÃ©jÃ  traitÃ©
         }
 
-        // Marquer comme complété
+        // Marquer comme complÃ©tÃ©
         $payment->markAsCompleted([
             'afribapay_result' => $data,
         ]);
 
-        // Créer les commandes si c'est un checkout
+        // CrÃ©er les commandes si c'est un checkout
         $cartItems = $payment->metadata['cart_items'] ?? null;
         if ($cartItems) {
-            $this->createOrdersFromCheckout($payment, $cartItems);
+            $this->createOrdersFromCheckout($payment);
         }
 
         Log::info('AfribaPay payment processed successfully', [
@@ -1770,9 +1771,9 @@ class PaymentController extends Controller
                 ->latest()
                 ->paginate($request->per_page ?? 15);
 
-            return $this->paginatedResponse($payments, 'Historique de paiements récupéré');
+            return $this->paginatedResponse($payments, 'Historique de paiements rÃ©cupÃ©rÃ©');
         } catch (\Exception $e) {
-            return $this->errorResponse('Erreur lors de la récupération', 500);
+            return $this->errorResponse('Erreur lors de la rÃ©cupÃ©ration', 500);
         }
     }
 
@@ -1786,7 +1787,7 @@ class PaymentController extends Controller
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
-            return $this->successResponse($payment, 'Détails du paiement récupérés');
+            return $this->successResponse($payment, 'DÃ©tails du paiement rÃ©cupÃ©rÃ©s');
         } catch (\Exception $e) {
             return $this->errorResponse('Paiement introuvable', 404);
         }
@@ -1797,9 +1798,9 @@ class PaymentController extends Controller
      */
     public function apiInitiate(Request $request)
     {
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'provider' => 'required|string|in:orange_money,mpesa,airtel_money,africell,illicocash',
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:1|max:500000',
             'phone' => 'required|string|min:9|max:15',
             'purpose' => 'required|string',
             'currency' => 'nullable|in:USD,CDF'
@@ -1820,13 +1821,13 @@ class PaymentController extends Controller
             $methodName = 'payWith' . str_replace('_', '', ucwords($request->provider, '_'));
             
             if (!method_exists($this->paymentService, $methodName)) {
-                return $this->errorResponse('Méthode de paiement non supportée', 400);
+                return $this->errorResponse('MÃ©thode de paiement non supportÃ©e', 400);
             }
 
             $result = $this->paymentService->{$methodName}($paymentData);
 
             if ($result['status'] === 'pending') {
-                return $this->successResponse($result, 'Paiement initié avec succès');
+                return $this->successResponse($result, 'Paiement initiÃ© avec succÃ¨s');
             }
 
             return $this->errorResponse($result['message'] ?? 'Erreur lors du paiement', 400);
@@ -1841,7 +1842,7 @@ class PaymentController extends Controller
      */
     public function apiRequestRefund(Request $request, $orderId)
     {
-        $validator = \Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'reason' => 'required|string|min:10|max:1000',
             'refund_type' => 'required|in:partial,full',
             'refund_amount' => 'nullable|numeric|min:0',
@@ -1857,11 +1858,11 @@ class PaymentController extends Controller
             $order = Order::findOrFail($orderId);
 
             if ($order->buyer_id !== $request->user()->id) {
-                return $this->errorResponse('Non autorisé', 403);
+                return $this->errorResponse('Non autorisÃ©', 403);
             }
 
             if (!$this->isRefundEligible($order)) {
-                return $this->errorResponse('Commande non éligible au remboursement', 400);
+                return $this->errorResponse('Commande non Ã©ligible au remboursement', 400);
             }
 
             $evidencePhotos = [];
@@ -1894,7 +1895,7 @@ class PaymentController extends Controller
 
             return $this->successResponse(
                 $refund,
-                'Demande de remboursement créée avec succès',
+                'Demande de remboursement crÃ©Ã©e avec succÃ¨s',
                 201
             );
         } catch (\Exception $e) {
@@ -1943,7 +1944,7 @@ class PaymentController extends Controller
 
             return $this->successResponse($stats, 'Statistiques de paiement');
         } catch (\Exception $e) {
-            return $this->errorResponse('Erreur lors de la récupération', 500);
+            return $this->errorResponse('Erreur lors de la rÃ©cupÃ©ration', 500);
         }
     }
 
@@ -1972,10 +1973,10 @@ class PaymentController extends Controller
         $currency = $request->input('currency', 'CDF');
         $deliveryAddressId = $request->delivery_address_id;
 
-        // Récupérer l'adresse de livraison
+        // RÃ©cupÃ©rer l'adresse de livraison
         $deliveryAddress = \App\Models\DeliveryAddress::findOrFail($deliveryAddressId);
 
-        // Stocker les données en session pour le formulaire MaishaPay
+        // Stocker les donnÃ©es en session pour le formulaire MaishaPay
         session([
             'maishapay_checkout' => [
                 'cart' => $cart,
@@ -2011,7 +2012,7 @@ class PaymentController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Données invalides',
+                'message' => 'DonnÃ©es invalides',
                 'errors' => $validator->errors(),
             ], 422);
         }
@@ -2020,23 +2021,30 @@ class PaymentController extends Controller
             $maishaPay = new \App\Services\MaishaPay();
 
             if (!$maishaPay->isConfigured()) {
-                Log::error('MaishaPay non configuré');
+                Log::error('MaishaPay non configurÃ©');
                 return response()->json([
                     'success' => false,
                     'message' => 'Service de paiement non disponible',
                 ], 503);
             }
 
-            $buyerId = $request->user()->id ?? $request->input('buyer_id');
+            $user = $request->user();
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Utilisateur non authentifiÃ©',
+                ], 401);
+            }
+            $buyerId = $user->id;
 
-            // Générer un ID de transaction unique
+            // GÃ©nÃ©rer un ID de transaction unique
             $transactionId = 'MP-' . strtoupper(\Illuminate\Support\Str::random(12)) . '-' . time();
 
-            // Stocker le panier dans les métadonnées pour le callback
+            // Stocker le panier dans les mÃ©tadonnÃ©es pour le callback
             $cartData = session('cart', []);
             $deliveryAddressId = session('maishapay_checkout.delivery_address_id');
 
-            // Créer la transaction dans la base
+            // CrÃ©er la transaction dans la base
             $transaction = Transaction::create([
                 'user_id' => $buyerId,
                 'buyer_id' => $buyerId,
@@ -2071,7 +2079,7 @@ class PaymentController extends Controller
                         'description' => 'Ref: ' . $result['transaction_id'],
                     ]);
 
-                    // Créer les commandes à partir du panier
+                    // CrÃ©er les commandes Ã  partir du panier
                     $this->createOrdersFromCart($buyerId, $transaction, $request->phone);
 
                     return response()->json([
@@ -2134,11 +2142,11 @@ class PaymentController extends Controller
     /**
      * Callback MaishaPay (webhook) - Supporte GET et POST
      * @param Request $request
-     * @param string|null $reference - Référence de transaction depuis l'URL
+     * @param string|null $reference - RÃ©fÃ©rence de transaction depuis l'URL
      */
     public function handleMaishaCallback(Request $request, ?string $reference = null)
     {
-        Log::info('MaishaPay Callback reçu', [
+        Log::info('MaishaPay Callback reÃ§u', [
             'method' => $request->method(),
             'url_reference' => $reference,
             'data' => $request->all(),
@@ -2146,10 +2154,10 @@ class PaymentController extends Controller
             'full_url' => $request->fullUrl(),
         ]);
 
-        // MaishaPay peut envoyer les données en query string (GET) ou body (POST)
+        // MaishaPay peut envoyer les donnÃ©es en query string (GET) ou body (POST)
         $data = $request->isMethod('get') ? $request->query() : $request->all();
         
-        // La référence peut être dans l'URL, les paramètres, ou le body
+        // La rÃ©fÃ©rence peut Ãªtre dans l'URL, les paramÃ¨tres, ou le body
         $transactionRef = $reference 
             ?? $data['reference'] 
             ?? $data['transaction_id'] 
@@ -2161,10 +2169,10 @@ class PaymentController extends Controller
             ?? $data['id']
             ?? null;
 
-        // Note: MaishaPay envoie les données en POST, pas besoin de signature pour l'instant
-        // La vérification se fait par la correspondance de la référence de transaction
+        // Note: MaishaPay envoie les donnÃ©es en POST, pas besoin de signature pour l'instant
+        // La vÃ©rification se fait par la correspondance de la rÃ©fÃ©rence de transaction
         
-        // Extraire le statut des données
+        // Extraire le statut des donnÃ©es
         $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? $data['transaction_status'] ?? $data['state'] ?? 'success');
 
         // Log complet pour debug
@@ -2175,12 +2183,12 @@ class PaymentController extends Controller
         ]);
 
         if (!$transactionRef) {
-            Log::error('MaishaPay Callback: Référence manquante - Toutes les données:', [
+            Log::error('MaishaPay Callback: RÃ©fÃ©rence manquante - Toutes les donnÃ©es:', [
                 'data' => $data,
                 'query_string' => $request->getQueryString(),
                 'full_url' => $request->fullUrl(),
             ]);
-            return response()->json(['error' => 'Référence manquante', 'received_keys' => array_keys($data)], 400);
+            return response()->json(['error' => 'RÃ©fÃ©rence manquante', 'received_keys' => array_keys($data)], 400);
         }
 
         // Chercher par transaction_ref ou transaction_id
@@ -2189,11 +2197,11 @@ class PaymentController extends Controller
             ->first();
 
         if (!$transaction) {
-            Log::warning('MaishaPay: Transaction non trouvée', ['reference' => $transactionRef]);
+            Log::warning('MaishaPay: Transaction non trouvÃ©e', ['reference' => $transactionRef]);
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
-        // Mettre à jour le statut
+        // Mettre Ã  jour le statut
         $newStatus = match($status) {
             'success', 'completed', 'successful' => 'completed',
             'failed', 'declined', 'cancelled' => 'failed',
@@ -2210,12 +2218,12 @@ class PaymentController extends Controller
             )),
         ]);
 
-        // Si le paiement vient d'être confirmé, créer les commandes
+        // Si le paiement vient d'Ãªtre confirmÃ©, crÃ©er les commandes
         if ($newStatus === 'completed' && $previousStatus !== 'completed') {
             $this->createOrdersFromCallback($transaction);
         }
 
-        Log::info('MaishaPay: Transaction mise à jour', [
+        Log::info('MaishaPay: Transaction mise Ã  jour', [
             'reference' => $reference,
             'status' => $newStatus,
         ]);
@@ -2224,7 +2232,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Créer les commandes à partir du callback (données stockées dans metadata)
+     * CrÃ©er les commandes Ã  partir du callback (donnÃ©es stockÃ©es dans metadata)
      */
     private function createOrdersFromCallback($transaction)
     {
@@ -2235,7 +2243,7 @@ class PaymentController extends Controller
         $phone = $transaction->phone ?? null;
 
         if (empty($cart)) {
-            Log::warning('MaishaPay Callback: Panier vide dans les métadonnées', [
+            Log::warning('MaishaPay Callback: Panier vide dans les mÃ©tadonnÃ©es', [
                 'transaction_id' => $transaction->id
             ]);
             return [];
@@ -2243,7 +2251,7 @@ class PaymentController extends Controller
 
         $orders = [];
         
-        // Récupérer l'adresse de livraison
+        // RÃ©cupÃ©rer l'adresse de livraison
         $deliveryAddress = $deliveryAddressId 
             ? \App\Models\DeliveryAddress::find($deliveryAddressId)
             : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
@@ -2252,16 +2260,16 @@ class PaymentController extends Controller
             $item = \App\Models\Item::find($itemId);
             
             if (!$item) {
-                Log::warning('Article non trouvé dans le panier callback', ['item_id' => $itemId]);
+                Log::warning('Article non trouvÃ© dans le panier callback', ['item_id' => $itemId]);
                 continue;
             }
 
             $orderAmount = $item->price * $cartItem['quantity'];
             
-            // Créer ou récupérer le wallet "pending" du vendeur
+            // CrÃ©er ou rÃ©cupÃ©rer le wallet "pending" du vendeur
             $seller = \App\Models\User::find($item->user_id);
             if (!$seller) {
-                Log::warning('Vendeur non trouvé', ['seller_id' => $item->user_id]);
+                Log::warning('Vendeur non trouvÃ©', ['seller_id' => $item->user_id]);
                 continue;
             }
 
@@ -2281,7 +2289,7 @@ class PaymentController extends Controller
             // Ajouter le montant au wallet pending du vendeur
             $sellerPendingWallet->increment('balance', $orderAmount);
             
-            // Préparer les données de commande
+            // PrÃ©parer les donnÃ©es de commande
             $orderData = [
                 'buyer_id' => $buyerId,
                 'seller_id' => $item->user_id,
@@ -2302,23 +2310,23 @@ class PaymentController extends Controller
                 $orderData['shipping_city'] = $deliveryAddress->city;
                 $orderData['shipping_phone'] = $deliveryAddress->phone;
             } else {
-                $orderData['shipping_address'] = 'À définir';
-                $orderData['shipping_city'] = 'À définir';
+                $orderData['shipping_address'] = 'Ã€ dÃ©finir';
+                $orderData['shipping_city'] = 'Ã€ dÃ©finir';
                 $orderData['shipping_phone'] = $phone ?? 'N/A';
             }
             
-            // Créer la commande
+            // CrÃ©er la commande
             $order = \App\Models\Order::create($orderData);
             $orders[] = $order;
             
-            // Mettre à jour le stock
+            // Mettre Ã  jour le stock
             $item->quantity -= $cartItem['quantity'];
             if ($item->quantity <= 0) {
                 $item->status = 'sold';
             }
             $item->save();
             
-            Log::info("Commande créée via MaishaPay Callback", [
+            Log::info("Commande crÃ©Ã©e via MaishaPay Callback", [
                 'order_id' => $order->id,
                 'seller_id' => $seller->id,
                 'amount' => $orderAmount,
@@ -2326,7 +2334,7 @@ class PaymentController extends Controller
             ]);
         }
         
-        Log::info('Commandes créées via callback', [
+        Log::info('Commandes crÃ©Ã©es via callback', [
             'buyer_id' => $buyerId,
             'transaction_id' => $transaction->id,
             'orders_count' => count($orders),
@@ -2336,7 +2344,7 @@ class PaymentController extends Controller
     }
 
     /**
-     * Vérifier le statut d'une transaction MaishaPay
+     * VÃ©rifier le statut d'une transaction MaishaPay
      */
     public function checkMaishaStatus(Request $request, $transactionId)
     {
@@ -2349,7 +2357,7 @@ class PaymentController extends Controller
             ], 404);
         }
 
-        // Si déjà complété ou échoué, retourner le statut
+        // Si dÃ©jÃ  complÃ©tÃ© ou Ã©chouÃ©, retourner le statut
         if (in_array($transaction->status, ['completed', 'failed'])) {
             return response()->json([
                 'success' => true,
@@ -2358,7 +2366,7 @@ class PaymentController extends Controller
             ]);
         }
 
-        // Sinon vérifier auprès de MaishaPay
+        // Sinon vÃ©rifier auprÃ¨s de MaishaPay
         if ($transaction->transaction_ref) {
             $maishaPay = new \App\Services\MaishaPay();
             $result = $maishaPay->checkStatus($transaction->transaction_ref);
@@ -2390,20 +2398,20 @@ class PaymentController extends Controller
     }
 
     /**
-     * Créer les commandes à partir du panier après un paiement réussi
+     * CrÃ©er les commandes Ã  partir du panier aprÃ¨s un paiement rÃ©ussi
      */
     private function createOrdersFromCart($buyerId, $transaction, $phone = null)
     {
         $cart = session('cart', []);
         
         if (empty($cart)) {
-            Log::info('Panier vide, aucune commande à créer', ['buyer_id' => $buyerId]);
+            Log::info('Panier vide, aucune commande Ã  crÃ©er', ['buyer_id' => $buyerId]);
             return [];
         }
 
         $orders = [];
         
-        // Récupérer l'adresse de livraison par défaut du client
+        // RÃ©cupÃ©rer l'adresse de livraison par dÃ©faut du client
         $defaultDeliveryAddress = \App\Models\DeliveryAddress::where('user_id', $buyerId)
             ->where('is_default', true)
             ->first();
@@ -2412,16 +2420,16 @@ class PaymentController extends Controller
             $item = \App\Models\Item::find($itemId);
             
             if (!$item) {
-                Log::warning('Article non trouvé dans le panier', ['item_id' => $itemId]);
+                Log::warning('Article non trouvÃ© dans le panier', ['item_id' => $itemId]);
                 continue;
             }
 
             $orderAmount = $item->price * $cartItem['quantity'];
             
-            // Créer ou récupérer le wallet "pending" du vendeur
+            // CrÃ©er ou rÃ©cupÃ©rer le wallet "pending" du vendeur
             $seller = \App\Models\User::find($item->user_id);
             if (!$seller) {
-                Log::warning('Vendeur non trouvé', ['seller_id' => $item->user_id]);
+                Log::warning('Vendeur non trouvÃ©', ['seller_id' => $item->user_id]);
                 continue;
             }
 
@@ -2441,7 +2449,7 @@ class PaymentController extends Controller
             // Ajouter le montant au wallet pending du vendeur
             $sellerPendingWallet->increment('balance', $orderAmount);
             
-            // Préparer les données de commande
+            // PrÃ©parer les donnÃ©es de commande
             $orderData = [
                 'buyer_id' => $buyerId,
                 'seller_id' => $item->user_id,
@@ -2462,23 +2470,23 @@ class PaymentController extends Controller
                 $orderData['shipping_city'] = $defaultDeliveryAddress->city;
                 $orderData['shipping_phone'] = $defaultDeliveryAddress->phone;
             } else {
-                $orderData['shipping_address'] = 'À définir';
-                $orderData['shipping_city'] = 'À définir';
+                $orderData['shipping_address'] = 'Ã€ dÃ©finir';
+                $orderData['shipping_city'] = 'Ã€ dÃ©finir';
                 $orderData['shipping_phone'] = $phone ?? 'N/A';
             }
             
-            // Créer la commande
+            // CrÃ©er la commande
             $order = \App\Models\Order::create($orderData);
             $orders[] = $order;
             
-            // Mettre à jour le stock
+            // Mettre Ã  jour le stock
             $item->quantity -= $cartItem['quantity'];
             if ($item->quantity <= 0) {
                 $item->status = 'sold';
             }
             $item->save();
             
-            Log::info("Commande créée via MaishaPay", [
+            Log::info("Commande crÃ©Ã©e via MaishaPay", [
                 'order_id' => $order->id,
                 'seller_id' => $seller->id,
                 'amount' => $orderAmount,
@@ -2486,10 +2494,10 @@ class PaymentController extends Controller
             ]);
         }
         
-        // Vider le panier après la création des commandes
+        // Vider le panier aprÃ¨s la crÃ©ation des commandes
         session()->forget('cart');
         
-        Log::info('Commandes créées avec succès', [
+        Log::info('Commandes crÃ©Ã©es avec succÃ¨s', [
             'buyer_id' => $buyerId,
             'transaction_id' => $transaction->id,
             'orders_count' => count($orders),

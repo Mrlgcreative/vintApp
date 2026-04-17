@@ -181,12 +181,6 @@
             }),
         );
 
-        console.log(
-            "[VintApp] Mode " +
-                (mode === "day" ? "☀️ Jour" : "🌙 Nuit") +
-                " — Palette: " +
-                (mode === "day" ? activeDayKey : activeNightKey),
-        );
     }
 
     function updateThemeColor(mode) {

@@ -116,7 +116,7 @@ Route::prefix('payment-callbacks')->group(function () {
 });
 
 // Routes d'authentification API (Sanctum)
-Route::post('/register', function (Request $request) {
+Route::middleware('throttle:5,1')->post('/register', function (Request $request) {
     $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users',
@@ -145,7 +145,7 @@ Route::post('/register', function (Request $request) {
     ], 201);
 });
 
-Route::post('/login', function (Request $request) {
+Route::middleware('throttle:5,1')->post('/login', function (Request $request) {
     $request->validate([
         'email' => 'required|string|email',
         'password' => 'required|string',
@@ -165,7 +165,7 @@ Route::post('/login', function (Request $request) {
 
     $token = $user->createToken('auth_token')->plainTextToken;
 
-    Log::info('API Login réussi', ['user_id' => $user->id, 'email' => $user->email]);
+    Log::info('API Login réussi', ['user_id' => $user->id]);
 
     return response()->json([
         'success' => true,
@@ -740,7 +740,7 @@ Route::post('v1/wallet/withdrawals/maishapay/callback', [WalletController::class
     ->withoutMiddleware(['auth:sanctum', 'web']);
 
 // ==================== Admin Routes ====================
-Route::prefix('v1/admin')->middleware(['auth:sanctum,web', 'role:admin'])->group(function () {
+Route::prefix('v1/admin')->middleware(['auth:sanctum,web', 'admin'])->group(function () {
     // Dashboard & Stats
     Route::get('/dashboard', [AdminController::class, 'apiDashboard']);
     Route::get('/stats/summary', [AdminController::class, 'apiStatsSummary']);

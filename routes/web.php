@@ -22,35 +22,35 @@ use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\VintPassController;
 
-// 🔍 Route de débogage pour vérifier les permissions admin
-Route::get('/debug/check-admin', function() {
-    if (!Auth::check()) {
-        return response()->json(['error' => 'Non authentifié']);
-    }
-    
-    $user = Auth::user();
-    $roles = $user->roles()->get(['id', 'name', 'slug']);
-    $isAdmin = $user->isAdmin();
-    
-    return response()->json([
-        'user_id' => $user->id,
-        'user_name' => $user->name,
-        'user_email' => $user->email,
-        'roles' => $roles,
-        'is_admin' => $isAdmin,
-        'has_admin_role' => $user->hasRole('admin'),
-        'role_user_records' => DB::table('role_user')->where('user_id', $user->id)->get(),
-    ]);
-})->middleware('auth');
+// Routes de débogage - uniquement en environnement local
+if (app()->environment('local')) {
+    Route::get('/debug/check-admin', function() {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Non authentifié']);
+        }
+        
+        $user = Auth::user();
+        $roles = $user->roles()->get(['id', 'name', 'slug']);
+        $isAdmin = $user->isAdmin();
+        
+        return response()->json([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'is_admin' => $isAdmin,
+            'has_admin_role' => $user->hasRole('admin'),
+        ]);
+    })->middleware('auth');
+}
 
-// 🔍 Route de test pour vérification items (sans security.log)
-Route::get('/debug/test-verification-access', function() {
-    return response()->json([
-        'message' => 'Accès autorisé à la vérification',
-        'user' => Auth::user()->only(['id', 'name', 'email']),
-        'is_admin' => auth()->user()->isAdmin(),
-    ]);
-})->middleware(['auth', 'admin']);
+if (app()->environment('local')) {
+    Route::get('/debug/test-verification-access', function() {
+        return response()->json([
+            'message' => 'Accès autorisé à la vérification',
+            'user' => Auth::user()->only(['id', 'name']),
+            'is_admin' => auth()->user()->isAdmin(),
+        ]);
+    })->middleware(['auth', 'admin']);
+}
 
 // 🚀 Route de test pour le lazy loading
 Route::get('/test-lazy-loading', function() {
@@ -203,7 +203,7 @@ Route::get('/newsletter/track/open/{token}', [NewsletterController::class, 'trac
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 Route::get('/newsletter/track/click/{token}', [NewsletterController::class, 'trackClick'])->name('newsletter.track.click');
 
-Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->middleware(['auth', 'redirect.role'])->name('dashboard');
 
 // Routes de test supprimées
 Route::get('/test-create', function() {
@@ -665,9 +665,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::prefix('support')->name('support.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\SupportController::class, 'index'])->name('index');
         Route::get('/stats', [App\Http\Controllers\Admin\SupportController::class, 'stats'])->name('stats');
+        Route::get('/agents', [App\Http\Controllers\Admin\SupportController::class, 'agents'])->name('agents');
+        Route::post('/agents', [App\Http\Controllers\Admin\SupportController::class, 'addAgent'])->name('agents.add');
+        Route::delete('/agents/{agent}', [App\Http\Controllers\Admin\SupportController::class, 'removeAgent'])->name('agents.remove');
+        Route::post('/agents/{agent}/toggle', [App\Http\Controllers\Admin\SupportController::class, 'toggleAgent'])->name('agents.toggle');
+        Route::put('/agents/{agent}', [App\Http\Controllers\Admin\SupportController::class, 'updateAgent'])->name('agents.update');
         Route::get('/{supportChat}', [App\Http\Controllers\Admin\SupportController::class, 'show'])->name('show');
         Route::post('/{supportChat}/reply', [App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('reply');
         Route::post('/{supportChat}/assign', [App\Http\Controllers\Admin\SupportController::class, 'assign'])->name('assign');
+        Route::post('/{supportChat}/auto-assign', [App\Http\Controllers\Admin\SupportController::class, 'autoAssign'])->name('autoAssign');
         Route::post('/{supportChat}/status', [App\Http\Controllers\Admin\SupportController::class, 'updateStatus'])->name('status');
         Route::post('/{supportChat}/priority', [App\Http\Controllers\Admin\SupportController::class, 'updatePriority'])->name('priority');
         Route::post('/{supportChat}/close', [App\Http\Controllers\Admin\SupportController::class, 'close'])->name('close');
@@ -770,6 +776,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 Route::get('/city-restricted', function() {
     return view('errors.city_restricted');
 })->name('city.restricted');
+
+// ==================== Routes Agent Support ====================
+Route::middleware(['auth', 'role:support,admin'])->prefix('agent')->name('agent.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Agent\AgentSupportController::class, 'dashboard'])->name('dashboard');
+    Route::get('/tickets', [App\Http\Controllers\Agent\AgentSupportController::class, 'tickets'])->name('tickets');
+    Route::get('/unassigned', [App\Http\Controllers\Agent\AgentSupportController::class, 'unassigned'])->name('unassigned');
+    Route::get('/ticket/{supportChat}', [App\Http\Controllers\Agent\AgentSupportController::class, 'show'])->name('show');
+    Route::post('/ticket/{supportChat}/reply', [App\Http\Controllers\Agent\AgentSupportController::class, 'reply'])->name('reply');
+    Route::post('/ticket/{supportChat}/claim', [App\Http\Controllers\Agent\AgentSupportController::class, 'claim'])->name('claim');
+    Route::post('/ticket/{supportChat}/status', [App\Http\Controllers\Agent\AgentSupportController::class, 'updateStatus'])->name('status');
+    Route::post('/ticket/{supportChat}/priority', [App\Http\Controllers\Agent\AgentSupportController::class, 'updatePriority'])->name('priority');
+});
 
 // Routes pour le support client (côté utilisateur)
 Route::middleware('auth')->prefix('support')->name('support.')->group(function () {

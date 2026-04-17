@@ -244,7 +244,7 @@
                     <div class="bg-white rounded-2xl p-6 text-center">
                         @if($vintPass->qr_code_path && Storage::exists($vintPass->qr_code_path))
                         <div class="bg-white p-4 rounded-xl inline-block mb-4">
-                            {!! Storage::get($vintPass->qr_code_path) !!}
+                            <img src="data:image/svg+xml;base64,{{ base64_encode(Storage::get($vintPass->qr_code_path)) }}" alt="QR Code VintPass" class="w-40 h-40">
                         </div>
                         @else
                         <div class="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center mx-auto mb-4">

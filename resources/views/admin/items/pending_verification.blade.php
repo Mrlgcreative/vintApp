@@ -1,296 +1,322 @@
 @extends('layouts.admin')
 
 @section('title', 'Articles vérifiés par les experts')
+@section('page-title', 'Articles vérifiés par les experts')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Articles vérifiés par les experts</h1>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Supervision des articles approuvés par les experts - Publication automatique
-        </p>
+{{-- Flash message --}}
+@if(session('success'))
+    <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-lg text-sm flex items-center gap-2">
+        <i class="fas fa-check-circle flex-shrink-0"></i>
+        {{ session('success') }}
     </div>
+@endif
 
-    @if(session('success'))
-        <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-lg">
-            {{ session('success') }}
+{{-- Stats rapides --}}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 sm:mb-6">
+    @php
+        $totalItems = $items->total();
+        $highScore = $items->filter(fn($i) => ($i->verification_score ?? 0) >= 75)->count();
+        $midScore = $items->filter(fn($i) => ($i->verification_score ?? 0) >= 50 && ($i->verification_score ?? 0) < 75)->count();
+        $lowScore = $items->filter(fn($i) => ($i->verification_score ?? 0) < 50)->count();
+    @endphp
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-box text-blue-600 dark:text-blue-400"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Total vérifiés</p>
+                <p class="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{{ $totalItems }}</p>
+            </div>
         </div>
-    @endif
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-star text-green-600 dark:text-green-400"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Score ≥ 75</p>
+                <p class="text-lg sm:text-xl font-bold text-green-600">{{ $highScore }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Score 50-74</p>
+                <p class="text-lg sm:text-xl font-bold text-yellow-600">{{ $midScore }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-times-circle text-red-600 dark:text-red-400"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Score < 50</p>
+                <p class="text-lg sm:text-xl font-bold text-red-600">{{ $lowScore }}</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    @if($items->isEmpty())
-        <div class="p-8 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
-            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <p class="mt-2 text-gray-600 dark:text-gray-400">Aucun article récemment vérifié.</p>
+@if($items->isEmpty())
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-check-circle text-2xl text-gray-400 dark:text-gray-500"></i>
         </div>
-    @else
-        <div class="space-y-6">
-            @foreach($items as $item)
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
-                <div class="p-6">
-                    <div class="flex flex-col lg:flex-row lg:items-start lg:space-x-6">
-                        <!-- Images Grid -->
-                        <div class="flex-shrink-0 mb-4 lg:mb-0">
-                            <div class="grid grid-cols-2 gap-2 w-64">
+        <h3 class="text-base font-medium text-gray-900 dark:text-white mb-1">Aucun article récemment vérifié</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Les articles vérifiés par les experts apparaîtront ici.</p>
+    </div>
+@else
+    <div class="space-y-4">
+        @foreach($items as $item)
+            @php
+                $score = $item->verification_score ?? 0;
+                $scoreColor = $score >= 75 ? 'text-green-600 dark:text-green-400' : ($score >= 50 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400');
+                $scoreBg = $score >= 75 ? 'bg-green-100 dark:bg-green-900/30 border-green-200 dark:border-green-800' : ($score >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800' : 'bg-red-100 dark:bg-red-900/30 border-red-200 dark:border-red-800');
+                $scoreRing = $score >= 75 ? 'ring-green-500' : ($score >= 50 ? 'ring-yellow-500' : 'ring-red-500');
+            @endphp
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" x-data="{ showDetails: false }">
+                <div class="p-4 sm:p-5">
+                    <div class="flex flex-col lg:flex-row lg:gap-5">
+                        {{-- Images --}}
+                        <div class="flex-shrink-0 mb-4 lg:mb-0" x-data="{ modal: false, modalSrc: '' }">
+                            <div class="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-2 gap-1.5 w-full lg:w-56">
                                 @foreach(array_slice($item->images ?? [], 0, 4) as $index => $image)
-                                    <div class="relative group cursor-pointer" onclick="openImageModal('{{ asset('storage/' . $image) }}')">
+                                    <div class="relative group cursor-pointer aspect-square" @click="modal = true; modalSrc = '{{ asset('storage/' . $image) }}'">
                                         <img src="{{ asset('storage/' . $image) }}" 
-                                             class="w-full h-28 object-cover rounded border-2 border-gray-200 dark:border-gray-600 group-hover:border-blue-500 transition"
+                                             class="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-gray-600 group-hover:border-primary-500 transition" loading="lazy"
                                              alt="Image {{ $index + 1 }}">
-                                        <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition rounded"></div>
+                                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition rounded-lg"></div>
                                     </div>
                                 @endforeach
                                 @if(count($item->images ?? []) > 4)
-                                    <div class="w-full h-28 bg-gray-100 dark:bg-gray-700 rounded border-2 border-gray-200 dark:border-gray-600 flex items-center justify-center">
-                                        <span class="text-2xl font-bold text-gray-500 dark:text-gray-400">+{{ count($item->images) - 4 }}</span>
+                                    <div class="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 flex items-center justify-center">
+                                        <span class="text-lg font-bold text-gray-500 dark:text-gray-400">+{{ count($item->images) - 4 }}</span>
                                     </div>
                                 @endif
+                            </div>
+                            {{-- Lightbox inline --}}
+                            <div x-show="modal" x-transition.opacity @click="modal = false" @keydown.escape.window="modal = false"
+                                 class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4" style="display:none">
+                                <button @click="modal = false" class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+                                    <i class="fas fa-times text-2xl"></i>
+                                </button>
+                                <img :src="modalSrc" class="max-w-full max-h-[90vh] object-contain rounded-lg" alt="Image agrandie">
                             </div>
                         </div>
 
-                        <!-- Item Details -->
+                        {{-- Détails --}}
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex-1">
-                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-1">
+                            {{-- En-tête : nom + score --}}
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="min-w-0">
+                                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
                                         {{ $item->name }}
-                                        <span class="text-sm text-gray-500 dark:text-gray-400 font-normal">#{{ $item->id }}</span>
+                                        <span class="text-xs text-gray-400 font-normal ml-1">#{{ $item->id }}</span>
                                     </h3>
-                                    <div class="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
-                                        <span>{{ $item->brand->name ?? 'N/A' }}</span>
+                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                                        @if($item->brand)
+                                            <span class="inline-flex items-center gap-1"><i class="fas fa-tag"></i>{{ $item->brand->name }}</span>
+                                        @endif
+                                        @if($item->category)
+                                            <span>•</span>
+                                            <span>{{ $item->category->name }}</span>
+                                        @endif
                                         <span>•</span>
-                                        <span>{{ $item->category->name ?? 'N/A' }}</span>
-                                        <span>•</span>
-                                        <span>{{ $item->currency_symbol ?? '' }} {{ number_format($item->price, 2, ',', ' ') }}</span>
+                                        <span class="font-semibold text-gray-700 dark:text-gray-200">{{ $item->currency_symbol ?? '' }} {{ number_format($item->price, 2, ',', ' ') }}</span>
                                     </div>
                                 </div>
-
-                                <!-- Verification Score Badge -->
-                                @php
-                                    $score = $item->verification_score ?? 0;
-                                    $badgeColor = $score >= 75 ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700' 
-                                                : ($score >= 50 ? 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700' 
-                                                : 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700');
-                                @endphp
-                                <div class="flex-shrink-0 ml-4">
-                                    <div class="px-4 py-2 rounded-full border-2 {{ $badgeColor }} text-center min-w-[80px]">
-                                        <div class="text-2xl font-bold">{{ number_format($score, 0) }}</div>
-                                        <div class="text-xs uppercase tracking-wide">Score IA</div>
-                                    </div>
+                                {{-- Score badge --}}
+                                <div class="flex-shrink-0 w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-full border-2 {{ $scoreBg }} flex flex-col items-center justify-center ring-2 {{ $scoreRing }} ring-offset-2 ring-offset-white dark:ring-offset-gray-800">
+                                    <span class="text-xl sm:text-2xl font-bold {{ $scoreColor }} leading-none">{{ number_format($score, 0) }}</span>
+                                    <span class="text-[9px] uppercase tracking-wider {{ $scoreColor }} opacity-75">Score</span>
                                 </div>
                             </div>
 
-                            <p class="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
-                                {{ $item->description }}
-                            </p>
+                            {{-- Description --}}
+                            <p class="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">{{ $item->description }}</p>
 
-                            <!-- Seller Info -->
-                            @if($item->user)
-                            <div class="flex items-center space-x-2 mb-4 text-sm">
-                                <img src="{{ $item->user->avatar ?? asset('images/default-avatar.png') }}" 
-                                     class="w-6 h-6 rounded-full"
-                                     alt="{{ $item->user->name }}">
-                                <span class="text-gray-600 dark:text-gray-400">Vendeur:</span>
-                                <span class="font-medium text-gray-900 dark:text-white">{{ $item->user->name }}</span>
-                            </div>
-                            @endif
-
-                            <!-- AI Analysis Details (Collapsible) -->
-                            @if($item->verification_details)
-                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden mb-4">
-                                <button type="button" 
-                                        onclick="toggleDetails('details-{{ $item->id }}')"
-                                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition flex items-center justify-between">
-                                    <span class="font-medium text-gray-900 dark:text-white">📊 Détails de l'analyse IA</span>
-                                    <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 transform transition-transform" id="icon-details-{{ $item->id }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                </button>
-                                
-                                <div id="details-{{ $item->id }}" class="hidden px-4 py-3 bg-white dark:bg-gray-800 space-y-3">
-                                    @php
-                                        $details = $item->verification_details;
-                                        $imageScore = $details['images']['score'] ?? 0;
-                                        $textScore = $details['text']['score'] ?? 0;
-                                        $coherenceScore = $details['coherence']['score'] ?? 0;
-                                    @endphp
-
-                                    <!-- Images Analysis -->
-                                    <div class="border-l-4 border-blue-500 pl-3">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <h4 class="font-semibold text-gray-900 dark:text-white">🖼️ Images (40%)</h4>
-                                            <span class="text-sm font-bold {{ $imageScore >= 70 ? 'text-green-600' : ($imageScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
-                                                {{ number_format($imageScore, 1) }}/100
-                                            </span>
-                                        </div>
-                                        @if(isset($details['images']['issues']) && !empty($details['images']['issues']) && is_array($details['images']['issues']))
-                                            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                                @foreach($details['images']['issues'] as $imageKey => $issue)
-                                                    <li class="flex items-start">
-                                                        <span class="text-red-500 mr-2">⚠️</span>
-                                                        @if(is_array($issue))
-                                                            <div>
-                                                                <strong>{{ $imageKey }}:</strong>
-                                                                @foreach($issue['issues'] ?? [] as $singleIssue)
-                                                                    <div class="ml-4">• {{ $singleIssue }}</div>
-                                                                @endforeach
-                                                            </div>
-                                                        @else
-                                                            <span>{{ $issue }}</span>
-                                                        @endif
-                                                    </li>
-                                                @endforeach
-                                            </ul>
+                            {{-- Vendeur + Expert --}}
+                            <div class="flex flex-wrap items-center gap-3 mb-3 text-xs">
+                                @if($item->user)
+                                    <div class="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+                                        @if($item->user->avatar)
+                                            <img src="{{ $item->user->avatar_url ?? $item->user->avatar }}" class="w-5 h-5 rounded-full" alt="">
                                         @else
-                                            <p class="text-sm text-green-600 dark:text-green-400">✓ Aucun problème détecté</p>
+                                            <div class="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center text-white text-[10px] font-semibold">{{ substr($item->user->name, 0, 1) }}</div>
                                         @endif
+                                        <span>Vendeur : <span class="font-medium text-gray-900 dark:text-white">{{ $item->user->name }}</span></span>
                                     </div>
-
-                                    <!-- Text Analysis -->
-                                    <div class="border-l-4 border-purple-500 pl-3">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <h4 class="font-semibold text-gray-900 dark:text-white">📝 Texte (30%)</h4>
-                                            <span class="text-sm font-bold {{ $textScore >= 70 ? 'text-green-600' : ($textScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
-                                                {{ number_format($textScore, 1) }}/100
-                                            </span>
-                                        </div>
-                                        @if(isset($details['text']['issues']) && !empty($details['text']['issues']) && is_array($details['text']['issues']))
-                                            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                                @foreach($details['text']['issues'] as $issue)
-                                                    <li class="flex items-start">
-                                                        <span class="text-red-500 mr-2">⚠️</span>
-                                                        <span>{{ is_array($issue) ? implode(', ', $issue) : $issue }}</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <p class="text-sm text-green-600 dark:text-green-400">✓ Aucun problème détecté</p>
-                                        @endif
-                                    </div>
-
-                                    <!-- Coherence Analysis -->
-                                    <div class="border-l-4 border-orange-500 pl-3">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <h4 class="font-semibold text-gray-900 dark:text-white">🔗 Cohérence (30%)</h4>
-                                            <span class="text-sm font-bold {{ $coherenceScore >= 70 ? 'text-green-600' : ($coherenceScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
-                                                {{ number_format($coherenceScore, 1) }}/100
-                                            </span>
-                                        </div>
-                                        @if(isset($details['coherence']['issues']) && !empty($details['coherence']['issues']) && is_array($details['coherence']['issues']))
-                                            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                                                @foreach($details['coherence']['issues'] as $issue)
-                                                    <li class="flex items-start">
-                                                        <span class="text-red-500 mr-2">⚠️</span>
-                                                        <span>{{ is_array($issue) ? implode(', ', $issue) : $issue }}</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
-                                            <p class="text-sm text-green-600 dark:text-green-400">✓ Aucun problème détecté</p>
-                                        @endif
-                                    </div>
-
-                                    <!-- Admin Rejection Reason (if exists) -->
-                                    @if(isset($details['admin_rejection']) && is_array($details['admin_rejection']))
-                                        <div class="border-l-4 border-red-500 pl-3 bg-red-50 dark:bg-red-900/20 p-3 rounded">
-                                            <h4 class="font-semibold text-red-800 dark:text-red-400 mb-1">❌ Motif de rejet précédent</h4>
-                                            <p class="text-sm text-red-700 dark:text-red-300 mb-1">{{ $details['admin_rejection']['reason'] ?? 'Non spécifié' }}</p>
-                                            <div class="text-xs text-red-600 dark:text-red-400 mt-2">
-                                                <span>Rejeté par: {{ $details['admin_rejection']['rejected_by'] ?? 'N/A' }}</span>
-                                                <span class="mx-2">•</span>
-                                                <span>Le: {{ $details['admin_rejection']['rejected_at'] ?? 'N/A' }}</span>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @endif
-
-                            <!-- Action Buttons -->
-                            <div class="flex items-center space-x-3">
-                                <a href="{{ route('admin.items.show', $item) }}" 
-                                   class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                                    👁️ Voir détails
-                                </a>
-                                
-                                <!-- Statut de vérification -->
-                                <div class="flex items-center px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <span class="font-medium">Vérifié par: {{ $item->verifiedBy->name ?? 'Expert' }}</span>
+                                @endif
+                                <div class="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span>Vérifié par : <span class="font-medium">{{ $item->verifiedBy->name ?? 'Expert' }}</span></span>
                                     @if($item->verified_at)
-                                        <span class="ml-2 text-sm opacity-75">{{ $item->verified_at->diffForHumans() }}</span>
+                                        <span class="text-gray-400 dark:text-gray-500">• {{ $item->verified_at->diffForHumans() }}</span>
                                     @endif
                                 </div>
-
-                                <!-- Badge statut actif -->
                                 @if($item->status === 'active')
-                                    <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
-                                        ✓ Publié
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">
+                                        <i class="fas fa-globe"></i>Publié
                                     </span>
                                 @endif
+                            </div>
+
+                            {{-- Analyse IA (collapsible via Alpine) --}}
+                            @if($item->verification_details)
+                                @php
+                                    $details = $item->verification_details;
+                                    $imageScore = $details['images']['score'] ?? 0;
+                                    $textScore = $details['text']['score'] ?? 0;
+                                    $coherenceScore = $details['coherence']['score'] ?? 0;
+                                @endphp
+                                <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-3">
+                                    <button type="button" @click="showDetails = !showDetails"
+                                            class="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center justify-between text-sm">
+                                        <span class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                            <i class="fas fa-chart-bar text-gray-400"></i>Détails de l'analyse IA
+                                        </span>
+                                        <div class="flex items-center gap-3">
+                                            {{-- Mini scores preview --}}
+                                            <div class="hidden sm:flex items-center gap-2 text-xs">
+                                                <span class="{{ $imageScore >= 70 ? 'text-green-600' : ($imageScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                    <i class="fas fa-image mr-0.5"></i>{{ number_format($imageScore, 0) }}
+                                                </span>
+                                                <span class="{{ $textScore >= 70 ? 'text-green-600' : ($textScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                    <i class="fas fa-font mr-0.5"></i>{{ number_format($textScore, 0) }}
+                                                </span>
+                                                <span class="{{ $coherenceScore >= 70 ? 'text-green-600' : ($coherenceScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                    <i class="fas fa-link mr-0.5"></i>{{ number_format($coherenceScore, 0) }}
+                                                </span>
+                                            </div>
+                                            <i class="fas fa-chevron-down text-xs text-gray-400 transition-transform" :class="showDetails && 'rotate-180'"></i>
+                                        </div>
+                                    </button>
+                                    <div x-show="showDetails" x-transition style="display:none">
+                                        <div class="px-3 py-3 space-y-3 bg-white dark:bg-gray-800">
+                                            {{-- Images --}}
+                                            <div class="border-l-4 border-blue-500 pl-3">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                                        <i class="fas fa-image text-blue-500"></i>Images <span class="font-normal text-gray-400">(40%)</span>
+                                                    </h4>
+                                                    <span class="text-sm font-bold {{ $imageScore >= 70 ? 'text-green-600' : ($imageScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                        {{ number_format($imageScore, 1) }}/100
+                                                    </span>
+                                                </div>
+                                                @if(isset($details['images']['issues']) && !empty($details['images']['issues']) && is_array($details['images']['issues']))
+                                                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                                                        @foreach($details['images']['issues'] as $imageKey => $issue)
+                                                            <li class="flex items-start gap-1.5">
+                                                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5 flex-shrink-0"></i>
+                                                                @if(is_array($issue))
+                                                                    <div>
+                                                                        <strong>{{ $imageKey }}:</strong>
+                                                                        @foreach($issue['issues'] ?? [] as $singleIssue)
+                                                                            <div class="ml-3">• {{ $singleIssue }}</div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @else
+                                                                    <span>{{ $issue }}</span>
+                                                                @endif
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fas fa-check"></i>Aucun problème détecté</p>
+                                                @endif
+                                            </div>
+                                            {{-- Texte --}}
+                                            <div class="border-l-4 border-purple-500 pl-3">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                                        <i class="fas fa-font text-purple-500"></i>Texte <span class="font-normal text-gray-400">(30%)</span>
+                                                    </h4>
+                                                    <span class="text-sm font-bold {{ $textScore >= 70 ? 'text-green-600' : ($textScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                        {{ number_format($textScore, 1) }}/100
+                                                    </span>
+                                                </div>
+                                                @if(isset($details['text']['issues']) && !empty($details['text']['issues']) && is_array($details['text']['issues']))
+                                                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                                                        @foreach($details['text']['issues'] as $issue)
+                                                            <li class="flex items-start gap-1.5">
+                                                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5 flex-shrink-0"></i>
+                                                                <span>{{ is_array($issue) ? implode(', ', $issue) : $issue }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fas fa-check"></i>Aucun problème détecté</p>
+                                                @endif
+                                            </div>
+                                            {{-- Cohérence --}}
+                                            <div class="border-l-4 border-orange-500 pl-3">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-1.5">
+                                                        <i class="fas fa-link text-orange-500"></i>Cohérence <span class="font-normal text-gray-400">(30%)</span>
+                                                    </h4>
+                                                    <span class="text-sm font-bold {{ $coherenceScore >= 70 ? 'text-green-600' : ($coherenceScore >= 50 ? 'text-yellow-600' : 'text-red-600') }}">
+                                                        {{ number_format($coherenceScore, 1) }}/100
+                                                    </span>
+                                                </div>
+                                                @if(isset($details['coherence']['issues']) && !empty($details['coherence']['issues']) && is_array($details['coherence']['issues']))
+                                                    <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                                                        @foreach($details['coherence']['issues'] as $issue)
+                                                            <li class="flex items-start gap-1.5">
+                                                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5 flex-shrink-0"></i>
+                                                                <span>{{ is_array($issue) ? implode(', ', $issue) : $issue }}</span>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-xs text-green-600 dark:text-green-400 flex items-center gap-1"><i class="fas fa-check"></i>Aucun problème détecté</p>
+                                                @endif
+                                            </div>
+                                            {{-- Rejet précédent --}}
+                                            @if(isset($details['admin_rejection']) && is_array($details['admin_rejection']))
+                                                <div class="border-l-4 border-red-500 pl-3 bg-red-50 dark:bg-red-900/20 p-3 rounded-r-lg">
+                                                    <h4 class="text-sm font-semibold text-red-800 dark:text-red-400 mb-1 flex items-center gap-1.5">
+                                                        <i class="fas fa-ban"></i>Motif de rejet précédent
+                                                    </h4>
+                                                    <p class="text-xs text-red-700 dark:text-red-300">{{ $details['admin_rejection']['reason'] ?? 'Non spécifié' }}</p>
+                                                    <div class="text-[10px] text-red-600 dark:text-red-400 mt-1.5 flex flex-wrap gap-x-2">
+                                                        <span>Rejeté par : {{ $details['admin_rejection']['rejected_by'] ?? 'N/A' }}</span>
+                                                        <span>•</span>
+                                                        <span>Le : {{ $details['admin_rejection']['rejected_at'] ?? 'N/A' }}</span>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            {{-- Actions --}}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <a href="{{ route('admin.items.show', $item) }}" 
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                    <i class="fas fa-eye text-xs"></i>Voir détails
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            @endforeach
-        </div>
+        @endforeach
+    </div>
 
+    @if($items->hasPages())
         <div class="mt-6">
-            {{ $items->links() }}
+            {{ $items->appends(request()->query())->links() }}
         </div>
     @endif
-</div>
-
-<!-- Image Modal -->
-<div id="imageModal" class="fixed inset-0 bg-black bg-opacity-90 hidden items-center justify-center z-50" onclick="closeImageModal()">
-    <div class="relative max-w-6xl max-h-screen p-4">
-        <button onclick="closeImageModal()" 
-                class="absolute top-6 right-6 text-white hover:text-gray-300 transition">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-        </button>
-        <img id="modalImage" src="" class="max-w-full max-h-screen object-contain" alt="Image agrandie">
-    </div>
-</div>
-
-<script>
-function toggleDetails(id) {
-    const details = document.getElementById(id);
-    const icon = document.getElementById('icon-' + id);
-    
-    if (details.classList.contains('hidden')) {
-        details.classList.remove('hidden');
-        icon.style.transform = 'rotate(180deg)';
-    } else {
-        details.classList.add('hidden');
-        icon.style.transform = 'rotate(0deg)';
-    }
-}
-
-function openImageModal(imageUrl) {
-    const modal = document.getElementById('imageModal');
-    const modalImage = document.getElementById('modalImage');
-    modalImage.src = imageUrl;
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-}
-
-function closeImageModal() {
-    const modal = document.getElementById('imageModal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-// Close modal with Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeImageModal();
-    }
-});
-</script>
+@endif
 @endsection

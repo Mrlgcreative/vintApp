@@ -6,55 +6,27 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Models\Setting;
 use App\Models\HeroSlide;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     public function index()
     {
-        $categories = \App\Models\Category::withCount(['items' => function($q) {
-            $q->where('status', 'active');
-        }])->where('is_active', true)->orderBy('sort_order')->get();
+        $data = $this->cacheService->getHomepageData();
 
-        // Récupérer les articles avec boost Spotlight spécifiquement
-        $spotlightItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereHas('activeBoosts', function($query) {
-                $query->whereHas('boostType', function($subQuery) {
-                    $subQuery->where('name', 'spotlight');
-                })
-                ->where('status', 'active')
-                ->where('expires_at', '>', now());
-            })
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
-        // Récupérer les articles avec boost prioritaires (tous types)
-        $boostedItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereHas('activeBoosts')
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(8)
-            ->get();
-
-        // Récupérer les articles récents (non-boostés)
-        $regularItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereDoesntHave('activeBoosts')
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(8)
-            ->get();
-
-        // Combiner les articles en priorisant les boostés
-        $latestItems = $boostedItems->concat($regularItems)->take(12);
-
-        $stats = [
-            'users' => \App\Models\User::count(),
-            'items' => \App\Models\Item::where('status', 'active')->count(),
-            'categories' => \App\Models\Category::where('is_active', true)->count(),
-            'boosted_items' => \App\Models\Item::whereHas('activeBoosts')->where('status', 'active')->count(),
-        ];
+        $categories = $data['categories'];
+        $spotlightItems = $data['spotlightItems'];
+        $boostedItems = $data['boostedItems'];
+        $latestItems = $data['latestItems'];
+        $stats = $data['stats'];
 
         // Récupérer les slides du carrousel actives
         $heroSlides = HeroSlide::active()->ordered()->get();
@@ -73,53 +45,10 @@ class WelcomeController extends Controller
 
     /**
      * API endpoint pour la page d'accueil
-     * Retourne toutes les données nécessaires pour l'application mobile/React
      */
     public function apiIndex()
     {
-        $categories = \App\Models\Category::withCount(['items' => function($q) {
-            $q->where('status', 'active');
-        }])->where('is_active', true)->orderBy('sort_order')->get();
-
-        // Récupérer les articles avec boost Spotlight spécifiquement
-        $spotlightItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereHas('activeBoosts', function($query) {
-                $query->whereHas('boostType', function($subQuery) {
-                    $subQuery->where('name', 'spotlight');
-                })
-                ->where('status', 'active')
-                ->where('expires_at', '>', now());
-            })
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(6)
-            ->get();
-
-        // Récupérer les articles avec boost prioritaires (tous types)
-        $boostedItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereHas('activeBoosts')
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(8)
-            ->get();
-
-        // Récupérer les articles récents (non-boostés)
-        $regularItems = \App\Models\Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
-            ->whereDoesntHave('activeBoosts')
-            ->where('status', 'active')
-            ->orderBy('created_at', 'desc')
-            ->limit(8)
-            ->get();
-
-        // Combiner les articles en priorisant les boostés
-        $latestItems = $boostedItems->concat($regularItems)->take(12);
-
-        $stats = [
-            'users' => \App\Models\User::count(),
-            'items' => \App\Models\Item::where('status', 'active')->count(),
-            'categories' => \App\Models\Category::where('is_active', true)->count(),
-            'boosted_items' => \App\Models\Item::whereHas('activeBoosts')->where('status', 'active')->count(),
-        ];
+        $data = $this->cacheService->getHomepageData();
 
         // Récupérer les slides du carrousel actives
         $heroSlides = HeroSlide::active()->ordered()->get();
@@ -136,11 +65,11 @@ class WelcomeController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'categories' => $categories,
-                'spotlight_items' => $spotlightItems,
-                'boosted_items' => $boostedItems,
-                'latest_items' => $latestItems,
-                'stats' => $stats,
+                'categories' => $data['categories'],
+                'spotlight_items' => $data['spotlightItems'],
+                'boosted_items' => $data['boostedItems'],
+                'latest_items' => $data['latestItems'],
+                'stats' => $data['stats'],
                 'hero_slides' => $heroSlides,
                 'hero_settings' => $heroSettings,
             ]

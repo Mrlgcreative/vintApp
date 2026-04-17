@@ -206,7 +206,7 @@ class ItemController extends Controller
                 Storage::disk('public')->makeDirectory('items');
             }
             foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
                 $path = $image->storeAs('items', $filename, 'public');
                 // Vérifier que le fichier a bien été créé
                 if (!Storage::disk('public')->exists($path)) {
@@ -344,10 +344,6 @@ class ItemController extends Controller
         // Invalider le cache de l'item après incrément
         $this->cacheService->forgetItem($item->id);
         
-        // Nettoyer et valider les données
-        $item->specifications = is_array($item->specifications) ? $item->specifications : [];
-        $item->images = is_array($item->images) ? $item->images : [];
-        
         // Charger les relations de manière optimisée
         $item->load([
             'category:id,name,slug',
@@ -456,7 +452,7 @@ class ItemController extends Controller
                 Storage::disk('public')->makeDirectory('items');
             }
             foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
                 $path = $image->storeAs('items', $filename, 'public');
                 if (!Storage::disk('public')->exists($path)) {
                     throw new \Exception('Erreur lors de l\'upload de l\'image.');
@@ -977,7 +973,7 @@ class ItemController extends Controller
             if ($request->hasFile('images')) {
                 $images = [];
                 foreach ($request->file('images') as $image) {
-                    $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+                    $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
                     $path = $image->storeAs('items', $filename, 'public');
                     StorageSyncService::syncFile($path);
                     $images[] = $path;

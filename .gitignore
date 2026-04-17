@@ -22,6 +22,10 @@
 /storage/pail
 /storage/app/firebase-service-account.json
 /vendor
+
+# Firebase Admin SDK - NE JAMAIS COMMITER
+vintapp-*-firebase-adminsdk-*.json
+*.firebase-adminsdk*.json
 Homestead.json
 Homestead.yaml
 Thumbs.db

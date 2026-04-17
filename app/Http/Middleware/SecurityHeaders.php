@@ -63,7 +63,7 @@ class SecurityHeaders
             $csp = implode('; ', [
                 "default-src 'self'",
                 // Scripts : CDNs nécessaires + inline pour admin
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' " .
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: " .
                     "https://cdn.tailwindcss.com " .
                     "https://cdn.jsdelivr.net " .
                     "https://code.jquery.com " .

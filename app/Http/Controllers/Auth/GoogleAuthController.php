@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
@@ -42,26 +43,29 @@ class GoogleAuthController extends Controller
                 // Mettre à jour les informations Google de l'utilisateur existant
                 $user->update([
                     'google_id' => $googleUser->getId(),
-                    'google_token' => $googleUser->token,
-                    'google_refresh_token' => $googleUser->refreshToken,
                     'avatar_url' => $googleUser->getAvatar(),
                 ]);
+                $user->google_token = $googleUser->token;
+                $user->google_refresh_token = $googleUser->refreshToken;
+                $user->save();
             } else {
                 // Créer un nouvel utilisateur
                 $user = User::create([
                     'name' => $googleUser->getName(),
                     'email' => $googleUser->getEmail(),
                     'google_id' => $googleUser->getId(),
-                    'google_token' => $googleUser->token,
-                    'google_refresh_token' => $googleUser->refreshToken,
                     'avatar_url' => $googleUser->getAvatar(),
                     'email_verified_at' => now(), // Vérification automatique car Google a vérifié
                     'password' => Hash::make(Str::random(24)), // Mot de passe aléatoire
                 ]);
+                $user->google_token = $googleUser->token;
+                $user->google_refresh_token = $googleUser->refreshToken;
+                $user->save();
             }
 
             // Connecter l'utilisateur
             Auth::login($user, true);
+            session()->regenerate();
 
             // Utilisation du trait pour la redirection basée sur le rôle
             return $this->redirectBasedOnRole('/dashboard', 'Connexion réussie avec Google');
@@ -81,16 +85,16 @@ class GoogleAuthController extends Controller
 
         if ($user && $user->google_token) {
             try {
-                // Révoquer le token Google
-                $client = new \Google_Client();
-                $client->revokeToken($user->google_token);
+                // Révoquer le token Google via l'API HTTP
+                Http::post('https://oauth2.googleapis.com/revoke', [
+                    'token' => $user->google_token,
+                ]);
 
                 // Supprimer les informations Google de la base de données
-                $user->update([
-                    'google_id' => null,
-                    'google_token' => null,
-                    'google_refresh_token' => null,
-                ]);
+                $user->google_id = null;
+                $user->google_token = null;
+                $user->google_refresh_token = null;
+                $user->save();
 
                 return back()->with('success', 'Accès Google révoqué avec succès.');
             } catch (Exception $e) {

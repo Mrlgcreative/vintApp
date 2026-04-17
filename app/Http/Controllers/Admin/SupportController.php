@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SupportAgent;
 use App\Models\SupportChat;
 use App\Models\SupportMessage;
 use App\Models\User;
@@ -70,17 +71,23 @@ class SupportController extends Controller
                 ->whereIn('status', ['open', 'in_progress'])->count()
         ];
 
-        // Admins disponibles pour l'assignation
-        $admins = User::whereHas('roles', function($query) {
-            $query->where('slug', 'admin');
-        })->get();
+        // Agents support disponibles pour l'assignation
+        $agents = SupportAgent::with('user')->active()->get();
         
-        // Si aucun admin avec rôle, utiliser l'utilisateur actuel comme fallback
-        if ($admins->isEmpty() && Auth::check()) {
-            $admins = collect([Auth::user()]);
+        // Fallback: si pas d'agents configurés, utiliser les admins
+        if ($agents->isEmpty()) {
+            $admins = User::whereHas('roles', function($query) {
+                $query->where('slug', 'admin');
+            })->get();
+            
+            if ($admins->isEmpty() && Auth::check()) {
+                $admins = collect([Auth::user()]);
+            }
+        } else {
+            $admins = $agents->pluck('user');
         }
 
-        return view('admin.support.index', compact('chats', 'stats', 'admins'));
+        return view('admin.support.index', compact('chats', 'stats', 'admins', 'agents'));
     }
 
     /**
@@ -447,6 +454,187 @@ class SupportController extends Controller
                 }
             ])
             ->get();
+    }
+
+    // ==================== Agents Support ====================
+
+    /**
+     * Page de gestion des agents support
+     */
+    public function agents()
+    {
+        $agents = SupportAgent::with('user')->get()->map(function ($agent) {
+            $agent->active_chats = SupportChat::where('admin_id', $agent->user_id)
+                ->whereNotIn('status', ['closed'])->count();
+            $agent->total_resolved = SupportChat::where('admin_id', $agent->user_id)
+                ->where('status', 'closed')->count();
+            return $agent;
+        });
+
+        // Utilisateurs pouvant être ajoutés comme agents (pas encore agents)
+        $existingAgentIds = $agents->pluck('user_id')->toArray();
+        $availableUsers = User::whereNotIn('id', $existingAgentIds)
+            ->orderBy('name')
+            ->get(['id', 'name', 'email']);
+
+        $categories = ['technical', 'account', 'payment', 'order', 'general'];
+
+        return view('admin.support.agents', compact('agents', 'availableUsers', 'categories'));
+    }
+
+    /**
+     * Ajouter un agent support
+     */
+    public function addAgent(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id|unique:support_agents,user_id',
+            'max_chats' => 'nullable|integer|min:1|max:50',
+            'specialties' => 'nullable|array',
+            'specialties.*' => 'string|in:technical,account,payment,order,general',
+        ]);
+
+        try {
+            $agent = SupportAgent::create([
+                'user_id' => $request->user_id,
+                'max_chats' => $request->max_chats ?? 10,
+                'specialties' => $request->specialties ?? [],
+                'is_active' => true,
+            ]);
+
+            // Ajouter le rôle support s'il ne l'a pas
+            $user = User::find($request->user_id);
+            $supportRole = \App\Models\Role::where('slug', 'support')->first();
+            if ($supportRole && !$user->hasRole('support')) {
+                $user->roles()->attach($supportRole->id);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Agent ajouté avec succès.',
+                'agent' => $agent->load('user'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur ajout agent support', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'ajout de l\'agent.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Supprimer un agent support
+     */
+    public function removeAgent(SupportAgent $agent)
+    {
+        try {
+            // Retirer le rôle support
+            $user = $agent->user;
+            $supportRole = \App\Models\Role::where('slug', 'support')->first();
+            if ($supportRole) {
+                $user->roles()->detach($supportRole->id);
+            }
+
+            $agent->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Agent supprimé avec succès.',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur suppression agent', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Activer/désactiver un agent
+     */
+    public function toggleAgent(SupportAgent $agent)
+    {
+        try {
+            $agent->update(['is_active' => !$agent->is_active]);
+
+            return response()->json([
+                'success' => true,
+                'message' => $agent->is_active ? 'Agent activé.' : 'Agent désactivé.',
+                'is_active' => $agent->is_active,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors du changement de statut.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Mettre à jour les paramètres d'un agent
+     */
+    public function updateAgent(Request $request, SupportAgent $agent)
+    {
+        $request->validate([
+            'max_chats' => 'nullable|integer|min:1|max:50',
+            'specialties' => 'nullable|array',
+            'specialties.*' => 'string|in:technical,account,payment,order,general',
+        ]);
+
+        try {
+            $agent->update($request->only(['max_chats', 'specialties']));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Agent mis à jour avec succès.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour.',
+            ], 500);
+        }
+    }
+
+    /**
+     * Auto-assigner un ticket à l'agent le moins chargé
+     */
+    public function autoAssign(SupportChat $supportChat)
+    {
+        try {
+            if ($supportChat->admin_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ce ticket est déjà assigné.',
+                ], 422);
+            }
+
+            $agent = SupportAgent::leastLoaded($supportChat->category);
+
+            if (!$agent) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Aucun agent disponible pour ce ticket.',
+                ], 422);
+            }
+
+            $supportChat->assignToAdmin($agent->user_id);
+            $agent->update(['last_assigned_at' => now()]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Ticket assigné à ' . $agent->user->name,
+                'agent_name' => $agent->user->name,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur auto-assign', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'auto-assignation.',
+            ], 500);
+        }
     }
 
     // ==================== API Methods ====================

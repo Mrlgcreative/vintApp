@@ -13,18 +13,23 @@
         <div class="relative">
             <div class="flex overflow-x-auto scrollbar-hide gap-4 lg:gap-6 pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
                 @php
-                    $icons = ['👔', '👗', '👟', '👜', '⌚', '🕶️', '🧥', '👠', '🎒', '💍'];
+                    $icons = ['fas fa-tshirt', 'fas fa-female', 'fas fa-shoe-prints', 'fas fa-shopping-bag', 'far fa-clock', 'fas fa-glasses', 'fas fa-vest', 'fas fa-shoe-prints', 'fas fa-suitcase', 'fas fa-gem'];
+                    $iconColors = [
+                        'text-purple-600', 'text-pink-600', 'text-purple-500', 'text-pink-500',
+                        'text-purple-600', 'text-pink-600', 'text-purple-500', 'text-pink-500',
+                        'text-purple-600', 'text-pink-600'
+                    ];
                     $colors = [
                         'from-purple-100 to-purple-200 border-purple-200',
                         'from-pink-100 to-pink-200 border-pink-200',
-                        'from-blue-100 to-blue-200 border-blue-200',
-                        'from-green-100 to-green-200 border-green-200',
-                        'from-yellow-100 to-yellow-200 border-yellow-200',
-                        'from-red-100 to-red-200 border-red-200',
-                        'from-indigo-100 to-indigo-200 border-indigo-200',
-                        'from-teal-100 to-teal-200 border-teal-200',
-                        'from-orange-100 to-orange-200 border-orange-200',
-                        'from-cyan-100 to-cyan-200 border-cyan-200'
+                        'from-purple-50 to-purple-100 border-purple-200',
+                        'from-pink-50 to-pink-100 border-pink-200',
+                        'from-purple-100 to-pink-100 border-purple-200',
+                        'from-pink-100 to-purple-100 border-pink-200',
+                        'from-purple-100 to-purple-200 border-purple-200',
+                        'from-pink-100 to-pink-200 border-pink-200',
+                        'from-purple-50 to-pink-100 border-purple-200',
+                        'from-pink-50 to-purple-100 border-pink-200'
                     ];
                 @endphp
                 
@@ -40,8 +45,8 @@
                                      alt="{{ $category->name }}" 
                                      class="w-full h-full object-cover" />
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-4xl">
-                                    {{ $icons[$index % count($icons)] }}
+                                <div class="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+                                    <i class="{{ $icons[$index % count($icons)] }} text-3xl {{ $iconColors[$index % count($iconColors)] }}"></i>
                                 </div>
                             @endif
                         </div>
@@ -65,9 +70,13 @@
                     </a>
                 @empty
                     <div class="text-center py-16 w-full">
-                        <div class="text-6xl lg:text-8xl mb-4 lg:mb-6">📦</div>
-                        <h3 class="text-lg lg:text-xl font-semibold text-gray-600 mb-2">Catégories à venir</h3>
-                        <p class="text-gray-400">Nos catégories seront bientôt disponibles</p>
+                        <div class="mb-4 lg:mb-6 flex justify-center">
+                            <svg class="w-16 h-16 lg:w-20 lg:h-20 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg lg:text-xl font-semibold text-purple-900 mb-2">Catégories à venir</h3>
+                        <p class="text-purple-400">Nos catégories seront bientôt disponibles</p>
                     </div>
                 @endforelse
             </div>

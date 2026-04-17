@@ -214,7 +214,7 @@ class LocalDeliveryController extends Controller
                 // Planning
                 'estimated_delivery_time' => $request->estimated_delivery_time,
                 'delivery_instructions' => $request->delivery_instructions,
-                'delivery_code' => strtoupper(substr(md5(uniqid()), 0, 6))
+                'delivery_code' => strtoupper(\Illuminate\Support\Str::random(6))
             ]);
 
             // Notifier l'acheteur

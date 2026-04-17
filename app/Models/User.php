@@ -33,19 +33,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'newsletter_subscribed',
         'google_id',
-        'google_token',
-        'google_refresh_token',
         'apple_id',
         'firebase_uid',
-        'fcm_token',
         'provider_data',
         'verification_code',
         'verification_code_expires_at',
         'email_verified_at',
         'wallet_balance',
-        'google2fa_secret',
         'google2fa_enabled',
-        'two_factor_recovery_codes',
     ];
 
     /**
@@ -367,6 +362,12 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarUrlAttribute()
     {
+        // Priorité à la colonne avatar_url stockée en base (ex: OAuth)
+        $storedUrl = $this->attributes['avatar_url'] ?? null;
+        if ($storedUrl) {
+            return $storedUrl;
+        }
+
         if ($this->avatar) {
             // Si c'est déjà une URL complète (Google, Facebook, etc.), retourner telle quelle
             if (filter_var($this->avatar, FILTER_VALIDATE_URL)) {
@@ -376,6 +377,14 @@ class User extends Authenticatable implements MustVerifyEmail
             return asset('storage/' . $this->avatar);
         }
         return null;
+    }
+
+    /**
+     * Mutateur pour avatar_url
+     */
+    public function setAvatarUrlAttribute($value)
+    {
+        $this->attributes['avatar_url'] = $value;
     }
 
     /**

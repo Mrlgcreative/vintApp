@@ -16,7 +16,7 @@ try {
         projectId: "vintapp-e6fa7",
         storageBucket: "vintapp-e6fa7.appspot.com",
         messagingSenderId: "880178183981",
-        appId: "1:880178183981:web:deed0feb693e8c82a35da4"
+        appId: "1:880178183981:web:395604645bd7d758a35da4"
     });
     
     const messaging = firebase.messaging();

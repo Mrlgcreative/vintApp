@@ -12,7 +12,6 @@
     outline: none;
     border-radius: 0.5rem;
 }
-
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -23,7 +22,6 @@
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
@@ -34,8 +32,16 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.slider::-webkit-slider-track {
-    background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 calc((6 - 3) / (15 - 3) * 100%), #e5e7eb calc((6 - 3) / (15 - 3) * 100%), #e5e7eb 100%);
+/* Carrousel Tailwind */
+.carousel-slide {
+    transition: opacity 0.7s ease-in-out;
+}
+.carousel-dot {
+    transition: all 0.3s ease;
+}
+.carousel-dot.active {
+    width: 2rem;
+    border-radius: 9999px;
 }
 </style>
 @endpush
@@ -80,88 +86,79 @@
         
         <div class="p-4 sm:p-6">
             <!-- Aperçu du carrousel -->
-            <div class="mb-6 bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                    <i class="fas fa-eye mr-2 text-primary-600"></i>
+            <div class="mb-8 bg-gray-50 dark:bg-gray-900 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+                        <i class="fas fa-eye text-primary-600 dark:text-primary-400"></i>
+                    </span>
                     Aperçu du Carrousel
                 </h3>
                 @if($slides->where('is_active', true)->count() > 0)
-                    <div id="heroCarouselPreview" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-indicators">
-                            @foreach($slides->where('is_active', true) as $index => $slide)
-                                <button type="button" data-bs-target="#heroCarouselPreview" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}"></button>
-                            @endforeach
-                        </div>
-                        <div class="carousel-inner rounded-lg overflow-hidden" style="max-height: 500px;">
-                            @foreach($slides->where('is_active', true) as $index => $slide)
-                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}" style="background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
-                                    <div class="d-flex align-items-center" style="min-height: 500px; padding: 40px;">
-                                        <div class="container">
-                                            <div class="row align-items-center">
-                                                @if($slide->image_position === 'left')
-                                                    <!-- Image à gauche -->
-                                                    <div class="col-md-6 text-center">
-                                                        <img src="/storage/{{ $slide->image_url }}" 
-                                                             class="img-fluid" 
-                                                             style="max-height: 400px; object-fit: contain;"
-                                                             alt="{{ $slide->title }}">
-                                                    </div>
-                                                    <!-- Texte à droite -->
-                                                    <div class="col-md-6 text-{{ $slide->text_position ?? 'left' }}">
-                                                        <h2 class="text-white fw-bold mb-3" style="font-size: 2.5rem;">{{ $slide->title }}</h2>
-                                                        @if($slide->subtitle)
-                                                            <p class="text-white mb-4" style="font-size: 1.2rem;">{{ $slide->subtitle }}</p>
-                                                        @endif
-                                                        <div class="d-flex gap-3 {{ $slide->text_position === 'center' ? 'justify-content-center' : ($slide->text_position === 'right' ? 'justify-content-end' : '') }}">
-                                                            @if($slide->button_primary_text)
-                                                                <a href="{{ $slide->button_primary_url ?? '#' }}" class="btn btn-light btn-lg px-4 py-2">{{ $slide->button_primary_text }}</a>
-                                                            @endif
-                                                            @if($slide->button_secondary_text)
-                                                                <a href="{{ $slide->button_secondary_url ?? '#' }}" class="btn btn-outline-light btn-lg px-4 py-2">{{ $slide->button_secondary_text }}</a>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    <!-- Texte à gauche (ou position choisie) -->
-                                                    <div class="col-md-6 text-{{ $slide->text_position ?? 'left' }}">
-                                                        <h2 class="text-white fw-bold mb-3" style="font-size: 2.5rem;">{{ $slide->title }}</h2>
-                                                        @if($slide->subtitle)
-                                                            <p class="text-white mb-4" style="font-size: 1.2rem;">{{ $slide->subtitle }}</p>
-                                                        @endif
-                                                        <div class="d-flex gap-3 {{ $slide->text_position === 'center' ? 'justify-content-center' : ($slide->text_position === 'right' ? 'justify-content-end' : '') }}">
-                                                            @if($slide->button_primary_text)
-                                                                <a href="{{ $slide->button_primary_url ?? '#' }}" class="btn btn-light btn-lg px-4 py-2">{{ $slide->button_primary_text }}</a>
-                                                            @endif
-                                                            @if($slide->button_secondary_text)
-                                                                <a href="{{ $slide->button_secondary_url ?? '#' }}" class="btn btn-outline-light btn-lg px-4 py-2">{{ $slide->button_secondary_text }}</a>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                    <!-- Image à droite -->
-                                                    <div class="col-md-6 text-center">
-                                                        <img src="/storage/{{ $slide->image_url }}" 
-                                                             class="img-fluid" 
-                                                             style="max-height: {{ $slide->image_size === 'small' ? '250px' : ($slide->image_size === 'medium' ? '350px' : ($slide->image_size === 'large' ? '450px' : '100%')) }}; object-fit: contain;"
-                                                             alt="{{ $slide->title }}">
-                                                    </div>
+                    @php $activeSlides = $slides->where('is_active', true)->values(); @endphp
+                    <div id="twCarousel" class="relative rounded-xl overflow-hidden shadow-lg">
+                        <!-- Slides -->
+                        <div class="relative" style="min-height: 400px;">
+                            @foreach($activeSlides as $index => $slide)
+                                <div class="carousel-slide absolute inset-0 flex items-center p-6 sm:p-10 transition-all duration-500 {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
+                                     data-slide-index="{{ $index }}"
+                                     style="background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
+                                    <div class="w-full">
+                                        <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 {{ $slide->image_position === 'left' ? 'md:flex-row-reverse' : '' }}">
+                                            <!-- Texte -->
+                                            <div class="flex-1 {{ $slide->text_position === 'center' ? 'text-center' : ($slide->text_position === 'right' ? 'text-right' : 'text-left') }}">
+                                                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight">{{ $slide->title }}</h2>
+                                                @if($slide->subtitle)
+                                                    <p class="text-base sm:text-lg text-white/85 mb-6">{{ $slide->subtitle }}</p>
                                                 @endif
+                                                <div class="flex flex-wrap gap-3 {{ $slide->text_position === 'center' ? 'justify-center' : ($slide->text_position === 'right' ? 'justify-end' : 'justify-start') }}">
+                                                    @if($slide->button_primary_text)
+                                                        <a href="{{ $slide->button_primary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-white text-gray-900 font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all duration-200">
+                                                            {{ $slide->button_primary_text }}
+                                                        </a>
+                                                    @endif
+                                                    @if($slide->button_secondary_text)
+                                                        <a href="{{ $slide->button_secondary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-transparent text-white font-semibold rounded-lg border-2 border-white/70 hover:bg-white/10 hover:border-white transition-all duration-200">
+                                                            {{ $slide->button_secondary_text }}
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <!-- Image -->
+                                            <div class="flex-1 flex justify-center">
+                                                <img src="/storage/{{ $slide->image_url }}" 
+                                                     class="object-contain drop-shadow-2xl rounded-lg"
+                                                     style="max-height: {{ $slide->image_size === 'small' ? '250px' : ($slide->image_size === 'medium' ? '350px' : ($slide->image_size === 'large' ? '450px' : '100%')) }};"
+                                                     alt="{{ $slide->title }}">
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarouselPreview" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
+
+                        <!-- Navigation flèches -->
+                        <button onclick="carouselPrev()" class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/50 transition-all duration-200 z-20">
+                            <i class="fas fa-chevron-left"></i>
                         </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarouselPreview" data-bs-slide="next">
-                            <span class="carousel-control-next-icon"></span>
+                        <button onclick="carouselNext()" class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/50 transition-all duration-200 z-20">
+                            <i class="fas fa-chevron-right"></i>
                         </button>
+
+                        <!-- Indicateurs -->
+                        <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+                            @foreach($activeSlides as $index => $slide)
+                                <button onclick="carouselGoto({{ $index }})"
+                                        class="carousel-dot h-3 rounded-full transition-all duration-300 {{ $index === 0 ? 'w-8 bg-white active' : 'w-3 bg-white/50 hover:bg-white/75' }}"
+                                        data-dot-index="{{ $index }}"></button>
+                            @endforeach
+                        </div>
                     </div>
                 @else
-                    <div class="text-center py-8 text-gray-500 dark:text-gray-400">
-                        <i class="fas fa-image fa-3x mb-3 opacity-50"></i>
-                        <p>Aucune slide active. Ajoutez et activez des slides pour voir l'aperçu.</p>
+                    <div class="text-center py-12 text-gray-500 dark:text-gray-400">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                            <i class="fas fa-image text-3xl opacity-50"></i>
+                        </div>
+                        <p class="text-sm">Aucune slide active. Ajoutez et activez des slides pour voir l'aperçu.</p>
                     </div>
                 @endif
             </div>
@@ -169,18 +166,22 @@
             <!-- Liste des slides -->
             <div class="space-y-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <i class="fas fa-list mr-2 text-primary-600"></i>
-                    Toutes les Slides ({{ $slides->count() }})
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+                        <i class="fas fa-list text-primary-600 dark:text-primary-400"></i>
+                    </span>
+                    Toutes les Slides
+                    <span class="ml-2 inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">{{ $slides->count() }}</span>
                 </h3>
 
                 @if($slides->count() > 0)
                     <div id="slidesList" class="space-y-3">
                         @foreach($slides as $slide)
-                            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow duration-200 slide-item" data-slide-id="{{ $slide->id }}">
+                            <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 slide-item" data-slide-id="{{ $slide->id }}">
                                 <div class="flex flex-col md:flex-row gap-4">
                                     <!-- Image -->
-                                    <div class="flex-shrink-0">
-                                        <img src="/storage/{{ $slide->image_url }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-lg">
+                                    <div class="flex-shrink-0 relative overflow-hidden rounded-lg">
+                                        <img src="/storage/{{ $slide->image_url }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
                                     </div>
                                     
                                     <!-- Contenu -->
@@ -264,11 +265,13 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                        <i class="fas fa-images fa-4x text-gray-400 mb-4"></i>
+                    <div class="text-center py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                            <i class="fas fa-images text-4xl text-gray-400"></i>
+                        </div>
                         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune slide</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-4">Commencez par ajouter votre première slide pour le carrousel hero.</p>
-                        <button onclick="showAddModal()" class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-sm mx-auto">Commencez par ajouter votre première slide pour le carrousel hero.</p>
+                        <button onclick="showAddModal()" class="inline-flex items-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                             <i class="fas fa-plus mr-2"></i>
                             Ajouter une Slide
                         </button>
@@ -280,16 +283,18 @@
 </div>
 
 <!-- Modal Ajouter/Modifier Slide -->
-<div id="slideModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 px-4">
-    <div class="relative top-10 sm:top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-xl bg-white dark:bg-gray-800">
-        <div class="mt-3">
-            <div class="flex items-center justify-between mb-4">
+<div id="slideModal" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
+    <div class="relative top-10 sm:top-16 mx-auto p-6 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-10">
+        <div class="mt-2">
+            <div class="flex items-center justify-between mb-5">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <i class="fas fa-image mr-2 text-primary-600"></i>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+                        <i class="fas fa-image text-primary-600 dark:text-primary-400"></i>
+                    </span>
                     <span id="modalTitle">Ajouter une Slide</span>
                 </h3>
-                <button onclick="hideModal()" class="text-gray-400 hover:text-gray-600 dark:text-gray-300">
-                    <i class="fas fa-times text-xl"></i>
+                <button onclick="hideModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
             
@@ -454,13 +459,13 @@
                 </div>
                 
                 <!-- Boutons -->
-                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-200 dark:border-gray-700">
                     <button type="button" onclick="hideModal()" 
-                            class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-colors">
+                            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-all duration-200">
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors">
+                            class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>
                         <span id="submitButtonText">Ajouter</span>
                     </button>
@@ -472,6 +477,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script>
+// Carrousel Preview
+let carouselCurrent = 0;
+let carouselTotal = {{ $slides->where('is_active', true)->count() }};
+let carouselAuto = null;
+
+function carouselGoto(index) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+    slides.forEach((s, i) => {
+        s.classList.toggle('opacity-100', i === index);
+        s.classList.toggle('opacity-0', i !== index);
+        s.classList.toggle('z-10', i === index);
+        s.classList.toggle('z-0', i !== index);
+    });
+    dots.forEach((d, i) => {
+        d.classList.toggle('w-8', i === index);
+        d.classList.toggle('bg-white', i === index);
+        d.classList.toggle('active', i === index);
+        d.classList.toggle('w-3', i !== index);
+        d.classList.toggle('bg-white/50', i !== index);
+    });
+    carouselCurrent = index;
+    clearInterval(carouselAuto);
+    carouselAuto = setInterval(() => carouselNext(), 5000);
+}
+function carouselPrev() { carouselGoto((carouselCurrent - 1 + carouselTotal) % carouselTotal); }
+function carouselNext() { carouselGoto((carouselCurrent + 1) % carouselTotal); }
+
+if (carouselTotal > 1) {
+    carouselAuto = setInterval(() => carouselNext(), 5000);
+}
+
 // Variables globales
 let currentSlideId = null;
 let slidesData = @json($slides);

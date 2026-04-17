@@ -12,10 +12,19 @@ use App\Models\Notification;
 use App\Models\Review;
 use App\Models\Payment;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
+use App\Services\CacheService;
 
 class DashboardController extends Controller
 {
+    protected CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     /**
      * Display the main dashboard
      */
@@ -76,47 +85,49 @@ class DashboardController extends Controller
      */
     private function getUserStats($user)
     {
-        $stats = [
-            'total_items' => Item::where('user_id', $user->id)->count(),
-            'active_items' => Item::where('user_id', $user->id)
-                ->where('status', 'active')
-                ->count(),
-            'total_sales' => Order::where('seller_id', $user->id)
+        return Cache::remember("dashboard.stats.{$user->id}", 300, function () use ($user) {
+            $stats = [
+                'total_items' => Item::where('user_id', $user->id)->count(),
+                'active_items' => Item::where('user_id', $user->id)
+                    ->where('status', 'active')
+                    ->count(),
+                'total_sales' => Order::where('seller_id', $user->id)
+                    ->where('status', 'completed')
+                    ->count(),
+                'total_revenue' => Payment::where('seller_id', $user->id)
+                    ->where('status', 'completed')
+                    ->sum('amount'),
+                'unread_messages' => Message::where('receiver_id', $user->id)
+                    ->where('read_at', null)
+                    ->count(),
+                'unread_notifications' => Notification::where('user_id', $user->id)
+                    ->where('read_at', null)
+                    ->count(),
+                'average_rating' => Review::where('seller_id', $user->id)
+                    ->avg('rating') ?? 0,
+                'total_reviews' => Review::where('seller_id', $user->id)->count(),
+            ];
+
+            // Calculate monthly growth
+            $currentMonth = Carbon::now()->month;
+            $lastMonth = Carbon::now()->subMonth()->month;
+
+            $currentMonthSales = Order::where('seller_id', $user->id)
                 ->where('status', 'completed')
-                ->count(),
-            'total_revenue' => Payment::where('seller_id', $user->id)
+                ->whereMonth('created_at', $currentMonth)
+                ->count();
+
+            $lastMonthSales = Order::where('seller_id', $user->id)
                 ->where('status', 'completed')
-                ->sum('amount'),
-            'unread_messages' => Message::where('receiver_id', $user->id)
-                ->where('read_at', null)
-                ->count(),
-            'unread_notifications' => Notification::where('user_id', $user->id)
-                ->where('read_at', null)
-                ->count(),
-            'average_rating' => Review::where('seller_id', $user->id)
-                ->avg('rating') ?? 0,
-            'total_reviews' => Review::where('seller_id', $user->id)->count(),
-        ];
+                ->whereMonth('created_at', $lastMonth)
+                ->count();
 
-        // Calculate monthly growth
-        $currentMonth = Carbon::now()->month;
-        $lastMonth = Carbon::now()->subMonth()->month;
+            $stats['sales_growth'] = $lastMonthSales > 0 
+                ? (($currentMonthSales - $lastMonthSales) / $lastMonthSales) * 100 
+                : 0;
 
-        $currentMonthSales = Order::where('seller_id', $user->id)
-            ->where('status', 'completed')
-            ->whereMonth('created_at', $currentMonth)
-            ->count();
-
-        $lastMonthSales = Order::where('seller_id', $user->id)
-            ->where('status', 'completed')
-            ->whereMonth('created_at', $lastMonth)
-            ->count();
-
-        $stats['sales_growth'] = $lastMonthSales > 0 
-            ? (($currentMonthSales - $lastMonthSales) / $lastMonthSales) * 100 
-            : 0;
-
-        return $stats;
+            return $stats;
+        });
     }
 
     /**
@@ -174,26 +185,28 @@ class DashboardController extends Controller
      */
     private function getSalesChart($user)
     {
-        $months = [];
-        $sales = [];
+        return Cache::remember("dashboard.chart.{$user->id}", 900, function () use ($user) {
+            $months = [];
+            $sales = [];
 
-        for ($i = 5; $i >= 0; $i--) {
-            $month = Carbon::now()->subMonths($i);
-            $months[] = $month->format('M Y');
-            
-            $monthSales = Order::where('seller_id', $user->id)
-                ->where('status', 'completed')
-                ->whereYear('created_at', $month->year)
-                ->whereMonth('created_at', $month->month)
-                ->count();
-            
-            $sales[] = $monthSales;
-        }
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::now()->subMonths($i);
+                $months[] = $month->format('M Y');
+                
+                $monthSales = Order::where('seller_id', $user->id)
+                    ->where('status', 'completed')
+                    ->whereYear('created_at', $month->year)
+                    ->whereMonth('created_at', $month->month)
+                    ->count();
+                
+                $sales[] = $monthSales;
+            }
 
-        return [
-            'labels' => $months,
-            'data' => $sales
-        ];
+            return [
+                'labels' => $months,
+                'data' => $sales
+            ];
+        });
     }
 
     /**

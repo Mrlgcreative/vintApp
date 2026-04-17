@@ -4,400 +4,338 @@
 @section('page-title', 'Tableau de bord')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-    <!-- Carte Utilisateurs -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Utilisateurs</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_users']) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">+{{ $stats['new_users_today'] }} aujourd'hui</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-users text-2xl text-primary-600"></i>
-                    </div>
-                </div>
+
+{{-- ====== Cartes KPI principales ====== --}}
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 mb-6">
+
+    {{-- Utilisateurs --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-600">Utilisateurs</span>
+            <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </div>
         </div>
-        <div class="h-1 bg-gradient-to-r from-primary-500 to-primary-600"></div>
-    </div>
-
-    <!-- Carte Revenus USD -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Revenus USD</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['total_revenue_usd'], 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $stats['transactions_today'] }} transactions aujourd'hui</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-dollar-sign text-2xl text-green-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
-    </div>
-
-    <!-- Carte Revenus CDF -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-2">Revenus CDF</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_revenue_cdf'], 0, ',', ' ') }} FC</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Franc Congolais</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-coins text-2xl text-emerald-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-emerald-500 to-emerald-600"></div>
-    </div>
-
-    <!-- Carte Wallets en attente -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">Wallets Pending</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_wallets'] }}</div>
-                    <div class="text-xs mt-1 space-y-1">
-                        <div class="text-gray-600 dark:text-gray-300">${{ number_format($stats['pending_wallets_usd'], 2) }} USD</div>
-                        <div class="text-gray-600 dark:text-gray-300">{{ number_format($stats['pending_wallets_cdf'], 0, ',', ' ') }} CDF</div>
-                        <a href="{{ route('admin.wallets.pending') }}" class="text-yellow-600 hover:text-yellow-700 font-medium inline-block mt-1">Voir détails</a>
-                    </div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-wallet text-2xl text-yellow-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-yellow-500 to-yellow-600"></div>
-    </div>
-
-    <!-- Carte Articles actifs -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Articles actifs</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['active_items']) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ number_format($stats['total_items']) }} au total</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-box text-2xl text-blue-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-    </div>
-
-    <!-- Carte Vérifications d'authenticité -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-2">Vérifications</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_verifications'] ?? 0 }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $stats['pending_verifications'] ?? 0 }} en attente</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-certificate text-2xl text-orange-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
-    </div>
-
-    <!-- Carte Commissions USD (Sous-wallet Commission) -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Commissions USD</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_commission_usd'] ?? 0, 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sous-wallet commission</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-percentage text-2xl text-primary-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-primary-500 to-primary-600"></div>
-    </div>
-</div>
-
-<!-- Nouveau panel pour les sous-wallets entreprise -->
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-    <!-- Sous-wallet Transport -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-cyan-600 uppercase tracking-wider mb-2">Transport</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_transport_usd'] ?? 0, 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sous-wallet transport</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-truck text-2xl text-cyan-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-cyan-500 to-cyan-600"></div>
-    </div>
-
-    <!-- Sous-wallet Boost -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-accent-600 uppercase tracking-wider mb-2">Boost</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_boost_usd'] ?? 0, 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Sous-wallet boost</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-accent-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-rocket text-2xl text-accent-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-accent-500 to-accent-600"></div>
-    </div>
-
-    <!-- Revenus Vérifications -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-2">Revenus Vérifications</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['verification_revenue_usd'] ?? 0, 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $stats['completed_verifications'] ?? 0 }} vérifications payées</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-shield-alt text-2xl text-amber-600"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
-    </div>
-
-    <!-- Total Entreprise -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 bg-gradient-to-br from-gray-50 to-gray-100">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <div class="text-xs font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wider mb-2">Total Entreprise</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0), 2) }}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Tous sous-wallets USD</div>
-                </div>
-                <div class="flex-shrink-0">
-                    <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                        <i class="fas fa-building text-2xl text-gray-700 dark:text-gray-200"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-gray-500 to-gray-700"></div>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
-    <!-- Graphique des statistiques quotidiennes -->
-    <div class="xl:col-span-2">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Évolution des 30 derniers jours</h3>
-            </div>
-            <div class="p-6">
-                <div class="relative">
-                    <canvas id="dailyStatsChart" height="400"></canvas>
-                </div>
-            </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_users']) }}</div>
+        <div class="flex items-center gap-1.5 mt-1">
+            <span class="inline-flex items-center text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-md">+{{ $stats['new_users_today'] }}</span>
+            <span class="text-[11px] text-gray-400">aujourd'hui</span>
         </div>
     </div>
 
-    <!-- Statistiques rapides -->
-    <div class="xl:col-span-1">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Activité récente</h3>
-            </div>
-            <div class="p-6">
-                <div class="space-y-6">
-                    <div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Utilisateurs actifs (7 jours)</div>
-                        <div class="text-2xl font-bold text-green-600">{{ $stats['active_users'] }}</div>
-                    </div>
-                    
-                    <div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Commandes en attente</div>
-                        <div class="text-2xl font-bold text-yellow-600">{{ $stats['pending_orders'] }}</div>
-                    </div>
-                    
-                    <div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total des fonds en wallets</div>
-                        <div class="text-2xl font-bold text-blue-600">{{ number_format($stats['total_wallet_balance'], 2) }} USD</div>
-                    </div>
-                </div>
-
-                <div class="mt-8 space-y-3">
-                    <a href="{{ route('admin.users.index') }}" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
-                        <i class="fas fa-users mr-2"></i>
-                        Gérer les utilisateurs
-                    </a>
-                    <a href="{{ route('admin.wallets.pending') }}" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors duration-200">
-                        <i class="fas fa-wallet mr-2"></i>
-                        Wallets pending (en attente confirmation)
-                    </a>
-                    <a href="{{ route('admin.transactions.index') }}" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                        <i class="fas fa-exchange-alt mr-2"></i>
-                        Voir les transactions
-                    </a>
-                    <a href="#" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200">
-                        <i class="fas fa-certificate mr-2"></i>
-                        Vérifications d'authenticité
-                    </a>
-                </div>
+    {{-- Revenus USD --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-green-600">Revenus USD</span>
+            <div class="w-9 h-9 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
         </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['total_revenue_usd'], 2) }}</div>
+        <p class="text-[11px] text-gray-400 mt-1">{{ $stats['transactions_today'] }} transactions aujourd'hui</p>
     </div>
-</div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Dernières transactions -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dernières transactions</h3>
+    {{-- Revenus CDF --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-600">Revenus CDF</span>
+            <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
         </div>
-        <div class="p-6">
-            @if($recentTransactions->count() > 0)
-                <div class="space-y-4">
-                    @foreach($recentTransactions as $transaction)
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                @if($transaction->status === 'completed')
-                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-check text-green-600"></i>
-                                    </div>
-                                @elseif($transaction->status === 'pending')
-                                    <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-clock text-yellow-600"></i>
-                                    </div>
-                                @else
-                                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                                        <i class="fas fa-times text-red-600"></i>
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $transaction->description }}</p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0 ml-4">
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $transaction->created_at->diffForHumans() }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="mt-6 text-center">
-                    <a href="{{ route('admin.transactions.index') }}" 
-                       class="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700">
-                        Voir toutes les transactions
-                        <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
-                </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_revenue_cdf'], 0, ',', ' ') }} <span class="text-base font-semibold text-gray-400">FC</span></div>
+        <p class="text-[11px] text-gray-400 mt-1">Franc Congolais</p>
+    </div>
+
+    {{-- Wallets en attente --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-yellow-200 dark:border-yellow-800/30 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-yellow-600">Wallets Pending</span>
+            <div class="w-9 h-9 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_wallets'] }}</div>
+        <div class="flex items-center gap-2 mt-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+            <span>${{ number_format($stats['pending_wallets_usd'], 2) }}</span>
+            <span class="w-px h-3 bg-gray-200 dark:bg-gray-600"></span>
+            <span>{{ number_format($stats['pending_wallets_cdf'], 0, ',', ' ') }} FC</span>
+        </div>
+        <a href="{{ route('admin.wallets.pending') }}" class="inline-flex items-center gap-1 text-[11px] font-medium text-yellow-600 hover:text-yellow-700 mt-2 transition-colors">
+            Voir détails
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+    </div>
+
+    {{-- Articles actifs --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-600">Articles actifs</span>
+            <div class="w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['active_items']) }}</div>
+        <p class="text-[11px] text-gray-400 mt-1">{{ number_format($stats['total_items']) }} au total</p>
+    </div>
+
+    {{-- Vérifications --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-orange-600">Vérifications</span>
+            <div class="w-9 h-9 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_verifications'] ?? 0 }}</div>
+        <div class="flex items-center gap-1.5 mt-1">
+            @if(($stats['pending_verifications'] ?? 0) > 0)
+                <span class="inline-flex items-center text-[11px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md">{{ $stats['pending_verifications'] ?? 0 }}</span>
+                <span class="text-[11px] text-gray-400">en attente</span>
             @else
-                <div class="text-center py-8">
-                    <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Aucune transaction récente</p>
-                </div>
+                <span class="text-[11px] text-gray-400">Aucune en attente</span>
             @endif
         </div>
     </div>
 
-    <!-- Nouveaux utilisateurs -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Nouveaux utilisateurs</h3>
+    {{-- Commissions USD --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-600">Commissions</span>
+            <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+            </div>
         </div>
-        <div class="p-6">
-            @if($recentUsers->count() > 0)
-                <div class="space-y-4">
-                    @foreach($recentUsers as $user)
-                        @if($user)
-                        <div class="flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                @if($user->avatar)
-                                    <img src="{{ $user->avatar_url }}" class="w-10 h-10 rounded-full" alt="Avatar">
-                                @else
-                                    <div class="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                                        {{ $user->initial ?? substr($user->name ?? 'U', 0, 1) }}
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex-1">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name ?? 'Utilisateur' }}</p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $user->email ?? 'N/A' }}</p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0 ml-4">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $user->created_at?->diffForHumans() ?? 'N/A' }}</p>
-                                        @if(method_exists($user, 'isOnline') && $user->isOnline())
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
-                                                En ligne
-                                            </span>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_commission_usd'] ?? 0, 2) }}</div>
+        <p class="text-[11px] text-gray-400 mt-1">Sous-wallet commission</p>
+    </div>
+
+    {{-- Commandes en attente (nouvel emplacement) --}}
+    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+        <div class="flex items-center justify-between mb-3">
+            <span class="text-[11px] font-semibold uppercase tracking-wider text-violet-600">Commandes</span>
+            <div class="w-9 h-9 bg-violet-50 dark:bg-violet-900/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4.5 h-4.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+        </div>
+        <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_orders'] }}</div>
+        <p class="text-[11px] text-gray-400 mt-1">en attente de traitement</p>
+    </div>
+</div>
+
+{{-- ====== Sous-wallets Entreprise ====== --}}
+<div class="mb-6">
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3 px-1">Sous-wallets Entreprise</h3>
+    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5">
+
+        {{-- Transport --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
+                </div>
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Transport</span>
+            </div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_transport_usd'] ?? 0, 2) }}</div>
+        </div>
+
+        {{-- Boost --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 bg-accent-50 dark:bg-accent-900/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Boost</span>
+            </div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['enterprise_boost_usd'] ?? 0, 2) }}</div>
+        </div>
+
+        {{-- Revenus Vérifications --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 p-5 transition-all duration-200 hover:shadow-md">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <span class="text-xs font-medium text-gray-500 dark:text-gray-400">Vérifications</span>
+            </div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">${{ number_format($stats['verification_revenue_usd'] ?? 0, 2) }}</div>
+            <p class="text-[11px] text-gray-400 mt-1">{{ $stats['completed_verifications'] ?? 0 }} payées</p>
+        </div>
+
+        {{-- Total Entreprise --}}
+        <div class="bg-gradient-to-br from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-5 transition-all duration-200 hover:shadow-md">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+                <span class="text-xs font-medium text-gray-300">Total Entreprise</span>
+            </div>
+            <div class="text-xl font-bold text-white">${{ number_format(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0), 2) }}</div>
+            <p class="text-[11px] text-gray-400 mt-1">Tous sous-wallets USD</p>
+        </div>
+    </div>
+</div>
+
+{{-- ====== Graphique + Sidebar ====== --}}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
+
+    {{-- Graphique 30 jours --}}
+    <div class="xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Évolution — 30 derniers jours</h3>
+            <div class="flex items-center gap-4 text-[11px]">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Utilisateurs</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Transactions</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Revenus</span>
+            </div>
+        </div>
+        <div class="p-5">
+            <canvas id="dailyStatsChart" height="320"></canvas>
+        </div>
+    </div>
+
+    {{-- Sidebar activité --}}
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden flex flex-col">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Aperçu rapide</h3>
+        </div>
+        <div class="p-5 flex-1 flex flex-col justify-between">
+            <div class="space-y-5">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Actifs (7j)</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $stats['active_users'] }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Commandes en attente</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $stats['pending_orders'] }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Fonds en wallets</p>
+                            <p class="text-lg font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_wallet_balance'], 2) }} <span class="text-xs font-normal text-gray-400">USD</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2.5 mt-6">
+                <a href="{{ route('admin.users.index') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-xl transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Gérer les utilisateurs
+                </a>
+                <a href="{{ route('admin.wallets.pending') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded-xl transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    Wallets en attente
+                </a>
+                <a href="{{ route('admin.transactions.index') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-xl transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                    Voir les transactions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ====== Dernières transactions + Nouveaux utilisateurs ====== --}}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
+    {{-- Dernières transactions --}}
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Dernières transactions</h3>
+            <a href="{{ route('admin.transactions.index') }}" class="text-[11px] font-medium text-primary-600 hover:text-primary-700 transition-colors">Tout voir</a>
+        </div>
+        <div class="divide-y divide-gray-50 dark:divide-gray-700/30">
+            @forelse($recentTransactions as $transaction)
+                <div class="flex items-center gap-3.5 px-6 py-3.5 hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
+                    @if($transaction->status === 'completed')
+                        <div class="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                    @elseif($transaction->status === 'pending')
+                        <div class="w-8 h-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    @else
+                        <div class="w-8 h-8 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </div>
+                    @endif
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</p>
+                        <p class="text-[11px] text-gray-400 truncate">{{ $transaction->description }}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}</p>
+                        <p class="text-[11px] text-gray-400">{{ $transaction->created_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+            @empty
+                <div class="text-center py-10">
+                    <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                    <p class="text-sm text-gray-400">Aucune transaction récente</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    {{-- Nouveaux utilisateurs --}}
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 overflow-hidden">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
+            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Nouveaux utilisateurs</h3>
+            <a href="{{ route('admin.users.index') }}" class="text-[11px] font-medium text-primary-600 hover:text-primary-700 transition-colors">Tout voir</a>
+        </div>
+        <div class="divide-y divide-gray-50 dark:divide-gray-700/30">
+            @forelse($recentUsers as $user)
+                @if($user)
+                <div class="flex items-center gap-3.5 px-6 py-3.5 hover:bg-gray-50/50 dark:hover:bg-gray-700/20 transition-colors">
+                    <div class="flex-shrink-0">
+                        @if($user->avatar)
+                            <img src="{{ $user->avatar_url }}" class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-700" alt="">
+                        @else
+                            <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold text-xs ring-2 ring-primary-100 dark:ring-primary-900/30">
+                                {{ $user->initial ?? substr($user->name ?? 'U', 0, 1) }}
+                            </div>
                         @endif
-                    @endforeach
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $user->name ?? 'Utilisateur' }}</p>
+                            @if(method_exists($user, 'isOnline') && $user->isOnline())
+                                <span class="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" title="En ligne"></span>
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-gray-400 truncate">{{ $user->email ?? 'N/A' }}</p>
+                    </div>
+                    <span class="text-[11px] text-gray-400 flex-shrink-0">{{ $user->created_at?->diffForHumans() ?? 'N/A' }}</span>
                 </div>
-                <div class="mt-6 text-center">
-                    <a href="{{ route('admin.users.index') }}" 
-                       class="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-700">
-                        Voir tous les utilisateurs
-                        <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
+                @endif
+            @empty
+                <div class="text-center py-10">
+                    <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <p class="text-sm text-gray-400">Aucun nouvel utilisateur</p>
                 </div>
-            @else
-                <div class="text-center py-8">
-                    <i class="fas fa-users text-4xl text-gray-300 mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Aucun nouvel utilisateur récemment</p>
-                </div>
-            @endif
+            @endforelse
         </div>
     </div>
 </div>
@@ -406,63 +344,87 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Graphique des statistiques quotidiennes
     const ctx = document.getElementById('dailyStatsChart').getContext('2d');
     const dailyStats = @json($dailyStats);
-    
+    const isDark = document.documentElement.classList.contains('dark');
+    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+    const textColor = isDark ? '#9ca3af' : '#6b7280';
+
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dailyStats.map(stat => {
-                const date = new Date(stat.date);
-                return date.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+            labels: dailyStats.map(s => {
+                const d = new Date(s.date);
+                return d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
             }),
             datasets: [{
-                label: 'Nouveaux utilisateurs',
-                data: dailyStats.map(stat => stat.users),
-                borderColor: 'rgb(54, 162, 235)',
-                backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                tension: 0.1
+                label: 'Utilisateurs',
+                data: dailyStats.map(s => s.users),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.08)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHitRadius: 20
             }, {
                 label: 'Transactions',
-                data: dailyStats.map(stat => stat.transactions),
-                borderColor: 'rgb(255, 99, 132)',
-                backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                tension: 0.1
+                data: dailyStats.map(s => s.transactions),
+                borderColor: '#f43f5e',
+                backgroundColor: 'rgba(244,63,94,0.08)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHitRadius: 20
             }, {
                 label: 'Revenus (USD)',
-                data: dailyStats.map(stat => stat.revenue),
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.1)',
-                tension: 0.1,
+                data: dailyStats.map(s => s.revenue),
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16,185,129,0.08)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.35,
+                pointRadius: 0,
+                pointHitRadius: 20,
                 yAxisID: 'y1'
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
             plugins: {
-                legend: {
-                    position: 'top',
-                },
-                title: {
-                    display: false
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: isDark ? '#1f2937' : '#fff',
+                    titleColor: isDark ? '#f9fafb' : '#111827',
+                    bodyColor: isDark ? '#d1d5db' : '#6b7280',
+                    borderColor: isDark ? '#374151' : '#e5e7eb',
+                    borderWidth: 1,
+                    padding: 12,
+                    cornerRadius: 10,
+                    titleFont: { weight: '600', size: 12 },
+                    bodyFont: { size: 11 },
+                    boxPadding: 4
                 }
             },
             scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkipPadding: 20 }
+                },
                 y: {
-                    type: 'linear',
-                    display: true,
                     position: 'left',
-                    beginAtZero: true
+                    beginAtZero: true,
+                    grid: { color: gridColor },
+                    ticks: { color: textColor, font: { size: 10 }, padding: 8 }
                 },
                 y1: {
-                    type: 'linear',
-                    display: true,
                     position: 'right',
                     beginAtZero: true,
-                    grid: {
-                        drawOnChartArea: false,
-                    },
+                    grid: { drawOnChartArea: false },
+                    ticks: { color: textColor, font: { size: 10 }, padding: 8, callback: v => '$' + v }
                 }
             }
         }
