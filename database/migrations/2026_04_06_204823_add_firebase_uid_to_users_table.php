@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('firebase_uid')->nullable()->unique()->after('email');
+            if (!Schema::hasColumn('users', 'firebase_uid')) {
+                $table->string('firebase_uid')->nullable()->unique()->after('email');
+            }
         });
     }
 
