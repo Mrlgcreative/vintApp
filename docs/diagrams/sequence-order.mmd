@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor Acheteur
+    participant Web as Interface Web
+    participant Cmd as Service Commande
+    participant Pay as Service Paiement
+    participant DB as Base de donnees
+    participant Notif as Service Notification
+
+    Acheteur->>Web: Selectionner article et valider panier
+    Web->>Cmd: Creer commande
+    Cmd->>DB: Enregistrer commande (statut: en attente)
+    DB-->>Cmd: Commande creee
+    Cmd-->>Web: Retourner details commande
+    Acheteur->>Web: Choisir moyen de paiement
+    Web->>Pay: Initialiser paiement
+    Pay->>DB: Enregistrer transaction
+    Pay-->>Web: Paiement confirme
+    Web->>Cmd: Mettre a jour statut commande
+    Cmd->>DB: Statut = payee
+    Cmd->>Notif: Notifier acheteur et vendeur
+    Notif-->>Acheteur: Confirmation de commande

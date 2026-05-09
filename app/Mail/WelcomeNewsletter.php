@@ -29,7 +29,7 @@ class WelcomeNewsletter extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Bienvenue sur VintApp ! 🎉',
+            subject: 'Bienvenue sur VintApp ! ',
         );
     }
 

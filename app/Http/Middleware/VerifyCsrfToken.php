@@ -16,5 +16,6 @@ class VerifyCsrfToken extends Middleware
         'wallet/withdrawals/webhook/*',  // Webhooks de décaissement mobile money
         'firebase/*',  // Firebase Auth routes (protégées par vérification idToken côté serveur)
         'auth/firebase/*',  // Firebase Auth alias routes
+        'preregistration',  // Route de préinscription publique
     ];
 }

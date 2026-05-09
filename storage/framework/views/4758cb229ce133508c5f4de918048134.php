@@ -1,8 +1,8 @@
-﻿@extends('app')
+﻿
 
-@section('title', 'Connexion - VintApp')
+<?php $__env->startSection('title', 'Connexion - VintApp'); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -86,7 +86,7 @@
                 <p class="text-gray-500 dark:text-gray-400 mt-2">Entrez vos identifiants pour accéder à votre compte</p>
             </div>
 
-            @if ($errors->any())
+            <?php if($errors->any()): ?>
                 <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
                     <div class="flex items-center text-red-800 dark:text-red-200 mb-2">
                         <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,34 +95,34 @@
                         <span class="font-medium text-sm">Erreur de connexion</span>
                     </div>
                     <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside space-y-0.5">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @if (session('status'))
+            <?php if(session('status')): ?>
                 <div class="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
                     <div class="flex items-center text-emerald-800 dark:text-emerald-200">
                         <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
-                        <span class="text-sm font-medium">{{ session('status') }}</span>
+                        <span class="text-sm font-medium"><?php echo e(session('status')); ?></span>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @if (session('error'))
+            <?php if(session('error')): ?>
                 <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
                     <div class="flex items-center text-red-800 dark:text-red-200">
                         <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
-                        <span class="text-sm font-medium">{{ session('error') }}</span>
+                        <span class="text-sm font-medium"><?php echo e(session('error')); ?></span>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?>
 
             <!-- Boutons sociaux en haut -->
             <div class="space-y-3 mb-6">
@@ -159,8 +159,8 @@
             </div>
 
             <!-- Formulaire de connexion -->
-            <form method="POST" action="{{ route('login') }}" class="space-y-4">
-                @csrf
+            <form method="POST" action="<?php echo e(route('login')); ?>" class="space-y-4">
+                <?php echo csrf_field(); ?>
 
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -176,14 +176,28 @@
                                id="email"
                                name="email"
                                required
-                               value="{{ old('email') }}"
+                               value="<?php echo e(old('email')); ?>"
                                autocomplete="email"
-                               class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 @error('email') border-red-400 focus:border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                placeholder="nom@exemple.com">
                     </div>
-                    @error('email')
-                        <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="mt-1.5 text-xs text-red-500"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <div>
@@ -201,7 +215,14 @@
                                name="password"
                                required
                                autocomplete="current-password"
-                               class="w-full pl-10 pr-11 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 @error('password') border-red-400 focus:border-red-500 @enderror"
+                               class="w-full pl-10 pr-11 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-400 focus:border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                placeholder="Votre mot de passe">
                         <button type="button"
                                 onclick="togglePassword()"
@@ -212,9 +233,16 @@
                             </svg>
                         </button>
                     </div>
-                    @error('password')
-                        <p class="mt-1.5 text-xs text-red-500">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="mt-1.5 text-xs text-red-500"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
 
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
@@ -225,7 +253,7 @@
                                class="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 focus:ring-offset-0">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
                     </label>
-                    <a href="{{ route('password.request') }}"
+                    <a href="<?php echo e(route('password.request')); ?>"
                        class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors sm:text-right">
                         Mot de passe oublié ?
                     </a>
@@ -240,7 +268,7 @@
 
             <p class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
                 Pas encore de compte ?
-                <a href="{{ route('register') }}" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors">
+                <a href="<?php echo e(route('register')); ?>" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors">
                     Créer un compte
                 </a>
             </p>
@@ -280,13 +308,13 @@ window.signInWithGoogle = async function() {
 
         const idToken = await user.getIdToken();
 
-        const response = await fetch('{{ route("firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({
                 idToken: idToken,
@@ -317,7 +345,7 @@ window.signInWithGoogle = async function() {
             showLoading(false);
             showToast('Connexion Google réussie !', 'success');
             setTimeout(() => {
-                window.location.href = data.redirect || '{{ route("home") }}';
+                window.location.href = data.redirect || '<?php echo e(route("home")); ?>';
             }, 800);
         } else {
             throw new Error(data.message || 'Erreur lors de la synchronisation avec le serveur');
@@ -364,7 +392,7 @@ window.signInWithFacebook = async function() {
         showToast('Connexion Facebook réussie !', 'success');
 
         setTimeout(() => {
-            window.location.href = '{{ route("home") }}';
+            window.location.href = '<?php echo e(route("home")); ?>';
         }, 800);
 
     } catch (error) {
@@ -490,12 +518,12 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 const firebaseConfig = {
-    apiKey: "{{ config('firebase.web_config.apiKey') }}",
-    authDomain: "{{ config('firebase.web_config.authDomain') }}",
-    projectId: "{{ config('firebase.web_config.projectId') }}",
-    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-    appId: "{{ config('firebase.web_config.appId') }}"
+    apiKey: "<?php echo e(config('firebase.web_config.apiKey')); ?>",
+    authDomain: "<?php echo e(config('firebase.web_config.authDomain')); ?>",
+    projectId: "<?php echo e(config('firebase.web_config.projectId')); ?>",
+    storageBucket: "<?php echo e(config('firebase.web_config.storageBucket')); ?>",
+    messagingSenderId: "<?php echo e(config('firebase.web_config.messagingSenderId')); ?>",
+    appId: "<?php echo e(config('firebase.web_config.appId')); ?>"
 };
 
 try {
@@ -508,4 +536,6 @@ try {
 }
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /home/aizen/Bureau/sky/vintApp/resources/views/auth/login.blade.php ENDPATH**/ ?>

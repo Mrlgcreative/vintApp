@@ -560,36 +560,45 @@
                     const country = formData.get('country');
                     const reasons = formData.getAll('reasons[]');
                     
-                    // Générer un mot de passe temporaire
-                    const tempPassword = 'VintApp' + Math.random().toString(36).slice(-8) + '!';
+                    // Générer un UID temporaire unique (sans créer de compte Firebase Auth)
+                    const firebaseUid = 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     
-                    // Créer l'utilisateur dans Firebase Auth
-                    const userCredential = await auth.createUserWithEmailAndPassword(email, tempPassword);
-                    const user = userCredential.user;
+                    // Enregistrer dans Firestore (optionnel - pour analytics)
+                    console.log('🔄 Tentative d\'enregistrement dans Firestore...');
+                    try {
+                        await db.collection('preregistrations').doc(firebaseUid).set({
+                            uid: firebaseUid,
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            country: country,
+                            reasons: reasons,
+                            status: 'pending',
+                            approved: false,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            accountType: 'preregistration'
+                        });
+                        console.log('✅ Enregistrement Firestore réussi');
+                    } catch (firestoreError) {
+                        console.warn('⚠️ Erreur Firestore (non critique):', firestoreError);
+                        // Continuer même si Firestore échoue
+                    }
                     
-                    // Mettre à jour le profil
-                    await user.updateProfile({
-                        displayName: name
+                    // Enregistrer dans la DB Laravel via AJAX
+                    console.log('🔄 Envoi de la requête AJAX vers Laravel...');
+                    console.log('📤 Données envoyées:', {
+                        name, email, phone, country, reasons, firebase_uid: firebaseUid
                     });
                     
-                    // Enregistrer dans Firestore
-                    await db.collection('preregistrations').doc(user.uid).set({
-                        uid: user.uid,
-                        name: name,
-                        email: email,
-                        phone: phone,
-                        country: country,
-                        reasons: reasons,
-                        status: 'pending',
-                        approved: false,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        tempPassword: tempPassword, // Pour envoi par email plus tard
-                        accountType: 'preregistration'
-                    });
-                    
-                    // Enregistrer aussi dans la DB Laravel via AJAX
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || 
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || 
                                      document.querySelector('input[name="_token"]')?.value;
+                    
+                    console.log('🔑 CSRF Token trouvé:', csrfToken ? 'Oui' : 'Non', csrfToken);
+                    console.log('🎯 URL cible:', form.action);
+                    
+                    // Ajouter un timeout
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 secondes
                     
                     const response = await fetch(form.action, {
                         method: 'POST',
@@ -604,16 +613,30 @@
                             phone: phone,
                             country: country,
                             reasons: reasons,
-                            firebase_uid: user.uid
-                        })
+                            firebase_uid: firebaseUid
+                        }),
+                        signal: controller.signal
                     });
                     
+                    clearTimeout(timeoutId);
+                    console.log('📥 Réponse reçue:', response.status, response.statusText);
+                    
                     if (!response.ok) {
-                        throw new Error('Erreur lors de l\'enregistrement dans la base de données');
+                        console.error('❌ Réponse HTTP non OK:', response.status, response.statusText);
+                        const errorData = await response.json();
+                        console.error('📄 Données d\'erreur:', errorData);
+                        
+                        // Si c'est une erreur de validation Laravel
+                        if (errorData.errors) {
+                            const errorMessages = Object.values(errorData.errors).flat();
+                            throw new Error(errorMessages.join('. '));
+                        }
+                        
+                        throw new Error(errorData.message || 'Erreur lors de l\'enregistrement dans la base de données');
                     }
                     
-                    // Déconnecter l'utilisateur (il se connectera plus tard)
-                    await auth.signOut();
+                    const responseData = await response.json();
+                    console.log('✅ Réponse Laravel réussie:', responseData);
                     
                     // Afficher le succès
                     showSuccessMessage('Inscription réussie ! Vous recevrez un email de confirmation avec vos identifiants.');
@@ -627,17 +650,18 @@
                     }, 3000);
                     
                 } catch (error) {
-                    console.error('Erreur d\'inscription:', error);
+                    console.error('❌ Erreur complète:', error);
                     
-                    // Messages d'erreur Firebase personnalisés
-                    const errorMessages = {
-                        'auth/email-already-in-use': 'Cette adresse email est déjà utilisée. Vous êtes peut-être déjà inscrit.',
-                        'auth/invalid-email': 'L\'adresse email n\'est pas valide.',
-                        'auth/weak-password': 'Le mot de passe est trop faible.',
-                        'auth/network-request-failed': 'Erreur de connexion. Vérifiez votre connexion internet.'
-                    };
+                    // Messages d'erreur personnalisés
+                    let errorMessage = 'Une erreur est survenue lors de l\'inscription.';
                     
-                    const errorMessage = errorMessages[error.code] || error.message || 'Une erreur est survenue lors de l\'inscription.';
+                    if (error.name === 'AbortError') {
+                        errorMessage = 'La requête a pris trop de temps. Vérifiez votre connexion internet.';
+                    } else if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    console.error('💬 Message d\'erreur affiché:', errorMessage);
                     showErrorMessage(errorMessage);
                     
                     // Restaurer le bouton

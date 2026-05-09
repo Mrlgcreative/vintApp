@@ -41,10 +41,14 @@ class PreRegistrationController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('🔄 Début de la préinscription', $request->all());
+        
         // Vérifier si la pré-inscription est activée
         $enabled = Setting::get('preregistration_enabled', false);
+        Log::info('📋 Préinscription activée:', $enabled);
         
         if (!$enabled) {
+            Log::warning('🚫 Préinscription désactivée');
             return response()->json([
                 'success' => false,
                 'message' => 'Les pré-inscriptions sont actuellement fermées.'
@@ -53,9 +57,14 @@ class PreRegistrationController extends Controller
 
         // Vérifier la limite
         $limit = Setting::get('preregistration_limit', 0);
+        Log::info('📊 Limite de préinscriptions:', $limit);
+        
         if ($limit > 0) {
             $currentCount = UserWaiting::count();
+            Log::info('📈 Nombre actuel de préinscriptions:', $currentCount);
+            
             if ($currentCount >= $limit) {
+                Log::warning('🚫 Limite de préinscriptions atteinte');
                 return response()->json([
                     'success' => false,
                     'message' => 'Le nombre maximum de pré-inscriptions a été atteint.'
@@ -65,6 +74,7 @@ class PreRegistrationController extends Controller
 
         // Récupérer les paramètres
         $requirePhone = Setting::get('preregistration_require_phone', false);
+        Log::info('📞 Téléphone requis:', $requirePhone);
 
         $rules = [
             'name' => ['required', 'string', 'max:255'],
@@ -86,14 +96,19 @@ class PreRegistrationController extends Controller
         ]);
 
         if ($validator->fails()) {
+            Log::error('❌ Erreurs de validation:', $validator->errors());
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur de validation',
                 'errors' => $validator->errors()
             ], 422);
         }
+        
+        Log::info('✅ Validation passée');
 
         try {
+            Log::info('🔄 Création du UserWaiting...');
+            
             // Créer la pré-inscription
             $userWaiting = UserWaiting::create([
                 'name' => $request->name,
@@ -108,6 +123,8 @@ class PreRegistrationController extends Controller
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
+
+            Log::info('✅ UserWaiting créé avec ID:', $userWaiting->id);
 
             // Envoyer l'email de bienvenue avec les identifiants
             // TODO: Implémenter l'envoi d'email avec le mot de passe temporaire
@@ -126,7 +143,9 @@ class PreRegistrationController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            Log::error("Erreur lors de la pré-inscription Firebase: {$e->getMessage()}");
+            Log::error("❌ Erreur lors de la pré-inscription Firebase: {$e->getMessage()}", [
+                'trace' => $e->getTraceAsString()
+            ]);
 
             return response()->json([
                 'success' => false,

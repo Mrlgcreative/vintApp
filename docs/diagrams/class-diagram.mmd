@@ -1,0 +1,62 @@
+classDiagram
+    class Utilisateur {
+      +id: int
+      +nom: string
+      +email: string
+      +motDePasse: string
+      +role: string
+    }
+
+    class Article {
+      +id: int
+      +titre: string
+      +description: text
+      +prix: decimal
+      +etat: string
+      +statut: string
+    }
+
+    class Categorie {
+      +id: int
+      +nom: string
+    }
+
+    class Commande {
+      +id: int
+      +reference: string
+      +montantTotal: decimal
+      +statut: string
+      +dateCommande: datetime
+    }
+
+    class Paiement {
+      +id: int
+      +montant: decimal
+      +mode: string
+      +statut: string
+      +transactionRef: string
+    }
+
+    class Message {
+      +id: int
+      +contenu: text
+      +dateEnvoi: datetime
+      +lu: bool
+    }
+
+    class Notification {
+      +id: int
+      +type: string
+      +contenu: text
+      +dateCreation: datetime
+      +statut: string
+    }
+
+    Utilisateur "1" --> "0..*" Article : publie
+    Categorie "1" --> "0..*" Article : classe
+    Utilisateur "1" --> "0..*" Commande : passe
+    Commande "1" --> "1..*" Article : contient
+    Commande "1" --> "0..1" Paiement : reglePar
+    Utilisateur "1" --> "0..*" Message : envoie
+    Utilisateur "1" --> "0..*" Message : recoit
+    Utilisateur "1" --> "0..*" Notification : recoit

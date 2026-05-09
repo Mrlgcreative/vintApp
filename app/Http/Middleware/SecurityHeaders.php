@@ -104,6 +104,7 @@ class SecurityHeaders
                     "https://identitytoolkit.googleapis.com " .
                     "https://firebaseinstallations.googleapis.com " .
                     "https://fcmregistrations.googleapis.com " .
+                    "https://firestore.googleapis.com " .
                     "https://accounts.google.com " .
                     "https://uncomely-uneffusing-averie.ngrok-free.dev " .
                     "https://*.ngrok-free.dev " .
