@@ -77,7 +77,10 @@ Route::get('/home', [WelcomeController::class, 'index'])->name('home');
 
 // Page de validation de localisation (utilisée par le middleware CheckGPSCityAccess)
 Route::get('/location/validate', [LocationValidationController::class, 'showValidatePage'])->name('location.validate');
-Route::post('/location/validate', [LocationValidationController::class, 'validateLocation']);
+Route::post('/location/validate', [LocationValidationController::class, 'validateLocation'])->name('location.validate.submit');
+
+// Page « indisponible » / région non couverte (hors middleware GPS)
+Route::get('/location/unauthorized', [LocationValidationController::class, 'showUnauthorizedPage'])->name('location.unauthorized');
 
 // Page offline pour PWA
 Route::get('/offline', function() {
@@ -230,93 +233,6 @@ Route::get('/test-session-gps', function() {
     return view('test-session-gps');
 })->name('test.session.gps');
 
-// Page de validation GPS
-Route::get('/location/validate', function() {
-    return view('location-validate');
-})->name('location.validate');
-
-// API de validation GPS (doit être dans web pour la session)
-Route::post('/location/validate', function(\Illuminate\Http\Request $request) {
-    $validated = $request->validate([
-        'latitude' => 'required|numeric|between:-90,90',
-        'longitude' => 'required|numeric|between:-180,180'
-    ]);
-
-    $userLat = $validated['latitude'];
-    $userLon = $validated['longitude'];
-
-    // Récupérer toutes les villes autorisées avec coordonnées
-    $allowedCities = \App\Models\AllowedCity::active()
-        ->whereNotNull('latitude')
-        ->whereNotNull('longitude')
-        ->get();
-
-    $maxDistance = 50; // 50km de rayon
-    $nearestCity = null;
-    $minDistance = PHP_FLOAT_MAX;
-
-    // Calcul de distance (formule de Haversine)
-    foreach ($allowedCities as $city) {
-        $cityLat = $city->latitude;
-        $cityLon = $city->longitude;
-
-        $R = 6371; // Rayon de la Terre en km
-        $dLat = deg2rad($cityLat - $userLat);
-        $dLon = deg2rad($cityLon - $userLon);
-        
-        $a = sin($dLat/2) * sin($dLat/2) +
-             cos(deg2rad($userLat)) * cos(deg2rad($cityLat)) *
-             sin($dLon/2) * sin($dLon/2);
-        
-        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
-        $distance = $R * $c;
-
-        if ($distance < $minDistance) {
-            $minDistance = $distance;
-            $nearestCity = $city;
-        }
-    }
-
-    if ($nearestCity && $minDistance <= $maxDistance) {
-        // ✅ Ville autorisée trouvée - SAUVEGARDER SESSION
-        session([
-            'gps_location_validated' => true,
-            'user_city' => $nearestCity->name,
-            'validated_at' => now()->toIso8601String()
-        ]);
-        
-        // Forcer la sauvegarde de la session
-        session()->save();
-        
-        \Log::info('✅ GPS: Accès autorisé + SESSION SAUVEGARDÉE', [
-            'ville' => $nearestCity->name,
-            'distance' => round($minDistance, 2) . 'km',
-            'coords' => [$userLat, $userLon],
-            'session_id' => session()->getId()
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'city' => $nearestCity->name,
-            'distance' => round($minDistance, 2),
-            'message' => "Bienvenue ! Vous êtes à {$nearestCity->name}"
-        ]);
-    }
-
-    \Log::warning('❌ GPS: Ville non autorisée', [
-        'ville_proche' => $nearestCity ? $nearestCity->name : 'Aucune',
-        'distance' => $nearestCity ? round($minDistance, 2) . 'km' : 'N/A',
-        'coords' => [$userLat, $userLon]
-    ]);
-
-    return response()->json([
-        'success' => false,
-        'message' => 'VintApp n\'est pas encore disponible dans votre ville.',
-        'nearest_city' => $nearestCity ? $nearestCity->name : null,
-        'distance' => $nearestCity ? round($minDistance, 2) : null
-    ], 403);
-})->name('location.validate.post');
-
 // Routes publiques pour les items
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
@@ -402,9 +318,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
     Route::get('/messages-unread-count', [App\Http\Controllers\MessageController::class, 'unreadCount'])->name('messages.unread-count');
     
-    // Routes pour les notifications en temps réel
-    Route::get('/notifications', [App\Http\Controllers\MessageController::class, 'getNotifications'])->name('notifications.get');
-    Route::post('/notifications/{id}/read', [App\Http\Controllers\MessageController::class, 'markNotificationAsRead'])->name('notifications.read');
+    // Routes pour les notifications
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/{id}', [App\Http\Controllers\NotificationController::class, 'show'])->name('notifications.show');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'apiMarkAsRead'])->name('notifications.read');
+    Route::post('/notifications/{id}/unread', [App\Http\Controllers\NotificationController::class, 'apiMarkAsUnread'])->name('notifications.unread');
+    Route::post('/notifications/read-all', [App\Http\Controllers\NotificationController::class, 'apiMarkAllAsRead'])->name('notifications.read-all');
     
     // Routes pour les réductions (MessageController)
     Route::post('/discounts/apply-message', [App\Http\Controllers\MessageController::class, 'applyDiscount'])->name('discounts.apply-message');
@@ -634,8 +553,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/maintenance/status', [App\Http\Controllers\Admin\AdminController::class, 'maintenanceStatus'])->name('maintenance.status');
         
         // Routes pour les restrictions géographiques
-        Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
-        Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
+        // Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
+        // Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
         
         // Routes pour les Hero Slides (Carrousel)
         Route::prefix('hero-slides')->name('hero-slides.')->group(function () {
@@ -870,7 +789,6 @@ Route::prefix('payments')->group(function () {
     Route::post('/airtel-money', [PaymentController::class, 'payWithAirtelMoney'])->name('payments.airtel_money');
     Route::post('/mpesa', [PaymentController::class, 'payWithMpesa'])->name('payments.mpesa');
     Route::post('/africell', [PaymentController::class, 'payWithAfricell'])->name('payments.africell');
-    Route::post('/simulate', [PaymentController::class, 'simulatePayment'])->name('payments.simulate');
     Route::post('/callback', [PaymentController::class, 'handleCallback'])->name('payments.callback');
     
     // MaishaPay routes

@@ -1,14 +1,8 @@
-﻿@extends('app')
+@extends('app')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 py-8">
+<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-800 py-8">
     <div class="container mx-auto px-4">
-        <!-- Breadcrumb -->
-        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-8">
-            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Accueil</a>
-            <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-gray-900 dark:text-white font-medium">Mes articles</span>
-        </nav>
 
         <!-- En-tête -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Traçage Commande #' . $order->order_number)
 @section('page-title', 'Traçage de la Commande #' . $order->order_number)

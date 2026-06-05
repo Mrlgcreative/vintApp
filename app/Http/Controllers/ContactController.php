@@ -6,12 +6,20 @@ use App\Models\Message;
 use App\Models\Item;
 use App\Models\Discount;
 use App\Models\User;
+use App\Models\Notification;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class ContactController extends Controller
 {
+    protected $notificationService;
+
+    public function __construct(NotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     /**
      * Afficher les demandes de réduction pour un vendeur
      */
@@ -101,6 +109,13 @@ class ContactController extends Controller
             'reason' => 'Demande automatique de réduction'
         ]);
 
+        // Créer une notification pour le vendeur
+        $this->notificationService->createMessageNotification(
+            $user->id,
+            $seller->id,
+            $finalMessage
+        );
+
         // Rediriger vers la conversation avec le vendeur
         return redirect()->route('messages.show', $seller->id)
             ->with('success', 'Votre demande de réduction a été envoyée avec succès !')
@@ -142,6 +157,23 @@ class ContactController extends Controller
             ]);
         }
 
+        // Créer une notification pour l'acheteur
+        $seller = Auth::user();
+        Notification::create([
+            'user_id' => $discount->user_id,
+            'type' => 'discount_applied',
+            'title' => 'Reduction accordee !',
+            'message' => $seller->name . " vous accorde une reduction de {$discount->discount_percentage}% sur \"{$discount->item->name}\"",
+            'data' => [
+                'seller_id' => $seller->id,
+                'seller_name' => $seller->name,
+                'item_name' => $discount->item->name,
+                'discount_percentage' => $discount->discount_percentage,
+                'final_price' => $discount->final_price,
+                'url' => '/messages/' . $seller->id,
+            ],
+        ]);
+
         return redirect()->back()->with('success', 'Réduction proposée avec succès !');
     }
 
@@ -174,6 +206,21 @@ class ContactController extends Controller
             'subject' => "Réduction refusée - {$discount->item->name}",
             'content' => $rejectionMessage,
             'type' => 'item_inquiry'
+        ]);
+
+        // Créer une notification pour l'acheteur
+        $seller = Auth::user();
+        Notification::create([
+            'user_id' => $discount->user_id,
+            'type' => 'discount_offered',
+            'title' => 'Reduction refusee',
+            'message' => $seller->name . " n'a pas pu accorder de reduction sur \"{$discount->item->name}\"",
+            'data' => [
+                'seller_id' => $seller->id,
+                'seller_name' => $seller->name,
+                'item_name' => $discount->item->name,
+                'url' => '/messages/' . $seller->id,
+            ],
         ]);
 
         return redirect()->back()->with('success', 'Demande de réduction refusée.');

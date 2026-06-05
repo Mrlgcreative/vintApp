@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Utilisateurs Connectés')
 @section('page-title', 'Utilisateurs Connectés en Temps Réel')

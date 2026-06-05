@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('title', 'Mon Profil - ' . config('app.name'))
 

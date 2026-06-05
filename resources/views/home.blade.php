@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('title', 'VintApp - Fashion Vintage')
 
@@ -234,46 +234,7 @@ function setupEventListeners() {
     }
 }
 
-// ============ CATEGORIES NAVIGATION ============
-function initCategoriesNavigation() {
-    const categoriesContainer = document.querySelector('.flex.overflow-x-auto.scrollbar-hide');
-    const prevBtn = document.getElementById('categoriesPrev');
-    const nextBtn = document.getElementById('categoriesNext');
-    
-    if (categoriesContainer && prevBtn && nextBtn) {
-        const scrollAmount = 200;
-        
-        prevBtn.addEventListener('click', () => {
-            categoriesContainer.scrollBy({
-                left: -scrollAmount,
-                behavior: 'smooth'
-            });
-        });
-        
-        nextBtn.addEventListener('click', () => {
-            categoriesContainer.scrollBy({
-                left: scrollAmount,
-                behavior: 'smooth'
-            });
-        });
-        
-        function updateNavigationButtons() {
-            const isAtStart = categoriesContainer.scrollLeft <= 0;
-            const isAtEnd = categoriesContainer.scrollLeft >= 
-                (categoriesContainer.scrollWidth - categoriesContainer.clientWidth - 10);
-            
-            prevBtn.style.opacity = isAtStart ? '0.3' : '0.8';
-            nextBtn.style.opacity = isAtEnd ? '0.3' : '0.8';
-            
-            prevBtn.style.pointerEvents = isAtStart ? 'none' : 'auto';
-            nextBtn.style.pointerEvents = isAtEnd ? 'none' : 'auto';
-        }
-        
-        categoriesContainer.addEventListener('scroll', updateNavigationButtons);
-        window.addEventListener('resize', updateNavigationButtons);
-        updateNavigationButtons();
-    }
-}
+// ============ (Categories are now a static grid — no JS needed) ============
 
 // ============ TOAST NOTIFICATIONS ============
 function showToast(message) {
@@ -316,15 +277,26 @@ function resetFilters() {
 
 // ============ CART FUNCTIONS ============
 function addToCart(itemId) {
-    showToast('Ajouté au panier avec succès !');
-    
     const button = event.target.closest('button');
-    if (button) {
-        button.classList.add('scale-90');
-        setTimeout(() => {
-            button.classList.remove('scale-90');
-        }, 200);
-    }
+    
+    fetch('{{ route("cart.add", ":id") }}'.replace(':id', itemId), {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        }
+    }).then(res => {
+        if (res.ok) {
+            showToast('Ajouté au panier avec succès !');
+            if (button) {
+                button.classList.add('scale-90');
+                setTimeout(() => button.classList.remove('scale-90'), 200);
+            }
+        } else {
+            showToast('Erreur lors de l\'ajout au panier', 'error');
+        }
+    }).catch(() => {
+        showToast('Erreur lors de l\'ajout au panier', 'error');
+    });
 }
 
 function toggleFavorite(itemId, event) {

@@ -51,7 +51,7 @@
             resultDiv.innerHTML = '<p class="text-gray-600">⏳ Test en cours...</p>';
 
             try {
-                const response = await fetch('{{ route("location.validate.post") }}', {
+                const response = await fetch('{{ url('/api/validate-location') }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -60,22 +60,24 @@
                     },
                     credentials: 'same-origin',
                     body: JSON.stringify({
-                        latitude: -10.723847,  // Position Kolwezi
-                        longitude: 25.5046347
+                        lat: -10.723847,
+                        lng: 25.5046347
                     })
                 });
 
                 const data = await response.json();
                 
-                if (data.success) {
+                if (data.ok) {
                     resultDiv.innerHTML = `
                         <div class="p-3 bg-green-100 border border-green-300 rounded">
                             <p class="font-semibold text-green-800">✅ Validation réussie !</p>
-                            <p class="text-sm text-green-700">Ville: ${data.city}</p>
-                            <p class="text-sm text-green-700">Distance: ${data.distance} km</p>
+                            <p class="text-sm text-green-700">Ville: ${data.user_city || ''}</p>
                             <p class="text-xs text-green-600 mt-2">Session devrait être sauvegardée. Rechargez pour vérifier.</p>
                         </div>
                     `;
+                } else if (data.redirect) {
+                    resultDiv.innerHTML = `<p class="text-amber-700 text-sm">Redirection vers la page d’indisponibilité…</p>`;
+                    window.location.href = data.redirect;
                 } else {
                     resultDiv.innerHTML = `
                         <div class="p-3 bg-red-100 border border-red-300 rounded">

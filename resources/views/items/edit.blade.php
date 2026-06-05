@@ -1,5 +1,5 @@
-﻿@extends('app')
-
+@extends('app')
+@section('title', 'Modifier l\'article')
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-amber-50/30 py-8">
     <div class="container mx-auto px-4">

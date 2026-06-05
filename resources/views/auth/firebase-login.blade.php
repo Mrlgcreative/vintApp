@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @push('styles')
 <style>

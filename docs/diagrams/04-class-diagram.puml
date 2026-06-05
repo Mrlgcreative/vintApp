@@ -1,0 +1,115 @@
+@startuml
+skinparam linetype ortho
+
+title Diagramme de Classes - VintApp (7 classes)
+
+' Ligne 1
+User -[hidden]right- Item
+Item -[hidden]right- Category
+
+' Ligne 2
+Order -[hidden]right- Payment
+
+' Ligne 3
+Wallet -[hidden]right- ProductAuthenticityCheck
+
+class User {
+  + id : bigint
+  + name : string
+  + email : string
+  + phone : string
+  + password : hashed
+  + avatar : string
+  + email_verified_at : datetime
+  + google_id : string
+  + apple_id : string
+  + google2fa_enabled : boolean
+  + fcm_token : string
+  + last_seen : datetime
+  + referred_by : bigint
+  --
+  + isAdmin() : bool
+  + isExpert() : bool
+  + hasRole(role) : bool
+}
+
+class Item {
+  + id : bigint
+  + user_id : bigint
+  + title : string
+  + description : text
+  + price : decimal
+  + currency : string
+  + condition : string
+  + status : string
+  + images : json
+  + location : string
+  + is_verified : boolean
+}
+
+class Category {
+  + id : bigint
+  + name : string
+  + slug : string
+  + parent_id : bigint
+  + order : int
+  + is_active : boolean
+}
+
+class Order {
+  + id : bigint
+  + buyer_id : bigint
+  + seller_id : bigint
+  + item_id : bigint
+  + total_amount : decimal
+  + currency : string
+  + status : string
+  + shipping_address : text
+}
+
+class Payment {
+  + id : bigint
+  + order_id : bigint
+  + buyer_id : bigint
+  + seller_id : bigint
+  + method : string
+  + provider : string
+  + amount : decimal
+  + currency : string
+  + status : string
+  + transaction_id : string
+}
+
+class Wallet {
+  + id : bigint
+  + user_id : bigint
+  + currency : string
+  + balance : decimal
+  + type : string
+  + is_active : boolean
+}
+
+class ProductAuthenticityCheck {
+  + id : bigint
+  + item_id : bigint
+  + user_id : bigint
+  + expert_id : bigint
+  + status : string
+  + fee_amount : decimal
+  + report : text
+  + verdict : string
+  + verified_at : datetime
+}
+
+' Relations reelles
+Item "*" -- "1" Category : appartient a
+User "1" -- "*" Item : vend
+User "1" -- "*" Order : acheteur
+User "1" -- "*" Order : vendeur
+User "1" -- "*" Wallet : possede
+User "1" -- "*" ProductAuthenticityCheck : soumet
+Item "1" -- "*" Order : commande
+Item "1" -- "0..1" ProductAuthenticityCheck : verifie
+Order "1" -- "0..1" Payment : paye
+
+@enduml

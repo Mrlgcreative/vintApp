@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('title', 'Conversation avec ' . $otherUser->name)
 
@@ -168,7 +168,22 @@
                                 </div>
                             @endif
                             
-                            @if($message->attachment)
+                            @if($message->type === 'audio' && $message->attachment)
+                                <div class="my-1 voice-msg" data-src="{{ Storage::url($message->attachment) }}" data-duration="{{ $message->duration ?? 0 }}">
+                                    <div class="flex items-center gap-2 min-w-48">
+                                        <button type="button" class="voice-play-btn w-9 h-9 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center flex-shrink-0 transition-all active:scale-95 shadow-sm">
+                                            <i class="fas fa-play text-xs ml-0.5"></i>
+                                        </button>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="voice-progress h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
+                                                <div class="voice-progress-fill h-full bg-primary-600 rounded-full" style="width: 0%"></div>
+                                            </div>
+                                        </div>
+                                        <span class="voice-time text-xs text-gray-500 dark:text-gray-400 tabular-nums flex-shrink-0">{{ gmdate('i:s', intval($message->duration ?? 0)) }}</span>
+                                        <i class="fas fa-microphone text-primary-600 dark:text-primary-400 text-xs flex-shrink-0 opacity-60"></i>
+                                    </div>
+                                </div>
+                            @elseif($message->attachment)
                                 <div class="my-2">
                                     @if(Str::startsWith($message->attachment, 'items/') || in_array(pathinfo($message->attachment, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
                                         <img src="{{ Storage::url($message->attachment) }}" 
@@ -216,36 +231,54 @@
         </div>
     </div>
 
-    <!-- Zone de saisie style WhatsApp -->
+    <!-- Zone de saisie -->
     <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 p-3 pb-20 md:pb-3 fixed md:relative bottom-0 left-0 right-0 z-40">
         <form id="messageForm" method="POST" action="{{ route('messages.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_id" value="{{ $otherUser->id }}">
-            
-            <div class="flex items-end gap-2 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-3 py-2 border border-gray-200/50 dark:border-gray-600/50 focus-within:border-primary-300 dark:focus-within:border-primary-600 focus-within:ring-2 focus-within:ring-primary-100 dark:focus-within:ring-primary-900/30 transition-all">
-                <button type="button" class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" onclick="document.getElementById('attachmentInput').click()">
+            <input type="hidden" name="type" id="messageType" value="text">
+            <input type="hidden" name="duration" id="messageDuration" value="">
+
+            <!-- Mode normal (texte/pièces jointes) -->
+            <div id="normalInput" class="flex items-end gap-2 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-3 py-2 border border-gray-200/50 dark:border-gray-600/50 transition-all">
+                <button type="button" class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onclick="document.getElementById('attachmentInput').click()">
                     <i class="fas fa-paperclip text-lg"></i>
                 </button>
-                
-                <div class="flex-1 relative">
-                    <textarea name="content" 
-                              class="w-full border-0 outline-none bg-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 max-h-24 min-h-5 py-2" 
+
+                <div class="flex-1 min-w-0 relative">
+                    <textarea name="content"
+                              class="w-full border-0 outline-none bg-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 max-h-24 min-h-5 py-2"
                               placeholder="Tapez un message..."
                               rows="1"
                               id="messageContent"></textarea>
-                    
-                    <input type="file" 
-                           name="attachment" 
-                           id="attachmentInput" 
-                           class="hidden" 
+
+                    <input type="file"
+                           name="attachment"
+                           id="attachmentInput"
+                           class="hidden"
                            accept="image/*,.pdf,.doc,.docx">
                 </div>
-                
-                <button type="submit" class="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all min-w-10 h-10 flex items-center justify-center shadow-sm">
+
+                <button type="submit" id="sendBtn" class="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all min-w-10 h-10 flex items-center justify-center shadow-sm flex-shrink-0">
                     <i class="fas fa-paper-plane text-sm"></i>
                 </button>
             </div>
-            
+
+            <!-- Mode enregistrement vocal -->
+            <div id="recordingInput" class="hidden items-center gap-3 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-4 py-2 border border-gray-200/50 dark:border-gray-600/50 transition-all">
+                <button type="button" id="cancelRecordBtn" class="text-gray-500 hover:text-red-500 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0" title="Annuler">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </button>
+                <div class="flex items-center gap-2 flex-1 min-w-0">
+                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0" id="recordDot"></span>
+                    <span id="recordingTimer" class="text-sm font-medium text-gray-900 dark:text-white tabular-nums">0:00</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">Appuyez pour arrêter</span>
+                </div>
+                <button type="button" id="stopRecordBtn" class="bg-red-500 text-white p-2.5 rounded-full hover:bg-red-600 active:scale-95 transition-all w-10 h-10 flex items-center justify-center shadow-sm flex-shrink-0" title="Arrêter">
+                    <i class="fas fa-stop text-sm"></i>
+                </button>
+            </div>
+
             <div id="attachmentPreview" class="mt-2 hidden">
                 <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/50 rounded-xl p-3 flex items-center gap-3 text-primary-700 dark:text-primary-300">
                     <div class="w-8 h-8 bg-primary-100 dark:bg-primary-800/40 rounded-lg flex items-center justify-center">
@@ -346,6 +379,46 @@ main.min-vh-100 {
     }
 }
 
+/* Animation enregistrement */
+@keyframes record-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.1); }
+}
+#recordDot {
+    animation: record-pulse 1s ease-in-out infinite;
+}
+
+/* Style barre de progression vocale */
+.voice-progress {
+    background: rgba(128, 128, 128, 0.25);
+}
+.voice-progress-fill {
+    transition: width 0.3s linear;
+    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+}
+
+/* Bouton lecture vocal */
+.voice-play-btn {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.voice-play-btn:active {
+    transform: scale(0.9);
+}
+
+/* Message vocal bulle */
+.voice-msg {
+    user-select: none;
+}
+.voice-msg .voice-time {
+    font-variant-numeric: tabular-nums;
+    min-width: 2.5rem;
+}
+
+/* Bordures arrondies pour le mode enregistrement */
+#recordingInput {
+    @apply rounded-2xl;
+}
+
 /* Responsive pour mobile */
 @media (max-width: 768px) {
     .max-w-xs {
@@ -365,6 +438,11 @@ main.min-vh-100 {
 
 @push('scripts')
 <script>
+let mediaRecorder = null;
+let recorderStream = null;
+let voiceFile = null;
+let voiceTimerInterval = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('messagesContainer');
     const messageInput = document.getElementById('messageContent');
@@ -389,7 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                messageForm.dispatchEvent(new Event('submit'));
+                this.closest('form').querySelector('button[type="submit"]').click();
             }
         });
     }
@@ -416,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800'} rounded-2xl ${isAuthor ? 'rounded-br-sm' : 'rounded-bl-sm'} px-3.5 py-2.5 shadow-sm animate-fade-in`;
         
         // Contenu du message
-        if (message.content) {
+        if (message.content && message.type !== 'audio') {
             const messageText = document.createElement('div');
             messageText.className = 'text-sm leading-relaxed text-gray-900 dark:text-white mb-1';
             messageText.innerHTML = message.content.replace(/\n/g, '<br>');
@@ -428,7 +506,28 @@ document.addEventListener('DOMContentLoaded', function() {
             const attachmentDiv = document.createElement('div');
             attachmentDiv.className = 'my-2';
             
-            if (message.attachment.match(/\.(jpg|jpeg|png|gif)$/i)) {
+            if (message.type === 'audio') {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'voice-msg flex items-center gap-2 min-w-48';
+                const dur = message.duration || 0;
+                const mins = Math.floor(dur / 60);
+                const secs = Math.floor(dur % 60);
+                wrapper.dataset.src = message.attachment;
+                wrapper.dataset.duration = dur;
+                wrapper.innerHTML = `
+                    <button type="button" class="voice-play-btn w-9 h-9 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center flex-shrink-0 transition-all active:scale-95 shadow-sm">
+                        <i class="fas fa-play text-xs ml-0.5"></i>
+                    </button>
+                    <div class="flex-1 min-w-0">
+                        <div class="voice-progress h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
+                            <div class="voice-progress-fill h-full bg-primary-600 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <span class="voice-time text-xs text-gray-500 dark:text-gray-400 tabular-nums flex-shrink-0">${mins}:${secs.toString().padStart(2, '0')}</span>
+                    <i class="fas fa-microphone text-primary-600 dark:text-primary-400 text-xs flex-shrink-0 opacity-60"></i>
+                `;
+                attachmentDiv.appendChild(wrapper);
+            } else if (message.attachment.match(/\.(jpg|jpeg|png|gif)$/i)) {
                 const img = document.createElement('img');
                 img.src = message.attachment;
                 img.className = 'max-w-48 max-h-48 rounded-xl cursor-pointer hover:scale-[1.02] transition-transform shadow-sm';
@@ -455,66 +554,93 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Envoi du formulaire optimisé
+    function sendMessage() {
+        const form = document.getElementById('messageForm');
+        if (!form) return false;
+
+        // Arrêter l'enregistrement vocal si en cours
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            return false;
+        }
+
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalIcon = submitButton ? submitButton.innerHTML : '';
+        const messageContent = form.querySelector('#messageContent').value.trim();
+        const attachmentFile = form.querySelector('#attachmentInput').files[0];
+        const msgType = document.getElementById('messageType').value;
+
+        // Si message vocal, ajouter le blob
+        if (msgType === 'audio' && voiceFile) {
+            formData.append('voice', voiceFile, 'voice.webm');
+        }
+
+        if (!messageContent && !attachmentFile && !voiceFile) return false;
+
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        }
+
+        // Ajouter immédiatement le message dans l'interface
+        const tempMessage = {
+            content: messageContent,
+            attachment: voiceFile ? URL.createObjectURL(voiceFile) : (attachmentFile ? URL.createObjectURL(attachmentFile) : null),
+            type: msgType,
+            duration: msgType === 'audio' ? parseFloat(document.getElementById('messageDuration').value) : null
+        };
+        const newMessageElement = appendNewMessage(tempMessage, true);
+        document.querySelector('#messagesContainer > div').appendChild(newMessageElement);
+
+        container.scrollTop = container.scrollHeight;
+
+        // Réinitialiser le formulaire
+        form.querySelector('#messageContent').value = '';
+        form.querySelector('#attachmentInput').value = '';
+        if (attachmentPreview) attachmentPreview.classList.add('hidden');
+        removeVoice();
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok && response.status !== 422) {
+                throw new Error('Erreur serveur: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                newMessageElement.remove();
+                alert(data.error || 'Erreur lors de l\'envoi du message');
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            if (newMessageElement.parentNode) {
+                newMessageElement.remove();
+            }
+        })
+        .finally(() => {
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalIcon;
+            }
+        });
+
+        return true;
+    }
+
     if (messageForm) {
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
-            const formData = new FormData(this);
-            const submitButton = this.querySelector('button[type="submit"]');
-            const originalIcon = submitButton.innerHTML;
-            const messageContent = this.querySelector('#messageContent').value.trim();
-            const attachmentFile = this.querySelector('#attachmentInput').files[0];
-            
-            if (!messageContent && !attachmentFile) return;
-            
-            // Désactiver le bouton et changer l'icône
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            
-            // Ajouter immédiatement le message dans l'interface
-            const tempMessage = {
-                content: messageContent,
-                attachment: attachmentFile ? URL.createObjectURL(attachmentFile) : null
-            };
-            const newMessageElement = appendNewMessage(tempMessage, true);
-            document.querySelector('#messagesContainer > div').appendChild(newMessageElement);
-            
-            // Scroll vers le bas
-            container.scrollTop = container.scrollHeight;
-            
-            // Réinitialiser le formulaire
-            this.querySelector('#messageContent').value = '';
-            this.querySelector('#attachmentInput').value = '';
-            if (attachmentPreview) {
-                attachmentPreview.classList.add('hidden');
-            }
-            
-            fetch(this.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success) {
-                    // En cas d'erreur, supprimer le message temporaire et afficher l'erreur
-                    newMessageElement.remove();
-                    alert(data.error || 'Erreur lors de l\'envoi du message');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                newMessageElement.remove();
-                alert('Une erreur est survenue lors de l\'envoi');
-            })
-            .finally(() => {
-                // Réactiver le bouton
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalIcon;
-            });
+            sendMessage();
         });
     }
 
@@ -612,6 +738,226 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    // === Enregistrement vocal (WhatsApp-style) ===
+    let audioChunks = [];
+    let recordingSeconds = 0;
+
+    const normalInput = document.getElementById('normalInput');
+    const recordingInput = document.getElementById('recordingInput');
+    const stopRecordBtn = document.getElementById('stopRecordBtn');
+    const cancelRecordBtn = document.getElementById('cancelRecordBtn');
+    const recordingTimerEl = document.getElementById('recordingTimer');
+    const messageType = document.getElementById('messageType');
+    const messageDuration = document.getElementById('messageDuration');
+
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            recorderStream = stream;
+            const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+                ? 'audio/webm;codecs=opus'
+                : 'audio/webm';
+            mediaRecorder = new MediaRecorder(stream, { mimeType });
+            audioChunks = [];
+
+            mediaRecorder.ondataavailable = (e) => {
+                if (e.data.size > 0) audioChunks.push(e.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                stream.getTracks().forEach(track => track.stop());
+                if (voiceTimerInterval) clearInterval(voiceTimerInterval);
+
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                voiceFile = new File([blob], 'voice.webm', { type: 'audio/webm' });
+
+                messageType.value = 'audio';
+                messageDuration.value = recordingSeconds;
+
+                recordingInput.classList.add('hidden');
+
+                // Envoyer automatiquement
+                sendMessage();
+            };
+
+            mediaRecorder.onerror = () => {
+                stream.getTracks().forEach(track => track.stop());
+                if (voiceTimerInterval) clearInterval(voiceTimerInterval);
+                recordingInput.classList.add('hidden');
+                normalInput.classList.remove('hidden');
+
+                const sb = document.querySelector('#messageForm button[type="submit"]');
+                if (sb) sb.disabled = false;
+            };
+
+            mediaRecorder.start(250);
+            recordingSeconds = 0;
+            recordingTimerEl.textContent = '0:00';
+
+            if (voiceTimerInterval) clearInterval(voiceTimerInterval);
+            voiceTimerInterval = setInterval(() => {
+                recordingSeconds++;
+                recordingTimerEl.textContent = formatTime(recordingSeconds);
+            }, 1000);
+
+            normalInput.classList.add('hidden');
+            recordingInput.classList.remove('hidden');
+
+            const sb = document.querySelector('#messageForm button[type="submit"]');
+            if (sb) sb.disabled = true;
+
+        }).catch(err => {
+            console.error('Erreur micro:', err);
+            alert('Impossible d\'accéder au microphone. Vérifiez les permissions.');
+        });
+    }
+
+    // Quand on appuie sur le mic dans le mode normal, passer en mode enregistrement
+    // On ajoute un bouton mic dans normalInput
+    const normalMicBtn = document.createElement('button');
+    normalMicBtn.type = 'button';
+    normalMicBtn.className = 'text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0';
+    normalMicBtn.title = 'Message vocal';
+    normalMicBtn.innerHTML = '<i class="fas fa-microphone text-lg"></i>';
+    normalMicBtn.addEventListener('click', startRecording);
+    normalInput.insertBefore(normalMicBtn, normalInput.querySelector('#sendBtn'));
+
+    stopRecordBtn.addEventListener('click', () => {
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+        }
+    });
+
+    cancelRecordBtn.addEventListener('click', () => {
+        if (mediaRecorder) {
+            if (mediaRecorder.state === 'recording') {
+                mediaRecorder.ondataavailable = null;
+                mediaRecorder.onstop = null;
+                mediaRecorder.stop();
+            }
+            if (recorderStream) {
+                recorderStream.getTracks().forEach(t => t.stop());
+                recorderStream = null;
+            }
+        }
+        if (voiceTimerInterval) clearInterval(voiceTimerInterval);
+        recordingInput.classList.add('hidden');
+        normalInput.classList.remove('hidden');
+        const sb = document.querySelector('#messageForm button[type="submit"]');
+        if (sb) sb.disabled = false;
+    });
+
+    // === Lecteur vocal WhatsApp-style (play/pause avec progression) ===
+    let currentVoiceAudio = null;
+    let currentVoiceBtn = null;
+    let currentVoiceFill = null;
+    let currentVoiceTime = null;
+    let voiceAnimFrame = null;
+
+    document.addEventListener('click', function(e) {
+        const playBtn = e.target.closest('.voice-play-btn');
+        if (!playBtn) return;
+
+        const container = playBtn.closest('.voice-msg');
+        if (!container) return;
+
+        const src = container.dataset.src;
+        const fill = container.querySelector('.voice-progress-fill');
+        const timeEl = container.querySelector('.voice-time');
+        const totalDur = parseFloat(container.dataset.duration) || 0;
+
+        // Si on clique sur le même bouton en cours de lecture
+        if (currentVoiceAudio && currentVoiceBtn === playBtn && !currentVoiceAudio.paused) {
+            currentVoiceAudio.pause();
+            cancelAnimationFrame(voiceAnimFrame);
+            playBtn.innerHTML = '<i class="fas fa-play text-xs ml-0.5"></i>';
+            return;
+        }
+
+        // Arrêter la lecture précédente
+        if (currentVoiceAudio) {
+            currentVoiceAudio.pause();
+            cancelAnimationFrame(voiceAnimFrame);
+            if (currentVoiceBtn) {
+                currentVoiceBtn.innerHTML = '<i class="fas fa-play text-xs ml-0.5"></i>';
+            }
+            if (currentVoiceFill) {
+                currentVoiceFill.style.width = '0%';
+            }
+            if (currentVoiceTime && currentVoiceAudio._totalDur) {
+                const m = Math.floor(currentVoiceAudio._totalDur / 60);
+                const s = Math.floor(currentVoiceAudio._totalDur % 60);
+                currentVoiceTime.textContent = m + ':' + s.toString().padStart(2, '0');
+            }
+        }
+
+        // Nouvelle lecture
+        const audio = new Audio(src);
+        audio._totalDur = totalDur;
+        currentVoiceAudio = audio;
+        currentVoiceBtn = playBtn;
+        currentVoiceFill = fill;
+        currentVoiceTime = timeEl;
+
+        playBtn.innerHTML = '<i class="fas fa-pause text-xs"></i>';
+
+        function updateProgress() {
+            if (audio.paused || audio.ended) return;
+            const current = audio.currentTime;
+            const dur = audio.duration || totalDur;
+            const pct = dur > 0 ? (current / dur) * 100 : 0;
+            if (fill) fill.style.width = Math.min(pct, 100) + '%';
+            const m = Math.floor(current / 60);
+            const s = Math.floor(current % 60);
+            if (timeEl) timeEl.textContent = m + ':' + s.toString().padStart(2, '0');
+            voiceAnimFrame = requestAnimationFrame(updateProgress);
+        }
+
+        audio.addEventListener('loadedmetadata', () => {
+            audio._totalDur = audio.duration;
+            updateProgress();
+        });
+
+        audio.addEventListener('timeupdate', updateProgress);
+
+        audio.addEventListener('ended', () => {
+            cancelAnimationFrame(voiceAnimFrame);
+            playBtn.innerHTML = '<i class="fas fa-play text-xs ml-0.5"></i>';
+            if (fill) fill.style.width = '0%';
+            if (timeEl) {
+                const m = Math.floor(totalDur / 60);
+                const s = Math.floor(totalDur % 60);
+                timeEl.textContent = m + ':' + s.toString().padStart(2, '0');
+            }
+            currentVoiceAudio = null;
+            currentVoiceBtn = null;
+            currentVoiceFill = null;
+            currentVoiceTime = null;
+        });
+
+        audio.play().catch(() => {
+            playBtn.innerHTML = '<i class="fas fa-play text-xs ml-0.5"></i>';
+        });
+    });
+
+    // === Real-time messages via Pusher ===
+    const otherUserId = {{ $otherUser->id }};
+    if (typeof window.Echo !== 'undefined' && window.Echo) {
+        window.Echo.private('user.{{ Auth::id() }}')
+            .listen('.message.sent', (message) => {
+                if (message.sender_id !== otherUserId) return;
+
+                const newMsg = {
+                    content: message.content,
+                    attachment: message.attachment,
+                    type: message.type,
+                    duration: message.duration,
+                };
+                const el = appendNewMessage(newMsg, false);
+                document.querySelector('#messagesContainer > div').appendChild(el);
+                container.scrollTop = container.scrollHeight;
+            });
+    }
 });
 
 // Fonctions globales
@@ -652,6 +998,32 @@ function closeImageModal() {
 function removeAttachment() {
     document.getElementById('attachmentInput').value = '';
     document.getElementById('attachmentPreview').classList.add('hidden');
+}
+
+function removeVoice() {
+    if (mediaRecorder && mediaRecorder.state === 'recording') {
+        mediaRecorder.stop();
+    }
+    if (recorderStream) {
+        recorderStream.getTracks().forEach(t => t.stop());
+        recorderStream = null;
+    }
+    if (voiceTimerInterval) clearInterval(voiceTimerInterval);
+    voiceFile = null;
+    document.getElementById('messageType').value = 'text';
+    document.getElementById('messageDuration').value = '';
+    const ri = document.getElementById('recordingInput');
+    const ni = document.getElementById('normalInput');
+    if (ri) ri.classList.add('hidden');
+    if (ni) ni.classList.remove('hidden');
+    const sb = document.querySelector('#messageForm button[type="submit"]');
+    if (sb) sb.disabled = false;
+}
+
+function formatTime(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return m + ':' + s.toString().padStart(2, '0');
 }
 
 // Fermer le dropdown en cliquant ailleurs

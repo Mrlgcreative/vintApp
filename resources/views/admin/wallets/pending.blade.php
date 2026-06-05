@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Wallets Pending')
 @section('page-title', 'Wallets Pending - Argent en Attente de Confirmation')

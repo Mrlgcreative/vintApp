@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -369,6 +369,9 @@
                             </button>
                         </form>
 
+                        <!-- Paiement Simulé (Test) -->
+                    </div>
+
                         <!-- Moyens de paiement acceptés -->
                         <div class="mt-4 text-center">
                             <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Paiements 100% sécurisés</p>
@@ -656,7 +659,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return false;
             }
 
-            // Afficher un loader sur le bouton
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection vers MaishaPay...';

@@ -28,99 +28,77 @@ foreach ($attributes->all() as $__key => $__value) {
 
 unset($__defined_vars, $__key, $__value); ?>
 
-<section class="py-20 lg:py-32 bg-gradient-to-b from-white to-gray-50/50">
+<section class="py-14 lg:py-20 bg-gradient-to-b from-violet-50/60 to-white dark:from-gray-800/60 dark:to-gray-900">
     <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- En-tête Section -->
-        <div class="mb-12">
-            <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                Catégories
-            </h2>
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <span class="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400">Parcourir</span>
+                <h2 class="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mt-1">
+                    Catégories
+                </h2>
+            </div>
+            <a href="<?php echo e(route('items.index')); ?>"
+               class="hidden lg:inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
+                Tout voir
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
         </div>
 
-        <!-- Conteneur Catégories -->
-        <div class="relative">
-            <div class="flex overflow-x-auto scrollbar-hide gap-4 lg:gap-6 pb-4 -mx-4 px-4" style="scroll-snap-type: x mandatory;">
-                <?php
-                    $icons = ['fas fa-tshirt', 'fas fa-female', 'fas fa-shoe-prints', 'fas fa-shopping-bag', 'far fa-clock', 'fas fa-glasses', 'fas fa-vest', 'fas fa-shoe-prints', 'fas fa-suitcase', 'fas fa-gem'];
-                    $iconColors = [
-                        'text-purple-600', 'text-pink-600', 'text-purple-500', 'text-pink-500',
-                        'text-purple-600', 'text-pink-600', 'text-purple-500', 'text-pink-500',
-                        'text-purple-600', 'text-pink-600'
-                    ];
-                    $colors = [
-                        'from-purple-100 to-purple-200 border-purple-200',
-                        'from-pink-100 to-pink-200 border-pink-200',
-                        'from-purple-50 to-purple-100 border-purple-200',
-                        'from-pink-50 to-pink-100 border-pink-200',
-                        'from-purple-100 to-pink-100 border-purple-200',
-                        'from-pink-100 to-purple-100 border-pink-200',
-                        'from-purple-100 to-purple-200 border-purple-200',
-                        'from-pink-100 to-pink-200 border-pink-200',
-                        'from-purple-50 to-pink-100 border-purple-200',
-                        'from-pink-50 to-purple-100 border-pink-200'
-                    ];
-                ?>
-                
-                <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>" 
-                       class="group relative bg-white hover:bg-gradient-to-br <?php echo e($colors[$index % count($colors)]); ?> border-2 border-transparent hover:border-opacity-50 rounded-2xl lg:rounded-3xl p-4 lg:p-8 text-center transition-all duration-300 hover:shadow-xl hover:shadow-black/5 hover:-translate-y-2 flex-shrink-0 w-32 lg:w-40"
-                       style="scroll-snap-align: start;">
-                        
-                        <!-- Icône de catégorie -->
-                        <div class="mb-3 lg:mb-4 overflow-hidden rounded-xl aspect-square group-hover:scale-110 transition-all duration-300">
-                            <div class="w-full h-full bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
-                                <i class="<?php echo e($category->icon ?? $icons[$index % count($icons)]); ?> text-3xl <?php echo e($iconColors[$index % count($iconColors)]); ?>"></i>
-                            </div>
-                        </div>
-                        
-                        <!-- Texte -->
-                        <div class="space-y-1">
-                            <h3 class="font-bold text-xs lg:text-sm xl:text-base text-gray-900 group-hover:text-gray-800 leading-tight">
-                                <?php echo e($category->name); ?>
+        <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 lg:gap-3">
+            <?php
+                $icons = [
+                    'fas fa-tshirt', 'fas fa-female', 'fas fa-shoe-prints', 'fas fa-shopping-bag',
+                    'far fa-clock', 'fas fa-glasses', 'fas fa-vest', 'fas fa-crown',
+                    'fas fa-suitcase', 'fas fa-gem', 'fas fa-headphones', 'fas fa-couch',
+                ];
+                $lightBgs = [
+                    'bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300',
+                    'bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-300',
+                    'bg-amber-50 text-amber-600 dark:bg-amber-900/40 dark:text-amber-300',
+                    'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300',
+                    'bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300',
+                    'bg-rose-50 text-rose-600 dark:bg-rose-900/40 dark:text-rose-300',
+                    'bg-teal-50 text-teal-600 dark:bg-teal-900/40 dark:text-teal-300',
+                    'bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-300',
+                    'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-300',
+                    'bg-cyan-50 text-cyan-600 dark:bg-cyan-900/40 dark:text-cyan-300',
+                    'bg-violet-50 text-violet-600 dark:bg-violet-900/40 dark:text-violet-300',
+                    'bg-pink-50 text-pink-600 dark:bg-pink-900/40 dark:text-pink-300',
+                ];
+            ?>
 
-                            </h3>
-                            <p class="text-xs lg:text-sm text-gray-500 group-hover:text-gray-600">
-                                <?php echo e($category->items_count ?? 0); ?> articles
-                            </p>
-                        </div>
-                        
-                        <!-- Indicateur hover -->
-                        <div class="absolute top-2 lg:top-3 right-2 lg:right-3 w-5 lg:w-6 h-5 lg:h-6 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center transform scale-75 group-hover:scale-100">
-                            <svg class="w-2 lg:w-3 h-2 lg:h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                        </div>
-                    </a>
-                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
-                    <div class="text-center py-16 w-full">
-                        <div class="mb-4 lg:mb-6 flex justify-center">
-                            <svg class="w-16 h-16 lg:w-20 lg:h-20 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-lg lg:text-xl font-semibold text-purple-900 mb-2">Catégories à venir</h3>
-                        <p class="text-purple-400">Nos catégories seront bientôt disponibles</p>
+            <?php $__empty_1 = true; $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                <?php $i = $index % count($lightBgs); ?>
+                <a href="<?php echo e(route('items.index', ['category' => $category->id])); ?>"
+                   class="group flex flex-col items-center gap-1.5 p-3 lg:p-4 rounded-xl bg-white/70 hover:bg-white dark:bg-gray-800/50 dark:hover:bg-gray-800 border border-transparent hover:border-violet-100 dark:hover:border-violet-800 transition-all duration-200 hover:shadow-sm hover:shadow-violet-200/40 dark:hover:shadow-violet-900/20">
+                    <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg <?php echo e($lightBgs[$i]); ?> flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
+                        <i class="<?php echo e($category->icon ?? $icons[$index % count($icons)]); ?> text-sm lg:text-base"></i>
                     </div>
-                <?php endif; ?>
-            </div>
-            
-            <!-- Navigation Arrows - Desktop uniquement -->
-            <div class="hidden lg:block">
-                <button id="categoriesPrev" 
-                        class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                
-                <button id="categoriesNext" 
-                        class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 w-10 h-10 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-600 hover:bg-gray-50 hover:text-gray-800 transition-all duration-300 z-10 opacity-80 hover:opacity-100">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
+                    <h3 class="font-medium text-[11px] lg:text-xs text-gray-800 dark:text-gray-200 text-center leading-tight">
+                        <?php echo e($category->name); ?>
+
+                    </h3>
+                </a>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
+                <div class="col-span-full text-center py-12">
+                    <p class="text-sm text-gray-400 dark:text-gray-500">Catégories à venir</p>
+                </div>
+            <?php endif; ?>
         </div>
+
+        <?php if($categories && $categories->count() > 6): ?>
+            <div class="mt-6 text-center lg:hidden">
+                <a href="<?php echo e(route('items.index')); ?>"
+                   class="inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors">
+                    Voir toutes les catégories
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 <?php /**PATH /home/aizen/Bureau/sky/vintApp/resources/views/components/home/category-grid.blade.php ENDPATH**/ ?>

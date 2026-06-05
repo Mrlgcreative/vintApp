@@ -18,6 +18,7 @@ class Message extends Model
         'content',
         'attachment', // Ajouté pour permettre l'upload de fichiers
         'type',
+        'duration',
         'is_read',
         'read_at'
     ];
@@ -58,6 +59,7 @@ class Message extends Model
     {
         return match($this->type) {
             'text' => 'Texte',
+            'audio' => 'Message vocal',
             'image' => 'Image',
             'file' => 'Fichier',
             'general' => 'Général',

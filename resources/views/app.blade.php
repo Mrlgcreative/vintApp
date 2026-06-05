@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
@@ -124,10 +124,11 @@
                             $unreadNotifications = App\Models\Notification::where('user_id', Auth::id())->whereNull('read_at')->count();
                         @endphp
                         @if($unreadNotifications > 0)
-                            <span class="absolute top-1 right-1 flex h-2.5 w-2.5">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 ring-2 ring-primary lg:ring-white dark:ring-gray-800"></span>
+                            <span id="notification-badge" class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold ring-2 ring-primary lg:ring-white dark:ring-gray-800 shadow-lg shadow-red-500/30">
+                                {{ $unreadNotifications > 99 ? '99+' : $unreadNotifications }}
                             </span>
+                        @else
+                            <span id="notification-badge" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold ring-2 ring-primary lg:ring-white dark:ring-gray-800 shadow-lg shadow-red-500/30">0</span>
                         @endif
                     </button>
                     
@@ -495,6 +496,11 @@
                 <div class="p-4" id="notifications-content">
                     <p class="text-gray-500 dark:text-gray-400 text-sm text-center">Chargement...</p>
                 </div>
+                <div class="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
+                    <a href="{{ route('notifications.index') }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                        Voir toutes les notifications
+                    </a>
+                </div>
             `;
             
             document.body.appendChild(panel);
@@ -516,15 +522,16 @@
             const content = document.getElementById('notifications-content');
             if (!content) return;
             
-            fetch('/notifications')
+            fetch('/api/v1/notifications')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.notifications.length === 0) {
+                    const notifications = data.data || [];
+                    if (notifications.length === 0) {
                         content.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-sm text-center">Aucune notification</p>';
                         return;
                     }
                     
-                    content.innerHTML = data.notifications.map(notification => `
+                    content.innerHTML = notifications.map(notification => `
                         <div class="p-3 border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer" 
                              onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
                             <div class="flex items-start space-x-3">
@@ -566,7 +573,7 @@
         }
 
         function markNotificationAsRead(notificationId, url) {
-            fetch(`/notifications/${notificationId}/read`, {
+            fetch(`/api/v1/notifications/${notificationId}/mark-read`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,5 +1,5 @@
 @extends('app')
-
+@section('title', 'Administration des Parrains')
 @section('content')
 <div class="container-fluid">
     <!-- Header Section -->

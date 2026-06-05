@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Détails de la commande #' . $order->id)
 @section('page-title', 'Détails de la commande #' . $order->id)

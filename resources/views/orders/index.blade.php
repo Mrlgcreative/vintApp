@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @push('scripts')
 <!-- jsQR Library pour scanner QR codes -->
@@ -19,9 +19,9 @@ if (typeof jsQR === 'undefined') {
 }
 </script>
 @endpush
-
+@section('title', 'Mes Commandes')
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">

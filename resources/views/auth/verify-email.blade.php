@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('content')
 <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5 px-3" style="background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 50%, #faf5ff 100%);">

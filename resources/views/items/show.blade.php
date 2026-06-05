@@ -1,5 +1,5 @@
-﻿@extends('app')
-
+@extends('app')
+@section('title', 'Détails de l\'article')
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900" data-page-type="product-detail">
     <div class="container mx-auto px-4 py-8 lg:py-16">

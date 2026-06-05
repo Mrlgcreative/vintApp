@@ -86,7 +86,10 @@ class PushNotificationServiceTest extends TestCase
         ]);
 
         // Act
-        $this->service->removeInvalidToken($user);
+        $reflection = new \ReflectionClass($this->service);
+        $method = $reflection->getMethod('removeInvalidToken');
+        $method->setAccessible(true);
+        $method->invoke($this->service, $user->fcm_token);
 
         // Assert
         $user->refresh();
@@ -134,7 +137,10 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $orderId = 12345;
+        $order = (object) [
+            'id' => 12345,
+            'buyer' => (object) ['name' => 'John Doe']
+        ];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -143,7 +149,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyNewOrder($user, $orderId);
+        $result = $serviceMock->notifyNewOrder($user, $order);
 
         // Assert
         $this->assertTrue($result);
@@ -157,7 +163,7 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $orderId = 12345;
+        $order = (object) ['id' => 12345];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -166,7 +172,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyOrderConfirmed($user, $orderId);
+        $result = $serviceMock->notifyOrderConfirmed($user, $order);
 
         // Assert
         $this->assertTrue($result);
@@ -180,7 +186,7 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $orderId = 12345;
+        $order = (object) ['id' => 12345];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -189,7 +195,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyOrderShipped($user, $orderId);
+        $result = $serviceMock->notifyOrderShipped($user, $order);
 
         // Assert
         $this->assertTrue($result);
@@ -203,8 +209,12 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $senderName = 'John Doe';
-        $messagePreview = 'Hello, how are you?';
+        $message = (object) [
+            'id' => 67890,
+            'content' => 'Hello, how are you?',
+            'conversation_id' => 12345,
+            'sender' => (object) ['name' => 'John Doe']
+        ];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -213,7 +223,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyNewMessage($user, $senderName, $messagePreview);
+        $result = $serviceMock->notifyNewMessage($user, $message);
 
         // Assert
         $this->assertTrue($result);
@@ -227,8 +237,11 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $itemTitle = 'Vintage Jacket';
-        $price = 150.00;
+        $item = (object) [
+            'id' => 54321,
+            'title' => 'Vintage Jacket',
+            'images' => [(object) ['url' => '/images/jacket.jpg']]
+        ];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -237,7 +250,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyItemSold($user, $itemTitle, $price);
+        $result = $serviceMock->notifyItemSold($user, $item);
 
         // Assert
         $this->assertTrue($result);
@@ -251,8 +264,11 @@ class PushNotificationServiceTest extends TestCase
             'fcm_token' => 'test_token_' . str()->random(100)
         ]);
 
-        $rating = 5;
-        $reviewerName = 'Jane Smith';
+        $review = (object) [
+            'id' => 98765,
+            'rating' => 5,
+            'reviewer' => (object) ['name' => 'Jane Smith']
+        ];
 
         // Mock the service
         $serviceMock = Mockery::mock(PushNotificationService::class)->makePartial();
@@ -261,7 +277,7 @@ class PushNotificationServiceTest extends TestCase
             ->andReturn(true);
 
         // Act
-        $result = $serviceMock->notifyNewReview($user, $rating, $reviewerName);
+        $result = $serviceMock->notifyNewReview($user, $review);
 
         // Assert
         $this->assertTrue($result);

@@ -99,8 +99,7 @@ class MessageController extends Controller
     {
         $request->validate([
             'recipient_id' => 'required|exists:users,id',
-            'content' => 'nullable|string|max:1000',
-            'attachment' => 'nullable|file|max:10240' // 10 Mo max
+            'content' => 'nullable|string|max:5000',
         ]);
 
         $user = Auth::user();
@@ -131,22 +130,41 @@ class MessageController extends Controller
         }
 
         $attachmentPath = null;
-        if ($request->hasFile('attachment')) {
+        $messageType = 'text';
+        $duration = null;
+
+        if ($request->hasFile('voice') && $request->file('voice')->isValid()) {
+            $request->validate(['voice' => 'file|mimes:webm,mp3,ogg,wav,mp4|max:5120']);
+            $attachmentPath = $request->file('voice')->store('messages', 'public');
+            StorageSyncService::syncFile($attachmentPath);
+            $messageType = 'audio';
+            $duration = (float) ($request->duration ?? 0);
+        } elseif ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+            $request->validate(['attachment' => 'file|max:10240']);
             $attachmentPath = $request->file('attachment')->store('messages', 'public');
             StorageSyncService::syncFile($attachmentPath);
         }
 
         // On autorise l'envoi d'un message vide si un fichier est joint
-        if (empty($request->content) && !$attachmentPath) {
+        if (empty(trim($request->content ?? '')) && !$attachmentPath) {
             return response()->json(['success' => false, 'error' => 'Message vide.'], 422);
         }
 
         $message = Message::create([
             'sender_id' => $user->id,
             'receiver_id' => $recipientId,
-            'content' => $request->content,
-            'attachment' => $attachmentPath
+            'content' => trim($request->content ?? ''),
+            'attachment' => $attachmentPath,
+            'type' => $messageType,
+            'duration' => $duration,
         ]);
+
+        // Diffuser le message en temps reel
+        try {
+            \App\Events\MessageSent::dispatch($message);
+        } catch (\Exception $e) {
+            \Log::error('Erreur broadcast message: ' . $e->getMessage());
+        }
 
         // Créer une notification pour le destinataire
         $this->notificationService->createMessageNotification(
@@ -698,8 +716,7 @@ class MessageController extends Controller
         try {
             $validator = \Validator::make($request->all(), [
                 'recipient_id' => 'required|exists:users,id',
-                'content' => 'nullable|string|max:1000',
-                'attachment' => 'nullable|file|max:10240',
+                'content' => 'nullable|string|max:5000',
                 'item_id' => 'nullable|exists:items,id'
             ]);
 
@@ -711,22 +728,50 @@ class MessageController extends Controller
             $recipientId = $request->recipient_id;
 
             $attachmentPath = null;
-            if ($request->hasFile('attachment')) {
+            $messageType = 'text';
+            $duration = null;
+
+            if ($request->hasFile('voice') && $request->file('voice')->isValid()) {
+                $validator = \Validator::make($request->all(), [
+                    'voice' => 'file|mimes:webm,mp3,ogg,wav,mp4|max:5120',
+                ]);
+                if ($validator->fails()) {
+                    return $this->errorResponse('Audio invalide', 422, $validator->errors());
+                }
+                $attachmentPath = $request->file('voice')->store('messages', 'public');
+                StorageSyncService::syncFile($attachmentPath);
+                $messageType = 'audio';
+                $duration = (float) ($request->duration ?? 0);
+            } elseif ($request->hasFile('attachment') && $request->file('attachment')->isValid()) {
+                $validator = \Validator::make($request->all(), [
+                    'attachment' => 'file|max:10240',
+                ]);
+                if ($validator->fails()) {
+                    return $this->errorResponse('Fichier invalide', 422, $validator->errors());
+                }
                 $attachmentPath = $request->file('attachment')->store('messages', 'public');
                 StorageSyncService::syncFile($attachmentPath);
             }
 
-            if (empty($request->content) && !$attachmentPath) {
+            if (empty(trim($request->content ?? '')) && !$attachmentPath) {
                 return $this->errorResponse('Message vide', 422);
             }
 
             $message = Message::create([
                 'sender_id' => $user->id,
                 'receiver_id' => $recipientId,
-                'content' => $request->content,
+                'content' => trim($request->content ?? ''),
                 'attachment' => $attachmentPath,
+                'type' => $messageType,
+                'duration' => $duration,
                 'item_id' => $request->item_id
             ]);
+
+            try {
+                \App\Events\MessageSent::dispatch($message);
+            } catch (\Exception $e) {
+                \Log::error('Erreur broadcast message api: ' . $e->getMessage());
+            }
 
             // Créer une notification pour le destinataire
             $this->notificationService->createMessageNotification(

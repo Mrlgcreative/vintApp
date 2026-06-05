@@ -1,5 +1,5 @@
 @extends('app')
-
+@section('title', 'Passer une commande')
 @section('content')
 <div class="container-fluid mt-4">
     <div class="row justify-content-center">

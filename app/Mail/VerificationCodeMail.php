@@ -3,13 +3,16 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
+/**
+ * Envoi synchrone au chargement de /verify-code : ne pas implémenter ShouldQueue
+ * (sinon dépendance à un worker de queue et risques si la queue échoue).
+ */
 class VerificationCodeMail extends Mailable
 {
     use Queueable, SerializesModels;

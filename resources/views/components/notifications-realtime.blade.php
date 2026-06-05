@@ -8,23 +8,28 @@
 <script>
 // Configuration Pusher/Echo pour les notifications temps réel
 @if(config('broadcasting.default') === 'pusher')
-// Vérifier que Echo est disponible avant de l'utiliser
 if (typeof window.Echo !== 'undefined' && window.Echo) {
     window.Echo.private('user.{{ Auth::id() }}')
         .notification((notification) => {
-            console.log('Notification reçue:', notification);
-            showNotification(notification);
-            
-            // Jouer un son si disponible
-            playNotificationSound();
-            
-            // Mettre à jour le badge de notifications
-            updateNotificationBadge();
+            handleNotification(notification);
+        })
+        .listen('.notification.created', (notification) => {
+            handleNotification(notification);
         });
 } else {
-    // Laravel Echo non disponible - notifications temps réel désactivées
+    console.warn('Echo non disponible - notifications temps reel desactivees');
 }
 @endif
+
+/**
+ * Point d'entree unique pour toutes les notifications recues
+ */
+function handleNotification(notification) {
+    showNotification(notification);
+    playNotificationSound();
+    updateNotificationBadge();
+    refreshNotificationsPanel();
+}
 
 /**
  * Affiche une notification toast
@@ -32,80 +37,81 @@ if (typeof window.Echo !== 'undefined' && window.Echo) {
 function showNotification(notification) {
     const container = document.getElementById('notifications-container');
     if (!container) return;
-    
+
     const notifId = 'notif-' + Date.now();
-    const isApproved = notification.type === 'App\\Notifications\\ItemApproved';
-    
-    const bgColor = isApproved 
-        ? 'bg-gradient-to-r from-green-500 to-green-600' 
-        : 'bg-gradient-to-r from-red-500 to-red-600';
-    
-    const icon = isApproved ? '✅' : '❌';
-    const title = isApproved ? 'Article Approuvé !' : 'Article Rejeté';
-    
+
+    // Couleur selon le type
+    let bgColor = 'bg-gradient-to-r from-blue-500 to-indigo-600';
+    let icon = '🔔';
+    let title = notification.title || 'Notification';
+
+    if (notification.type) {
+        if (notification.type.includes('new_message') || notification.type === 'App\\Notifications\\NewMessage') {
+            bgColor = 'bg-gradient-to-r from-blue-500 to-blue-600';
+            icon = '💬';
+        } else if (notification.type.includes('new_order') || notification.type === 'App\\Notifications\\NewOrder') {
+            bgColor = 'bg-gradient-to-r from-green-500 to-emerald-600';
+            icon = '🛒';
+        } else if (notification.type.includes('discount') || notification.type === 'App\\Notifications\\DiscountApplied') {
+            bgColor = 'bg-gradient-to-r from-purple-500 to-purple-600';
+            icon = '🏷️';
+        } else if (notification.type.includes('refund')) {
+            bgColor = 'bg-gradient-to-r from-amber-500 to-orange-600';
+            icon = '💰';
+        } else if (notification.type.includes('item_favorited')) {
+            bgColor = 'bg-gradient-to-r from-pink-500 to-rose-600';
+            icon = '❤️';
+        } else if (notification.type.includes('Approved')) {
+            bgColor = 'bg-gradient-to-r from-green-500 to-green-600';
+            icon = '✅';
+        } else if (notification.type.includes('Rejected')) {
+            bgColor = 'bg-gradient-to-r from-red-500 to-red-600';
+            icon = '❌';
+        } else if (notification.type.includes('wallet')) {
+            bgColor = 'bg-gradient-to-r from-emerald-500 to-teal-600';
+            icon = '💳';
+        }
+    }
+
+    const actionUrl = notification.data?.url || '#';
+
     const toast = document.createElement('div');
     toast.id = notifId;
-    toast.className = `${bgColor} text-white rounded-xl shadow-2xl p-4 transform transition-all duration-300 pointer-events-auto animate-slide-in-right`;
-    
+    toast.className = `${bgColor} text-white rounded-xl shadow-2xl p-4 transform transition-all duration-300 pointer-events-auto animate-slide-in-right cursor-pointer hover:shadow-3xl`;
+    toast.onclick = function() {
+        if (actionUrl !== '#') {
+            window.location.href = actionUrl;
+        }
+        closeNotification(notifId);
+    };
+
     toast.innerHTML = `
         <div class="flex items-start space-x-3">
-            <div class="flex-shrink-0 text-3xl">${icon}</div>
+            <div class="flex-shrink-0 text-2xl">${icon}</div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between mb-1">
-                    <h4 class="font-bold text-lg">${title}</h4>
-                    <button onclick="closeNotification('${notifId}')" 
-                            class="text-white hover:text-gray-200 transition ml-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+                    <h4 class="font-bold text-sm">${title}</h4>
+                    <button onclick="event.stopPropagation(); closeNotification('${notifId}')" 
+                            class="text-white hover:text-gray-200 transition ml-2 flex-shrink-0">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <p class="text-sm text-white/90 mb-2">${notification.message || notification.data?.message || ''}</p>
-                ${notification.data?.item_image ? `
-                    <div class="mb-2">
-                        <img src="/storage/${notification.data.item_image}" 
-                             class="w-16 h-16 object-cover rounded-lg border-2 border-white/30"
-                             alt="Article">
-                    </div>
-                ` : ''}
-                ${isApproved && notification.data?.verification_score ? `
-                    <div class="flex items-center space-x-2 text-xs text-white/80 mb-2">
-                        <span>Score IA: <strong>${notification.data.verification_score}/100</strong></span>
-                    </div>
-                ` : ''}
-                ${!isApproved && notification.data?.reason ? `
-                    <div class="bg-white/20 rounded p-2 text-xs mb-2">
-                        <strong>Raison:</strong> ${notification.data.reason}
-                    </div>
-                ` : ''}
-                <div class="flex items-center space-x-2 mt-2">
-                    ${notification.data?.item_id ? `
-                        <a href="/items/${notification.data.item_id}" 
-                           class="px-3 py-1 bg-white text-${isApproved ? 'green' : 'red'}-600 rounded-lg text-sm font-medium hover:bg-gray-100 transition">
-                            Voir l'article
-                        </a>
-                    ` : ''}
-                    ${!isApproved && notification.data?.item_id ? `
-                        <a href="/items/${notification.data.item_id}/edit" 
-                           class="px-3 py-1 bg-white/20 text-white rounded-lg text-sm hover:bg-white/30 transition">
-                            Modifier
-                        </a>
-                    ` : ''}
-                </div>
+                <p class="text-sm text-white/90">${notification.message || ''}</p>
+                <p class="text-xs text-white/60 mt-1">${formatTime(notification.created_at)}</p>
             </div>
         </div>
     `;
-    
+
     container.insertBefore(toast, container.firstChild);
-    
-    // Auto-fermeture après 10 secondes
+
+    // Auto-fermeture apres 8 secondes
     setTimeout(() => {
         closeNotification(notifId);
-    }, 10000);
+    }, 8000);
 }
 
 /**
- * Ferme une notification
+ * Ferme une notification toast
  */
 function closeNotification(notifId) {
     const notif = document.getElementById(notifId);
@@ -119,48 +125,108 @@ function closeNotification(notifId) {
 }
 
 /**
- * Joue un son de notification
+ * Joue un son de notification (Web Audio API + MP3 fallback)
  */
 function playNotificationSound() {
     try {
-        const audio = new Audio('/sounds/notification.mp3');
-        audio.volume = 0.3;
-        audio.play().catch(e => console.log('Son désactivé:', e));
+        const audio = new Audio();
+        audio.src = '/sounds/notification-double.wav';
+        audio.volume = 0.4;
+        audio.play().catch(() => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
+                osc1.connect(gain1);
+                gain1.connect(ctx.destination);
+                osc1.type = 'sine';
+                osc1.frequency.value = 880;
+                gain1.gain.setValueAtTime(0, now);
+                gain1.gain.linearRampToValueAtTime(0.3, now + 0.02);
+                gain1.gain.linearRampToValueAtTime(0, now + 0.12);
+                osc1.start(now);
+                osc1.stop(now + 0.12);
+
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.type = 'sine';
+                osc2.frequency.value = 1100;
+                gain2.gain.setValueAtTime(0, now + 0.2);
+                gain2.gain.linearRampToValueAtTime(0.25, now + 0.22);
+                gain2.gain.linearRampToValueAtTime(0, now + 0.32);
+                osc2.start(now + 0.2);
+                osc2.stop(now + 0.32);
+            } catch (e) {
+                // Silencieux
+            }
+        });
     } catch (e) {
-        // Silencieux si le son n'est pas disponible
+        // Silencieux
     }
 }
 
 /**
- * Met à jour le badge de compteur de notifications
+ * Formate une date en temps relatif
+ */
+function formatTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now - date;
+
+    if (diff < 60000) return "A l'instant";
+    if (diff < 3600000) return Math.floor(diff / 60000) + ' min';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + ' h';
+    return Math.floor(diff / 86400000) + ' j';
+}
+
+/**
+ * Met a jour le badge de compteur de notifications
  */
 function updateNotificationBadge() {
-    // Si vous avez un badge dans le header
     const badge = document.getElementById('notification-badge');
     if (badge) {
-        const currentCount = parseInt(badge.textContent || '0');
-        badge.textContent = currentCount + 1;
+        let currentCount = parseInt(badge.textContent || '0');
+        if (isNaN(currentCount)) currentCount = 0;
+        currentCount++;
+        badge.textContent = currentCount > 99 ? '99+' : currentCount;
         badge.classList.remove('hidden');
     }
 }
 
+/**
+ * Rafraichit le panneau de notifications flottant s'il est ouvert
+ */
+function refreshNotificationsPanel() {
+    const panel = document.getElementById('notifications-panel');
+    if (panel) {
+        panel.remove();
+        if (typeof toggleNotifications === 'function') {
+            toggleNotifications();
+        }
+    }
+}
+
 // Animation CSS pour le slide-in
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slide-in-right {
-        0% {
-            opacity: 0;
-            transform: translateX(100%);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
+(function() {
+    if (!document.getElementById('notification-anim-style')) {
+        const style = document.createElement('style');
+        style.id = 'notification-anim-style';
+        style.textContent = `
+            @keyframes slide-in-right {
+                0% { opacity: 0; transform: translateX(100%); }
+                100% { opacity: 1; transform: translateX(0); }
+            }
+            .animate-slide-in-right {
+                animation: slide-in-right 0.35s ease-out;
+            }
+        `;
+        document.head.appendChild(style);
     }
-    .animate-slide-in-right {
-        animation: slide-in-right 0.4s ease-out;
-    }
-`;
-document.head.appendChild(style);
+})();
 </script>
 @endauth

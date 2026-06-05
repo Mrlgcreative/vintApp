@@ -1,0 +1,60 @@
+@startuml
+!theme plain
+!pragma layout smetana
+skinparam packageStyle rectangle
+skinparam defaultTextAlignment center
+
+skinparam node {
+  BorderColor #2E6B9E
+  FontSize 12
+  BackgroundColor #E8F4E8
+}
+skinparam database {
+  BorderColor #2E6B9E
+  FontSize 12
+  BackgroundColor #FFF0E0
+}
+skinparam cloud {
+  BorderColor #2E6B9E
+  FontSize 12
+  BackgroundColor #F0F0FF
+}
+skinparam component {
+  FontSize 11
+  BackgroundColor #F0F8FF
+}
+skinparam arrow {
+  FontSize 10
+}
+
+title Architecture de déploiement - VintApp
+
+node "Client\n(Web/Mobile)" as C {
+  component "Vue 3 + Inertia + PWA"
+}
+node "Serveur\n(NGINX)" as W {
+  component "Vite / Router SPA"
+}
+node "Application\nLaravel PHP 8.3" as L {
+  component "Controllers / Services / Middleware"
+  component "Events / Commands / Mails"
+}
+database "MySQL 8\n(128 tables)" as DB
+database "Redis" as R {
+  component "Cache + Sessions + Queue"
+}
+cloud "Services\nExternes" as EXT {
+  component "CinetPay / AfribaPay / Orange / Mpesa"
+  component "Google OAuth / Apple / Firebase"
+  component "Pusher WS / FCM Push / SMTP"
+  component "Telescope / Spatie Backup"
+}
+
+C -right-> W : HTTPS
+W -right-> L : FPM
+L -right-> DB : Eloquent ORM
+L -down-> R : Cache
+L -down-> EXT : API / Webhooks
+EXT -up-> C : OAuth redirect
+
+@enduml

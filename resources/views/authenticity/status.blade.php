@@ -1,4 +1,4 @@
-﻿@extends('app')
+@extends('app')
 
 @section('title', 'Statut de vérification')
 

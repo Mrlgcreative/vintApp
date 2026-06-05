@@ -57,20 +57,21 @@ class PushNotificationManager {
     }
 
     /**
-     * Demander la permission pour les notifications
+     * Demander la permission pour les notifications.
+     * Ne pas utiliser async/await sur le handler de clic : le navigateur exige un geste utilisateur
+     * synchrone jusqu'à Notification.requestPermission() (sinon rejet / avertissement).
      */
-    async requestPermission() {
+    requestPermission() {
         if (!this.isSupported) {
-            throw new Error('Notifications non supportées sur ce navigateur');
+            return Promise.reject(new Error('Notifications non supportées sur ce navigateur'));
         }
 
-        const permission = await Notification.requestPermission();
-
-        if (permission === 'granted') {
-            await this.subscribeToNotifications();
-        }
-
-        return permission;
+        return Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                return this.subscribeToNotifications().then(() => permission);
+            }
+            return permission;
+        });
     }
 
     /**
@@ -132,11 +133,26 @@ class PushNotificationManager {
                 })
             });
 
+            const raw = await response.text();
+
             if (!response.ok) {
                 throw new Error('Erreur sauvegarde token');
             }
 
-            const data = await response.json();
+            const ct = (response.headers.get('content-type') || '').toLowerCase();
+            if (!ct.includes('application/json')) {
+                throw new Error('Réponse serveur inattendue (non JSON)');
+            }
+
+            let data = {};
+            if (raw.trim()) {
+                try {
+                    data = JSON.parse(raw);
+                } catch (e) {
+                    throw new Error('Réponse JSON invalide');
+                }
+            }
+
             localStorage.setItem('fcm_token', token);
             return data;
         } catch (error) {
@@ -271,10 +287,10 @@ class PushNotificationManager {
 
         document.body.appendChild(modal);
 
-        // Gestion des boutons
-        modal.querySelector('#notif-allow').addEventListener('click', async () => {
+        // Gestion des boutons (handler non-async pour préserver le geste utilisateur)
+        modal.querySelector('#notif-allow').addEventListener('click', () => {
             modal.remove();
-            await this.requestPermission();
+            this.requestPermission().catch(() => {});
         });
 
         modal.querySelector('#notif-deny').addEventListener('click', () => {
@@ -338,11 +354,26 @@ if (document.readyState === 'loading') {
     pushManager.init();
 }
 
-// Afficher prompt après 30 secondes si pas encore de permission
+/**
+ * Ne pas afficher le prompt automatique sur les flux auth / vérification
+ * (évite avertissements navigateur et appels API hors contexte).
+ */
+function pushManagerShouldSkipAutoPrompt() {
+    const p = (window.location.pathname || '').toLowerCase();
+    return (
+        p.includes('/verify-code') ||
+        p.includes('/login') ||
+        p.includes('/register') ||
+        p.includes('/password/')
+    );
+}
+
+// Afficher prompt après 30 secondes si pertinent (toujours déclenché par une interaction pour l'API système)
 setTimeout(() => {
-    if (pushManager.shouldShowPrompt()) {
-        pushManager.showPermissionPrompt();
+    if (pushManagerShouldSkipAutoPrompt() || !pushManager.shouldShowPrompt()) {
+        return;
     }
+    pushManager.showPermissionPrompt();
 }, 30000);
 
 // Export pour utilisation globale

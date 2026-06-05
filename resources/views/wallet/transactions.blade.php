@@ -1,4 +1,4 @@
-﻿    @extends('app')
+    @extends('app')
 
 @section('title', 'Historique des transactions - ' . $wallet->currency)
 

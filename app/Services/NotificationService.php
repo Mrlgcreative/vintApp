@@ -4,11 +4,22 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Models\User;
+use App\Events\NewNotification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
+    private function createAndBroadcast(array $data): Notification
+    {
+        $notification = Notification::create($data);
+        try {
+            NewNotification::dispatch($notification);
+        } catch (\Exception $e) {
+            Log::error('Erreur broadcast notification: ' . $e->getMessage());
+        }
+        return $notification;
+    }
     /**
      * Créer une notification pour un nouveau message
      */
@@ -17,7 +28,7 @@ class NotificationService
         try {
             $sender = User::find($senderId);
             
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $receiverId,
                 'type' => 'new_message',
                 'title' => 'Nouveau message',
@@ -26,7 +37,8 @@ class NotificationService
                     'sender_id' => $senderId,
                     'sender_name' => $sender->name,
                     'message_preview' => \Str::limit($messageContent, 99),
-                    'conversation_id' => $senderId, // Pour la messagerie, l'ID de conversation est l'ID de l'expéditeur
+                    'conversation_id' => $senderId,
+                    'url' => '/messages/' . $senderId,
                 ],
             ]);
 
@@ -45,7 +57,7 @@ class NotificationService
         try {
             $buyer = User::find($buyerId);
             
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $sellerId,
                 'type' => 'new_order',
                 'title' => 'Nouvelle commande',
@@ -54,6 +66,7 @@ class NotificationService
                     'buyer_id' => $buyerId,
                     'buyer_name' => $buyer->name,
                     'item_name' => $itemName,
+                    'url' => '/orders',
                 ],
             ]);
 
@@ -72,13 +85,14 @@ class NotificationService
         try {
             $user = User::find($userId);
             
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $userId,
                 'type' => 'item_favorited',
                 'title' => 'Article ajouté aux favoris',
                 'message' => 'Vous avez ajouté "' . $itemName . '" à vos favoris',
                 'data' => [
                     'item_name' => $itemName,
+                    'url' => '/items',
                 ],
             ]);
 
@@ -97,7 +111,7 @@ class NotificationService
         try {
             $seller = User::find($sellerId);
             
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $buyerId,
                 'type' => 'discount_applied',
                 'title' => 'Réduction accordée !',
@@ -127,7 +141,7 @@ class NotificationService
     {
         try {
             // Notification pour l'acheteur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_approved',
                 'title' => 'Remboursement approuvé ✅',
@@ -144,7 +158,7 @@ class NotificationService
             ]);
 
             // Notification pour le vendeur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_approved',
                 'title' => 'Remboursement approuvé pour votre article',
@@ -175,7 +189,7 @@ class NotificationService
     {
         try {
             // Notification pour l'acheteur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_rejected',
                 'title' => 'Demande de remboursement refusée',
@@ -193,7 +207,7 @@ class NotificationService
             ]);
 
             // Notification pour le vendeur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_rejected',
                 'title' => 'Demande de remboursement refusée',
@@ -222,7 +236,7 @@ class NotificationService
     {
         try {
             // Notification pour l'acheteur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->buyer_id,
                 'type' => 'refund_negotiation',
                 'title' => 'Contre-offre de remboursement',
@@ -241,7 +255,7 @@ class NotificationService
             ]);
 
             // Notification pour le vendeur
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $refund->seller_id,
                 'type' => 'refund_negotiation',
                 'title' => 'Négociation de remboursement',
@@ -314,7 +328,7 @@ class NotificationService
     public function createLocalDeliveryProposedNotification($localDelivery)
     {
         try {
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $localDelivery->buyer_id,
                 'title' => 'Livraison locale proposée',
                 'message' => "Le vendeur {$localDelivery->seller->name} propose une livraison locale pour votre commande #{$localDelivery->order->order_number}",
@@ -345,7 +359,7 @@ class NotificationService
     public function createLocalDeliveryAcceptedNotification($localDelivery)
     {
         try {
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $localDelivery->seller_id,
                 'title' => 'Livraison locale acceptée',
                 'message' => "L'acheteur {$localDelivery->buyer->name} a accepté votre proposition de livraison locale pour la commande #{$localDelivery->order->order_number}",
@@ -374,7 +388,7 @@ class NotificationService
     public function createLocalDeliveryInTransitNotification($localDelivery)
     {
         try {
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $localDelivery->buyer_id,
                 'title' => 'Livraison en transit',
                 'message' => "Votre commande #{$localDelivery->order->order_number} est en cours de livraison. Code de vérification: {$localDelivery->delivery_code}",
@@ -403,7 +417,7 @@ class NotificationService
     public function createLocalDeliveryDeliveredNotification($localDelivery)
     {
         try {
-            Notification::create([
+            $this->createAndBroadcast([
                 'user_id' => $localDelivery->buyer_id,
                 'title' => 'Livraison terminée',
                 'message' => "Votre commande #{$localDelivery->order->order_number} a été livrée avec succès !",
@@ -444,7 +458,7 @@ class NotificationService
             }
 
             foreach ($recipients as $userId) {
-                Notification::create([
+                $this->createAndBroadcast([
                     'user_id' => $userId,
                     'title' => 'Livraison locale annulée',
                     'message' => $message,

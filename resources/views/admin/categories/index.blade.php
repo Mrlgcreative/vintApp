@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Gestion des catégories')
 @section('page-title', 'Gestion des catégories')

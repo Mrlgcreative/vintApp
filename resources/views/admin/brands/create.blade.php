@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Créer une marque')
 @section('page-title', 'Créer une marque')

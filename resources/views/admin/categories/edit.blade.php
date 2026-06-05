@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Modifier la catégorie')
 @section('page-title', 'Modifier : ' . $category->name)

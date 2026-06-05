@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
@@ -27,6 +28,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Artisan serve = HTTP uniquement. Si APP_URL ou le navigateur pousse du HTTPS,
+        // la poignée TLS échoue → net::ERR_CONNECTION_CLOSED sur :8001.
+        if ($this->app->environment('local', 'development')) {
+            URL::forceScheme('http');
+        }
+
         Vite::usePreloadTagAttributes(function (string $src, string $url, ?array $chunk, ?array $manifest) {
             // Ne pas preload les fichiers CSS (évite le warning navigateur)
             if (str_ends_with($src, '.css')) {

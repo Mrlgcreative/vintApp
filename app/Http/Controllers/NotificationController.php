@@ -11,6 +11,41 @@ class NotificationController extends Controller
 {
     use ApiResponses;
 
+    // ==================== Web Methods ====================
+
+    /**
+     * Afficher la liste des notifications
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+
+        $notifications = $user->notifications()
+            ->recent()
+            ->paginate(20);
+
+        $unreadCount = $user->notifications()
+            ->unread()
+            ->count();
+
+        return view('notifications.index', compact('notifications', 'unreadCount'));
+    }
+
+    /**
+     * Afficher une notification
+     */
+    public function show(Request $request, $id)
+    {
+        $user = $request->user();
+
+        $notification = $user->notifications()
+            ->findOrFail($id);
+
+        $notification->markAsRead();
+
+        return view('notifications.show', compact('notification'));
+    }
+
     // ==================== API Methods ====================
 
     /**
@@ -79,6 +114,24 @@ class NotificationController extends Controller
             return $this->successResponse($notification, 'Notification marquée comme lue');
         } catch (\Exception $e) {
             return $this->errorResponse('Notification introuvable', 404);
+        }
+    }
+
+    /**
+     * Mark a notification as unread
+     */
+    public function apiMarkAsUnread(Request $request, $notificationId)
+    {
+        try {
+            $notification = Notification::where('id', $notificationId)
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+
+            $notification->update(['read_at' => null]);
+
+            return response()->json(['success' => true, 'message' => 'Notification marquée comme non lue']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Notification introuvable'], 404);
         }
     }
 

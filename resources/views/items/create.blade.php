@@ -1,5 +1,5 @@
-﻿@extends('app')
-
+@extends('app')
+@section('title', 'Vendre un article')
 @section('content')
 
 <!-- Loading Overlay -->

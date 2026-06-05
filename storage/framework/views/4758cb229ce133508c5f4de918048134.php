@@ -1,5 +1,3 @@
-﻿
-
 <?php $__env->startSection('title', 'Connexion - VintApp'); ?>
 
 <?php $__env->startSection('content'); ?>

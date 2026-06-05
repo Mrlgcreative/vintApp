@@ -1,5 +1,5 @@
-﻿@extends('app')
-
+@extends('app')
+@section('title', 'Articles disponibles')
 @section('content')
 {{-- Toast notification --}}
 <div class="fixed bottom-4 right-4 z-50">

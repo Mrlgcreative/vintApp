@@ -1,0 +1,63 @@
+@startuml
+skinparam sequence {
+  BoxPadding 30
+  MessagePadding 15
+  ParticipantPadding 50
+}
+
+title Diagramme de Sequence - 7 cas d'utilisation
+
+actor Acheteur as B
+actor Vendeur as S
+actor Admin as A
+participant Systeme as Sys
+participant Paiement as Pay
+
+== 1 - S'authentifier ==
+B -> Sys : Connexion (email/OAuth)
+S -> Sys : Connexion (email/OAuth)
+A -> Sys : Connexion (email/OAuth)
+Sys --> B : Token valide
+Sys --> S : Token valide
+Sys --> A : Token valide
+
+== 2 - Consulter le catalogue ==
+B -> Sys : Parcourir / Rechercher
+Sys --> B : Liste d'articles
+S -> Sys : Voir ses annonces
+Sys --> S : Mes articles
+
+== 3 - Acheter ==
+B -> Sys : Ajouter au panier
+B -> Sys : Passer commande
+B -> Sys : Payer (Wallet/Carte/Mobile)
+Sys -> Pay : Initier paiement
+Pay --> Sys : Confirmation
+Sys --> B : Commande validee
+Sys --> S : Nouvelle commande recue
+
+== 4 - Vendre ==
+S -> Sys : Gerer les articles
+S -> Sys : Expedier commande
+Sys --> B : Commande expediee
+B -> Sys : Confirmer reception
+Sys --> S : Paiement libere
+
+== 5 - Gerer son wallet ==
+B -> Sys : Voir solde USD/CDF
+S -> Sys : Voir transactions
+B -> Sys : Deposer / Retirer
+Sys --> B : Solde mis a jour
+
+== 6 - Verifier l'authenticite ==
+B -> Sys : Soumettre article
+Sys ->> Sys : Assigner expert
+Sys --> B : Resultat verification
+
+== 7 - Administrer ==
+A -> Sys : Gerer utilisateurs
+A -> Sys : Moderer catalogue
+A -> Sys : Configurer parametres
+Sys --> A : Confirmation
+
+@enduml

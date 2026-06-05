@@ -2287,17 +2287,17 @@ class AdminController extends Controller
     public function getLocationRestrictionsStatus()
     {
         try {
-            $enabled = Setting::get('enable_location_restrictions', true);
+            $enabled = Setting::get('enable_location_restrictions', false);
             
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'enabled' => (bool) $enabled,
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du statut des restrictions: ' . $e->getMessage());
             
             return response()->json([
-                'success' => false,
+                'success' => true,
                 'message' => 'Erreur lors de la récupération du statut',
             ], 500);
         }

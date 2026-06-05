@@ -38,6 +38,8 @@ class EnsureEmailIsVerified
                 'splash',
                 'offline',
                 'location.validate',
+                'location.validate.submit',
+                'location.unauthorized',
                 'api.fcm-token',
                 // Routes de débogage
                 'debug.check-admin',

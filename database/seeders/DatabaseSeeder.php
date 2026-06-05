@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             BrandSeeder::class,
             NotificationSeeder::class,
             AdminUserSeeder::class,
+            AddKolweziToAllowedCitiesSeeder::class,
         ]);
     }
 }

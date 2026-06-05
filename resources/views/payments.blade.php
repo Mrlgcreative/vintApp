@@ -1,13 +1,13 @@
-﻿@extends('app')
+@extends('app')
 
 @section('content')
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <!-- En-tête MaishaPay -->
+            <!-- En-tête Mobile Money -->
             <div class="bg-green-600 text-white px-6 py-5 text-center">
                 <h4 class="text-xl font-semibold flex items-center justify-center">
-                    <i class="fas fa-bolt mr-3"></i>Paiement MaishaPay
+                    <i class="fas fa-mobile-alt mr-3"></i>Paiement Mobile Money
                 </h4>
                 <p class="text-green-100 text-sm mt-1">Tous opérateurs Mobile Money RDC</p>
                 <div class="flex items-center justify-center gap-4 mt-3">
@@ -170,7 +170,7 @@
                     
                     <button type="submit" 
                             class="w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg">
-                        <i class="fas fa-bolt mr-2"></i>Payer avec MaishaPay
+                        <i class="fas fa-paper-plane mr-2"></i>Payer maintenant
                     </button>
                 </form>
                 
@@ -474,14 +474,15 @@ document.getElementById('payment-form').addEventListener('submit', async functio
 
         console.log('Envoi de la requête...'); // Debug
 
-        // Utiliser la simulation de paiement pour tous les opérateurs
-        // Cela permet de tester le système complet sans les vraies APIs
-        console.log('Utilisation de la simulation de paiement pour:', provider);
-        
-        // Toujours utiliser la route de simulation
-        const apiRoute = '{{ route("payments.simulate") }}';
+        // Router vers l'API du fournisseur sélectionné
+        const providerRoutes = {
+            'Orange Money': '{{ route("payments.orange_money") }}',
+            'Vodacom M-Pesa': '{{ route("payments.mpesa") }}',
+            'Airtel Money': '{{ route("payments.airtel_money") }}',
+            'Africell Money': '{{ route("payments.africell") }}',
+        };
+        const apiRoute = providerRoutes[provider] || '{{ route("payments.orange_money") }}';
 
-        // Appel API de simulation
         const response = await fetch(apiRoute, {
             method: 'POST',
             headers: {
@@ -492,17 +493,14 @@ document.getElementById('payment-form').addEventListener('submit', async functio
             body: JSON.stringify({
                 provider: provider,
                 amount: parseFloat(amount),
-                currency: productCurrency,  // Devise du produit (USD ou CDF)
+                currency: productCurrency,
                 phone: phone,
                 purpose: purpose,
                 buyer_id: buyerId
             })
         });
 
-        console.log('Réponse reçue:', response.status); // Debug
-
         const data = await response.json();
-        console.log('Données reçues:', data); // Debug
 
         if (response.ok && data.status === 'success') {
             // Rediriger vers la page de succès avec l'ID de transaction
@@ -539,7 +537,7 @@ document.getElementById('payment-form').addEventListener('submit', async functio
     } finally {
         // Réactiver le bouton et restaurer son texte original
         submitButton.disabled = false;
-        submitButton.innerHTML = '<i class="fas fa-bolt mr-2"></i>Payer avec MaishaPay';
+        submitButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Payer maintenant';
         submitButton.className = 'w-full bg-green-600 text-white py-3 px-6 rounded-lg hover:bg-green-700 transition-colors font-medium text-lg';
     }
 });

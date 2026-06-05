@@ -127,9 +127,11 @@ class EmailVerificationController extends Controller
         
         try {
             Mail::to($user->email)->send(new VerificationCodeMail($user, $code));
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi email vérification: ' . $e->getMessage());
-            // En cas d'erreur d'envoi, on peut quand même continuer
+        } catch (\Throwable $e) {
+            Log::error('Erreur envoi email vérification', [
+                'message' => $e->getMessage(),
+                'user_id' => $user->id,
+            ]);
         }
     }
 

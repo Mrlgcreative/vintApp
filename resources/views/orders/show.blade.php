@@ -1,5 +1,5 @@
-﻿@extends('app')
-
+@extends('app')
+@section('title', 'Détails de la commande')
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
