@@ -553,8 +553,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/maintenance/status', [App\Http\Controllers\Admin\AdminController::class, 'maintenanceStatus'])->name('maintenance.status');
         
         // Routes pour les restrictions géographiques
-        // Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
-        // Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
+        Route::post('/location-restrictions/toggle', [App\Http\Controllers\Admin\AdminController::class, 'toggleLocationRestrictions'])->name('location-restrictions.toggle');
+        Route::get('/location-restrictions/status', [App\Http\Controllers\Admin\AdminController::class, 'getLocationRestrictionsStatus'])->name('location-restrictions.status');
         
         // Routes pour les Hero Slides (Carrousel)
         Route::prefix('hero-slides')->name('hero-slides.')->group(function () {
@@ -782,6 +782,9 @@ Route::prefix('payments')->group(function () {
     Route::get('/simulate-purchase', function () {
         return view('payments.simulate-purchase');
     })->name('payments.simulate-purchase');
+
+    // Simulation de paiement (POST)
+    Route::post('/simulate', [PaymentController::class, 'simulatePayment'])->name('payments.simulate');
     
     Route::post('/process', [PaymentController::class, 'processPayment'])->name('payments.process');
     Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash'])->name('payments.illicocash');
@@ -1276,3 +1279,4 @@ Route::prefix('two-factor')->name('two-factor.')->group(function () {
 
 // Routes des experts
 require __DIR__.'/expert.php';
+require __DIR__.'/seller.php';

@@ -5,12 +5,12 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
     <!-- En-tête -->
-    <div class="bg-gradient-to-r from-indigo-500 to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
+    <div class="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
         <h1 class="text-3xl font-bold mb-2">
             <i class="fas fa-tasks mr-3"></i>
             Mes Vérifications
         </h1>
-        <p class="text-indigo-100">
+        <p class="text-primary-100">
             Gérez toutes vos demandes de vérification d'authenticité
         </p>
     </div>
@@ -19,7 +19,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl p-6 mb-8 shadow-md">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="text-center">
-                <div class="text-2xl font-bold text-indigo-600 mb-1">{{ $verifications->total() }}</div>
+                <div class="text-2xl font-bold text-primary mb-1">{{ $verifications->total() }}</div>
                 <div class="text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total</div>
             </div>
             <div class="text-center">
@@ -49,7 +49,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
-                    <select name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <select name="status" class="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                         <option value="">Tous les statuts</option>
                         <option value="expert_review" {{ request('status') === 'expert_review' ? 'selected' : '' }}>
                             En attente d'examen
@@ -65,7 +65,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Catégorie</label>
-                    <select name="category" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <select name="category" class="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
                         <option value="">Toutes les catégories</option>
                         @foreach(\App\Models\Category::all() as $category)
                             <option value="{{ $category->slug }}" 
@@ -77,7 +77,7 @@
                 </div>
                 
                 <div class="flex space-x-3">
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                    <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors">
                         <i class="fas fa-filter mr-2"></i>
                         Filtrer
                     </button>
@@ -94,12 +94,12 @@
             <div class="mt-4 flex flex-wrap gap-2">
                 <strong class="text-gray-700 dark:text-gray-200">Filtres actifs:</strong>
                 @if(request('status'))
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                         Statut: {{ ucfirst(str_replace('_', ' ', request('status'))) }}
                     </span>
                 @endif
                 @if(request('category'))
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
                         Catégorie: {{ \App\Models\Category::where('slug', request('category'))->first()?->name }}
                     </span>
                 @endif
@@ -203,7 +203,7 @@
                         <!-- Actions -->
                         <div class="flex space-x-2">
                             <a href="{{ route('expert.verifications.show', $verification) }}" 
-                               class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                               class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors text-sm">
                                 <i class="fas fa-eye mr-1"></i>
                                 {{ $verification->status === 'expert_review' ? 'Examiner' : 'Voir détails' }}
                             </a>
@@ -244,7 +244,7 @@
             </p>
             @if(request()->hasAny(['status', 'category']))
                 <a href="{{ route('expert.verifications.index') }}" 
-                   class="inline-flex items-center px-4 py-2 border border-indigo-500 text-indigo-600 rounded-lg hover:bg-indigo-50 transition-colors">
+                   class="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-lg hover:bg-primary-50 transition-colors">
                     Voir toutes les vérifications
                 </a>
             @endif

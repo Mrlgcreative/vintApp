@@ -5,14 +5,14 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
     <!-- En-tête -->
-    <div class="bg-gradient-to-r from-indigo-500 to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
+    <div class="bg-gradient-to-r from-primary to-primary-600 rounded-xl p-8 text-white mb-8 shadow-lg">
         <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-3xl font-bold mb-2">
                     <i class="fas fa-shield-alt mr-3"></i>
                     Vérification #{{ $check->id }}
                 </h1>
-                <p class="text-indigo-100">
+                <p class="text-primary-100">
                     Examen expert - {{ $check->item->name ?? 'Produit sans nom' }}
                 </p>
             </div>
@@ -39,11 +39,11 @@
         </div>
     @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden">
         <!-- Informations sur le produit -->
         <div class="p-8 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                <i class="fas fa-box-open mr-2 text-indigo-600"></i>
+                <i class="fas fa-box-open mr-2 text-primary"></i>
                 Informations sur le produit
             </h3>
 
@@ -126,7 +126,7 @@
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @foreach($check->verificationImages as $image)
-                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 cursor-pointer hover:border-indigo-300 transition-colors" 
+                        <div class="aspect-square rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 cursor-pointer hover:border-primary-300 transition-colors" 
                              data-bs-toggle="modal" data-bs-target="#imageModal"
                              data-image="{{ asset('storage/' . $image->image_path) }}">
                             <img src="{{ asset('storage/' . $image->image_path) }}" 
@@ -198,7 +198,7 @@
                 
                 @foreach($check->auditLogs->sortBy('created_at') as $log)
                     <div class="relative mb-6 last:mb-0">
-                        <div class="absolute left-2 w-3 h-3 bg-indigo-600 rounded-full border-2 border-white shadow"></div>
+                        <div class="absolute left-2 w-3 h-3 bg-primary rounded-full border-2 border-white shadow"></div>
                         <div class="ml-10 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                             <div class="flex justify-content-between items-start mb-2">
                                 <strong class="text-gray-900 dark:text-white">{{ $log->getActionLabel() }}</strong>
@@ -236,10 +236,10 @@
         @if($check->expert_notes)
             <div class="p-8 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                    <i class="fas fa-comment mr-2 text-indigo-600"></i>
+                    <i class="fas fa-comment mr-2 text-primary"></i>
                     Notes de l'expert
                 </h3>
-                <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-indigo-500 p-4 rounded-lg">
+                <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-primary p-4 rounded-lg">
                     <p class="text-gray-700 dark:text-gray-200">{{ $check->expert_notes }}</p>
                 </div>
             </div>
@@ -286,7 +286,7 @@
                             <i class="fas fa-pen mr-1"></i>
                             Notes et justification (obligatoire)
                         </label>
-                        <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        <textarea class="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
                                   name="expert_notes" id="expert_notes" rows="4" 
                                   placeholder="Détaillez votre analyse et les raisons de votre décision..." 
                                   required>{{ old('expert_notes') }}</textarea>
@@ -301,7 +301,7 @@
                             <i class="fas fa-percent mr-1"></i>
                             Niveau de confiance
                         </label>
-                        <div class="text-center text-2xl font-bold text-indigo-600 mb-2" id="confidenceDisplay">85%</div>
+                        <div class="text-center text-2xl font-bold text-primary mb-2" id="confidenceDisplay">85%</div>
                         <input type="range" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer" 
                                name="confidence_level" id="confidenceSlider" min="1" max="100" value="85" required>
                         <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -315,7 +315,7 @@
 
                     <!-- Bouton de soumission -->
                     <div class="text-center">
-                        <button type="submit" class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                        <button type="submit" class="px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                                 id="submitBtn" disabled>
                             <i class="fas fa-gavel mr-2"></i>
                             Finaliser la vérification
@@ -328,17 +328,12 @@
 </div>
 
 <!-- Modal pour les images -->
-<div class="modal fade" id="imageModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Image détaillée</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" class="img-fluid" alt="Image détaillée">
-            </div>
-        </div>
+<div id="imageModal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+    <div class="max-w-4xl w-full relative">
+        <img id="modalImage" src="" class="w-full h-auto rounded-lg" alt="Image détaillée">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300 transition">
+            <i class="fas fa-times text-3xl"></i>
+        </button>
     </div>
 </div>
 @endsection
@@ -361,17 +356,18 @@ $(document).ready(function() {
 
         if (decision === 'approve') {
             $(this).addClass('selected bg-green-100 border-green-500');
-            $('#submitBtn').removeClass('bg-indigo-600 hover:bg-indigo-700 bg-red-600 hover:bg-red-700').addClass('bg-green-600 hover:bg-green-700');
+            $('#submitBtn').removeClass('bg-primary hover:bg-primary-700 bg-red-600 hover:bg-red-700').addClass('bg-green-600 hover:bg-green-700');
         } else {
             $(this).addClass('selected bg-red-100 border-red-500');
-            $('#submitBtn').removeClass('bg-indigo-600 hover:bg-indigo-700 bg-green-600 hover:bg-green-700').addClass('bg-red-600 hover:bg-red-700');
+            $('#submitBtn').removeClass('bg-primary hover:bg-primary-700 bg-green-600 hover:bg-green-700').addClass('bg-red-600 hover:bg-red-700');
         }
     });
 
-    // Modal d'image
-    $('[data-bs-toggle="modal"]').on('click', function() {
+    // Modal d'image (Tailwind)
+    $('[data-image]').on('click', function() {
         const imageSrc = $(this).data('image');
         $('#modalImage').attr('src', imageSrc);
+        $('#imageModal').removeClass('hidden');
     });
 
     // Validation du formulaire
@@ -391,6 +387,17 @@ $(document).ready(function() {
         
         return confirm('Êtes-vous sûr de votre décision ? Cette action est irréversible.');
     });
+
+    // Fermer le modal en cliquant en dehors
+    $('#imageModal').on('click', function(e) {
+        if (e.target === this) {
+            $('#imageModal').addClass('hidden');
+        }
+    });
 });
+
+function closeImageModal() {
+    $('#imageModal').addClass('hidden');
+}
 </script>
 @endpush

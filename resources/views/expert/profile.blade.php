@@ -5,14 +5,14 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
     <!-- En-tête -->
-    <div class="bg-gradient-to-r from-indigo-600 to-primary-600 rounded-2xl p-8 mb-8 mx-4 lg:mx-8">
+    <div class="bg-gradient-to-r from-primary to-primary-600 rounded-2xl p-8 mb-8 mx-4 lg:mx-8">
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center">
             <div class="text-white">
                 <h1 class="text-3xl lg:text-4xl font-bold mb-3 flex items-center">
                     <i class="fas fa-user-shield mr-3"></i>
                     Profil Expert
                 </h1>
-                <p class="text-indigo-100 text-lg">
+                <p class="text-primary-100 text-lg">
                     Gérez vos informations et consultez vos statistiques
                 </p>
             </div>
@@ -30,8 +30,8 @@
         <!-- Profil principal -->
         <div class="lg:col-span-1">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-                <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 text-center border-b border-gray-200 dark:border-gray-700">
-                    <div class="w-32 h-32 bg-gradient-to-r from-indigo-600 to-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl text-white shadow-lg">
+                <div class="bg-gradient-to-br from-gray-50 dark:from-gray-800 to-gray-100 dark:to-gray-700 p-8 text-center border-b border-gray-200 dark:border-gray-700">
+                    <div class="w-32 h-32 bg-gradient-to-r from-primary to-primary-600 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl text-white shadow-lg">
                         <i class="fas fa-user"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ $expert->name }}</h3>
@@ -39,13 +39,13 @@
                     
                     @php
                         $levelClasses = [
-                            'bronze' => 'bg-orange-100 text-orange-800',
-                            'silver' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100',
-                            'gold' => 'bg-yellow-100 text-yellow-800'
+                            'junior' => 'bg-green-100 text-green-800',
+                            'senior' => 'bg-blue-100 text-blue-800',
+                            'master' => 'bg-purple-100 text-purple-800'
                         ];
-                        $level = $expertProfile->level ?? 'bronze';
+                        $level = $expertProfile->certification_level ?? 'junior';
                     @endphp
-                    <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide mb-4 {{ $levelClasses[$level] ?? $levelClasses['bronze'] }}">
+                    <span class="inline-block px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide mb-4 {{ $levelClasses[$level] ?? $levelClasses['junior'] }}">
                         Niveau {{ ucfirst($level) }}
                     </span>
 
@@ -66,8 +66,8 @@
                 </div>
 
                 <div class="p-8 space-y-6">
-                    <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-indigo-500 p-4 rounded-lg">
-                        <div class="flex items-center text-indigo-600 font-semibold mb-2">
+                    <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-primary p-4 rounded-lg">
+                        <div class="flex items-center text-primary font-semibold mb-2">
                             <i class="fas fa-calendar-alt mr-2"></i>
                             Expert depuis
                         </div>
@@ -111,13 +111,13 @@
             <!-- Statistiques détaillées -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
                 <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
-                    <i class="fas fa-chart-bar mr-3 text-indigo-600"></i>
+                    <i class="fas fa-chart-bar mr-3 text-primary"></i>
                     Statistiques de performance
                 </h4>
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-indigo-500 p-6 rounded-lg text-center">
-                        <div class="text-3xl font-bold text-indigo-600 mb-2">{{ $detailedStats['total_assigned'] }}</div>
+                    <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-primary p-6 rounded-lg text-center">
+                        <div class="text-3xl font-bold text-primary mb-2">{{ $detailedStats['total_assigned'] }}</div>
                         <div class="text-gray-600 dark:text-gray-300 font-medium uppercase text-sm tracking-wide">Total assigné</div>
                     </div>
 
@@ -179,7 +179,7 @@
                     <i class="fas fa-chart-line mr-3 text-blue-600"></i>
                     Évolution des performances
                 </h5>
-                <div class="h-48 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
+                <div class="h-48 bg-gradient-to-br from-gray-50 dark:from-gray-800 to-gray-100 dark:to-gray-700 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center">
                     <div class="text-center">
                         <i class="fas fa-chart-line text-4xl text-gray-400 mb-3"></i>
                         <p class="text-gray-600 dark:text-gray-300 font-medium">Graphique de performance</p>
@@ -196,7 +196,7 @@
                 </h4>
 
                 @if(session('success'))
-                    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg mb-6 flex items-center">
+                    <div class="bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-4 py-3 rounded-lg mb-6 flex items-center">
                         <i class="fas fa-check-circle mr-3"></i>
                         {{ session('success') }}
                     </div>
@@ -213,7 +213,7 @@
                                 <i class="fas fa-user-edit mr-2"></i>
                                 Biographie
                             </label>
-                            <textarea class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                            <textarea class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
                                       name="bio" id="bio" rows="4"
                                       placeholder="Décrivez votre expérience et expertise...">{{ old('bio', $expertProfile->bio) }}</textarea>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -229,7 +229,7 @@
                                 <i class="fas fa-certificate mr-2"></i>
                                 Certifications et qualifications
                             </label>
-                            <textarea class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                            <textarea class="w-full px-4 py-3 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" 
                                       name="credentials" id="credentials" rows="3"
                                       placeholder="Listez vos certifications, formations et qualifications...">{{ old('credentials', $expertProfile->credentials) }}</textarea>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
@@ -243,7 +243,7 @@
 
                     <div class="text-center mt-8">
                         <button type="submit" 
-                                class="bg-gradient-to-r from-indigo-600 to-primary-600 hover:from-indigo-700 hover:to-primary-700 text-white px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
+                                class="bg-gradient-to-r from-primary to-primary-600 hover:from-primary-700 hover:to-primary-700 text-white px-8 py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1">
                             <i class="fas fa-save mr-2"></i>
                             Mettre à jour le profil
                         </button>

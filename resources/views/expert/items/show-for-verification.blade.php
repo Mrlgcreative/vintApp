@@ -195,7 +195,7 @@
                     </h2>
                 </div>
 
-                <form id="verificationForm" method="POST" class="p-6 space-y-4">
+                <form id="verificationForm" method="POST" action="{{ route('expert.items.submit-verification', $item) }}" class="p-6 space-y-4">
                     @csrf
                     <input type="hidden" name="decision" id="decisionInput" value="">
 

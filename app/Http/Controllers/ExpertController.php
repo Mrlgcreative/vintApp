@@ -31,17 +31,25 @@ class ExpertController extends Controller
         $expert = Auth::user();
         $expertProfile = $expert->expertProfile;
 
-        // Statistiques de l'expert
+        // Statistiques de l'expert (via ProductAuthenticityCheck + items vérifiés directement)
+        $itemsToday = \App\Models\Item::where('verified_by', $expert->id)
+            ->whereDate('verified_at', today())
+            ->count();
+
+        $itemsVerified = \App\Models\Item::where('verified_by', $expert->id)
+            ->whereNotNull('verified_at')
+            ->count();
+
         $stats = [
             'pending_assignments' => ProductAuthenticityCheck::where('expert_id', $expert->id)
                 ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_REVIEW)
                 ->count(),
             'completed_today' => ProductAuthenticityCheck::where('expert_id', $expert->id)
                 ->whereDate('expert_completed_at', today())
-                ->count(),
+                ->count() + $itemsToday,
             'total_verified' => ProductAuthenticityCheck::where('expert_id', $expert->id)
                 ->whereIn('status', [ProductAuthenticityCheck::STATUS_EXPERT_APPROVED, ProductAuthenticityCheck::STATUS_EXPERT_REJECTED])
-                ->count(),
+                ->count() + $itemsVerified,
             'approval_rate' => $expertProfile->approval_rate ?? 0,
         ];
 
@@ -204,15 +212,27 @@ class ExpertController extends Controller
         $expertProfile = $expert->expertProfile;
         $expertProfile->increment('verification_count');
         
-        // Recalculer le taux d'approbation
-        $totalVerified = ProductAuthenticityCheck::where('expert_id', $expert->id)
+        // Recalculer le taux d'approbation (toutes sources confondues)
+        $totalVerifiedPAC = ProductAuthenticityCheck::where('expert_id', $expert->id)
             ->whereIn('status', [ProductAuthenticityCheck::STATUS_EXPERT_APPROVED, ProductAuthenticityCheck::STATUS_EXPERT_REJECTED])
             ->count();
         
-        $approvedCount = ProductAuthenticityCheck::where('expert_id', $expert->id)
+        $approvedPAC = ProductAuthenticityCheck::where('expert_id', $expert->id)
             ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_APPROVED)
             ->count();
+
+        $totalVerifiedItems = \App\Models\Item::where('verified_by', $expert->id)
+            ->whereNotNull('verified_at')
+            ->count();
+
+        $approvedItems = \App\Models\Item::where('verified_by', $expert->id)
+            ->where('verification_status', 'approved')
+            ->count();
         
+        $totalVerified = $totalVerifiedPAC + $totalVerifiedItems;
+
+        $approvedCount = $approvedPAC + $approvedItems;
+
         $expertProfile->update([
             'approval_rate' => $totalVerified > 0 ? ($approvedCount / $totalVerified) * 100 : 0
         ]);
@@ -231,15 +251,24 @@ class ExpertController extends Controller
         $expert = Auth::user();
         $expertProfile = $expert->expertProfile;
 
-        // Statistiques détaillées
+        // Statistiques détaillées (via ProductAuthenticityCheck + items vérifiés directement)
+        $itemsApproved = \App\Models\Item::where('verified_by', $expert->id)
+            ->where('verification_status', 'approved')->count();
+
+        $itemsRejected = \App\Models\Item::where('verified_by', $expert->id)
+            ->where('verification_status', 'rejected')->count();
+
         $detailedStats = [
-            'total_assigned' => ProductAuthenticityCheck::where('expert_id', $expert->id)->count(),
+            'total_assigned' => ProductAuthenticityCheck::where('expert_id', $expert->id)->count()
+                + $itemsApproved + $itemsRejected,
             'pending' => ProductAuthenticityCheck::where('expert_id', $expert->id)
                 ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_REVIEW)->count(),
             'approved' => ProductAuthenticityCheck::where('expert_id', $expert->id)
-                ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_APPROVED)->count(),
+                ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_APPROVED)->count()
+                + $itemsApproved,
             'rejected' => ProductAuthenticityCheck::where('expert_id', $expert->id)
-                ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_REJECTED)->count(),
+                ->where('status', ProductAuthenticityCheck::STATUS_EXPERT_REJECTED)->count()
+                + $itemsRejected,
             'avg_review_time' => $this->calculateAverageReviewTime($expert->id),
             'categories_expertise' => $expertProfile->specialties ?? [],
         ];
@@ -442,7 +471,40 @@ class ExpertController extends Controller
                 $notificationService->notifyItemRejected($item, $item->user, $validated['rejection_reason'] ?? null);
             }
 
+            // Créer un enregistrement ProductAuthenticityCheck pour que l'article
+            // apparaisse dans "Mes Vérifications" et dans l'historique du dashboard
+            $pacStatus = $validated['decision'] === 'approved'
+                ? ProductAuthenticityCheck::STATUS_EXPERT_APPROVED
+                : ProductAuthenticityCheck::STATUS_EXPERT_REJECTED;
+
+            ProductAuthenticityCheck::create([
+                'item_id' => $item->id,
+                'user_id' => $item->user_id,
+                'status' => $pacStatus,
+                'expert_id' => $expert->id,
+                'expert_notes' => $validated['rejection_reason'] ?? 'Article vérifié et approuvé par l\'expert',
+                'expert_assigned_at' => now(),
+                'expert_completed_at' => now(),
+                'submitted_at' => $item->created_at,
+            ]);
+
             \Illuminate\Support\Facades\DB::commit();
+
+            // Mettre à jour les stats de l'expert
+            $expertProfile = $expert->expertProfile;
+            $expertProfile->increment('verification_count');
+
+            $totalVerified = \App\Models\Item::where('verified_by', $expert->id)
+                ->whereNotNull('verified_at')
+                ->count();
+
+            $approvedCount = \App\Models\Item::where('verified_by', $expert->id)
+                ->where('verification_status', 'approved')
+                ->count();
+
+            $expertProfile->update([
+                'approval_rate' => $totalVerified > 0 ? ($approvedCount / $totalVerified) * 100 : 0
+            ]);
 
             return redirect()->route('expert.items.pending')
                 ->with('success', 'Vérification soumise avec succès.');

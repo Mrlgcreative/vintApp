@@ -3,7 +3,7 @@
 @section('title', 'Modifier Expert - ' . $expert->user->name)
 
 @section('content')
-<div class="space-y-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 space-y-6">
     <!-- En-tête -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>

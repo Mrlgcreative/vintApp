@@ -10,7 +10,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
     
     <!-- Preconnect pour optimiser le chargement Firebase -->
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>

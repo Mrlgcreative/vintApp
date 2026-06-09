@@ -47,7 +47,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
 
     <!-- Day/Night Theme (système automatique jour/nuit) -->
     @if(config('colors.day_night.enabled', false))
@@ -181,16 +181,14 @@
                         <!-- Navigation links -->
                         <div class="flex items-center gap-1">
                             @php
+                                $isSeller = auth()->check() && auth()->user()->isSeller();
+
                                 $desktopNavLinks = [
-                                    ['route' => 'dashboard', 'label' => 'Dashboard', 'active' => request()->routeIs('dashboard'), 'icon' => 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z', 'auth' => false],
-                                    ['route' => 'items.index', 'label' => 'Articles', 'active' => request()->routeIs('items.index'), 'icon' => 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z', 'auth' => false],
-                                    ['route' => 'categories.index', 'label' => 'Catégories', 'active' => request()->routeIs('categories.*'), 'icon' => 'M6.429 9.75L2.25 12l4.179 2.25m0-4.5l5.571 3 5.571-3m-11.142 0L2.25 7.5 12 2.25l9.75 5.25-4.179 2.25m0 0L21.75 12l-4.179 2.25m0 0l4.179 2.25L12 21.75 2.25 16.5l4.179-2.25m11.142 0l-5.571 3-5.571-3', 'auth' => false],
-                                    ['route' => 'brands.index', 'label' => 'Marques', 'active' => request()->routeIs('brands.*'), 'icon' => 'M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z M6 6h.008v.008H6V6z', 'auth' => false],
+                                    ['route' => 'items.index', 'label' => 'Articles', 'active' => request()->routeIs('items.index'), 'icon' => 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z'],
                                 ];
+
                                 $authNavLinks = [
-                                    ['route' => 'items.my-items', 'label' => 'Mes Articles', 'active' => request()->routeIs('items.my-items'), 'icon' => 'M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z'],
                                     ['route' => 'orders.index', 'label' => 'Commandes', 'active' => request()->routeIs('orders.index'), 'icon' => 'M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121 0 2.002-.895 1.924-2.013l-.553-7.72a.75.75 0 00-.746-.687H6.154a.75.75 0 00-.746.687l-.553 7.72a1.924 1.924 0 001.924 2.013zm12.75 3a3 3 0 00-3-3m3 3v.008h-.008V17.25h.008zm-3 0v.008h-.008V17.25h.008z'],
-                                    ['route' => 'wallet.index', 'label' => 'Wallet', 'active' => request()->routeIs('wallet.*'), 'icon' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.008A2.25 2.25 0 0021 6.008V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v.008c0 1.243 1.007 2.25 2.25 2.25H15a3 3 0 010 6H5.25A2.25 2.25 0 003 16.5v1.245c0 1.243 1.007 2.25 2.25 2.248h13.5A2.25 2.25 0 0021 17.745V12z'],
                                 ];
                             @endphp
                             
@@ -210,6 +208,16 @@
                                         @if($link['active'])<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-full"></span>@endif
                                     </a>
                                 @endforeach
+                            @endauth
+                            
+                            @auth
+                                @if($isSeller)
+                                    <a href="{{ route('seller.dashboard') }}" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.*') ? 'text-white bg-white/15' : 'text-white/75 hover:text-white hover:bg-white/10' }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-13.5 0V9.75M3 21h18M3 9.75l7.5-6 7.5 6"/></svg>
+                                        Espace vendeur
+                                        @if(request()->routeIs('seller.*'))<span class="absolute bottom-0 left-3 right-3 h-0.5 bg-white rounded-full"></span>@endif
+                                    </a>
+                                @endif
                             @endauth
                             
                             <a href="{{ route('help.index') }}" class="relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ request()->routeIs('help.*') ? 'text-white bg-white/15' : 'text-white/75 hover:text-white hover:bg-white/10' }}">
@@ -258,6 +266,14 @@
                                      x-transition:leave-end="opacity-0 scale-95"
                                      class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 py-1 z-50 overflow-hidden">
                                     <div class="px-4 py-2.5 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Profil & Paramètres</div>
+                                    @auth
+                                        @if(auth()->user()->isSeller())
+                                            <a href="{{ route('seller.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-13.5 0V9.75M3 21h18M3 9.75l7.5-6 7.5 6"/></svg>
+                                                Espace vendeur
+                                            </a>
+                                        @endif
+                                    @endauth
                                     <a href="{{ route('profile.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                                         Mon Profil
@@ -314,9 +330,7 @@
                     @php
                         $chevronSvg = '<svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>';
                     @endphp
-                    @if(request()->routeIs('dashboard'))
-                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">Dashboard</span></li>
-                    @elseif(request()->routeIs('categories.*'))
+                    @if(request()->routeIs('categories.*'))
                         <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('categories.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Catégories</a></li>
                         @if(request()->routeIs('categories.show'))
                             <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $category->name ?? 'Détails' }}</span></li>
@@ -401,9 +415,6 @@
             @auth
                 @php
                     $authMobileNav = [
-                        ['url' => route('wallet.index'), 'label' => 'Wallet', 'active' => request()->routeIs('wallet.*'),
-                         'icon' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.75a.75.75 0 000-1.5H15a4.5 4.5 0 000 9h3.75A.75.75 0 0019.5 12v0a.75.75 0 00-.75-.75H15a3 3 0 100 6h3.75A2.25 2.25 0 0021 15V12zM3 5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25v13.5A2.25 2.25 0 0118.75 21H5.25A2.25 2.25 0 013 18.75V5.25z',
-                         'iconSimple' => 'M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.008A2.25 2.25 0 0021 6.008V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v.008c0 1.243 1.007 2.25 2.25 2.25H15a3 3 0 010 6H5.25A2.25 2.25 0 003 16.5v1.245c0 1.243 1.007 2.25 2.25 2.248h13.5A2.25 2.25 0 0021 17.745V12z'],
                         ['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
                          'icon' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z',
                          'iconSimple' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'],
@@ -622,35 +633,7 @@
             });
         });
 
-        // Thème
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-            
-            // Gérer la classe dark pour Tailwind
-            if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
-            }
-        }
-
-        function getPreferredTheme() {
-            return localStorage.getItem('theme') || window.userTheme || 'auto';
-        }
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            const theme = getPreferredTheme();
-            applyTheme(theme);
-            
-            // Écouter les changements de préférences système pour le mode auto
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                if (getPreferredTheme() === 'auto') {
-                    applyTheme('auto');
-                }
-            });
-        });
+        // Thème (défini dans le head, ne pas dupliquer)
     </script>
 
     @auth

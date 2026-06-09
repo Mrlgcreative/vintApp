@@ -23,7 +23,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -63,7 +63,7 @@
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 font-sans text-sm leading-relaxed text-gray-900 dark:text-white">
+<body class="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-gray-900 dark:to-gray-800 font-sans text-sm leading-relaxed text-gray-900 dark:text-white">
     <div class="flex min-h-screen">
         @php
             // Détecter si l'utilisateur est un expert
@@ -91,13 +91,16 @@
                     @if($isExpert)
                         <!-- Menu Expert -->
                         <a href="{{ route('expert.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.dashboard*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.dashboard*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                             <span>Dashboard Expert</span>
                         </a>
 
+                        <div class="sidebar-section-title">
+                            <span>Vérifications</span>
+                        </div>
                         <a href="{{ route('expert.verifications.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                            class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             <span class="flex-1">Mes Vérifications</span>
                             @php
@@ -111,7 +114,7 @@
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_review']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_review') active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span class="flex-1">En attente d'examen</span>
                             @if($pendingVerifications > 0)
@@ -120,19 +123,19 @@
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_approved']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_approved') active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span>Approuvées</span>
                         </a>
 
                         <a href="{{ route('expert.verifications.index', ['status' => 'expert_rejected']) }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.verifications.index') && request('status') === 'expert_rejected') active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span>Rejetées</span>
                         </a>
 
                         <a href="{{ route('expert.items.pending') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.items.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.items.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                             <span class="flex-1">Articles à vérifier</span>
                             @php
@@ -145,17 +148,21 @@
                             @endif
                         </a>
 
-                        <div class="my-3 h-px bg-white/10"></div>
-
+                        <div class="sidebar-section-title">
+                            <span>Profil</span>
+                        </div>
                         <a href="{{ route('expert.profile') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.profile*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                            class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('expert.profile*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             <span>Mon Profil Expert</span>
                         </a>
 
                         <!-- Statistiques rapides -->
-                        <div class="mt-5 rounded-xl bg-white/5 p-4">
-                            <h4 class="text-[11px] font-semibold uppercase tracking-wider text-white/50 mb-3">Statistiques</h4>
+                        <div class="mt-5 rounded-xl bg-white/[0.04] border border-white/[0.06] p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <svg class="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                <h4 class="text-[11px] font-semibold uppercase tracking-wider text-white/40">Statistiques</h4>
+                            </div>
                             @php
                                 $expertStats = [
                                     'total' => \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())->count(),
@@ -164,18 +171,18 @@
                                     'approval_rate' => auth()->user()->expertProfile->approval_rate ?? 0
                                 ];
                             @endphp
-                            <div class="space-y-2.5 text-xs">
-                                <div class="flex justify-between text-white/60">
-                                    <span>Total traité</span>
-                                    <span class="text-white font-medium">{{ $expertStats['total'] }}</span>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
+                                    <span class="text-white/50">Total traité</span>
+                                    <span class="text-white font-semibold">{{ $expertStats['total'] }}</span>
                                 </div>
-                                <div class="flex justify-between text-white/60">
-                                    <span>Aujourd'hui</span>
-                                    <span class="text-emerald-400 font-medium">{{ $expertStats['completed_today'] }}</span>
+                                <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
+                                    <span class="text-white/50">Aujourd'hui</span>
+                                    <span class="text-emerald-400 font-semibold">{{ $expertStats['completed_today'] }}</span>
                                 </div>
-                                <div class="flex justify-between text-white/60">
-                                    <span>Taux succès</span>
-                                    <span class="text-blue-400 font-medium">{{ number_format($expertStats['approval_rate'], 1) }}%</span>
+                                <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2">
+                                    <span class="text-white/50">Taux succès</span>
+                                    <span class="text-blue-400 font-semibold">{{ number_format($expertStats['approval_rate'], 1) }}%</span>
                                 </div>
                             </div>
                         </div>
@@ -183,13 +190,13 @@
                     @else
                         <!-- Menu Admin -->
                         <a href="{{ route('admin.dashboard') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.dashboard')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.dashboard')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
                             <span>Tableau de bord</span>
                         </a>
 
                         <a href="{{ route('admin.users.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.users.index') || request()->routeIs('admin.users.show') || request()->routeIs('admin.users.edit')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             <span class="flex-1">Utilisateurs</span>
                             @if(isset($pendingUsersCount) && $pendingUsersCount > 0)
@@ -198,14 +205,14 @@
                         </a>
 
                         <a href="{{ route('admin.users.online') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.users.online')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.users.online')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span class="flex-1">Utilisateurs Connectés</span>
                             <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50"></span>
                         </a>
 
                         <a href="{{ route('admin.experts.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.experts.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.experts.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                             <span class="flex-1">Experts</span>
                             @php
@@ -217,16 +224,17 @@
                             @endif
                         </a>
 
-                        <div class="my-3 h-px bg-white/10"></div>
-
+                        <div class="sidebar-section-title">
+                            <span>Gestion</span>
+                        </div>
                         <a href="{{ route('admin.transactions.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.transactions.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.transactions.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                             <span>Transactions</span>
                         </a>
 
                         <a href="{{ route('admin.wallets.pending') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.wallets.pending')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.wallets.pending')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             <span class="flex-1">Wallets en attente</span>
                             @if(isset($pendingWalletsCount) && $pendingWalletsCount > 0)
@@ -235,13 +243,13 @@
                         </a>
 
                         <a href="{{ route('admin.orders.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.orders.*') && !request()->routeIs('admin.orders.tracking')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                             <span>Commandes</span>
                         </a>
 
                         <a href="{{ route('admin.items.pending_verification') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.items.pending_verification')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.items.pending_verification')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                             <span class="flex-1">Vérification IA</span>
                             @php
@@ -253,7 +261,7 @@
                         </a>
 
                         <a href="{{ route('admin.refunds.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.refunds.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.refunds.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
                             <span class="flex-1">Remboursements</span>
                             @php
@@ -265,28 +273,29 @@
                         </a>
 
                         <a href="{{ route('admin.orders.tracking.list') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.orders.tracking*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.orders.tracking*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             <span class="flex-1">Traçage GPS</span>
                             <span class="w-2.5 h-2.5 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
-                        <div class="my-3 h-px bg-white/10"></div>
-
+                        <div class="sidebar-section-title">
+                            <span>Catalogue & Services</span>
+                        </div>
                         <a href="{{ route('admin.brands.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.brands.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.brands.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                             <span>Marques</span>
                         </a>
 
                         <a href="{{ route('admin.categories.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.categories.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.categories.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                             <span>Catégories</span>
                         </a>
 
                         <a href="{{ route('admin.support.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.support.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.support.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             <span class="flex-1">Support Client</span>
                             @php
@@ -299,7 +308,7 @@
                         </a>
 
                         <a href="{{ route('admin.affiliate.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.affiliate.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.affiliate.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                             <span class="flex-1">Affiliation</span>
                             @php
@@ -312,41 +321,42 @@
                             @endif
                         </a>
 
-                        <div class="my-3 h-px bg-white/10"></div>
-
+                        <div class="sidebar-section-title">
+                            <span>Système</span>
+                        </div>
                         <a href="{{ route('admin.reports') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.reports')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.reports')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                             <span>Rapports</span>
                         </a>
 
                         <a href="{{ route('admin.monitoring.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.monitoring.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.monitoring.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
                             <span class="flex-1">Monitoring</span>
                             <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50"></span>
                         </a>
 
                         <a href="{{ route('admin.logs') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.logs')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.logs')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <span>Logs système</span>
                         </a>
 
                         <a href="{{ route('admin.settings.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.settings.*') && !request()->routeIs('admin.locations.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             <span>Paramètres</span>
                         </a>
 
                         <a href="{{ route('admin.locations.index') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.locations.*')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.locations.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                             <span>Zones autorisées</span>
                         </a>
 
                         <a href="{{ route('admin.broadcast.fcm') }}" 
-                           class="group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.broadcast.fcm')) bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.broadcast.fcm')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                             <span class="flex-1">Broadcast Push</span>
                             <span class="w-2 h-2 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/50"></span>
@@ -420,6 +430,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Theme Toggle -->
+                        <button id="theme-toggle" class="relative rounded-lg p-2 text-white transition-colors duration-200 hover:bg-white/10" type="button" aria-label="Changer le thème">
+                            <svg id="theme-icon-sun" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <svg id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                        </button>
 
                         <!-- Profil -->
                         <div class="relative">
@@ -520,6 +536,34 @@
     </div>
 
     <!-- Auto-dismiss des alertes -->
+    <script>
+        // Theme Toggle
+        (function() {
+            const html = document.documentElement;
+            const sun = document.getElementById('theme-icon-sun');
+            const moon = document.getElementById('theme-icon-moon');
+            const stored = localStorage.getItem('theme');
+
+            if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                html.classList.add('dark');
+                if (sun) sun.classList.remove('hidden');
+                if (moon) moon.classList.add('hidden');
+            } else {
+                html.classList.remove('dark');
+                if (sun) sun.classList.add('hidden');
+                if (moon) moon.classList.remove('hidden');
+            }
+
+            document.getElementById('theme-toggle')?.addEventListener('click', function() {
+                html.classList.toggle('dark');
+                const isDark = html.classList.contains('dark');
+                localStorage.setItem('theme', isDark ? 'dark' : 'light');
+                if (sun) sun.classList.toggle('hidden', !isDark);
+                if (moon) moon.classList.toggle('hidden', isDark);
+            });
+        })();
+    </script>
+
     <script>
         document.querySelectorAll('[role="alert"]').forEach(function(a) {
             setTimeout(function() { a.style.transition = 'opacity .3s, transform .3s'; a.style.opacity = '0'; a.style.transform = 'translateY(-8px)'; setTimeout(function() { a.remove(); }, 300); }, 5000);

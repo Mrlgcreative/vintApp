@@ -165,12 +165,12 @@
         <!-- Carte de conversion de devises -->
         <div class="mb-8">
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-blue-600 to-primary-600 p-6 text-white">
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white">
                     <h2 class="text-xl font-bold flex items-center gap-2.5 mb-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
                         Convertir entre devises (USD ⇄ CDF)
                     </h2>
-                    <p class="text-blue-100 text-sm">Convertissez facilement vos dollars en francs congolais et vice-versa</p>
+                    <p class="text-emerald-100 text-sm">Convertissez facilement vos dollars en francs congolais et vice-versa</p>
                 </div>
                 <div class="p-6">
                     <!-- Options de conversion rapide -->
@@ -195,7 +195,7 @@
                             <!-- Source -->
                             <div class="lg:col-span-5">
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">De</label>
-                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary mb-3" 
                                         id="fromWallet" name="from_wallet_id" required>
                                     <option value="{{ $usdWallet->id }}" data-currency="USD">
                                         USD - ${{ number_format($usdWallet->balance, 2) }}
@@ -206,7 +206,7 @@
                                 </select>
                                 <div class="flex">
                                     <input type="number" 
-                                           class="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                                           class="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary" 
                                            id="fromAmount" 
                                            name="amount" 
                                            placeholder="0.00" 
@@ -224,7 +224,7 @@
                             <!-- Bouton d'échange -->
                             <div class="lg:col-span-2 flex items-center justify-center">
                                 <button type="button" 
-                                        class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-sm" 
+                                        class="w-12 h-12 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-sm" 
                                         id="swapBtn">
                                     <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
                                 </button>
@@ -233,7 +233,7 @@
                             <!-- Destination -->
                             <div class="lg:col-span-5">
                                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Vers</label>
-                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-3" 
+                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary mb-3" 
                                         id="toWallet" name="to_wallet_id" required>
                                     <option value="{{ $cdfWallet->id }}" data-currency="CDF">
                                         CDF - {{ number_format($cdfWallet->balance, 2) }} FC
@@ -259,11 +259,11 @@
 
                         <!-- Taux de change -->
                         <div class="mt-6">
-                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 rounded-xl p-4" id="rateAlert">
+                            <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-4" id="rateAlert">
                                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
+                                            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
                                             <span class="text-gray-700 dark:text-gray-200">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
                                             <span id="rateSource" class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full text-xs font-medium hidden">
                                                 Temps réel
@@ -285,7 +285,7 @@
                                     </div>
                                     <div class="flex items-center gap-3">
                                         <button type="button" 
-                                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-100 dark:bg-blue-800/30 text-blue-700 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200 text-sm" 
+                                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-800/30 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors duration-200 text-sm" 
                                                 id="refreshRateBtn" onclick="refreshExchangeRate()">
                                             <svg class="w-3.5 h-3.5" id="refreshIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182"/></svg>
                                             Actualiser
@@ -301,7 +301,7 @@
                         <!-- Bouton de conversion -->
                         <div class="mt-6">
                             <button type="submit" 
-                                    class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-primary-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-blue-700 hover:to-primary-700 transform hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 shadow-lg hover:shadow-xl" 
+                                    class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-emerald-700 hover:to-teal-700 transform hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 shadow-lg hover:shadow-xl" 
                                     id="convertBtn">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
                                 Convertir maintenant
@@ -348,9 +348,9 @@
             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h2 class="text-xl font-bold flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
+<div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
                         <span class="text-gray-900 dark:text-white">Transactions récentes</span>
                     </h2>
                     <div class="flex items-center gap-3">
@@ -378,8 +378,8 @@
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
                         Débits
                     </button>
-                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-lg text-sm hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors duration-200" 
-                            id="filterUSD" onclick="filterTransactions('USD')">
+                            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200" 
+                                    id="filterUSD" onclick="filterTransactions('USD')">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         USD
                     </button>
@@ -443,7 +443,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-center hidden lg:table-cell">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $transaction->wallet->currency === 'USD' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $transaction->wallet->currency === 'USD' ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
                                                 {{ $transaction->wallet->currency }}
                                             </span>
                                         </td>
@@ -566,13 +566,13 @@
                                         <p class="text-sm text-green-700 dark:text-green-500">Recevez l'argent de vos ventes</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/10 p-4 rounded-xl border border-blue-200 dark:border-blue-800/30">
+                                <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/10 p-4 rounded-xl border border-primary-200 dark:border-primary-800/30">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-blue-200/60 dark:bg-blue-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-primary-200/60 dark:bg-primary-800/30 rounded-xl mb-2">
+                                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
                                         </div>
-                                        <h5 class="font-semibold text-blue-800 dark:text-blue-400">Commissions</h5>
-                                        <p class="text-sm text-blue-700 dark:text-blue-500">Gagnez des commissions sur les ventes</p>
+                                        <h5 class="font-semibold text-primary-800 dark:text-primary-400">Commissions</h5>
+                                        <p class="text-sm text-primary-700 dark:text-primary-500">Gagnez des commissions sur les ventes</p>
                                     </div>
                                 </div>
                                 <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/10 p-4 rounded-xl border border-primary-200 dark:border-primary-800/30">
@@ -602,15 +602,7 @@
                                         <p class="text-sm text-emerald-700 dark:text-emerald-500">Ajout de fonds via Mobile Money</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-900/10 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800/30">
-                                    <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-indigo-200/60 dark:bg-indigo-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
-                                        </div>
-                                        <h5 class="font-semibold text-indigo-800 dark:text-indigo-400">Conversion</h5>
-                                        <p class="text-sm text-indigo-700 dark:text-indigo-500">Change entre USD et CDF</p>
-                                    </div>
-                                </div>
+
                             </div>
                         </div>
                         

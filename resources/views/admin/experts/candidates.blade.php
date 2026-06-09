@@ -3,25 +3,22 @@
 @section('title', 'Candidats Experts')
 
 @section('content')
-<div class="space-y-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 space-y-6">
     <!-- En-tête -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                <i class="fas fa-user-plus" style="color: var(--color-success);"></i>
+                <i class="fas fa-user-plus text-green-600"></i>
                 Candidats Experts
             </h1>
             <p class="text-gray-600 dark:text-gray-300 mt-1">Sélectionnez des utilisateurs pour les désigner comme experts</p>
         </div>
         <div>
             <a href="{{ route('admin.experts.index') }}" 
-               class="hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-               style="background-color: var(--color-light);">
+                class="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
                 <i class="fas fa-arrow-left"></i>
                 Retour aux Experts
             </a>
-        </div>
-    </div>
         </div>
     </div>
 

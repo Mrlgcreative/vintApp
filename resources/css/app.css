@@ -154,6 +154,8 @@
 
 
 
+
+
 /* ============================================
    PALETTE DE COULEURS VINTAPP
    Les variables CSS sont définies dans:
@@ -181,5 +183,47 @@
             var(--color-primary-500),
             var(--color-primary-600)
         );
+    }
+
+    /* Sidebar - Accent bar on active/hover items */
+    .sidebar-link {
+        position: relative;
+        overflow: hidden;
+    }
+    .sidebar-link::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%) scaleY(0);
+        width: 3px;
+        height: 40%;
+        background: rgba(255,255,255,0.7);
+        border-radius: 0 4px 4px 0;
+        transition: transform 0.2s ease;
+        box-shadow: 0 0 8px rgba(255,255,255,0.15);
+    }
+    .sidebar-link:hover::before {
+        transform: translateY(-50%) scaleY(1);
+    }
+    .sidebar-link.active::before {
+        transform: translateY(-50%) scaleY(1);
+        background: #fff;
+        box-shadow: 0 0 12px rgba(255,255,255,0.3);
+    }
+    /* Sidebar section title */
+    .sidebar-section-title {
+        padding: 0.5rem 1rem 0.25rem;
+        margin-top: 1.25rem;
+    }
+    .sidebar-section-title:first-child {
+        margin-top: 0;
+    }
+    .sidebar-section-title span {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: rgba(255,255,255,0.35);
     }
 }

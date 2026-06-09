@@ -709,7 +709,8 @@ function updateActivePalette(newPalette) {
         card.classList.remove('border-blue-500', 'bg-blue-50');
         card.classList.add('border-gray-200');
         card.classList.add('dark:border-gray-700');
-        card.querySelector('.active-badge').classList.add('hidden');
+        const badge = card.querySelector('.active-badge');
+        if (badge) badge.classList.add('hidden');
     });
 
     // Ajouter les styles actifs à la carte sélectionnée
@@ -718,7 +719,8 @@ function updateActivePalette(newPalette) {
         activeCard.classList.remove('border-gray-200');
         activeCard.classList.remove('dark:border-gray-700');
         activeCard.classList.add('border-blue-500', 'bg-blue-50');
-        activeCard.querySelector('.active-badge').classList.remove('hidden');
+        const activeBadge = activeCard.querySelector('.active-badge');
+        if (activeBadge) activeBadge.classList.remove('hidden');
     }
 }
 

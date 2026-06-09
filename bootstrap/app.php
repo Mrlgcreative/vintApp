@@ -80,6 +80,7 @@ return Application::configure(basePath: dirname(__DIR__))
             '2fa' => \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Authentification à deux facteurs
             'force.json' => \App\Http\Middleware\ForceJsonResponse::class, // 🔥 Force JSON response pour Firebase
             'redirect.role' => \App\Http\Middleware\RedirectAdminToDashboard::class, // 🔄 Redirige admin/agent vers leur dashboard
+            'seller' => \App\Http\Middleware\SellerMiddleware::class, // 🛒 Espace vendeur
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

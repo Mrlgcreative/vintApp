@@ -490,6 +490,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Vérifie si l'utilisateur est un vendeur (a au moins un article en vente).
+     */
+    public function isSeller(): bool
+    {
+        return $this->items()->where('status', 'active')->count() > 0;
+    }
+
+    /**
      * Chats de support créés par l'utilisateur
      */
     public function supportChats()

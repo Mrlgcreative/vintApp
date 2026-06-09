@@ -3,7 +3,7 @@
 @section('title', 'Gestion des Experts')
 
 @section('content')
-<div class="space-y-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 space-y-6">
     <!-- Statistiques rapides -->
     <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <!-- Total Experts -->
