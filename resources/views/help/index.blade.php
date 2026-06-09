@@ -73,7 +73,7 @@
                                 <svg class="w-5 h-5 mr-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                                 </svg>
-                                Vendre
+                                Vendeur
                             </a>
                             <a href="#payments" data-category="payments" class="category-link flex items-center px-6 py-4 text-gray-700 hover:bg-purple-50 transition-colors duration-200 border-l-4 border-transparent">
                                 <svg class="w-5 h-5 mr-3 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -394,55 +394,296 @@
                     </div>
                 </div>
 
-                <!-- Section Vendre -->
+                <!-- Section Vendeur -->
                 <div id="selling" class="help-section hidden">
                     <div class="mb-8">
                         <h2 class="text-3xl font-bold text-gray-900 flex items-center mb-3">
                             <svg class="w-8 h-8 mr-3 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                             </svg>
-                            Guide de vente
+                            Guide du vendeur
                         </h2>
-                        <p class="text-gray-600">Maximisez vos ventes avec nos conseils d'experts</p>
+                        <p class="text-gray-600">Tout ce qu'il faut savoir pour vendre sur VintApp et maximiser vos revenus</p>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                        <div class="lg:col-span-2">
-                            <div class="bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl shadow-lg p-6 text-white">
-                                <h5 class="text-xl font-bold mb-4 flex items-center">
+                    <!-- Cartes étapes clés -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300">
+                            <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h5 class="font-bold text-gray-900 mb-2">Publier</h5>
+                            <p class="text-sm text-gray-600">Créez une annonce avec photos HD et description complète</p>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300">
+                            <div class="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                            </div>
+                            <h5 class="font-bold text-gray-900 mb-2">Booster</h5>
+                            <p class="text-sm text-gray-600">Promouvez vos articles avec le système de Boost</p>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 text-center hover:shadow-xl transition-all duration-300">
+                            <div class="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h5 class="font-bold text-gray-900 mb-2">Gagner</h5>
+                            <p class="text-sm text-gray-600">Recevez vos paiements sur votre wallet et retirez</p>
+                        </div>
+                    </div>
+
+                    <!-- Guide détaillé vendeur -->
+                    <div class="space-y-6">
+                        <h4 class="text-2xl font-bold text-gray-900 mb-4">Fonctionnalités vendeur</h4>
+
+                        <!-- Gestion des articles -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 text-white">
+                                <h5 class="text-xl font-bold flex items-center">
                                     <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    Conseils pour une vente réussie
+                                    Gestion des articles
                                 </h5>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <h6 class="font-semibold mb-2">Photos de qualité</h6>
-                                        <ul class="text-sm space-y-1 text-white/90">
-                                            <li>✓ Lumière naturelle</li>
-                                            <li>✓ Plusieurs angles</li>
-                                            <li>✓ Fond neutre</li>
-                                        </ul>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <div class="flex gap-4">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+                                            <div>
+                                                <h6 class="font-bold text-gray-900">Créer une annonce</h6>
+                                                <p class="text-sm text-gray-600">Ajoutez photos HD, titre, description, catégorie, marque, état et prix</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-4">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+                                            <div>
+                                                <h6 class="font-bold text-gray-900">Gérer le statut</h6>
+                                                <p class="text-sm text-gray-600">Activez, désactivez ou marquez comme vendu depuis votre tableau de bord</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex gap-4">
+                                            <div class="flex-shrink-0 w-8 h-8 bg-amber-500 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+                                            <div>
+                                                <h6 class="font-bold text-gray-900">Modifier / Supprimer</h6>
+                                                <p class="text-sm text-gray-600">Mettez à jour vos annonces à tout moment ou supprimez-les</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h6 class="font-semibold mb-2">Description détaillée</h6>
-                                        <ul class="text-sm space-y-1 text-white/90">
-                                            <li>✓ État précis</li>
-                                            <li>✓ Dimensions</li>
-                                            <li>✓ Défauts visibles</li>
+                                    <div class="bg-amber-50 rounded-xl p-4 border border-amber-200">
+                                        <h6 class="font-bold text-gray-900 mb-3 flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                            </svg>
+                                            Conseils photos
+                                        </h6>
+                                        <ul class="text-sm space-y-1.5 text-gray-700">
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>Lumière naturelle sans flash</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>Cadrez l'article sous plusieurs angles</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>Fond neutre et dégagé</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span>Montrez les défauts honnêtement</span></li>
                                         </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="lg:col-span-1">
-                            <div class="bg-white rounded-2xl shadow-lg p-6 text-center h-full flex flex-col justify-center">
-                                <svg class="w-16 h-16 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                                </svg>
-                                <h6 class="font-semibold text-gray-900 mb-2">Vendeurs actifs vendent</h6>
-                                <h4 class="text-4xl font-bold text-green-500 mb-2">3x</h4>
-                                <p class="text-sm text-gray-600">plus vite en répondant rapidement</p>
+
+                        <!-- Ventes et commandes -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 text-white">
+                                <h5 class="text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                    </svg>
+                                    Ventes et commandes
+                                </h5>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <h6 class="font-bold text-gray-900">Cycle de vie d'une commande</h6>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                            <div>
+                                                <span class="font-semibold text-gray-900">En attente</span>
+                                                <p class="text-sm text-gray-600">L'acheteur a payé, le montant est sécurisé dans un wallet en attente</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                            <div>
+                                                <span class="font-semibold text-gray-900">Confirmée</span>
+                                                <p class="text-sm text-gray-600">Vous confirmez la commande et préparez l'article</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                            <div>
+                                                <span class="font-semibold text-gray-900">Expédiée</span>
+                                                <p class="text-sm text-gray-600">Vous marquez la commande comme expédiée</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-6 h-6 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                                            <div>
+                                                <span class="font-semibold text-gray-900">Livrée</span>
+                                                <p class="text-sm text-gray-600">L'acheteur confirme la réception → les fonds sont débloqués</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                                        <h6 class="font-bold text-gray-900 mb-3">Livraison locale</h6>
+                                        <p class="text-sm text-gray-700 mb-3">Proposez différents modes de remise :</p>
+                                        <ul class="text-sm space-y-2 text-gray-700">
+                                            <li class="flex items-start"><span class="text-blue-500 mr-2">📍</span><span><strong>Remise en main propre</strong> — chez vous</span></li>
+                                            <li class="flex items-start"><span class="text-blue-500 mr-2">📍</span><span><strong>Point de rencontre</strong> — lieu neutre GPS</span></li>
+                                            <li class="flex items-start"><span class="text-blue-500 mr-2">📍</span><span><strong>Retrait</strong> — l'acheteur vient chercher</span></li>
+                                        </ul>
+                                        <div class="mt-3 bg-blue-100 rounded-lg p-3 text-sm">
+                                            <span class="font-semibold">Frais de transport :</span> $2 pour les 5 premiers km, $0.50/km supplémentaire
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Système de Boost -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-purple-500 to-purple-600 px-6 py-4 text-white">
+                                <h5 class="text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                    Système de Boost
+                                </h5>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                    <div class="lg:col-span-2 space-y-4">
+                                        <p class="text-gray-700">Le Boost augmente la visibilité de vos articles dans les recherches :</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                                                <h6 class="font-bold text-gray-900 mb-2">Types de Boost</h6>
+                                                <ul class="text-sm space-y-1.5 text-gray-700">
+                                                    <li><span class="text-purple-500 mr-1">•</span> Spotlight — mise en avant</li>
+                                                    <li><span class="text-purple-500 mr-1">•</span> Premium — priorité de recherche</li>
+                                                    <li><span class="text-purple-500 mr-1">•</span> Urgent — vente rapide</li>
+                                                    <li><span class="text-purple-500 mr-1">•</span> Top — classement élevé</li>
+                                                </ul>
+                                            </div>
+                                            <div class="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                                                <h6 class="font-bold text-gray-900 mb-2">Durée et tarifs</h6>
+                                                <ul class="text-sm space-y-1.5 text-gray-700">
+                                                    <li><span class="text-purple-500 mr-1">•</span> Prix dégressif par jour</li>
+                                                    <li><span class="text-purple-500 mr-1">•</span> Durées : 1, 3, 7, 14, 21 ou 30 jours</li>
+                                                    <li><span class="text-purple-500 mr-1">•</span> Paiement depuis votre wallet</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="bg-amber-50 rounded-lg p-3 border border-amber-200 text-sm">
+                                            <strong>Remboursement :</strong> Intégral sous 24h, partiel après, non remboursable passé 50% de la durée.
+                                        </div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-5 text-white flex flex-col justify-center text-center">
+                                        <div class="text-3xl font-bold mb-1">+70%</div>
+                                        <p class="text-sm text-purple-200">de visibilité en moyenne avec un Boost</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vérification d'authenticité -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 text-white">
+                                <h5 class="text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                    Vérification d'authenticité
+                                </h5>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <p class="text-gray-700">Rassurez vos acheteurs en faisant vérifier vos articles par nos experts :</p>
+                                        <ul class="space-y-2 text-sm text-gray-700">
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span><strong>Analyse IA</strong> — première évaluation automatique</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span><strong>Expert humain</strong> — vérification approfondie si nécessaire</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span><strong>Badge authentifié</strong> — visible sur l'annonce</span></li>
+                                            <li class="flex items-start"><span class="text-green-500 mr-2">✓</span><span><strong>VintPass</strong> — certificat numérique avec QR code unique</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-5 border border-emerald-200">
+                                        <h6 class="font-bold text-gray-900 mb-2">Niveaux de certification</h6>
+                                        <div class="space-y-1.5 text-sm">
+                                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-purple-500"></span><span>Platinum (95+)</span></div>
+                                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span>Gold (85+)</span></div>
+                                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-gray-400"></span><span>Silver (75+)</span></div>
+                                            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-700"></span><span>Bronze (60+)</span></div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-3">Le VintPass est transférable au prochain acheteur.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Portefeuille et retrait -->
+                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                            <div class="bg-gradient-to-r from-green-500 to-green-600 px-6 py-4 text-white">
+                                <h5 class="text-xl font-bold flex items-center">
+                                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Portefeuille et retraits
+                                </h5>
+                            </div>
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div class="space-y-4">
+                                        <p class="text-gray-700">Votre argent est sécurisé et débloqué après confirmation de livraison :</p>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            </div>
+                                            <div>
+                                                <h6 class="font-semibold text-gray-900">Wallet en attente</h6>
+                                                <p class="text-sm text-gray-600">Les fonds sont bloqués tant que l'acheteur n'a pas confirmé la réception</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                            </div>
+                                            <div>
+                                                <h6 class="font-semibold text-gray-900">Wallet principal</h6>
+                                                <p class="text-sm text-gray-600">Fonds disponibles pour retrait ou pour acheter</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                            </div>
+                                            <div>
+                                                <h6 class="font-semibold text-gray-900">Retrait</h6>
+                                                <p class="text-sm text-gray-600">Retirez vos fonds vers M-Pesa, Orange Money, Airtel Money ou Africell</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-5 border border-green-200">
+                                        <h6 class="font-bold text-gray-900 mb-3">Commission plateforme</h6>
+                                        <p class="text-sm text-gray-700 mb-3">Une commission de <strong>10%</strong> est prélevée sur chaque vente pour maintenir la plateforme.</p>
+                                        <div class="bg-white rounded-lg p-3 text-sm">
+                                            <p class="text-gray-700"><strong>Exemple :</strong> Vente à $100 → $10 de commission → $50 reversé au vendeur</p>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-3">La commission est automatiquement distribuée au wallet entreprise.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -491,7 +732,62 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                             </div>
+                            <h6 class="font-semibold text-gray-900 text-sm">CinetPay</h6>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition-all">
+                            <div class="w-12 h-12 bg-teal-500 text-white rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h6 class="font-semibold text-gray-900 text-sm">Africell</h6>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition-all">
+                            <div class="w-12 h-12 bg-indigo-500 text-white rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <h6 class="font-semibold text-gray-900 text-sm">AfribaPay</h6>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition-all">
+                            <div class="w-12 h-12 bg-rose-500 text-white rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <h6 class="font-semibold text-gray-900 text-sm">Illicocash</h6>
+                        </div>
+                        <div class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition-all">
+                            <div class="w-12 h-12 bg-blue-500 text-white rounded-xl flex items-center justify-center mx-auto mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                                </svg>
+                            </div>
                             <h6 class="font-semibold text-gray-900 text-sm">Cartes bancaires</h6>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                        <h5 class="font-bold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Système de Wallet
+                        </h5>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <h6 class="font-semibold text-gray-900 mb-2">Wallet principal</h6>
+                                <p class="text-sm text-gray-600">Votre solde disponible pour acheter ou retirer. Rechargez via mobile money.</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <h6 class="font-semibold text-gray-900 mb-2">Wallet en attente</h6>
+                                <p class="text-sm text-gray-600">Fonds bloqués en attente de confirmation de livraison</p>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-4">
+                                <h6 class="font-semibold text-gray-900 mb-2">Conversion de devises</h6>
+                                <p class="text-sm text-gray-600">Convertissez entre USD et CDF selon le taux du jour</p>
+                            </div>
                         </div>
                     </div>
 
@@ -743,9 +1039,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchData = {
         'inscription': { title: 'Comment créer un compte ?', section: 'getting-started', content: 'Créez un compte gratuitement avec email, Google ou Facebook' },
         'vendre': { title: 'Comment vendre un article ?', section: 'selling', content: 'Publiez votre annonce avec photos et description détaillée' },
+        'vendeur': { title: 'Guide complet du vendeur', section: 'selling', content: 'Gestion des articles, ventes, boost, vérification, wallet et retraits' },
+        'boost-annonce': { title: 'Système de Boost', section: 'selling', content: 'Promouvez vos articles : spotlight, premium, top, urgent' },
+        'wallet-vendeur': { title: 'Portefeuille et retraits', section: 'selling', content: 'Wallet principal, wallet en attente, retrait vers mobile money' },
+        'commission': { title: 'Commission plateforme', section: 'selling', content: '10% de commission sur chaque vente réussie' },
+        'verification': { title: 'Vérijication d\'authenticité', section: 'selling', content: 'Faites vérifier vos articles par IA et experts, obtenez un VintPass' },
+        'livraison': { title: 'Livraison locale', section: 'selling', content: 'Remise en main propre, point de rencontre, retrait avec frais de transport' },
+        'retrait-fonds': { title: 'Retrait des fonds', section: 'selling', content: 'Retirez votre argent vers M-Pesa, Orange Money, Airtel Money ou Africell' },
         'acheter': { title: 'Comment acheter en sécurité ?', section: 'buying', content: 'Recherchez, discutez avec le vendeur et payez en sécurité' },
-        'paiement': { title: 'Méthodes de paiement acceptées', section: 'payments', content: 'M-Pesa, Orange Money, Airtel Money et cartes bancaires' },
-        'parrainage': { title: 'Programme d\'affiliation', section: 'affiliate', content: 'Gagnez 500 points en parrainant vos amis' }
+        'paiement': { title: 'Méthodes de paiement acceptées', section: 'payments', content: 'M-Pesa, Orange Money, Airtel Money, CinetPay, Africell, AfribaPay, Illicocash, cartes bancaires' },
+        'wallet-paiement': { title: 'Système de Wallet', section: 'payments', content: 'Wallet principal, wallet en attente, conversion de devises, rechargement et retrait' },
+        'retrait-wallet': { title: 'Retrait d\'argent', section: 'payments', content: 'Retirez vos fonds vers M-Pesa, Orange Money, Airtel Money depuis votre wallet' },
+        'mpesa': { title: 'M-Pesa', section: 'payments', content: 'Paiement et retrait via M-Pesa' },
+        'orange-money': { title: 'Orange Money', section: 'payments', content: 'Paiement et retrait via Orange Money' },
+        'airtel-money': { title: 'Airtel Money', section: 'payments', content: 'Paiement et retrait via Airtel Money' },
+        'africell': { title: 'Africell', section: 'payments', content: 'Paiement via Africell' },
+        'cinetpay': { title: 'CinetPay', section: 'payments', content: 'Passerelle de paiement CinetPay' },
+        'afribapay': { title: 'AfribaPay', section: 'payments', content: 'Paiement mobile AfribaPay' },
+        'commission-plateforme': { title: 'Commission plateforme', section: 'payments', content: 'Commission de 10% sur les ventes, répartie entre commission, transport et boost' },
+        'illicocash': { title: 'Illicocash', section: 'payments', content: 'Paiement mobile via Illicocash' },
+        'vintpass': { title: 'VintPass', section: 'selling', content: 'Certificat numérique d\'authenticité avec QR code, transférable' },
+        'qr-code': { title: 'Scan QR', section: 'buying', content: 'Scannez le QR code de votre commande pour confirmer la livraison' },
+        'favoris': { title: 'Favoris et liste de souhaits', section: 'buying', content: 'Ajoutez des articles à vos favoris pour les retrouver facilement' },
+        'parrainage': { title: 'Programme d\'affiliation', section: 'affiliate', content: 'Gagnez 500 points en parrainant vos amis' },
+        'points': { title: 'Système de points', section: 'affiliate', content: 'Gagnez des points : 2% sur achats, 1% sur ventes, 100 pts à l\'inscription' },
+        '2fa': { title: 'Authentification à deux facteurs', section: 'safety', content: 'Activez la 2FA avec Google Authenticator pour sécuriser votre compte' },
+        'rgpd': { title: 'Confidentialité et RGPD', section: 'safety', content: 'Vos données sont protégées, jamais partagées, conformes au RGPD' }
     };
     
     function performSearch() {

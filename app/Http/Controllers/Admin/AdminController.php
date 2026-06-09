@@ -44,13 +44,9 @@ class AdminController extends Controller
             'transactions_today' => Transaction::whereDate('created_at', today())->count(),
             'total_transaction_amount' => Transaction::where('status', 'completed')->sum('amount'),
             
-            // Revenus par devise
-            'total_revenue_usd' => Transaction::where('status', 'completed')
-                ->where('currency', 'USD')
-                ->sum('amount'),
-            'total_revenue_cdf' => Transaction::where('status', 'completed')
-                ->where('currency', 'CDF')
-                ->sum('amount'),
+            // Revenus plateforme = sous-wallets entreprise
+            'total_revenue_usd' => Wallet::getEnterpriseSubWallets('USD')->sum('balance'),
+            'total_revenue_cdf' => Wallet::getEnterpriseSubWallets('CDF')->sum('balance'),
             
             // Wallets en attente de confirmation (type='pending')
             'pending_wallets' => Wallet::where('type', 'pending')->count(),

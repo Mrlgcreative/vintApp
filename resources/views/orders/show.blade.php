@@ -487,10 +487,14 @@
                             </div>
                         @elseif($order->status === 'shipped' && !$order->confirmed_by_buyer_at)
                             @if($order->buyer_id === Auth::id())
-                                <button onclick="confirmDelivery()"
+                                <button id="btn-confirm-delivery" onclick="confirmDelivery()"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
                                     <i class="fas fa-check-circle mr-2"></i>
-                                    ✅ Commande Reçue
+                                    <span id="btn-confirm-text">✅ Commande Reçue</span>
+                                    <svg id="btn-confirm-spinner" class="hidden ml-2 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
                                 </button>
                                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                                     <div class="flex">
@@ -513,10 +517,14 @@
                             @endif
                         @elseif($order->status === 'delivered' && !$order->confirmed_by_buyer_at)
                             @if($order->buyer_id === Auth::id())
-                                <button onclick="confirmDelivery()"
+                                <button id="btn-confirm-delivery" onclick="confirmDelivery()"
                                         class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300">
                                     <i class="fas fa-check-circle mr-2"></i>
-                                    ✅ Commande Reçue
+                                    <span id="btn-confirm-text">✅ Commande Reçue</span>
+                                    <svg id="btn-confirm-spinner" class="hidden ml-2 animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
                                 </button>
                                 <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
                                     <div class="flex">
@@ -749,11 +757,18 @@ document.getElementById('refundForm').addEventListener('submit', function(e) {
 });
 
 // Script pour confirmer la réception de la commande
-// Script pour confirmer la réception de la commande
 function confirmDelivery() {
+    const btn = document.getElementById('btn-confirm-delivery');
+    const text = document.getElementById('btn-confirm-text');
+    const spinner = document.getElementById('btn-confirm-spinner');
+    
     const note = prompt('Confirmez-vous avoir reçu votre commande ?\n\nVous pouvez ajouter un commentaire (optionnel) :');
     
-    if (note !== null) { // L'utilisateur n'a pas cliqué sur Annuler
+    if (note !== null) {
+        btn.disabled = true;
+        text.textContent = 'Confirmation...';
+        spinner.classList.remove('hidden');
+        
         fetch('{{ route('orders.confirm-delivery', $order) }}', {
             method: 'POST',
             headers: {
@@ -765,18 +780,29 @@ function confirmDelivery() {
                 note: note || ''
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.error || 'Erreur serveur'); });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 alert(data.message);
                 window.location.reload();
             } else {
                 alert(data.error || 'Erreur lors de la confirmation');
+                btn.disabled = false;
+                text.textContent = '✅ Commande Reçue';
+                spinner.classList.add('hidden');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Une erreur est survenue lors de la confirmation');
+            alert('Erreur : ' + error.message);
+            btn.disabled = false;
+            text.textContent = '✅ Commande Reçue';
+            spinner.classList.add('hidden');
         });
     }
 }

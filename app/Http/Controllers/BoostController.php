@@ -248,19 +248,19 @@ class BoostController extends Controller
             }
 
             // Vérifier le solde du wallet de l'utilisateur
-            if (!isset($user->wallet_balance) || $user->wallet_balance < $totalPrice) {
+            $cdfWallet = $user->cdfWallet();
+            $cdfBalance = $cdfWallet ? $cdfWallet->balance : 0;
+            if ($cdfBalance < $totalPrice) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solde insuffisant. Votre solde: ' . number_format($user->wallet_balance ?? 0, 0, ',', ' ') . ' CDF, Requis: ' . number_format($totalPrice, 0, ',', ' ') . ' CDF'
+                    'message' => 'Solde insuffisant. Votre solde: ' . number_format($cdfBalance, 0, ',', ' ') . ' CDF, Requis: ' . number_format($totalPrice, 0, ',', ' ') . ' CDF'
                 ], 400);
             }
 
             DB::beginTransaction();
 
             // Déduire le montant du wallet
-            DB::table('users')
-                ->where('id', Auth::id())
-                ->decrement('wallet_balance', $totalPrice);
+            $cdfWallet->decrement('balance', $totalPrice);
 
             // Créer l'enregistrement de boost
             $boost = ProductBoost::create([
@@ -326,6 +326,9 @@ class BoostController extends Controller
             // Calculer le remboursement selon la politique
             $refundAmount = $this->calculateRefundAmount($productBoost);
 
+            // Récupérer le wallet CDF pour le remboursement
+            $cdfWallet = Auth::user()->cdfWallet();
+
             // Mettre à jour le boost
             $productBoost->update([
                 'status' => 'cancelled',
@@ -335,9 +338,7 @@ class BoostController extends Controller
 
             // Effectuer le remboursement si applicable
             if ($refundAmount > 0) {
-                DB::table('users')
-                    ->where('id', Auth::id())
-                    ->increment('wallet_balance', $refundAmount);
+                $cdfWallet->increment('balance', $refundAmount);
             }
 
             DB::commit();

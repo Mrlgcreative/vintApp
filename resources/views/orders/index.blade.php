@@ -179,9 +179,10 @@ if (typeof jsQR === 'undefined') {
                                 @endif
 
                                 <!-- Confirmer réception -->
-                                @if(in_array($order->status, ['shipped', 'delivered']) && !$order->confirmed_by_buyer_at && !$order->scan_token)
+                                @if(in_array($order->status, ['shipped', 'delivered']) && !$order->confirmed_by_buyer_at)
                                     <button class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-300" 
                                             data-order-id="{{ $order->id }}"
+                                            id="confirm-btn-{{ $order->id }}"
                                             onclick="confirmDelivery(this.dataset.orderId)">
                                         <i class="fas fa-check-circle mr-2"></i>
                                         Commande Reçue
@@ -260,10 +261,14 @@ function cancelOrder(orderId) {
 }
 
 function confirmDelivery(orderId) {
-    // Demander une confirmation avec possibilité d'ajouter un commentaire
+    const btn = document.getElementById('confirm-btn-' + orderId);
+    
     const note = prompt('Confirmez-vous avoir reçu votre commande ?\n\nVous pouvez ajouter un commentaire (optionnel) :');
     
-    if (note !== null) { // L'utilisateur n'a pas cliqué sur Annuler
+    if (note !== null) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Confirmation...';
+        
         fetch(`/orders/${orderId}/confirm-delivery`, {
             method: 'POST',
             headers: {
@@ -275,18 +280,27 @@ function confirmDelivery(orderId) {
                 note: note || ''
             })
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.error || 'Erreur serveur'); });
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 alert(data.message);
                 window.location.reload();
             } else {
                 alert(data.error || 'Erreur lors de la confirmation');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Commande Reçue';
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Une erreur est survenue lors de la confirmation');
+            alert('Erreur : ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Commande Reçue';
         });
     }
 }
