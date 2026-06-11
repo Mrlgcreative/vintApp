@@ -506,6 +506,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::patch('/{item}/status', [App\Http\Controllers\Admin\AdminController::class, 'itemUpdateStatus'])->name('update-status');
         Route::patch('/{item}/approve', [App\Http\Controllers\Admin\AdminController::class, 'itemApprove'])->name('approve');
         Route::patch('/{item}/reject', [App\Http\Controllers\Admin\AdminController::class, 'itemReject'])->name('reject');
+        Route::post('/{item}/block', [App\Http\Controllers\Admin\AdminController::class, 'itemBlock'])->name('block');
+        Route::post('/{item}/unblock', [App\Http\Controllers\Admin\AdminController::class, 'itemUnblock'])->name('unblock');
+        Route::post('/{item}/suspend', [App\Http\Controllers\Admin\AdminController::class, 'itemSuspend'])->name('suspend');
+        Route::post('/{item}/unsuspend', [App\Http\Controllers\Admin\AdminController::class, 'itemUnsuspend'])->name('unsuspend');
         Route::post('/bulk-action', [App\Http\Controllers\Admin\AdminController::class, 'itemsBulkAction'])->name('bulk-action');
     });
 
@@ -685,6 +689,24 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         });
     });
 
+    // 🚀 Gestion des boosts
+    Route::prefix('boost-types')->name('boost-types.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\BoostTypeController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\BoostTypeController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\BoostTypeController::class, 'store'])->name('store');
+        Route::get('/{boostType}', [App\Http\Controllers\Admin\BoostTypeController::class, 'show'])->name('show');
+        Route::get('/{boostType}/edit', [App\Http\Controllers\Admin\BoostTypeController::class, 'edit'])->name('edit');
+        Route::put('/{boostType}', [App\Http\Controllers\Admin\BoostTypeController::class, 'update'])->name('update');
+        Route::delete('/{boostType}', [App\Http\Controllers\Admin\BoostTypeController::class, 'destroy'])->name('destroy');
+        Route::patch('/{boostType}/status', [App\Http\Controllers\Admin\BoostTypeController::class, 'updateStatus'])->name('update-status');
+    });
+
+    Route::prefix('product-boosts')->name('product-boosts.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ProductBoostController::class, 'index'])->name('index');
+        Route::get('/{productBoost}', [App\Http\Controllers\Admin\ProductBoostController::class, 'show'])->name('show');
+        Route::post('/{productBoost}/cancel', [App\Http\Controllers\Admin\ProductBoostController::class, 'cancel'])->name('cancel');
+    });
+
     // 🔔 Broadcast Notifications Push FCM
     Route::get('/broadcast-fcm', function() {
         return view('admin.broadcast-fcm');
@@ -773,19 +795,6 @@ Route::prefix('payments')->group(function () {
     // AfribaPay Webhook (pas d'authentification requise)
     Route::post('/afribapay/notify', [PaymentController::class, 'handleAfribaNotification'])->name('payments.afribapay.notify');
     
-    // Page de test pour la simulation de paiement
-    Route::get('/test', function () {
-        return view('payments.test');
-    })->name('payments.test');
-    
-    // Page de simulation d'achat complet
-    Route::get('/simulate-purchase', function () {
-        return view('payments.simulate-purchase');
-    })->name('payments.simulate-purchase');
-
-    // Simulation de paiement (POST)
-    Route::post('/simulate', [PaymentController::class, 'simulatePayment'])->name('payments.simulate');
-    
     Route::post('/process', [PaymentController::class, 'processPayment'])->name('payments.process');
     Route::post('/illicocash', [PaymentController::class, 'payWithIllicocash'])->name('payments.illicocash');
     Route::post('/orange-money', [PaymentController::class, 'payWithOrangeMoney'])->name('payments.orange_money');
@@ -805,7 +814,6 @@ Route::prefix('payments')->group(function () {
         return view('payment-status', compact('transaction'));
     })->name('payments.status');
     
-    // Pages de callback pour simulation
     Route::get('/success/{transaction_id}', [PaymentController::class, 'paymentSuccess'])->name('payments.success');
     Route::get('/error', [PaymentController::class, 'paymentError'])->name('payments.error');
     

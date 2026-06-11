@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 use App\Services\StorageSyncService;
 use App\Traits\ApiResponses;
+use App\Notifications\ItemModerated;
 
 class AdminController extends Controller
 {
@@ -1825,7 +1826,7 @@ class AdminController extends Controller
      */
     public function items(Request $request)
     {
-        $query = Item::with(['user', 'category', 'brand']);
+        $query = Item::with(['user', 'category', 'brand', 'blockedBy', 'suspendedBy']);
 
         // Filtres
         if ($request->filled('search')) {
@@ -1841,6 +1842,15 @@ class AdminController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('moderation')) {
+            match ($request->moderation) {
+                'blocked' => $query->where('is_blocked', true),
+                'suspended' => $query->where('is_suspended', true),
+                'normal' => $query->where('is_blocked', false)->where('is_suspended', false),
+                default => null,
+            };
         }
 
         if ($request->filled('category')) {
@@ -1865,7 +1875,15 @@ class AdminController extends Controller
 
         $items = $query->paginate(20)->withQueryString();
 
-        return view('admin.items.index', compact('items'));
+        $stats = [
+            'total' => Item::count(),
+            'active' => Item::where('status', 'active')->count(),
+            'pending' => Item::where('status', 'pending')->count(),
+            'blocked' => Item::where('is_blocked', true)->count(),
+            'suspended' => Item::where('is_suspended', true)->count(),
+        ];
+
+        return view('admin.items.index', compact('items', 'stats'));
     }
 
     /**
@@ -2051,7 +2069,14 @@ class AdminController extends Controller
      */
     public function itemReject(Request $request, Item $item)
     {
-        $item->update(['status' => 'inactive']);
+        $request->validate(['reason' => 'nullable|string|max:1000']);
+
+        $data = ['status' => 'inactive'];
+        if ($request->filled('reason')) {
+            $data['rejection_reason'] = $request->reason;
+        }
+
+        $item->update($data);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -2061,6 +2086,134 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.items.show', $item)->with('success', 'Article rejeté avec succès.');
+    }
+
+    /**
+     * Bloquer un article
+     */
+    public function itemBlock(Request $request, Item $item)
+    {
+        $request->validate(['reason' => 'nullable|string|max:1000']);
+
+        $item->update([
+            'is_blocked' => true,
+            'blocked_at' => now(),
+            'blocked_by' => auth()->id(),
+            'block_reason' => $request->reason,
+        ]);
+
+        $item->user->notify(new ItemModerated(
+            $item,
+            'blocked',
+            $request->reason,
+            null,
+            auth()->user()->name
+        ));
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article bloqué avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article bloqué avec succès.');
+    }
+
+    /**
+     * Débloquer un article
+     */
+    public function itemUnblock(Request $request, Item $item)
+    {
+        $item->update([
+            'is_blocked' => false,
+            'blocked_at' => null,
+            'blocked_by' => null,
+            'block_reason' => null,
+        ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article débloqué avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article débloqué avec succès.');
+    }
+
+    /**
+     * Suspendre un article
+     */
+    public function itemSuspend(Request $request, Item $item)
+    {
+        $request->validate([
+            'reason' => 'nullable|string|max:1000',
+            'days' => 'nullable|integer|min:1|max:365',
+        ]);
+
+        $data = [
+            'is_suspended' => true,
+            'suspended_at' => now(),
+            'suspended_by' => auth()->id(),
+            'suspend_reason' => $request->reason,
+        ];
+
+        if ($request->filled('days')) {
+            $data['suspended_until'] = now()->addDays((int)$request->days);
+        } else {
+            $data['suspended_until'] = null;
+        }
+
+        $item->update($data);
+
+        $item->user->notify(new ItemModerated(
+            $item,
+            'suspended',
+            $request->reason,
+            $request->filled('days') ? (int)$request->days : null,
+            auth()->user()->name
+        ));
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article suspendu avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article suspendu avec succès.');
+    }
+
+    /**
+     * Rétablir un article suspendu
+     */
+    public function itemUnsuspend(Request $request, Item $item)
+    {
+        $item->update([
+            'is_suspended' => false,
+            'suspended_at' => null,
+            'suspended_until' => null,
+            'suspended_by' => null,
+            'suspend_reason' => null,
+        ]);
+
+        $item->user->notify(new ItemModerated(
+            $item,
+            'unsuspended',
+            null,
+            null,
+            auth()->user()->name
+        ));
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Article rétabli avec succès.'
+            ]);
+        }
+
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article rétabli avec succès.');
     }
 
     /**

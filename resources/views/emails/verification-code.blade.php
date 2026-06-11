@@ -6,73 +6,75 @@
     <title>Code de vérification VintApp</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f8fafc;
+            color: #4a4a5a;
+            background-color: #f4f0f9;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 24px auto;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.08);
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #6d28d9 100%);
+            padding: 36px 30px;
             text-align: center;
         }
         .header h1 {
             margin: 0;
             font-size: 28px;
-            font-weight: bold;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
         }
         .header p {
-            margin: 10px 0 0;
-            opacity: 0.9;
-            font-size: 16px;
+            margin: 6px 0 0;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
         }
         .content {
-            padding: 40px 30px;
+            padding: 36px 32px 28px;
         }
         .code-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
             border-radius: 12px;
-            padding: 30px;
+            padding: 28px;
             text-align: center;
-            margin: 30px 0;
+            margin: 24px 0;
         }
         .verification-code {
-            font-size: 48px;
-            font-weight: bold;
-            color: white;
-            letter-spacing: 8px;
+            font-size: 44px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 10px;
             margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
         .code-label {
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 12px;
+            margin-bottom: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
         }
         .warning {
             background: #fef3cd;
-            border-left: 4px solid #fbbf24;
-            padding: 15px 20px;
+            border-left: 4px solid #f59e0b;
+            padding: 14px 18px;
             margin: 20px 0;
-            border-radius: 6px;
+            border-radius: 8px;
         }
         .warning-title {
             color: #92400e;
-            font-weight: bold;
-            margin: 0 0 5px;
+            font-weight: 700;
+            margin: 0 0 4px;
+            font-size: 14px;
         }
         .warning-text {
             color: #b45309;
@@ -80,119 +82,111 @@
             font-size: 14px;
         }
         .instructions {
-            background: #f8fafc;
-            border-radius: 8px;
+            background: #f5f3ff;
+            border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
         }
         .instructions h3 {
-            color: #374151;
-            margin: 0 0 15px;
-            font-size: 18px;
+            color: #5b21b6;
+            margin: 0 0 16px;
+            font-size: 16px;
         }
         .step {
             display: flex;
             align-items: center;
             margin: 10px 0;
-            color: #6b7280;
+            color: #4a4a5a;
+            font-size: 14px;
         }
         .step-number {
-            background: #667eea;
+            background: #7c3aed;
             color: white;
             border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 700;
             margin-right: 12px;
             flex-shrink: 0;
         }
         .footer {
-            background: #f8fafc;
-            padding: 30px;
+            background: #f8f6fc;
+            padding: 28px 30px;
             text-align: center;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #eeeaf5;
         }
         .footer p {
-            color: #6b7280;
-            margin: 5px 0;
-            font-size: 14px;
+            color: #9a9aae;
+            margin: 4px 0;
+            font-size: 13px;
         }
         .security-notice {
             background: #ecfdf5;
             border: 1px solid #d1fae5;
             border-radius: 8px;
-            padding: 15px;
+            padding: 14px;
             margin: 20px 0;
             text-align: center;
         }
         .security-notice p {
             color: #065f46;
             margin: 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         .timer {
             color: #dc2626;
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 700;
+            font-size: 15px;
             margin: 15px 0;
         }
+        .divider {
+            border: none;
+            border-top: 1px solid #eeeaf5;
+            margin: 28px 0;
+        }
         @media (max-width: 600px) {
-            .container {
-                margin: 10px;
-                border-radius: 8px;
-            }
-            .header, .content, .footer {
-                padding: 20px;
-            }
-            .verification-code {
-                font-size: 36px;
-                letter-spacing: 4px;
-            }
+            .container { margin: 12px; border-radius: 12px; }
+            .header, .content, .footer { padding: 20px; }
+            .verification-code { font-size: 34px; letter-spacing: 6px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>🔐 VintApp</h1>
-            <p>Code de vérification de votre compte</p>
+            <h1>{{ config('app.name') }}</h1>
+            <p>Code de vérification</p>
         </div>
-
-        <!-- Content -->
         <div class="content">
-            <h2 style="color: #374151; margin: 0 0 20px;">Bonjour {{ $user->name }},</h2>
-            
-            <p style="color: #6b7280; margin: 0 0 20px;">
-                Nous avons reçu une demande de vérification pour votre compte VintApp. 
+            <h2 style="color: #1f1f2e; margin: 0 0 16px; font-size: 18px;">Bonjour {{ $user->name }},</h2>
+
+            <p style="color: #4a4a5a; margin: 0 0 8px;">
+                Nous avons reçu une demande de vérification pour votre compte.
                 Utilisez le code ci-dessous pour confirmer votre adresse email :
             </p>
 
-            <!-- Code de vérification -->
             <div class="code-container">
                 <div class="code-label">Votre code de vérification</div>
                 <div class="verification-code">{{ $code }}</div>
             </div>
 
-            <!-- Avertissement de sécurité -->
             <div class="warning">
-                <div class="warning-title">⚠️ Important</div>
+                <div class="warning-title">Important</div>
                 <div class="warning-text">
-                    Ce code expire dans <strong>15 minutes</strong>. 
+                    Ce code expire dans <strong>15 minutes</strong>.
                     Ne le partagez jamais avec qui que ce soit.
                 </div>
             </div>
 
-            <!-- Instructions -->
             <div class="instructions">
                 <h3>Comment utiliser ce code :</h3>
                 <div class="step">
                     <div class="step-number">1</div>
-                    <span>Retournez sur VintApp dans votre navigateur</span>
+                    <span>Retournez sur {{ config('app.name') }} dans votre navigateur</span>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
@@ -200,34 +194,24 @@
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <span>Cliquez sur "Vérifier le code"</span>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <span>Profitez de VintApp !</span>
+                    <span>Cliquez sur "Vérifier"</span>
                 </div>
             </div>
 
-            <!-- Notice de sécurité -->
             <div class="security-notice">
-                <p>
-                    🔒 Si vous n'avez pas demandé cette vérification, 
-                    ignorez cet email et votre compte restera sécurisé.
-                </p>
+                <p>Si vous n'avez pas demandé cette vérification, ignorez cet email et votre compte restera sécurisé.</p>
             </div>
 
-            <p style="color: #6b7280; margin: 30px 0 0;">
-                Merci de faire confiance à VintApp pour vos achats et ventes !
-            </p>
-        </div>
+            <hr class="divider">
 
-        <!-- Footer -->
+            <p style="color: #4a4a5a; margin: 0;">Merci de faire confiance à {{ config('app.name') }} !</p>
+        </div>
         <div class="footer">
-            <p><strong>VintApp</strong> - Votre marketplace de confiance</p>
+            <p><strong>{{ config('app.name') }}</strong> &mdash; Marketplace de confiance</p>
             <p>Cet email a été envoyé à {{ $user->email }}</p>
-            <p style="margin-top: 20px;">
-                Des questions ? Contactez notre support : 
-                <a href="mailto:{{ config('mail.from.address') }}" style="color: #667eea;">
+            <p style="margin-top: 16px;">
+                Des questions ?
+                <a href="mailto:{{ config('mail.from.address') }}" style="color: #7c3aed; text-decoration: underline;">
                     {{ config('mail.from.address') }}
                 </a>
             </p>

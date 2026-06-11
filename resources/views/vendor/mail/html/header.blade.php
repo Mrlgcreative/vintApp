@@ -1,12 +1,9 @@
 @props(['url'])
 <tr>
 <td class="header">
-<a href="{{ $url }}" style="display: inline-block;">
-@if (trim($slot) === 'Laravel')
-<img src="https://laravel.com/img/notification-logo.png" class="logo" alt="Laravel Logo">
-@else
-{!! $slot !!}
-@endif
+<a href="{{ $url }}">
+<div class="brand-name">{{ config('app.name') }}</div>
+<div class="brand-tagline">Marketplace de confiance</div>
 </a>
 </td>
 </tr>

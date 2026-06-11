@@ -15,28 +15,42 @@ class BoostType extends Model
         'description',
         'icon',
         'color',
+        'base_price',
+        'price_per_day',
         'price_usd',
         'price_cdf',
         'available_durations',
         'visual_config',
         'is_active',
+        'is_premium',
         'sort_order',
+        'min_duration',
+        'max_duration',
         'max_concurrent',
+        'benefits',
         'admin_notes'
     ];
 
     protected $casts = [
+        'base_price' => 'decimal:2',
+        'price_per_day' => 'decimal:2',
         'price_usd' => 'decimal:2',
         'price_cdf' => 'decimal:0',
         'available_durations' => 'array',
         'visual_config' => 'array',
-        'is_active' => 'boolean'
+        'benefits' => 'array',
+        'is_active' => 'boolean',
+        'is_premium' => 'boolean',
+        'min_duration' => 'integer',
+        'max_duration' => 'integer',
+        'sort_order' => 'integer',
+        'max_concurrent' => 'integer'
     ];
 
     // Relations
     public function productBoosts()
     {
-        return $this->hasMany(ProductBoost::class, 'boost_type', 'name');
+        return $this->hasMany(ProductBoost::class, 'boost_type_id');
     }
 
     public function activeBoosts()
@@ -56,23 +70,9 @@ class BoostType extends Model
     }
 
     // Accessors
-    public function getPriceAttribute($currency = 'USD')
-    {
-        return $currency === 'USD' ? $this->price_usd : $this->price_cdf;
-    }
-
-    public function getPriceFormattedAttribute($currency = 'USD')
-    {
-        if ($currency === 'USD') {
-            return '$' . number_format($this->price_usd, 2);
-        }
-        
-        return number_format($this->price_cdf, 0, ',', ' ') . ' FC';
-    }
-
     public function getVisualConfigAttribute($value)
     {
-        $config = json_decode($value, true) ?? [];
+        $config = is_array($value) ? $value : (json_decode($value, true) ?? []);
         
         return array_merge([
             'badge_text' => strtoupper($this->name),
@@ -115,11 +115,11 @@ class BoostType extends Model
 
     public function canApplyToItem($itemId)
     {
-        $activeBoosts = ProductBoost::active()
-            ->forItem($itemId)
-            ->byType($this->name)
+        $activeBoosts = ProductBoost::where('boost_type_id', $this->id)
+            ->where('item_id', $itemId)
+            ->active()
             ->count();
-            
+
         return $activeBoosts < $this->max_concurrent;
     }
 
@@ -128,11 +128,10 @@ class BoostType extends Model
         return $this->activeBoosts()->count();
     }
 
-    public function getTotalRevenue($currency = 'USD')
+    public function getTotalRevenue()
     {
         return $this->productBoosts()
             ->where('status', 'active')
-            ->where('currency', $currency)
-            ->sum('price');
+            ->sum('total_price');
     }
 }

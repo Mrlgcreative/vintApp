@@ -34,7 +34,7 @@ class ItemRejected extends Notification implements ShouldQueue
      */
     public function via(object $notifiable): array
     {
-        return ['database', 'broadcast'];
+        return ['mail', 'database', 'broadcast'];
     }
 
     /**

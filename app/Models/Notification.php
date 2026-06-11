@@ -16,6 +16,7 @@ class Notification extends Model
         'message',
         'data',
         'read_at',
+        'action_url',
     ];
 
     protected $casts = [
@@ -90,6 +91,7 @@ class Notification extends Model
             'wallet_debit' => 'fa-minus-circle',
             'boost_activated' => 'fa-rocket',
             'boost_expired' => 'fa-clock',
+            'item_moderated' => 'fa-shield-alt',
             'review_received' => 'fa-star',
             'affiliate_commission' => 'fa-coins',
             'system' => 'fa-bell',
@@ -108,6 +110,7 @@ class Notification extends Model
             'item_rejected' => 'text-red-500',
             'refund_approved' => 'text-green-500',
             'refund_rejected' => 'text-red-500',
+            'item_moderated' => 'text-orange-500',
             'wallet_credit' => 'text-emerald-500',
             'wallet_debit' => 'text-red-500',
             'boost_activated' => 'text-purple-500',
@@ -120,5 +123,20 @@ class Notification extends Model
     public function getTimeAgoAttribute(): string
     {
         return $this->created_at->diffForHumans();
+    }
+
+    public function getTitleAttribute(?string $value): ?string
+    {
+        return $value ?? $this->data['title'] ?? null;
+    }
+
+    public function getMessageAttribute(?string $value): ?string
+    {
+        return $value ?? $this->data['message'] ?? null;
+    }
+
+    public function getActionUrlAttribute(?string $value): ?string
+    {
+        return $value ?? $this->data['action_url'] ?? $this->data['url'] ?? null;
     }
 }

@@ -248,6 +248,21 @@
                             <span>Commandes</span>
                         </a>
 
+                        <a href="{{ route('admin.items.index') }}" 
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.items.index') || request()->routeIs('admin.items.show') || request()->routeIs('admin.items.edit')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                            <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <span class="flex-1">Articles</span>
+                            @php
+                                $totalItems = \App\Models\Item::count();
+                                $blockedItems = \App\Models\Item::where('is_blocked', true)->count();
+                            @endphp
+                            @if($blockedItems > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-bold text-white bg-red-500 rounded-full">{{ $blockedItems }}</span>
+                            @else
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-bold text-white bg-gray-500 rounded-full">{{ $totalItems }}</span>
+                            @endif
+                        </a>
+
                         <a href="{{ route('admin.items.pending_verification') }}" 
                            class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.items.pending_verification')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
@@ -279,6 +294,18 @@
                             <span class="w-2.5 h-2.5 bg-primary-400 rounded-full animate-pulse shadow-lg shadow-primary-400/50"></span>
                         </a>
 
+                        <a href="{{ route('admin.product-boosts.index') }}" 
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.product-boosts.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                            <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span class="flex-1">Boosts appliqués</span>
+                            @php
+                                $activeBoostsCount = \App\Models\ProductBoost::where('status', 'active')->count();
+                            @endphp
+                            @if($activeBoostsCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-0.5 text-[11px] font-bold text-white bg-green-500 rounded-full">{{ $activeBoostsCount }}</span>
+                            @endif
+                        </a>
+
                         <div class="sidebar-section-title">
                             <span>Catalogue & Services</span>
                         </div>
@@ -292,6 +319,12 @@
                            class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.categories.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
                             <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                             <span>Catégories</span>
+                        </a>
+
+                        <a href="{{ route('admin.boost-types.index') }}" 
+                           class="sidebar-link group flex items-center rounded-xl px-4 py-3 text-white/70 transition-all duration-200 hover:translate-x-0.5 hover:bg-white/10 hover:text-white @if(request()->routeIs('admin.boost-types.*')) active bg-gradient-primary-link text-white font-semibold shadow-lg translate-x-0.5 @endif">
+                            <svg class="w-5 h-5 mr-3 shrink-0 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <span>Types de boost</span>
                         </a>
 
                         <a href="{{ route('admin.support.index') }}" 

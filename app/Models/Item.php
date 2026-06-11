@@ -35,6 +35,16 @@ class Item extends Model
         'verification_details',
         'verified_at',
         'verified_by',
+        'is_blocked',
+        'blocked_at',
+        'blocked_by',
+        'block_reason',
+        'is_suspended',
+        'suspended_at',
+        'suspended_until',
+        'suspended_by',
+        'suspend_reason',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -47,6 +57,11 @@ class Item extends Model
         'verification_details' => 'array',
         'verification_score' => 'decimal:2',
         'verified_at' => 'datetime',
+        'is_blocked' => 'boolean',
+        'blocked_at' => 'datetime',
+        'is_suspended' => 'boolean',
+        'suspended_at' => 'datetime',
+        'suspended_until' => 'datetime',
     ];
 
     /**
@@ -343,6 +358,62 @@ class Item extends Model
     {
         $urls = $this->getImageUrls();
         return !empty($urls) ? $urls[0] : null;
+    }
+
+    // Relations de modération
+    public function blockedBy()
+    {
+        return $this->belongsTo(User::class, 'blocked_by');
+    }
+
+    public function suspendedBy()
+    {
+        return $this->belongsTo(User::class, 'suspended_by');
+    }
+
+    // Scopes de modération
+    public function scopeNotBlocked($query)
+    {
+        return $query->where('is_blocked', false);
+    }
+
+    public function scopeBlocked($query)
+    {
+        return $query->where('is_blocked', true);
+    }
+
+    public function scopeNotSuspended($query)
+    {
+        return $query->where('is_suspended', false);
+    }
+
+    public function scopeSuspended($query)
+    {
+        return $query->where('is_suspended', true);
+    }
+
+    public function scopeVisible($query)
+    {
+        return $query->where('is_blocked', false)
+            ->where(function ($q) {
+                $q->where('is_suspended', false)
+                  ->orWhere('suspended_until', '<', now());
+            });
+    }
+
+    // Méthodes de modération
+    public function isAvailable(): bool
+    {
+        return $this->status === 'active'
+            && !$this->is_blocked
+            && !$this->isCurrentlySuspended();
+    }
+
+    public function isCurrentlySuspended(): bool
+    {
+        if (!$this->is_suspended) return false;
+        if (!$this->suspended_until) return true;
+        return now()->lt($this->suspended_until);
     }
 
     // Scope pour les items boostés

@@ -9,7 +9,7 @@
     <!-- Header avec actions -->
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <a href="{{ route('admin.items.pending_verification') }}" class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 mb-2">
+            <a href="{{ route('admin.items.index') }}" class="inline-flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 mb-2">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Retour à la liste
             </a>
@@ -22,18 +22,36 @@
             </p>
         </div>
 
-        <!-- Badge de statut -->
-        @php
-            $statusConfig = [
-                'approved' => ['class' => 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700', 'icon' => 'fa-check-circle', 'label' => 'Approuvé'],
-                'pending' => ['class' => 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700', 'icon' => 'fa-clock', 'label' => 'En attente'],
-                'rejected' => ['class' => 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700', 'icon' => 'fa-times-circle', 'label' => 'Rejeté'],
-            ];
-            $status = $statusConfig[$item->verification_status] ?? $statusConfig['pending'];
-        @endphp
-        <div class="px-4 py-2 rounded-lg border-2 {{ $status['class'] }} flex items-center space-x-2">
-            <i class="fas {{ $status['icon'] }}"></i>
-            <span class="font-semibold">{{ $status['label'] }}</span>
+        <div class="flex items-center gap-2">
+            <!-- Badge de statut vérification -->
+            @php
+                $statusConfig = [
+                    'approved' => ['class' => 'bg-green-100 text-green-800 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700', 'icon' => 'fa-check-circle', 'label' => 'Approuvé'],
+                    'pending' => ['class' => 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700', 'icon' => 'fa-clock', 'label' => 'En attente'],
+                    'rejected' => ['class' => 'bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700', 'icon' => 'fa-times-circle', 'label' => 'Rejeté'],
+                ];
+                $status = $statusConfig[$item->verification_status] ?? $statusConfig['pending'];
+            @endphp
+            <div class="px-4 py-2 rounded-lg border-2 {{ $status['class'] }} flex items-center space-x-2">
+                <i class="fas {{ $status['icon'] }}"></i>
+                <span class="font-semibold">{{ $status['label'] }}</span>
+            </div>
+
+            <!-- Badge de modération -->
+            @if($item->is_blocked)
+                <div class="px-4 py-2 rounded-lg border-2 bg-red-100 text-red-800 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700 flex items-center space-x-2">
+                    <i class="fas fa-ban"></i>
+                    <span class="font-semibold">Bloqué</span>
+                </div>
+            @elseif($item->isCurrentlySuspended())
+                <div class="px-4 py-2 rounded-lg border-2 bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700 flex items-center space-x-2">
+                    <i class="fas fa-pause-circle"></i>
+                    <span class="font-semibold">Suspendu</span>
+                    @if($item->suspended_until)
+                        <span class="text-xs">jusqu'au {{ $item->suspended_until->format('d/m/Y') }}</span>
+                    @endif
+                </div>
+            @endif
         </div>
     </div>
 
@@ -260,14 +278,14 @@
             @endif
 
             <!-- Actions -->
-            @if($item->verification_status === 'pending')
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
                         <i class="fas fa-cogs mr-2 text-primary-600"></i>
-                        Actions
+                        Modération
                     </h3>
                     <div class="space-y-3">
+                        @if($item->verification_status === 'pending')
                         <form action="{{ route('admin.items.approve', $item) }}" method="POST">
                             @csrf
                             @method('PATCH')
@@ -277,17 +295,88 @@
                                 Approuver l'item
                             </button>
                         </form>
-                        
+
                         <button type="button" 
-                                onclick="openRejectModal({{ $item->id }})"
+                                onclick="openRejectModal()"
                                 class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center justify-center">
                             <i class="fas fa-times mr-2"></i>
                             Rejeter l'item
                         </button>
+                        @endif
+
+                        <hr class="border-gray-200 dark:border-gray-700">
+
+                        @if($item->is_blocked)
+                        <form action="{{ route('admin.items.unblock', $item) }}" method="POST">
+                            @csrf
+                            <button type="submit" 
+                                    class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium flex items-center justify-center">
+                                <i class="fas fa-unlock mr-2"></i>
+                                Débloquer l'article
+                            </button>
+                        </form>
+                        @else
+                        <button type="button" 
+                                onclick="openBlockModal()"
+                                class="w-full px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium flex items-center justify-center">
+                            <i class="fas fa-ban mr-2"></i>
+                            Bloquer l'article
+                        </button>
+                        @endif
+
+                        @if($item->isCurrentlySuspended())
+                        <form action="{{ route('admin.items.unsuspend', $item) }}" method="POST">
+                            @csrf
+                            <button type="submit" 
+                                    class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition font-medium flex items-center justify-center">
+                                <i class="fas fa-play-circle mr-2"></i>
+                                Rétablir l'article
+                            </button>
+                        </form>
+                        @else
+                        <button type="button" 
+                                onclick="openSuspendModal()"
+                                class="w-full px-4 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition font-medium flex items-center justify-center">
+                            <i class="fas fa-pause-circle mr-2"></i>
+                            Suspendre l'article
+                        </button>
+                        @endif
                     </div>
+
+                    <!-- Bloc motif du blocage -->
+                    @if($item->block_reason)
+                    <div class="mt-4 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <p class="text-xs font-semibold text-red-700 dark:text-red-400 uppercase">Motif du blocage</p>
+                        <p class="text-sm text-red-600 dark:text-red-300 mt-1">{{ $item->block_reason }}</p>
+                        @if($item->blockedBy)
+                            <p class="text-xs text-red-500 mt-1">Par {{ $item->blockedBy->name }}, le {{ $item->blocked_at?->format('d/m/Y à H:i') }}</p>
+                        @endif
+                    </div>
+                    @endif
+
+                    <!-- Bloc motif de suspension -->
+                    @if($item->suspend_reason)
+                    <div class="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                        <p class="text-xs font-semibold text-orange-700 dark:text-orange-400 uppercase">Motif de suspension</p>
+                        <p class="text-sm text-orange-600 dark:text-orange-300 mt-1">{{ $item->suspend_reason }}</p>
+                        @if($item->suspendedBy)
+                            <p class="text-xs text-orange-500 mt-1">Par {{ $item->suspendedBy->name }}, le {{ $item->suspended_at?->format('d/m/Y à H:i') }}</p>
+                        @endif
+                        @if($item->suspended_until)
+                            <p class="text-xs text-orange-500 mt-1">Jusqu'au {{ $item->suspended_until->format('d/m/Y') }}</p>
+                        @endif
+                    </div>
+                    @endif
+
+                    <!-- Bloc motif de rejet -->
+                    @if($item->rejection_reason)
+                    <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-900/20 rounded-lg">
+                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-400 uppercase">Motif du rejet</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ $item->rejection_reason }}</p>
+                    </div>
+                    @endif
                 </div>
             </div>
-            @endif
 
             <!-- Historique -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
@@ -330,36 +419,108 @@
 </div>
 
 <!-- Reject Modal -->
-<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closeRejectModal(event)">
+<div id="rejectModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closeModal(event, 'rejectModal')">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onclick="event.stopPropagation()">
         <div class="p-6">
             <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Rejeter l'item</h3>
             
-            <form id="rejectForm" action="{{ route('admin.items.reject', $item) }}" method="POST">
+            <form action="{{ route('admin.items.reject', $item) }}" method="POST">
                 @csrf
                 @method('PATCH')
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Motif du rejet (requis)
+                        Motif du rejet
                     </label>
-                    <textarea name="reason" 
-                              id="rejectReason"
-                              rows="4" 
-                              required
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                              placeholder="Ex: Images de mauvaise qualité, description contenant du spam, incohérence entre images et description..."></textarea>
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Le vendeur recevra cette raison par notification.</p>
+                    <textarea name="reason" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                              placeholder="Raison du rejet..."></textarea>
                 </div>
-                
                 <div class="flex items-center justify-end space-x-3">
-                    <button type="button" 
-                            onclick="closeRejectModal()"
+                    <button type="button" onclick="closeModal(event, 'rejectModal')"
                             class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                         Annuler
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                             class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium">
                         Confirmer le rejet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Block Modal -->
+<div id="blockModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closeModal(event, 'blockModal')">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                    <i class="fas fa-ban text-2xl text-red-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Bloquer l'article</h3>
+                    <p class="text-sm text-gray-500">L'article sera masqué de la plateforme.</p>
+                </div>
+            </div>
+            <form action="{{ route('admin.items.block', $item) }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Motif du blocage</label>
+                    <textarea name="reason" rows="4"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:text-white"
+                              placeholder="Raison du blocage..."></textarea>
+                </div>
+                <div class="flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeModal(event, 'blockModal')"
+                            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium">
+                        Confirmer le blocage
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Suspend Modal -->
+<div id="suspendModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" onclick="closeModal(event, 'suspendModal')">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onclick="event.stopPropagation()">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+                    <i class="fas fa-pause-circle text-2xl text-orange-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Suspendre l'article</h3>
+                    <p class="text-sm text-gray-500">L'article sera temporairement masqué.</p>
+                </div>
+            </div>
+            <form action="{{ route('admin.items.suspend', $item) }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Motif de suspension</label>
+                    <textarea name="reason" rows="3"
+                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white"
+                              placeholder="Raison de la suspension..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Durée (jours)</label>
+                    <input type="number" name="days" min="1" max="365" placeholder="Laisser vide pour indéfini"
+                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
+                    <p class="mt-1 text-xs text-gray-500">Laissez vide pour une suspension indéfinie.</p>
+                </div>
+                <div class="flex items-center justify-end space-x-3">
+                    <button type="button" onclick="closeModal(event, 'suspendModal')"
+                            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-5 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition font-medium">
+                        Confirmer la suspension
                     </button>
                 </div>
             </form>
@@ -384,19 +545,25 @@
 </div>
 
 <script>
-function openRejectModal(itemId) {
-    const modal = document.getElementById('rejectModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.getElementById('rejectReason').value = '';
-    document.getElementById('rejectReason').focus();
+function openRejectModal() {
+    document.getElementById('rejectModal').classList.remove('hidden');
+    document.getElementById('rejectModal').classList.add('flex');
 }
 
-function closeRejectModal(event) {
-    if (!event || event.target.id === 'rejectModal') {
-        const modal = document.getElementById('rejectModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+function openBlockModal() {
+    document.getElementById('blockModal').classList.remove('hidden');
+    document.getElementById('blockModal').classList.add('flex');
+}
+
+function openSuspendModal() {
+    document.getElementById('suspendModal').classList.remove('hidden');
+    document.getElementById('suspendModal').classList.add('flex');
+}
+
+function closeModal(event, modalId) {
+    if (!event || event.target.id === modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.getElementById(modalId).classList.remove('flex');
     }
 }
 
@@ -416,11 +583,12 @@ function closeImageModal() {
     modal.classList.remove('flex');
 }
 
-// Close modals with Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        closeRejectModal();
-        closeImageModal();
+        document.querySelectorAll('[id$=Modal]').forEach(m => {
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        });
     }
 });
 </script>
