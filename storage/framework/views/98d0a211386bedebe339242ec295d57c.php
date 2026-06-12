@@ -176,8 +176,8 @@
                                    class="flex-1 px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-r-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg tracking-wider bg-white dark:bg-gray-900" 
                                    id="phone" 
                                    name="phone" 
-                                   maxlength="11" 
-                                   placeholder="XX XXX XXXX" 
+                                   maxlength="13" 
+                                   placeholder="0XX XX XX XXX" 
                                    required
                                    autocomplete="tel">
                         </div>
@@ -333,33 +333,35 @@ const operators = {
 };
 
 function formatPhoneInput(value) {
-    const digits = value.replace(/\D/g, '').substring(0, 9);
-    if (digits.length > 6) {
-        return digits.substring(0, 2) + ' ' + digits.substring(2, 5) + ' ' + digits.substring(5);
-    } else if (digits.length > 2) {
-        return digits.substring(0, 2) + ' ' + digits.substring(2);
+    const digits = value.replace(/\D/g, '').substring(0, 10);
+    if (digits.length > 7) {
+        return digits.substring(0, 3) + ' ' + digits.substring(3, 5) + ' ' + digits.substring(5, 7) + ' ' + digits.substring(7);
+    } else if (digits.length > 5) {
+        return digits.substring(0, 3) + ' ' + digits.substring(3, 5) + ' ' + digits.substring(5);
+    } else if (digits.length > 3) {
+        return digits.substring(0, 3) + ' ' + digits.substring(3);
     }
     return digits;
 }
 
 document.getElementById('phone').addEventListener('input', function(e) {
     const raw = e.target.value.replace(/\D/g, '');
-    const digits = raw.substring(0, 9);
+    const digits = raw.substring(0, 10);
     const formatted = formatPhoneInput(digits);
     e.target.value = formatted;
 
-    const prefix = digits.substring(0, 2);
+    const prefix = digits.length >= 3 ? digits.substring(1, 3) : '';
     const operatorDetected = document.getElementById('operator-detected');
     const operatorInput = document.getElementById('operator');
 
-    if (operators[prefix]) {
+    if (prefix && operators[prefix]) {
         const op = operators[prefix];
         operatorDetected.classList.remove('hidden');
         document.getElementById('detected-logo').src = op.logo;
         document.getElementById('detected-name').textContent = op.name;
         operatorInput.value = op.code;
 
-        if (digits.length === 9) {
+        if (digits.length === 10) {
             e.target.classList.add('border-green-500', 'ring-2', 'ring-green-200');
             e.target.classList.remove('border-gray-300', 'dark:border-gray-600');
         }
@@ -397,7 +399,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
                 </div>
                 <div>
                     <p class="font-semibold text-red-800 dark:text-red-200 text-sm">Numéro invalide</p>
-                    <p class="text-xs text-red-600 dark:text-red-400 mt-0.5">Veuillez entrer un numéro Mobile Money valide (ex: 97 123 4567)</p>
+                    <p class="text-xs text-red-600 dark:text-red-400 mt-0.5">Veuillez entrer un numéro Mobile Money valide (ex: 097 12 34 567)</p>
                 </div>
             </div>
         `;
@@ -446,7 +448,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                phone: phone,
+                phone: phone.replace(/^0/, ''),
                 amount: parseFloat(amount),
                 currency: currency,
                 operator: operator,

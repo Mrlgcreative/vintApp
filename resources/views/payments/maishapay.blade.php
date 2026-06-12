@@ -473,10 +473,11 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
                 </div>
             `;
 
-            submitBtn.innerHTML = '<i class="fas fa-check"></i><span>Paiement réussi ✓</span>';
+            submitBtn.innerHTML = '<i class="fas fa-hourglass-half"></i><span>En attente de confirmation...</span>';
+            submitBtn.disabled = true;
 
             setTimeout(() => {
-                window.location.href = '{{ route("payments.success", ":id") }}'.replace(':id', data.transaction_id);
+                window.location.href = '{{ route("payments.status", ":id") }}'.replace(':id', data.transaction_id);
             }, 2000);
         } else {
             throw new Error(data.message || 'Erreur de paiement');
