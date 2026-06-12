@@ -1,8 +1,6 @@
-@extends('app')
+<?php $__env->startSection('title', 'Paiement MaishaPay'); ?>
 
-@section('title', 'Paiement MaishaPay')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="max-w-2xl mx-auto">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -45,7 +43,7 @@
                         <div class="operator-card group cursor-pointer" data-operator="VODACOM">
                             <div class="relative p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-transparent hover:border-green-500 transition-all duration-300 text-center hover:shadow-lg hover:-translate-y-0.5">
                                 <div class="w-14 h-14 mx-auto mb-2.5 p-1.5 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                                    <img src="{{ asset('images/operators/mpesa.jpeg') }}" alt="M-Pesa" class="w-full h-full object-contain">
+                                    <img src="<?php echo e(asset('images/operators/mpesa.jpeg')); ?>" alt="M-Pesa" class="w-full h-full object-contain">
                                 </div>
                                 <span class="block text-xs font-semibold text-gray-700 dark:text-gray-200">M-Pesa</span>
                                 <span class="block text-[10px] text-gray-400 mt-0.5">81/82/83</span>
@@ -54,7 +52,7 @@
                         <div class="operator-card group cursor-pointer" data-operator="ORANGE">
                             <div class="relative p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-transparent hover:border-orange-500 transition-all duration-300 text-center hover:shadow-lg hover:-translate-y-0.5">
                                 <div class="w-14 h-14 mx-auto mb-2.5 p-1.5 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                                    <img src="{{ asset('images/operators/orange.jpeg') }}" alt="Orange Money" class="w-full h-full object-contain">
+                                    <img src="<?php echo e(asset('images/operators/orange.jpeg')); ?>" alt="Orange Money" class="w-full h-full object-contain">
                                 </div>
                                 <span class="block text-xs font-semibold text-orange-600 dark:text-orange-400">Orange Money</span>
                                 <span class="block text-[10px] text-gray-400 mt-0.5">84/85/89</span>
@@ -63,7 +61,7 @@
                         <div class="operator-card group cursor-pointer" data-operator="AIRTEL">
                             <div class="relative p-4 bg-gradient-to-br from-red-50 to-red-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-transparent hover:border-red-500 transition-all duration-300 text-center hover:shadow-lg hover:-translate-y-0.5">
                                 <div class="w-14 h-14 mx-auto mb-2.5 p-1.5 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                                    <img src="{{ asset('images/operators/airtel.jpeg') }}" alt="Airtel Money" class="w-full h-full object-contain">
+                                    <img src="<?php echo e(asset('images/operators/airtel.jpeg')); ?>" alt="Airtel Money" class="w-full h-full object-contain">
                                 </div>
                                 <span class="block text-xs font-semibold text-red-600 dark:text-red-400">Airtel Money</span>
                                 <span class="block text-[10px] text-gray-400 mt-0.5">97/98/99</span>
@@ -72,7 +70,7 @@
                         <div class="operator-card group cursor-pointer" data-operator="AFRICELL">
                             <div class="relative p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border-2 border-transparent hover:border-blue-500 transition-all duration-300 text-center hover:shadow-lg hover:-translate-y-0.5">
                                 <div class="w-14 h-14 mx-auto mb-2.5 p-1.5 bg-white rounded-xl shadow-sm flex items-center justify-center">
-                                    <img src="{{ asset('images/operators/africell.jpeg') }}" alt="Africell Money" class="w-full h-full object-contain">
+                                    <img src="<?php echo e(asset('images/operators/africell.jpeg')); ?>" alt="Africell Money" class="w-full h-full object-contain">
                                 </div>
                                 <span class="block text-xs font-semibold text-blue-600 dark:text-blue-400">Africell Money</span>
                                 <span class="block text-[10px] text-gray-400 mt-0.5">90/91</span>
@@ -81,7 +79,7 @@
                     </div>
                 </div>
 
-                @if(isset($cart) && !empty($cart))
+                <?php if(isset($cart) && !empty($cart)): ?>
                     <!-- Récapitulatif commande -->
                     <div class="mb-8 p-5 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-750 rounded-xl border border-gray-200 dark:border-gray-700">
                         <h5 class="text-base font-bold text-gray-900 dark:text-white mb-4 flex items-center">
@@ -91,40 +89,42 @@
                             Votre commande
                         </h5>
                         <div class="space-y-2 mb-4">
-                            @foreach($cart as $item)
+                            <?php $__currentLoopData = $cart; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="flex items-center justify-between py-2.5 border-b border-gray-200 dark:border-gray-700 last:border-0">
                                     <div class="flex items-center space-x-3 min-w-0">
-                                        @if(isset($item['image']) && $item['image'])
-                                            <img src="{{ asset('storage/' . $item['image']) }}" 
-                                                 alt="{{ $item['name'] }}" 
+                                        <?php if(isset($item['image']) && $item['image']): ?>
+                                            <img src="<?php echo e(asset('storage/' . $item['image'])); ?>" 
+                                                 alt="<?php echo e($item['name']); ?>" 
                                                  class="w-11 h-11 rounded-lg object-cover flex-shrink-0">
-                                        @else
+                                        <?php else: ?>
                                             <div class="w-11 h-11 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                                 <i class="fas fa-box text-gray-400"></i>
                                             </div>
-                                        @endif
+                                        <?php endif; ?>
                                         <div class="min-w-0">
-                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate">{{ $item['name'] }}</span>
-                                            <span class="text-xs text-gray-400">x{{ $item['quantity'] }}</span>
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-200 block truncate"><?php echo e($item['name']); ?></span>
+                                            <span class="text-xs text-gray-400">x<?php echo e($item['quantity']); ?></span>
                                         </div>
                                     </div>
                                     <span class="font-semibold text-gray-900 dark:text-white text-sm flex-shrink-0 ml-3">
-                                        {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
+                                        <?php echo e(number_format($item['price'] * $item['quantity'], 2)); ?> <?php echo e($item['currency']); ?>
+
                                     </span>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </div>
 
-                        @php
+                        <?php
                             $displayTotal = isset($total) ? $total : (isset($totalInPriority) ? $totalInPriority : 0);
                             $displayCurrency = isset($currency) ? $currency : (isset($priorityCurrency) ? $priorityCurrency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD'));
-                        @endphp
+                        ?>
 
                         <div class="border-t-2 border-green-500 pt-4 mt-2">
                             <div class="flex justify-between items-center">
                                 <span class="text-base font-bold text-gray-900 dark:text-white">Total à payer</span>
                                 <span class="text-xl font-bold text-green-600 dark:text-green-400">
-                                    {{ number_format($displayTotal, 2) }} {{ $displayCurrency }}
+                                    <?php echo e(number_format($displayTotal, 2)); ?> <?php echo e($displayCurrency); ?>
+
                                 </span>
                             </div>
                         </div>
@@ -138,11 +138,11 @@
                             </div>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?>
 
                 <!-- Formulaire de paiement -->
                 <form id="maishapay-form">
-                    @csrf
+                    <?php echo csrf_field(); ?>
 
                     <!-- Numéro de téléphone -->
                     <div class="mb-6">
@@ -176,10 +176,11 @@
                                    class="flex-1 px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-r-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg tracking-wider bg-white dark:bg-gray-900" 
                                    id="phone" 
                                    name="phone" 
-                                   maxlength="11" 
+                                   maxlength="9" 
                                    placeholder="XX XXX XXXX" 
                                    required
-                                   autocomplete="tel">
+                                   autocomplete="tel"
+                                   pattern="[0-9]{9}">
                         </div>
                         <p class="text-xs text-gray-400 mt-2 flex items-center gap-1.5">
                             <i class="fas fa-info-circle"></i>
@@ -202,21 +203,22 @@
                                    step="0.01" 
                                    required 
                                    readonly
-                                   value="{{ $displayTotal ?? $total ?? '' }}">
+                                   value="<?php echo e($displayTotal ?? $total ?? ''); ?>">
                             <span class="inline-flex items-center px-4 py-3.5 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-r-xl font-medium text-sm text-gray-700 dark:text-gray-200 shadow-sm">
-                                {{ $displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}
+                                <?php echo e($displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD')); ?>
+
                             </span>
                         </div>
-                        <input type="hidden" name="currency" value="{{ $displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD') }}">
+                        <input type="hidden" name="currency" value="<?php echo e($displayCurrency ?? $currency ?? (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD')); ?>">
                     </div>
 
                     <input type="hidden" id="description" name="description" value="Paiement VintApp">
-                    <input type="hidden" id="buyer_id" name="buyer_id" value="{{ Auth::id() }}">
-                    @if(isset($deliveryAddress))
-                        <input type="hidden" name="delivery_address_id" value="{{ $deliveryAddress->id }}">
-                    @endif
+                    <input type="hidden" id="buyer_id" name="buyer_id" value="<?php echo e(Auth::id()); ?>">
+                    <?php if(isset($deliveryAddress)): ?>
+                        <input type="hidden" name="delivery_address_id" value="<?php echo e($deliveryAddress->id); ?>">
+                    <?php endif; ?>
 
-                    @if(isset($deliveryAddress))
+                    <?php if(isset($deliveryAddress)): ?>
                     <!-- Adresse de livraison -->
                     <div class="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
                         <div class="flex items-start gap-3">
@@ -226,15 +228,16 @@
                             <div>
                                 <h6 class="font-semibold text-blue-800 dark:text-blue-200 text-sm">Livraison à</h6>
                                 <p class="text-sm text-blue-700 dark:text-blue-300 mt-0.5">
-                                    <strong>{{ $deliveryAddress->full_name }}</strong><br>
-                                    {{ $deliveryAddress->address }}, {{ $deliveryAddress->commune }}<br>
-                                    {{ $deliveryAddress->city }}<br>
-                                    <i class="fas fa-phone mr-1"></i>{{ $deliveryAddress->phone }}
+                                    <strong><?php echo e($deliveryAddress->full_name); ?></strong><br>
+                                    <?php echo e($deliveryAddress->address); ?>, <?php echo e($deliveryAddress->commune); ?><br>
+                                    <?php echo e($deliveryAddress->city); ?><br>
+                                    <i class="fas fa-phone mr-1"></i><?php echo e($deliveryAddress->phone); ?>
+
                                 </p>
                             </div>
                         </div>
                     </div>
-                    @endif
+                    <?php endif; ?>
 
                     <!-- Bouton de paiement -->
                     <button type="submit" 
@@ -312,22 +315,22 @@ input[type="tel"]:focus::placeholder {
 }
 </style>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
-const buyerId = {{ Auth::id() ?? 'null' }};
+const buyerId = <?php echo e(Auth::id() ?? 'null'); ?>;
 
 const operators = {
-    '81': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '{{ asset("images/operators/mpesa.jpeg") }}' },
-    '82': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '{{ asset("images/operators/mpesa.jpeg") }}' },
-    '83': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '{{ asset("images/operators/mpesa.jpeg") }}' },
-    '84': { name: 'Orange Money', code: 'ORANGE', logo: '{{ asset("images/operators/orange.jpeg") }}' },
-    '85': { name: 'Orange Money', code: 'ORANGE', logo: '{{ asset("images/operators/orange.jpeg") }}' },
-    '89': { name: 'Orange Money', code: 'ORANGE', logo: '{{ asset("images/operators/orange.jpeg") }}' },
-    '97': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
-    '98': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
-    '99': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
-    '90': { name: 'Africell Money', code: 'AFRICELL', logo: '{{ asset("images/operators/africell.jpeg") }}' },
-    '91': { name: 'Africell Money', code: 'AFRICELL', logo: '{{ asset("images/operators/africell.jpeg") }}' },
+    '81': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '<?php echo e(asset("images/operators/mpesa.jpeg")); ?>' },
+    '82': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '<?php echo e(asset("images/operators/mpesa.jpeg")); ?>' },
+    '83': { name: 'Vodacom M-Pesa', code: 'VODACOM', logo: '<?php echo e(asset("images/operators/mpesa.jpeg")); ?>' },
+    '84': { name: 'Orange Money', code: 'ORANGE', logo: '<?php echo e(asset("images/operators/orange.jpeg")); ?>' },
+    '85': { name: 'Orange Money', code: 'ORANGE', logo: '<?php echo e(asset("images/operators/orange.jpeg")); ?>' },
+    '89': { name: 'Orange Money', code: 'ORANGE', logo: '<?php echo e(asset("images/operators/orange.jpeg")); ?>' },
+    '97': { name: 'Airtel Money', code: 'AIRTEL', logo: '<?php echo e(asset("images/operators/airtel.jpeg")); ?>' },
+    '98': { name: 'Airtel Money', code: 'AIRTEL', logo: '<?php echo e(asset("images/operators/airtel.jpeg")); ?>' },
+    '99': { name: 'Airtel Money', code: 'AIRTEL', logo: '<?php echo e(asset("images/operators/airtel.jpeg")); ?>' },
+    '90': { name: 'Africell Money', code: 'AFRICELL', logo: '<?php echo e(asset("images/operators/africell.jpeg")); ?>' },
+    '91': { name: 'Africell Money', code: 'AFRICELL', logo: '<?php echo e(asset("images/operators/africell.jpeg")); ?>' },
 };
 
 function formatPhoneInput(value) {
@@ -436,7 +439,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
     statusDiv.classList.remove('hidden');
 
     try {
-        const response = await fetch('{{ route("payments.maishapay.initiate") }}', {
+        const response = await fetch('<?php echo e(route("payments.maishapay.initiate")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -474,7 +477,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
             submitBtn.innerHTML = '<i class="fas fa-check"></i><span>Paiement réussi ✓</span>';
 
             setTimeout(() => {
-                window.location.href = '{{ route("payments.success", ":id") }}'.replace(':id', data.transaction_id);
+                window.location.href = '<?php echo e(route("payments.success", ":id")); ?>'.replace(':id', data.transaction_id);
             }, 2000);
         } else {
             throw new Error(data.message || 'Erreur de paiement');
@@ -497,5 +500,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
     }
 });
 </script>
-@endpush
-@endsection
+<?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /home/aizen/Bureau/sky/vintApp/resources/views/payments/maishapay.blade.php ENDPATH**/ ?>
