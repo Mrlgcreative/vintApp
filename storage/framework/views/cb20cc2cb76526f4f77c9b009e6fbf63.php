@@ -886,51 +886,7 @@ function submitDiscountRequest() {
             updateAddToCartButton(true);
         }
         
-        function applyDiscount() {
-            const section = document.getElementById('discountSection');
-            const discountId = section.dataset.discountId;
-            
-            if (!discountId) return;
-            
-            fetch(`/discounts/${discountId}/apply`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const priceElement = document.querySelector('.bg-gradient-to-r.from-primary-600.to-primary-800.bg-clip-text.text-transparent');
-                    if (priceElement && priceElement.parentElement) {
-                        const currencySymbol = '<?php echo e($item->currency_symbol); ?>';
-                        priceElement.parentElement.innerHTML = `
-                            <div class="flex items-baseline justify-between flex-wrap gap-4">
-                                <span class="text-2xl lg:text-3xl line-through text-gray-400"><?php echo e($item->formatted_price); ?></span>
-                                <span class="text-4xl lg:text-5xl font-black text-emerald-600">
-                                    ${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(data.final_price)}
-                                </span>
-                                <span class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                                    -${data.discount_percentage}%
-                                </span>
-                            </div>
-                        `;
-                    }
-                    
-                    section.classList.add('hidden');
-                    updateAddToCartButton(true);
-                    showNotification(data.message, 'success');
-                } else {
-                    showNotification(data.error || 'Erreur lors de l\'application de la réduction', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showNotification('Une erreur est survenue', 'danger');
-            });
-        }
+
     <?php endif; ?>
 <?php endif; ?>
 

@@ -445,9 +445,9 @@ class ItemController extends Controller
         }
 
         // Gestion des nouvelles images
-        if ($request->hasFile('images')) {
+        $hasNewImages = $request->hasFile('images');
+        if ($hasNewImages) {
             $currentImages = $item->images ?? [];
-            // S'assurer que le dossier existe
             if (!Storage::disk('public')->exists('items')) {
                 Storage::disk('public')->makeDirectory('items');
             }
@@ -457,16 +457,14 @@ class ItemController extends Controller
                 if (!Storage::disk('public')->exists($path)) {
                     throw new \Exception('Erreur lors de l\'upload de l\'image.');
                 }
-                // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
                 StorageSyncService::syncFile($path);
                 $currentImages[] = $path;
             }
             $item->images = $currentImages;
         }
 
-        // Après mise à jour des images, relancer la vérification automatique
-        if ($item->images && is_array($item->images) && count($item->images) > 0) {
-            // Récupérer les noms de catégorie et marque
+        // Ne relancer la vérification que si de nouvelles images sont uploadées
+        if ($hasNewImages) {
             $category = Category::find($item->category_id);
             $brand = Brand::find($item->brand_id);
             
@@ -478,16 +476,12 @@ class ItemController extends Controller
                 $category->name ?? null
             );
             
-            // Appliquer le résultat de la vérification IA (pré-vérification)
             $item->verification_status = $verification['status'];
             $item->verification_score = $verification['score'];
             $item->verification_details = $verification['details'];
-            // Note: verified_at sera défini par l'expert lors de la vérification manuelle
             
-            // Tous les articles doivent passer par l'expert, peu importe le résultat IA
-            // Le verification_status garde le résultat IA mais status force pending_verification
             if ($verification['status'] !== 'rejected') {
-                $item->verification_status = 'pending'; // En attente de l'expert
+                $item->verification_status = 'pending';
             }
             $item->status = 'pending_verification';
         }
