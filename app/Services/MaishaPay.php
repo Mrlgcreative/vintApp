@@ -131,7 +131,7 @@ class MaishaPay
 
             $result = $response->json();
 
-            Log::info('MaishaPay: Réponse API v2', [
+            Log::info('MaishaPay: Reponse API v2', [
                 'status' => $response->status(),
                 'response' => $result,
             ]);
@@ -140,9 +140,9 @@ class MaishaPay
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'maishapay_id' => $result['data']['transactionId'] ?? $result['transactionId'] ?? null,
+                    'maishapay_id' => $result['data']['transactionId'] ?? $result['data']['reference'] ?? $result['data']['id'] ?? $result['transactionId'] ?? $result['transactionReference'] ?? $result['reference'] ?? $result['id'] ?? null,
                     'status' => 'pending',
-                    'message' => $result['message'] ?? 'Paiement initié. Confirmez sur votre téléphone.',
+                    'message' => $result['message'] ?? 'Paiement initie. Confirmez sur votre telephone.',
                     'data' => $result['data'] ?? $result,
                 ];
             }
@@ -151,7 +151,7 @@ class MaishaPay
                 'success' => false,
                 'transaction_id' => $transactionId,
                 'status' => 'failed',
-                'message' => $result['title'] ?? $result['message'] ?? 'Erreur lors de l\'initiation du paiement',
+                'message' => $result['title'] ?? $result['message'] ?? "Erreur lors de l'initiation du paiement",
                 'error' => $result['errors'] ?? $result['error'] ?? null,
             ];
 
@@ -180,31 +180,37 @@ class MaishaPay
 
             $result = $response->json();
 
-            Log::info('MaishaPay: Vérification statut', [
+            Log::info('MaishaPay: Verification statut', [
                 'transaction_id' => $transactionId,
-                'status' => $response->status(),
+                'status_code' => $response->status(),
                 'response' => $result,
             ]);
 
             if ($response->successful()) {
+                $status = $result['data']['status']
+                    ?? $result['status']
+                    ?? $result['transactionStatus']
+                    ?? $result['state']
+                    ?? 'unknown';
+
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'status' => $result['data']['status'] ?? 'unknown',
-                    'message' => $result['message'] ?? '',
-                    'data' => $result['data'] ?? [],
+                    'status' => $status,
+                    'message' => $result['message'] ?? $result['data']['message'] ?? '',
+                    'data' => $result['data'] ?? $result,
                 ];
             }
 
             return [
                 'success' => false,
                 'transaction_id' => $transactionId,
-                'status' => 'unknown',
-                'message' => $result['message'] ?? 'Impossible de vérifier le statut',
+                'status' => $result['status'] ?? $result['data']['status'] ?? 'unknown',
+                'message' => $result['message'] ?? 'Impossible de verifier le statut',
             ];
 
         } catch (\Exception $e) {
-            Log::error('MaishaPay: Erreur vérification statut', [
+            Log::error('MaishaPay: Erreur verification statut', [
                 'transaction_id' => $transactionId,
                 'error' => $e->getMessage(),
             ]);
@@ -287,7 +293,7 @@ class MaishaPay
             ],
         ];
 
-        Log::info('MaishaPay: Initiation décaissement B2C', [
+        Log::info('MaishaPay: Initiation decaissement B2C', [
             'reference' => $transactionId,
             'amount' => $payload['order']['amount'],
             'currency' => $payload['order']['currency'],
@@ -306,7 +312,7 @@ class MaishaPay
 
             $result = $response->json();
 
-            Log::info('MaishaPay: Réponse payout API B2C', [
+            Log::info('MaishaPay: Reponse payout API B2C', [
                 'status' => $response->status(),
                 'response' => $result,
             ]);
@@ -315,10 +321,10 @@ class MaishaPay
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'maishapay_id' => $result['data']['transactionId'] ?? $result['transactionId'] ?? null,
+                    'maishapay_id' => $result['data']['transactionId'] ?? $result['data']['reference'] ?? $result['data']['id'] ?? $result['transactionId'] ?? $result['transactionReference'] ?? $result['reference'] ?? $result['id'] ?? null,
                     'provider_reference' => $result['data']['transactionId'] ?? $transactionId,
                     'status' => 'processing',
-                    'message' => $result['message'] ?? 'Décaissement initié avec succès',
+                    'message' => $result['message'] ?? 'Decaissement initie avec succes',
                     'data' => $result['data'] ?? $result,
                 ];
             }
@@ -327,7 +333,7 @@ class MaishaPay
                 'success' => false,
                 'transaction_id' => $transactionId,
                 'status' => 'failed',
-                'message' => $result['title'] ?? $result['message'] ?? 'Erreur lors du décaissement',
+                'message' => $result['title'] ?? $result['message'] ?? "Erreur lors du decaissement",
                 'error' => $result['errors'] ?? $result['error'] ?? null,
             ];
 
@@ -370,11 +376,11 @@ class MaishaPay
                 'success' => false,
                 'transaction_id' => $transactionId,
                 'status' => 'unknown',
-                'message' => $result['message'] ?? 'Impossible de vérifier le statut',
+                'message' => $result['message'] ?? 'Impossible de verifier le statut',
             ];
 
         } catch (\Exception $e) {
-            Log::error('MaishaPay: Erreur vérification statut payout', [
+            Log::error('MaishaPay: Erreur verification statut payout', [
                 'transaction_id' => $transactionId,
                 'error' => $e->getMessage(),
             ]);

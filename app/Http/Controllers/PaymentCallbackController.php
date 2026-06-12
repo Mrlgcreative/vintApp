@@ -484,7 +484,7 @@ class PaymentCallbackController extends Controller
     /**
      * Endpoint pour vérifier le statut d'une transaction (polling)
      */
-    public function checkStatus(Request $request)
+        public function checkStatus(Request $request)
     {
         $transactionId = $request->input('transaction_id');
         
@@ -497,7 +497,6 @@ class PaymentCallbackController extends Controller
             ], 404);
         }
 
-        // Si déjà complété ou échoué, retourner directement
         if (in_array($transaction->status, ['completed', 'failed'])) {
             return response()->json([
                 'status' => 'success',
@@ -512,38 +511,60 @@ class PaymentCallbackController extends Controller
             ]);
         }
 
-        // Vérifier le vrai statut auprès de MaishaPay si applicable
         if ($transaction->provider === 'maishapay' && $transaction->transaction_ref) {
             try {
                 $maishaPay = new MaishaPay();
-                $result = $maishaPay->checkStatus($transaction->transaction_ref);
 
-                if ($result['success']) {
-                    $apiStatus = strtolower($result['status']);
-                    $newStatus = match($apiStatus) {
-                        'success', 'completed', 'successful' => 'completed',
-                        'failed', 'declined', 'cancelled' => 'failed',
-                        default => 'pending',
-                    };
+                $metadata = json_decode($transaction->metadata, true) ?? [];
+                $refsToTry = array_unique(array_filter([
+                    $transaction->transaction_ref,
+                    $transaction->transaction_id,
+                    $metadata['maishapay_id'] ?? null,
+                    $metadata['ref'] ?? null,
+                ]));
 
-                    if ($newStatus !== $transaction->status) {
-                        $transaction->update(['status' => $newStatus]);
+                foreach ($refsToTry as $ref) {
+                    $result = $maishaPay->checkStatus($ref);
+
+                    if ($result['success']) {
+                        $apiStatus = strtolower($result['status']);
+
+                        if (in_array($apiStatus, ['success', 'completed', 'successful'])) {
+                            $transaction->update([
+                                'status' => 'completed',
+                                'transaction_ref' => $ref,
+                            ]);
+                            return response()->json([
+                                'status' => 'success',
+                                'transaction' => [
+                                    'id' => $transaction->id,
+                                    'status' => 'completed',
+                                    'amount' => $transaction->amount,
+                                    'currency' => $transaction->currency,
+                                    'created_at' => $transaction->created_at,
+                                    'completed_at' => $transaction->completed_at,
+                                ],
+                            ]);
+                        }
+
+                        if (in_array($apiStatus, ['failed', 'declined', 'cancelled'])) {
+                            $transaction->update(['status' => 'failed']);
+                            return response()->json([
+                                'status' => 'success',
+                                'transaction' => [
+                                    'id' => $transaction->id,
+                                    'status' => 'failed',
+                                    'amount' => $transaction->amount,
+                                    'currency' => $transaction->currency,
+                                    'created_at' => $transaction->created_at,
+                                    'completed_at' => $transaction->completed_at,
+                                ],
+                            ]);
+                        }
                     }
-
-                    return response()->json([
-                        'status' => 'success',
-                        'transaction' => [
-                            'id' => $transaction->id,
-                            'status' => $newStatus,
-                            'amount' => $transaction->amount,
-                            'currency' => $transaction->currency,
-                            'created_at' => $transaction->created_at,
-                            'completed_at' => $transaction->completed_at,
-                        ],
-                    ]);
                 }
             } catch (\Exception $e) {
-                Log::error('Erreur vérification statut MaishaPay', [
+                Log::error('Erreur verification statut MaishaPay', [
                     'error' => $e->getMessage(),
                     'transaction_id' => $transactionId,
                 ]);
@@ -561,13 +582,7 @@ class PaymentCallbackController extends Controller
                 'completed_at' => $transaction->completed_at,
             ],
         ]);
-    }
-
-    /**
-     * Protection contre les replay attacks
-     * Empêche qu'un même callback soit traité plusieurs fois
-     */
-    protected function preventReplayAttack(Request $request, string $provider): bool
+    }protected function preventReplayAttack(Request $request, string $provider): bool
     {
         // Créer une signature unique basée sur le contenu du callback
         $payload = json_encode($request->all());
