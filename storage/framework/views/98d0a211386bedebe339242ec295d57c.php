@@ -176,11 +176,10 @@
                                    class="flex-1 px-4 py-3.5 border border-gray-300 dark:border-gray-600 rounded-r-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all text-lg tracking-wider bg-white dark:bg-gray-900" 
                                    id="phone" 
                                    name="phone" 
-                                   maxlength="9" 
+                                   maxlength="11" 
                                    placeholder="XX XXX XXXX" 
                                    required
-                                   autocomplete="tel"
-                                   pattern="[0-9]{9}">
+                                   autocomplete="tel">
                         </div>
                         <p class="text-xs text-gray-400 mt-2 flex items-center gap-1.5">
                             <i class="fas fa-info-circle"></i>
