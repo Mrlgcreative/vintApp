@@ -1,12 +1,10 @@
-@extends('app')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="min-h-[80vh] flex items-center justify-center px-4 py-10">
     <div class="w-full max-w-md">
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-8 text-center">
             <div id="payment-icon" class="mb-5">
                 <div class="w-16 h-16 mx-auto rounded-full bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-primary-600 dark:text-primary-400 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <svg class="w-8 h-8 text-primary-600 animate-spin" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
                     </svg>
@@ -21,20 +19,20 @@
             <div id="transaction-info" class="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4 mb-5 text-sm text-left space-y-2">
                 <div class="flex justify-between">
                     <span class="text-gray-500">Montant</span>
-                    <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($transaction->amount, 2) }} {{ $transaction->currency ?? 'USD' }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white"><?php echo e(number_format($transaction->amount, 2)); ?> <?php echo e($transaction->currency ?? 'USD'); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-500">Opérateur</span>
-                    <span class="font-medium text-gray-700 dark:text-gray-300">{{ ucfirst(str_replace('_', ' ', $transaction->provider ?? '...')) }}</span>
+                    <span class="font-medium text-gray-700 dark:text-gray-300"><?php echo e(ucfirst(str_replace('_', ' ', $transaction->provider ?? '...'))); ?></span>
                 </div>
                 <div class="flex justify-between">
                     <span class="text-gray-500">Téléphone</span>
-                    <span class="font-mono text-sm">{{ $transaction->phone ?? '...' }}</span>
+                    <span class="font-mono text-sm"><?php echo e($transaction->phone ?? '...'); ?></span>
                 </div>
             </div>
 
             <div class="w-full h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full mb-5 overflow-hidden">
-                <div id="progress-bar" class="h-full rounded-full bg-primary-500 dark:bg-primary-400 transition-all duration-500" style="width: 30%"></div>
+                <div id="progress-bar" class="h-full rounded-full bg-primary-500 transition-all duration-500" style="width: 30%"></div>
             </div>
 
             <div id="payment-instructions" class="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-100 dark:border-yellow-900/20 rounded-xl p-4 mb-5 text-sm text-yellow-800 dark:text-yellow-200">
@@ -54,13 +52,13 @@
             </div>
 
             <div id="payment-actions" class="flex gap-2 justify-center">
-                <button onclick="checkStatus()" class="px-4 py-2 text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
+                <button onclick="checkStatus()" class="px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
                     <svg class="w-4 h-4 inline mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                     Actualiser
                 </button>
-                <a href="{{ route('home') }}" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                <a href="<?php echo e(route('home')); ?>" class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                     Retour
                 </a>
             </div>
@@ -69,7 +67,7 @@
 </div>
 
 <script>
-const transactionId = {{ $transaction->id ?? 'null' }};
+const transactionId = <?php echo e($transaction->id ?? 'null'); ?>;
 let pollingInterval = null;
 let pollingCount = 0;
 const maxPollingAttempts = 120;
@@ -164,4 +162,6 @@ function showTimeout() {
 
 window.addEventListener('beforeunload', stopPolling);
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /home/aizen/Bureau/sky/vintApp/resources/views/payment-status.blade.php ENDPATH**/ ?>

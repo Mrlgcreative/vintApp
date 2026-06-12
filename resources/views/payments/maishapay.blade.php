@@ -466,7 +466,7 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
                     <div class="min-w-0">
                         <p class="font-semibold text-green-800 dark:text-green-200 text-sm">Paiement initié avec succès !</p>
                         <p class="text-xs text-green-600 dark:text-green-400 mt-0.5">${data.message}</p>
-                        <p class="text-[11px] text-green-500 dark:text-green-500 mt-1.5 font-mono bg-white dark:bg-green-900/30 inline-block px-2 py-0.5 rounded">
+                        <p class="text-[11px] text-green-500 dark:text-green-400 mt-1.5 font-mono bg-white dark:bg-green-900/30 inline-block px-2 py-0.5 rounded">
                             Réf: ${data.transaction_id}
                         </p>
                     </div>
