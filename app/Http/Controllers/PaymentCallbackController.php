@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use App\Models\Order;
 use App\Models\Wallet;
 use App\Models\User;
+use App\Services\MaishaPay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -494,6 +495,59 @@ class PaymentCallbackController extends Controller
                 'status' => 'error',
                 'message' => 'Transaction not found'
             ], 404);
+        }
+
+        // Si déjà complété ou échoué, retourner directement
+        if (in_array($transaction->status, ['completed', 'failed'])) {
+            return response()->json([
+                'status' => 'success',
+                'transaction' => [
+                    'id' => $transaction->id,
+                    'status' => $transaction->status,
+                    'amount' => $transaction->amount,
+                    'currency' => $transaction->currency,
+                    'created_at' => $transaction->created_at,
+                    'completed_at' => $transaction->completed_at,
+                ],
+            ]);
+        }
+
+        // Vérifier le vrai statut auprès de MaishaPay si applicable
+        if ($transaction->provider === 'maishapay' && $transaction->transaction_ref) {
+            try {
+                $maishaPay = new MaishaPay();
+                $result = $maishaPay->checkStatus($transaction->transaction_ref);
+
+                if ($result['success']) {
+                    $apiStatus = strtolower($result['status']);
+                    $newStatus = match($apiStatus) {
+                        'success', 'completed', 'successful' => 'completed',
+                        'failed', 'declined', 'cancelled' => 'failed',
+                        default => 'pending',
+                    };
+
+                    if ($newStatus !== $transaction->status) {
+                        $transaction->update(['status' => $newStatus]);
+                    }
+
+                    return response()->json([
+                        'status' => 'success',
+                        'transaction' => [
+                            'id' => $transaction->id,
+                            'status' => $newStatus,
+                            'amount' => $transaction->amount,
+                            'currency' => $transaction->currency,
+                            'created_at' => $transaction->created_at,
+                            'completed_at' => $transaction->completed_at,
+                        ],
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::error('Erreur vérification statut MaishaPay', [
+                    'error' => $e->getMessage(),
+                    'transaction_id' => $transactionId,
+                ]);
+            }
         }
 
         return response()->json([
