@@ -390,11 +390,7 @@
                                         <div id="discountInfo" class="text-gray-600 dark:text-gray-300 text-sm"></div>
                                     </div>
                                 </div>
-                                <button onclick="applyDiscount()" 
-                                    class="w-full bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                    Appliquer la réduction
-                                </button>
+
                             </div>
                         @endif
                     @endauth
@@ -875,51 +871,7 @@ function submitDiscountRequest() {
             updateAddToCartButton(true);
         }
         
-        function applyDiscount() {
-            const section = document.getElementById('discountSection');
-            const discountId = section.dataset.discountId;
-            
-            if (!discountId) return;
-            
-            fetch(`/discounts/${discountId}/apply`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const priceElement = document.querySelector('.bg-gradient-to-r.from-primary-600.to-primary-800.bg-clip-text.text-transparent');
-                    if (priceElement && priceElement.parentElement) {
-                        const currencySymbol = '{{ $item->currency_symbol }}';
-                        priceElement.parentElement.innerHTML = `
-                            <div class="flex items-baseline justify-between flex-wrap gap-4">
-                                <span class="text-2xl lg:text-3xl line-through text-gray-400">{{ $item->formatted_price }}</span>
-                                <span class="text-4xl lg:text-5xl font-black text-emerald-600">
-                                    ${currencySymbol} ${new Intl.NumberFormat('fr-FR').format(data.final_price)}
-                                </span>
-                                <span class="bg-emerald-500 text-white px-3 py-1 rounded-lg text-sm font-semibold">
-                                    -${data.discount_percentage}%
-                                </span>
-                            </div>
-                        `;
-                    }
-                    
-                    section.classList.add('hidden');
-                    updateAddToCartButton(true);
-                    showNotification(data.message, 'success');
-                } else {
-                    showNotification(data.error || 'Erreur lors de l\'application de la réduction', 'danger');
-                }
-            })
-            .catch(error => {
-                console.error('Erreur:', error);
-                showNotification('Une erreur est survenue', 'danger');
-            });
-        }
+
     @endif
 @endauth
 

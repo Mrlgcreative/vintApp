@@ -2,14 +2,6 @@
 <?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900" data-page-type="product-detail">
     <div class="container mx-auto px-4 py-8 lg:py-16">
-        <!-- Breadcrumb -->
-        <nav class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400 mb-8">
-            <a href="<?php echo e(route('home')); ?>" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Accueil</a>
-            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <a href="<?php echo e(route('items.index')); ?>" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Produits</a>
-            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <span class="text-gray-900 dark:text-white font-medium"><?php echo e(Str::limit($item->name, 30)); ?></span>
-        </nav>
 
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
             <!-- Galerie d'images verticale -->
@@ -78,13 +70,13 @@
                         <div class="flex-1 pr-3 lg:pr-4">
                             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight mb-3 lg:mb-4"><?php echo e($item->name); ?></h1>
                             <div class="flex flex-wrap gap-2">
-                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                     <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                                     <?php echo e($item->category->name); ?>
 
                                 </span>
                                 <?php if($item->brand): ?>
-                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary dark:text-primary-300 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                                         <?php echo e($item->brand->name); ?>
 
@@ -119,7 +111,7 @@
                                         Vérification en cours
                                     </span>
                                 <?php elseif($item->canRequestVerification()): ?>
-                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 text-blue-600 border border-blue-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                                    <span class="inline-flex items-center px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg lg:rounded-xl bg-gradient-to-r from-primary-50 to-primary-100 text-primary border border-primary-200/50 text-xs lg:text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                                         <i class="fas fa-question-circle mr-1.5 lg:mr-2 text-xs lg:text-sm"></i>
                                         Non vérifié
                                     </span>
@@ -135,9 +127,9 @@
                     </div>
 
                     <!-- Section prix -->
-                    <div class="bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-blue-200/30 dark:border-blue-700/30 mb-4 lg:mb-6">
+                    <div class="bg-gradient-to-r from-primary-50/50 to-primary-100/50 dark:from-primary-900/20 dark:to-primary-900/20 p-4 lg:p-6 rounded-xl lg:rounded-2xl border-2 border-primary-200/30 dark:border-primary-700/30 mb-4 lg:mb-6">
                         <div class="flex items-center justify-between flex-wrap gap-3 lg:gap-4">
-                            <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            <span class="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-primary to-primary-600 bg-clip-text text-transparent">
                                 <?php echo e($item->formatted_price); ?>
 
                             </span>
@@ -158,10 +150,10 @@
                     </div>
 
                     <!-- Métadonnées du produit -->
-                    <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-4 lg:mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-4 lg:p-6 rounded-xl lg:rounded-2xl border border-primary-200/20 dark:border-gray-700 mb-4 lg:mb-6">
                         <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </div>
                                 <div>
@@ -171,7 +163,7 @@
                             </div>
                             
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                                 </div>
                                 <div>
@@ -182,7 +174,7 @@
 
                             <?php if($item->color): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                                 </div>
                                 <div>
@@ -194,13 +186,13 @@
 
                             <?php if($item->size): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
                                 </div>
                                 <div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-medium">Taille</p>
                                     <div class="text-gray-900 dark:text-white font-bold text-sm lg:text-base">
-                                        <span class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-2 py-1 rounded text-xs font-semibold">
+                                        <span class="bg-gradient-to-r from-primary to-primary-600 text-white px-2 py-1 rounded text-xs font-semibold">
                                             <?php echo e($item->size); ?>
 
                                         </span>
@@ -211,7 +203,7 @@
 
                             <?php if($item->item_number): ?>
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                                 </div>
                                 <div>
@@ -222,7 +214,7 @@
                             <?php endif; ?>
 
                             <div class="bg-white dark:bg-gray-800 p-3 lg:p-4 rounded-lg lg:rounded-xl flex items-center gap-2 lg:gap-3 transition-all duration-300 hover:shadow-md hover:-translate-y-1">
-                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <div class="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-r from-primary to-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
@@ -234,20 +226,20 @@
                     </div>
 
                     <!-- Section panier -->
-                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-primary-200/20 dark:border-gray-700 mb-6">
                         <form method="POST" action="<?php echo e(route('cart.add', $item->id)); ?>" id="addToCartForm">
                             <?php echo csrf_field(); ?>
                             <div class="mb-4">
                                 <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Quantité</label>
                                 <div class="flex items-center max-w-xs">
                                     <button type="button" onclick="decrementQuantity()" 
-                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-blue-200/50 dark:border-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-primary-200/50 dark:border-gray-600 text-primary dark:text-primary-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:scale-105">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
                                     </button>
                                     <input type="number" name="quantity" id="quantityInput" value="1" min="1" max="<?php echo e(max($item->quantity, 1)); ?>" 
-                                        class="flex-1 h-11 border-2 border-blue-200/50 dark:border-gray-600 dark:bg-gray-800 text-center font-bold text-gray-900 dark:text-white text-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300" <?php echo e($item->quantity == 0 ? 'disabled' : ''); ?>>
+                                        class="flex-1 h-11 border-2 border-primary-200/50 dark:border-gray-600 dark:bg-gray-800 text-center font-bold text-gray-900 dark:text-white text-lg focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none transition-all duration-300" <?php echo e($item->quantity == 0 ? 'disabled' : ''); ?>>
                                     <button type="button" onclick="incrementQuantity()" 
-                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-blue-200/50 dark:border-gray-600 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:scale-105">
+                                        class="w-11 h-11 bg-white dark:bg-gray-800 border-2 border-primary-200/50 dark:border-gray-600 text-primary dark:text-primary-400 rounded-xl flex items-center justify-center font-semibold transition-all duration-300 hover:bg-primary hover:text-white hover:border-primary hover:scale-105">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                                     </button>
                                 </div>
@@ -264,7 +256,7 @@
                                 <?php endif; ?>
                             </div>
                             <button type="submit" id="addToCartBtn" 
-                                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group flex items-center justify-center">
+                                class="w-full bg-gradient-to-r from-primary to-primary-600 text-white font-bold text-lg py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl relative overflow-hidden group flex items-center justify-center">
                                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
                                 <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                 <span>Ajouter au panier</span>
@@ -276,10 +268,10 @@
                     <?php if(auth()->guard()->check()): ?>
                         <?php if($item->user_id === auth()->id()): ?>
                             <?php if($item->canRequestVerification()): ?>
-                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-2xl border border-blue-200/50 dark:border-blue-700/30 mb-6">
+                                <div class="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/20 p-6 rounded-2xl border border-primary-200/50 dark:border-primary-700/30 mb-6">
                                     <div class="flex items-start space-x-4">
-                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <svg class="w-6 h-6 text-primary dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                         </div>
                                         <div class="flex-1">
                                             <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Authentifiez votre produit</h4>
@@ -289,7 +281,7 @@
                                             </p>
                                             <div class="flex flex-wrap gap-3">
                                                 <a href="<?php echo e(route('authenticity.request', $item)); ?>" 
-                                                   class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center">
+                                                   class="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-700 transition-colors flex items-center">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                                                     Demander la vérification
                                                 </a>
@@ -326,7 +318,7 @@
                                             </div>
                                         </div>
                                         <a href="<?php echo e(route('authenticity.status', $item)); ?>" 
-                                           class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                                           class="text-primary hover:text-primary-800 font-medium text-sm">
                                             Voir détails →
                                         </a>
                                     </div>
@@ -336,9 +328,9 @@
                     <?php endif; ?>
 
                     <!-- Description -->
-                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border-l-4 border-blue-600 mb-6">
+                    <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border-l-4 border-primary mb-6">
                         <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
-                            <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                            <svg class="w-5 h-5 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
                             Description
                         </h5>
                         <p class="text-gray-600 dark:text-gray-300 leading-relaxed"><?php echo e($item->description); ?></p>
@@ -346,9 +338,9 @@
 
                     <!-- Spécifications -->
                     <?php if($item->specifications && is_array($item->specifications) && count($item->specifications) > 0): ?>
-                        <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
+                        <div class="bg-gray-50 dark:bg-gray-900 p-6 rounded-2xl border border-primary-200/20 dark:border-gray-700 mb-6">
                             <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
-                                <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                <svg class="w-5 h-5 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
                                 Spécifications
                             </h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -363,14 +355,14 @@
                     <?php endif; ?>
 
                     <!-- Vendeur -->
-                    <div class="bg-gradient-to-r from-blue-50/30 to-indigo-50/30 dark:from-blue-900/10 dark:to-indigo-900/10 p-6 rounded-2xl border border-blue-200/20 dark:border-gray-700 mb-6">
+                    <div class="bg-gradient-to-r from-primary-50/30 to-primary-100/30 dark:from-primary-900/10 dark:to-primary-900/20 p-6 rounded-2xl border border-primary-200/20 dark:border-gray-700 mb-6">
                         <h5 class="text-lg font-bold text-gray-900 dark:text-white flex items-center mb-4">
-                            <svg class="w-5 h-5 text-blue-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <svg class="w-5 h-5 text-primary mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                             Vendeur
                         </h5>
                         <div class="bg-white dark:bg-gray-800 p-5 rounded-xl transition-all duration-300 hover:shadow-lg">
                             <div class="flex items-center">
-                                <div class="w-15 h-15 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
+                                <div class="w-15 h-15 rounded-full bg-gradient-to-r from-primary to-primary-600 flex items-center justify-center text-white text-2xl mr-4 flex-shrink-0">
                                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                 </div>
                                 <div class="flex-1">
@@ -405,11 +397,7 @@
                                         <div id="discountInfo" class="text-gray-600 dark:text-gray-300 text-sm"></div>
                                     </div>
                                 </div>
-                                <button onclick="applyDiscount()" 
-                                    class="w-full bg-emerald-500 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex items-center justify-center">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                    Appliquer la réduction
-                                </button>
+
                             </div>
                         <?php endif; ?>
                     <?php endif; ?>
@@ -422,7 +410,7 @@
                                 <form id="contactForm" method="POST" action="<?php echo e(route('contact.seller', $item)); ?>">
                                     <?php echo csrf_field(); ?>
                                     <button type="button" onclick="openModal('contactModal')"
-                                        class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3 flex items-center justify-center">
+                                        class="w-full bg-gradient-to-r from-primary to-primary-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl mb-3 flex items-center justify-center">
                                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2zM10 8.5a.5.5 0 11-1 0 .5.5 0 011 0zm5 5a.5.5 0 11-1 0 .5.5 0 011 0z"/></svg>
                                         Demander une réduction
                                     </button>
@@ -430,7 +418,7 @@
                                 
                                 <!-- Bouton contact vendeur -->
                                 <button onclick="contactSeller()" 
-                                    class="w-full bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 border-2 border-blue-600 dark:border-blue-500 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white hover:-translate-y-1 hover:shadow-lg flex items-center justify-center">
+                                    class="w-full bg-white dark:bg-gray-800 text-primary dark:text-primary-400 border-2 border-primary dark:border-primary-500 font-semibold py-4 rounded-2xl transition-all duration-300 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-white hover:-translate-y-1 hover:shadow-lg flex items-center justify-center">
                                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                     Contacter le vendeur
                                 </button>
@@ -450,7 +438,7 @@
                             <?php endif; ?>
                         <?php else: ?>
                             <a href="<?php echo e(route('login')); ?>" 
-                                class="block w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
+                                class="block w-full bg-gradient-to-r from-primary to-primary-600 text-white font-bold text-lg py-5 rounded-2xl text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-3xl">
                                 <svg class="w-5 h-5 mr-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                                 Se connecter pour acheter
                             </a>
@@ -660,7 +648,7 @@
                         <textarea name="custom_message" 
                                   id="customMessage" 
                                   rows="4" 
-                                  class="w-full border-2 border-primary-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/20 outline-none text-sm resize-none"
+                                  class="w-full border-2 border-primary-200/50 rounded-lg lg:rounded-xl p-3 lg:p-4 transition-all duration-300 focus:border-primary focus:ring-4 focus:ring-primary/20 outline-none text-sm resize-none"
                                   placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
                         <small class="text-gray-500 dark:text-gray-400 text-xs lg:text-sm mt-2 block">
                             <i class="fas fa-info-circle mr-1"></i>
@@ -669,26 +657,26 @@
                     </div>
 
                     <!-- Informations sur le processus -->
-                    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/50 rounded-xl lg:rounded-2xl p-4 lg:p-6">
-                        <div class="font-bold text-blue-600 mb-4 flex items-center text-sm lg:text-base">
+                    <div class="bg-gradient-to-r from-primary-50 to-primary-100 border border-primary-200/50 rounded-xl lg:rounded-2xl p-4 lg:p-6">
+                        <div class="font-bold text-primary mb-4 flex items-center text-sm lg:text-base">
                             <i class="fas fa-lightbulb mr-2"></i>
                             Comment ça fonctionne ?
                         </div>
                         <ul class="space-y-2">
                             <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
-                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                <i class="fas fa-check text-primary mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Votre demande est envoyée instantanément au vendeur
                             </li>
                             <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
-                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                <i class="fas fa-check text-primary mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Le vendeur peut vous proposer une réduction personnalisée
                             </li>
                             <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
-                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                <i class="fas fa-check text-primary mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 La réduction est appliquée automatiquement si acceptée
                             </li>
                             <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs lg:text-sm">
-                                <i class="fas fa-check text-blue-600 mr-2 lg:mr-3 mt-1 text-xs"></i>
+                                <i class="fas fa-check text-primary mr-2 lg:mr-3 mt-1 text-xs"></i>
                                 Vous recevez une notification de la réponse
                             </li>
                         </ul>

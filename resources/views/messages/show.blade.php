@@ -130,18 +130,7 @@
                             </div>
                         </div>
                         
-                        <div class="space-y-3">
-                            <div class="bg-white dark:bg-gray-800 rounded-lg p-3 border border-primary-600 hidden" id="selectedDiscountInfo">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-primary-600 selected-rate"></span>
-                                    <span class="font-bold text-green-600 text-lg selected-price"></span>
-                                </div>
-                            </div>
-                            <button class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary-700 hover:-translate-y-0.5 hover:shadow-lg transition-all disabled:bg-gray-400 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2" id="applyDiscountBtn" disabled>
-                                <i class="fas fa-check"></i>
-                                Appliquer la réduction
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -641,101 +630,6 @@ document.addEventListener('DOMContentLoaded', function() {
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
             sendMessage();
-        });
-    }
-
-    // Gestion du panel de réduction
-    const rateOptions = document.querySelectorAll('.rate-option');
-    const applyDiscountBtn = document.getElementById('applyDiscountBtn');
-    const selectedDiscountInfo = document.getElementById('selectedDiscountInfo');
-
-    // Gestion de la sélection des taux de réduction
-    let selectedRate = null;
-    
-    rateOptions.forEach(option => {
-        option.addEventListener('click', function() {
-            // Retirer la sélection précédente
-            rateOptions.forEach(opt => opt.classList.remove('selected'));
-            
-            // Ajouter la sélection à l'option actuelle
-            this.classList.add('selected');
-            
-            // Récupérer les informations
-            selectedRate = this.dataset.rate;
-            const ratePercentage = this.children[0].textContent;
-            const ratePrice = this.children[1].textContent;
-            
-            // Afficher les informations sélectionnées
-            selectedDiscountInfo.querySelector('.selected-rate').textContent = `Réduction de ${ratePercentage}`;
-            selectedDiscountInfo.querySelector('.selected-price').textContent = `Prix final: ${ratePrice}`;
-            selectedDiscountInfo.classList.remove('hidden');
-            
-            // Activer le bouton d'application
-            applyDiscountBtn.disabled = false;
-        });
-    });
-
-    // Gestion de l'application de la réduction
-    if (applyDiscountBtn) {
-        applyDiscountBtn.addEventListener('click', function() {
-            if (!selectedRate) return;
-            
-            const originalText = this.innerHTML;
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Application...';
-            
-            const formData = new FormData();
-            formData.append('item_id', '{{ $item ? $item->id : '' }}');
-            formData.append('buyer_id', '{{ $otherUser->id }}');
-            formData.append('discount_percentage', selectedRate);
-            formData.append('expires_hours', 24);
-            formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-            
-            fetch('{{ route('discounts.apply-message') }}', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                
-                if (data.success) {
-                    // Afficher un message de succès
-                    alert('Réduction appliquée avec succès ! Le client a été notifié.');
-                    
-                    // Masquer le panel de réduction
-                    document.getElementById('discountContent').classList.add('hidden');
-                    document.getElementById('discountToggleIcon').classList.add('fa-chevron-down');
-                    document.getElementById('discountToggleIcon').classList.remove('fa-chevron-up');
-                    
-                    // Optionnel: recharger la page pour afficher le message automatique
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    console.error('Server error:', data.error);
-                    alert(data.error || 'Erreur lors de l\'application de la réduction');
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                alert('Une erreur est survenue lors de l\'application de la réduction: ' + error.message);
-            })
-            .finally(() => {
-                this.disabled = false;
-                this.innerHTML = originalText;
-            });
         });
     }
 
