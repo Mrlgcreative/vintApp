@@ -131,8 +131,9 @@ function updateUI(tx) {
         inst.remove();
         bar.style.width = '100%';
         bar.className = 'h-full rounded-full bg-green-500 transition-all duration-500';
-        actions.innerHTML = '<a href="/dashboard" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Tableau de bord</a>';
-        setTimeout(() => window.location.href = '/payments/success/' + transactionId, 3000);
+        const receiptUrl = '/payments/receipt/' + transactionId;
+        actions.innerHTML = '<a href="' + receiptUrl + '" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Voir le reçu</a>';
+        setTimeout(() => window.location.href = receiptUrl, 3000);
     } else if (status === 'failed') {
         stopPolling();
         icon.innerHTML = '<div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center"><svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></div>';

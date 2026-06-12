@@ -358,6 +358,17 @@ class PaymentController extends Controller
             return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
         }
 
+        // GÃ©nÃ©rer le reÃ§u s'il manque pour une transaction complÃ©tÃ©e
+        if ($transaction->status === 'completed' && !$transaction->receipt_number) {
+            $transaction->receipt_number = 'REC-' . now()->format('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(8));
+            $transaction->receipt_signature = hash_hmac('sha256',
+                $transaction->id . $transaction->receipt_number . $transaction->amount . $transaction->currency,
+                config('app.key')
+            );
+            $transaction->receipt_generated_at = now();
+            $transaction->save();
+        }
+
         // RÃ©cupÃ©rer les commandes liÃ©es Ã  cette transaction
         $orders = \App\Models\Order::where('buyer_id', $transaction->user_id)
             ->where('status', 'confirmed')
@@ -374,7 +385,20 @@ class PaymentController extends Controller
         
         return view('payments.success', compact('transaction', 'orders', 'unratedOrders'));
     }
-    
+
+    public function receipt($transactionId)
+    {
+        $transaction = \App\Models\Transaction::where('id', $transactionId)
+            ->orWhere('transaction_id', $transactionId)
+            ->firstOrFail();
+
+        if (!$transaction->receipt_number) {
+            abort(404, 'Reçu non disponible');
+        }
+
+        return view('payments.receipt', compact('transaction'));
+    }
+
     public function paymentError(Request $request)
     {
         $error = $request->query('error', 'Une erreur est survenue lors du paiement');

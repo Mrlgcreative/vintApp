@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo as EloquentBelongsTo;
+use Illuminate\Support\Str;
 
 class Transaction extends Model
 {
@@ -18,7 +19,7 @@ class Transaction extends Model
      */
     protected $fillable = [
         'user_id',
-        'buyer_id', // Pour compatibilité avec l'ancienne structure
+        'buyer_id',
         'wallet_id',
         'amount',
         'currency',
@@ -33,6 +34,9 @@ class Transaction extends Model
         'phone_number',
         'purpose',
         'metadata',
+        'receipt_number',
+        'receipt_signature',
+        'receipt_generated_at',
     ];
 
     /**
@@ -44,6 +48,7 @@ class Transaction extends Model
         'amount' => 'decimal:2',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'receipt_generated_at' => 'datetime',
     ];
 
     /**
@@ -243,5 +248,24 @@ class Transaction extends Model
             self::METHOD_BANK => 'fas fa-university',
             default => 'fas fa-money-bill-wave',
         };
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (self $transaction) {
+            if ($transaction->isDirty('status') && $transaction->status === self::STATUS_COMPLETED && !$transaction->receipt_number) {
+                $transaction->receipt_number = 'REC-' . now()->format('Ymd') . '-' . strtoupper(Str::random(8));
+                $transaction->receipt_signature = hash_hmac('sha256',
+                    $transaction->id . $transaction->receipt_number . $transaction->amount . $transaction->currency,
+                    config('app.key')
+                );
+                $transaction->receipt_generated_at = now();
+            }
+        });
+    }
+
+    public function getReceiptUrlAttribute(): string
+    {
+        return $this->receipt_number ? route('payments.receipt', $this->id) : '#';
     }
 }

@@ -815,6 +815,7 @@ Route::prefix('payments')->group(function () {
     })->name('payments.status');
     
     Route::get('/success/{transaction_id}', [PaymentController::class, 'paymentSuccess'])->name('payments.success');
+    Route::get('/receipt/{transaction}', [PaymentController::class, 'receipt'])->name('payments.receipt');
     Route::get('/error', [PaymentController::class, 'paymentError'])->name('payments.error');
     
     // Routes de remboursement

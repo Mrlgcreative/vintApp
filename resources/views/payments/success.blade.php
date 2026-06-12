@@ -67,10 +67,10 @@
                     <a href="{{ route('dashboard') }}" class="block w-full py-2.5 text-sm font-medium text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition-colors">
                         Tableau de bord
                     </a>
-                    @if($isCompleted)
-                    <button onclick="window.print()" class="block w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                        Télécharger le reçu
-                    </button>
+                    @if($isCompleted && $transaction->receipt_number)
+                    <a href="{{ route('payments.receipt', $transaction->id) }}" class="block w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        Voir le reçu
+                    </a>
                     @endif
                 </div>
             @endif
