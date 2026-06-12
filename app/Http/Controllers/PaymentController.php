@@ -1877,7 +1877,9 @@ class PaymentController extends Controller
             ]);
 
             if ($result['success']) {
+                $maishapayRef = $result['maishapay_id'] ?? $result['transaction_id'];
                 $transaction->update([
+                    'transaction_ref' => $maishapayRef,
                     'description' => 'Ref: ' . $result['transaction_id'],
                     'metadata' => json_encode(array_merge(
                         json_decode($transaction->metadata ?? '{}', true),
@@ -1989,6 +1991,7 @@ class PaymentController extends Controller
 
         $transaction->update([
             'status' => $newStatus,
+            'transaction_ref' => $data['transactionId'] ?? $data['transaction_id'] ?? $transaction->transaction_ref,
             'metadata' => json_encode(array_merge(
                 json_decode($transaction->metadata ?? '{}', true),
                 ['callback_data' => $data, 'callback_at' => now()->toISOString()]
