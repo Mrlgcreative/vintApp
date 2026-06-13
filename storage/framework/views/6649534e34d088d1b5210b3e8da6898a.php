@@ -553,6 +553,7 @@ unset($__errorArgs, $__bag); ?>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">Recevoir les offres et actualités</p>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="newsletter_subscribed" value="0">
                                         <input type="checkbox" name="newsletter_subscribed" value="1" <?php echo e($user->newsletter_subscribed ? 'checked' : ''); ?> class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500">
                                     </label>
                                     <label class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors">
@@ -565,6 +566,7 @@ unset($__errorArgs, $__bag); ?>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">Alertes en temps réel sur vos ventes</p>
                                             </div>
                                         </div>
+                                        <input type="hidden" name="push_enabled" value="0">
                                         <input type="checkbox" name="push_enabled" value="1" checked class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500">
                                     </label>
                                     <div class="flex justify-end">
@@ -718,6 +720,37 @@ function showAvatarModal() {
 function closeAvatarModal() {
     document.getElementById('avatarModal').classList.add('hidden');
     document.getElementById('avatarModal').classList.remove('flex');
+}
+
+function markAsRead(id) {
+    fetch('/notifications/' + id + '/read', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Content-Type': 'application/json' }
+    }).then(r => r.json()).then(() => {
+        const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+        if (item) {
+            item.classList.remove('ring-2', 'ring-primary-100', 'dark:ring-primary-900');
+            const badge = item.querySelector('.flex-shrink-0');
+            if (badge) badge.remove();
+            const btn = item.querySelector('button[title="Marquer comme lu"]');
+            if (btn) btn.remove();
+        }
+    });
+}
+
+function markAllAsRead() {
+    fetch('/notifications/read-all', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>', 'Content-Type': 'application/json' }
+    }).then(r => r.json()).then(() => {
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.classList.remove('ring-2', 'ring-primary-100', 'dark:ring-primary-900');
+            const badge = item.querySelector('.flex-shrink-0');
+            if (badge) badge.remove();
+            const btn = item.querySelector('button[title="Marquer comme lu"]');
+            if (btn) btn.remove();
+        });
+    });
 }
 
 // Close modal on outside click
