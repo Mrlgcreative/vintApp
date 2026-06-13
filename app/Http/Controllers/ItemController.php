@@ -593,22 +593,37 @@ class ItemController extends Controller
     }
 
     /**
-     * Liste les items vérifiés par les experts (admin - supervision)
-     * L'admin voit les articles approuvés par les experts (publiés automatiquement)
+     * Liste les articles en attente de vérification (admin)
+     * L'admin peut approuver ou rejeter les articles soumis
      */
     public function pendingVerificationList(Request $request)
     {
-        // La vérification admin est déjà faite par le middleware
-        
-        // L'admin voit les articles récemment vérifiés par les experts
-        // Ces articles sont maintenant publiés (status = 'active') car l'expert a le pouvoir de publier
-        $items = Item::where('verification_status', 'approved') // Approuvés par expert
-            ->whereNotNull('verified_at') // Qui ont été vérifiés
-            ->with(['user', 'category', 'brand', 'verifiedBy'])
-            ->orderBy('verified_at', 'desc') // Les plus récemment vérifiés en premier
-            ->paginate(20);
+        $query = Item::where(function($q) {
+                $q->where('verification_status', 'pending')
+                  ->orWhereNull('verification_status');
+            })
+            ->where('status', '!=', 'sold')
+            ->with(['user', 'category', 'brand']);
 
-        return view('admin.items.pending_verification', compact('items'));
+        if ($request->filled('search')) {
+            $search = '%' . $request->search . '%';
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', $search)
+                  ->orWhereHas('user', function($q) use ($search) {
+                      $q->where('name', 'like', $search);
+                  });
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        $items = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $categories = \App\Models\Category::orderBy('name')->get();
+
+        return view('admin.items.pending_verification', compact('items', 'categories'));
     }
 
     /**

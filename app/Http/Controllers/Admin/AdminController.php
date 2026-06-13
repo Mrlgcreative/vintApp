@@ -2052,16 +2052,37 @@ class AdminController extends Controller
      */
     public function itemApprove(Request $request, Item $item)
     {
-        $item->update(['status' => 'active']);
+        $admin = auth()->user();
+
+        $item->update([
+            'status' => 'active',
+            'verification_status' => 'approved',
+            'verified_at' => now(),
+            'verified_by' => $admin->id,
+            'authenticity_verified' => true,
+            'authenticity_badge_type' => 'vintapp_verified',
+        ]);
+
+        try {
+            if (!\App\Models\VintPass::where('item_id', $item->id)->exists()) {
+                $vintPassService = app(\App\Services\VintPassService::class);
+                $vintPassService->createVintPass($item, null, $admin);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning("Échec création VintPass", [
+                'item_id' => $item->id,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Article approuvé avec succès.'
+                'message' => 'Article approuvé et vérifié avec succès.'
             ]);
         }
 
-        return redirect()->route('admin.items.show', $item)->with('success', 'Article approuvé avec succès.');
+        return redirect()->route('admin.items.show', $item)->with('success', 'Article approuvé et vérifié avec succès.');
     }
 
     /**
@@ -2071,7 +2092,12 @@ class AdminController extends Controller
     {
         $request->validate(['reason' => 'nullable|string|max:1000']);
 
-        $data = ['status' => 'inactive'];
+        $data = [
+            'status' => 'inactive',
+            'verification_status' => 'rejected',
+            'verified_at' => now(),
+            'verified_by' => auth()->id(),
+        ];
         if ($request->filled('reason')) {
             $data['rejection_reason'] = $request->reason;
         }
