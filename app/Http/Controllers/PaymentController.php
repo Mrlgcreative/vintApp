@@ -405,6 +405,16 @@ class PaymentController extends Controller
         $amount = $request->query('amount', 0);
         $provider = $request->query('provider', 'Mobile Money');
         $currency = $request->query('currency', 'USD');
+
+        if ($transactionId = $request->query('transaction_id')) {
+            $transaction = \App\Models\Transaction::find($transactionId);
+            if ($transaction) {
+                $amount = $transaction->amount;
+                $provider = $transaction->provider ?? $provider;
+                $currency = $transaction->currency ?? $currency;
+                $error = 'Votre paiement ' . ($transaction->transaction_id ?? '') . ' a échoué.';
+            }
+        }
         
         return view('payments.error', compact('error', 'amount', 'provider', 'currency'));
     }
