@@ -158,9 +158,43 @@ function showTimeout() {
 
     icon.innerHTML = '<div class="w-16 h-16 mx-auto rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center"><svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>';
     title.textContent = 'Délai dépassé';
-    msg.textContent = 'La confirmation prend plus de temps. Vérifiez vos transactions.';
+    msg.textContent = 'Si vous avez confirmé sur votre téléphone, cliquez sur "J\'ai confirmé".';
     inst.remove();
-    actions.innerHTML = '<button onclick="location.reload()" class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">Réessayer</button> <a href="/dashboard" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Tableau de bord</a>';
+    actions.innerHTML = `
+        <button onclick="confirmManually()" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+            J'ai confirmé
+        </button>
+        <button onclick="location.reload()" class="px-4 py-2.5 text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
+            Réessayer
+        </button>
+        <a href="/dashboard" class="px-4 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+            Tableau de bord
+        </a>
+    `;
+}
+
+async function confirmManually() {
+    const btn = document.querySelector('#payment-actions button');
+    if (btn) btn.disabled = true;
+    try {
+        const resp = await fetch('/api/payment-callbacks/' + transactionId + '/force-complete', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            }
+        });
+        const data = await resp.json();
+        if (data.status === 'success' && data.transaction) {
+            updateUI(data.transaction);
+        } else {
+            alert(data.message || 'Erreur lors de la confirmation');
+        }
+    } catch (e) {
+        alert('Erreur réseau. Veuillez réessayer.');
+        console.error(e);
+    }
+    if (btn) btn.disabled = false;
 }
 
 window.addEventListener('beforeunload', stopPolling);

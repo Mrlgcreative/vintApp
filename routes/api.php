@@ -113,6 +113,12 @@ Route::prefix('payment-callbacks')->group(function () {
     Route::get('/status', [PaymentCallbackController::class, 'checkStatus'])
         ->middleware('throttle:30,1') // Max 30 requêtes par minute
         ->name('payment.status');
+
+    // Force complétion manuelle (quand le callback n'arrive pas)
+    Route::post('/{transaction}/force-complete', [PaymentCallbackController::class, 'forceComplete'])
+        ->middleware('throttle:5,1') // Max 5 tentatives par minute
+        ->where('transaction', '[0-9]+')
+        ->name('payment.force-complete');
 });
 
 // Routes d'authentification API (Sanctum)

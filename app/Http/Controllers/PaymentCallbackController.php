@@ -582,7 +582,48 @@ class PaymentCallbackController extends Controller
                 'completed_at' => $transaction->completed_at,
             ],
         ]);
-    }protected function preventReplayAttack(Request $request, string $provider): bool
+    }    /**
+     * Force la complétion manuelle d'une transaction en attente.
+     * Utilisé quand le callback MaishaPay n'arrive pas (localhost) ou quand
+     * l'utilisateur a déjà confirmé sur son téléphone.
+     */
+    public function forceComplete(int $transactionId)
+    {
+        $transaction = Transaction::find($transactionId);
+
+        if (!$transaction) {
+            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
+        }
+
+        if ($transaction->status !== 'pending') {
+            return response()->json(['status' => 'error', 'message' => 'Transaction déjà traitée'], 400);
+        }
+
+        $transaction->update([
+            'status' => 'completed',
+        ]);
+
+        Log::info('Transaction complétée manuellement', [
+            'transaction_id' => $transaction->id,
+            'user_id' => $transaction->user_id,
+            'provider' => $transaction->provider,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaction confirmée',
+            'transaction' => [
+                'id' => $transaction->id,
+                'status' => 'completed',
+                'amount' => $transaction->amount,
+                'currency' => $transaction->currency,
+                'created_at' => $transaction->created_at,
+                'completed_at' => $transaction->completed_at,
+            ],
+        ]);
+    }
+
+    protected function preventReplayAttack(Request $request, string $provider): bool
     {
         // Créer une signature unique basée sur le contenu du callback
         $payload = json_encode($request->all());
