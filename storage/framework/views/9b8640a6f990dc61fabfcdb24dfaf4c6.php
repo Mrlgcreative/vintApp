@@ -5,7 +5,7 @@
     <div class="flex">
         <?php echo $__env->make('seller.partials.sidebar', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-        <main class="flex-1 p-6 lg:p-8">
+        <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-center justify-between mb-8">
                     <div>

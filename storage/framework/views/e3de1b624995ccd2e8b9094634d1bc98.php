@@ -49,7 +49,7 @@
 </aside>
 
 
-<div class="lg:hidden fixed top-4 left-4 z-50">
+<div class="lg:hidden fixed top-[68px] left-4 z-[60]">
     <button id="seller-drawer-toggle" class="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Menu vendeur">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
@@ -57,9 +57,9 @@
     </button>
 </div>
 
-<div id="seller-drawer-overlay" class="lg:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm hidden transition-opacity duration-300"></div>
+<div id="seller-drawer-overlay" class="lg:hidden fixed inset-0 z-[55] bg-black/40 backdrop-blur-sm hidden transition-opacity duration-300"></div>
 
-<div id="seller-drawer" class="lg:hidden fixed top-0 left-0 z-50 h-full w-72 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl border-r border-gray-200 dark:border-gray-700 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+<div id="seller-drawer" class="lg:hidden fixed top-0 left-0 z-[60] h-full w-72 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl border-r border-gray-200 dark:border-gray-700 transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
     <div class="p-6">
         <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
