@@ -80,6 +80,11 @@
                 document.documentElement.classList.remove('dark');
             }
         }
+
+        // Appliquer immédiatement la préférence utilisateur (avant day-night.js)
+        if (window.userTheme) {
+            applyTheme(window.userTheme);
+        }
     </script>
 </head>
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">

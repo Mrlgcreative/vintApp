@@ -60,8 +60,8 @@
                             </div>
                             <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                                 <div class="text-2xl font-bold text-blue-600 dark:text-blue-400"><?php echo e(number_format($stats['total_revenue'], 0)); ?>$</div>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Revenus</div>
-                                <div class="text-[10px] text-gray-400 dark:text-gray-500"><?php echo e($stats['total_orders']); ?> commandes</div>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Revenus USD</div>
+                                <div class="text-[10px] text-gray-400 dark:text-gray-500"><?php echo e(number_format($stats['total_revenue_cdf'], 0)); ?> FC</div>
                             </div>
                             <div class="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
                                 <div class="text-2xl font-bold text-amber-600 dark:text-amber-400"><?php echo e(number_format($stats['average_rating'], 1)); ?></div>

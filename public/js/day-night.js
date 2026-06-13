@@ -404,6 +404,11 @@
             }
         }
 
+        // Utiliser la préférence utilisateur du serveur (profile.edit) comme override permanent
+        if (!manualOverride && window.userTheme && window.userTheme !== 'auto') {
+            manualOverride = window.userTheme === 'dark' ? 'night' : 'day';
+        }
+
         var initialMode = manualOverride || getTimeBasedMode();
         applyMode(initialMode, false);
 
