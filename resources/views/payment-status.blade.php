@@ -160,10 +160,11 @@ function showTimeout() {
     title.textContent = 'Délai dépassé';
     msg.textContent = 'Si vous avez confirmé sur votre téléphone, cliquez sur "J\'ai confirmé".';
     inst.remove();
+    const useManualBtn = {{ app()->environment('local') ? 'true' : 'false' }};
     actions.innerHTML = `
-        <button onclick="confirmManually()" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
+        ${useManualBtn ? `<button onclick="confirmManually()" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
             J'ai confirmé
-        </button>
+        </button>` : ''}
         <button onclick="location.reload()" class="px-4 py-2.5 text-sm font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors">
             Réessayer
         </button>
@@ -174,6 +175,7 @@ function showTimeout() {
 }
 
 async function confirmManually() {
+    if (!confirm('Avez-vous vraiment confirmé le paiement sur votre téléphone ?\n\nCette action est irreversible.')) return;
     const btn = document.querySelector('#payment-actions button');
     if (btn) btn.disabled = true;
     try {

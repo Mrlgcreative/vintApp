@@ -587,7 +587,7 @@ class PaymentCallbackController extends Controller
      * Utilisé quand le callback MaishaPay n'arrive pas (localhost) ou quand
      * l'utilisateur a déjà confirmé sur son téléphone.
      */
-    public function forceComplete(int $transactionId)
+    public function forceComplete(Request $request, int $transactionId)
     {
         $transaction = Transaction::find($transactionId);
 
@@ -607,6 +607,8 @@ class PaymentCallbackController extends Controller
             'transaction_id' => $transaction->id,
             'user_id' => $transaction->user_id,
             'provider' => $transaction->provider,
+            'ip' => $request->ip(),
+            'user_agent' => $request->userAgent(),
         ]);
 
         return response()->json([
