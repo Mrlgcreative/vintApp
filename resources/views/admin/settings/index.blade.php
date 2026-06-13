@@ -5,11 +5,11 @@
 @section('content')
 <div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
     @if(session('success'))
-        <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
+        <div class="mb-4 sm:mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
                 <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
                 <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
-                <button type="button" class="ml-2 text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
+                <button type="button" class="ml-2 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200" onclick="this.parentElement.parentElement.remove()">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
@@ -17,11 +17,11 @@
     @endif
 
     @if(session('error'))
-        <div class="mb-4 sm:mb-6 bg-red-50 border border-red-200 text-red-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
+        <div class="mb-4 sm:mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
             <div class="flex items-center">
                 <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
                 <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
-                <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
+                <button type="button" class="ml-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200" onclick="this.parentElement.parentElement.remove()">
                     <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
@@ -36,12 +36,12 @@
                 <span class="sm:hidden">Paramètres</span>
             </h1>
             <div class="flex flex-col xs:flex-row gap-2 sm:gap-3">
-                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-cyan-300 text-cyan-700 bg-cyan-50 rounded-lg hover:bg-cyan-100 transition-colors duration-200" onclick="clearCache()">
+                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-cyan-300 dark:border-cyan-700 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-900/30 rounded-lg hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors duration-200" onclick="clearCache()">
                     <i class="fas fa-trash mr-2"></i>
                     <span class="hidden xs:inline">Vider Cache</span>
                     <span class="xs:hidden">Cache</span>
                 </button>
-                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-blue-300 text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200" onclick="backupSettings()">
+                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-200" onclick="backupSettings()">
                     <i class="fas fa-download mr-2"></i>
                     <span class="hidden xs:inline">Sauvegarder</span>
                     <span class="xs:hidden">Backup</span>
@@ -94,26 +94,11 @@
                                         'sécurité' => 'fa-shield-alt',
                                     ];
                                     $catIcon = $catIcons[strtolower($category)] ?? 'fa-cog';
-                                    $catColors = [
-                                        'general' => 'from-blue-50 to-indigo-50 border-blue-200',
-                                        'général' => 'from-blue-50 to-indigo-50 border-blue-200',
-                                        'app' => 'from-purple-50 to-pink-50 border-purple-200',
-                                        'application' => 'from-purple-50 to-pink-50 border-purple-200',
-                                        'seo' => 'from-green-50 to-teal-50 border-green-200',
-                                        'social' => 'from-cyan-50 to-blue-50 border-cyan-200',
-                                        'payment' => 'from-amber-50 to-orange-50 border-amber-200',
-                                        'paiement' => 'from-amber-50 to-orange-50 border-amber-200',
-                                        'email' => 'from-rose-50 to-pink-50 border-rose-200',
-                                        'notification' => 'from-yellow-50 to-amber-50 border-yellow-200',
-                                        'security' => 'from-red-50 to-orange-50 border-red-200',
-                                        'sécurité' => 'from-red-50 to-orange-50 border-red-200',
-                                    ];
-                                    $catColor = $catColors[strtolower($category)] ?? 'from-gray-50 to-slate-50 border-gray-200';
                                 @endphp
-                                <div class="group bg-gradient-to-br {{ $catColor }} dark:from-gray-900 dark:to-gray-800 dark:border-gray-700 rounded-xl border p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+                                <div class="group bg-white dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
                                     <div class="mb-4 sm:mb-6">
                                         <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white dark:bg-gray-700 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700/50 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
                                                 <i class="fas {{ $catIcon }} text-gray-600 dark:text-gray-300 text-sm"></i>
                                             </span>
                                             {{ ucfirst($category) }}
@@ -140,7 +125,7 @@
                                                              id="logo-preview">
                                                     </div>
                                                     <input type="file" 
-                                                           class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                                           class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                                            name="logo_file"
                                                            accept="image/*"
                                                            onchange="previewLogo(this)">
@@ -149,7 +134,7 @@
                                                            value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
                                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
                                                             @elseif($setting->type === 'json' || $setting->type === 'array')
-                                                    <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
+                                                    <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
                                                               name="settings[{{ $setting->key }}]"
                                                               rows="5"
                                                               data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
@@ -173,14 +158,14 @@
                                                     </div>
                                                 @elseif($setting->type === 'integer')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="1"
                                                            data-original-value="{{ $setting->value }}">
                                                 @elseif($setting->type === 'float')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="0.01"
@@ -188,19 +173,19 @@
                                                 @else
                                                     @if(str_contains($setting->key, 'email'))
                                                         <input type="email" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @elseif(str_contains($setting->key, 'phone'))
                                                         <input type="tel" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @else
                                                         <input type="text" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
@@ -230,7 +215,7 @@
                     <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-orange-200 dark:border-orange-800 p-6 shadow-sm">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900 mr-3">
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/50 mr-3">
                                     <i class="fas fa-tools text-orange-600 dark:text-orange-400"></i>
                                 </span>
                                 Mode Maintenance
@@ -243,8 +228,8 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2 rounded-full {{ $maintenanceStatus ? 'bg-red-100' : 'bg-green-100' }}">
-                                        <i class="fas {{ $maintenanceStatus ? 'fa-exclamation-triangle text-red-600' : 'fa-check-circle text-green-600' }} text-lg"></i>
+                                    <div class="p-2 rounded-full {{ $maintenanceStatus ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30' }}">
+                                        <i class="fas {{ $maintenanceStatus ? 'fa-exclamation-triangle text-red-600 dark:text-red-400' : 'fa-check-circle text-green-600 dark:text-green-400' }} text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900 dark:text-white">
@@ -265,10 +250,10 @@
                             </div>
                             
                             @if($maintenanceStatus)
-                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                                     <div class="flex items-center">
-                                        <i class="fas fa-info-circle text-red-600 mr-2"></i>
-                                        <p class="text-red-800 text-sm">
+                                        <i class="fas fa-info-circle text-red-600 dark:text-red-400 mr-2"></i>
+                                        <p class="text-red-800 dark:text-red-200 text-sm">
                                             <strong>Attention :</strong> Seuls les administrateurs peuvent accéder au site en mode maintenance.
                                         </p>
                                     </div>
@@ -297,7 +282,7 @@
                             <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full" id="location-status-icon">
-                                        <i class="fas fa-map-marker-alt text-blue-600 text-lg"></i>
+                                        <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900 dark:text-white" id="location-status-text">
@@ -318,8 +303,8 @@
                                 </button>
                             </div>
                             
-                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <div class="space-y-2 text-sm text-blue-800">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
                                     <p class="flex items-start">
                                         <i class="fas fa-check-circle mr-2 mt-0.5"></i>
                                         <span><strong>Activé :</strong> Les vendeurs ne peuvent publier des articles que dans les villes autorisées par l'admin.</span>
@@ -358,8 +343,8 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100' : 'bg-red-100' }}">
-                                        <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600' : 'fa-times-circle text-red-600' }} text-lg"></i>
+                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30' }}">
+                                        <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600 dark:text-green-400' : 'fa-times-circle text-red-600 dark:text-red-400' }} text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-gray-900 dark:text-white">
@@ -447,10 +432,10 @@
                             </div>
                             
                             @if($preregLimit > 0 && $preregCount >= $preregLimit)
-                                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                                     <div class="flex items-center">
-                                        <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
-                                        <p class="text-red-800 text-sm">
+                                        <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 mr-2"></i>
+                                        <p class="text-red-800 dark:text-red-200 text-sm">
                                             <strong>Limite atteinte :</strong> Le nombre maximum de pré-inscriptions ({{ $preregLimit }}) a été atteint.
                                         </p>
                                     </div>
@@ -458,10 +443,10 @@
                             @endif
                             
                             @if(!$preregEnabled)
-                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                                <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
                                     <div class="flex items-center">
-                                        <i class="fas fa-info-circle text-orange-600 mr-2"></i>
-                                        <p class="text-orange-800 text-sm">
+                                        <i class="fas fa-info-circle text-orange-600 dark:text-orange-400 mr-2"></i>
+                                        <p class="text-orange-800 dark:text-orange-200 text-sm">
                                             Les visiteurs verront le message de fermeture configuré dans les paramètres.
                                         </p>
                                     </div>
@@ -486,12 +471,12 @@
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-sliders-h text-2xl text-primary-600"></i>
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-sliders-h text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                     </div>
                                     <div>
@@ -534,12 +519,12 @@
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 p-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-900/50 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-paper-plane text-2xl text-blue-600"></i>
+                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-paper-plane text-2xl text-blue-600 dark:text-blue-400"></i>
                                         </div>
                                     </div>
                                     <div>
@@ -591,11 +576,11 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Wallet USD -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center mr-4">
-                                            <i class="fas fa-dollar-sign text-2xl text-primary-600"></i>
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-dollar-sign text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet USD</h4>
@@ -618,7 +603,7 @@
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                                                 {{ $enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
                                         </div>
@@ -632,11 +617,11 @@
                             </div>
                             
                             <!-- Wallet CDF -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-indigo-200 p-6">
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-indigo-200 dark:border-indigo-900/50 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
-                                            <i class="fas fa-coins text-2xl text-indigo-600"></i>
+                                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-coins text-2xl text-indigo-600 dark:text-indigo-400"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet CDF</h4>
@@ -649,7 +634,7 @@
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-gray-600 dark:text-gray-300">Solde actuel</span>
-                                            <span class="text-2xl font-bold text-indigo-600">
+                                            <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                                                 {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
                                             </span>
                                         </div>
@@ -659,7 +644,7 @@
                                         </div>
                                         <div class="flex justify-between items-center">
                                             <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                                                 {{ $enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
                                         </div>
@@ -674,10 +659,10 @@
                         </div>
                         
                         <!-- Informations sur les commissions -->
-                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 p-4">
+                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
-                                    <i class="fas fa-info-circle text-primary-600 text-xl"></i>
+                                    <i class="fas fa-info-circle text-primary-600 dark:text-primary-400 text-xl"></i>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">
@@ -918,7 +903,7 @@ function resetForm() {
         // Nettoyer tous les indicateurs de changement
         const changedContainers = document.querySelectorAll('.bg-yellow-50');
         changedContainers.forEach(container => {
-            container.classList.remove('bg-yellow-50', 'border', 'border-yellow-300', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
             container.classList.add('bg-transparent');
             
             const indicator = container.querySelector('.change-indicator');
@@ -1010,23 +995,17 @@ function previewLogo(input) {
 }
 
 function showNotification(message, type = 'info') {
+    const isDark = document.documentElement.classList.contains('dark');
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full opacity-0 transition-all duration-300`;
     
-    // Couleurs selon le type
-    switch(type) {
-        case 'success':
-            notification.className += ' bg-green-500 text-white';
-            break;
-        case 'error':
-            notification.className += ' bg-red-500 text-white';
-            break;
-        case 'warning':
-            notification.className += ' bg-yellow-500 text-white';
-            break;
-        default:
-            notification.className += ' bg-blue-500 text-white';
-    }
+    const colors = {
+        success: isDark ? 'bg-green-800 text-green-100' : 'bg-green-500 text-white',
+        error: isDark ? 'bg-red-800 text-red-100' : 'bg-red-500 text-white',
+        warning: isDark ? 'bg-yellow-700 text-yellow-100' : 'bg-yellow-500 text-white',
+        info: isDark ? 'bg-blue-800 text-blue-100' : 'bg-blue-500 text-white',
+    };
+    notification.className += ' ' + (colors[type] || colors.info);
     
     notification.innerHTML = `
         <div class="flex items-center">
@@ -1071,13 +1050,13 @@ function markChangedField(event) {
     const container = input.closest('.space-y-2');
     if (container) {
         if (isChanged) {
-            container.classList.add('bg-yellow-50', 'border', 'border-yellow-300', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.add('bg-yellow-50 dark:bg-yellow-900/20', 'border', 'border-yellow-300 dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
             container.classList.remove('bg-transparent');
             
             // Ajouter un indicateur visuel si pas déjà présent
             if (!container.querySelector('.change-indicator')) {
                 const indicator = document.createElement('span');
-                indicator.className = 'change-indicator text-xs text-yellow-700 font-medium';
+                indicator.className = 'change-indicator text-xs text-yellow-700 dark:text-yellow-300 font-medium';
                 indicator.innerHTML = '<i class="fas fa-edit mr-1"></i>Modifié';
                 const label = container.querySelector('label');
                 if (label) {
@@ -1085,7 +1064,7 @@ function markChangedField(event) {
                 }
             }
         } else {
-            container.classList.remove('bg-yellow-50', 'border', 'border-yellow-300', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
             container.classList.add('bg-transparent');
             
             // Enlever l'indicateur visuel
@@ -1366,16 +1345,16 @@ function updateLocationRestrictionsUI(enabled) {
     
     if (enabled) {
         // État ACTIVÉ
-        statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-600 text-lg"></i>';
-        statusIcon.className = 'p-2 rounded-full bg-green-100';
+        statusIcon.innerHTML = '<i class="fas fa-check-circle text-green-600 dark:text-green-400 text-lg"></i>';
+        statusIcon.className = 'p-2 rounded-full bg-green-100 dark:bg-green-900/30';
         statusText.textContent = 'Restrictions ACTIVÉES';
         statusDescription.textContent = 'Les vendeurs ne peuvent publier que dans les villes autorisées';
         toggleBtn.innerHTML = '<i class="fas fa-times mr-2"></i>Désactiver';
         toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
     } else {
         // État DÉSACTIVÉ
-        statusIcon.innerHTML = '<i class="fas fa-globe text-blue-600 text-lg"></i>';
-        statusIcon.className = 'p-2 rounded-full bg-blue-100';
+        statusIcon.innerHTML = '<i class="fas fa-globe text-blue-600 dark:text-blue-400 text-lg"></i>';
+        statusIcon.className = 'p-2 rounded-full bg-blue-100 dark:bg-blue-900/30';
         statusText.textContent = 'Restrictions DÉSACTIVÉES';
         statusDescription.textContent = 'Les vendeurs peuvent publier dans n\'importe quelle ville du monde';
         toggleBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Activer';
@@ -1408,7 +1387,7 @@ function updateLocationRestrictionsUI(enabled) {
                             Message personnalisé
                         </label>
                         <textarea name="message" 
-                                  class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                  class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                   rows="3" 
                                   placeholder="Nous effectuons actuellement des travaux de maintenance..."></textarea>
                     </div>
@@ -1419,7 +1398,7 @@ function updateLocationRestrictionsUI(enabled) {
                         </label>
                         <input type="text" 
                                name="estimated_time" 
-                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                placeholder="Ex: 2 heures, 30 minutes...">
                     </div>
                 </div>
@@ -1427,7 +1406,7 @@ function updateLocationRestrictionsUI(enabled) {
                 <div class="flex flex-col xs:flex-row items-center justify-end pt-4 sm:pt-6 space-y-2 xs:space-y-0 xs:space-x-3">
                     <button type="button" 
                             onclick="hideMaintenanceModal()" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-300 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-400 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit" 

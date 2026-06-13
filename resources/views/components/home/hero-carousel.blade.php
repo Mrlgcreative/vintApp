@@ -149,23 +149,6 @@
                     </a>
                 </div>
                 
-                <!-- Stats -->
-                <div class="flex justify-center gap-10 mt-14">
-                    <div class="text-center px-6">
-                        <div class="text-3xl font-bold text-white mb-1">2,5K+</div>
-                        <div class="text-sm text-white/40 font-medium">Articles</div>
-                    </div>
-                    <div class="w-px h-12 bg-white/10"></div>
-                    <div class="text-center px-6">
-                        <div class="text-3xl font-bold text-white mb-1">1,2K+</div>
-                        <div class="text-sm text-white/40 font-medium">Clients</div>
-                    </div>
-                    <div class="w-px h-12 bg-white/10"></div>
-                    <div class="text-center px-6">
-                        <div class="text-3xl font-bold text-white mb-1">98%</div>
-                        <div class="text-sm text-white/40 font-medium">Satisfaction</div>
-                    </div>
-                </div>
             </div>
         </div>
     @endif

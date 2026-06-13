@@ -20,12 +20,20 @@
                     <i class="fas fa-box mr-3 text-primary-600"></i>
                     Articles disponibles
                 </h1>
-                @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all">
-                        <i class="fas fa-plus mr-2"></i>
-                        Vendre un article
-                    </a>
-                @endauth
+                <div class="flex items-center gap-2">
+                    @if($userCity)
+                        <span class="inline-flex items-center px-3 py-1.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium rounded-full">
+                            <i class="fas fa-location-dot mr-1.5"></i>
+                            {{ $userCity }}
+                        </span>
+                    @endif
+                    @auth
+                        <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all">
+                            <i class="fas fa-plus mr-2"></i>
+                            Vendre un article
+                        </a>
+                    @endauth
+                </div>
             </div>
         </div>
 
@@ -148,6 +156,27 @@
                                         <option value="fair" {{ request('condition') == 'fair' ? 'selected' : '' }}>État correct</option>
                                         <option value="poor" {{ request('condition') == 'poor' ? 'selected' : '' }}>Usé</option>
                                     </select>
+                                </div>
+
+                                <div>
+                                    <label for="filterCity" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
+                                        <i class="fas fa-city mr-1.5 text-primary-600"></i>Ville
+                                    </label>
+                                    <select id="filterCity" name="city" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
+                                        <option value="">Toutes les villes</option>
+                                        @foreach($cities as $city)
+                                            <option value="{{ $city }}" {{ request('city', $userCity) == $city ? 'selected' : '' }}>
+                                                {{ $city }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        @if($userCity)
+                                            <i class="fas fa-location-dot mr-1 text-primary-500"></i>Ville détectée : <strong>{{ $userCity }}</strong>
+                                        @else
+                                            <i class="fas fa-info-circle mr-1"></i>Aucune ville détectée
+                                        @endif
+                                    </p>
                                 </div>
                             </form>
                         </div>
@@ -339,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             var itemId = this.dataset.itemId;
             var icon = this.querySelector('i');
-            fetch('/items/' + itemId + '/favorite', {
+            fetch('/api/items/' + itemId + '/favorite', {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

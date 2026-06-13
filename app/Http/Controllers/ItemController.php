@@ -50,6 +50,9 @@ class ItemController extends Controller
             'activeBoosts.boostType:id,name,icon,visual_config'
         ];
 
+        // Ville de l'utilisateur (session ou requête)
+        $userCity = $request->has('city') ? $request->city : session('user_city');
+
         // Récupérer les articles avec boost prioritaires
         $boostedItemsQuery = Item::with($eagerLoad)
             ->whereHas('activeBoosts')
@@ -66,6 +69,13 @@ class ItemController extends Controller
         $queries = [$boostedItemsQuery, $regularItemsQuery];
         
         foreach ($queries as $query) {
+            // Filtre par ville
+            if ($userCity) {
+                $query->whereHas('user', function($q) use ($userCity) {
+                    $q->where('location', 'like', "%{$userCity}%");
+                });
+            }
+
             // Filtres
             if ($request->filled('category')) {
                 $query->where('category_id', $request->category);
@@ -125,7 +135,9 @@ class ItemController extends Controller
         );
         $items->appends($request->query());
 
-        return view('items.index', compact('items', 'categories', 'brands'));
+        $cities = AllowedCity::active()->orderBy('name')->pluck('name');
+
+        return view('items.index', compact('items', 'categories', 'brands', 'cities', 'userCity'));
     }
 
     /**
@@ -387,7 +399,10 @@ class ItemController extends Controller
                 ->get();
         });
 
-        return view('items.show', compact('item', 'similarItems', 'reviews', 'averageRating', 'totalReviews'));
+        // Vérifier si l'utilisateur connecté a cet article en favori
+        $isFavorited = Auth::check() ? Auth::user()->favorites()->where('item_id', $item->id)->exists() : false;
+
+        return view('items.show', compact('item', 'similarItems', 'reviews', 'averageRating', 'totalReviews', 'isFavorited'));
     }
 
     /**
@@ -678,6 +693,7 @@ class ItemController extends Controller
         $minPrice = $request->get('min_price');
         $maxPrice = $request->get('max_price');
         $condition = $request->get('condition');
+        $city = $request->has('city') ? $request->city : session('user_city');
 
         // Prioriser les articles boostés dans les résultats de recherche
         $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
@@ -691,6 +707,12 @@ class ItemController extends Controller
         $queries = [$boostedItems, $regularItems];
         
         foreach ($queries as $items) {
+            if ($city) {
+                $items->whereHas('user', function($q) use ($city) {
+                    $q->where('location', 'like', "%{$city}%");
+                });
+            }
+
             if ($query) {
                 $items->where(function($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")
@@ -740,8 +762,9 @@ class ItemController extends Controller
         $items->appends($request->query());
         
         $categories = Category::where('is_active', true)->get();
+        $cities = AllowedCity::active()->orderBy('name')->pluck('name');
 
-        return view('items.search', compact('items', 'categories', 'query'));
+        return view('items.search', compact('items', 'categories', 'query', 'cities'));
     }
 
     /**
@@ -777,6 +800,19 @@ class ItemController extends Controller
             ->paginate(10);
 
         return view('items.my-items', compact('items'));
+    }
+
+    /**
+     * Show user's favorite items
+     */
+    public function favorites()
+    {
+        $items = Auth::user()->favorites()
+            ->with(['category', 'brand', 'user:id,name,avatar,avatar_url'])
+            ->orderBy('favorites.created_at', 'desc')
+            ->paginate(12);
+
+        return view('items.favorites', compact('items'));
     }
 
     /**

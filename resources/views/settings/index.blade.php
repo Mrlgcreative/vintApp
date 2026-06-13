@@ -5,22 +5,20 @@
 @section('meta_description', 'Gérez vos préférences, votre profil et les paramètres de votre compte VintApp.')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-6">
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- En-tete -->
         <div class="mb-8">
             <div class="flex items-center mb-4">
                 <button onclick="history.back()" class="mr-4 p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
                     <i class="fas fa-arrow-left text-lg"></i>
                 </button>
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Parametres</h1>
-                    <p class="text-gray-500 dark:text-gray-400 mt-1">Gerer vos preferences et votre compte</p>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Paramètres</h1>
+                    <p class="text-gray-500 dark:text-gray-400 mt-1">Gérer vos préférences et votre compte</p>
                 </div>
             </div>
         </div>
 
-        <!-- Profil utilisateur -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 p-6 mb-8">
             <div class="flex items-center space-x-4">
                 @if(Auth::user()->avatar)
@@ -52,9 +50,7 @@
             </div>
         </div>
 
-        <!-- Grille des sections -->
         <div class="space-y-6">
-            <!-- Section : Mon compte -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700/50">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
@@ -86,7 +82,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-semibold text-gray-900 dark:text-white">Personnalisation</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Preferences d'affichage et notifications</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Préférences d'affichage et notifications</p>
                                 </div>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors"></i>
@@ -100,7 +96,7 @@
                                     <i class="fas fa-palette text-lg"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 dark:text-white">Theme d'affichage</h4>
+                                    <h4 class="font-semibold text-gray-900 dark:text-white">Thème d'affichage</h4>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Clair, Sombre ou Automatique</p>
                                 </div>
                             </div>
@@ -113,7 +109,6 @@
                 </div>
             </div>
 
-            <!-- Section : Navigation rapide -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700/50">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
@@ -135,9 +130,21 @@
                             </div>
                         </a>
 
-                        <a href="{{ route('orders.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
+                        <a href="{{ route('items.favorites') }}" class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
                             <div class="flex items-center space-x-4">
                                 <div class="w-10 h-10 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900 dark:text-white">Mes favoris</h4>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Articles sauvegardés</p>
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('orders.index') }}" class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors group">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                     <i class="fas fa-shopping-cart"></i>
                                 </div>
                                 <div>
@@ -199,9 +206,8 @@
                     </div>
                 </div>
 
-                <!-- Affiliation -->
-                <div class="border-t border-gray-100 dark:border-gray-700/50 bg-gradient-to-r from-primary-50 to-cyan-50 dark:from-primary-900/20 dark:to-cyan-900/20">
-                    <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:from-primary-100 hover:to-cyan-100 dark:hover:from-primary-900/30 dark:hover:to-cyan-900/30 transition-all group">
+                <div class="border-t border-gray-100 dark:border-gray-700/50 bg-white dark:bg-gray-800">
+                    <a href="{{ route('affiliate.dashboard') }}" class="block px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-all group">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 bg-gradient-to-r from-primary-600 to-cyan-400 text-white rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg">
@@ -212,7 +218,7 @@
                                         <h4 class="font-semibold text-gray-900 dark:text-white">Programme d'affiliation</h4>
                                         <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">NOUVEAU</span>
                                     </div>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Parrainez vos amis et gagnez des recompenses</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Parrainez vos amis et gagnez des récompenses</p>
                                 </div>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors"></i>
@@ -221,7 +227,6 @@
                 </div>
             </div>
 
-            <!-- Section : Catalogue -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700/50">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
@@ -248,8 +253,8 @@
                                 <i class="fas fa-layer-group"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900 dark:text-white">Categories</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Par categorie</p>
+                                <h4 class="font-medium text-gray-900 dark:text-white">Catégories</h4>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Par catégorie</p>
                             </div>
                         </div>
                     </a>
@@ -268,7 +273,6 @@
                 </div>
             </div>
 
-            <!-- Section : Aide & Support -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700/50 overflow-hidden">
                 <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-100 dark:border-gray-700/50">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
@@ -300,7 +304,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-900 dark:text-white">Nous contacter</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">Creer un ticket de support</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Créer un ticket de support</p>
                                 </div>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors"></i>
@@ -315,7 +319,7 @@
                                 </div>
                                 <div>
                                     <h4 class="font-medium text-gray-900 dark:text-white">Conditions d'utilisation</h4>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400">CGU et politique de confidentialite</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">CGU et politique de confidentialité</p>
                                 </div>
                             </div>
                             <i class="fas fa-chevron-right text-gray-300 group-hover:text-gray-500 dark:text-gray-600 dark:group-hover:text-gray-400 transition-colors"></i>
@@ -324,14 +328,12 @@
                 </div>
             </div>
 
-            <!-- Section : Actions du compte -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Deconnexion -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-orange-200 dark:border-orange-900/30 overflow-hidden">
                     <div class="px-6 py-4 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 border-b border-orange-200 dark:border-orange-800/30">
                         <h3 class="text-lg font-semibold text-orange-800 dark:text-orange-300 flex items-center">
                             <i class="fas fa-sign-out-alt mr-3 text-orange-600 dark:text-orange-400"></i>
-                            Deconnexion
+                            Déconnexion
                         </h3>
                     </div>
                     <div class="p-6">
@@ -339,14 +341,13 @@
                             @csrf
                             <button type="submit" class="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg shadow-orange-500/25 transition-all duration-200 hover:-translate-y-0.5 flex items-center justify-center space-x-2">
                                 <i class="fas fa-sign-out-alt"></i>
-                                <span>Se deconnecter</span>
+                                <span>Se déconnecter</span>
                             </button>
                         </form>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">Deconnexion securisee de votre compte</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-3 text-center">Déconnexion sécurisée de votre compte</p>
                     </div>
                 </div>
 
-                <!-- Zone dangereuse -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-red-200 dark:border-red-900/30 overflow-hidden">
                     <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-b border-red-200 dark:border-red-800/30">
                         <h3 class="text-lg font-semibold text-red-800 dark:text-red-300 flex items-center">
@@ -359,31 +360,29 @@
                             <i class="fas fa-user-slash"></i>
                             <span>Supprimer mon compte</span>
                         </button>
-                        <p class="text-sm text-red-500 dark:text-red-400 mt-3 text-center font-medium">Action irreversible</p>
+                        <p class="text-sm text-red-500 dark:text-red-400 mt-3 text-center font-medium">Action irréversible</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Version et copyright -->
             <div class="text-center py-8 text-gray-400 dark:text-gray-500">
                 <div class="flex items-center justify-center space-x-2 mb-2">
                     <i class="fas fa-mobile-alt"></i>
                     <span class="font-medium">{{ config('app.name', 'VintApp') }} v1.0.0</span>
                 </div>
-                <p class="text-sm">&copy; {{ date('Y') }} Tous droits reserves</p>
+                <p class="text-sm">&copy; {{ date('Y') }} Tous droits réservés</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal de selection du theme -->
 <div id="themeModal" class="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
             <div class="flex items-center justify-between">
                 <h3 class="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-palette mr-2 text-primary-600"></i>
-                    Choisir un theme
+                    Choisir un thème
                 </h3>
                 <button onclick="closeThemeModal()" class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                     <i class="fas fa-times text-xl"></i>
@@ -400,7 +399,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-900 dark:text-white">Clair</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Theme lumineux</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Thème lumineux</p>
                             </div>
                         </div>
                         <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
@@ -415,7 +414,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-900 dark:text-white">Sombre</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Theme fonce</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Thème foncé</p>
                             </div>
                         </div>
                         <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
@@ -430,7 +429,7 @@
                             </div>
                             <div>
                                 <h4 class="font-semibold text-gray-900 dark:text-white">Automatique</h4>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Suit les preferences systeme</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Suit les préférences système</p>
                             </div>
                         </div>
                         <i class="fas fa-check text-green-500 dark:text-green-400 hidden theme-check"></i>
@@ -441,7 +440,6 @@
     </div>
 </div>
 
-<!-- Modal de personnalisation -->
 <div id="personalizationModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
@@ -456,7 +454,6 @@
             </div>
         </div>
         <div class="p-6 space-y-6">
-            <!-- Notifications -->
             <div>
                 <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Notifications</h4>
                 <div class="space-y-3">
@@ -477,7 +474,6 @@
                 </div>
             </div>
 
-            <!-- Preferences d'affichage -->
             <div>
                 <h4 class="font-semibold text-gray-900 dark:text-white mb-3">Affichage</h4>
                 <div class="space-y-3">
@@ -510,20 +506,19 @@
     </div>
 </div>
 
-<!-- Modal de suppression du compte -->
 <div id="deleteAccountModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div class="px-6 py-4 bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-b border-red-200 dark:border-red-800/30">
             <h3 class="text-xl font-semibold text-red-800 dark:text-red-300 flex items-center">
                 <i class="fas fa-exclamation-triangle mr-2 text-red-600 dark:text-red-400"></i>
-                Supprimer definitivement mon compte
+                Supprimer définitivement mon compte
             </h3>
         </div>
         <div class="p-6">
             <div class="bg-gradient-to-r from-red-100 to-red-50 dark:from-red-900/30 dark:to-red-800/20 border border-red-200 dark:border-red-800/50 text-red-800 dark:text-red-300 px-4 py-3 rounded-xl mb-6">
                 <div class="flex items-center">
                     <i class="fas fa-skull-crossbones mr-2"></i>
-                    <strong>ATTENTION !</strong>&nbsp;Cette action est <strong>IRREVERSIBLE</strong>
+                    <strong>ATTENTION !</strong>&nbsp;Cette action est <strong>IRRÉVERSIBLE</strong>
                 </div>
             </div>
 
@@ -548,7 +543,7 @@
                     </li>
                     <li class="flex items-center text-red-600 dark:text-red-400">
                         <i class="fas fa-times-circle mr-2"></i>
-                        <strong>Toutes vos donnees</strong>&nbsp;personnelles
+                        <strong>Toutes vos données</strong>&nbsp;personnelles
                     </li>
                 </ul>
             </div>
@@ -574,7 +569,7 @@
                         <input type="password"
                                id="delete_password"
                                name="password"
-                               class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all"
+                               class="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition-all bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                placeholder="Votre mot de passe"
                                required
                                autocomplete="current-password">
@@ -583,7 +578,7 @@
                     <label class="flex items-start space-x-3 cursor-pointer">
                         <input type="checkbox" id="confirmDelete" class="mt-1" required>
                         <span class="text-sm text-gray-700 dark:text-gray-200">
-                            Je comprends que cette action est definitive et irreversible
+                            Je comprends que cette action est définitive et irréversible
                         </span>
                     </label>
                 </div>
@@ -595,7 +590,7 @@
                 </button>
                 <button onclick="confirmDeleteAccount()" class="px-6 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg shadow-red-500/25 transition-all duration-200 flex items-center space-x-2">
                     <i class="fas fa-trash-alt"></i>
-                    <span>Supprimer definitivement</span>
+                    <span>Supprimer définitivement</span>
                 </button>
             </div>
         </div>
@@ -619,7 +614,25 @@ function closeThemeModal() {
 }
 
 function selectTheme(theme) {
-    applyTheme(theme);
+    const root = document.documentElement;
+
+    if (theme === 'light') {
+        root.classList.remove('dark');
+        root.setAttribute('data-theme', 'day');
+        localStorage.setItem('vintapp_day_night_manual', 'day');
+    } else if (theme === 'dark') {
+        root.classList.add('dark');
+        root.setAttribute('data-theme', 'night');
+        localStorage.setItem('vintapp_day_night_manual', 'night');
+    } else {
+        root.classList.remove('dark');
+        localStorage.removeItem('vintapp_day_night_manual');
+        root.removeAttribute('data-theme');
+        if (window.VintAppDayNight && window.VintAppDayNight.resetAuto) {
+            window.VintAppDayNight.resetAuto();
+        }
+    }
+
     localStorage.setItem('theme', theme);
     updateThemeBadge();
 
@@ -662,10 +675,6 @@ function getPreferredTheme() {
     return localStorage.getItem('theme') || window.userTheme || 'auto';
 }
 
-function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-}
-
 function openPersonalizationModal() {
     document.getElementById('personalizationModal').classList.remove('hidden');
 }
@@ -699,21 +708,11 @@ function confirmDeleteAccount() {
         return;
     }
 
-    const finalConfirm = confirm(
-        'DERNIERE CONFIRMATION\n\n' +
-        'Etes-vous ABSOLUMENT SUR de vouloir supprimer votre compte ?\n\n' +
-        '- Cette action est IRREVERSIBLE\n' +
-        '- Toutes vos donnees seront DEFINITIVEMENT supprimees\n' +
-        '- Vous ne pourrez PAS recuperer votre compte\n\n' +
-        'Cliquez sur OK pour confirmer la suppression definitive.'
-    );
-
-    if (finalConfirm) {
+    if (confirm('DERNIÈRE CONFIRMATION\n\nÊtes-vous ABSOLUMENT SÛR de vouloir supprimer votre compte ?\n\n- Cette action est IRRÉVERSIBLE\n- Toutes vos données seront DÉFINITIVEMENT supprimées\n- Vous ne pourrez PAS récupérer votre compte\n\nCliquez sur OK pour confirmer la suppression définitive.')) {
         document.getElementById('deleteAccountForm').submit();
     }
 }
 
-// Fermer les modaux en cliquant a l'exterieur
 document.addEventListener('click', function(event) {
     ['themeModal', 'personalizationModal', 'deleteAccountModal'].forEach(id => {
         const modal = document.getElementById(id);
@@ -721,7 +720,6 @@ document.addEventListener('click', function(event) {
     });
 });
 
-// Touche Echap pour fermer les modaux
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         ['themeModal', 'personalizationModal', 'deleteAccountModal'].forEach(id => {
@@ -734,17 +732,13 @@ document.addEventListener('keydown', function(event) {
 
 @push('styles')
 <style>
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .max-w-4xl {
     animation: fadeInUp 0.6s ease-out;
 }
 
-.group:hover .group-hover\:scale-110 {
-    transform: scale(1.1);
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .toggle-switch {
@@ -783,24 +777,6 @@ document.addEventListener('keydown', function(event) {
     .grid-cols-1.md\:grid-cols-3 > * {
         border-right: none !important;
     }
-}
-
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #94a3b8;
-    border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #64748b;
 }
 </style>
 @endpush

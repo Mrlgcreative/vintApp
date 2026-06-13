@@ -254,6 +254,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/items/{item}', [ItemController::class, 'destroy'])->name('items.destroy');
     Route::patch('/items/{item}/status', [ItemController::class, 'updateStatus'])->name('items.update-status');
     Route::patch('/items/{item}/personalization', [ItemController::class, 'updatePersonalization'])->name('items.update-personalization');
+    Route::get('/favorites', [ItemController::class, 'favorites'])->name('items.favorites');
     
     // Routes du profil
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');

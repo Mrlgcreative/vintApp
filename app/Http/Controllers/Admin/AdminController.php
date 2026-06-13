@@ -2439,14 +2439,14 @@ class AdminController extends Controller
             $enabled = Setting::get('enable_location_restrictions', false);
             
             return response()->json([
-                'success' => false,
+                'success' => true,
                 'enabled' => (bool) $enabled,
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur lors de la récupération du statut des restrictions: ' . $e->getMessage());
             
             return response()->json([
-                'success' => true,
+                'success' => false,
                 'message' => 'Erreur lors de la récupération du statut',
             ], 500);
         }

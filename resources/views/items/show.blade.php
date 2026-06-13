@@ -117,9 +117,9 @@
                             </div>
                         </div>
                         @auth
-                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white dark:bg-gray-800 flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0" 
+                            <button class="favorite-btn w-10 h-10 lg:w-12 lg:h-12 rounded-full border-2 border-primary-200/50 bg-white dark:bg-gray-800 flex items-center justify-center transition-all duration-300 hover:bg-red-50 hover:border-red-400 hover:scale-110 flex-shrink-0 {{ $isFavorited ? 'bg-red-50 border-red-400' : '' }}" 
                                 data-item-id="{{ $item->id }}">
-                                <i class="fas fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
+                                <i class="{{ $isFavorited ? 'fas' : 'far' }} fa-heart text-red-500 text-sm lg:text-lg transition-transform duration-300 hover:scale-125"></i>
                             </button>
                         @endauth
                     </div>
@@ -911,7 +911,7 @@ if (favoriteBtn) {
         e.preventDefault();
         const itemId = this.dataset.itemId;
         
-        fetch(`/items/${itemId}/favorite`, {
+        fetch(`/api/items/${itemId}/favorite`, {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

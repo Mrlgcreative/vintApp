@@ -54,6 +54,15 @@
                         <option value="fair" {{ request('condition') == 'fair' ? 'selected' : '' }}>État correct</option>
                     </select>
 
+                    <select name="city" class="px-4 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-600 rounded-full text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <option value="">Toutes les villes</option>
+                        @foreach($cities ?? [] as $city)
+                            <option value="{{ $city }}" {{ request('city', session('user_city')) == $city ? 'selected' : '' }}>
+                                {{ $city }}
+                            </option>
+                        @endforeach
+                    </select>
+
                     <div class="flex items-center gap-2">
                         <input type="number" 
                                name="min_price" 
@@ -246,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = this.dataset.itemId;
             const icon = this.querySelector('svg');
             
-            fetch(`/items/${itemId}/favorite`, {
+            fetch(`/api/items/${itemId}/favorite`, {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
