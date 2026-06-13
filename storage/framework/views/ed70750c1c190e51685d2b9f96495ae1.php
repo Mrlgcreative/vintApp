@@ -1,8 +1,6 @@
-@extends('app')
+<?php $__env->startSection('title', 'Inscription - VintApp'); ?>
 
-@section('title', 'Inscription - VintApp')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Firebase Scripts -->
 <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -184,7 +182,7 @@
                             </div>
                             <input type="text" 
                                    id="firebase-referral-code"
-                                   value="{{ session('referral_code', '') }}"
+                                   value="<?php echo e(session('referral_code', '')); ?>"
                                    class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 uppercase"
                                    placeholder="CODE123">
                         </div>
@@ -316,7 +314,7 @@
             <!-- Lien connexion -->
             <p class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
                 Déjà un compte ?
-                <a href="{{ route('login') }}" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors">
+                <a href="<?php echo e(route('login')); ?>" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors">
                     Se connecter
                 </a>
             </p>
@@ -442,51 +440,86 @@
             </div>
         </div>
         <div class="p-6">
-            <form method="POST" action="{{ route('register') }}" class="space-y-4">
-                @csrf
+            <form method="POST" action="<?php echo e(route('register')); ?>" class="space-y-4">
+                <?php echo csrf_field(); ?>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nom complet</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required
+                        <input type="text" name="name" value="<?php echo e(old('name')); ?>" required
                                class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                        @error('name')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required
+                        <input type="email" name="email" value="<?php echo e(old('email')); ?>" required
                                class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                        @error('email')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Téléphone</label>
-                    <input type="tel" name="phone" value="{{ old('phone') }}" required
+                    <input type="tel" name="phone" value="<?php echo e(old('phone')); ?>" required
                            class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                    @error('phone')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Adresse</label>
-                    <textarea name="address" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none" rows="3">{{ old('address') }}</textarea>
-                    @error('address')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <textarea name="address" required class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none" rows="3"><?php echo e(old('address')); ?></textarea>
+                    <?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Code de parrainage (optionnel)</label>
-                    <input type="text" name="referral_code" value="{{ old('referral_code') }}"
+                    <input type="text" name="referral_code" value="<?php echo e(old('referral_code')); ?>"
                            class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none uppercase">
-                    @error('referral_code')
-                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <?php $__errorArgs = ['referral_code'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                        <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                    <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -494,9 +527,16 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Mot de passe</label>
                         <input type="password" name="password" required
                                class="w-full px-3 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:ring-purple-500 focus:border-purple-500 focus:outline-none">
-                        @error('password')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <p class="text-red-500 text-xs mt-1"><?php echo e($message); ?></p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Confirmer mot de passe</label>
@@ -521,12 +561,12 @@
 <script>
 // ============ FIREBASE CONFIG ============
 const firebaseConfig = {
-    apiKey: "{{ config('firebase.web_config.apiKey') }}",
-    authDomain: "{{ config('firebase.web_config.authDomain') }}",
-    projectId: "{{ config('firebase.web_config.projectId') }}",
-    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-    appId: "{{ config('firebase.web_config.appId') }}"
+    apiKey: "<?php echo e(config('firebase.web_config.apiKey')); ?>",
+    authDomain: "<?php echo e(config('firebase.web_config.authDomain')); ?>",
+    projectId: "<?php echo e(config('firebase.web_config.projectId')); ?>",
+    storageBucket: "<?php echo e(config('firebase.web_config.storageBucket')); ?>",
+    messagingSenderId: "<?php echo e(config('firebase.web_config.messagingSenderId')); ?>",
+    appId: "<?php echo e(config('firebase.web_config.appId')); ?>"
 };
 
 try {
@@ -580,13 +620,13 @@ window.registerWithFirebaseEmail = async function() {
         
         const idToken = await user.getIdToken(true);
         
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({
                 idToken: idToken,
@@ -603,7 +643,7 @@ window.registerWithFirebaseEmail = async function() {
         if (response.ok) {
             showLoading(false);
             showToast('Inscription réussie ! Vérifiez votre email.', 'success');
-            window.location.href = '{{ route("verification.code") }}';
+            window.location.href = '<?php echo e(route("verification.code")); ?>';
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -652,13 +692,13 @@ window.signUpWithGoogle = async function() {
         
         const idToken = await user.getIdToken(true);
         
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({
                 idToken: idToken,
@@ -681,7 +721,7 @@ window.signUpWithGoogle = async function() {
         if (response.ok) {
             showLoading(false);
             showToast('Inscription Google réussie !', 'success');
-            setTimeout(() => { window.location.href = data.redirect || '{{ route("verification.code") }}'; }, 800);
+            setTimeout(() => { window.location.href = data.redirect || '<?php echo e(route("verification.code")); ?>'; }, 800);
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -714,13 +754,13 @@ window.signUpWithFacebook = async function() {
         
         const idToken = await user.getIdToken(true);
         
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('<?php echo e(route("auth.firebase.login")); ?>', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>'
             },
             body: JSON.stringify({
                 idToken: idToken,
@@ -738,7 +778,7 @@ window.signUpWithFacebook = async function() {
         if (response.ok) {
             showLoading(false);
             showToast('Inscription Facebook réussie !', 'success');
-            setTimeout(() => { window.location.href = data.redirect || '{{ route("verification.code") }}'; }, 800);
+            setTimeout(() => { window.location.href = data.redirect || '<?php echo e(route("verification.code")); ?>'; }, 800);
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -902,4 +942,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH /home/aizen/Bureau/sky/vintApp/resources/views/auth/register.blade.php ENDPATH**/ ?>

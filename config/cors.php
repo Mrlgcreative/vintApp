@@ -30,7 +30,9 @@ return [
 
     'exposed_headers' => ['X-Cache', 'X-RateLimit-Limit', 'X-RateLimit-Remaining'],
 
-    'max_age' => 86400, // 24 heures
+    'max_age' => 86400, 
+    
+    // 24 heures
 
     'supports_credentials' => true,
 
