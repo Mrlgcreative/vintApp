@@ -134,13 +134,8 @@ function updateUI(tx) {
         setTimeout(() => window.location.href = receiptUrl, 3000);
     } else if (status === 'failed') {
         stopPolling();
-        icon.innerHTML = '<div class="w-16 h-16 mx-auto rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center"><svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></div>';
-        title.textContent = 'Paiement échoué';
-        msg.textContent = 'Le paiement n\'a pas abouti. Réessayez.';
-        inst.remove();
-        bar.style.width = '100%';
-        bar.className = 'h-full rounded-full bg-red-500 transition-all duration-500';
-        actions.innerHTML = '<button onclick="location.reload()" class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors">Réessayer</button> <a href="/dashboard" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Tableau de bord</a>';
+        window.location.href = '/payments/error?transaction_id=' + transactionId;
+        return;
     } else {
         const progress = Math.min(30 + (pollingCount / maxPollingAttempts) * 60, 90);
         bar.style.width = progress + '%';

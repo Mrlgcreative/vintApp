@@ -456,6 +456,8 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
         });
 
         const data = await response.json();
+        const errorMsg = data.message || 'Erreur de paiement';
+        const txId = data.transaction_id || '';
 
         if (data.success) {
             statusDiv.innerHTML = `
@@ -480,23 +482,10 @@ document.getElementById('maishapay-form').addEventListener('submit', async funct
                 window.location.href = '{{ route("payments.status", ":id") }}'.replace(':id', data.transaction_id);
             }, 2000);
         } else {
-            throw new Error(data.message || 'Erreur de paiement');
+            window.location.href = '/payments/error?error=' + encodeURIComponent(errorMsg) + '&amount=' + encodeURIComponent(amount) + '&provider=MaishaPay' + (txId ? '&transaction_id=' + txId : '');
         }
     } catch (error) {
-        statusDiv.innerHTML = `
-            <div class="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 animate-fade-in">
-                <div class="w-9 h-9 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <i class="fas fa-times-circle text-red-600 text-lg"></i>
-                </div>
-                <div class="min-w-0">
-                    <p class="font-semibold text-red-800 dark:text-red-200 text-sm">Échec du paiement</p>
-                    <p class="text-xs text-red-600 dark:text-red-400 mt-0.5">${error.message}</p>
-                </div>
-            </div>
-        `;
-
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fas fa-lock"></i><span>Payer avec MaishaPay</span>';
+        window.location.href = '/payments/error?error=' + encodeURIComponent(error.message || 'Erreur de paiement') + '&amount=' + encodeURIComponent(amount) + '&provider=MaishaPay';
     }
 });
 </script>

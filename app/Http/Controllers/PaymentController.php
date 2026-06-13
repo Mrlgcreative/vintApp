@@ -1917,6 +1917,7 @@ class PaymentController extends Controller
                 'success' => false,
                 'status' => 'failed',
                 'message' => $result['message'] ?? 'Erreur lors du paiement',
+                'transaction_id' => $transaction->id,
             ], 400);
 
         } catch (\Exception $e) {
