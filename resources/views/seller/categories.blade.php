@@ -7,7 +7,7 @@
     <div class="flex">
         @include('seller.partials.sidebar')
 
-        <main class="flex-1 p-6 lg:p-8">
+        <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
                 <div class="flex items-center justify-between mb-8">
                     <div>
