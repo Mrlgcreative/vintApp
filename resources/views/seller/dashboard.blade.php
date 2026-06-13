@@ -5,72 +5,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <div class="flex">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 min-h-screen hidden lg:block flex-shrink-0">
-            <div class="p-6">
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <i class="fas fa-store text-primary"></i>
-                    Espace Vendeur
-                </h2>
-            </div>
-            <nav class="px-4 space-y-1">
-                <a href="{{ route('seller.dashboard') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.dashboard') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-chart-pie w-5 text-center"></i>
-                    <span>Tableau de bord</span>
-                </a>
-                <a href="{{ route('seller.items') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.items') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-box w-5 text-center"></i>
-                    <span>Mes articles</span>
-                </a>
-                <a href="{{ route('seller.sales') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.sales') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-shopping-cart w-5 text-center"></i>
-                    <span>Mes ventes</span>
-                </a>
-                <a href="{{ route('seller.wallet') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.wallet') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-wallet w-5 text-center"></i>
-                    <span>Mon wallet</span>
-                </a>
-                <hr class="my-3 border-gray-200 dark:border-gray-700">
-                <a href="{{ route('seller.categories') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.categories') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-tags w-5 text-center"></i>
-                    <span>Catégories</span>
-                </a>
-                <a href="{{ route('seller.brands') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.brands') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-copyright w-5 text-center"></i>
-                    <span>Marques</span>
-                </a>
-                <a href="{{ route('seller.reviews') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 {{ request()->routeIs('seller.reviews') ? 'bg-primary text-white shadow-lg shadow-primary/25' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
-                    <i class="fas fa-star w-5 text-center"></i>
-                    <span>Mes notes</span>
-                </a>
-            </nav>
-            <div class="p-4 mt-auto border-t border-gray-200 dark:border-gray-700">
-                <a href="{{ route('items.create') }}" class="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg hover:-translate-y-0.5 transition-all">
-                    <i class="fas fa-plus"></i>
-                    <span>Nouvel article</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Mobile sidebar toggle -->
-        <div class="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex gap-2 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 p-2">
-            <a href="{{ route('seller.dashboard') }}" class="px-3 py-2 rounded-xl text-xs font-medium {{ request()->routeIs('seller.dashboard') ? 'bg-primary text-white' : 'text-gray-500' }}">
-                <i class="fas fa-chart-pie block text-base text-center mb-0.5"></i>
-                Dash
-            </a>
-            <a href="{{ route('seller.items') }}" class="px-3 py-2 rounded-xl text-xs font-medium {{ request()->routeIs('seller.items') ? 'bg-primary text-white' : 'text-gray-500' }}">
-                <i class="fas fa-box block text-base text-center mb-0.5"></i>
-                Arts
-            </a>
-            <a href="{{ route('seller.sales') }}" class="px-3 py-2 rounded-xl text-xs font-medium {{ request()->routeIs('seller.sales') ? 'bg-primary text-white' : 'text-gray-500' }}">
-                <i class="fas fa-shopping-cart block text-base text-center mb-0.5"></i>
-                Ventes
-            </a>
-            <a href="{{ route('seller.wallet') }}" class="px-3 py-2 rounded-xl text-xs font-medium {{ request()->routeIs('seller.wallet') ? 'bg-primary text-white' : 'text-gray-500' }}">
-                <i class="fas fa-wallet block text-base text-center mb-0.5"></i>
-                Wallet
-            </a>
-        </div>
+        @include('seller.partials.sidebar')
 
         <!-- Main content -->
         <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">

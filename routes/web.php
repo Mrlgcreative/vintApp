@@ -262,6 +262,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::patch('/profile/theme', [ProfileController::class, 'updateTheme'])->name('profile.theme');
+    Route::patch('/profile/preferences', [ProfileController::class, 'updatePreferences'])->name('profile.preferences');
     Route::post('/profile/avatar', [ProfileController::class, 'updateAvatar'])->name('profile.avatar');
     Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
     Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');

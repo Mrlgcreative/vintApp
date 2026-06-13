@@ -195,6 +195,35 @@ class ProfileController extends Controller
     }
 
     /**
+     * Mettre à jour les préférences (newsletter, langue, devise)
+     */
+    public function updatePreferences(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'newsletter_subscribed' => ['nullable', 'boolean'],
+            'push_enabled' => ['nullable', 'boolean'],
+            'locale' => ['nullable', Rule::in(['fr', 'en'])],
+            'currency' => ['nullable', Rule::in(['USD', 'CDF', 'EUR'])],
+        ]);
+
+        $user = $request->user();
+
+        if ($request->has('newsletter_subscribed')) {
+            $user->newsletter_subscribed = (bool) $request->newsletter_subscribed;
+        }
+        if ($request->has('locale')) {
+            $user->locale = $request->locale;
+        }
+        if ($request->has('currency')) {
+            session(['currency' => $request->currency]);
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'preferences-updated');
+    }
+
+    /**
      * Mettre à jour l'avatar de l'utilisateur
      */
     public function updateAvatar(Request $request): RedirectResponse
