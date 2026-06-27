@@ -6,24 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->text('address')->nullable()->after('email');
-            $table->boolean('newsletter_subscribed')->default(false)->after('address');
+            $table->string('role')->default('acheteur');
+            $table->string('phone', 20)->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['address', 'newsletter_subscribed']);
+            $table->dropColumn(['role', 'phone']);
         });
     }
 };

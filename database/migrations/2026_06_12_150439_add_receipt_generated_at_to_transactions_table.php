@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('transactions', function (Blueprint $table) {
-            $table->timestamp('receipt_generated_at')->nullable()->after('receipt_signature');
+            $table->timestamp('receipt_generated_at')->nullable();
         });
     }
 

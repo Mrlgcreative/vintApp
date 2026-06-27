@@ -43,93 +43,87 @@ class PreRegistrationController extends Controller
     {
         Log::info('🔄 Début de la préinscription', $request->all());
         
-        // Vérifier si la pré-inscription est activée
-        $enabled = Setting::get('preregistration_enabled', false);
-        Log::info('📋 Préinscription activée:', $enabled);
-        
-        if (!$enabled) {
-            Log::warning('🚫 Préinscription désactivée');
-            return response()->json([
-                'success' => false,
-                'message' => 'Les pré-inscriptions sont actuellement fermées.'
-            ], 403);
-        }
+        try {
+            // Vérifier si la pré-inscription est activée
+            $enabled = Setting::get('preregistration_enabled', false);
+            Log::info('📋 Préinscription activée:', ['enabled' => $enabled]);
 
-        // Vérifier la limite
-        $limit = Setting::get('preregistration_limit', 0);
-        Log::info('📊 Limite de préinscriptions:', $limit);
-        
-        if ($limit > 0) {
-            $currentCount = UserWaiting::count();
-            Log::info('📈 Nombre actuel de préinscriptions:', $currentCount);
-            
-            if ($currentCount >= $limit) {
-                Log::warning('🚫 Limite de préinscriptions atteinte');
+            if (!$enabled) {
+                Log::warning('🚫 Préinscription désactivée');
                 return response()->json([
                     'success' => false,
-                    'message' => 'Le nombre maximum de pré-inscriptions a été atteint.'
+                    'message' => 'Les pré-inscriptions sont actuellement fermées.'
                 ], 403);
             }
-        }
 
-        // Récupérer les paramètres
-        $requirePhone = Setting::get('preregistration_require_phone', false);
-        Log::info('📞 Téléphone requis:', $requirePhone);
+            // Vérifier la limite
+            $limit = Setting::get('preregistration_limit', 0);
+            Log::info('📊 Limite de préinscriptions:', ['limit' => $limit]);
 
-        $rules = [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users_waiting,email', 'unique:users,email'],
-            'phone' => $requirePhone 
-                ? ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15']
-                : ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15'],
-            'country' => ['required', 'string', 'max:100'],
-            'reasons' => ['nullable', 'array'],
-            'reasons.*' => ['string', 'max:255'],
-            'firebase_uid' => ['required', 'string', 'max:128'],
-        ];
+            if ($limit > 0) {
+                $currentCount = UserWaiting::count();
+                Log::info('📈 Nombre actuel de préinscriptions:', ['count' => $currentCount]);
 
-        $validator = Validator::make($request->all(), $rules, [
-            'email.unique' => 'Cette adresse email est déjà enregistrée.',
-            'phone.regex' => 'Format de téléphone invalide. Ex: 0812345678 ou +243812345678',
-            'phone.required' => 'Le numéro de téléphone est obligatoire.',
-            'firebase_uid.required' => 'L\'identifiant Firebase est requis.',
-        ]);
+                if ($currentCount >= $limit) {
+                    Log::warning('🚫 Limite de préinscriptions atteinte');
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Le nombre maximum de pré-inscriptions a été atteint.'
+                    ], 403);
+                }
+            }
 
-        if ($validator->fails()) {
-            Log::error('❌ Erreurs de validation:', $validator->errors());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur de validation',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-        
-        Log::info('✅ Validation passée');
+            // Récupérer les paramètres
+            $requirePhone = Setting::get('preregistration_require_phone', false);
+            Log::info('📞 Téléphone requis:', ['required' => $requirePhone]);
 
-        try {
+            $rules = [
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users_waiting,email', 'unique:users,email'],
+                'phone' => $requirePhone
+                    ? ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15']
+                    : ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'max:15'],
+                'country' => ['required', 'string', 'max:100'],
+                'reasons' => ['nullable', 'array'],
+                'reasons.*' => ['string', 'max:255'],
+                'firebase_uid' => ['required', 'string', 'max:128'],
+            ];
+
+            $validator = Validator::make($request->all(), $rules, [
+                'email.unique' => 'Cette adresse email est déjà enregistrée.',
+                'phone.regex' => 'Format de téléphone invalide. Ex: 0812345678 ou +243812345678',
+                'phone.required' => 'Le numéro de téléphone est obligatoire.',
+                'firebase_uid.required' => 'L\'identifiant Firebase est requis.',
+            ]);
+
+            if ($validator->fails()) {
+                Log::error('❌ Erreurs de validation:', $validator->errors());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Erreur de validation',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            Log::info('✅ Validation passée');
             Log::info('🔄 Création du UserWaiting...');
-            
-            // Créer la pré-inscription
+
             $userWaiting = UserWaiting::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'country' => $request->country,
                 'message' => $request->reasons ? implode(', ', $request->reasons) : null,
+                'reasons' => $request->reasons,
                 'firebase_uid' => $request->firebase_uid,
                 'confirmation_token' => UserWaiting::generateUniqueToken(),
-                'status' => 'pending',
-                'confirmed_at' => now(), // Auto-confirmé car Firebase valide l'email
+                'status' => 'confirmed',
+                'email_confirmed_at' => now(),
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
 
-            Log::info('✅ UserWaiting créé avec ID:', $userWaiting->id);
-
-            // Envoyer l'email de bienvenue avec les identifiants
-            // TODO: Implémenter l'envoi d'email avec le mot de passe temporaire
-            // $userWaiting->sendWelcomeEmail();
-
+            Log::info('✅ UserWaiting créé avec ID:', ['id' => $userWaiting->id]);
             Log::info("Nouvelle pré-inscription Firebase: {$userWaiting->email} (UID: {$request->firebase_uid})");
 
             return response()->json([

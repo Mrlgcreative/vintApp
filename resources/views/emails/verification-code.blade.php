@@ -8,8 +8,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #4a4a5a;
-            background-color: #f4f0f9;
+            color: #57534e;
+            background-color: #f5f5f0;
             margin: 0;
             padding: 0;
         }
@@ -19,10 +19,10 @@
             background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
         .header {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #6d28d9 100%);
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #d97706 100%);
             padding: 36px 30px;
             text-align: center;
         }
@@ -42,7 +42,7 @@
             padding: 36px 32px 28px;
         }
         .code-container {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
             border-radius: 12px;
             padding: 28px;
             text-align: center;
@@ -64,7 +64,7 @@
             letter-spacing: 2px;
         }
         .warning {
-            background: #fef3cd;
+            background: #fffbeb;
             border-left: 4px solid #f59e0b;
             padding: 14px 18px;
             margin: 20px 0;
@@ -82,13 +82,14 @@
             font-size: 14px;
         }
         .instructions {
-            background: #f5f3ff;
+            background: #fafaf9;
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
+            border: 1px solid #e7e5e4;
         }
         .instructions h3 {
-            color: #5b21b6;
+            color: #44403c;
             margin: 0 0 16px;
             font-size: 16px;
         }
@@ -96,11 +97,11 @@
             display: flex;
             align-items: center;
             margin: 10px 0;
-            color: #4a4a5a;
+            color: #57534e;
             font-size: 14px;
         }
         .step-number {
-            background: #7c3aed;
+            background: #d97706;
             color: white;
             border-radius: 50%;
             width: 26px;
@@ -114,38 +115,32 @@
             flex-shrink: 0;
         }
         .footer {
-            background: #f8f6fc;
+            background: #fafaf9;
             padding: 28px 30px;
             text-align: center;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e7e5e4;
         }
         .footer p {
-            color: #9a9aae;
+            color: #a8a29e;
             margin: 4px 0;
             font-size: 13px;
         }
         .security-notice {
-            background: #ecfdf5;
-            border: 1px solid #d1fae5;
+            background: #fafaf9;
+            border: 1px solid #e7e5e4;
             border-radius: 8px;
             padding: 14px;
             margin: 20px 0;
             text-align: center;
         }
         .security-notice p {
-            color: #065f46;
+            color: #57534e;
             margin: 0;
             font-size: 13px;
         }
-        .timer {
-            color: #dc2626;
-            font-weight: 700;
-            font-size: 15px;
-            margin: 15px 0;
-        }
         .divider {
             border: none;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e7e5e4;
             margin: 28px 0;
         }
         @media (max-width: 600px) {
@@ -162,9 +157,9 @@
             <p>Code de vérification</p>
         </div>
         <div class="content">
-            <h2 style="color: #1f1f2e; margin: 0 0 16px; font-size: 18px;">Bonjour {{ $user->name }},</h2>
+            <h2 style="color: #44403c; margin: 0 0 16px; font-size: 18px;">Bonjour {{ $user->name }},</h2>
 
-            <p style="color: #4a4a5a; margin: 0 0 8px;">
+            <p style="color: #57534e; margin: 0 0 8px;">
                 Nous avons reçu une demande de vérification pour votre compte.
                 Utilisez le code ci-dessous pour confirmer votre adresse email :
             </p>
@@ -204,14 +199,14 @@
 
             <hr class="divider">
 
-            <p style="color: #4a4a5a; margin: 0;">Merci de faire confiance à {{ config('app.name') }} !</p>
+            <p style="color: #57534e; margin: 0;">Merci de faire confiance à {{ config('app.name') }} !</p>
         </div>
         <div class="footer">
             <p><strong>{{ config('app.name') }}</strong> &mdash; Marketplace de confiance</p>
             <p>Cet email a été envoyé à {{ $user->email }}</p>
             <p style="margin-top: 16px;">
                 Des questions ?
-                <a href="mailto:{{ config('mail.from.address') }}" style="color: #7c3aed; text-decoration: underline;">
+                <a href="mailto:{{ config('mail.from.address') }}" style="color: #d97706; text-decoration: underline;">
                     {{ config('mail.from.address') }}
                 </a>
             </p>
