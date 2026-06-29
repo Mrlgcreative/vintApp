@@ -15,7 +15,7 @@ class PreRegistrationController extends Controller
      */
     public function index()
     {
-        return redirect('/');
+        abort(404);
     }
 
     public function store(Request $request)
