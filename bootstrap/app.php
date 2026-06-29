@@ -39,7 +39,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ShareAppSettings::class,
             \App\Http\Middleware\EnsureColorSystem::class, // 🎨 Système de couleurs automatique
             \App\Http\Middleware\MaintenanceMode::class,
-            \App\Http\Middleware\CheckPreregistrationMode::class,
+
             \App\Http\Middleware\CheckGPSCityAccess::class, // 📍 Vérification GPS précise
             \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions utilisateurs
             \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Gérer les codes de parrainage
