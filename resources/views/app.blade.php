@@ -378,7 +378,7 @@
         <!-- Fond avec blur -->
         <div class="absolute inset-0 bg-white/80 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/60 dark:border-gray-700/50"></div>
         
-        <div class="relative grid grid-cols-5 h-16 max-w-lg mx-auto px-2 safe-area-bottom">
+        <div class="relative flex items-center justify-around h-16 max-w-lg mx-auto px-2 safe-area-bottom">
             @php
                 $mobileNav = [
                     ['url' => url('/'), 'label' => 'Accueil', 'active' => request()->is('/'),
