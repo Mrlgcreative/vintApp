@@ -15,9 +15,7 @@ class PreRegistrationController extends Controller
      */
     public function index()
     {
-        $message = Setting::get('preregistration_closed_message', 'Les pré-inscriptions sont actuellement fermées.');
-        $contactEmail = Setting::get('preregistration_notification_email', 'contact@vintapp.com');
-        return view('preregistration.closed', compact('message', 'contactEmail'));
+        return redirect('/');
     }
 
     public function store(Request $request)
