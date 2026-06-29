@@ -547,7 +547,12 @@
             if (!content) return;
             
             fetch('/api/v1/notifications')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     const notifications = data.data || [];
                     if (notifications.length === 0) {
@@ -571,6 +576,8 @@
                     `).join('');
                 })
                 .catch(error => {
+                    console.error('Notifications error:', error);
+                    if (content.querySelector('.text-center')) return;
                     content.innerHTML = '<p class="text-red-500 text-sm text-center">Erreur de chargement</p>';
                 });
         }
