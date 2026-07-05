@@ -202,18 +202,7 @@
     }
 
     function updateIndicator(mode) {
-        var indicator = document.getElementById("dayNightIndicator");
-        if (!indicator) return;
-
-        var icon = indicator.querySelector(".day-night-icon");
-        if (icon) {
-            icon.textContent = mode === "day" ? "☀️" : "🌙";
-        }
-
-        indicator.style.transform = "scale(1.2) rotate(360deg)";
-        setTimeout(function () {
-            indicator.style.transform = "scale(1) rotate(0deg)";
-        }, 300);
+        // Indicator removed — theme toggle is now in the header
     }
 
     function toggleMode() {
@@ -226,8 +215,8 @@
             showToast(
                 "info",
                 newMode === "day"
-                    ? "☀️ Mode jour activé"
-                    : "🌙 Mode nuit activé",
+                    ? "Mode jour active"
+                    : "Mode nuit active",
             );
         }
     }
@@ -332,36 +321,7 @@
     }
 
     function createIndicator() {
-        if (document.getElementById("dayNightIndicator")) return;
-
-        var indicator = document.createElement("div");
-        indicator.id = "dayNightIndicator";
-        indicator.className = "day-night-indicator";
-        indicator.style.cssText =
-            "position:fixed;bottom:80px;right:20px;z-index:9999;width:44px;height:44px;" +
-            "border-radius:50%;display:flex;align-items:center;justify-content:center;" +
-            "cursor:pointer;font-size:20px;transition:transform .3s ease,background .3s ease;" +
-            "user-select:none;-webkit-tap-highlight-color:transparent;";
-
-        indicator.innerHTML =
-            '<span class="day-night-icon" style="pointer-events:none;">' +
-            (getTimeBasedMode() === "day" ? "☀️" : "🌙") +
-            "</span>";
-
-        indicator.addEventListener("click", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleMode();
-        });
-
-        indicator.addEventListener("dblclick", function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            resetToAutoMode();
-        });
-
-        indicator.title = "Clic: basculer jour/nuit | Double-clic: mode auto";
-        document.body.appendChild(indicator);
+        // Indicator removed — theme toggle is now in the header
     }
 
     // =============================================

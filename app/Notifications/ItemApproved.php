@@ -36,52 +36,6 @@ class ItemApproved extends Notification implements ShouldQueue
     }
 
     /**
-     * Après envoi de la notification, envoyer aussi via FCM
-     */
-    public function afterCommit()
-    {
-        // Envoyer notification push Firebase
-        $this->sendFCMNotification();
-    }
-
-    /**
-     * Envoyer notification push via Firebase Cloud Messaging
-     */
-    protected function sendFCMNotification()
-    {
-        try {
-            $user = $this->item->user;
-            
-            if (!$user || !$user->fcm_token) {
-                Log::info('Pas de token FCM pour l\'utilisateur', ['user_id' => $this->item->user_id]);
-                return;
-            }
-
-            $fcmService = app(FirebasePushService::class);
-            
-            $itemData = [
-                'item_id' => $this->item->id,
-                'item_name' => $this->item->name,
-                'item_image' => $this->item->images[0] ?? null,
-                'verification_score' => $this->item->verification_score
-            ];
-
-            $fcmService->sendItemApprovedNotification($user->fcm_token, $itemData);
-            
-            Log::info('Notification FCM envoyée (approbation)', [
-                'user_id' => $user->id,
-                'item_id' => $this->item->id
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi notification FCM (approbation)', [
-                'error' => $e->getMessage(),
-                'item_id' => $this->item->id
-            ]);
-        }
-    }
-
-    /**
      * Get the mail representation of the notification.
      */
     public function toMail(object $notifiable): MailMessage
@@ -100,6 +54,8 @@ class ItemApproved extends Notification implements ShouldQueue
      */
     public function toArray(object $notifiable): array
     {
+        $this->sendFCMNotification();
+
         return [
             'type' => 'item_approved',
             'item_id' => $this->item->id,
@@ -109,6 +65,37 @@ class ItemApproved extends Notification implements ShouldQueue
             'admin_name' => $this->adminName,
             'message' => "Votre article \"{$this->item->name}\" a été approuvé et est maintenant en ligne !",
         ];
+    }
+
+    /**
+     * Envoyer notification push via Firebase Cloud Messaging
+     */
+    protected function sendFCMNotification()
+    {
+        try {
+            $user = $this->item->user;
+            
+            if (!$user || !$user->fcm_token) {
+                return;
+            }
+
+            $fcmService = app(FirebasePushService::class);
+            
+            $itemData = [
+                'item_id' => $this->item->id,
+                'item_name' => $this->item->name,
+                'item_image' => $this->item->images[0] ?? null,
+                'verification_score' => $this->item->verification_score
+            ];
+
+            $fcmService->sendItemApprovedNotification($user->fcm_token, $itemData);
+
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi notification FCM (approbation)', [
+                'error' => $e->getMessage(),
+                'item_id' => $this->item->id
+            ]);
+        }
     }
 
     /**

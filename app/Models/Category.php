@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Category extends Model
 {
@@ -24,6 +25,21 @@ class Category extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(function (self $category): void {
+            Cache::forget('categories.active');
+            Cache::forget('categories.all');
+            Cache::forget('api.categories.list');
+        });
+
+        static::deleted(function (self $category): void {
+            Cache::forget('categories.active');
+            Cache::forget('categories.all');
+            Cache::forget('api.categories.list');
+        });
+    }
 
     /**
      * Attributs à ajouter automatiquement au JSON

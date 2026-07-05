@@ -2506,6 +2506,7 @@ class AdminController extends Controller
             'button_secondary_text' => 'nullable|string|max:100',
             'button_secondary_url' => 'nullable|string|max:255',
             'is_active' => 'boolean',
+            'display_duration' => 'nullable|integer|min:3|max:15',
         ]);
 
         try {
@@ -2529,6 +2530,7 @@ class AdminController extends Controller
                 'button_secondary_url' => $validated['button_secondary_url'] ?? null,
                 'order' => $maxOrder + 1,
                 'is_active' => $validated['is_active'] ?? true,
+                'display_duration' => $validated['display_duration'] ?? 6,
             ]);
 
             // Synchroniser automatiquement le storage
@@ -2562,6 +2564,7 @@ class AdminController extends Controller
             'button_secondary_text' => 'nullable|string|max:100',
             'button_secondary_url' => 'nullable|string|max:255',
             'is_active' => 'boolean',
+            'display_duration' => 'nullable|integer|min:3|max:15',
         ]);
 
         try {
@@ -2577,6 +2580,7 @@ class AdminController extends Controller
                 'button_secondary_text' => $validated['button_secondary_text'] ?? null,
                 'button_secondary_url' => $validated['button_secondary_url'] ?? null,
                 'is_active' => $validated['is_active'] ?? $slide->is_active,
+                'display_duration' => $validated['display_duration'] ?? $slide->display_duration,
             ];
 
             // Si une nouvelle image est uploadée

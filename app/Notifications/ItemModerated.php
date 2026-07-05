@@ -34,62 +34,6 @@ class ItemModerated extends Notification implements ShouldQueue
         return ['mail', 'database'];
     }
 
-    public function afterCommit(): void
-    {
-        $this->sendFCMNotification();
-    }
-
-    protected function sendFCMNotification(): void
-    {
-        try {
-            $user = $this->item->user;
-
-            if (!$user || !$user->fcm_token) {
-                return;
-            }
-
-            $fcmService = app(FirebasePushService::class);
-
-            $titles = [
-                'blocked' => '🚫 Article bloqué',
-                'suspended' => '⏸ Article suspendu',
-                'unsuspended' => '✅ Article rétabli',
-            ];
-
-            $bodies = [
-                'blocked' => "Votre article \"{$this->item->name}\" a été bloqué."
-                    . ($this->reason ? " Raison : {$this->reason}" : ''),
-                'suspended' => "Votre article \"{$this->item->name}\" a été suspendu."
-                    . ($this->reason ? " Raison : {$this->reason}" : ''),
-                'unsuspended' => "Votre article \"{$this->item->name}\" est de nouveau visible.",
-            ];
-
-            $fcmService->sendNotification(
-                $user->fcm_token,
-                $titles[$this->action] ?? 'Mise à jour de votre article',
-                $bodies[$this->action] ?? '',
-                [
-                    'type' => 'item_moderated',
-                    'action' => $this->action,
-                    'item_id' => (string) $this->item->id,
-                    'item_name' => $this->item->name,
-                    'reason' => $this->reason ?? '',
-                    'url' => route('items.show', $this->item),
-                ],
-                $this->item->images[0] ?? null
-                    ? asset('storage/' . $this->item->images[0])
-                    : null
-            );
-
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi notification FCM (modération)', [
-                'error' => $e->getMessage(),
-                'item_id' => $this->item->id,
-                'action' => $this->action,
-            ]);
-        }
-    }
-
     public function toMail(object $notifiable): MailMessage
     {
         $subject = match ($this->action) {
@@ -148,6 +92,8 @@ class ItemModerated extends Notification implements ShouldQueue
             'unsuspended' => "Votre article \"{$this->item->name}\" est de nouveau visible sur la plateforme.",
         ];
 
+        $this->sendFCMNotification();
+
         return [
             'type' => 'item_moderated',
             'action' => $this->action,
@@ -160,5 +106,56 @@ class ItemModerated extends Notification implements ShouldQueue
             'message' => $messages[$this->action] ?? "Votre article \"{$this->item->name}\" a été mis à jour.",
             'action_url' => route('items.show', $this->item),
         ];
+    }
+
+    protected function sendFCMNotification(): void
+    {
+        try {
+            $user = $this->item->user;
+
+            if (!$user || !$user->fcm_token) {
+                return;
+            }
+
+            $fcmService = app(FirebasePushService::class);
+
+            $titles = [
+                'blocked' => 'Article bloqué',
+                'suspended' => 'Article suspendu',
+                'unsuspended' => 'Article rétabli',
+            ];
+
+            $bodies = [
+                'blocked' => "Votre article \"{$this->item->name}\" a été bloqué."
+                    . ($this->reason ? " Raison : {$this->reason}" : ''),
+                'suspended' => "Votre article \"{$this->item->name}\" a été suspendu."
+                    . ($this->reason ? " Raison : {$this->reason}" : ''),
+                'unsuspended' => "Votre article \"{$this->item->name}\" est de nouveau visible.",
+            ];
+
+            $fcmService->sendNotification(
+                $user->fcm_token,
+                $titles[$this->action] ?? 'Mise à jour de votre article',
+                $bodies[$this->action] ?? '',
+                [
+                    'type' => 'item_moderated',
+                    'action' => $this->action,
+                    'item_id' => (string) $this->item->id,
+                    'item_name' => $this->item->name,
+                    'reason' => $this->reason ?? '',
+                    'url' => route('items.show', $this->item),
+                ],
+                $this->item->images[0] ?? null
+                    ? asset('storage/' . $this->item->images[0])
+                    : null
+            );
+
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi notification FCM (modération)', [
+                'error' => $e->getMessage(),
+                'item_id' => $this->item->id,
+                'action' => $this->action,
+            ]);
+        }
     }
 }

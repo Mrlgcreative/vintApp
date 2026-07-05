@@ -28,10 +28,10 @@ Créer mon mot de passe
 
 ## Ce qui vous attend sur {{ config('app.name') }}
 
-✨ **Explorez** - Découvrez des articles uniques  
-💬 **Échangez** - Communiquez directement avec les vendeurs  
-💰 **Achetez** - Transactions sécurisées et simplifiées  
-🛍️ **Vendez** - Mettez en vente vos propres articles  
+- **Explorez** - Découvrez des articles uniques  
+- **Échangez** - Communiquez directement avec les vendeurs  
+- **Achetez** - Transactions sécurisées et simplifiées  
+- **Vendez** - Mettez en vente vos propres articles  
 
 ---
 

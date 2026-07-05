@@ -23,6 +23,7 @@ class HeroSlide extends Model
         'button_secondary_url',
         'order',
         'is_active',
+        'display_duration',
     ];
 
     protected $casts = [

@@ -9,7 +9,7 @@
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <meta name="theme-color" content="#7c3aed">
+    <meta name="theme-color" content="#1a1a1a">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -47,11 +47,34 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @production
+        <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @else
+        {{-- In dev mode, Vite injects CSS via JS (after synchronous link tags), so we inject dynamic-colors after DOMContentLoaded to ensure correct cascade order --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}';
+                document.head.appendChild(link);
+            });
+        </script>
+    @endproduction
 
     <!-- Day/Night Theme (système automatique jour/nuit) -->
     @if(config('colors.day_night.enabled', false))
-        <link rel="stylesheet" href="{{ asset('css/day-night-theme.css') }}">
+        @production
+            <link rel="stylesheet" href="{{ asset('css/day-night-theme.css') }}?v={{ filemtime(public_path('css/day-night-theme.css')) }}">
+        @else
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    var link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = '{{ asset('css/day-night-theme.css') }}?v={{ filemtime(public_path('css/day-night-theme.css')) }}';
+                    document.head.appendChild(link);
+                });
+            </script>
+        @endproduction
     @endif
 
     <!-- Custom Styles -->
@@ -90,7 +113,7 @@
 <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
     
     <!-- Header avec barre de profil -->
-    <header class="bg-primary lg:bg-white dark:bg-gray-800/95 dark:backdrop-blur-md shadow-sm border-b border-primary-700 lg:border-gray-200 dark:border-gray-700/50 sticky top-0 z-50 transition-colors duration-300">
+    <header class="bg-gray-900 lg:bg-white dark:bg-gray-800/95 dark:backdrop-blur-md shadow-sm border-b border-gray-800 lg:border-gray-200 dark:border-gray-700/50 sticky top-0 z-50 transition-colors duration-300">
         <div class="flex items-center justify-between px-4 py-2.5 max-w-7xl lg:mx-auto">
             @auth
                 <!-- Profil utilisateur connecté -->
@@ -104,13 +127,13 @@
                             @endphp
                             <img src="{{ $avatarUrl }}" 
                                  alt="{{ Auth::user()->name }}" 
-                                 class="w-9 h-9 rounded-full object-cover ring-2 ring-white/80 lg:ring-primary-200 group-hover:ring-white lg:group-hover:ring-primary-400 transition-all duration-200"
+                                 class="w-9 h-9 rounded-full object-cover ring-2 ring-white/80 lg:ring-gray-300 group-hover:ring-white lg:group-hover:ring-gray-400 transition-all duration-200"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-500 to-accent-400 items-center justify-center text-white font-bold text-xs hidden shadow-inner">
+                            <div class="w-9 h-9 rounded-full bg-gray-700 items-center justify-center text-white font-bold text-xs hidden shadow-inner">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                             </div>
                         @else
-                            <div class="w-9 h-9 rounded-full bg-white/90 lg:bg-gradient-to-br lg:from-primary-500 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white font-bold text-xs ring-2 ring-white/60 lg:ring-0 shadow-inner">
+                            <div class="w-9 h-9 rounded-full bg-white/90 lg:bg-gray-800 flex items-center justify-center text-gray-800 lg:text-white font-bold text-xs ring-2 ring-white/60 lg:ring-0 shadow-inner">
                                 {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                             </div>
                         @endif
@@ -120,6 +143,13 @@
                 
                 <!-- Actions utilisateur connecté -->
                 <div class="flex items-center gap-1">
+                    <!-- Theme Toggle -->
+                    <button id="headerThemeToggle" onclick="toggleHeaderTheme()" class="p-2 hover:bg-white/10 lg:hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 active:scale-95" aria-label="Changer le theme">
+                        <svg id="headerThemeIcon" class="w-5 h-5 text-white lg:text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+
                     <!-- Notifications -->
                     <button class="relative p-2 hover:bg-white/10 lg:hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 active:scale-95" onclick="toggleNotifications()" aria-label="Notifications">
                         <svg class="w-5 h-5 text-white lg:text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -153,7 +183,7 @@
                 <!-- Logo pour utilisateur non connecté -->
                 <div class="flex items-center">
                     <a href="{{ url('/') }}" class="group flex items-center gap-2.5" aria-label="Accueil">
-                        <div class="w-9 h-9 rounded-xl bg-white/90 lg:bg-gradient-to-br lg:from-primary-500 lg:to-accent-400 flex items-center justify-center text-primary-600 lg:text-white shadow-sm group-hover:shadow-md transition-all duration-200">
+                        <div class="w-9 h-9 rounded-xl bg-white/90 lg:bg-gray-800 flex items-center justify-center text-gray-800 lg:text-white shadow-sm group-hover:shadow-md transition-all duration-200">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/>
                             </svg>
@@ -161,11 +191,18 @@
                         <span class="font-semibold text-white lg:text-gray-800 dark:text-gray-100 text-sm group-hover:opacity-80 transition-opacity">{{ config('app.name', 'VintApp') }}</span>
                     </a>
                 </div>
+                <div class="flex items-center gap-1">
+                    <button id="headerThemeToggle" onclick="toggleHeaderTheme()" class="p-2 hover:bg-white/10 lg:hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 active:scale-95" aria-label="Changer le theme">
+                        <svg id="headerThemeIcon" class="w-5 h-5 text-white lg:text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+                </div>
             @endauth
         </div>
 
         <!-- Navigation principale (desktop seulement) -->
-        <nav class="bg-primary hidden lg:block" role="navigation" aria-label="Navigation principale">
+        <nav class="bg-gray-900 hidden lg:block" role="navigation" aria-label="Navigation principale">
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex items-center justify-between h-14">
                     <!-- Logo et navigation gauche -->
@@ -250,7 +287,7 @@
                         @auth
                             <!-- Menu utilisateur -->
                             <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-primary-200 transition-colors p-1.5 rounded-lg hover:bg-white/10" aria-label="Menu utilisateur">
+                                <button @click="open = !open" class="flex items-center gap-2 text-white hover:text-gray-300 transition-colors p-1.5 rounded-lg hover:bg-white/10" aria-label="Menu utilisateur">
                                     @if(Auth::user()->avatar)
                                         <img src="{{ $avatarUrl }}" alt="{{ Auth::user()->name }}" class="w-7 h-7 rounded-lg object-cover ring-2 ring-white/30">
                                     @else
@@ -310,7 +347,7 @@
                                 <a href="{{ route('login') }}" class="text-white/80 hover:text-white px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-white/10 transition-all duration-200">
                                     Connexion
                                 </a>
-                                <a href="{{ route('register') }}" class="bg-white text-primary-600 hover:bg-white/90 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm">
+                                <a href="{{ route('register') }}" class="bg-white text-gray-900 hover:bg-white/90 px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-sm">
                                     S'inscrire
                                 </a>
                             </div>
@@ -327,7 +364,7 @@
             <div class="max-w-7xl mx-auto px-4">
                 <ol class="flex items-center gap-1.5 text-sm">
                     <li>
-                        <a href="{{ url('/') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors flex items-center gap-1">
+                        <a href="{{ url('/') }}" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>
                             Accueil
                         </a>
@@ -336,17 +373,17 @@
                         $chevronSvg = '<svg class="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>';
                     @endphp
                     @if(request()->routeIs('categories.*'))
-                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('categories.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Catégories</a></li>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('categories.index') }}" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">Catégories</a></li>
                         @if(request()->routeIs('categories.show'))
                             <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $category->name ?? 'Détails' }}</span></li>
                         @endif
                     @elseif(request()->routeIs('brands.*'))
-                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('brands.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Marques</a></li>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('brands.index') }}" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">Marques</a></li>
                         @if(request()->routeIs('brands.show'))
                             <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $brand->name ?? 'Détails' }}</span></li>
                         @endif
                     @elseif(request()->routeIs('items.*'))
-                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('items.index') }}" class="text-gray-500 hover:text-primary-600 dark:text-gray-400 transition-colors">Articles</a></li>
+                        <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<a href="{{ route('items.index') }}" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">Articles</a></li>
                         @if(request()->routeIs('items.show'))
                             <li class="flex items-center gap-1.5">{!! $chevronSvg !!}<span class="text-gray-700 dark:text-gray-200 font-medium">{{ $item->name ?? 'Détails' }}</span></li>
                         @elseif(request()->routeIs('items.my-items'))
@@ -397,21 +434,21 @@
                 <a href="{{ $item['url'] }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="{{ $item['label'] }}">
                     @if(!empty($item['special']))
                         {{-- Bouton Vendre spécial --}}
-                        <div class="w-10 h-10 -mt-3 rounded-xl flex items-center justify-center transition-all duration-200 {{ $item['active'] ? 'bg-primary-600 shadow-lg shadow-primary-500/30' : 'bg-primary-500 shadow-md shadow-primary-500/20 group-active:scale-90' }}">
+                        <div class="w-10 h-10 -mt-3 rounded-xl flex items-center justify-center transition-all duration-200 {{ $item['active'] ? 'bg-gray-900 shadow-lg shadow-black/30' : 'bg-gray-800 shadow-md shadow-black/20 group-active:scale-90' }}">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
                         </div>
-                        <span class="text-[10px] font-semibold {{ $item['active'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        <span class="text-[10px] font-semibold {{ $item['active'] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
                     @else
                         <div class="relative p-1">
                             @if($item['active'])
-                                <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" viewBox="0 0 24 24" fill="currentColor">@foreach(explode(' M', $item['iconFilled']) as $i => $path)<path d="{{ $i > 0 ? 'M' : '' }}{{ $path }}"/>@endforeach</svg>
+                                <svg class="w-5 h-5 text-gray-900 dark:text-gray-100" viewBox="0 0 24 24" fill="currentColor">@foreach(explode(' M', $item['iconFilled']) as $i => $path)<path d="{{ $i > 0 ? 'M' : '' }}{{ $path }}"/>@endforeach</svg>
                             @else
                                 <svg class="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/></svg>
                             @endif
                         </div>
-                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-gray-900 dark:text-gray-100 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
                         @if($item['active'])
-                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary-500 rounded-full"></span>
+                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-gray-900 rounded-full"></span>
                         @endif
                     @endif
                 </a>
@@ -436,11 +473,11 @@
                 @foreach($authMobileNav as $item)
                     <a href="{{ $item['url'] }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="{{ $item['label'] }}">
                         <div class="relative p-1">
-                            <svg class="w-5 h-5 transition-colors {{ $item['active'] ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300' }}" fill="{{ $item['active'] ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['active'] ? ($item['iconSimple'] ?? $item['icon']) : $item['icon'] }}"/></svg>
+                            <svg class="w-5 h-5 transition-colors {{ $item['active'] ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300' }}" fill="{{ $item['active'] ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['active'] ? ($item['iconSimple'] ?? $item['icon']) : $item['icon'] }}"/></svg>
                         </div>
-                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-primary-600 dark:text-primary-400 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-gray-900 dark:text-gray-100 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
                         @if($item['active'])
-                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-primary-500 rounded-full"></span>
+                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-gray-900 rounded-full"></span>
                         @endif
                     </a>
                 @endforeach
@@ -491,6 +528,11 @@
     <!-- Background Sync Manager -->
     <script src="{{ asset('js/background-sync.js') }}?v={{ time() }}"></script>
 
+    <!-- Day/Night Theme -->
+    @if(config('colors.day_night.enabled', false))
+        <script src="{{ asset('js/day-night.js') }}?v={{ filemtime(public_path('js/day-night.js')) }}"></script>
+    @endif
+
     <!-- Scripts personnalisés -->
     <script>
         // Fonction pour afficher les notifications
@@ -521,7 +563,7 @@
                     <p class="text-gray-500 dark:text-gray-400 text-sm text-center">Chargement...</p>
                 </div>
                 <div class="p-3 border-t border-gray-200 dark:border-gray-700 text-center">
-                    <a href="{{ route('notifications.index') }}" class="text-sm text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                    <a href="{{ route('notifications.index') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:underline font-medium">
                         Voir toutes les notifications
                     </a>
                 </div>
@@ -564,7 +606,7 @@
                         <div class="p-3 border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900 cursor-pointer" 
                              onclick="markNotificationAsRead(${notification.id}, '${notification.data?.url || '#'}')">
                             <div class="flex items-start space-x-3">
-                                <i class="fas ${getNotificationIcon(notification.type)} text-primary-600 mt-1"></i>
+                                <i class="fas ${getNotificationIcon(notification.type)} text-gray-600 mt-1"></i>
                                 <div class="flex-1">
                                     <div class="font-semibold text-gray-800 dark:text-gray-100 text-sm">${notification.title}</div>
                                     <div class="text-gray-600 dark:text-gray-300 text-xs mt-1">${notification.message}</div>
@@ -642,18 +684,56 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    messageDiv.innerHTML = '<p class="text-green-500">✅ Inscription réussie !</p>';
+                    messageDiv.innerHTML = '<p class="text-green-600 font-medium">Inscription réussie !</p>';
                     document.getElementById('newsletterEmail').value = '';
                 } else {
-                    messageDiv.innerHTML = '<p class="text-red-500">❌ Erreur lors de l\'inscription</p>';
+                    messageDiv.innerHTML = '<p class="text-red-500 font-medium">Erreur lors de l\'inscription</p>';
                 }
             })
             .catch(error => {
-                messageDiv.innerHTML = '<p class="text-red-500">❌ Erreur lors de l\'inscription</p>';
+                messageDiv.innerHTML = '<p class="text-red-500 font-medium">Erreur lors de l\'inscription</p>';
             });
         });
 
-        // Thème (défini dans le head, ne pas dupliquer)
+        // Header theme toggle
+        function toggleHeaderTheme() {
+            const current = localStorage.getItem('theme') || window.userTheme || 'auto';
+            const html = document.documentElement;
+            const icon = document.getElementById('headerThemeIcon');
+
+            let newTheme;
+            if (current === 'dark') {
+                newTheme = 'light';
+                if (icon) {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>';
+                }
+            } else {
+                newTheme = 'dark';
+                if (icon) {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
+                }
+            }
+
+            localStorage.setItem('theme', newTheme);
+            html.setAttribute('data-theme', newTheme);
+
+            if (newTheme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        }
+
+        // Sync header icon on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const icon = document.getElementById('headerThemeIcon');
+            if (icon) {
+                const theme = localStorage.getItem('theme') || window.userTheme || 'light';
+                if (theme === 'dark') {
+                    icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>';
+                }
+            }
+        });
     </script>
 
     @auth
@@ -822,9 +902,6 @@
     </script>
     @endauth
 
-    <!-- Système Jour/Nuit automatique -->
-    @if(config('colors.day_night.enabled', false))
-        <script src="{{ asset('js/day-night.js') }}" defer></script>
-    @endif
+    
 </body>
 </html>

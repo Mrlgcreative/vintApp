@@ -8,8 +8,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #4a4a5a;
-            background-color: #f4f0f9;
+            color: #4a4a4a;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
         }
@@ -19,10 +19,10 @@
             background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
         .header {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #6d28d9 100%);
+            background: #1a1a1a;
             padding: 36px 30px;
             text-align: center;
         }
@@ -34,14 +34,14 @@
         }
         .header p {
             margin: 8px 0 0;
-            color: rgba(255, 255, 255, 0.85);
+            color: rgba(255, 255, 255, 0.65);
             font-size: 15px;
         }
         .content {
             padding: 36px 32px 28px;
         }
         .item-card {
-            border: 1px solid #eeeaf5;
+            border: 1px solid #e5e5e5;
             border-radius: 12px;
             overflow: hidden;
             margin: 20px 0;
@@ -56,32 +56,32 @@
             padding: 24px;
         }
         .item-title {
-            color: #1f1f2e;
+            color: #1a1a1a;
             font-size: 20px;
             font-weight: 700;
             margin: 0 0 10px 0;
         }
         .item-description {
-            color: #6b6b80;
+            color: #6b6b6b;
             line-height: 1.6;
             margin: 12px 0;
             font-size: 14px;
         }
         .item-price {
             font-size: 26px;
-            color: #7c3aed;
+            color: #1a1a1a;
             font-weight: 800;
             margin: 16px 0;
         }
         .item-meta {
-            color: #9a9aae;
+            color: #9a9a9a;
             font-size: 13px;
             margin: 12px 0;
         }
         .badge {
             display: inline-block;
-            background: #f5f3ff;
-            color: #7c3aed;
+            background: #f5f5f5;
+            color: #4a4a4a;
             padding: 4px 14px;
             border-radius: 20px;
             font-size: 12px;
@@ -90,7 +90,7 @@
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            background: #1a1a1a;
             color: #ffffff !important;
             padding: 14px 36px;
             text-decoration: none !important;
@@ -100,18 +100,18 @@
             margin: 16px 0;
         }
         .footer {
-            background: #f8f6fc;
+            background: #f5f5f5;
             padding: 28px 30px;
             text-align: center;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e5e5e5;
         }
         .footer p {
-            color: #9a9aae;
+            color: #9a9a9a;
             margin: 4px 0;
             font-size: 13px;
         }
         .footer a {
-            color: #7c3aed;
+            color: #1a1a1a;
         }
         @media (max-width: 600px) {
             .email-container { margin: 12px; border-radius: 12px; }

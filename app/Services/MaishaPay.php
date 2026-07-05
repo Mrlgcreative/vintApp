@@ -15,11 +15,25 @@ class MaishaPay
     protected string $collectUrl;
     protected string $payoutUrl;
 
-    public function __construct()
+    public function __construct(?array $config = null)
     {
-        $this->apiKey = config('services.maishapay.api_key') ?? '';
-        $this->secretKey = config('services.maishapay.secret_key') ?? '';
-        $this->merchantId = config('services.maishapay.merchant_id') ?? '';
+        $serviceConfig = $config;
+
+        if (empty($serviceConfig) && function_exists('app') && app()->bound('config')) {
+            $serviceConfig = app('config')->get('services.maishapay', []);
+        }
+
+        if (empty($serviceConfig)) {
+            $serviceConfig = [
+                'api_key' => getenv('MAISHAPAY_API_KEY') ?: '',
+                'secret_key' => getenv('MAISHAPAY_SECRET_KEY') ?: '',
+                'merchant_id' => getenv('MAISHAPAY_MERCHANT_ID') ?: '',
+            ];
+        }
+
+        $this->apiKey = $serviceConfig['api_key'] ?? '';
+        $this->secretKey = $serviceConfig['secret_key'] ?? '';
+        $this->merchantId = $serviceConfig['merchant_id'] ?? '';
 
         $this->baseUrl = 'https://marchand.maishapay.online/api';
         $this->collectUrl = 'https://marchand.maishapay.online/api/collect/v2/store/mobileMoney';
@@ -137,13 +151,22 @@ class MaishaPay
             ]);
 
             if ($response->successful() && !isset($result['errors'])) {
+                $payloadData = $result['data'] ?? $result;
+                $providerTransactionId = $payloadData['transactionId'] ?? $payloadData['id'] ?? null;
+                $statusReference = $payloadData['originatingTransactionId']
+                    ?? $payloadData['transactionReference']
+                    ?? $payloadData['reference']
+                    ?? $payloadData['id']
+                    ?? $transactionId;
+
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
-                    'maishapay_id' => $result['data']['transactionId'] ?? $result['data']['reference'] ?? $result['data']['id'] ?? $result['transactionId'] ?? $result['transactionReference'] ?? $result['reference'] ?? $result['id'] ?? null,
+                    'maishapay_id' => $providerTransactionId,
+                    'status_reference' => $statusReference,
                     'status' => 'pending',
                     'message' => $result['message'] ?? 'Paiement initie. Confirmez sur votre telephone.',
-                    'data' => $result['data'] ?? $result,
+                    'data' => $payloadData,
                 ];
             }
 
@@ -171,19 +194,64 @@ class MaishaPay
         }
     }
 
+    public function resolveStatusReference(array $result): ?string
+    {
+        $data = $result['data'] ?? $result;
+
+        foreach (['originatingTransactionId', 'transactionReference', 'transactionId', 'reference', 'id'] as $key) {
+            $value = $data[$key] ?? null;
+            if (!empty($value) && is_string($value)) {
+                return $value;
+            }
+
+            if (!empty($value) && !is_array($value)) {
+                return (string) $value;
+            }
+        }
+
+        return null;
+    }
+
+    public function buildStatusUrl(string $transactionId, ?array $result = null): string
+    {
+        $reference = $result ? $this->resolveStatusReference($result) : null;
+
+        if ($reference) {
+            return $this->baseUrl . '/payments/' . urlencode($reference) . '/status';
+        }
+
+        return $this->baseUrl . '/payments/' . urlencode($transactionId) . '/status';
+    }
+
     public function checkStatus(string $transactionId): array
     {
         try {
+            $statusUrl = $this->baseUrl . '/payments/' . urlencode($transactionId) . '/status';
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(15)
-                ->get($this->baseUrl . '/payments/' . $transactionId . '/status');
+                ->get($statusUrl);
 
             $result = $response->json();
+
+            if (is_array($result) && !empty($result)) {
+                $resolvedReference = $this->resolveStatusReference($result);
+                if ($resolvedReference && $resolvedReference !== $transactionId) {
+                    $fallbackUrl = $this->buildStatusUrl($transactionId, $result);
+                    if ($fallbackUrl !== $statusUrl) {
+                        $response = Http::withHeaders($this->getHeaders())
+                            ->timeout(15)
+                            ->get($fallbackUrl);
+                        $result = $response->json();
+                        $statusUrl = $fallbackUrl;
+                    }
+                }
+            }
 
             Log::info('MaishaPay: Verification statut', [
                 'transaction_id' => $transactionId,
                 'status_code' => $response->status(),
                 'response' => $result,
+                'status_url' => $statusUrl,
             ]);
 
             if ($response->successful()) {
@@ -202,10 +270,21 @@ class MaishaPay
                 ];
             }
 
+            $status = $result['status'] ?? $result['data']['status'] ?? 'unknown';
+            if (in_array($response->status(), [404, 500], true)) {
+                return [
+                    'success' => false,
+                    'transaction_id' => $transactionId,
+                    'status' => 'pending',
+                    'message' => 'Statut MaishaPay indisponible pour le moment',
+                    'retryable' => false,
+                ];
+            }
+
             return [
                 'success' => false,
                 'transaction_id' => $transactionId,
-                'status' => $result['status'] ?? $result['data']['status'] ?? 'unknown',
+                'status' => $status,
                 'message' => $result['message'] ?? 'Impossible de verifier le statut',
             ];
 
@@ -218,8 +297,9 @@ class MaishaPay
             return [
                 'success' => false,
                 'transaction_id' => $transactionId,
-                'status' => 'error',
-                'message' => 'Erreur de connexion',
+                'status' => 'pending',
+                'message' => 'Erreur temporaire lors de la vérification du statut',
+                'retryable' => false,
             ];
         }
     }

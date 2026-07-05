@@ -1,11 +1,10 @@
 @extends('app')
 @section('title', 'Articles disponibles')
 @section('content')
-{{-- Toast notification --}}
 <div class="fixed bottom-4 right-4 z-50">
-    <div id="mainToast" class="hidden bg-primary-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
+    <div id="mainToast" class="hidden bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
         <div id="mainToastBody" class="flex-1">Notification</div>
-        <button type="button" onclick="hideToast()" class="text-white hover:text-gray-200 ml-4">
+        <button type="button" onclick="hideToast()" class="text-white hover:text-gray-300 ml-4">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -13,22 +12,22 @@
 
 <div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-6 md:py-8" data-page-type="product-grid">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        {{-- En-tête --}}
+        {{-- En-tete --}}
         <div class="mb-6 md:mb-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-                    <i class="fas fa-box mr-3 text-primary-600"></i>
+                    <i class="fas fa-box mr-3 text-gray-700 dark:text-gray-300"></i>
                     Articles disponibles
                 </h1>
                 <div class="flex items-center gap-2">
                     @if($userCity)
-                        <span class="inline-flex items-center px-3 py-1.5 bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium rounded-full">
+                        <span class="inline-flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-full">
                             <i class="fas fa-location-dot mr-1.5"></i>
                             {{ $userCity }}
                         </span>
                     @endif
                     @auth
-                        <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all">
+                        <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white font-semibold rounded-xl shadow hover:shadow-lg active:scale-[0.98] transition-all">
                             <i class="fas fa-plus mr-2"></i>
                             Vendre un article
                         </a>
@@ -46,11 +45,11 @@
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="search"
                                    name="search"
-                                   class="w-full pl-11 pr-4 sm:pr-28 py-3 sm:py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                   class="w-full pl-11 pr-4 sm:pr-28 py-3 sm:py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                                    placeholder="Rechercher un article..."
                                    value="{{ request('search') }}"
                                    autocomplete="off">
-                            <button type="submit" class="hidden sm:flex absolute right-1.5 top-1/2 -translate-y-1/2 items-center px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors">
+                            <button type="submit" class="hidden sm:flex absolute right-1.5 top-1/2 -translate-y-1/2 items-center px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-lg transition-colors">
                                 <i class="fas fa-search mr-2"></i>
                                 Rechercher
                             </button>
@@ -71,7 +70,7 @@
                         <div class="sticky top-0 bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700 rounded-t-2xl z-10">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
-                                    <i class="fas fa-filter mr-2 text-primary-600"></i>
+                                    <i class="fas fa-filter mr-2 text-gray-700 dark:text-gray-300"></i>
                                     Filtres
                                 </h3>
                                 <button type="button" onclick="closeFiltersModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors">
@@ -84,22 +83,22 @@
                             <form method="GET" action="{{ route('items.index') }}" id="filterForm" class="space-y-5">
                                 <div>
                                     <label for="filterSearch" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-search mr-1.5 text-primary-600"></i>Mot-clé
+                                        <i class="fas fa-search mr-1.5 text-gray-500"></i>Mot-cle
                                     </label>
                                     <input type="text"
                                            id="filterSearch"
                                            name="search"
-                                           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-                                           placeholder="Ex: iPhone, Nike, Vêtements..."
+                                           class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
+                                           placeholder="Ex: iPhone, Nike, Vetements..."
                                            value="{{ request('search') }}">
                                 </div>
 
                                 <div>
                                     <label for="filterCategory" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-layer-group mr-1.5 text-primary-600"></i>Catégorie
+                                        <i class="fas fa-layer-group mr-1.5 text-gray-500"></i>Categorie
                                     </label>
-                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
-                                        <option value="">Toutes les catégories</option>
+                                    <select id="filterCategory" name="category" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all">
+                                        <option value="">Toutes les categories</option>
                                         @foreach($categories as $category)
                                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                                                 {{ $category->name }}
@@ -110,9 +109,9 @@
 
                                 <div>
                                     <label for="filterBrand" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-tag mr-1.5 text-primary-600"></i>Marque
+                                        <i class="fas fa-tag mr-1.5 text-gray-500"></i>Marque
                                     </label>
-                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
+                                    <select id="filterBrand" name="brand" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all">
                                         <option value="">Toutes les marques</option>
                                         @foreach($brands as $brand)
                                             <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>
@@ -124,19 +123,19 @@
 
                                 <div>
                                     <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-dollar-sign mr-1.5 text-primary-600"></i>Prix (USD)
+                                        <i class="fas fa-dollar-sign mr-1.5 text-gray-500"></i>Prix (USD)
                                     </label>
                                     <div class="grid grid-cols-2 gap-3">
                                         <input type="number"
                                                name="min_price"
-                                               class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                               class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                                                placeholder="Min"
                                                value="{{ request('min_price') }}"
                                                min="0"
                                                step="0.01">
                                         <input type="number"
                                                name="max_price"
-                                               class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                               class="px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                                                placeholder="Max"
                                                value="{{ request('max_price') }}"
                                                min="0"
@@ -146,23 +145,23 @@
 
                                 <div>
                                     <label for="filterCondition" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-star mr-1.5 text-primary-600"></i>État
+                                        <i class="fas fa-star mr-1.5 text-gray-500"></i>Etat
                                     </label>
-                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
-                                        <option value="">Tous les états</option>
+                                    <select id="filterCondition" name="condition" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all">
+                                        <option value="">Tous les etats</option>
                                         <option value="new" {{ request('condition') == 'new' ? 'selected' : '' }}>Neuf</option>
                                         <option value="like_new" {{ request('condition') == 'like_new' ? 'selected' : '' }}>Comme neuf</option>
-                                        <option value="good" {{ request('condition') == 'good' ? 'selected' : '' }}>Bon état</option>
-                                        <option value="fair" {{ request('condition') == 'fair' ? 'selected' : '' }}>État correct</option>
-                                        <option value="poor" {{ request('condition') == 'poor' ? 'selected' : '' }}>Usé</option>
+                                        <option value="good" {{ request('condition') == 'good' ? 'selected' : '' }}>Bon etat</option>
+                                        <option value="fair" {{ request('condition') == 'fair' ? 'selected' : '' }}>Etat correct</option>
+                                        <option value="poor" {{ request('condition') == 'poor' ? 'selected' : '' }}>Use</option>
                                     </select>
                                 </div>
 
                                 <div>
                                     <label for="filterCity" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                        <i class="fas fa-city mr-1.5 text-primary-600"></i>Ville
+                                        <i class="fas fa-city mr-1.5 text-gray-500"></i>Ville
                                     </label>
-                                    <select id="filterCity" name="city" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all">
+                                    <select id="filterCity" name="city" class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all">
                                         <option value="">Toutes les villes</option>
                                         @foreach($cities as $city)
                                             <option value="{{ $city }}" {{ request('city', $userCity) == $city ? 'selected' : '' }}>
@@ -172,9 +171,9 @@
                                     </select>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         @if($userCity)
-                                            <i class="fas fa-location-dot mr-1 text-primary-500"></i>Ville détectée : <strong>{{ $userCity }}</strong>
+                                            <i class="fas fa-location-dot mr-1 text-gray-500"></i>Ville detectee : <strong>{{ $userCity }}</strong>
                                         @else
-                                            <i class="fas fa-info-circle mr-1"></i>Aucune ville détectée
+                                            <i class="fas fa-info-circle mr-1"></i>Aucune ville detectee
                                         @endif
                                     </p>
                                 </div>
@@ -183,9 +182,9 @@
 
                         <div class="sticky bottom-0 bg-white dark:bg-gray-800 px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex gap-3">
                             <button type="button" onclick="resetFilters()" class="flex-1 px-5 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-medium rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                                <i class="fas fa-undo mr-2"></i>Réinitialiser
+                                <i class="fas fa-undo mr-2"></i>Reinitialiser
                             </button>
-                            <button type="button" onclick="applyFilters()" class="flex-1 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-lg transition-colors">
+                            <button type="button" onclick="applyFilters()" class="flex-1 px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl shadow transition-colors">
                                 <i class="fas fa-check mr-2"></i>Appliquer
                             </button>
                         </div>
@@ -205,13 +204,9 @@
                         $isBoosted = $activeBoost !== null;
                         $boostType = $activeBoost?->boostType;
                     @endphp
-                    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 {{ $isBoosted ? 'ring-2 ring-' . ($boostType?->color ?? 'primary') . '-400/50' : '' }}">
+                    <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                         {{-- Image --}}
                         <a href="{{ route('items.show', $item) }}" class="block relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700">
-                            @if($isBoosted)
-                                <div class="absolute inset-0 bg-gradient-to-tr from-{{ $boostType?->color ?? 'primary' }}-400/10 to-transparent pointer-events-none z-10"></div>
-                            @endif
-
                             @if($item->images && count($item->images) > 0)
                                 <img data-src="{{ Storage::url($item->images[0]) }}"
                                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f3f4f6' width='400' height='300'/%3E%3C/svg%3E"
@@ -227,13 +222,13 @@
                             {{-- Badges top-left --}}
                             <div class="absolute top-2 left-2 flex flex-col gap-1 z-20">
                                 @if($isBoosted)
-                                    <span class="px-2 py-0.5 bg-gradient-to-r from-{{ $boostType?->color ?? 'primary' }}-500 to-{{ $boostType?->color ?? 'primary' }}-600 text-white text-[10px] md:text-xs font-bold rounded-full shadow-lg flex items-center gap-1 animate-pulse">
-                                        <i class="{{ $boostType?->icon ?? 'fas fa-star' }} text-[9px]"></i>
+                                    <span class="px-2 py-0.5 bg-gray-900 text-white text-[10px] md:text-xs font-bold rounded-full shadow flex items-center gap-1">
+                                        <i class="fas fa-star text-[9px]"></i>
                                         <span class="hidden sm:inline">{{ $boostType?->name ?? 'BOOST' }}</span>
                                     </span>
                                 @endif
                                 @if($isNew)
-                                    <span class="px-2 py-0.5 bg-emerald-500 text-white text-[10px] md:text-xs font-bold rounded-full shadow">
+                                    <span class="px-2 py-0.5 bg-gray-900 text-white text-[10px] md:text-xs font-bold rounded-full shadow">
                                         NOUVEAU
                                     </span>
                                 @endif
@@ -243,13 +238,13 @@
                             @auth
                                 <button class="absolute top-2 right-2 z-20 w-8 h-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-md hover:bg-white dark:hover:bg-gray-700 transition-all favorite-btn"
                                         data-item-id="{{ $item->id }}">
-                                    <i class="fas fa-heart text-gray-400 hover:text-red-500 transition-colors text-xs"></i>
+                                    <i class="fas fa-heart text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xs"></i>
                                 </button>
                             @endauth
 
                             {{-- Prix overlay bottom --}}
                             <div class="absolute bottom-2 right-2 z-20">
-                                <span class="px-2.5 py-1 bg-gray-900/80 backdrop-blur-sm text-white rounded-lg text-xs md:text-sm font-bold shadow-lg {{ $isBoosted ? 'ring-1 ring-' . ($boostType?->color ?? 'primary') . '-400' : '' }}">
+                                <span class="px-2.5 py-1 bg-gray-900/80 backdrop-blur-sm text-white rounded-lg text-xs md:text-sm font-bold shadow-lg">
                                     {{ $item->formatted_price }}
                                 </span>
                             </div>
@@ -258,13 +253,13 @@
                         {{-- Contenu --}}
                         <div class="p-3 md:p-4">
                             <a href="{{ route('items.show', $item) }}" class="block group/title">
-                                <h3 class="text-xs md:text-sm font-bold text-gray-900 dark:text-white line-clamp-2 group-hover/title:text-primary-600 transition-colors leading-tight">
+                                <h3 class="text-xs md:text-sm font-bold text-gray-900 dark:text-white line-clamp-2 group-hover/title:text-gray-600 dark:group-hover/title:text-gray-300 transition-colors leading-tight">
                                     {{ $item->name }}
                                 </h3>
                             </a>
 
                             <div class="flex flex-wrap gap-1 mt-2">
-                                <span class="px-1.5 md:px-2 py-0.5 text-[10px] md:text-xs font-medium bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded">{{ $item->category->name }}</span>
+                                <span class="px-1.5 md:px-2 py-0.5 text-[10px] md:text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">{{ $item->category->name }}</span>
                                 @if($item->brand)
                                     <span class="px-1.5 md:px-2 py-0.5 text-[10px] md:text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">{{ $item->brand->name }}</span>
                                 @endif
@@ -300,10 +295,10 @@
                 <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-5">
                     <i class="fas fa-search text-2xl text-gray-300 dark:text-gray-600"></i>
                 </div>
-                <h4 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">Aucun article trouvé</h4>
-                <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm">Essayez de modifier vos critères de recherche.</p>
+                <h4 class="text-xl font-bold text-gray-700 dark:text-gray-300 mb-2">Aucun article trouve</h4>
+                <p class="text-gray-500 dark:text-gray-400 mb-6 text-sm">Essayez de modifier vos criteres de recherche.</p>
                 @auth
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl active:scale-[0.98] transition-all">
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center px-5 py-2.5 bg-gray-900 text-white font-semibold rounded-xl shadow hover:shadow-lg active:scale-[0.98] transition-all">
                         <i class="fas fa-plus mr-2"></i>
                         Vendre votre premier article
                     </a>
@@ -361,7 +356,6 @@ function applyFilters() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Favoris
     document.querySelectorAll('.favorite-btn').forEach(function(btn) {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -388,7 +382,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Escape pour fermer le modal
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeFiltersModal();
     });

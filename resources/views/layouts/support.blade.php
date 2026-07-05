@@ -8,7 +8,18 @@
     <link rel="icon" type="image/png" href="{{ asset($appFavicon ?? '/favicon.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @production
+        <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @else
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}';
+                document.head.appendChild(link);
+            });
+        </script>
+    @endproduction
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" crossorigin="anonymous">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 

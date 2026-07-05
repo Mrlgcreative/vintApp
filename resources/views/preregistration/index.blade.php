@@ -9,7 +9,18 @@
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @production
+        <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @else
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}';
+                document.head.appendChild(link);
+            });
+        </script>
+    @endproduction
     
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://www.gstatic.com">

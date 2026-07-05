@@ -23,7 +23,19 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Color Palette Variables (loaded AFTER Vite to override default colors) -->
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @production
+        <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @else
+        {{-- In dev mode, Vite injects CSS via JS (after synchronous link tags), so we inject dynamic-colors after DOMContentLoaded to ensure correct cascade order --}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}';
+                document.head.appendChild(link);
+            });
+        </script>
+    @endproduction
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

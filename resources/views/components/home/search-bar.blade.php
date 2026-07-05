@@ -1,8 +1,8 @@
-<section class="relative -mt-32 z-40 container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-white backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-100 p-3 hover:shadow-3xl transition-all duration-500 transform hover:scale-[1.02]">
-        <form action="{{ route('items.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+<section class="relative -mt-16 sm:-mt-28 z-40 container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-2">
+        <form action="{{ route('items.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
             <div class="flex-1 relative">
-                <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
+                <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                     <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
@@ -10,24 +10,24 @@
                 <input type="search" 
                        name="q" 
                        value="{{ request('q') }}" 
-                       placeholder="Rechercher des pièces vintage..." 
-                       class="w-full h-16 pl-14 pr-6 rounded-2xl bg-gray-50 border-0 focus:bg-white focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all text-base font-medium placeholder:text-gray-400" />
+                       placeholder="Rechercher des pieces vintage..." 
+                       class="w-full h-12 pl-12 pr-4 rounded-xl bg-gray-50 border-0 focus:bg-white focus:ring-2 focus:ring-gray-300 focus:outline-none transition-all text-sm font-medium placeholder:text-gray-400" />
             </div>
             
-            <div class="flex gap-3">
+            <div class="flex gap-2">
                 <button type="button" 
                         onclick="toggleFiltersModal()" 
-                        class="h-16 px-6 rounded-2xl border-2 border-gray-200 hover:border-purple-300 hover:bg-purple-50 text-gray-700 hover:text-purple-700 transition-all flex items-center gap-2 font-medium group">
-                    <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="h-12 px-4 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-600 transition-all flex items-center gap-2 text-sm font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
                     </svg>
                     <span class="hidden sm:inline">Filtres</span>
                 </button>
                 
                 <button type="submit" 
-                        class="h-16 px-8 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-purple-500/30 transform hover:scale-105">
+                        class="h-12 px-6 bg-gray-900 text-white rounded-xl font-semibold text-sm hover:bg-gray-800 transition-all">
                     <span class="hidden sm:inline">Rechercher</span>
-                    <svg class="w-5 h-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
                 </button>

@@ -10,7 +10,7 @@
     $slideDurations = $slides ? $slides->pluck('display_duration')->toArray() : [];
 @endphp
 
-<section class="relative h-[90vh] min-h-[600px] overflow-hidden">
+<section class="relative h-[90vh] min-h-[500px] sm:min-h-[600px] overflow-hidden">
     @if($slides && $slides->count() > 0)
         <!-- Carrousel Container -->
         <div class="relative h-full">
@@ -20,7 +20,7 @@
                     <div class="carousel-slide absolute inset-0 flex items-center transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
                          data-slide-index="{{ $index }}"
                          data-duration="{{ $slide->display_duration ?? 6 }}"
-                         style="background-color: {{ $slide->background_color ?? '#6A0DAD' }};">
+                          style="background-color: {{ $slide->background_color ?? '#1a1a1a' }};">
                         
                         <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
                             <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 {{ ($slide->image_position ?? 'right') === 'left' ? 'md:flex-row-reverse' : '' }}">
@@ -29,7 +29,7 @@
                                 <div class="flex-1 space-y-6 {{ ($slide->text_position ?? 'left') === 'center' ? 'text-center' : (($slide->text_position ?? 'left') === 'right' ? 'text-right' : 'text-left') }}">
                                     @if($slide->subtitle)
                                         <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full">
-                                            <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                                            <span class="w-2 h-2 bg-white/60 rounded-full animate-pulse"></span>
                                             <span class="text-sm font-semibold text-white/90 tracking-wide uppercase">{{ $slide->subtitle }}</span>
                                         </div>
                                     @endif
@@ -41,7 +41,7 @@
                                     <div class="flex flex-wrap gap-4 pt-2 {{ ($slide->text_position ?? 'left') === 'center' ? 'justify-center' : (($slide->text_position ?? 'left') === 'right' ? 'justify-end' : 'justify-start') }}">
                                         @if($slide->button_primary_text)
                                             <a href="{{ $slide->button_primary_url ?? '#' }}" 
-                                               class="group inline-flex items-center gap-3 px-7 py-3.5 bg-white text-gray-900 rounded-full font-bold text-base hover:bg-purple-50 transition-all duration-300 shadow-xl shadow-black/20">
+                                               class="inline-flex items-center gap-3 px-7 py-3.5 bg-white text-gray-900 rounded-full font-semibold text-base hover:bg-gray-100 transition-all duration-300 shadow-lg shadow-black/20">
                                                 <span>{{ $slide->button_primary_text }}</span>
                                                 <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -50,7 +50,7 @@
                                         @endif
                                         @if($slide->button_secondary_text)
                                             <a href="{{ $slide->button_secondary_url ?? '#' }}" 
-                                               class="inline-flex items-center gap-2 px-7 py-3.5 border-2 border-white/30 text-white rounded-full font-semibold text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
+                                               class="inline-flex items-center gap-2 px-7 py-3.5 border border-white/30 text-white rounded-full font-medium text-base hover:bg-white/10 transition-all duration-300">
                                                 {{ $slide->button_secondary_text }}
                                             </a>
                                         @endif
@@ -104,45 +104,36 @@
         </div>
     @else
         <!-- Fallback Hero -->
-        <div class="relative h-full bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center overflow-hidden">
-            <!-- Motif décoratif -->
-            <div class="absolute inset-0 opacity-30">
-                <div class="absolute top-1/4 -left-20 w-96 h-96 bg-purple-600/30 rounded-full blur-3xl"></div>
-                <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-pink-600/20 rounded-full blur-3xl"></div>
-                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-3xl"></div>
-            </div>
-            
-            <!-- Grille subtile -->
-            <div class="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(255,255,255,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.1)_1px,transparent_1px)] bg-[size:60px_60px]"></div>
+        <div class="relative h-full bg-gray-900 flex items-center justify-center overflow-hidden">
             
             <div class="container max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8">
-                    <span class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></span>
+                    <span class="w-2 h-2 bg-white/60 rounded-full animate-pulse"></span>
                     <span class="text-sm font-semibold text-white/80 tracking-wide uppercase">Bienvenue sur VintApp</span>
                 </div>
                 
-                <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
-                    Trouvez des Pièces
-                    <span class="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400">
+                <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
+                    Trouvez des Pieces
+                    <span class="block text-white/90">
                         Vintage Uniques
                     </span>
                 </h1>
                 
-                <p class="text-lg sm:text-xl text-white/60 mb-10 leading-relaxed max-w-2xl mx-auto">
-                    Des articles authentiques sélectionnés avec soin, pour un style qui vous ressemble
+                <p class="text-base sm:text-xl text-white/60 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
+                    Des articles authentiques selectionnes avec soin, pour un style qui vous ressemble
                 </p>
                 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                     <a href="{{ route('items.index') }}" 
-                       class="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-gray-900 rounded-full font-bold text-base hover:bg-purple-50 transition-all duration-300 shadow-xl shadow-black/20">
+                       class="inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3.5 sm:py-4 bg-white text-gray-900 rounded-full font-semibold text-sm sm:text-base hover:bg-gray-100 transition-all duration-300 shadow-lg shadow-black/20">
                         <span>Explorer la Collection</span>
-                        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                         </svg>
                     </a>
                     <a href="{{ route('items.create') ?? '#' }}" 
-                       class="inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white/20 text-white rounded-full font-semibold text-base hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 border border-white/20 text-white rounded-full font-medium text-sm sm:text-base hover:bg-white/10 transition-all duration-300">
+                        <svg class="w-3.5 sm:w-4 h-3.5 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                         Vendre un Article

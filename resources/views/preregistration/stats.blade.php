@@ -6,7 +6,18 @@
     <title>Statistiques - VintApp</title>
     <meta name="description" content="Statistiques de pré-inscription VintApp">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @production
+        <link rel="stylesheet" href="{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}">
+    @else
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = '{{ asset('css/dynamic-colors.css') }}?v={{ filemtime(public_path('css/dynamic-colors.css')) }}';
+                document.head.appendChild(link);
+            });
+        </script>
+    @endproduction
 </head>
 <body class="min-h-screen bg-stone-100 dark:bg-stone-950">
     <div class="min-h-screen flex items-center justify-center px-4 py-12">

@@ -483,10 +483,10 @@ class PaymentCallbackController extends Controller
     /**
      * Endpoint pour vérifier le statut d'une transaction (polling)
      */
-        public function checkStatus(Request $request)
+    public function checkStatus(Request $request)
     {
         $transactionId = $request->input('transaction_id');
-        
+
         $transaction = Transaction::find($transactionId);
 
         if (!$transaction) {
@@ -510,9 +510,43 @@ class PaymentCallbackController extends Controller
             ]);
         }
 
-        // NOTE: L'API de vérification de statut MaishaPay (/api/payments/{id}/status)
-        // n'est pas disponible (retourne 404/520). On attend le callback ou la
-        // confirmation manuelle (forceComplete).
+        if ($transaction->provider === 'maishapay' && $transaction->transaction_ref) {
+            try {
+                $maishaPay = new \App\Services\MaishaPay();
+                $result = $maishaPay->checkStatus($transaction->transaction_ref);
+
+                if ($result['success'] ?? false) {
+                    $status = strtolower($result['status'] ?? 'pending');
+                    $newStatus = match ($status) {
+                        'success', 'completed', 'successful' => 'completed',
+                        'failed', 'declined', 'cancelled' => 'failed',
+                        default => 'pending',
+                    };
+
+                    if ($newStatus !== $transaction->status) {
+                        $transaction->update(['status' => $newStatus]);
+                    }
+
+                    return response()->json([
+                        'status' => 'success',
+                        'transaction' => [
+                            'id' => $transaction->id,
+                            'status' => $transaction->fresh()->status,
+                            'amount' => $transaction->amount,
+                            'currency' => $transaction->currency,
+                            'created_at' => $transaction->created_at,
+                            'completed_at' => $transaction->completed_at,
+                        ],
+                        'provider_status' => $result['status'] ?? null,
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                Log::warning('MaishaPay status polling failed', [
+                    'transaction_id' => $transaction->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         return response()->json([
             'status' => 'success',
@@ -525,7 +559,9 @@ class PaymentCallbackController extends Controller
                 'completed_at' => $transaction->completed_at,
             ],
         ]);
-    }    /**
+    }
+
+    /**
      * Force la complétion manuelle d'une transaction en attente.
      * Utilisé quand le callback MaishaPay n'arrive pas (localhost) ou quand
      * l'utilisateur a déjà confirmé sur son téléphone.

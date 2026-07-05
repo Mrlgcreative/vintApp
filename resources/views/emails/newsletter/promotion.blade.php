@@ -8,8 +8,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #4a4a5a;
-            background-color: #f4f0f9;
+            color: #4a4a4a;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
         }
@@ -19,10 +19,10 @@
             background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.08);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
         }
         .header {
-            background: linear-gradient(135deg, #7c3aed 0%, #9333ea 50%, #6d28d9 100%);
+            background: #1a1a1a;
             padding: 36px 30px;
             text-align: center;
         }
@@ -33,7 +33,7 @@
             color: #ffffff;
         }
         .header .subtitle {
-            color: rgba(255, 255, 255, 0.85);
+            color: rgba(255, 255, 255, 0.65);
             font-size: 15px;
             margin-top: 8px;
         }
@@ -41,11 +41,11 @@
             padding: 36px 32px 28px;
         }
         .highlight-box {
-            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            background: #f5f5f5;
             border-radius: 12px;
             padding: 24px;
             margin: 20px 0;
-            border: 1px solid #ddd6fe;
+            border: 1px solid #e5e5e5;
             font-size: 15px;
             line-height: 1.7;
         }
@@ -62,23 +62,24 @@
             text-align: center;
         }
         .feature-icon {
-            font-size: 28px;
+            font-size: 16px;
             margin-bottom: 8px;
+            color: #9a9a9a;
         }
         .feature h3 {
-            color: #1f1f2e;
+            color: #1a1a1a;
             font-size: 14px;
             font-weight: 700;
             margin: 0 0 4px;
         }
         .feature p {
             font-size: 13px;
-            color: #6b6b80;
+            color: #6b6b6b;
             margin: 0;
         }
         .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            background: #1a1a1a;
             color: #ffffff !important;
             padding: 16px 40px;
             text-decoration: none !important;
@@ -89,26 +90,26 @@
         }
         .divider {
             border: none;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e5e5e5;
             margin: 28px 0;
         }
         .footer {
-            background: #f8f6fc;
+            background: #f5f5f5;
             padding: 28px 30px;
             text-align: center;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e5e5e5;
         }
         .footer p {
-            color: #9a9aae;
+            color: #9a9a9a;
             margin: 4px 0;
             font-size: 13px;
         }
         .footer a {
-            color: #7c3aed;
+            color: #1a1a1a;
         }
         .testimonial {
             font-style: italic;
-            color: #6b6b80;
+            color: #6b6b6b;
             text-align: center;
             margin: 24px 0;
             font-size: 15px;
@@ -124,7 +125,7 @@
     <div class="email-container">
         <div class="header">
             <h1>{{ $subject ?? 'Offre exclusive' }}</h1>
-            <div class="subtitle">Des trésors uniques à prix exceptionnels</div>
+            <div class="subtitle">Des articles uniques sélectionnés pour vous</div>
         </div>
         <div class="content">
             <p class="greeting" style="font-size: 16px; color: #1f1f2e;">
@@ -141,17 +142,17 @@
 
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">🔍</div>
+                    <div class="feature-icon">◆</div>
                     <h3>Sélection Rigoureuse</h3>
                     <p>Articles vérifiés et authentifiés par notre équipe</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🚚</div>
+                    <div class="feature-icon">◆</div>
                     <h3>Livraison Sécurisée</h3>
                     <p>Suivi en temps réel de vos commandes</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">💰</div>
+                    <div class="feature-icon">◆</div>
                     <h3>Prix Compétitifs</h3>
                     <p>Les meilleures offres du marché</p>
                 </div>

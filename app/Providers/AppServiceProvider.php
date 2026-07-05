@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Notifications\Channels\DatabaseChannel;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -21,6 +22,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(\App\Services\SettingService::class, function ($app) {
             return new \App\Services\SettingService();
         });
+
+        $this->app->bind(
+            \Illuminate\Notifications\Channels\DatabaseChannel::class,
+            DatabaseChannel::class
+        );
     }
 
     /**

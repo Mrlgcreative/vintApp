@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue sur VintApp</title>
+    <title>Bienvenue - {{ config('app.name') }}</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
-            color: #4a4a5a;
-            background-color: #f4f0f9;
+            color: #4a4a4a;
+            background-color: #f5f5f5;
             margin: 0;
             padding: 0;
         }
@@ -17,83 +17,77 @@
             max-width: 600px;
             margin: 24px auto;
             background: #ffffff;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(124, 58, 237, 0.08);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
         }
         .header {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #6d28d9 100%);
-            padding: 36px 30px;
+            background: #1a1a1a;
+            padding: 32px 28px;
             text-align: center;
         }
         .header h1 {
             margin: 0;
-            font-size: 28px;
-            font-weight: 800;
+            font-size: 24px;
+            font-weight: 700;
             color: #ffffff;
         }
-        .header p {
-            margin: 8px 0 0;
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 15px;
-        }
         .content {
-            padding: 36px 32px 28px;
+            padding: 32px 28px;
         }
         .features {
             display: flex;
             gap: 12px;
-            margin: 24px 0;
+            margin: 20px 0;
         }
         .feature {
             flex: 1;
-            background: #f5f3ff;
-            padding: 20px 16px;
-            border-radius: 12px;
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 8px;
             text-align: center;
         }
         .feature-icon {
-            font-size: 32px;
-            margin-bottom: 8px;
+            font-size: 18px;
+            margin-bottom: 6px;
+            color: #9a9a9a;
         }
         .feature strong {
             display: block;
-            color: #5b21b6;
-            font-size: 14px;
+            font-size: 13px;
             margin-bottom: 4px;
         }
         .feature p {
-            font-size: 13px;
-            color: #6b6b80;
+            font-size: 12px;
+            color: #9a9a9a;
             margin: 0;
         }
-        .cta-button {
+        .btn {
             display: inline-block;
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            background: #1a1a1a;
             color: #ffffff !important;
-            padding: 16px 40px;
+            padding: 14px 36px;
             text-decoration: none !important;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
-            margin: 20px 0;
+            font-size: 15px;
+            margin: 16px 0;
         }
         .footer {
-            background: #f8f6fc;
-            padding: 28px 30px;
+            padding: 24px 28px;
             text-align: center;
-            border-top: 1px solid #eeeaf5;
+            border-top: 1px solid #e5e5e5;
         }
         .footer p {
-            color: #9a9aae;
+            color: #9a9a9a;
             margin: 4px 0;
             font-size: 13px;
         }
         .footer a {
-            color: #7c3aed;
+            color: #1a1a1a;
         }
         @media (max-width: 600px) {
-            .container { margin: 12px; border-radius: 12px; }
+            .container { margin: 12px; border-radius: 10px; }
             .header, .content, .footer { padding: 20px; }
             .features { flex-direction: column; }
         }
@@ -102,49 +96,45 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Bienvenue sur {{ config('app.name') }} !</h1>
-            <p>Merci de nous avoir rejoints</p>
+            <h1>Bienvenue !</h1>
         </div>
         <div class="content">
-            <h2 style="color: #1f1f2e; margin: 0 0 16px;">Bonjour {{ $subscriber->name ?? 'cher(e) abonné(e)' }},</h2>
-
-            <p>Merci de vous être inscrit(e) à notre newsletter ! Vous recevrez désormais nos meilleures trouvailles et offres exclusives.</p>
+            <p>Bonjour {{ $subscriber->name ?? 'cher abonné' }},</p>
+            <p>Merci de vous être inscrit à notre newsletter ! Vous recevrez désormais nos meilleures trouvailles et offres exclusives.</p>
 
             <div class="features">
                 <div class="feature">
-                    <div class="feature-icon">📦</div>
+                    <div class="feature-icon">✦</div>
                     <strong>Nouveaux articles</strong>
-                    <p>Soyez le premier à découvrir nos dernières trouvailles</p>
+                    <p>Soyez le premier informé</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">🎁</div>
-                    <strong>Promotions exclusives</strong>
-                    <p>Accédez à des offres réservées aux abonnés</p>
+                    <div class="feature-icon">✦</div>
+                    <strong>Promotions</strong>
+                    <p>Offres réservées aux abonnés</p>
                 </div>
                 <div class="feature">
-                    <div class="feature-icon">💰</div>
-                    <strong>Conseils et astuces</strong>
-                    <p>Maximisez vos achats et ventes</p>
+                    <div class="feature-icon">✦</div>
+                    <strong>Conseils</strong>
+                    <p>Astuces et bons plans</p>
                 </div>
             </div>
 
             <div style="text-align: center;">
-                <a href="{{ route('items.index') }}" class="cta-button">
-                    Découvrir nos articles
-                </a>
+                <a href="{{ route('items.index') }}" class="btn">Découvrir nos articles</a>
             </div>
 
-            <p style="margin-top: 24px;">À bientôt sur {{ config('app.name') }} !</p>
+            <p>À bientôt sur {{ config('app.name') }} !</p>
             <p><strong>L'équipe {{ config('app.name') }}</strong></p>
         </div>
         <div class="footer">
-            <p>Vous recevez cet email car vous êtes inscrit(e) à notre newsletter.</p>
+            <p>Vous recevez cet email car vous êtes abonné à notre newsletter.</p>
             <p>
-                <a href="{{ route('newsletter.preferences', $subscriber->unsubscribe_token) }}">Gérer mes préférences</a>
+                <a href="{{ route('newsletter.preferences', $subscriber->unsubscribe_token) }}">Préférences</a>
                 &mdash;
                 <a href="{{ route('newsletter.unsubscribe', $subscriber->unsubscribe_token) }}">Se désabonner</a>
             </p>
-            <p>&copy; {{ date('Y') }} {{ config('app.name') }}. Tous droits réservés.</p>
+            <p>&copy; {{ date('Y') }} {{ config('app.name') }}</p>
             <img src="{{ route('newsletter.track.open', $subscriber->unsubscribe_token) }}" alt="" width="1" height="1" style="display:none;">
         </div>
     </div>
