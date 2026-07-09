@@ -46,7 +46,7 @@ try {
     // Firebase Messaging non disponible (mode offline/dégradé)
 }
 
-const CACHE_VERSION = 'vintapp-v1.0.3';
+const CACHE_VERSION = 'vintapp-v1.0.4';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const DYNAMIC_CACHE = `${CACHE_VERSION}-dynamic`;
 const IMAGE_CACHE = `${CACHE_VERSION}-images`;
@@ -122,13 +122,17 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Ne pas intercepter les pages HTML (navigation)
+    // Le service worker ne gère pas correctement les cookies session
+    if (request.destination === 'document' || request.destination === 'iframe') {
+        return;
+    }
+
     if (isImageRequest(url)) {
         event.respondWith(cacheFirstStrategy(request, IMAGE_CACHE));
     } else if (isStaticAsset(url)) {
         event.respondWith(cacheFirstStrategy(request, STATIC_CACHE));
     } else if (isAPIRequest(url)) {
-        event.respondWith(networkFirstStrategy(request, DYNAMIC_CACHE));
-    } else {
         event.respondWith(networkFirstStrategy(request, DYNAMIC_CACHE));
     }
 });
