@@ -12,7 +12,7 @@ class CartController extends Controller
     // Afficher le panier
     public function index(Request $request)
     {
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         return view('cart', ['cart' => $cart]);
     }
 
@@ -38,10 +38,9 @@ class CartController extends Controller
             }
         }
         
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         if (isset($cart[$itemId])) {
             $cart[$itemId]['quantity'] += $quantity;
-            // Mettre à jour le prix si une réduction est active
             if ($activeDiscount) {
                 $cart[$itemId]['price'] = $finalPrice;
                 $cart[$itemId]['original_price'] = $item->price;
@@ -58,7 +57,6 @@ class CartController extends Controller
                 'image' => $item->images[0] ?? null,
             ];
             
-            // Ajouter les informations de réduction si applicable
             if ($activeDiscount) {
                 $cartItem['original_price'] = $item->price;
                 $cartItem['discount_id'] = $activeDiscount->id;
@@ -69,7 +67,8 @@ class CartController extends Controller
             $cart[$itemId] = $cartItem;
         }
         
-        session(['cart' => $cart]);
+        $request->session()->put('cart', $cart);
+        $request->session()->save();
         
         $message = $activeDiscount 
             ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
@@ -81,34 +80,35 @@ class CartController extends Controller
     // Modifier la quantité d'un article
     public function update(Request $request, $itemId)
     {
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         if (isset($cart[$itemId])) {
             $cart[$itemId]['quantity'] = max(1, (int) $request->input('quantity', 1));
-            session(['cart' => $cart]);
+            $request->session()->put('cart', $cart);
+            $request->session()->save();
         }
         return redirect()->route('cart.index');
     }
 
     // Supprimer un article du panier
-    public function remove($itemId)
+    public function remove(Request $request, $itemId)
     {
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         unset($cart[$itemId]);
-        session(['cart' => $cart]);
+        $request->session()->put('cart', $cart);
         return redirect()->route('cart.index');
     }
 
     // Vider le panier
-    public function clear()
+    public function clear(Request $request)
     {
-        session()->forget('cart');
+        $request->session()->forget('cart');
         return redirect()->route('cart.index');
     }
 
     // Page de checkout (récapitulatif avant paiement)
-    public function checkout()
+    public function checkout(Request $request)
     {
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
@@ -142,9 +142,9 @@ class CartController extends Controller
     }
 
     // Page de paiement mobile avec pré-remplissage
-    public function pay()
+    public function pay(Request $request)
     {
-        $cart = session('cart', []);
+        $cart = $request->session()->get('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
