@@ -283,17 +283,26 @@ function addToCart(itemId) {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
         }
     }).then(res => {
-        if (res.ok) {
-            showToast('Ajouté au panier avec succès !');
-            if (button) {
-                button.classList.add('scale-90');
-                setTimeout(() => button.classList.remove('scale-90'), 200);
+        return res.json().then(data => {
+            if (res.ok && data.success) {
+                showToast(data.message || 'Ajouté au panier avec succès !');
+                if (button) {
+                    button.classList.add('scale-90');
+                    setTimeout(() => button.classList.remove('scale-90'), 200);
+                }
+                // Mettre à jour le badge du panier
+                const badge = document.getElementById('cart-badge');
+                if (badge && data.cart_count !== undefined) {
+                    badge.textContent = data.cart_count;
+                    badge.classList.remove('hidden');
+                }
+            } else {
+                showToast(data.message || 'Erreur lors de l\'ajout au panier', 'error');
             }
-        } else {
-            showToast('Erreur lors de l\'ajout au panier', 'error');
-        }
+        });
     }).catch(() => {
         showToast('Erreur lors de l\'ajout au panier', 'error');
     });

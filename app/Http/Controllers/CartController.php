@@ -68,11 +68,18 @@ class CartController extends Controller
         }
         
         $request->session()->put('cart', $cart);
-        $request->session()->save();
         
         $message = $activeDiscount 
             ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
             : 'Article ajouté au panier.';
+        
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'cart_count' => count($cart),
+            ]);
+        }
             
         return redirect()->route('cart.index')->with('success', $message);
     }
