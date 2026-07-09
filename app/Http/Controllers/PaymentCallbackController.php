@@ -139,6 +139,14 @@ class PaymentCallbackController extends Controller
             case 'africell':
                 // Africell utilise un secret dans le payload
                 return $request->input('secret') === env('AFRICELL_CALLBACK_SECRET');
+
+            case 'maishapay':
+                $signature = $request->header('X-MaishaPay-Signature');
+                if (!$signature) {
+                    return app()->environment('local');
+                }
+                $maishaPay = new \App\Services\MaishaPay();
+                return $maishaPay->verifyWebhookSignature($request->getContent(), $signature);
         }
 
         // Si pas de vérification spécifique, vérifier juste l'IP
@@ -188,6 +196,9 @@ class PaymentCallbackController extends Controller
                 
                 case 'africell':
                     return $this->parseAfricellCallback($request);
+
+                case 'maishapay':
+                    return $this->parseMaishaPayCallback($request);
                 
                 default:
                     return $this->parseGenericCallback($request);
@@ -326,6 +337,48 @@ class PaymentCallbackController extends Controller
             'SUCCESS', 'SUCCESSFUL' => 'success',
             'PENDING' => 'pending',
             'FAILED', 'ERROR' => 'failed',
+            default => 'failed',
+        };
+    }
+
+    /**
+     * Parser callback MaishaPay (Collection v2 Mobile Money / B2C)
+     */
+    protected function parseMaishaPayCallback(Request $request): array
+    {
+        $data = $request->all();
+
+        return [
+            'transaction_id' => $data['originatingTransactionId']
+                ?? $data['transactionId']
+                ?? $data['transactionReference']
+                ?? $request->input('transaction_id'),
+            'status' => $this->mapMaishaPayStatus($data['transactionStatus'] ?? $data['status'] ?? ''),
+            'amount' => $data['order']['cost']['amount']
+                ?? $data['order']['amount']
+                ?? $request->input('amount'),
+            'currency' => $data['order']['cost']['currency']
+                ?? $data['order']['currency']
+                ?? $request->input('currency', 'CDF'),
+            'phone_number' => $data['paymentChannel']['walletID']
+                ?? $request->input('walletID')
+                ?? $request->input('phone'),
+            'reference' => $data['originatingTransactionId'] ?? null,
+            'message' => $data['transactionDescription'] ?? null,
+            'provider_reference' => $data['transactionId'] ?? null,
+            'status_code' => $data['status_code'] ?? null,
+        ];
+    }
+
+    /**
+     * Mapper les statuts MaishaPay
+     */
+    protected function mapMaishaPayStatus($status): string
+    {
+        return match(strtoupper($status ?? '')) {
+            'SUCCESS', 'SUCCESSFUL', 'COMPLETED', 'APPROVED' => 'success',
+            'PENDING' => 'pending',
+            'FAILED', 'DECLINED', 'CANCELLED', 'CANCELED', 'ERROR' => 'failed',
             default => 'failed',
         };
     }

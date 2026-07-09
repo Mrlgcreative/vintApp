@@ -292,19 +292,19 @@
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-gray-700 dark:text-gray-200">Sous-total :</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($subtotal, 2) }} {{ $item['currency'] ?? '' }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ number_format($subtotal, 2) }} {{ $currency }}</span>
                         </div>
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-gray-700 dark:text-gray-200">
                                 Frais de livraison :
                                 <span class="text-sm text-gray-500 dark:text-gray-400">({{ $transportFeePercentage }}%)</span>
                             </span>
-                            <span class="font-semibold text-blue-600">+{{ number_format($transportFee, 2) }} {{ $item['currency'] ?? '' }}</span>
+                            <span class="font-semibold text-blue-600">+{{ number_format($transportFee, 2) }} {{ $currency }}</span>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-xl font-semibold text-gray-900 dark:text-white">Total :</span>
-                                <span class="text-xl font-bold text-blue-600">{{ number_format($total, 2) }} {{ $item['currency'] ?? '' }}</span>
+                                <span class="text-xl font-bold text-blue-600">{{ number_format($total, 2) }} {{ $currency }}</span>
                             </div>
                             
                             <!-- Avertissement frais opérateur -->
@@ -360,12 +360,12 @@
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
                             <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
                             <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $item['currency'] ?? 'CDF' }}">
+                            <input type="hidden" name="currency" value="{{ $currency }}">
                             
                             <button type="submit" 
                                     class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
                                 <i class="fas fa-bolt mr-2"></i>
-                                Payer {{ number_format($total, 2) }} {{ $item['currency'] ?? 'CDF' }} avec MaishaPay
+                                Payer {{ number_format($total, 2) }} {{ $currency }} avec MaishaPay
                             </button>
                         </form>
 
@@ -381,13 +381,13 @@
                                 <div class="bg-green-100 dark:bg-green-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300">⚡ MaishaPay</div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Message d'instruction (affiché par défaut) -->
-                    <div id="deliveryInstructionMessage" class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                        <div class="flex items-center">
-                            <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i>
-                            <span class="text-yellow-800 text-sm">Veuillez d'abord remplir vos informations de livraison ci-contre.</span>
+                        <!-- Message d'instruction (affiché par défaut) -->
+                        <div id="deliveryInstructionMessage" class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i>
+                                <span class="text-yellow-800 text-sm">Veuillez d'abord remplir vos informations de livraison ci-contre.</span>
+                            </div>
                         </div>
                     </div>
                 </div>

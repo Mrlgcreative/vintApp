@@ -559,44 +559,57 @@
 <!-- Modal de demande de réduction -->
 @auth
     @if(Auth::id() !== $item->user_id)
-        <div id="contactModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300">
+        <div id="contactModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 invisible transition-all duration-300">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto transform scale-95 transition-all duration-300 border border-gray-100 dark:border-gray-700">
                 <!-- Header -->
-                <div class="bg-primary text-white p-6 flex justify-between items-start">
-                    <div>
-                        <h5 class="text-xl font-bold mb-1">
-                            <i class="fas fa-percentage mr-2"></i>
-                            Demander une réduction
-                        </h5>
-                        <p class="text-primary-100 text-sm">Négociez directement avec le vendeur</p>
+                <div class="relative overflow-hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 px-6 py-5">
+                    <div class="absolute inset-0 pointer-events-none">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                        <div class="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-400/20 rounded-full blur-xl"></div>
                     </div>
-                    <button type="button" onclick="closeModal('contactModal')" 
-                        class="w-8 h-8 rounded-full bg-white/20 border-0 text-white flex items-center justify-center hover:bg-white/30" 
-                        aria-label="Fermer">
-                        <i class="fas fa-times text-sm"></i>
-                    </button>
+                    <div class="relative flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2.5 mb-1">
+                                <div class="w-8 h-8 bg-white/15 backdrop-blur rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <h5 class="text-lg font-bold text-white">Demander une reduction</h5>
+                            </div>
+                            <p class="text-sm text-purple-200/80 ml-[42px]">Negociez directement avec le vendeur</p>
+                        </div>
+                        <button type="button" onclick="closeModal('contactModal')" 
+                            class="w-8 h-8 rounded-full bg-white/10 backdrop-blur border-0 text-white flex items-center justify-center hover:bg-white/20 transition-all flex-shrink-0" 
+                            aria-label="Fermer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
+
                 <!-- Body -->
-                <div class="p-6">
-                    <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-xl mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                            <div>
-                                @if($item->images && count($item->images) > 0)
+                <div class="p-5 space-y-5">
+                    <div class="bg-[#f8f6ff] dark:bg-gray-900/50 rounded-xl p-4 border border-purple-100/50 dark:border-gray-700">
+                        <div class="flex gap-4">
+                            @if($item->images && count($item->images) > 0)
+                                <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 shadow-sm">
                                     <img src="{{ Storage::url($item->images[0]) }}" 
-                                         class="w-full h-24 object-cover rounded-lg" 
+                                         class="w-full h-full object-cover" 
                                          alt="{{ $item->name }}"
                                          loading="lazy">
-                                @endif
-                            </div>
-                            <div class="md:col-span-2">
-                                <h6 class="font-bold text-gray-900 dark:text-white mb-2 text-sm">{{ $item->name }}</h6>
-                                <p class="text-gray-600 dark:text-gray-300 text-xs mb-4">{{ Str::limit($item->description, 120) }}</p>
-                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                                    <span class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
-                                        {{ $item->formatted_price }}
-                                    </span>
-                                    <span class="bg-primary-100 text-primary-700 px-2 py-1 rounded-lg text-xs font-semibold w-fit">
-                                        <i class="fas fa-tag mr-1"></i>
+                                </div>
+                            @endif
+                            <div class="flex-1 min-w-0">
+                                <h6 class="font-bold text-gray-900 dark:text-white text-sm truncate">{{ $item->name }}</h6>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ Str::limit($item->description, 100) }}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-lg font-bold text-gray-900 dark:text-white">{{ $item->formatted_price }}</span>
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-[11px] font-semibold">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                        </svg>
                                         {{ $item->category->name }}
                                     </span>
                                 </div>
@@ -604,57 +617,83 @@
                         </div>
                     </div>
 
-                    <div class="mb-6">
+                    <div>
                         <label for="customMessage" class="block font-semibold text-gray-900 dark:text-white mb-2 text-sm">
-                            <i class="fas fa-comment-dots text-primary mr-2"></i>
+                            <svg class="w-4 h-4 inline mr-1.5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                            </svg>
                             Votre message (optionnel)
                         </label>
                         <textarea name="custom_message" 
                                   id="customMessage" 
                                   rows="4" 
-                                  class="w-full border border-gray-200 dark:border-gray-600 rounded-lg p-3 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-sm resize-none"
-                                  placeholder="Bonjour, je suis très intéressé(e) par votre produit. Serait-il possible de négocier le prix ?"></textarea>
-                        <small class="text-gray-500 dark:text-gray-400 text-xs mt-2 block">
-                            <i class="fas fa-info-circle mr-1"></i>
-                            Un message automatique sera envoyé si vous laissez ce champ vide
-                        </small>
+                                  class="w-full border border-gray-200 dark:border-gray-600 rounded-xl p-3.5 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 outline-none text-sm resize-none bg-white dark:bg-gray-800 transition-all"
+                                  placeholder="Bonjour, je suis tres interesse(e) par votre produit. Serait-il possible de negocier le prix ?"></textarea>
+                        <div class="flex items-start gap-1.5 mt-2">
+                            <svg class="w-3.5 h-3.5 text-gray-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-[11px] text-gray-400">Un message automatique sera envoye si vous laissez ce champ vide</p>
+                        </div>
                     </div>
 
-                    <div class="bg-primary-50 border border-primary-100 rounded-xl p-4">
-                        <div class="font-bold text-primary mb-4 flex items-center text-sm">
-                            <i class="fas fa-lightbulb mr-2"></i>
-                            Comment ça fonctionne ?
-                        </div>
-                        <ul class="space-y-2">
-                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs">
-                                <i class="fas fa-check text-primary mr-2 mt-1 text-xs"></i>
-                                Votre demande est envoyée instantanément au vendeur
+                    <div class="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border border-purple-100/60 dark:border-purple-800/30 rounded-xl p-4">
+                        <h6 class="font-bold text-gray-900 dark:text-white flex items-center gap-2 text-sm mb-3">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                            Comment ca fonctionne ?
+                        </h6>
+                        <ul class="space-y-2.5">
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <span class="text-xs text-gray-600 dark:text-gray-300">Votre demande est envoyee instantanement au vendeur</span>
                             </li>
-                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs">
-                                <i class="fas fa-check text-primary mr-2 mt-1 text-xs"></i>
-                                Le vendeur peut vous proposer une réduction personnalisée
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <span class="text-xs text-gray-600 dark:text-gray-300">Le vendeur peut vous proposer une reduction personnalisee</span>
                             </li>
-                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs">
-                                <i class="fas fa-check text-primary mr-2 mt-1 text-xs"></i>
-                                La réduction est appliquée automatiquement si acceptée
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <span class="text-xs text-gray-600 dark:text-gray-300">La reduction est applique automatiquement si acceptee</span>
                             </li>
-                            <li class="flex items-start text-gray-600 dark:text-gray-300 text-xs">
-                                <i class="fas fa-check text-primary mr-2 mt-1 text-xs"></i>
-                                Vous recevez une notification de la réponse
+                            <li class="flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                                    </svg>
+                                </span>
+                                <span class="text-xs text-gray-600 dark:text-gray-300">Vous recevez une notification de la reponse</span>
                             </li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="bg-gray-50 dark:bg-gray-900 p-4 flex flex-col sm:flex-row gap-3">
+                <div class="bg-gray-50 dark:bg-gray-900/50 px-5 py-4 flex flex-col sm:flex-row gap-3 border-t border-gray-100 dark:border-gray-700">
                     <button type="button" onclick="closeModal('contactModal')" 
-                        class="flex-1 bg-white dark:bg-gray-800 text-gray-700 border-2 border-gray-300 font-semibold py-2.5 rounded-lg hover:bg-gray-50 text-sm">
-                        <i class="fas fa-times mr-2"></i>
+                        class="flex-1 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 font-semibold py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 text-sm transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                         Annuler
                     </button>
                     <button type="button" id="submitDiscountBtn" onclick="submitDiscountRequest()" 
-                        class="flex-2 bg-primary text-white font-semibold py-2.5 rounded-lg hover:bg-primary-700 text-sm">
-                        <i class="fas fa-paper-plane mr-2"></i>
+                        class="flex-[2] bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white font-semibold py-2.5 rounded-xl hover:shadow-lg hover:from-indigo-500 hover:via-purple-500 hover:to-violet-500 transition-all text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
                         Envoyer la demande
                     </button>
                 </div>
@@ -755,7 +794,7 @@ function submitDiscountRequest() {
         form.appendChild(input);
     }
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
+    submitBtn.innerHTML = '<svg class="w-4 h-4 animate-spin inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Envoi en cours...';
     showNotification('Envoi de votre demande en cours...', 'info');
     setTimeout(() => {
         form.submit();

@@ -3,52 +3,66 @@
 @section('title', 'Conversation avec ' . $otherUser->name)
 
 @section('content')
-<div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden z-50 pb-16 md:pb-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(0,0,0,0.02) 1px, rgba(0,0,0,0.02) 10px);">
-    <!-- En-tête style WhatsApp -->
+<div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden z-50 pb-16 md:pb-0 [&_footer]:!hidden [&_.breadcrumb]:!hidden [&_main]:pt-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_1px,rgba(0,0,0,0.02)_1px,rgba(0,0,0,0.02)_10px)]">
+    {{-- En-tete style WhatsApp --}}
     <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg">
-        <div class="flex items-center px-4 py-3 gap-3">
-            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white/10 p-2 rounded-full transition-all duration-200">
-                <i class="fas fa-arrow-left text-xl"></i>
+        <div class="flex items-center px-3 sm:px-4 py-2.5 sm:py-3 gap-2 sm:gap-3">
+            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white/10 p-1.5 sm:p-2 rounded-full transition-all duration-200">
+                <svg class="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
             </a>
-            <div class="flex items-center flex-1 gap-3 cursor-pointer">
-                <div class="relative">
+            <div class="flex items-center flex-1 gap-2 sm:gap-3 min-w-0 cursor-pointer">
+                <div class="relative flex-shrink-0">
                     @if($otherUser->avatar_url)
-                        <img src="{{ $otherUser->avatar_url }}" 
-                             alt="{{ $otherUser->name }}" 
-                             class="w-10 h-10 rounded-full object-cover">
+                        <img src="{{ $otherUser->avatar_url }}"
+                             alt="{{ $otherUser->name }}"
+                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
                     @else
-                        <div class="w-10 h-10 rounded-full bg-primary-700 flex items-center justify-center text-white font-semibold">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-700 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
                             {{ strtoupper(substr($otherUser->name, 0, 1)) }}
                         </div>
                     @endif
-                    <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-primary-600 rounded-full ring-2 ring-green-400/30"></div>
+                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 border-2 border-primary-600 rounded-full ring-2 ring-green-400/30"></div>
                 </div>
-                <div class="flex-1">
-                    <h6 class="font-semibold text-white">{{ $otherUser->name }}</h6>
-                    <p class="text-xs text-white/70 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block"></span> En ligne</p>
+                <div class="flex-1 min-w-0">
+                    <h6 class="font-semibold text-white text-sm sm:text-base truncate">{{ $otherUser->name }}</h6>
+                    <p class="text-[11px] sm:text-xs text-white/70 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block flex-shrink-0"></span>
+                        <span class="truncate">En ligne</span>
+                    </p>
                 </div>
             </div>
-            <div class="flex gap-1">
-                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200">
-                    <i class="fas fa-phone text-sm"></i>
+            <div class="flex items-center gap-0.5 sm:gap-1">
+                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200 hidden sm:flex" title="Appel">
+                    <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
                 </button>
-                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200">
-                    <i class="fas fa-video text-sm"></i>
+                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200 hidden sm:flex" title="Video">
+                    <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
                 </button>
                 <div class="relative">
-                    <button class="text-white/80 hover:text-white hover:bg-white/10 p-2.5 rounded-full transition-all duration-200" onclick="toggleDropdown()">
-                        <i class="fas fa-ellipsis-v text-sm"></i>
+                    <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200" onclick="toggleDropdown()" title="Plus">
+                        <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
                     </button>
-                    <div id="dropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 hidden z-10">
-                        <a href="#" class="flex items-center px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-search mr-3 text-gray-400"></i>Rechercher
+                    <div id="dropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 hidden z-10">
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            Rechercher
                         </a>
-                        <a href="#" class="flex items-center px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-ban mr-3 text-gray-400"></i>Bloquer
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            Blocker
                         </a>
                         <hr class="my-1.5 border-gray-100 dark:border-gray-700">
-                        <a href="#" class="flex items-center px-4 py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                            <i class="fas fa-trash mr-3"></i>Supprimer
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            Supprimer
                         </a>
                     </div>
                 </div>
@@ -56,94 +70,123 @@
         </div>
     </div>
 
-    <!-- Badge produit concerné -->
+    {{-- Badge produit concerne --}}
     @if($item)
-        <div class="bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-800/50 px-4 py-3">
-            <div class="flex items-center gap-3">
+        <div class="bg-secondary dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-2 sm:py-3">
+            <div class="flex items-center gap-2 sm:gap-3">
                 @if($item->images && count($item->images) > 0)
-                    <img src="{{ Storage::url($item->images[0]) }}" 
-                         alt="{{ $item->name }}" 
-                         class="w-14 h-14 rounded-xl object-cover shadow-sm ring-1 ring-black/5">
+                    <img src="{{ Storage::url($item->images[0]) }}"
+                         alt="{{ $item->name }}"
+                         class="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl object-cover shadow-sm ring-1 ring-black/5 flex-shrink-0">
                 @endif
                 <div class="flex-1 min-w-0">
-                    <span class="font-semibold text-gray-900 dark:text-white block truncate">{{ $item->name }}</span>
-                    <span class="text-primary-600 dark:text-primary-400 font-bold text-lg">{{ $item->formatted_price }}</span>
+                    <span class="font-semibold text-gray-900 dark:text-white block truncate text-sm sm:text-base">{{ $item->name }}</span>
+                    <span class="text-primary-600 dark:text-primary-400 font-bold text-base sm:text-lg">{{ $item->formatted_price }}</span>
                 </div>
-                <a href="{{ route('items.show', $item) }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 p-2.5 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-800/30 transition-colors">
-                    <i class="fas fa-external-link-alt"></i>
+                <a href="{{ route('items.show', $item) }}"
+                   class="text-primary-500 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 p-2 sm:p-2.5 rounded-full hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors flex-shrink-0">
+                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
                 </a>
             </div>
         </div>
 
-        <!-- Panel de réduction pour le vendeur -->
+        {{-- Panel de reduction pour le vendeur --}}
         @if($item->user_id === Auth::id())
-            <div class="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800/50" id="discountPanel">
-                <div class="flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-green-100 dark:hover:bg-green-800/30 transition-colors" onclick="toggleDiscountPanel()">
-                    <div class="flex items-center text-green-700 dark:text-green-400">
-                        <div class="w-8 h-8 bg-green-100 dark:bg-green-800/40 rounded-full flex items-center justify-center mr-3">
-                            <i class="fas fa-percent text-green-600 dark:text-green-400 text-sm"></i>
+            <div class="bg-white dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700" id="discountPanel">
+                <div class="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" onclick="toggleDiscountPanel()">
+                    <div class="flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 min-w-0">
+                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
+                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                         </div>
-                        <span class="font-semibold">Proposer une réduction</span>
+                        <span class="font-semibold text-sm sm:text-base truncate">Proposer une reduction</span>
                     </div>
-                    <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        <i class="fas fa-chevron-down transition-transform" id="discountToggleIcon"></i>
+                    <button class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0" id="discountToggleBtn">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200" id="discountToggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
                     </button>
                 </div>
-                
-                <div class="px-4 pb-4 hidden" id="discountContent">
-                    <div class="border-t border-green-200 dark:border-green-800/50 pt-4">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 mb-4 border border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-300 font-medium">Prix actuel:</span>
-                            <span class="text-primary-600 font-bold text-lg">{{ $item->formatted_price }}</span>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-4">
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="5">
-                                <div class="font-bold text-lg mb-1">5%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.95, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.05, 2) }}</div>
-                            </div>
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="10">
-                                <div class="font-bold text-lg mb-1">10%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.90, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.10, 2) }}</div>
-                            </div>
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="15">
-                                <div class="font-bold text-lg mb-1">15%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.85, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.15, 2) }}</div>
-                            </div>
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="20">
-                                <div class="font-bold text-lg mb-1">20%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.80, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.20, 2) }}</div>
-                            </div>
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="25">
-                                <div class="font-bold text-lg mb-1">25%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.75, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.25, 2) }}</div>
-                            </div>
-                            <div class="rate-option bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 text-center cursor-pointer hover:border-primary-600 hover:-translate-y-1 hover:shadow-md transition-all" data-rate="30">
-                                <div class="font-bold text-lg mb-1">30%</div>
-                                <div class="text-green-600 font-semibold">{{ $item->currency_symbol }} {{ number_format($item->price * 0.70, 2) }}</div>
-                                <div class="text-sm text-gray-500 dark:text-gray-400">-{{ $item->currency_symbol }} {{ number_format($item->price * 0.30, 2) }}</div>
-                            </div>
-                        </div>
-                        
 
+                <div class="px-3 sm:px-4 pb-4 hidden" id="discountContent">
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4 space-y-3 sm:space-y-4">
+                        <div class="bg-white dark:bg-gray-800/80 backdrop-blur rounded-lg sm:rounded-xl p-3 sm:p-3.5 border border-gray-200 dark:border-gray-700 flex items-center justify-between shadow-sm">
+                            <div class="flex items-center gap-2 sm:gap-2.5">
+                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
+                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">Prix actuel :</span>
+                            </div>
+                            <span class="text-primary-600 dark:text-primary-400 font-bold text-lg sm:text-xl tracking-tight">{{ $item->formatted_price }}</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5">
+                            @php
+                                $rates = [5, 10, 15, 20, 25, 30];
+                            @endphp
+                            @foreach($rates as $rate)
+                                <div class="rate-option bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3.5 text-center cursor-pointer hover:border-primary-400 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
+                                     data-rate="{{ $rate }}">
+                                    <div class="text-sm sm:text-lg font-bold text-gray-900 dark:text-white mb-0.5 sm:mb-1.5">{{ $rate }}%</div>
+                                    <div class="text-primary-600 dark:text-primary-400 font-semibold text-[10px] sm:text-sm leading-tight sm:leading-normal">
+                                        {{ $item->currency_symbol }}{{ number_format($item->price * (1 - $rate/100), 2) }}
+                                    </div>
+                                    <div class="text-[9px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1 flex items-center justify-center gap-0.5 sm:gap-1">
+                                        <span class="inline-flex items-center gap-0.5 text-red-400">
+                                            <svg class="w-2 h-2 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                                            </svg>
+                                            {{ $item->currency_symbol }}{{ number_format($item->price * $rate/100, 2) }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl p-2.5 sm:p-3 border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-start gap-2 sm:gap-2.5">
+                                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <p class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                    La reduction sera appliquee automatiquement sur le prix affiche. L'acheteur recevra une notification de votre offre.
+                                </p>
+                            </div>
+                        </div>
+
+                        <form id="discountForm" method="POST" action="{{ route('discounts.apply-message') }}" onsubmit="return false;">
+                            @csrf
+                            <input type="hidden" name="item_id" value="{{ $item->id }}">
+                            <input type="hidden" name="buyer_id" value="{{ $otherUser->id }}">
+                            <input type="hidden" name="discount_percentage" id="discountPercentage" value="">
+                            <button type="button" id="applyDiscountBtn"
+                                    class="w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                    disabled
+                                    onclick="submitDiscount()">
+                                Appliquer la reduction
+                            </button>
+                            <div id="discountResult" class="hidden mt-2 text-center text-sm font-medium"></div>
+                        </form>
                     </div>
                 </div>
             </div>
         @endif
     @endif
 
-    <!-- Zone des messages -->
-    <div class="flex-1 overflow-y-auto px-4 py-4 pb-24 md:pb-4 bg-gray-50 dark:bg-gray-900/50" id="messagesContainer">
+    {{-- Zone des messages --}}
+    <div class="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-4 pb-24 md:pb-4 bg-gray-50 dark:bg-gray-900/50" id="messagesContainer">
         <div class="max-w-4xl mx-auto space-y-1">
             @if($messages->count() > 0)
                 @foreach($messages as $message)
                     <div class="mb-1.5 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br-sm' : 'rounded-bl-sm' }} px-3.5 py-2.5 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
+                        <div class="max-w-[75%] sm:max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br-sm' : 'rounded-bl-sm' }} px-3 sm:px-3.5 py-2 sm:py-2.5 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
                             @if($message->subject)
                                 <div class="bg-black/5 dark:bg-white/5 rounded-lg px-2.5 py-1.5 mb-2 text-xs font-semibold flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
                                     <i class="fas fa-tag text-primary-500"></i>
@@ -297,130 +340,23 @@
 
 @push('styles')
 <style>
-/* Masquer les éléments de navigation pour l'expérience chat */
-body {
-    overflow: hidden;
-}
-
-footer,
-.breadcrumb {
-    display: none !important;
-}
-
-main.min-vh-100 {
-    padding-top: 0 !important;
-}
-
-/* Animation d'apparition des messages */
 @keyframes fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fade-in {
     animation: fade-in 0.25s ease-out;
 }
 
-/* Style pour les options de réduction sélectionnées */
-.rate-option.selected {
-    @apply border-primary-600 bg-primary-600 text-white shadow-lg scale-[1.02];
-}
-
-.rate-option.selected .text-green-600 {
-    @apply text-green-100;
-}
-
-.rate-option.selected .text-gray-500,
-.rate-option.selected .dark\:text-gray-400 {
-    @apply text-white/80;
-}
-
-/* Style pour la barre de défilement */
-#messagesContainer::-webkit-scrollbar {
-    width: 5px;
-}
-
-#messagesContainer::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#messagesContainer::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.15);
-    border-radius: 10px;
-}
-
-#messagesContainer::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.25);
-}
+#messagesContainer::-webkit-scrollbar { width: 5px; }
+#messagesContainer::-webkit-scrollbar-track { background: transparent; }
+#messagesContainer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+#messagesContainer::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
 
 @media (prefers-color-scheme: dark) {
-    #messagesContainer::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.15);
-    }
-    #messagesContainer::-webkit-scrollbar-thumb:hover {
-        background: rgba(255,255,255,0.25);
-    }
-}
-
-/* Animation enregistrement */
-@keyframes record-pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.1); }
-}
-#recordDot {
-    animation: record-pulse 1s ease-in-out infinite;
-}
-
-/* Style barre de progression vocale */
-.voice-progress {
-    background: rgba(128, 128, 128, 0.25);
-}
-.voice-progress-fill {
-    transition: width 0.3s linear;
-    background: linear-gradient(90deg, #7c3aed, #a78bfa);
-}
-
-/* Bouton lecture vocal */
-.voice-play-btn {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.voice-play-btn:active {
-    transform: scale(0.9);
-}
-
-/* Message vocal bulle */
-.voice-msg {
-    user-select: none;
-}
-.voice-msg .voice-time {
-    font-variant-numeric: tabular-nums;
-    min-width: 2.5rem;
-}
-
-/* Bordures arrondies pour le mode enregistrement */
-#recordingInput {
-    @apply rounded-2xl;
-}
-
-/* Responsive pour mobile */
-@media (max-width: 768px) {
-    .max-w-xs {
-        max-width: 16rem;
-    }
-    
-    .max-w-4xl {
-        max-width: 100%;
-    }
-    
-    .grid-cols-2 {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    #messagesContainer::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
+    #messagesContainer::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 }
 </style>
 @endpush
@@ -433,6 +369,8 @@ let voiceFile = null;
 let voiceTimerInterval = null;
 
 document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('overflow-hidden');
+
     const container = document.getElementById('messagesContainer');
     const messageInput = document.getElementById('messageContent');
     const attachmentInput = document.getElementById('attachmentInput');
@@ -863,15 +801,13 @@ function toggleDropdown() {
 function toggleDiscountPanel() {
     const content = document.getElementById('discountContent');
     const icon = document.getElementById('discountToggleIcon');
-    
+    const btn = document.getElementById('discountToggleBtn');
+
+    content.classList.toggle('hidden');
     if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
+        icon.style.transform = 'rotate(0deg)';
     } else {
-        content.classList.add('hidden');
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
+        icon.style.transform = 'rotate(180deg)';
     }
 }
 
@@ -926,6 +862,89 @@ document.addEventListener('click', function(e) {
     if (dropdown && !e.target.closest('button')) {
         dropdown.classList.add('hidden');
     }
+});
+
+// Selection des options de reduction
+let selectedRate = null;
+let selectedPrice = null;
+
+document.querySelectorAll('.rate-option').forEach(option => {
+    option.addEventListener('click', function() {
+        document.querySelectorAll('.rate-option').forEach(r => {
+            r.classList.remove(
+                'border-primary-400', 'bg-gradient-to-br', 'from-primary-600',
+                'to-primary-800', 'shadow-lg', 'scale-[1.04]', 'text-white',
+                '!border-primary-400'
+            );
+            r.querySelector('.text-primary-600')?.classList.remove('text-primary-100');
+            r.querySelectorAll('.text-gray-400, .text-red-400').forEach(el => {
+                el.classList.remove('text-white/70');
+            });
+        });
+        this.classList.add(
+            'border-primary-400', 'bg-gradient-to-br', 'from-primary-600',
+            'to-primary-800', 'shadow-lg', 'scale-[1.04]', 'text-white'
+        );
+        this.querySelector('.text-primary-600')?.classList.add('text-primary-100');
+        this.querySelectorAll('.text-gray-400, .text-red-400').forEach(el => {
+            el.classList.add('text-white/70');
+        });
+        selectedRate = this.dataset.rate;
+        selectedPrice = this.querySelector('.text-primary-600')?.textContent?.trim() || null;
+
+        const btn = document.getElementById('applyDiscountBtn');
+        btn.disabled = false;
+        btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+    });
+});
+
+function submitDiscount() {
+    if (!selectedRate) return;
+    const btn = document.getElementById('applyDiscountBtn');
+    const form = document.getElementById('discountForm');
+    const result = document.getElementById('discountResult');
+
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>';
+    btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-primary-600 text-white';
+
+    document.getElementById('discountPercentage').value = selectedRate;
+
+    fetch(form.action, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value },
+        body: new FormData(form)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            result.className = 'mt-2 text-center text-sm font-medium text-emerald-600 dark:text-emerald-400';
+            result.textContent = '✓ ' + data.message;
+            btn.innerHTML = 'Appliquee';
+            btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-emerald-500 text-white cursor-default';
+            document.querySelectorAll('.rate-option').forEach(r => r.style.pointerEvents = 'none');
+        } else {
+            result.className = 'mt-2 text-center text-sm font-medium text-red-500';
+            result.textContent = '✗ ' + (data.error || 'Erreur');
+            btn.disabled = false;
+            btn.innerHTML = 'Appliquer la reduction';
+            btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+        }
+        result.classList.remove('hidden');
+    })
+    .catch(e => {
+        result.className = 'mt-2 text-center text-sm font-medium text-red-500';
+        result.textContent = '✗ Erreur de connexion';
+        result.classList.remove('hidden');
+        btn.disabled = false;
+        btn.innerHTML = 'Appliquer la reduction';
+        btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+    });
+}
+
+// Nettoyage au depart
+window.addEventListener('beforeunload', function() {
+    document.body.classList.remove('overflow-hidden');
 });
 </script>
 @endpush

@@ -226,38 +226,33 @@ class MaishaPay
     public function checkStatus(string $transactionId): array
     {
         try {
-            $statusUrl = $this->baseUrl . '/payments/' . urlencode($transactionId) . '/status';
-            $response = Http::withHeaders($this->getHeaders())
+            $payload = [
+                'gatewayMode' => 1,
+                'publicApiKey' => $this->apiKey,
+                'secretApiKey' => $this->secretKey,
+                'transactionId' => $transactionId,
+            ];
+
+            $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                ])
                 ->timeout(15)
-                ->get($statusUrl);
+                ->post($this->baseUrl . '/transaction/rest/v2/check?useRef=1', $payload);
 
             $result = $response->json();
-
-            if (is_array($result) && !empty($result)) {
-                $resolvedReference = $this->resolveStatusReference($result);
-                if ($resolvedReference && $resolvedReference !== $transactionId) {
-                    $fallbackUrl = $this->buildStatusUrl($transactionId, $result);
-                    if ($fallbackUrl !== $statusUrl) {
-                        $response = Http::withHeaders($this->getHeaders())
-                            ->timeout(15)
-                            ->get($fallbackUrl);
-                        $result = $response->json();
-                        $statusUrl = $fallbackUrl;
-                    }
-                }
-            }
 
             Log::info('MaishaPay: Verification statut', [
                 'transaction_id' => $transactionId,
                 'status_code' => $response->status(),
                 'response' => $result,
-                'status_url' => $statusUrl,
             ]);
 
             if ($response->successful()) {
-                $status = $result['data']['status']
-                    ?? $result['status']
+                $status = $result['data']['transactionStatus']
+                    ?? $result['data']['status']
                     ?? $result['transactionStatus']
+                    ?? $result['status']
                     ?? $result['state']
                     ?? 'unknown';
 
@@ -270,7 +265,6 @@ class MaishaPay
                 ];
             }
 
-            $status = $result['status'] ?? $result['data']['status'] ?? 'unknown';
             if (in_array($response->status(), [404, 500], true)) {
                 return [
                     'success' => false,
@@ -284,7 +278,7 @@ class MaishaPay
             return [
                 'success' => false,
                 'transaction_id' => $transactionId,
-                'status' => $status,
+                'status' => $result['data']['transactionStatus'] ?? $result['data']['status'] ?? $result['status'] ?? 'unknown',
                 'message' => $result['message'] ?? 'Impossible de verifier le statut',
             ];
 

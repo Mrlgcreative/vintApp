@@ -33,8 +33,8 @@ class PaymentCallbackControllerTest extends TestCase
         ]);
 
         Http::fake([
-            'https://marchand.maishapay.online/api/payments/maisha-ext-ref/status' => Http::response([
-                'data' => ['status' => 'SUCCESS'],
+            'https://marchand.maishapay.online/api/transaction/rest/v2/check*' => Http::response([
+                'data' => ['transactionStatus' => 'SUCCESS'],
                 'message' => 'success',
             ], 200),
         ]);

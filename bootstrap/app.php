@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'firebase/*',
             'auth/firebase/*',
             'payments/callback',
+            'payments/maishapay/callback*',
             'wallet/withdrawals/webhook/*',
         ]);
 

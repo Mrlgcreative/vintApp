@@ -813,11 +813,16 @@ Route::prefix('payments')->group(function () {
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {
         $transaction = \App\Models\Transaction::findOrFail($transactionId);
+        if ($transaction->status === 'completed') {
+            session()->forget('cart');
+            session()->forget('maishapay_checkout');
+        }
         return view('payment-status', compact('transaction'));
     })->name('payments.status');
     
     Route::get('/success/{transaction_id}', [PaymentController::class, 'paymentSuccess'])->name('payments.success');
     Route::get('/receipt/{transaction}', [PaymentController::class, 'receipt'])->name('payments.receipt');
+    Route::get('/receipt/{transaction}/download', [PaymentController::class, 'downloadReceipt'])->name('payments.receipt.download');
     Route::get('/error', [PaymentController::class, 'paymentError'])->name('payments.error');
     
     // Routes de remboursement

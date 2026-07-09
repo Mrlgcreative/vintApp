@@ -107,7 +107,7 @@ Route::prefix('payment-callbacks')->group(function () {
     Route::post('/{provider}', [PaymentCallbackController::class, 'handleCallback'])
         ->name('payment.callback')
         ->middleware('throttle:100,1') // Max 100 callbacks par minute (protection DDoS)
-        ->where('provider', 'mpesa|orange_money|airtel_money|africell|illicocash');
+        ->where('provider', 'mpesa|orange_money|airtel_money|africell|illicocash|maishapay');
     
     // Endpoint pour vérifier le statut (polling)
     Route::get('/status', [PaymentCallbackController::class, 'checkStatus'])

@@ -71,6 +71,9 @@
                     <a href="{{ route('payments.receipt', $transaction->id) }}" class="block w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                         Voir le reçu
                     </a>
+                    <a href="{{ route('payments.receipt.download', $transaction->id) }}" class="block w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">
+                        <i class="fas fa-download mr-2"></i>Télécharger le reçu (PDF)
+                    </a>
                     @endif
                 </div>
             @endif

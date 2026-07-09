@@ -358,6 +358,12 @@ class PaymentController extends Controller
             return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
         }
 
+        // Vider le panier de la session
+        if ($transaction->status === 'completed') {
+            session()->forget('cart');
+            session()->forget('maishapay_checkout');
+        }
+
         // GÃ©nÃ©rer le reÃ§u s'il manque pour une transaction complÃ©tÃ©e
         if ($transaction->status === 'completed' && !$transaction->receipt_number) {
             $transaction->receipt_number = 'REC-' . now()->format('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(8));
@@ -396,7 +402,27 @@ class PaymentController extends Controller
             abort(404, 'Reçu non disponible');
         }
 
+        if ($transaction->status === 'completed') {
+            session()->forget('cart');
+            session()->forget('maishapay_checkout');
+        }
+
         return view('payments.receipt', compact('transaction'));
+    }
+
+    public function downloadReceipt($transactionId)
+    {
+        $transaction = \App\Models\Transaction::where('id', $transactionId)
+            ->orWhere('transaction_id', $transactionId)
+            ->firstOrFail();
+
+        if (!$transaction->receipt_number) {
+            abort(404, 'Reçu non disponible');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('payments.receipt-pdf', compact('transaction'));
+
+        return $pdf->download('recu-' . $transaction->receipt_number . '.pdf');
     }
 
     public function paymentError(Request $request)
@@ -1948,14 +1974,29 @@ class PaymentController extends Controller
             'full_url' => $request->fullUrl(),
         ]);
 
-        // MaishaPay peut envoyer les donnÃ©es en query string (GET) ou body (POST)
+        // 1. VÃ©rifier la signature HMAC si prÃ©sente
+        $signature = $request->header('X-MaishaPay-Signature');
+        if ($signature) {
+            $payload = $request->getContent();
+            $maishaPay = new \App\Services\MaishaPay();
+            if (!$maishaPay->verifyWebhookSignature($payload, $signature)) {
+                Log::warning('MaishaPay: Signature HMAC invalide', [
+                    'reference' => $reference,
+                    'signature' => substr($signature, 0, 16) . '...',
+                ]);
+                return response()->json(['error' => 'Signature invalide'], 403);
+            }
+        }
+
+        // 2. MaishaPay envoie les donnÃ©es en POST (body JSON)
         $data = $request->isMethod('get') ? $request->query() : $request->all();
-        
-        // La rÃ©fÃ©rence peut Ãªtre dans l'URL, les paramÃ¨tres, ou le body
-        $transactionRef = $reference 
-            ?? $data['reference'] 
-            ?? $data['transaction_id'] 
-            ?? $data['transactionReference'] 
+
+        // 3. DÃ©terminer la rÃ©fÃ©rence : URL > originatingTransactionId (notre ref) > transactionId (MaishaPay)
+        $transactionRef = $reference
+            ?? $data['originatingTransactionId']
+            ?? $data['transactionReference']
+            ?? $data['reference']
+            ?? $data['transaction_id']
             ?? $data['transactionId']
             ?? $data['orderNumber']
             ?? $data['order_number']
@@ -1963,21 +2004,23 @@ class PaymentController extends Controller
             ?? $data['id']
             ?? null;
 
-        // Note: MaishaPay envoie les donnÃ©es en POST, pas besoin de signature pour l'instant
-        // La vÃ©rification se fait par la correspondance de la rÃ©fÃ©rence de transaction
-        
-        // Extraire le statut des donnÃ©es
-        $status = strtolower($data['status'] ?? $data['transactionStatus'] ?? $data['transaction_status'] ?? $data['state'] ?? 'success');
+        // 4. Extraire la rÃ©fÃ©rence fournisseur (ID interne MaishaPay)
+        $providerReference = $data['transactionId'] ?? $data['id'] ?? null;
 
-        // Log complet pour debug
+        // 5. Extraire le statut (MaishaPay utilise "transactionStatus" dans le callback)
+        $rawStatus = $data['transactionStatus'] ?? $data['status'] ?? $data['transaction_status'] ?? $data['state'] ?? '';
+        $status = strtolower($rawStatus);
+
         Log::info('MaishaPay Callback - Traitement:', [
             'reference' => $transactionRef,
-            'status' => $status,
+            'provider_reference' => $providerReference,
+            'status_raw' => $rawStatus,
+            'status_normalized' => $status,
             'toutes_cles' => array_keys($data),
         ]);
 
         if (!$transactionRef) {
-            Log::error('MaishaPay Callback: RÃ©fÃ©rence manquante - Toutes les donnÃ©es:', [
+            Log::error('MaishaPay Callback: RÃ©fÃ©rence manquante', [
                 'data' => $data,
                 'query_string' => $request->getQueryString(),
                 'full_url' => $request->fullUrl(),
@@ -1985,39 +2028,54 @@ class PaymentController extends Controller
             return response()->json(['error' => 'RÃ©fÃ©rence manquante', 'received_keys' => array_keys($data)], 400);
         }
 
-        // Chercher par transaction_ref ou transaction_id
+        // 6. Chercher la transaction (d'abord par ref, puis par metadata)
         $transaction = Transaction::where('transaction_ref', $transactionRef)
             ->orWhere('transaction_id', $transactionRef)
             ->first();
+
+        if (!$transaction) {
+            $transaction = Transaction::where('metadata', 'LIKE', '%' . $transactionRef . '%')
+                ->where('provider', 'maishapay')
+                ->first();
+        }
 
         if (!$transaction) {
             Log::warning('MaishaPay: Transaction non trouvÃ©e', ['reference' => $transactionRef]);
             return response()->json(['error' => 'Transaction not found'], 404);
         }
 
-        // Mettre Ã  jour le statut
-        $newStatus = match($status) {
-            'success', 'completed', 'successful' => 'completed',
-            'failed', 'declined', 'cancelled' => 'failed',
+        // 7. Mapper le statut (MaishaPay envoie SUCCESS/FAILED/PENDING en majuscules)
+        $newStatus = match(strtoupper($rawStatus)) {
+            'SUCCESS', 'SUCCESSFUL', 'COMPLETED', 'APPROVED' => 'completed',
+            'FAILED', 'DECLINED', 'CANCELLED', 'CANCELED', 'ERROR' => 'failed',
+            'PENDING' => 'pending',
             default => 'pending',
         };
 
         $previousStatus = $transaction->status;
 
-        $transaction->update([
+        // 8. PrÃ©parer les donnÃ©es de mise Ã  jour
+        $updateData = [
             'status' => $newStatus,
-            'transaction_ref' => $providerReference ?? $transaction->transaction_ref,
             'metadata' => json_encode(array_merge(
                 json_decode($transaction->metadata ?? '{}', true),
-                [
+                array_filter([
                     'callback_data' => $data,
                     'callback_at' => now()->toISOString(),
                     'provider_reference' => $providerReference,
-                ]
+                    'originating_transaction_id' => $data['originatingTransactionId'] ?? null,
+                    'status_code' => $data['status_code'] ?? null,
+                ])
             )),
-        ]);
+        ];
 
-        // Si le paiement vient d'Ãªtre confirmÃ©, crÃ©er les commandes
+        if ($providerReference && !$transaction->transaction_ref) {
+            $updateData['transaction_ref'] = $providerReference;
+        }
+
+        $transaction->update($updateData);
+
+        // 9. Si le paiement vient d'Ãªtre confirmÃ©, crÃ©er les commandes
         if ($newStatus === 'completed' && $previousStatus !== 'completed') {
             $this->createOrdersFromCallback($transaction);
         }
@@ -2025,6 +2083,7 @@ class PaymentController extends Controller
         Log::info('MaishaPay: Transaction mise Ã  jour', [
             'reference' => $reference,
             'status' => $newStatus,
+            'provider_reference' => $providerReference,
         ]);
 
         return response()->json(['success' => true, 'status' => $newStatus]);
@@ -2177,8 +2236,14 @@ class PaymentController extends Controller
                     default => 'pending',
                 };
 
-                if ($newStatus !== $transaction->status) {
+                $previousStatus = $transaction->status;
+
+                if ($newStatus !== $previousStatus) {
                     $transaction->update(['status' => $newStatus]);
+                }
+
+                if ($newStatus === 'completed' && $previousStatus !== 'completed') {
+                    $this->createOrdersFromCallback($transaction->fresh());
                 }
 
                 return response()->json([

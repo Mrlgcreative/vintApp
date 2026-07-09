@@ -70,9 +70,10 @@
 
 <script>
 const transactionId = {{ $transaction->id ?? 'null' }};
-let pollingInterval = null;
+let pollingTimeout = null;
 let pollingCount = 0;
 const maxPollingAttempts = 120;
+let pollingBackoff = 1;
 
 document.addEventListener('DOMContentLoaded', function() {
     if (transactionId) startPolling();
@@ -80,20 +81,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function startPolling() {
     pollingCount = 0;
-    pollingInterval = setInterval(() => {
+    pollingBackoff = 1;
+    schedulePoll();
+}
+
+function schedulePoll() {
+    const interval = 2000 * pollingBackoff;
+    pollingTimeout = setTimeout(() => {
         checkStatus();
         pollingCount++;
         if (pollingCount >= maxPollingAttempts) {
             stopPolling();
             showTimeout();
+        } else {
+            schedulePoll();
         }
-    }, 1000);
+    }, interval);
 }
 
 function stopPolling() {
-    if (pollingInterval) {
-        clearInterval(pollingInterval);
-        pollingInterval = null;
+    if (pollingTimeout) {
+        clearTimeout(pollingTimeout);
+        pollingTimeout = null;
     }
 }
 
@@ -107,6 +116,13 @@ async function checkStatus() {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
             }
         });
+
+        if (response.status === 429) {
+            pollingBackoff = Math.min(pollingBackoff + 1, 5);
+            return;
+        }
+
+        pollingBackoff = 1;
         const data = await response.json();
         if (data.status === 'success' && data.transaction) updateUI(data.transaction);
     } catch (e) {
@@ -132,7 +148,9 @@ function updateUI(tx) {
         bar.style.width = '100%';
         bar.className = 'h-full rounded-full bg-green-500 transition-all duration-500';
         const receiptUrl = '/payments/receipt/' + transactionId;
-        actions.innerHTML = '<a href="' + receiptUrl + '" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Voir le reçu</a>';
+        const downloadUrl = '/payments/receipt/' + transactionId + '/download';
+        actions.innerHTML = '<a href="' + receiptUrl + '" class="px-5 py-2.5 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">Voir le reçu</a>' +
+            '<a href="' + downloadUrl + '" class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"><svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg> Télécharger</a>';
         setTimeout(() => window.location.href = receiptUrl, 3000);
     } else if (status === 'failed') {
         stopPolling();

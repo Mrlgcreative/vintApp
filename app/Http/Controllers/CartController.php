@@ -129,12 +129,15 @@ class CartController extends Controller
         // Calculer le total
         $total = $subtotal + $transportFee;
         
+        $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
+
         return view('checkout', [
             'cart' => $cart, 
             'subtotal' => $subtotal,
             'transportFee' => $transportFee,
             'transportFeePercentage' => $transportFeePercentage,
-            'total' => $total
+            'total' => $total,
+            'currency' => $currency,
         ]);
     }
 
