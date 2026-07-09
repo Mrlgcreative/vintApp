@@ -5,142 +5,245 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\Discount;
+use App\Models\Cart;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    // Afficher le panier
+    protected function getSessionId(Request $request)
+    {
+        return $request->session()->getId();
+    }
+
+    protected function getCartArray(Request $request)
+    {
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        $cartRows = Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->get();
+
+        $cart = [];
+        foreach ($cartRows as $row) {
+            $item = [
+                'id' => $row->item_id,
+                'name' => $row->item_name,
+                'price' => (float) $row->price,
+                'currency' => $row->currency,
+                'quantity' => $row->quantity,
+                'image' => $row->image,
+            ];
+            if ($row->has_discount) {
+                $item['original_price'] = (float) $row->original_price;
+                $item['discount_id'] = $row->discount_id;
+                $item['discount_percentage'] = (float) $row->discount_percentage;
+                $item['has_discount'] = true;
+            }
+            $cart[$row->item_id] = $item;
+        }
+
+        return $cart;
+    }
+
+    protected function syncSessionToDb(Request $request)
+    {
+        $sessionCart = $request->session()->get('cart', []);
+        if (empty($sessionCart)) {
+            return;
+        }
+
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        foreach ($sessionCart as $itemId => $item) {
+            Cart::updateOrCreate(
+                ['session_id' => $sessionId, 'item_id' => $itemId],
+                [
+                    'user_id' => $userId,
+                    'item_name' => $item['name'],
+                    'price' => $item['price'],
+                    'currency' => $item['currency'] ?? 'CDF',
+                    'quantity' => $item['quantity'],
+                    'image' => $item['image'] ?? null,
+                    'original_price' => $item['original_price'] ?? null,
+                    'discount_id' => $item['discount_id'] ?? null,
+                    'discount_percentage' => $item['discount_percentage'] ?? null,
+                    'has_discount' => $item['has_discount'] ?? false,
+                ]
+            );
+        }
+
+        $request->session()->forget('cart');
+    }
+
     public function index(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
+        $this->syncSessionToDb($request);
+        $cart = $this->getCartArray($request);
         return view('cart', ['cart' => $cart]);
     }
 
-    // Ajouter un article au panier
     public function add(Request $request, $itemId)
     {
         $item = Item::findOrFail($itemId);
         $quantity = max(1, (int) $request->input('quantity', 1));
-        
-        // Vérifier s'il y a une réduction active pour cet utilisateur et cet article
+
         $activeDiscount = null;
         $finalPrice = $item->price;
-        
+
         if (Auth::check()) {
             $activeDiscount = Discount::where('item_id', $itemId)
                 ->where('user_id', Auth::id())
                 ->where('status', 'approved')
                 ->where('expires_at', '>', now())
                 ->first();
-            
+
             if ($activeDiscount) {
                 $finalPrice = $activeDiscount->final_price;
             }
         }
-        
-        $cart = $request->session()->get('cart', []);
-        if (isset($cart[$itemId])) {
-            $cart[$itemId]['quantity'] += $quantity;
+
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        $cartRow = Cart::where('session_id', $sessionId)
+            ->where('item_id', $itemId)
+            ->first();
+
+        if ($cartRow) {
+            $cartRow->increment('quantity', $quantity);
             if ($activeDiscount) {
-                $cart[$itemId]['price'] = $finalPrice;
-                $cart[$itemId]['original_price'] = $item->price;
-                $cart[$itemId]['discount_id'] = $activeDiscount->id;
-                $cart[$itemId]['discount_percentage'] = $activeDiscount->discount_percentage;
+                $cartRow->update([
+                    'price' => $finalPrice,
+                    'original_price' => $item->price,
+                    'discount_id' => $activeDiscount->id,
+                    'discount_percentage' => $activeDiscount->discount_percentage,
+                    'has_discount' => true,
+                ]);
             }
         } else {
-            $cartItem = [
-                'id' => $item->id,
-                'name' => $item->name,
+            $data = [
+                'session_id' => $sessionId,
+                'user_id' => $userId,
+                'item_id' => $item->id,
+                'item_name' => $item->name,
                 'price' => $finalPrice,
                 'currency' => $item->currency,
                 'quantity' => $quantity,
                 'image' => $item->images[0] ?? null,
             ];
-            
+
             if ($activeDiscount) {
-                $cartItem['original_price'] = $item->price;
-                $cartItem['discount_id'] = $activeDiscount->id;
-                $cartItem['discount_percentage'] = $activeDiscount->discount_percentage;
-                $cartItem['has_discount'] = true;
+                $data['original_price'] = $item->price;
+                $data['discount_id'] = $activeDiscount->id;
+                $data['discount_percentage'] = $activeDiscount->discount_percentage;
+                $data['has_discount'] = true;
             }
-            
-            $cart[$itemId] = $cartItem;
+
+            Cart::create($data);
         }
-        
-        $request->session()->put('cart', $cart);
-        $request->session()->save();
-        
-        $message = $activeDiscount 
+
+        $message = $activeDiscount
             ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
             : 'Article ajouté au panier.';
-        
+
         if ($request->ajax() || $request->wantsJson()) {
+            $cartCount = Cart::where(function ($q) use ($sessionId, $userId) {
+                $q->where('session_id', $sessionId);
+                if ($userId) {
+                    $q->orWhere('user_id', $userId);
+                }
+            })->sum('quantity');
+
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'cart_count' => count($cart),
+                'cart_count' => $cartCount,
             ]);
         }
-            
+
         return redirect()->route('cart.index')->with('success', $message);
     }
 
-    // Modifier la quantité d'un article
     public function update(Request $request, $itemId)
     {
-        $cart = $request->session()->get('cart', []);
-        if (isset($cart[$itemId])) {
-            $cart[$itemId]['quantity'] = max(1, (int) $request->input('quantity', 1));
-            $request->session()->put('cart', $cart);
-            $request->session()->save();
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        $cartRow = Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->where('item_id', $itemId)->first();
+
+        if ($cartRow) {
+            $cartRow->update([
+                'quantity' => max(1, (int) $request->input('quantity', 1)),
+            ]);
         }
+
         return redirect()->route('cart.index');
     }
 
-    // Supprimer un article du panier
     public function remove(Request $request, $itemId)
     {
-        $cart = $request->session()->get('cart', []);
-        unset($cart[$itemId]);
-        $request->session()->put('cart', $cart);
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->where('item_id', $itemId)->delete();
+
         return redirect()->route('cart.index');
     }
 
-    // Vider le panier
     public function clear(Request $request)
     {
-        $request->session()->forget('cart');
+        $sessionId = $this->getSessionId($request);
+        $userId = Auth::id();
+
+        Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->delete();
+
         return redirect()->route('cart.index');
     }
 
-    // Page de checkout (récapitulatif avant paiement)
     public function checkout(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
+        $this->syncSessionToDb($request);
+        $cart = $this->getCartArray($request);
+
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
-        
-        // Calculer le sous-total
-        $subtotal = collect($cart)->sum(function($item) {
+
+        $subtotal = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
-        
-        // Récupérer le pourcentage des frais de transport depuis les settings
+
         $transportFeePercentage = \DB::table('settings')
             ->where('key', 'transport_fee_percentage')
             ->value('value') ?? 5;
-        
-        // Calculer les frais de transport
+
         $transportFee = ($subtotal * $transportFeePercentage) / 100;
-        
-        // Calculer le total
         $total = $subtotal + $transportFee;
-        
+
         $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
 
         return view('checkout', [
-            'cart' => $cart, 
+            'cart' => $cart,
             'subtotal' => $subtotal,
             'transportFee' => $transportFee,
             'transportFeePercentage' => $transportFeePercentage,
@@ -149,36 +252,32 @@ class CartController extends Controller
         ]);
     }
 
-    // Page de paiement mobile avec pré-remplissage
     public function pay(Request $request)
     {
-        $cart = $request->session()->get('cart', []);
+        $this->syncSessionToDb($request);
+        $cart = $this->getCartArray($request);
+
         if (empty($cart)) {
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
-        
-        // Calculer le sous-total
-        $subtotal = collect($cart)->sum(function($item) {
+
+        $subtotal = collect($cart)->sum(function ($item) {
             return $item['price'] * $item['quantity'];
         });
-        
-        // Récupérer le pourcentage des frais de transport depuis les settings
+
         $transportFeePercentage = \DB::table('settings')
             ->where('key', 'transport_fee_percentage')
             ->value('value') ?? 5;
-        
-        // Calculer les frais de transport
+
         $transportFee = ($subtotal * $transportFeePercentage) / 100;
-        
-        // Calculer le total
         $total = $subtotal + $transportFee;
-        
+
         return view('payments', [
-            'cart' => $cart, 
+            'cart' => $cart,
             'subtotal' => $subtotal,
             'transportFee' => $transportFee,
             'transportFeePercentage' => $transportFeePercentage,
-            'total' => $total
+            'total' => $total,
         ]);
     }
 }

@@ -169,8 +169,7 @@ class PaymentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Configuration M-Pesa manquante.'], 500);
         }
 
-        // RÃ©cupÃ©rer le panier pour traitement des commandes
-        $cart = session('cart', []);
+        $cart = get_cart_array();
         
         // DÃ©terminer la devise prioritaire et calculer le montant total
         $totalAmount = 0;
@@ -358,9 +357,8 @@ class PaymentController extends Controller
             return redirect()->route('payments.error')->with('error', 'Transaction introuvable');
         }
 
-        // Vider le panier de la session
         if ($transaction->status === 'completed') {
-            session()->forget('cart');
+            clear_cart();
             session()->forget('maishapay_checkout');
         }
 
@@ -403,7 +401,7 @@ class PaymentController extends Controller
         }
 
         if ($transaction->status === 'completed') {
-            session()->forget('cart');
+            clear_cart();
             session()->forget('maishapay_checkout');
         }
 
@@ -1879,7 +1877,7 @@ class PaymentController extends Controller
             $transactionId = 'MP-' . strtoupper(\Illuminate\Support\Str::random(12)) . '-' . time();
 
             // Stocker le panier dans les mÃ©tadonnÃ©es pour le callback
-            $cartData = session('cart', []);
+            $cartData = get_cart_array();
             $deliveryAddressId = session('maishapay_checkout.delivery_address_id');
 
             // CrÃ©er la transaction dans la base
@@ -2089,116 +2087,9 @@ class PaymentController extends Controller
         return response()->json(['success' => true, 'status' => $newStatus]);
     }
 
-    /**
-     * CrÃ©er les commandes Ã  partir du callback (donnÃ©es stockÃ©es dans metadata)
-     */
     private function createOrdersFromCallback($transaction)
     {
-        $metadata = json_decode($transaction->metadata ?? '{}', true);
-        $cart = $metadata['cart'] ?? [];
-        $deliveryAddressId = $metadata['delivery_address_id'] ?? null;
-        $buyerId = $transaction->buyer_id ?? $transaction->user_id;
-        $phone = $transaction->phone ?? null;
-
-        if (empty($cart)) {
-            Log::warning('MaishaPay Callback: Panier vide dans les mÃ©tadonnÃ©es', [
-                'transaction_id' => $transaction->id
-            ]);
-            return [];
-        }
-
-        $orders = [];
-        
-        // RÃ©cupÃ©rer l'adresse de livraison
-        $deliveryAddress = $deliveryAddressId 
-            ? \App\Models\DeliveryAddress::find($deliveryAddressId)
-            : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
-
-        foreach ($cart as $itemId => $cartItem) {
-            $item = \App\Models\Item::find($itemId);
-            
-            if (!$item) {
-                Log::warning('Article non trouvÃ© dans le panier callback', ['item_id' => $itemId]);
-                continue;
-            }
-
-            $orderAmount = $item->price * $cartItem['quantity'];
-            
-            // CrÃ©er ou rÃ©cupÃ©rer le wallet "pending" du vendeur
-            $seller = \App\Models\User::find($item->user_id);
-            if (!$seller) {
-                Log::warning('Vendeur non trouvÃ©', ['seller_id' => $item->user_id]);
-                continue;
-            }
-
-            $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
-                [
-                    'user_id' => $seller->id,
-                    'type' => 'pending',
-                    'currency' => $item->currency
-                ],
-                [
-                    'balance' => 0,
-                    'status' => 'active',
-                    'is_active' => true
-                ]
-            );
-            
-            // Ajouter le montant au wallet pending du vendeur
-            $sellerPendingWallet->increment('balance', $orderAmount);
-            
-            // PrÃ©parer les donnÃ©es de commande
-            $orderData = [
-                'buyer_id' => $buyerId,
-                'seller_id' => $item->user_id,
-                'item_id' => $item->id,
-                'quantity' => $cartItem['quantity'],
-                'unit_price' => $item->price,
-                'total_amount' => $orderAmount,
-                'currency' => $item->currency,
-                'status' => 'confirmed',
-                'paid_at' => now(),
-                'notes' => 'Paiement via MaishaPay - Transaction #' . $transaction->id,
-            ];
-            
-            // Ajouter l'adresse de livraison si disponible
-            if ($deliveryAddress) {
-                $orderData['delivery_address_id'] = $deliveryAddress->id;
-                $orderData['shipping_address'] = $deliveryAddress->address;
-                $orderData['shipping_city'] = $deliveryAddress->city;
-                $orderData['shipping_phone'] = $deliveryAddress->phone;
-            } else {
-                $orderData['shipping_address'] = 'Ã€ dÃ©finir';
-                $orderData['shipping_city'] = 'Ã€ dÃ©finir';
-                $orderData['shipping_phone'] = $phone ?? 'N/A';
-            }
-            
-            // CrÃ©er la commande
-            $order = \App\Models\Order::create($orderData);
-            $orders[] = $order;
-            
-            // Mettre Ã  jour le stock
-            $item->quantity -= $cartItem['quantity'];
-            if ($item->quantity <= 0) {
-                $item->status = 'sold';
-            }
-            $item->save();
-            
-            Log::info("Commande crÃ©Ã©e via MaishaPay Callback", [
-                'order_id' => $order->id,
-                'seller_id' => $seller->id,
-                'amount' => $orderAmount,
-                'currency' => $item->currency,
-            ]);
-        }
-        
-        Log::info('Commandes crÃ©Ã©es via callback', [
-            'buyer_id' => $buyerId,
-            'transaction_id' => $transaction->id,
-            'orders_count' => count($orders),
-        ]);
-        
-        return $orders;
+        return create_orders_from_transaction($transaction);
     }
 
     /**
@@ -2266,7 +2157,7 @@ class PaymentController extends Controller
      */
     private function createOrdersFromCart($buyerId, $transaction, $phone = null)
     {
-        $cart = session('cart', []);
+        $cart = get_cart_array();
         
         if (empty($cart)) {
             Log::info('Panier vide, aucune commande Ã  crÃ©er', ['buyer_id' => $buyerId]);
@@ -2358,8 +2249,7 @@ class PaymentController extends Controller
             ]);
         }
         
-        // Vider le panier aprÃ¨s la crÃ©ation des commandes
-        session()->forget('cart');
+        clear_cart();
         
         Log::info('Commandes crÃ©Ã©es avec succÃ¨s', [
             'buyer_id' => $buyerId,

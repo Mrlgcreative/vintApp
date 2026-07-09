@@ -342,3 +342,161 @@ if (!function_exists('dynamic_class')) {
         }
     }
 }
+
+if (!function_exists('cart_count')) {
+    function cart_count(): int
+    {
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+        return \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->sum('quantity');
+    }
+}
+
+if (!function_exists('clear_cart')) {
+    function clear_cart(): void
+    {
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+        \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->delete();
+    }
+}
+
+if (!function_exists('create_orders_from_transaction')) {
+    function create_orders_from_transaction($transaction): array
+    {
+        $orders = [];
+
+        if (!$transaction || $transaction->status !== 'completed') {
+            return $orders;
+        }
+
+        $metadata = is_string($transaction->metadata)
+            ? json_decode($transaction->metadata ?? '{}', true)
+            : ($transaction->metadata ?? []);
+        $cart = $metadata['cart'] ?? [];
+        $deliveryAddressId = $metadata['delivery_address_id'] ?? null;
+        $buyerId = $transaction->buyer_id ?? $transaction->user_id;
+        $phone = $transaction->phone ?? null;
+
+        if (empty($cart)) {
+            return $orders;
+        }
+
+        $deliveryAddress = $deliveryAddressId
+            ? \App\Models\DeliveryAddress::find($deliveryAddressId)
+            : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();
+
+        foreach ($cart as $itemId => $cartItem) {
+            $item = \App\Models\Item::find($itemId);
+
+            if (!$item) {
+                continue;
+            }
+
+            $orderAmount = $item->price * $cartItem['quantity'];
+
+            $seller = \App\Models\User::find($item->user_id);
+            if (!$seller) {
+                continue;
+            }
+
+            $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
+                [
+                    'user_id' => $seller->id,
+                    'type' => 'pending',
+                    'currency' => $item->currency,
+                ],
+                [
+                    'balance' => 0,
+                    'status' => 'active',
+                    'is_active' => true,
+                ]
+            );
+
+            $sellerPendingWallet->increment('balance', $orderAmount);
+
+            $orderData = [
+                'buyer_id' => $buyerId,
+                'seller_id' => $item->user_id,
+                'item_id' => $item->id,
+                'quantity' => $cartItem['quantity'],
+                'unit_price' => $item->price,
+                'total_amount' => $orderAmount,
+                'currency' => $item->currency,
+                'status' => 'confirmed',
+                'paid_at' => now(),
+                'notes' => 'Paiement via ' . ($transaction->provider ?? 'VintApp') . ' - Transaction #' . $transaction->id,
+            ];
+
+            if ($deliveryAddress) {
+                $orderData['delivery_address_id'] = $deliveryAddress->id;
+                $orderData['shipping_address'] = $deliveryAddress->address;
+                $orderData['shipping_city'] = $deliveryAddress->city;
+                $orderData['shipping_phone'] = $deliveryAddress->phone;
+            } else {
+                $orderData['shipping_address'] = 'À définir';
+                $orderData['shipping_city'] = 'À définir';
+                $orderData['shipping_phone'] = $phone ?? 'N/A';
+            }
+
+            $order = \App\Models\Order::create($orderData);
+            $orders[] = $order;
+
+            $item->quantity -= $cartItem['quantity'];
+            if ($item->quantity <= 0) {
+                $item->status = 'sold';
+            }
+            $item->save();
+        }
+
+        clear_cart();
+
+        return $orders;
+    }
+}
+
+if (!function_exists('get_cart_array')) {
+    function get_cart_array(): array
+    {
+        $sessionId = session()->getId();
+        $userId = auth()->id();
+
+        $cartRows = \App\Models\Cart::where(function ($q) use ($sessionId, $userId) {
+            $q->where('session_id', $sessionId);
+            if ($userId) {
+                $q->orWhere('user_id', $userId);
+            }
+        })->get();
+
+        $cart = [];
+        foreach ($cartRows as $row) {
+            $item = [
+                'id' => $row->item_id,
+                'name' => $row->item_name,
+                'price' => (float) $row->price,
+                'currency' => $row->currency,
+                'quantity' => $row->quantity,
+                'image' => $row->image,
+            ];
+            if ($row->has_discount) {
+                $item['original_price'] = (float) $row->original_price;
+                $item['discount_id'] = $row->discount_id;
+                $item['discount_percentage'] = (float) $row->discount_percentage;
+                $item['has_discount'] = true;
+            }
+            $cart[$row->item_id] = $item;
+        }
+
+        return $cart;
+    }
+}

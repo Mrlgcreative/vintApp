@@ -900,23 +900,30 @@ class ItemController extends Controller
     /**
      * Achat direct d'un article (ajoute au panier et redirige vers le checkout)
      */
-    public function buy($id)
+    public function buy(Request $request, $id)
     {
         $item = Item::findOrFail($id);
-        $cart = session('cart', []);
-        if (isset($cart[$id])) {
-            $cart[$id]['quantity'] += 1;
+        $sessionId = $request->session()->getId();
+        $userId = Auth::id();
+
+        $cartRow = \App\Models\Cart::firstOrNew([
+            'session_id' => $sessionId,
+            'item_id' => $item->id,
+        ]);
+
+        if ($cartRow->exists) {
+            $cartRow->increment('quantity', 1);
         } else {
-            $cart[$id] = [
-                'id' => $item->id,
-                'name' => $item->name,
+            $cartRow->fill([
+                'user_id' => $userId,
+                'item_name' => $item->name,
                 'price' => $item->price,
                 'currency' => $item->currency,
                 'quantity' => 1,
                 'image' => $item->images[0] ?? null,
-            ];
+            ])->save();
         }
-        session(['cart' => $cart]);
+
         return redirect()->route('cart.checkout');
     }
 

@@ -814,7 +814,7 @@ Route::prefix('payments')->group(function () {
     Route::get('/status/{transaction}', function ($transactionId) {
         $transaction = \App\Models\Transaction::findOrFail($transactionId);
         if ($transaction->status === 'completed') {
-            session()->forget('cart');
+            clear_cart();
             session()->forget('maishapay_checkout');
         }
         return view('payment-status', compact('transaction'));

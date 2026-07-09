@@ -480,11 +480,12 @@ class PaymentCallbackController extends Controller
             'completed_at' => now(),
         ]);
 
-        // Déterminer le type de paiement (commande ou recharge wallet)
         if ($transaction->order_id) {
             $this->processOrderPayment($transaction);
         } elseif ($transaction->wallet_id) {
             $this->processWalletRecharge($transaction);
+        } else {
+            $orders = create_orders_from_transaction($transaction->fresh());
         }
 
         Log::info("Paiement réussi pour transaction {$transaction->id}");
@@ -578,6 +579,9 @@ class PaymentCallbackController extends Controller
 
                     if ($newStatus !== $transaction->status) {
                         $transaction->update(['status' => $newStatus]);
+                        if ($newStatus === 'completed') {
+                            create_orders_from_transaction($transaction->fresh());
+                        }
                     }
 
                     return response()->json([
@@ -634,6 +638,8 @@ class PaymentCallbackController extends Controller
         $transaction->update([
             'status' => 'completed',
         ]);
+
+        create_orders_from_transaction($transaction->fresh());
 
         Log::info('Transaction complétée manuellement', [
             'transaction_id' => $transaction->id,
