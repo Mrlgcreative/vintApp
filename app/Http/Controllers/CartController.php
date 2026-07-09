@@ -68,6 +68,7 @@ class CartController extends Controller
         }
         
         $request->session()->put('cart', $cart);
+        $request->session()->save();
         
         $message = $activeDiscount 
             ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
