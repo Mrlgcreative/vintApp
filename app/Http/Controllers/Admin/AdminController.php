@@ -35,7 +35,7 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        // Statistiques gÃ©nÃ©rales
+        // Statistiques générales
         $stats = [
             'total_users' => User::count(),
             'new_users_today' => User::whereDate('created_at', today())->count(),
@@ -88,7 +88,7 @@ class AdminController extends Controller
         // Graphiques des derniers 30 jours
         $dailyStats = $this->getDailyStats();
         
-        // DerniÃ¨res activitÃ©s
+        // Dernières activités
         $recentTransactions = Transaction::with(['user'])
             ->latest()
             ->take(10)
@@ -137,7 +137,7 @@ class AdminController extends Controller
     }
 
     /**
-     * DÃ©tails d'un utilisateur
+     * Détails d'un utilisateur
      */
     public function userShow(User $user)
     {
@@ -154,7 +154,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour le statut d'un utilisateur
+     * Mettre à jour le statut d'un utilisateur
      */
     public function userUpdateStatus(Request $request, User $user)
     {
@@ -168,23 +168,23 @@ class AdminController extends Controller
             switch ($request->action) {
                 case 'activate':
                     $user->update(['is_active' => true]);
-                    $message = "Utilisateur activÃ© avec succÃ¨s.";
+                    $message = "Utilisateur activé avec succès.";
                     break;
                     
                 case 'deactivate':
                     $user->update(['is_active' => false]);
-                    $message = "Utilisateur dÃ©sactivÃ© avec succÃ¨s.";
+                    $message = "Utilisateur désactivé avec succès.";
                     break;
                     
                 case 'suspend':
                     $user->update(['is_suspended' => true]);
-                    $message = "Utilisateur suspendu avec succÃ¨s.";
+                    $message = "Utilisateur suspendu avec succès.";
                     break;
                     
                 case 'delete':
                     // Soft delete
                     $user->delete();
-                    $message = "Utilisateur supprimÃ© avec succÃ¨s.";
+                    $message = "Utilisateur supprimé avec succès.";
                     break;
             }
             
@@ -271,7 +271,7 @@ class AdminController extends Controller
                 'verified_by' => Auth::id()
             ]);
             
-            // CrÃ©er une transaction de confirmation
+            // Créer une transaction de confirmation
             Transaction::create([
                 'user_id' => $wallet->user_id,
                 'wallet_id' => $wallet->id,
@@ -279,19 +279,19 @@ class AdminController extends Controller
                 'amount' => 0,
                 'currency' => $wallet->currency,
                 'status' => 'completed',
-                'description' => 'Wallet approuvÃ© par l\'administrateur',
+                'description' => 'Wallet approuvé par l\'administrateur',
                 'processed_by' => Auth::id()
             ]);
             
             DB::commit();
             
-            Log::info("Wallet approuvÃ©", [
+            Log::info("Wallet approuvé", [
                 'admin_id' => Auth::id(),
                 'wallet_id' => $wallet->id,
                 'user_id' => $wallet->user_id
             ]);
             
-            return redirect()->back()->with('success', 'Wallet approuvÃ© avec succÃ¨s.');
+            return redirect()->back()->with('success', 'Wallet approuvé avec succès.');
             
         } catch (\Exception $e) {
             DB::rollBack();
@@ -322,7 +322,7 @@ class AdminController extends Controller
                 'verified_by' => Auth::id()
             ]);
             
-            // CrÃ©er une transaction de rejet
+            // Créer une transaction de rejet
             Transaction::create([
                 'user_id' => $wallet->user_id,
                 'wallet_id' => $wallet->id,
@@ -330,20 +330,20 @@ class AdminController extends Controller
                 'amount' => 0,
                 'currency' => $wallet->currency,
                 'status' => 'failed',
-                'description' => 'Wallet rejetÃ©: ' . $request->reason,
+                'description' => 'Wallet rejeté: ' . $request->reason,
                 'processed_by' => Auth::id()
             ]);
             
             DB::commit();
             
-            Log::info("Wallet rejetÃ©", [
+            Log::info("Wallet rejeté", [
                 'admin_id' => Auth::id(),
                 'wallet_id' => $wallet->id,
                 'user_id' => $wallet->user_id,
                 'reason' => $request->reason
             ]);
             
-            return redirect()->back()->with('success', 'Wallet rejetÃ© avec succÃ¨s.');
+            return redirect()->back()->with('success', 'Wallet rejeté avec succès.');
             
         } catch (\Exception $e) {
             DB::rollBack();
@@ -383,7 +383,7 @@ class AdminController extends Controller
                     
                     $approvedCount++;
                     
-                    Log::info("Wallet approuvÃ© en lot", [
+                    Log::info("Wallet approuvé en lot", [
                         'admin_id' => Auth::id(),
                         'wallet_id' => $wallet->id,
                         'user_id' => $wallet->user_id
@@ -393,7 +393,7 @@ class AdminController extends Controller
             
             DB::commit();
             
-            return redirect()->back()->with('success', "{$approvedCount} wallet(s) approuvÃ©(s) avec succÃ¨s.");
+            return redirect()->back()->with('success', "{$approvedCount} wallet(s) approuvé(s) avec succès.");
             
         } catch (\Exception $e) {
             DB::rollBack();
@@ -434,7 +434,7 @@ class AdminController extends Controller
                     
                     $rejectedCount++;
                     
-                    Log::info("Wallet rejetÃ© en lot", [
+                    Log::info("Wallet rejeté en lot", [
                         'admin_id' => Auth::id(),
                         'wallet_id' => $wallet->id,
                         'user_id' => $wallet->user_id,
@@ -445,7 +445,7 @@ class AdminController extends Controller
             
             DB::commit();
             
-            return redirect()->back()->with('success', "{$rejectedCount} wallet(s) rejetÃ©(s) avec succÃ¨s.");
+            return redirect()->back()->with('success', "{$rejectedCount} wallet(s) rejeté(s) avec succès.");
             
         } catch (\Exception $e) {
             DB::rollBack();
@@ -504,7 +504,7 @@ class AdminController extends Controller
     }
 
     /**
-     * DÃ©tails d'une transaction
+     * Détails d'une transaction
      */
     public function transactionShow(Transaction $transaction)
     {
@@ -565,7 +565,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Gestion des catÃ©gories
+     * Gestion des catégories
      */
     public function categories()
     {
@@ -579,7 +579,7 @@ class AdminController extends Controller
      */
     public function reports(Request $request)
     {
-        $period = $request->get('period', '30'); // 30 jours par dÃ©faut
+        $period = $request->get('period', '30'); // 30 jours par défaut
         
         $startDate = Carbon::now()->subDays($period);
         
@@ -594,7 +594,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Logs systÃ¨me
+     * Logs système
      */
     public function logs(Request $request)
     {
@@ -618,9 +618,9 @@ class AdminController extends Controller
                 foreach (array_reverse($lines) as $line) {
                     if (empty(trim($line))) continue;
                     
-                    // DÃ©tecter le dÃ©but d'une nouvelle entrÃ©e de log
+                    // Détecter le début d'une nouvelle entrée de log
                     if (preg_match('/^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]\s+(\w+)\.(\w+):\s+(.+)/', $line, $matches)) {
-                        // Sauvegarder le log prÃ©cÃ©dent si existe
+                        // Sauvegarder le log précédent si existe
                         if ($currentLog !== null) {
                             // Filtres
                             $shouldAdd = true;
@@ -652,7 +652,7 @@ class AdminController extends Controller
                             }
                         }
                         
-                        // CrÃ©er une nouvelle entrÃ©e
+                        // Créer une nouvelle entrée
                         $currentLog = [
                             'datetime' => $matches[1],
                             'env' => $matches[2],
@@ -665,7 +665,7 @@ class AdminController extends Controller
                         $currentLog['context'] .= $line . "\n";
                     }
                     
-                    // Limiter Ã  100 logs pour performance
+                    // Limiter à 100 logs pour performance
                     if (count($logs) >= 100) {
                         break;
                     }
@@ -688,7 +688,7 @@ class AdminController extends Controller
     }
 
     /**
-     * ParamÃ¨tres systÃ¨me
+     * Paramètres système
      */
     public function settings()
     {
@@ -711,7 +711,7 @@ class AdminController extends Controller
             
             return view('admin.settings.index', compact('maintenanceStatus', 'settings', 'categories', 'enterpriseWallets'));
         } catch (\Exception $e) {
-            Log::error('Erreur lors du chargement des paramÃ¨tres: ' . $e->getMessage());
+            Log::error('Erreur lors du chargement des paramètres: ' . $e->getMessage());
             $maintenanceStatus = false;
             $settings = collect();
             $categories = [];
@@ -721,7 +721,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Met Ã  jour les paramÃ¨tres systÃ¨me
+     * Met à jour les paramètres système
      */
     public function settingsUpdate(Request $request)
     {
@@ -742,11 +742,11 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.settings.index')
-            ->with('success', 'ParamÃ¨tres mis Ã  jour avec succÃ¨s');
+            ->with('success', 'Paramètres mis à jour avec succès');
     }
 
     /**
-     * Affiche les paramÃ¨tres de prÃ©-inscription
+     * Affiche les paramètres de pré-inscription
      */
     public function preregistrationSettings()
     {
@@ -756,7 +756,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Met Ã  jour les paramÃ¨tres de prÃ©-inscription
+     * Met à jour les paramètres de pré-inscription
      */
     public function updatePreregistrationSettings(Request $request)
     {
@@ -774,17 +774,17 @@ class AdminController extends Controller
             'preregistration_closed_message' => 'nullable|string',
         ]);
 
-        // Mettre Ã  jour chaque paramÃ¨tre
+        // Mettre à jour chaque paramètre
         foreach ($validated as $key => $value) {
             $setting = Setting::where('key', $key)->first();
             
             if ($setting) {
-                // Cas spÃ©cial pour les benefits (array -> json)
+                // Cas spécial pour les benefits (array -> json)
                 if ($key === 'preregistration_benefits') {
                     $value = json_encode(array_values(array_filter($value)));
                 }
                 
-                // Cas spÃ©cial pour les checkboxes
+                // Cas spécial pour les checkboxes
                 if ($setting->type === 'boolean') {
                     $value = $value ? '1' : '0';
                 }
@@ -793,7 +793,7 @@ class AdminController extends Controller
             }
         }
 
-        // Si preregistration_enabled n'est pas dans la requÃªte (checkbox non cochÃ©e)
+        // Si preregistration_enabled n'est pas dans la requête (checkbox non cochée)
         if (!isset($validated['preregistration_enabled'])) {
             Setting::where('key', 'preregistration_enabled')->update(['value' => '0']);
         }
@@ -808,11 +808,11 @@ class AdminController extends Controller
 
         return redirect()
             ->route('admin.settings.preregistration')
-            ->with('success', 'ParamÃ¨tres de prÃ©-inscription mis Ã  jour avec succÃ¨s');
+            ->with('success', 'Paramètres de pré-inscription mis à jour avec succès');
     }
 
     /**
-     * Toggle (activer/dÃ©sactiver) la prÃ©-inscription
+     * Toggle (activer/désactiver) la pré-inscription
      */
     public function togglePreregistration(Request $request)
     {
@@ -826,8 +826,8 @@ class AdminController extends Controller
             $setting->update(['value' => $validated['enabled'] ? '1' : '0']);
             
             $message = $validated['enabled'] 
-                ? 'ðŸ”’ Mode prÃ©-inscription ACTIVÃ‰ ! L\'application est maintenant verrouillÃ©e. Seuls les admins peuvent y accÃ©der.' 
-                : 'âœ… Mode prÃ©-inscription DÃ‰SACTIVÃ‰. L\'application est de nouveau accessible Ã  tous.';
+                ? '🔒 Mode pré-inscription ACTIVÉ ! L\'application est maintenant verrouillée. Seuls les admins peuvent y accéder.' 
+                : '✅ Mode pré-inscription DÉSACTIVÉ. L\'application est de nouveau accessible à tous.';
             
             return response()->json([
                 'success' => true,
@@ -838,7 +838,7 @@ class AdminController extends Controller
         
         return response()->json([
             'success' => false,
-            'message' => 'ParamÃ¨tre de prÃ©-inscription introuvable'
+            'message' => 'Paramètre de pré-inscription introuvable'
         ], 404);
     }
 
@@ -852,7 +852,7 @@ class AdminController extends Controller
             'notifications' => []
         ];
         
-        // Compter les Ã©lÃ©ments nÃ©cessitant attention
+        // Compter les éléments nécessitant attention
         $pendingWallets = Wallet::where('status', 'pending')->count();
         $pendingOrders = Order::where('status', 'pending')->count();
         $failedTransactions = Transaction::where('status', 'failed')->whereDate('created_at', today())->count();
@@ -882,7 +882,7 @@ class AdminController extends Controller
         if ($failedTransactions > 0) {
             $notifications['notifications'][] = [
                 'icon' => 'fa-exclamation-triangle',
-                'message' => "{$failedTransactions} transaction(s) Ã©chouÃ©e(s) aujourd'hui",
+                'message' => "{$failedTransactions} transaction(s) échouée(s) aujourd'hui",
                 'link' => route('admin.transactions.index', ['status' => 'failed']),
                 'created_at' => 'Maintenant',
                 'read_at' => null
@@ -976,7 +976,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher les paramÃ¨tres systÃ¨me
+     * Afficher les paramètres système
      */
     public function systemSettings(SettingService $settingService)
     {
@@ -987,7 +987,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour les paramÃ¨tres
+     * Mettre à jour les paramètres
      */
     public function updateSettings(Request $request, SettingService $settingService)
     {
@@ -998,7 +998,7 @@ class AdminController extends Controller
         ]);
 
         try {
-            // GÃ©rer l'upload du logo en premier
+            // Gérer l'upload du logo en premier
             if ($request->hasFile('logo_file')) {
                 $logoFile = $request->file('logo_file');
                 $logoPath = $logoFile->store('logos', 'public');
@@ -1009,7 +1009,7 @@ class AdminController extends Controller
                     Storage::disk('public')->delete(str_replace('/storage/', '', $oldLogo));
                 }
                 
-                // Mettre Ã  jour le chemin du logo
+                // Mettre à jour le chemin du logo
                 $request->merge([
                     'settings' => array_merge($request->settings, [
                         'app_logo' => '/storage/' . $logoPath
@@ -1031,12 +1031,12 @@ class AdminController extends Controller
             $settingService->clearCache();
 
             return redirect()->route('admin.settings.index')
-                ->with('success', 'ParamÃ¨tres mis Ã  jour avec succÃ¨s.');
+                ->with('success', 'Paramètres mis à jour avec succès.');
                 
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la mise Ã  jour des paramÃ¨tres: ' . $e->getMessage());
+            Log::error('Erreur lors de la mise à jour des paramètres: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'Erreur lors de la mise Ã  jour des paramÃ¨tres.')
+                ->with('error', 'Erreur lors de la mise à jour des paramètres.')
                 ->withInput();
         }
     }
@@ -1056,7 +1056,7 @@ class AdminController extends Controller
     }
 
     /**
-     * RÃ©initialiser le cache des settings
+     * Réinitialiser le cache des settings
      */
     public function clearSettingsCache(SettingService $settingService)
     {
@@ -1065,7 +1065,7 @@ class AdminController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Cache des paramÃ¨tres vidÃ© avec succÃ¨s.'
+                'message' => 'Cache des paramètres vidé avec succès.'
             ]);
             
         } catch (\Exception $e) {
@@ -1078,11 +1078,11 @@ class AdminController extends Controller
     }
 
     // =============================================
-    // MÃ‰THODES CRUD POUR LES BRANDS (MARQUES)
+    // MÉTHODES CRUD POUR LES BRANDS (MARQUES)
     // =============================================
 
     /**
-     * Afficher le formulaire de crÃ©ation d'une marque
+     * Afficher le formulaire de création d'une marque
      */
     public function brandCreate()
     {
@@ -1113,25 +1113,25 @@ class AdminController extends Controller
 
         $data = $request->all();
         
-        // GÃ©nÃ©rer le slug automatiquement si pas fourni
+        // Générer le slug automatiquement si pas fourni
         if (empty($data['slug'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
         }
 
-        // GÃ©rer l'upload du logo
+        // Gérer l'upload du logo
         if ($request->hasFile('logo')) {
             $logoPath = $request->file('logo')->store('brands/logos', 'public');
             $data['logo'] = $logoPath;
         }
 
-        // DÃ©finir les valeurs par dÃ©faut pour les boolÃ©ens
+        // Définir les valeurs par défaut pour les booléens
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
 
         $brand = Brand::create($data);
 
         return redirect()->route('admin.brands.index')
-            ->with('success', 'Marque crÃ©Ã©e avec succÃ¨s.');
+            ->with('success', 'Marque créée avec succès.');
     }
 
     /**
@@ -1156,7 +1156,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher le formulaire d'Ã©dition d'une marque
+     * Afficher le formulaire d'édition d'une marque
      */
     public function brandEdit(Brand $brand)
     {
@@ -1164,7 +1164,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour une marque
+     * Mettre à jour une marque
      */
     public function brandUpdate(Request $request, Brand $brand)
     {
@@ -1187,12 +1187,12 @@ class AdminController extends Controller
 
         $data = $request->all();
         
-        // GÃ©nÃ©rer le slug automatiquement si pas fourni
+        // Générer le slug automatiquement si pas fourni
         if (empty($data['slug'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
         }
 
-        // GÃ©rer l'upload du logo
+        // Gérer l'upload du logo
         if ($request->hasFile('logo')) {
             // Supprimer l'ancien logo
             if ($brand->logo && Storage::disk('public')->exists($brand->logo)) {
@@ -1203,14 +1203,14 @@ class AdminController extends Controller
             $data['logo'] = $logoPath;
         }
 
-        // DÃ©finir les valeurs par dÃ©faut pour les boolÃ©ens
+        // Définir les valeurs par défaut pour les booléens
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
 
         $brand->update($data);
 
         return redirect()->route('admin.brands.show', $brand)
-            ->with('success', 'Marque mise Ã  jour avec succÃ¨s.');
+            ->with('success', 'Marque mise à jour avec succès.');
     }
 
     /**
@@ -1219,7 +1219,7 @@ class AdminController extends Controller
     public function brandDestroy(Brand $brand)
     {
         try {
-            // VÃ©rifier s'il y a des articles associÃ©s
+            // Vérifier s'il y a des articles associés
             if ($brand->items()->count() > 0) {
                 return redirect()->route('admin.brands.index')
                     ->with('error', 'Impossible de supprimer cette marque car elle contient des articles.');
@@ -1233,7 +1233,7 @@ class AdminController extends Controller
             $brand->delete();
 
             return redirect()->route('admin.brands.index')
-                ->with('success', 'Marque supprimÃ©e avec succÃ¨s.');
+                ->with('success', 'Marque supprimée avec succès.');
                 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de la marque: ' . $e->getMessage());
@@ -1255,17 +1255,17 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Statut de la marque mis Ã  jour avec succÃ¨s.',
+            'message' => 'Statut de la marque mis à jour avec succès.',
             'status' => $brand->is_active
         ]);
     }
 
     // =============================================
-    // MÃ‰THODES CRUD POUR LES CATEGORIES
+    // MÉTHODES CRUD POUR LES CATEGORIES
     // =============================================
 
     /**
-     * Afficher le formulaire de crÃ©ation d'une catÃ©gorie
+     * Afficher le formulaire de création d'une catégorie
      */
     public function categoryCreate()
     {
@@ -1274,7 +1274,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Enregistrer une nouvelle catÃ©gorie
+     * Enregistrer une nouvelle catégorie
      */
     public function categoryStore(Request $request)
     {
@@ -1296,12 +1296,12 @@ class AdminController extends Controller
 
         $data = $request->all();
         
-        // GÃ©nÃ©rer le slug automatiquement si pas fourni
+        // Générer le slug automatiquement si pas fourni
         if (empty($data['slug'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
         }
 
-        // GÃ©rer l'upload de l'image
+        // Gérer l'upload de l'image
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('categories/images', 'public');
             $data['image'] = $imagePath;
@@ -1310,11 +1310,11 @@ class AdminController extends Controller
             StorageSyncService::syncFile($imagePath);
         }
 
-        // DÃ©finir les valeurs par dÃ©faut pour les boolÃ©ens
+        // Définir les valeurs par défaut pour les booléens
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
 
-        // DÃ©finir l'ordre de tri par dÃ©faut
+        // Définir l'ordre de tri par défaut
         if (empty($data['sort_order'])) {
             $maxOrder = Category::where('parent_id', $data['parent_id'])->max('sort_order') ?? 0;
             $data['sort_order'] = $maxOrder + 1;
@@ -1323,7 +1323,7 @@ class AdminController extends Controller
         $category = Category::create($data);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'CatÃ©gorie crÃ©Ã©e avec succÃ¨s.');
+            ->with('success', 'Catégorie créée avec succès.');
     }
 
     /**
@@ -1335,7 +1335,7 @@ class AdminController extends Controller
             $query->with('brand')->latest()->take(10);
         }]);
 
-        // Statistiques de la catÃ©gorie
+        // Statistiques de la catégorie
         $stats = [
             'total_items' => $category->items()->count(),
             'active_items' => $category->items()->where('status', 'active')->count(),
@@ -1349,7 +1349,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher le formulaire d'Ã©dition d'une catÃ©gorie
+     * Afficher le formulaire d'édition d'une catégorie
      */
     public function categoryEdit(Category $category)
     {
@@ -1362,7 +1362,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour une catÃ©gorie
+     * Mettre à jour une catégorie
      */
     public function categoryUpdate(Request $request, Category $category)
     {
@@ -1384,12 +1384,12 @@ class AdminController extends Controller
 
         $data = $request->all();
         
-        // GÃ©nÃ©rer le slug automatiquement si pas fourni
+        // Générer le slug automatiquement si pas fourni
         if (empty($data['slug'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']);
         }
 
-        // GÃ©rer l'upload de l'image
+        // Gérer l'upload de l'image
         if ($request->hasFile('image')) {
             // Supprimer l'ancienne image
             if ($category->image && Storage::disk('public')->exists($category->image)) {
@@ -1400,32 +1400,32 @@ class AdminController extends Controller
             $data['image'] = $imagePath;
         }
 
-        // DÃ©finir les valeurs par dÃ©faut pour les boolÃ©ens
+        // Définir les valeurs par défaut pour les booléens
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
 
         $category->update($data);
 
         return redirect()->route('admin.categories.show', $category)
-            ->with('success', 'CatÃ©gorie mise Ã  jour avec succÃ¨s.');
+            ->with('success', 'Catégorie mise à jour avec succès.');
     }
 
     /**
-     * Supprimer une catÃ©gorie
+     * Supprimer une catégorie
      */
     public function categoryDestroy(Category $category)
     {
         try {
-            // VÃ©rifier s'il y a des articles associÃ©s
+            // Vérifier s'il y a des articles associés
             if ($category->items()->count() > 0) {
                 return redirect()->route('admin.categories.index')
-                    ->with('error', 'Impossible de supprimer cette catÃ©gorie car elle contient des articles.');
+                    ->with('error', 'Impossible de supprimer cette catégorie car elle contient des articles.');
             }
 
-            // VÃ©rifier s'il y a des sous-catÃ©gories
+            // Vérifier s'il y a des sous-catégories
             if ($category->children()->count() > 0) {
                 return redirect()->route('admin.categories.index')
-                    ->with('error', 'Impossible de supprimer cette catÃ©gorie car elle contient des sous-catÃ©gories.');
+                    ->with('error', 'Impossible de supprimer cette catégorie car elle contient des sous-catégories.');
             }
 
             // Supprimer l'image
@@ -1436,17 +1436,17 @@ class AdminController extends Controller
             $category->delete();
 
             return redirect()->route('admin.categories.index')
-                ->with('success', 'CatÃ©gorie supprimÃ©e avec succÃ¨s.');
+                ->with('success', 'Catégorie supprimée avec succès.');
                 
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la suppression de la catÃ©gorie: ' . $e->getMessage());
+            Log::error('Erreur lors de la suppression de la catégorie: ' . $e->getMessage());
             return redirect()->route('admin.categories.index')
-                ->with('error', 'Erreur lors de la suppression de la catÃ©gorie.');
+                ->with('error', 'Erreur lors de la suppression de la catégorie.');
         }
     }
 
     /**
-     * Changer le statut d'une catÃ©gorie
+     * Changer le statut d'une catégorie
      */
     public function categoryUpdateStatus(Request $request, Category $category)
     {
@@ -1458,17 +1458,17 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Statut de la catÃ©gorie mis Ã  jour avec succÃ¨s.',
+            'message' => 'Statut de la catégorie mis à jour avec succès.',
             'status' => $category->is_active
         ]);
     }
 
     // =============================================
-    // MÃ‰THODES CRUD POUR LES USERS (UTILISATEURS)
+    // MÉTHODES CRUD POUR LES USERS (UTILISATEURS)
     // =============================================
 
     /**
-     * Afficher le formulaire de crÃ©ation d'un utilisateur
+     * Afficher le formulaire de création d'un utilisateur
      */
     public function userCreate()
     {
@@ -1505,28 +1505,28 @@ class AdminController extends Controller
         $data = $request->all();
         $data['password'] = Hash::make($data['password']);
 
-        // GÃ©rer l'upload de l'avatar
+        // Gérer l'upload de l'avatar
         if ($request->hasFile('avatar')) {
             $avatarPath = $request->file('avatar')->store('users/avatars', 'public');
             $data['avatar'] = $avatarPath;
         }
 
-        // DÃ©finir les valeurs par dÃ©faut
+        // Définir les valeurs par défaut
         $data['status'] = $data['status'] ?? 'active';
         $data['role'] = $data['role'] ?? 'user';
         $data['is_seller'] = $request->has('is_seller');
-        $data['notifications_enabled'] = $request->has('notifications_enabled') ? 1 : 1; // Par dÃ©faut activÃ©
+        $data['notifications_enabled'] = $request->has('notifications_enabled') ? 1 : 1; // Par défaut activé
         $data['marketing_emails'] = $request->has('marketing_emails');
-        $data['email_verified_at'] = now(); // Marquer comme vÃ©rifiÃ© par l'admin
+        $data['email_verified_at'] = now(); // Marquer comme vérifié par l'admin
 
         $user = User::create($data);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'Utilisateur crÃ©Ã© avec succÃ¨s.');
+            ->with('success', 'Utilisateur créé avec succès.');
     }
 
     /**
-     * Afficher le formulaire d'Ã©dition d'un utilisateur
+     * Afficher le formulaire d'édition d'un utilisateur
      */
     public function userEdit(User $user)
     {
@@ -1535,7 +1535,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour un utilisateur
+     * Mettre à jour un utilisateur
      */
     public function userUpdate(Request $request, User $user)
     {
@@ -1563,14 +1563,14 @@ class AdminController extends Controller
 
         $data = $request->all();
 
-        // GÃ©rer le mot de passe
+        // Gérer le mot de passe
         if (!empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
         }
 
-        // GÃ©rer l'upload de l'avatar
+        // Gérer l'upload de l'avatar
         if ($request->hasFile('avatar')) {
             // Supprimer l'ancien avatar
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
@@ -1581,7 +1581,7 @@ class AdminController extends Controller
             $data['avatar'] = $avatarPath;
         }
 
-        // DÃ©finir les valeurs par dÃ©faut pour les boolÃ©ens
+        // Définir les valeurs par défaut pour les booléens
         $data['is_seller'] = $request->has('is_seller');
         $data['notifications_enabled'] = $request->has('notifications_enabled');
         $data['marketing_emails'] = $request->has('marketing_emails');
@@ -1589,7 +1589,7 @@ class AdminController extends Controller
         $user->update($data);
 
         return redirect()->route('admin.users.show', $user)
-            ->with('success', 'Utilisateur mis Ã  jour avec succÃ¨s.');
+            ->with('success', 'Utilisateur mis à jour avec succès.');
     }
 
     /**
@@ -1598,7 +1598,7 @@ class AdminController extends Controller
     public function userDestroy(User $user)
     {
         try {
-            // VÃ©rifier si l'utilisateur a des commandes en cours
+            // Vérifier si l'utilisateur a des commandes en cours
             if ($user->orders()->whereIn('status', ['pending', 'processing'])->count() > 0) {
                 return redirect()->route('admin.users.index')
                     ->with('error', 'Impossible de supprimer cet utilisateur car il a des commandes en cours.');
@@ -1612,7 +1612,7 @@ class AdminController extends Controller
             $user->delete();
 
             return redirect()->route('admin.users.index')
-                ->with('success', 'Utilisateur supprimÃ© avec succÃ¨s.');
+                ->with('success', 'Utilisateur supprimé avec succès.');
                 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de l\'utilisateur: ' . $e->getMessage());
@@ -1631,27 +1631,27 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Statut de l\'utilisateur mis Ã  jour avec succÃ¨s.',
+            'message' => 'Statut de l\'utilisateur mis à jour avec succès.',
             'status' => $user->status
         ]);
     }
 
     /**
-     * Envoyer un email de rÃ©initialisation de mot de passe
+     * Envoyer un email de réinitialisation de mot de passe
      */
     public function userSendPasswordReset(User $user)
     {
         try {
-            // Logique pour envoyer l'email de rÃ©initialisation
+            // Logique pour envoyer l'email de réinitialisation
             // Vous pouvez utiliser Password::sendResetLink() ou votre propre logique
             
             return response()->json([
                 'success' => true,
-                'message' => 'Email de rÃ©initialisation envoyÃ© avec succÃ¨s.'
+                'message' => 'Email de réinitialisation envoyé avec succès.'
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'envoi de l\'email de rÃ©initialisation: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'envoi de l\'email de réinitialisation: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur lors de l\'envoi de l\'email.'
@@ -1669,7 +1669,7 @@ class AdminController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Email de bienvenue envoyÃ© avec succÃ¨s.'
+                'message' => 'Email de bienvenue envoyé avec succès.'
             ]);
             
         } catch (\Exception $e) {
@@ -1682,7 +1682,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Envoyer un message Ã  un utilisateur
+     * Envoyer un message à un utilisateur
      */
     public function userSendMessage(Request $request, User $user)
     {
@@ -1695,7 +1695,7 @@ class AdminController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Message envoyÃ© avec succÃ¨s.'
+                'message' => 'Message envoyé avec succès.'
             ]);
             
         } catch (\Exception $e) {
@@ -1708,7 +1708,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Exporter les donnÃ©es d'un utilisateur
+     * Exporter les données d'un utilisateur
      */
     public function userExport(User $user)
     {
@@ -1727,14 +1727,14 @@ class AdminController extends Controller
                 ->header('Content-Disposition', 'attachment; filename="' . $fileName . '"');
                 
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'export des donnÃ©es utilisateur: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'export des données utilisateur: ' . $e->getMessage());
             return redirect()->route('admin.users.show', $user)
-                ->with('error', 'Erreur lors de l\'export des donnÃ©es.');
+                ->with('error', 'Erreur lors de l\'export des données.');
         }
     }
 
     // =============================================
-    // MÃ‰THODES DE GESTION DU MODE MAINTENANCE
+    // MÉTHODES DE GESTION DU MODE MAINTENANCE
     // =============================================
 
     /**
@@ -1753,7 +1753,7 @@ class AdminController extends Controller
             
             MaintenanceMode::enable($message, $estimatedTime);
             
-            Log::info('Mode maintenance activÃ© par l\'admin', [
+            Log::info('Mode maintenance activé par l\'admin', [
                 'user_id' => Auth::id(),
                 'message' => $message,
                 'estimated_time' => $estimatedTime
@@ -1761,7 +1761,7 @@ class AdminController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Mode maintenance activÃ© avec succÃ¨s'
+                'message' => 'Mode maintenance activé avec succès'
             ]);
             
         } catch (\Exception $e) {
@@ -1778,37 +1778,37 @@ class AdminController extends Controller
     }
     
     /**
-     * DÃ©sactiver le mode maintenance
+     * Désactiver le mode maintenance
      */
     public function disableMaintenance()
     {
         try {
             MaintenanceMode::disable();
             
-            Log::info('Mode maintenance dÃ©sactivÃ© par l\'admin', [
+            Log::info('Mode maintenance désactivé par l\'admin', [
                 'user_id' => Auth::id()
             ]);
             
             return response()->json([
                 'success' => true,
-                'message' => 'Mode maintenance dÃ©sactivÃ© avec succÃ¨s'
+                'message' => 'Mode maintenance désactivé avec succès'
             ]);
             
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la dÃ©sactivation du mode maintenance', [
+            Log::error('Erreur lors de la désactivation du mode maintenance', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id()
             ]);
             
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de la dÃ©sactivation du mode maintenance'
+                'message' => 'Erreur lors de la désactivation du mode maintenance'
             ], 500);
         }
     }
     
     /**
-     * VÃ©rifier le statut du mode maintenance
+     * Vérifier le statut du mode maintenance
      */
     public function maintenanceStatus()
     {
@@ -1818,7 +1818,7 @@ class AdminController extends Controller
     }
 
     // =============================================
-    // MÃ‰THODES CRUD POUR LES ITEMS (ARTICLES)
+    // MÉTHODES CRUD POUR LES ITEMS (ARTICLES)
     // =============================================
 
     /**
@@ -1887,7 +1887,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher le formulaire de crÃ©ation d'un article
+     * Afficher le formulaire de création d'un article
      */
     public function itemCreate()
     {
@@ -1920,7 +1920,7 @@ class AdminController extends Controller
 
         $data = $request->all();
 
-        // GÃ©rer les images
+        // Gérer les images
         if ($request->hasFile('images')) {
             $images = [];
             foreach ($request->file('images') as $image) {
@@ -1933,11 +1933,11 @@ class AdminController extends Controller
         $item = Item::create($data);
 
         return redirect()->route('admin.items.index')
-            ->with('success', 'Article crÃ©Ã© avec succÃ¨s.');
+            ->with('success', 'Article créé avec succès.');
     }
 
     /**
-     * Afficher les dÃ©tails d'un article
+     * Afficher les détails d'un article
      */
     public function itemShow(Item $item)
     {
@@ -1947,7 +1947,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Afficher le formulaire d'Ã©dition d'un article
+     * Afficher le formulaire d'édition d'un article
      */
     public function itemEdit(Item $item)
     {
@@ -1959,7 +1959,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Mettre Ã  jour un article
+     * Mettre à jour un article
      */
     public function itemUpdate(Request $request, Item $item)
     {
@@ -1980,7 +1980,7 @@ class AdminController extends Controller
 
         $data = $request->all();
 
-        // GÃ©rer les nouvelles images
+        // Gérer les nouvelles images
         if ($request->hasFile('images')) {
             $images = $item->images ?? [];
             foreach ($request->file('images') as $image) {
@@ -1993,7 +1993,7 @@ class AdminController extends Controller
         $item->update($data);
 
         return redirect()->route('admin.items.show', $item)
-            ->with('success', 'Article mis Ã  jour avec succÃ¨s.');
+            ->with('success', 'Article mis à jour avec succès.');
     }
 
     /**
@@ -2002,10 +2002,10 @@ class AdminController extends Controller
     public function itemDestroy(Item $item)
     {
         try {
-            // VÃ©rifier s'il y a des commandes associÃ©es
+            // Vérifier s'il y a des commandes associées
             if ($item->orders()->count() > 0) {
                 return redirect()->route('admin.items.index')
-                    ->with('error', 'Impossible de supprimer cet article car il est associÃ© Ã  des commandes.');
+                    ->with('error', 'Impossible de supprimer cet article car il est associé à des commandes.');
             }
 
             // Supprimer les images
@@ -2020,7 +2020,7 @@ class AdminController extends Controller
             $item->delete();
 
             return redirect()->route('admin.items.index')
-                ->with('success', 'Article supprimÃ© avec succÃ¨s.');
+                ->with('success', 'Article supprimé avec succès.');
                 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de l\'article: ' . $e->getMessage());
@@ -2042,7 +2042,7 @@ class AdminController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Statut de l\'article mis Ã  jour avec succÃ¨s.',
+            'message' => 'Statut de l\'article mis à jour avec succès.',
             'status' => $item->status
         ]);
     }
@@ -2260,22 +2260,22 @@ class AdminController extends Controller
             switch ($request->action) {
                 case 'approve':
                     $items->update(['status' => 'active']);
-                    $message = "{$count} article(s) approuvÃ©(s) avec succÃ¨s.";
+                    $message = "{$count} article(s) approuvé(s) avec succès.";
                     break;
                 
                 case 'reject':
                     $items->update(['status' => 'inactive']);
-                    $message = "{$count} article(s) rejetÃ©(s) avec succÃ¨s.";
+                    $message = "{$count} article(s) rejeté(s) avec succès.";
                     break;
                 
                 case 'activate':
                     $items->update(['status' => 'active']);
-                    $message = "{$count} article(s) activÃ©(s) avec succÃ¨s.";
+                    $message = "{$count} article(s) activé(s) avec succès.";
                     break;
                 
                 case 'deactivate':
                     $items->update(['status' => 'inactive']);
-                    $message = "{$count} article(s) dÃ©sactivÃ©(s) avec succÃ¨s.";
+                    $message = "{$count} article(s) désactivé(s) avec succès.";
                     break;
                 
                 case 'delete':
@@ -2292,7 +2292,7 @@ class AdminController extends Controller
                             $item->delete();
                         }
                     }
-                    $message = "Articles supprimÃ©s avec succÃ¨s.";
+                    $message = "Articles supprimés avec succès.";
                     break;
             }
 
@@ -2305,13 +2305,13 @@ class AdminController extends Controller
             Log::error('Erreur lors de l\'action en lot: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Erreur lors de l\'exÃ©cution de l\'action.'
+                'message' => 'Erreur lors de l\'exécution de l\'action.'
             ], 500);
         }
     }
 
     /**
-     * Afficher le formulaire de dÃ©finition de mot de passe (pour l'utilisateur)
+     * Afficher le formulaire de définition de mot de passe (pour l'utilisateur)
      */
     public function showSetPasswordForm(Request $request)
     {
@@ -2319,7 +2319,7 @@ class AdminController extends Controller
         $email = $request->query('email');
 
         if (!$token || !$email) {
-            return redirect()->route('login')->with('error', 'Lien invalide ou expirÃ©.');
+            return redirect()->route('login')->with('error', 'Lien invalide ou expiré.');
         }
 
         // Chercher l'utilisateur en attente avec ce token
@@ -2328,16 +2328,16 @@ class AdminController extends Controller
             ->first();
 
         if (!$userWaiting) {
-            return redirect()->route('login')->with('error', 'Lien invalide ou expirÃ©.');
+            return redirect()->route('login')->with('error', 'Lien invalide ou expiré.');
         }
 
-        // VÃ©rifier si le token n'a pas expirÃ©
+        // Vérifier si le token n'a pas expiré
         if ($userWaiting->password_setup_token_expires_at && 
             now()->isAfter($userWaiting->password_setup_token_expires_at)) {
-            return redirect()->route('login')->with('error', 'Ce lien a expirÃ©. Contactez l\'administrateur.');
+            return redirect()->route('login')->with('error', 'Ce lien a expiré. Contactez l\'administrateur.');
         }
 
-        // VÃ©rifier si l'utilisateur existe dÃ©jÃ 
+        // Vérifier si l'utilisateur existe déjà
         $user = \App\Models\User::where('email', $email)->first();
         
         if (!$user) {
@@ -2352,7 +2352,7 @@ class AdminController extends Controller
     }
 
     /**
-     * DÃ©finir le mot de passe de l'utilisateur
+     * Définir le mot de passe de l'utilisateur
      */
     public function setPassword(Request $request)
     {
@@ -2361,7 +2361,7 @@ class AdminController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:8|confirmed',
         ], [
-            'password.min' => 'Le mot de passe doit contenir au moins 8 caractÃ¨res.',
+            'password.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
             'password.confirmed' => 'Les mots de passe ne correspondent pas.',
         ]);
 
@@ -2374,13 +2374,13 @@ class AdminController extends Controller
             ->first();
 
         if (!$userWaiting) {
-            return back()->with('error', 'Lien invalide ou expirÃ©.');
+            return back()->with('error', 'Lien invalide ou expiré.');
         }
 
-        // VÃ©rifier l'expiration
+        // Vérifier l'expiration
         if ($userWaiting->password_setup_token_expires_at && 
             now()->isAfter($userWaiting->password_setup_token_expires_at)) {
-            return back()->with('error', 'Ce lien a expirÃ©. Contactez l\'administrateur.');
+            return back()->with('error', 'Ce lien a expiré. Contactez l\'administrateur.');
         }
 
         // Trouver l'utilisateur
@@ -2390,7 +2390,7 @@ class AdminController extends Controller
             return back()->with('error', 'Compte utilisateur introuvable.');
         }
 
-        // Mettre Ã  jour le mot de passe
+        // Mettre à jour le mot de passe
         $user->update([
             'password' => bcrypt($request->password),
         ]);
@@ -2401,12 +2401,12 @@ class AdminController extends Controller
             'password_setup_token_expires_at' => null,
         ]);
 
-        Log::info("Mot de passe dÃ©fini pour l'utilisateur: {$email}");
+        Log::info("Mot de passe défini pour l'utilisateur: {$email}");
 
         // Connecter automatiquement l'utilisateur
         auth()->login($user);
 
-        return redirect()->route('dashboard')->with('success', 'ðŸŽ‰ Bienvenue sur VintApp ! Votre compte est maintenant actif.');
+        return redirect()->route('dashboard')->with('success', '🎉 Bienvenue sur VintApp ! Votre compte est maintenant actif.');
     }
 
     /**
@@ -3849,14 +3849,14 @@ class AdminController extends Controller
     }
 
     /**
-     * R�cup�rer les notifications de l'admin
+     * Récupérer les notifications de l'admin
      */
     public function getNotifications(Request $request)
     {
         try {
             $user = Auth::user();
             
-            // R�cup�rer les notifications (limit� � 10)
+            // Récupérer les notifications (limitée à 10)
             $notifications = $user->notifications()
                 ->latest()
                 ->take(10)
@@ -3896,7 +3896,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Obtenir l'ic�ne pour un type de notification
+     * Obtenir l'icône pour un type de notification
      */
     private function getNotificationIcon($type)
     {

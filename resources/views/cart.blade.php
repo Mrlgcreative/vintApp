@@ -248,8 +248,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // +/- quantité avec auto-submit
 function updateQty(btn, delta) {
     const input = btn.closest('form').querySelector('input[name="quantity"]');
-    const newVal = Math.max(1, parseInt(input.value) + delta);
-    input.value = newVal;
+    const current = parseInt(input.value, 10);
+    const next = isNaN(current) ? 1 : current + delta;
+    input.value = Math.max(1, next);
     btn.closest('form').submit();
 }
 </script>

@@ -128,6 +128,7 @@
                 </div>
                 <div class="grid grid-cols-1 divide-y divide-slate-100 md:grid-cols-2 md:divide-x md:divide-y-0 dark:divide-slate-700/50">
                     <div class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        @if(Auth::user()->isSeller())
                         <a href="{{ route('dashboard') }}" class="group block px-5 py-4 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-700/30">
                             <div class="flex items-center gap-4">
                                 <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 transition-transform duration-200 group-hover:scale-110 dark:bg-indigo-900/30 dark:text-indigo-400">
@@ -139,6 +140,7 @@
                                 </div>
                             </div>
                         </a>
+                        @endif
 
                         <a href="{{ route('items.favorites') }}" class="group block px-5 py-4 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-700/30">
                             <div class="flex items-center gap-4">
