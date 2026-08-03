@@ -4,148 +4,134 @@
 @section('page-title', $category->name)
 
 @section('page-actions')
-<div class="d-flex gap-2">
-    <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">
-        <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+<div class="flex flex-wrap gap-2">
+    <a href="{{ route('admin.categories.index') }}"
+       class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <i class="fas fa-arrow-left"></i>Retour à la liste
     </a>
-    <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-primary">
-        <i class="fas fa-edit me-2"></i>Modifier
+    <a href="{{ route('admin.categories.edit', $category) }}"
+       class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+        <i class="fas fa-edit"></i>Modifier
     </a>
-    <div class="dropdown">
-        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-            <i class="fas fa-ellipsis-v"></i>
-        </button>
-        <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" onclick="toggleStatus()">
-                <i class="fas fa-{{ $category->is_active ? 'pause' : 'play' }} me-2"></i>
-                {{ $category->is_active ? 'Désactiver' : 'Activer' }}
-            </a></li>
-            <li><a class="dropdown-item" href="#" onclick="toggleFeatured()">
-                <i class="fas fa-{{ $category->is_featured ? 'star-half-alt' : 'star' }} me-2"></i>
-                {{ $category->is_featured ? 'Retirer de la une' : 'Mettre en une' }}
-            </a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{ route('admin.categories.create', ['parent' => $category->id]) }}">
-                <i class="fas fa-plus me-2"></i>Ajouter une sous-catégorie
-            </a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="#" onclick="confirmDelete()">
-                <i class="fas fa-trash me-2"></i>Supprimer
-            </a></li>
-        </ul>
-    </div>
+    <button type="button" onclick="toggleStatus()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <i class="fas fa-{{ $category->is_active ? 'pause' : 'play' }}"></i>
+        {{ $category->is_active ? 'Désactiver' : 'Activer' }}
+    </button>
+    <button type="button" onclick="toggleFeatured()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <i class="fas fa-{{ $category->is_featured ? 'star-half-alt' : 'star' }}"></i>
+        {{ $category->is_featured ? 'Retirer de la une' : 'Mettre en une' }}
+    </button>
+    <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}"
+       class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <i class="fas fa-plus"></i>Sous-catégorie
+    </a>
+    <button type="button" onclick="confirmDelete()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+        <i class="fas fa-trash"></i>Supprimer
+    </button>
 </div>
 @endsection
 
 @section('content')
-<div class="row">
-    <!-- Informations principales -->
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="d-flex align-items-center mb-3">
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Colonne principale -->
+    <div class="space-y-6 lg:col-span-2">
+        <!-- Informations principales -->
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="p-5 sm:p-6">
+                <div class="flex flex-col gap-6 md:flex-row">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-4 mb-4">
                             @if($category->icon)
-                                <i class="{{ $category->icon }} me-3" style="color: {{ $category->color ?? '#007bff' }}; font-size: 2rem;"></i>
+                                <i class="{{ $category->icon }}" style="color: {{ $category->color ?? '#7c3aed' }}; font-size: 2rem;"></i>
                             @endif
                             <div>
-                                <h3 class="card-title mb-1">{{ $category->name }}</h3>
-                                <p class="text-muted mb-0">{{ $category->slug }}</p>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ $category->name }}</h3>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ $category->slug }}</p>
                             </div>
                         </div>
-                        
+
                         @if($category->description)
-                            <div class="mb-4">
-                                <h6>Description</h6>
-                                <p class="text-muted">{{ $category->description }}</p>
+                            <div class="mb-6">
+                                <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Description</h6>
+                                <p class="text-sm text-slate-700 dark:text-slate-200">{{ $category->description }}</p>
                             </div>
                         @endif
-                        
-                        <div class="row">
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             @if($category->parent)
-                                <div class="col-md-6 mb-3">
-                                    <h6>Catégorie parente</h6>
-                                    <a href="{{ route('admin.categories.show', $category->parent) }}" class="text-decoration-none">
-                                        <i class="{{ $category->parent->icon ?? 'fas fa-folder' }} me-2"></i>
+                                <div>
+                                    <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Catégorie parente</h6>
+                                    <a href="{{ route('admin.categories.show', $category->parent) }}" class="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                                        <i class="{{ $category->parent->icon ?? 'fas fa-folder' }} mr-2"></i>
                                         {{ $category->parent->name }}
                                     </a>
                                 </div>
                             @endif
-                            
+
                             @if($category->color)
-                                <div class="col-md-6 mb-3">
-                                    <h6>Couleur</h6>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2" style="width: 20px; height: 20px; background-color: {{ $category->color }}; border-radius: 3px;"></div>
-                                        <span>{{ $category->color }}</span>
+                                <div>
+                                    <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Couleur</h6>
+                                    <div class="flex items-center">
+                                        <span class="mr-2 inline-block h-5 w-5 rounded" style="background-color: {{ $category->color }}"></span>
+                                        <span class="text-sm text-slate-700 dark:text-slate-200">{{ $category->color }}</span>
                                     </div>
                                 </div>
                             @endif
-                            
-                            <div class="col-md-6 mb-3">
-                                <h6>Ordre d'affichage</h6>
-                                <p class="mb-0">{{ $category->sort_order }}</p>
+
+                            <div>
+                                <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Ordre d'affichage</h6>
+                                <p class="text-sm text-slate-700 dark:text-slate-200">{{ $category->sort_order }}</p>
                             </div>
-                            
-                            <div class="col-md-6 mb-3">
-                                <h6>Statut</h6>
-                                <div>
+
+                            <div>
+                                <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Statut</h6>
+                                <div class="flex flex-wrap gap-2">
                                     @if($category->is_active)
-                                        <span class="badge bg-success">Active</span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300">Active</span>
                                     @else
-                                        <span class="badge bg-danger">Inactive</span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300">Inactive</span>
                                     @endif
-                                    
+
                                     @if($category->is_featured)
-                                        <span class="badge bg-warning">En vedette</span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300">En vedette</span>
                                     @endif
-                                    
+
                                     @if($category->show_in_menu)
-                                        <span class="badge bg-info">Affichage menu</span>
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300">Affichage menu</span>
                                     @endif
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Meta données SEO -->
+
                         @if($category->meta_title || $category->meta_description || $category->meta_keywords)
-                            <div class="mt-4">
-                                <h6>SEO et Meta données</h6>
-                                @if($category->meta_title)
-                                    <div class="mb-2">
-                                        <strong>Titre meta:</strong> {{ $category->meta_title }}
-                                    </div>
-                                @endif
-                                @if($category->meta_description)
-                                    <div class="mb-2">
-                                        <strong>Description meta:</strong> {{ $category->meta_description }}
-                                    </div>
-                                @endif
-                                @if($category->meta_keywords)
-                                    <div class="mb-2">
-                                        <strong>Mots-clés:</strong> {{ $category->meta_keywords }}
-                                    </div>
-                                @endif
+                            <div class="mt-6 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
+                                <h6 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">SEO et Meta données</h6>
+                                <div class="space-y-2 text-sm">
+                                    @if($category->meta_title)
+                                        <div class="text-slate-700 dark:text-slate-200"><strong>Titre meta:</strong> {{ $category->meta_title }}</div>
+                                    @endif
+                                    @if($category->meta_description)
+                                        <div class="text-slate-700 dark:text-slate-200"><strong>Description meta:</strong> {{ $category->meta_description }}</div>
+                                    @endif
+                                    @if($category->meta_keywords)
+                                        <div class="text-slate-700 dark:text-slate-200"><strong>Mots-clés:</strong> {{ $category->meta_keywords }}</div>
+                                    @endif
+                                </div>
                             </div>
                         @endif
                     </div>
-                    
-                    <div class="col-md-4 text-center">
+
+                    <div class="shrink-0">
                         @if($category->image)
-                            <div class="mb-3">
-                                <img src="{{ $category->image_url }}" 
-                                     class="img-thumbnail" 
-                                     style="max-width: 200px;" 
-                                     alt="Image {{ $category->name }}">
-                            </div>
+                            <img src="{{ $category->image_url }}" class="rounded-xl border border-slate-200 dark:border-slate-700 object-cover" style="max-width: 200px;" alt="Image {{ $category->name }}">
                         @else
-                            <div class="mb-3">
-                                <div class="border rounded p-4" style="height: 200px; display: flex; align-items: center; justify-content: center; background-color: {{ $category->color ?? '#f8f9fa' }}20;">
-                                    <div class="text-center" style="color: {{ $category->color ?? '#6c757d' }};">
-                                        <i class="{{ $category->icon ?? 'fas fa-image' }} fa-3x mb-2"></i>
-                                        <p class="mb-0">{{ $category->name }}</p>
-                                    </div>
+                            <div class="flex h-48 w-44 items-center justify-center rounded-xl border border-dashed border-slate-300 dark:border-slate-600" style="background-color: {{ $category->color ?? '#f1f5f9' }}20;">
+                                <div class="text-center" style="color: {{ $category->color ?? '#64748b' }};">
+                                    <i class="{{ $category->icon ?? 'fas fa-image' }} text-4xl mb-2 block"></i>
+                                    <p class="text-sm">{{ $category->name }}</p>
                                 </div>
                             </div>
                         @endif
@@ -153,277 +139,268 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Sous-catégories -->
         @if($category->children && $category->children->count() > 0)
-            <div class="card mt-4">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">Sous-catégories</h5>
-                    <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}" class="btn btn-sm btn-outline-primary">
-                        Ajouter une sous-catégorie
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                    <h5 class="text-base font-semibold text-slate-900 dark:text-white">Sous-catégories</h5>
+                    <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}" class="inline-flex items-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-3 py-1.5 text-xs font-medium text-white transition-colors">
+                        <i class="fas fa-plus"></i>Ajouter une sous-catégorie
                     </a>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        @foreach($category->children as $child)
-                            <div class="col-md-6 mb-3">
-                                <div class="card border">
-                                    <div class="card-body">
-                                        <div class="d-flex align-items-center">
-                                            @if($child->icon)
-                                                <i class="{{ $child->icon }} me-3" style="color: {{ $child->color ?? '#007bff' }}; font-size: 1.5rem;"></i>
-                                            @endif
-                                            <div class="flex-grow-1">
-                                                <h6 class="card-title mb-1">{{ $child->name }}</h6>
-                                                <small class="text-muted">{{ $child->items_count ?? 0 }} article(s)</small>
-                                            </div>
-                                            <a href="{{ route('admin.categories.show', $child) }}" class="btn btn-sm btn-outline-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+                    @foreach($category->children as $child)
+                        <div class="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 p-4 transition-colors hover:border-primary-300 dark:hover:border-primary-700">
+                            @if($child->icon)
+                                <i class="{{ $child->icon }}" style="color: {{ $child->color ?? '#7c3aed' }}; font-size: 1.5rem;"></i>
+                            @endif
+                            <div class="flex-1 min-w-0">
+                                <h6 class="font-semibold text-slate-900 dark:text-white truncate">{{ $child->name }}</h6>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">{{ $child->items_count ?? 0 }} article(s)</p>
                             </div>
-                        @endforeach
-                    </div>
+                            <a href="{{ route('admin.categories.show', $child) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors" title="Voir">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         @endif
-        
+
         <!-- Articles de la catégorie -->
-        <div class="card mt-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Articles de la catégorie</h5>
-                <a href="{{ route('admin.items.index', ['category' => $category->id]) }}" class="btn btn-sm btn-outline-primary">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                <h5 class="text-base font-semibold text-slate-900 dark:text-white">Articles de la catégorie</h5>
+                <a href="{{ route('admin.items.index', ['category' => $category->id]) }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                     Voir tous les articles
                 </a>
             </div>
-            <div class="card-body">
-                @if($category->items && $category->items->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Article</th>
-                                    <th>Marque</th>
-                                    <th>Prix</th>
-                                    <th>Statut</th>
-                                    <th>Créé le</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($category->items->take(10) as $item)
-                                    <tr>
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                @if($item->image)
-                                                    <img src="{{ $item->image_url }}" 
-                                                         class="rounded me-2" 
-                                                         width="40" 
-                                                         height="40" 
-                                                         alt="{{ $item->title }}">
-                                                @endif
-                                                <div>
-                                                    <div class="fw-bold">{{ $item->title }}</div>
-                                                    <small class="text-muted">{{ Str::limit($item->description, 50) }}</small>
-                                                </div>
+            @if($category->items && $category->items->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-slate-50 dark:bg-slate-900">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Article</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Marque</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Prix</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Statut</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Créé le</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($category->items->take(10) as $item)
+                                <tr class="border-t border-slate-100 dark:border-slate-700/50 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-3">
+                                            @if($item->image)
+                                                <img src="{{ $item->image_url }}" class="h-10 w-10 rounded-lg object-cover" alt="{{ $item->title }}">
+                                            @endif
+                                            <div class="min-w-0">
+                                                <div class="font-semibold text-slate-900 dark:text-white truncate">{{ $item->title }}</div>
+                                                <div class="text-xs text-slate-500 dark:text-slate-400">{{ Str::limit($item->description, 50) }}</div>
                                             </div>
-                                        </td>
-                                        <td>{{ $item->brand->name ?? 'Sans marque' }}</td>
-                                        <td>{{ number_format($item->price, 2) }} €</td>
-                                        <td>
-                                            <span class="badge bg-{{ $item->status === 'active' ? 'success' : 'secondary' }}">
-                                                {{ ucfirst($item->status) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ $item->created_at->format('d/m/Y') }}</td>
-                                        <td>
-                                            <a href="{{ route('admin.items.show', $item) }}" class="btn btn-sm btn-outline-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                @else
-                    <div class="text-center text-muted py-4">
-                        <i class="fas fa-box fa-3x mb-3"></i>
-                        <p>Aucun article dans cette catégorie</p>
-                        <a href="{{ route('admin.items.create', ['category' => $category->id]) }}" class="btn btn-primary">
-                            Ajouter un article
-                        </a>
-                    </div>
-                @endif
-            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-700 dark:text-slate-200">{{ $item->brand->name ?? 'Sans marque' }}</td>
+                                    <td class="px-4 py-3 font-medium tabular-nums text-slate-900 dark:text-white">{{ number_format($item->price, 2) }} €</td>
+                                    <td class="px-4 py-3">
+                                        @if($item->status === 'active')
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300">Active</span>
+                                        @else
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300">{{ ucfirst($item->status) }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-700 dark:text-slate-200">{{ $item->created_at->format('d/m/Y') }}</td>
+                                    <td class="px-4 py-3 text-right">
+                                        <a href="{{ route('admin.items.show', $item) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors" title="Voir">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <div class="py-12 text-center">
+                    <i class="fas fa-box text-4xl text-slate-200 dark:text-slate-600 mb-3 block"></i>
+                    <p class="text-slate-400 mb-4">Aucun article dans cette catégorie</p>
+                    <a href="{{ route('admin.items.create', ['category' => $category->id]) }}"
+                       class="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                        <i class="fas fa-plus"></i>Ajouter un article
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
-    
+
     <!-- Sidebar avec statistiques -->
-    <div class="col-lg-4">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Statistiques</h5>
+    <div class="space-y-6">
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                <h5 class="text-base font-semibold text-slate-900 dark:text-white">Statistiques</h5>
             </div>
-            <div class="card-body">
-                <div class="row text-center">
-                    <div class="col-6 mb-3">
-                        <div class="border-end">
-                            <h3 class="text-primary">{{ $category->items_count ?? 0 }}</h3>
-                            <small class="text-muted">Articles</small>
-                        </div>
-                    </div>
-                    <div class="col-6 mb-3">
-                        <h3 class="text-success">{{ $category->children_count ?? 0 }}</h3>
-                        <small class="text-muted">Sous-catégories</small>
-                    </div>
-                    <div class="col-6">
-                        <div class="border-end">
-                            <h3 class="text-info">{{ $category->active_items_count ?? 0 }}</h3>
-                            <small class="text-muted">Articles actifs</small>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <h3 class="text-warning">{{ $category->views_count ?? 0 }}</h3>
-                        <small class="text-muted">Vues</small>
-                    </div>
+            <div class="grid grid-cols-2 gap-4 p-5">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ $category->items_count ?? 0 }}</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Articles</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ $category->children_count ?? 0 }}</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Sous-catégories</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-sky-600 dark:text-sky-400">{{ $category->active_items_count ?? 0 }}</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Articles actifs</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ $category->views_count ?? 0 }}</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Vues</p>
                 </div>
             </div>
         </div>
-        
+
         <!-- Hiérarchie des catégories -->
         @if($category->parent || $category->children->count() > 0)
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">Hiérarchie</h5>
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+                <div class="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                    <h5 class="text-base font-semibold text-slate-900 dark:text-white">Hiérarchie</h5>
                 </div>
-                <div class="card-body">
+                <div class="p-5">
                     @if($category->parent)
-                        <div class="mb-3">
-                            <strong>Parent:</strong><br>
-                            <a href="{{ route('admin.categories.show', $category->parent) }}" class="text-decoration-none">
-                                <i class="{{ $category->parent->icon ?? 'fas fa-folder' }} me-2"></i>
+                        <div class="mb-4">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Parent</p>
+                            <a href="{{ route('admin.categories.show', $category->parent) }}" class="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                                <i class="{{ $category->parent->icon ?? 'fas fa-folder' }} mr-2"></i>
                                 {{ $category->parent->name }}
                             </a>
                         </div>
                     @endif
-                    
+
                     @if($category->children->count() > 0)
                         <div>
-                            <strong>Enfants:</strong><br>
-                            @foreach($category->children as $child)
-                                <div class="mt-1">
-                                    <a href="{{ route('admin.categories.show', $child) }}" class="text-decoration-none">
-                                        <i class="{{ $child->icon ?? 'fas fa-folder' }} me-2"></i>
-                                        {{ $child->name }}
-                                    </a>
-                                    <small class="text-muted">({{ $child->items_count ?? 0 }})</small>
-                                </div>
-                            @endforeach
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Enfants</p>
+                            <div class="space-y-1">
+                                @foreach($category->children as $child)
+                                    <div>
+                                        <a href="{{ route('admin.categories.show', $child) }}" class="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">
+                                            <i class="{{ $child->icon ?? 'fas fa-folder' }} mr-2"></i>
+                                            {{ $child->name }}
+                                        </a>
+                                        <span class="text-xs text-slate-500 dark:text-slate-400">({{ $child->items_count ?? 0 }})</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     @endif
                 </div>
             </div>
         @endif
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Informations système</h5>
+
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                <h5 class="text-base font-semibold text-slate-900 dark:text-white">Informations système</h5>
             </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>ID:</strong>
-                        <span>{{ $category->id }}</span>
-                    </div>
+            <div class="p-5 space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="font-medium text-slate-500 dark:text-slate-400">ID</span>
+                    <span class="text-slate-900 dark:text-white">{{ $category->id }}</span>
                 </div>
-                
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>Créée le:</strong>
-                        <span>{{ $category->created_at->format('d/m/Y H:i') }}</span>
-                    </div>
+                <div class="flex justify-between text-sm">
+                    <span class="font-medium text-slate-500 dark:text-slate-400">Créée le</span>
+                    <span class="text-slate-900 dark:text-white">{{ $category->created_at->format('d/m/Y H:i') }}</span>
                 </div>
-                
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between">
-                        <strong>Modifiée le:</strong>
-                        <span>{{ $category->updated_at->format('d/m/Y H:i') }}</span>
-                    </div>
+                <div class="flex justify-between text-sm">
+                    <span class="font-medium text-slate-500 dark:text-slate-400">Modifiée le</span>
+                    <span class="text-slate-900 dark:text-white">{{ $category->updated_at->format('d/m/Y H:i') }}</span>
                 </div>
-                
                 @if($category->created_by)
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <strong>Créée par:</strong>
-                            <span>{{ $category->creator->name ?? 'Inconnu' }}</span>
-                        </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="font-medium text-slate-500 dark:text-slate-400">Créée par</span>
+                        <span class="text-slate-900 dark:text-white">{{ $category->creator->name ?? 'Inconnu' }}</span>
                     </div>
                 @endif
             </div>
         </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Actions rapides</h5>
+
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="border-b border-slate-100 dark:border-slate-700 px-5 py-4">
+                <h5 class="text-base font-semibold text-slate-900 dark:text-white">Actions rapides</h5>
             </div>
-            <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a href="{{ route('admin.items.create', ['category' => $category->id]) }}" class="btn btn-outline-primary">
-                        <i class="fas fa-plus me-2"></i>Ajouter un article
-                    </a>
-                    
-                    <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-plus me-2"></i>Ajouter une sous-catégorie
-                    </a>
-                    
-                    <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-outline-info">
-                        <i class="fas fa-edit me-2"></i>Modifier la catégorie
-                    </a>
-                    
-                    <button class="btn btn-outline-warning" onclick="exportCategoryData()">
-                        <i class="fas fa-download me-2"></i>Exporter les données
-                    </button>
-                </div>
+            <div class="p-5 space-y-3">
+                <a href="{{ route('admin.items.create', ['category' => $category->id]) }}"
+                   class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-plus"></i>Ajouter un article
+                </a>
+                <a href="{{ route('admin.categories.create', ['parent' => $category->id]) }}"
+                   class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-plus"></i>Ajouter une sous-catégorie
+                </a>
+                <a href="{{ route('admin.categories.edit', $category) }}"
+                   class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-edit"></i>Modifier la catégorie
+                </a>
+                <button type="button" onclick="exportCategoryData()"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-download"></i>Exporter les données
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal de confirmation de suppression -->
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Confirmer la suppression</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer la catégorie <strong>{{ $category->name }}</strong> ?</p>
-                @if($category->items_count > 0)
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+<div id="deleteModal" class="modal-wrapper hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700 animate-pop">
+        <div class="flex items-center justify-between bg-red-50 dark:bg-red-900/20 px-5 py-4 border-b border-red-100 dark:border-red-800">
+            <h3 class="text-base font-semibold text-red-800 dark:text-red-200 flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle"></i>Confirmer la suppression
+            </h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-red-400 hover:text-red-600 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-5 sm:p-6">
+            <p class="text-slate-700 dark:text-slate-200 mb-4">
+                Êtes-vous sûr de vouloir supprimer la catégorie
+                <strong class="text-slate-900 dark:text-white">{{ $category->name }}</strong> ?
+            </p>
+
+            @if($category->items_count > 0)
+                <div class="rounded-xl border-l-4 border-amber-400 bg-amber-50 dark:bg-amber-900/20 p-4 mb-3">
+                    <p class="text-sm text-amber-700 dark:text-amber-200">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
                         Cette catégorie contient {{ $category->items_count }} article(s).
-                    </div>
-                @endif
-                @if($category->children_count > 0)
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
+                    </p>
+                </div>
+            @endif
+
+            @if($category->children_count > 0)
+                <div class="rounded-xl border-l-4 border-amber-400 bg-amber-50 dark:bg-amber-900/20 p-4 mb-3">
+                    <p class="text-sm text-amber-700 dark:text-amber-200">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
                         Cette catégorie contient {{ $category->children_count }} sous-catégorie(s).
-                    </div>
-                @endif
-                <p class="text-danger small">Cette action est irréversible.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Supprimer définitivement</button>
-                </form>
-            </div>
+                    </p>
+                </div>
+            @endif
+
+            <p class="text-sm font-medium text-red-600 dark:text-red-400">Cette action est irréversible.</p>
+        </div>
+
+        <div class="bg-slate-50 dark:bg-slate-900 rounded-b-2xl px-5 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
+            <button type="button" onclick="closeDeleteModal()" class="inline-flex justify-center items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full sm:w-auto">
+                <i class="fas fa-times"></i>Annuler
+            </button>
+            <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="w-full sm:w-auto">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="inline-flex justify-center items-center gap-2 w-full rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <i class="fas fa-trash"></i>Supprimer définitivement
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -432,8 +409,17 @@
 @push('scripts')
 <script>
 function confirmDelete() {
-    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    deleteModal.show();
+    const modal = document.getElementById('deleteModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
 }
 
 function toggleStatus() {

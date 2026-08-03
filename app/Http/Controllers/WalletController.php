@@ -159,8 +159,8 @@ class WalletController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01|max:' . $wallet->balance,
             'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
-            // Ajout de maishapay comme méthode principale de décaissement
-            'payment_method' => 'required|string|in:maishapay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
+            // Ajout de maishapay et cinetpay comme méthodes de décaissement
+            'payment_method' => 'required|string|in:maishapay,cinetpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
             // Si payment_method == agent, on attend l'id de l'agent ou son numéro
             'agent_id' => 'nullable|integer',
             'agent_phone' => ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15', 'required_if:payment_method,agent'],
@@ -239,6 +239,15 @@ class WalletController extends Controller
                     // Décaissement via MaishaPay B2C (détection automatique de l'opérateur)
                     $cashOutResponse = $this->mobileMoneyService->cashOut(
                         'maishapay',
+                        $validated['phone_number'],
+                        $validated['amount'],
+                        $wallet->currency,
+                        $transaction
+                    );
+                } elseif ($validated['payment_method'] === 'cinetpay') {
+                    // Décaissement via l'API de transfert CinetPay
+                    $cashOutResponse = $this->mobileMoneyService->cashOut(
+                        'cinetpay',
                         $validated['phone_number'],
                         $validated['amount'],
                         $wallet->currency,
@@ -512,8 +521,8 @@ class WalletController extends Controller
         ]);
 
         try {
-            // Valider le provider (inclut maishapay comme agrégateur)
-            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'maishapay'];
+            // Valider le provider (inclut maishapay et cinetpay comme agrégateurs)
+            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'maishapay', 'cinetpay'];
             if (!in_array($provider, $validProviders)) {
                 Log::warning('Invalid provider in webhook', ['provider' => $provider]);
                 return response()->json(['status' => 'error', 'message' => 'Provider invalide'], 400);

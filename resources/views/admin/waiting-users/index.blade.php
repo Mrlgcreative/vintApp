@@ -1,604 +1,307 @@
 @extends('layouts.admin')
 
 @section('title', 'Gestion des pré-inscriptions')
+@section('page-title', 'Gestion des pré-inscriptions')
 
-@push('styles')
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    /* Couleurs personnalisées */
-    .text-purple { color: #8b5cf6; }
-    .bg-purple { background-color: #8b5cf6; }
-    
-    /* Cards avec bordure gauche colorée */
-    .card {
-        border-radius: 0.5rem;
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    /* Statistiques cards */
-    .card-body h3 {
-        font-weight: 700;
-        font-size: 2rem;
-    }
-    
-    .card-body .small {
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 500;
-    }
-    
-    /* Tableau */
-    .table {
-        font-size: 0.9rem;
-    }
-    
-    .table thead th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: #6b7280;
-        border-bottom: 2px solid #e5e7eb;
-    }
-    
-    .table tbody tr {
-        transition: background-color 0.2s;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #f9fafb;
-    }
-    
-    /* Badges de statut */
-    .badge {
-        padding: 0.35em 0.65em;
-        font-weight: 500;
-        font-size: 0.75rem;
-        border-radius: 0.375rem;
-    }
-    
-    /* Boutons */
-    .btn {
-        border-radius: 0.375rem;
-        font-weight: 500;
-        transition: all 0.2s;
-    }
-    
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-    
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    .btn-group .btn {
-        border-radius: 0;
-    }
-    
-    .btn-group .btn:first-child {
-        border-top-left-radius: 0.375rem;
-        border-bottom-left-radius: 0.375rem;
-    }
-    
-    .btn-group .btn:last-child {
-        border-top-right-radius: 0.375rem;
-        border-bottom-right-radius: 0.375rem;
-    }
-    
-    /* Filtres */
-    .form-control, .form-select {
-        border-radius: 0.375rem;
-        border: 1px solid #d1d5db;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-    
-    .form-label {
-        font-weight: 500;
-        font-size: 0.875rem;
-        color: #374151;
-        margin-bottom: 0.5rem;
-    }
-    
-    /* Icônes */
-    .fas, .far {
-        transition: transform 0.2s;
-    }
-    
-    .btn:hover .fas,
-    .btn:hover .far {
-        transform: scale(1.1);
-    }
-    
-    /* Modal */
-    .modal-content {
-        border-radius: 0.75rem;
-        border: none;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .modal-header {
-        border-bottom: 1px solid #e5e7eb;
-        padding: 1.25rem;
-    }
-    
-    .modal-title {
-        font-weight: 600;
-        font-size: 1.125rem;
-    }
-    
-    .modal-body {
-        padding: 1.25rem;
-    }
-    
-    .modal-footer {
-        border-top: 1px solid #e5e7eb;
-        padding: 1rem 1.25rem;
-    }
-    
-    /* Alerts */
-    .alert {
-        border-radius: 0.5rem;
-        border: none;
-        padding: 1rem 1.25rem;
-        font-weight: 500;
-    }
-    
-    .alert-success {
-        background-color: #d1fae5;
-        color: #065f46;
-    }
-    
-    .alert-danger {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    
-    .alert-warning {
-        background-color: #fef3c7;
-        color: #92400e;
-    }
-    
-    /* Pagination */
-    .pagination {
-        margin: 0;
-    }
-    
-    .page-link {
-        border-radius: 0.375rem;
-        margin: 0 0.25rem;
-        border: 1px solid #d1d5db;
-        color: #6b7280;
-        transition: all 0.2s;
-    }
-    
-    .page-link:hover {
-        background-color: #f3f4f6;
-        border-color: #6366f1;
-        color: #6366f1;
-        transform: translateY(-1px);
-    }
-    
-    .page-item.active .page-link {
-        background-color: #6366f1;
-        border-color: #6366f1;
-    }
-    
-    /* Checkbox styling */
-    input[type="checkbox"] {
-        width: 1.125rem;
-        height: 1.125rem;
-        cursor: pointer;
-        border-radius: 0.25rem;
-        border: 2px solid #d1d5db;
-        transition: all 0.2s;
-    }
-    
-    input[type="checkbox"]:checked {
-        background-color: #6366f1;
-        border-color: #6366f1;
-    }
-    
-    input[type="checkbox"]:hover {
-        border-color: #6366f1;
-    }
-    
-    /* Animation pour les cartes de statistiques */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .card {
-        animation: fadeInUp 0.5s ease-out;
-    }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .table {
-            font-size: 0.8rem;
-        }
-        
-        .btn-sm {
-            padding: 0.2rem 0.4rem;
-            font-size: 0.75rem;
-        }
-        
-        .card-body h3 {
-            font-size: 1.5rem;
-        }
-    }
-    
-    /* État vide */
-    .text-muted .fa-inbox {
-        opacity: 0.3;
-    }
-    
-    /* Hover sur les lignes du tableau */
-    tbody tr {
-        cursor: pointer;
-    }
-    
-    /* Badge avec animation */
-    .badge {
-        animation: fadeIn 0.3s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    /* Amélioration des bordures colorées */
-    .card[style*="border-left"] {
-        border-left-width: 4px !important;
-        border-left-style: solid !important;
-    }
-</style>
-@endpush
+@section('page-actions')
+<div class="flex flex-wrap gap-2">
+    <a href="{{ route('admin.waiting-users.export') }}"
+       class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+        <i class="fas fa-file-export"></i>Exporter CSV
+    </a>
+</div>
+@endsection
 
 @section('content')
-<div class="container-fluid py-4">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="mb-2">
-                                <i class="fas fa-users-cog me-2 text-primary"></i>
-                                Gestion des pré-inscriptions
-                            </h2>
-                            <p class="text-muted mb-0">Gérez les demandes d'inscription en attente</p>
-                        </div>
-                        <div>
-                            <a href="{{ route('admin.waiting-users.export') }}" class="btn btn-success">
-                                <i class="fas fa-file-export me-2"></i>Exporter CSV
-                            </a>
-                        </div>
-                    </div>
-                </div>
+<!-- Statistiques -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Total</p>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total'] }}</div>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
+                <i class="fas fa-users text-2xl text-indigo-600 dark:text-indigo-300"></i>
             </div>
         </div>
     </div>
 
-    <!-- Statistiques -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm" style="border-left: 4px solid #6366f1 !important;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Total</p>
-                            <h3 class="mb-0">{{ $stats['total'] }}</h3>
-                        </div>
-                        <div class="text-primary" style="font-size: 2.5rem;">
-                            <i class="fas fa-users"></i>
-                        </div>
-                    </div>
-                </div>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">En attente</p>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['pending'] }}</div>
             </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm" style="border-left: 4px solid #f59e0b !important;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">En attente</p>
-                            <h3 class="mb-0">{{ $stats['pending'] }}</h3>
-                        </div>
-                        <div class="text-warning" style="font-size: 2.5rem;">
-                            <i class="fas fa-hourglass-half"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm" style="border-left: 4px solid #10b981 !important;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Approuvés</p>
-                            <h3 class="mb-0">{{ $stats['approved'] }}</h3>
-                        </div>
-                        <div class="text-success" style="font-size: 2.5rem;">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-3 mb-3">
-            <div class="card border-0 shadow-sm" style="border-left: 4px solid #8b5cf6 !important;">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Convertis</p>
-                            <h3 class="mb-0">{{ $stats['converted'] }}</h3>
-                        </div>
-                        <div class="text-purple" style="font-size: 2.5rem; color: #8b5cf6;">
-                            <i class="fas fa-user-check"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/30">
+                <i class="fas fa-hourglass-half text-2xl text-amber-600 dark:text-amber-300"></i>
             </div>
         </div>
     </div>
 
-    <!-- Stats supplémentaires -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card bg-light">
-                <div class="card-body text-center">
-                    <i class="fas fa-calendar-day text-primary mb-2" style="font-size: 2rem;"></i>
-                    <h4 class="mb-0">{{ $stats['today'] }}</h4>
-                    <small class="text-muted">Aujourd'hui</small>
-                </div>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Approuvés</p>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['approved'] }}</div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-light">
-                <div class="card-body text-center">
-                    <i class="fas fa-calendar-week text-info mb-2" style="font-size: 2rem;"></i>
-                    <h4 class="mb-0">{{ $stats['this_week'] }}</h4>
-                    <small class="text-muted">Cette semaine</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card bg-light">
-                <div class="card-body text-center">
-                    <i class="fas fa-calendar-alt text-success mb-2" style="font-size: 2rem;"></i>
-                    <h4 class="mb-0">{{ $stats['this_month'] }}</h4>
-                    <small class="text-muted">Ce mois</small>
-                </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
+                <i class="fas fa-check-circle text-2xl text-emerald-600 dark:text-emerald-300"></i>
             </div>
         </div>
     </div>
 
-    <!-- Messages -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">Convertis</p>
+                <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['converted'] }}</div>
+            </div>
+            <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
+                <i class="fas fa-user-check text-2xl text-violet-600 dark:text-violet-300"></i>
+            </div>
         </div>
-    @endif
+    </div>
+</div>
 
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>{{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
+<!-- Stats supplémentaires -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6">
+    <div class="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm p-5 text-center">
+        <i class="fas fa-calendar-day text-indigo-500 mb-2 text-2xl"></i>
+        <div class="text-xl font-bold text-slate-900 dark:text-white">{{ $stats['today'] }}</div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Aujourd'hui</p>
+    </div>
+    <div class="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm p-5 text-center">
+        <i class="fas fa-calendar-week text-sky-500 mb-2 text-2xl"></i>
+        <div class="text-xl font-bold text-slate-900 dark:text-white">{{ $stats['this_week'] }}</div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Cette semaine</p>
+    </div>
+    <div class="rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm p-5 text-center">
+        <i class="fas fa-calendar-alt text-emerald-500 mb-2 text-2xl"></i>
+        <div class="text-xl font-bold text-slate-900 dark:text-white">{{ $stats['this_month'] }}</div>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Ce mois</p>
+    </div>
+</div>
 
-    <!-- Filtres et recherche -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <form method="GET" action="{{ route('admin.waiting-users.index') }}" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label"><i class="fas fa-search me-1"></i>Recherche</label>
-                    <input type="text" name="search" class="form-control" placeholder="Nom, email, téléphone..." value="{{ request('search') }}">
-                </div>
-                
-                <div class="col-md-2">
-                    <label class="form-label"><i class="fas fa-filter me-1"></i>Statut</label>
-                    <select name="status" class="form-select">
-                        <option value="">Tous</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmé</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeté</option>
-                        <option value="converted" {{ request('status') == 'converted' ? 'selected' : '' }}>Converti</option>
-                    </select>
-                </div>
-                
-                <div class="col-md-2">
-                    <label class="form-label"><i class="fas fa-calendar me-1"></i>Date début</label>
-                    <input type="date" name="date_from" class="form-control" value="{{ request('date_from') }}">
-                </div>
-                
-                <div class="col-md-2">
-                    <label class="form-label"><i class="fas fa-calendar me-1"></i>Date fin</label>
-                    <input type="date" name="date_to" class="form-control" value="{{ request('date_to') }}">
-                </div>
-                
-                <div class="col-md-3">
-                    <label class="form-label">&nbsp;</label>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i>Filtrer
-                        </button>
-                    </div>
-                </div>
-            </form>
+<!-- Filtres et recherche -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm mb-6">
+    <div class="p-5 sm:p-6">
+        <form method="GET" action="{{ route('admin.waiting-users.index') }}" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fas fa-search mr-1"></i>Recherche
+                </label>
+                <input type="text" name="search" placeholder="Nom, email, téléphone..."
+                       value="{{ request('search') }}"
+                       class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fas fa-filter mr-1"></i>Statut
+                </label>
+                <select name="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                    <option value="">Tous</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>En attente</option>
+                    <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Confirmé</option>
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approuvé</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejeté</option>
+                    <option value="converted" {{ request('status') == 'converted' ? 'selected' : '' }}>Converti</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fas fa-calendar mr-1"></i>Date début
+                </label>
+                <input type="date" name="date_from" value="{{ request('date_from') }}"
+                       class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <i class="fas fa-calendar mr-1"></i>Date fin
+                </label>
+                <input type="date" name="date_to" value="{{ request('date_to') }}"
+                       class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <i class="fas fa-search"></i>Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Liste des pré-inscriptions -->
+<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm">
+    <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <h5 class="font-semibold text-slate-900 dark:text-white">
+                <i class="fas fa-list mr-2"></i>Liste des pré-inscriptions ({{ $waitingUsers->total() }})
+            </h5>
+            <div class="flex flex-wrap gap-2">
+                <button type="button" onclick="bulkAction('approve')" id="bulkApproveBtn"
+                        class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 text-xs font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-check"></i>Approuver
+                </button>
+                <button type="button" onclick="bulkAction('reject')" id="bulkRejectBtn"
+                        class="inline-flex items-center gap-1.5 rounded-lg bg-red-600 hover:bg-red-700 px-3 py-1.5 text-xs font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i class="fas fa-times"></i>Rejeter
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Liste des utilisateurs -->
-    <div class="card shadow-sm">
-        <div class="card-header bg-white dark:bg-gray-800">
-            <div class="d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">
-                    <i class="fas fa-list me-2"></i>Liste des pré-inscriptions ({{ $waitingUsers->total() }})
-                </h5>
-                
-                <!-- Actions en masse -->
-                <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-success" onclick="bulkAction('approve')" id="bulkApproveBtn" disabled>
-                        <i class="fas fa-check me-1"></i>Approuver
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="bulkAction('reject')" id="bulkRejectBtn" disabled>
-                        <i class="fas fa-times me-1"></i>Rejeter
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th width="40">
-                                <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
-                            </th>
-                            <th>Nom</th>
-                            <th>Email</th>
-                            <th>Téléphone</th>
-                            <th>Pays</th>
-                            <th>Statut</th>
-                            <th>Date inscription</th>
-                            <th>Attente (jours)</th>
-                            <th width="200">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($waitingUsers as $user)
-                            <tr>
-                                <td>
-                                    <input type="checkbox" class="user-checkbox" value="{{ $user->id }}">
-                                </td>
-                                <td>
-                                    <strong>{{ $user->name }}</strong>
-                                </td>
-                                <td>
-                                    <i class="fas fa-envelope text-muted me-1"></i>{{ $user->email }}
-                                    @if($user->email_confirmed_at)
-                                        <i class="fas fa-check-circle text-success ms-1" title="Email confirmé"></i>
-                                    @endif
-                                </td>
-                                <td>{{ $user->phone ?? '-' }}</td>
-                                <td>{{ $user->country }}</td>
-                                <td>{!! $user->status_badge !!}</td>
-                                <td>{{ $user->created_at->format('d/m/Y H:i') }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $user->waiting_days > 7 ? 'danger' : ($user->waiting_days > 3 ? 'warning' : 'info') }}">
-                                        {{ $user->waiting_days }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('admin.waiting-users.show', $user) }}" class="btn btn-sm btn-info" title="Voir détails">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                        
-                                        @if($user->status === 'confirmed' || $user->status === 'pending')
-                                            <form action="{{ route('admin.waiting-users.approve', $user) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-success" title="Approuver">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            
-                                            <button type="button" class="btn btn-sm btn-warning" onclick="showRejectModal({{ $user->id }})" title="Rejeter">
-                                                <i class="fas fa-times"></i>
-                                            </button>
-                                        @endif
-                                        
-                                        <form action="{{ route('admin.waiting-users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Supprimer cette pré-inscription ?')">
+    @if($waitingUsers->count() > 0)
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="px-4 py-3 text-left">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()"
+                                   class="h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 dark:border-slate-600 dark:bg-slate-800">
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Nom</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Email</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Téléphone</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pays</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Statut</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Date inscription</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Attente</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($waitingUsers as $user)
+                        <tr class="border-t border-slate-100 dark:border-slate-700/50 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                            <td class="px-4 py-3 align-middle">
+                                <input type="checkbox" class="user-checkbox h-4 w-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500 dark:border-slate-600 dark:bg-slate-800" value="{{ $user->id }}">
+                            </td>
+                            <td class="px-4 py-3 align-middle font-semibold text-slate-900 dark:text-white">{{ $user->name }}</td>
+                            <td class="px-4 py-3 align-middle">
+                                <span class="text-slate-700 dark:text-slate-200">{{ $user->email }}</span>
+                                @if($user->email_confirmed_at)
+                                    <i class="fas fa-check-circle text-emerald-500 ml-1" title="Email confirmé"></i>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 align-middle text-slate-700 dark:text-slate-200">{{ $user->phone ?? '-' }}</td>
+                            <td class="px-4 py-3 align-middle text-slate-700 dark:text-slate-200">{{ $user->country }}</td>
+                            <td class="px-4 py-3 align-middle">{!! $user->status_badge !!}</td>
+                            <td class="px-4 py-3 align-middle text-slate-700 dark:text-slate-200">{{ $user->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="px-4 py-3 align-middle">
+                                @php
+                                    $waitingClass = $user->waiting_days > 7
+                                        ? 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300'
+                                        : ($user->waiting_days > 3
+                                            ? 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300'
+                                            : 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300');
+                                @endphp
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $waitingClass }}">
+                                    {{ $user->waiting_days }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 align-middle">
+                                <div class="flex justify-end gap-1">
+                                    <a href="{{ route('admin.waiting-users.show', $user) }}"
+                                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-colors"
+                                       title="Voir détails">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    @if($user->status === 'confirmed' || $user->status === 'pending')
+                                        <form action="{{ route('admin.waiting-users.approve', $user) }}" method="POST">
                                             @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" title="Supprimer">
-                                                <i class="fas fa-trash"></i>
+                                            <button type="submit"
+                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+                                                    title="Approuver">
+                                                <i class="fas fa-check"></i>
                                             </button>
                                         </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="9" class="text-center py-4 text-muted">
-                                    <i class="fas fa-inbox fa-3x mb-3 d-block"></i>
-                                    Aucune pré-inscription trouvée
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+
+                                        <button type="button" onclick="showRejectModal({{ $user->id }})"
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
+                                                title="Rejeter">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    @endif
+
+                                    <form action="{{ route('admin.waiting-users.destroy', $user) }}" method="POST"
+                                          onsubmit="return confirm('Supprimer cette pré-inscription ?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                                title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9" class="px-4 py-12 text-center text-slate-400">
+                                <i class="fas fa-inbox text-4xl text-slate-200 dark:text-slate-600 mb-3 block"></i>
+                                Aucune pré-inscription trouvée
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-        
+
         @if($waitingUsers->hasPages())
-            <div class="card-footer bg-white dark:bg-gray-800">
+            <div class="px-5 py-4 border-t border-slate-100 dark:border-slate-700">
                 {{ $waitingUsers->links() }}
             </div>
         @endif
-    </div>
+    @else
+        <div class="text-center py-12">
+            <i class="fas fa-inbox text-4xl text-slate-200 dark:text-slate-600 mb-3 block"></i>
+            <p class="text-slate-400">Aucune pré-inscription trouvée</p>
+        </div>
+    @endif
 </div>
 
 <!-- Modal de rejet -->
-<div class="modal fade" id="rejectModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="rejectForm" method="POST">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-times-circle me-2"></i>Rejeter la pré-inscription</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="reason" class="form-label">Raison du rejet</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="3" placeholder="Expliquez pourquoi cette demande est rejetée..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <button type="submit" class="btn btn-danger">Rejeter</button>
-                </div>
-            </form>
+<div id="rejectModal" class="modal-wrapper hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700 animate-pop">
+        <div class="flex items-center justify-between bg-amber-50 dark:bg-amber-900/20 px-5 py-4 border-b border-amber-100 dark:border-amber-800">
+            <h5 class="text-base font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-2">
+                <i class="fas fa-times-circle"></i>Rejeter la pré-inscription
+            </h5>
+            <button type="button" onclick="closeRejectModal()" class="text-amber-400 hover:text-amber-600 transition-colors">
+                <i class="fas fa-xmark text-xl"></i>
+            </button>
         </div>
+        <form id="rejectForm" method="POST">
+            @csrf
+            <div class="p-5 sm:p-6">
+                <label for="reason" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Raison du rejet</label>
+                <textarea id="reason" name="reason" rows="3"
+                          placeholder="Expliquez pourquoi cette demande est rejetée..."
+                          class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors"></textarea>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900 rounded-b-2xl px-5 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
+                <button type="button" onclick="closeRejectModal()"
+                        class="inline-flex justify-center items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full sm:w-auto">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="inline-flex justify-center items-center gap-2 w-full sm:w-auto rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <i class="fas fa-times-circle"></i>Rejeter
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+@endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Sélection multiple
+    document.querySelectorAll('.user-checkbox').forEach(cb => {
+        cb.addEventListener('change', updateBulkButtons);
+    });
+
     function toggleSelectAll() {
         const selectAll = document.getElementById('selectAll');
         const checkboxes = document.querySelectorAll('.user-checkbox');
@@ -606,46 +309,46 @@
         updateBulkButtons();
     }
 
-    document.querySelectorAll('.user-checkbox').forEach(cb => {
-        cb.addEventListener('change', updateBulkButtons);
-    });
-
     function updateBulkButtons() {
         const checked = document.querySelectorAll('.user-checkbox:checked').length;
         document.getElementById('bulkApproveBtn').disabled = checked === 0;
         document.getElementById('bulkRejectBtn').disabled = checked === 0;
     }
 
-    // Actions en masse
     function bulkAction(action) {
         const checkedBoxes = document.querySelectorAll('.user-checkbox:checked');
         const userIds = Array.from(checkedBoxes).map(cb => cb.value);
-        
         if (userIds.length === 0) return;
-        
         if (!confirm(`Confirmer cette action pour ${userIds.length} utilisateur(s) ?`)) return;
-        
+
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '{{ route("admin.waiting-users.bulk-action") }}';
-        
         form.innerHTML = `
             @csrf
             <input type="hidden" name="action" value="${action}">
             ${userIds.map(id => `<input type="hidden" name="user_ids[]" value="${id}">`).join('')}
         `;
-        
         document.body.appendChild(form);
         form.submit();
     }
 
-    // Modal de rejet
     function showRejectModal(userId) {
-        const modal = new bootstrap.Modal(document.getElementById('rejectModal'));
+        const modal = document.getElementById('rejectModal');
         const form = document.getElementById('rejectForm');
         form.action = `/admin/waiting-users/${userId}/reject`;
-        modal.show();
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
+
+    function closeRejectModal() {
+        const modal = document.getElementById('rejectModal');
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') closeRejectModal();
+    });
 </script>
 @endpush
-@endsection

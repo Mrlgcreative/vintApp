@@ -3,17 +3,17 @@
 @section('title', 'Gestion des Experts')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 space-y-6">
+<div class="min-h-screen bg-slate-50 dark:bg-slate-900 p-6 space-y-6">
     <!-- Statistiques rapides -->
     <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <!-- Total Experts -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-semibold text-blue-600 uppercase tracking-wide">
                         Total Experts
                     </p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_experts'] }}</p>
+                    <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total_experts'] }}</p>
                 </div>
                 <div class="p-2 sm:p-3 bg-blue-100 rounded-full">
                     <i class="fas fa-users text-blue-600 text-base sm:text-xl"></i>
@@ -22,13 +22,13 @@
         </div>
 
         <!-- Experts Actifs -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-semibold text-green-600 uppercase tracking-wide">
                         Experts Actifs
                     </p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['active_experts'] }}</p>
+                    <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['active_experts'] }}</p>
                 </div>
                 <div class="p-2 sm:p-3 bg-green-100 rounded-full">
                     <i class="fas fa-user-check text-green-600 text-base sm:text-xl"></i>
@@ -37,13 +37,13 @@
         </div>
 
         <!-- Vérifications Totales -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-semibold text-primary-600 uppercase tracking-wide">
                         Vérifications
                     </p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_verifications'] }}</p>
+                    <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total_verifications'] }}</p>
                 </div>
                 <div class="p-2 sm:p-3 bg-primary-100 rounded-full">
                     <i class="fas fa-certificate text-primary-600 text-base sm:text-xl"></i>
@@ -52,13 +52,13 @@
         </div>
 
         <!-- En Attente -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-3 sm:p-6">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-3 sm:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-[10px] sm:text-xs font-semibold text-orange-600 uppercase tracking-wide">
                         En Attente
                     </p>
-                    <p class="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pending_verifications'] }}</p>
+                    <p class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['pending_verifications'] }}</p>
                 </div>
                 <div class="p-2 sm:p-3 bg-orange-100 rounded-full">
                     <i class="fas fa-clock text-orange-600 text-base sm:text-xl"></i>
@@ -70,11 +70,11 @@
     <!-- En-tête avec actions -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-            <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
+            <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2 sm:gap-3">
                 <i class="fas fa-user-graduate text-blue-600"></i>
                 Gestion des Experts
             </h1>
-            <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mt-1">Gérer les experts en vérification d'authenticité</p>
+            <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mt-1">Gérer les experts en vérification d'authenticité</p>
         </div>
         <div class="flex gap-2 sm:gap-3">
             <a href="{{ route('admin.experts.candidates') }}" 
@@ -83,7 +83,7 @@
                 <span class="hidden xs:inline">Désigner un</span> Expert
             </a>
             <button onclick="toggleStats()" 
-                    class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors flex items-center gap-2 justify-center">
+                    class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors flex items-center gap-2 justify-center">
                 <i class="fas fa-chart-bar"></i>
                 <span class="hidden sm:inline">Statistiques</span>
             </button>
@@ -131,11 +131,11 @@
     @endif
 
     <!-- Filtres et recherche -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Filtres de recherche</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Filtres de recherche</h3>
             <button onclick="toggleFilters()" 
-                    class="text-gray-500 hover:text-gray-700 dark:text-gray-200 transition-colors">
+                    class="text-slate-500 hover:text-slate-700 dark:text-slate-200 transition-colors">
                 <i class="fas fa-filter"></i>
             </button>
         </div>
@@ -143,16 +143,16 @@
             <form method="GET" action="{{ route('admin.experts.index') }}">
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                     <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Rechercher</label>
+                        <label for="search" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Rechercher</label>
                         <input type="text" id="search" name="search" 
                                value="{{ request('search') }}" 
                                placeholder="Nom ou email..."
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
                     <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Statut</label>
+                        <label for="status" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Statut</label>
                         <select id="status" name="status" 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Tous</option>
                             <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
                             <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactif</option>
@@ -160,9 +160,9 @@
                         </select>
                     </div>
                     <div>
-                        <label for="specialization" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Spécialisation</label>
+                        <label for="specialization" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Spécialisation</label>
                         <select id="specialization" name="specialization" 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="">Toutes</option>
                             <option value="luxury" {{ request('specialization') === 'luxury' ? 'selected' : '' }}>Luxe</option>
                             <option value="sneakers" {{ request('specialization') === 'sneakers' ? 'selected' : '' }}>Sneakers</option>
@@ -171,23 +171,23 @@
                         </select>
                     </div>
                     <div>
-                        <label for="sort" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Trier par</label>
+                        <label for="sort" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Trier par</label>
                         <select id="sort" name="sort" 
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nom</option>
                             <option value="created_at" {{ request('sort') === 'created_at' ? 'selected' : '' }}>Date d'ajout</option>
                             <option value="verifications_count" {{ request('sort') === 'verifications_count' ? 'selected' : '' }}>Nb vérifications</option>
                         </select>
                     </div>
                     <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">&nbsp;</label>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">&nbsp;</label>
                         <div class="flex gap-2">
                             <button type="submit" 
                                     class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors flex items-center gap-2 flex-1 sm:flex-none justify-center">
                                 <i class="fas fa-search"></i> Filtrer
                             </button>
                             <a href="{{ route('admin.experts.index') }}" 
-                               class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors flex items-center gap-2 flex-1 sm:flex-none justify-center">
+                               class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition-colors flex items-center gap-2 flex-1 sm:flex-none justify-center">
                                 <i class="fas fa-undo"></i> Reset
                             </a>
                         </div>
@@ -198,9 +198,9 @@
     </div>
 
     <!-- Liste des experts -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                 <i class="fas fa-list text-blue-600"></i>
                 Liste des Experts ({{ $experts->total() }})
             </h3>
@@ -211,19 +211,19 @@
                 <div class="hidden lg:block overflow-x-auto">
                     <table class="w-full">
                         <thead>
-                            <tr class="border-b border-gray-200 dark:border-gray-700">
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Expert</th>
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Spécialisations</th>
-                                <th class="text-left py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Niveau</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Vérifications</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Taux d'approbation</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Statut</th>
-                                <th class="text-center py-3 px-4 font-semibold text-gray-700 dark:text-gray-200">Actions</th>
+                            <tr class="border-b border-slate-200 dark:border-slate-700">
+                                <th class="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Expert</th>
+                                <th class="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Spécialisations</th>
+                                <th class="text-left py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Niveau</th>
+                                <th class="text-center py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Vérifications</th>
+                                <th class="text-center py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Taux d'approbation</th>
+                                <th class="text-center py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Statut</th>
+                                <th class="text-center py-3 px-4 font-semibold text-slate-700 dark:text-slate-200">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($experts as $expert)
-                                <tr class="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-900">
+                                <tr class="border-b border-slate-100 hover:bg-slate-50 dark:bg-slate-900">
                                     <td class="py-4 px-4">
                                         <div class="flex items-center gap-3">
                                             @if($expert->user)
@@ -247,18 +247,18 @@
                                                     @endif
                                                 </div>
                                                 <div>
-                                                    <div class="font-semibold text-gray-900 dark:text-white">{{ $expert->user->name }}</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ $expert->user->email }}</div>
+                                                    <div class="font-semibold text-slate-900 dark:text-white">{{ $expert->user->name }}</div>
+                                                    <div class="text-sm text-slate-500 dark:text-slate-400">{{ $expert->user->email }}</div>
                                                 </div>
                                             @else
                                                 <div class="w-10 h-10 flex-shrink-0">
-                                                    <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center">
+                                                    <div class="w-10 h-10 bg-slate-400 rounded-full flex items-center justify-center">
                                                         <span class="text-white font-bold text-sm">?</span>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <div class="font-semibold text-gray-900 dark:text-white">Utilisateur supprimé</div>
-                                                    <div class="text-sm text-gray-500 dark:text-gray-400">N/A</div>
+                                                    <div class="font-semibold text-slate-900 dark:text-white">Utilisateur supprimé</div>
+                                                    <div class="text-sm text-slate-500 dark:text-slate-400">N/A</div>
                                                 </div>
                                             @endif
                                         </div>
@@ -273,31 +273,31 @@
                                                 @endforeach
                                             </div>
                                         @else
-                                            <span class="text-gray-400 text-sm">Aucune spécialisation</span>
+                                            <span class="text-slate-400 text-sm">Aucune spécialisation</span>
                                         @endif
                                     </td>
                                     <td class="py-4 px-4">
                                         <span class="px-2 py-1 text-xs font-medium rounded-full
                                             @if($expert->certification_level === 'master') bg-green-100 text-green-800
                                             @elseif($expert->certification_level === 'senior') bg-blue-100 text-blue-800
-                                            @else bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100
+                                            @else bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100
                                             @endif">
                                             {{ ucfirst($expert->certification_level) }}
                                         </span>
                                     </td>
                                     <td class="py-4 px-4 text-center">
-                                        <div class="font-bold text-gray-900 dark:text-white">{{ $expert->verification_count }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">vérifications</div>
+                                        <div class="font-bold text-slate-900 dark:text-white">{{ $expert->verification_count }}</div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">vérifications</div>
                                     </td>
                                     <td class="py-4 px-4 text-center">
                                         @if($expert->approval_rate > 0)
                                             <div class="font-bold text-green-600">{{ number_format($expert->approval_rate, 1) }}%</div>
-                                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1 mt-1">
+                                            <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1 mt-1">
                                                 <div class="bg-green-600 h-1 rounded-full" 
                                                      style="width: {{ $expert->approval_rate }}%"></div>
                                             </div>
                                         @else
-                                            <span class="text-gray-400">N/A</span>
+                                            <span class="text-slate-400">N/A</span>
                                         @endif
                                     </td>
                                     <td class="py-4 px-4 text-center">
@@ -307,8 +307,8 @@
                                                    data-expert-id="{{ $expert->id }}"
                                                    {{ $expert->is_active ? 'checked' : '' }}
                                                    onchange="toggleExpertStatus({{ $expert->id }})">
-                                            <div class="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-300">
+                                            <div class="relative w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            <span class="ml-2 text-sm text-slate-600 dark:text-slate-300">
                                                 {{ $expert->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
                                         </label>
@@ -342,7 +342,7 @@
                 <!-- Vue Cards Mobile -->
                 <div class="lg:hidden space-y-3">
                     @foreach($experts as $expert)
-                        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-3">
+                        <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 space-y-3">
                             <!-- En-tête : Avatar + Nom + Statut -->
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-3 min-w-0">
@@ -363,15 +363,15 @@
                                             @endif
                                         </div>
                                         <div class="min-w-0">
-                                            <div class="font-semibold text-gray-900 dark:text-white truncate">{{ $expert->user->name }}</div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $expert->user->email }}</div>
+                                            <div class="font-semibold text-slate-900 dark:text-white truncate">{{ $expert->user->name }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ $expert->user->email }}</div>
                                         </div>
                                     @else
-                                        <div class="w-10 h-10 bg-gray-400 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <div class="w-10 h-10 bg-slate-400 rounded-full flex items-center justify-center flex-shrink-0">
                                             <span class="text-white font-bold text-sm">?</span>
                                         </div>
                                         <div>
-                                            <div class="font-semibold text-gray-900 dark:text-white">Utilisateur supprimé</div>
+                                            <div class="font-semibold text-slate-900 dark:text-white">Utilisateur supprimé</div>
                                         </div>
                                     @endif
                                 </div>
@@ -379,7 +379,7 @@
                                     <input type="checkbox" class="sr-only peer" data-expert-id="{{ $expert->id }}"
                                            {{ $expert->is_active ? 'checked' : '' }}
                                            onchange="toggleExpertStatus({{ $expert->id }})">
-                                    <div class="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div class="relative w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
 
@@ -388,7 +388,7 @@
                                 <span class="px-2 py-0.5 text-xs font-medium rounded-full
                                     @if($expert->certification_level === 'master') bg-green-100 text-green-800
                                     @elseif($expert->certification_level === 'senior') bg-blue-100 text-blue-800
-                                    @else bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100
+                                    @else bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100
                                     @endif">
                                     {{ ucfirst($expert->certification_level) }}
                                 </span>
@@ -402,16 +402,16 @@
                             </div>
 
                             <!-- Stats + Actions -->
-                            <div class="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700">
                                 <div class="flex items-center gap-4 text-sm">
                                     <div class="text-center">
-                                        <span class="font-bold text-gray-900 dark:text-white">{{ $expert->verification_count }}</span>
-                                        <span class="text-gray-500 dark:text-gray-400 text-xs ml-0.5">vérif.</span>
+                                        <span class="font-bold text-slate-900 dark:text-white">{{ $expert->verification_count }}</span>
+                                        <span class="text-slate-500 dark:text-slate-400 text-xs ml-0.5">vérif.</span>
                                     </div>
                                     @if($expert->approval_rate > 0)
                                         <div class="flex items-center gap-1">
                                             <span class="font-bold text-green-600">{{ number_format($expert->approval_rate, 0) }}%</span>
-                                            <div class="w-12 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                                            <div class="w-12 bg-slate-200 dark:bg-slate-700 rounded-full h-1.5">
                                                 <div class="bg-green-600 h-1.5 rounded-full" style="width: {{ $expert->approval_rate }}%"></div>
                                             </div>
                                         </div>
@@ -440,7 +440,7 @@
 
                 <!-- Pagination -->
                 <div class="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 gap-3 sm:gap-4">
-                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 order-2 sm:order-1">
+                    <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 order-2 sm:order-1">
                         {{ $experts->firstItem() ?? 0 }}-{{ $experts->lastItem() ?? 0 }} sur {{ $experts->total() }}
                     </div>
                     <div class="order-1 sm:order-2 w-full sm:w-auto overflow-x-auto">
@@ -449,9 +449,9 @@
                 </div>
             @else
                 <div class="text-center py-8 sm:py-12 px-4">
-                    <i class="fas fa-user-graduate text-gray-400 text-4xl sm:text-6xl mb-3 sm:mb-4"></i>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun expert désigné</h3>
-                    <p class="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">Commencez par désigner des utilisateurs comme experts.</p>
+                    <i class="fas fa-user-graduate text-slate-400 text-4xl sm:text-6xl mb-3 sm:mb-4"></i>
+                    <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white mb-2">Aucun expert désigné</h3>
+                    <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 mb-4 sm:mb-6">Commencez par désigner des utilisateurs comme experts.</p>
                     <a href="{{ route('admin.experts.candidates') }}" 
                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium transition-colors inline-flex items-center gap-2">
                         <i class="fas fa-user-plus"></i>

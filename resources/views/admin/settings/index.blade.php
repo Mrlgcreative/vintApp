@@ -1,77 +1,67 @@
 @extends('layouts.admin')
 
 @section('title', 'Paramètres Système')
+@section('page-title', 'Paramètres Système')
+
+@section('page-actions')
+<div class="flex flex-wrap gap-2">
+    <button type="button" onclick="clearCache()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300 dark:border-cyan-700 bg-cyan-50 dark:bg-cyan-900/30 px-4 py-2.5 text-sm font-medium text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors">
+        <i class="fas fa-trash"></i>Vider Cache
+    </button>
+    <button type="button" onclick="backupSettings()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+        <i class="fas fa-download"></i>Sauvegarder
+    </button>
+</div>
+@endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
+<div class="space-y-6">
     @if(session('success'))
-        <div class="mb-4 sm:mb-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-200 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
-                <button type="button" class="ml-2 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
+            <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
+            <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
+            <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-4 sm:mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
-                <button type="button" class="ml-2 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
+            <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
+            <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                <i class="fas fa-cogs mr-2 sm:mr-3 text-gray-600 dark:text-gray-300 text-base sm:text-xl"></i>
-                <span class="hidden sm:inline">Paramètres Système</span>
-                <span class="sm:hidden">Paramètres</span>
-            </h1>
-            <div class="flex flex-col xs:flex-row gap-2 sm:gap-3">
-                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-cyan-300 dark:border-cyan-700 text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-900/30 rounded-lg hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors duration-200" onclick="clearCache()">
-                    <i class="fas fa-trash mr-2"></i>
-                    <span class="hidden xs:inline">Vider Cache</span>
-                    <span class="xs:hidden">Cache</span>
-                </button>
-                <button class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-200" onclick="backupSettings()">
-                    <i class="fas fa-download mr-2"></i>
-                    <span class="hidden xs:inline">Sauvegarder</span>
-                    <span class="xs:hidden">Backup</span>
-                </button>
-            </div>
-        </div>
-
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <!-- Navigation par onglets -->
-        <div class="border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+        <div class="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <nav class="flex space-x-1 px-4 sm:px-6 overflow-x-auto" aria-label="Paramètres">
                 <a href="{{ route('admin.settings.index') }}" 
-                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-gray-800/60 rounded-t-lg whitespace-nowrap transition-all duration-200">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-slate-800/60 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-sliders-h mr-2"></i>
                     Général
                 </a>
                 <a href="{{ route('admin.settings.colors') }}" 
-                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 rounded-t-lg whitespace-nowrap transition-all duration-200">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-palette mr-2"></i>
                     Couleurs
                 </a>
                 <a href="{{ route('admin.settings.preregistration') }}" 
-                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:border-gray-300 rounded-t-lg whitespace-nowrap transition-all duration-200">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-user-clock mr-2"></i>
                     Préinscription
                 </a>
             </nav>
         </div>
         
-        <div class="p-4 sm:p-6">
-            <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-4 sm:space-y-6">
+        <div class="p-5 sm:p-6">
+            <form action="{{ route('admin.settings.update') }}" method="POST" id="settingsForm" class="space-y-5 sm:space-y-6">
                 @csrf
                 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
@@ -95,23 +85,23 @@
                                     ];
                                     $catIcon = $catIcons[strtolower($category)] ?? 'fa-cog';
                                 @endphp
-                                <div class="group bg-white dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+                                <div class="group bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
                                     <div class="mb-4 sm:mb-6">
-                                        <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700/50 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
-                                                <i class="fas {{ $catIcon }} text-gray-600 dark:text-gray-300 text-sm"></i>
+                                        <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center">
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700/50 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas {{ $catIcon }} text-slate-600 dark:text-slate-300 text-sm"></i>
                                             </span>
                                             {{ ucfirst($category) }}
-                                            <span class="ml-auto text-xs text-gray-400 font-normal">{{ count($settings[$category]) }} param.</span>
+                                            <span class="ml-auto text-xs text-slate-400 font-normal">{{ count($settings[$category]) }} param.</span>
                                         </h3>
                                     </div>
                                     <div class="space-y-3 sm:space-y-4">
                                         @foreach($settings[$category] as $setting)
                                             <div class="space-y-2">
-                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                <label class="block text-sm font-medium text-slate-700 dark:text-slate-200">
                                                     {{ $setting->label }}
                                                     @if($setting->description)
-                                                        <i class="fas fa-info-circle text-gray-400 ml-1 cursor-help" 
+                                                        <i class="fas fa-info-circle text-slate-400 ml-1 cursor-help" 
                                                            title="{{ $setting->description }}" 
                                                            data-tooltip="{{ $setting->description }}"></i>
                                                     @endif
@@ -121,24 +111,24 @@
                                                     <div class="mb-3">
                                                         <img src="{{ asset($setting->value) }}" 
                                                              alt="Logo actuel" 
-                                                             class="h-16 w-32 object-contain border border-gray-200 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-sm"
+                                                             class="h-16 w-32 object-contain border border-slate-200 rounded-xl p-2 bg-white dark:bg-slate-800 shadow-sm"
                                                              id="logo-preview">
                                                     </div>
                                                     <input type="file" 
-                                                           class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                                           class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                                            name="logo_file"
                                                            accept="image/*"
                                                            onchange="previewLogo(this)">
                                                     <input type="hidden" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
                                                             @elseif($setting->type === 'json' || $setting->type === 'array')
-                                                    <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
+                                                    <textarea class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
                                                               name="settings[{{ $setting->key }}]"
                                                               rows="5"
                                                               data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
-                                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Format JSON</p>
+                                                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Format JSON</p>
                                                 @elseif($setting->type === 'boolean')
                                                     <div class="flex items-center space-x-3">
                                                         <!-- Hidden input pour s'assurer que la valeur false est envoyée -->
@@ -150,22 +140,22 @@
                                                                    id="{{ $setting->key }}"
                                                                    value="1"
                                                                    {{ $setting->value ? 'checked' : '' }}>
-                                                            <div class="relative w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-800 after:border-gray-300 dark:border-gray-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                                            <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200" id="{{ $setting->key }}_label">
+                                                            <div class="relative w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                            <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200" id="{{ $setting->key }}_label">
                                                                 {{ $setting->value ? 'Activé' : 'Désactivé' }}
                                                             </span>
                                                         </label>
                                                     </div>
                                                 @elseif($setting->type === 'integer')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="1"
                                                            data-original-value="{{ $setting->value }}">
                                                 @elseif($setting->type === 'float')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="0.01"
@@ -173,19 +163,19 @@
                                                 @else
                                                     @if(str_contains($setting->key, 'email'))
                                                         <input type="email" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @elseif(str_contains($setting->key, 'phone'))
                                                         <input type="tel" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @else
                                                         <input type="text" 
-                                                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
@@ -199,43 +189,43 @@
                         @endforeach
                     @else
                         <div class="col-span-2">
-                            <div class="text-center py-16 bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl border-2 border-dashed border-blue-200 dark:border-gray-600">
+                            <div class="text-center py-16 bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-xl border-2 border-dashed border-blue-200 dark:border-slate-600">
                                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
                                     <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-2xl"></i>
                                 </div>
                                 <h3 class="text-lg font-medium text-blue-900 dark:text-white mb-2">Aucun paramètre trouvé</h3>
-                                <p class="text-blue-700 dark:text-gray-300">Veuillez exécuter les migrations et seeders.</p>
+                                <p class="text-blue-700 dark:text-slate-300">Veuillez exécuter les migrations et seeders.</p>
                             </div>
                         </div>
                     @endif
                 </div>
                 
                 <!-- Section Mode Maintenance -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-orange-200 dark:border-orange-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
+                    <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-orange-200 dark:border-orange-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/50 mr-3">
                                     <i class="fas fa-tools text-orange-600 dark:text-orange-400"></i>
                                 </span>
                                 Mode Maintenance
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 Contrôlez l'accès au site pour effectuer des maintenances ou des mises à jour.
                             </p>
                         </div>
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full {{ $maintenanceStatus ? 'bg-red-100 dark:bg-red-900/30' : 'bg-green-100 dark:bg-green-900/30' }}">
                                         <i class="fas {{ $maintenanceStatus ? 'fa-exclamation-triangle text-red-600 dark:text-red-400' : 'fa-check-circle text-green-600 dark:text-green-400' }} text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">
+                                        <p class="font-medium text-slate-900 dark:text-white">
                                             Statut : {{ $maintenanceStatus ? 'Mode maintenance ACTIVÉ' : 'Site en ligne' }}
                                         </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">
                                             {{ $maintenanceStatus ? 'Le site affiche la page de maintenance aux visiteurs' : 'Le site est accessible normalement' }}
                                         </p>
                                     </div>
@@ -243,14 +233,14 @@
                                 
                                 <button type="button" 
                                         onclick="{{ $maintenanceStatus ? 'disableMaintenance()' : 'showMaintenanceModal()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                        class="inline-flex items-center px-4 py-2 {{ $maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }} text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas {{ $maintenanceStatus ? 'fa-play' : 'fa-pause' }} mr-2"></i>
                                     {{ $maintenanceStatus ? 'Désactiver' : 'Activer' }}
                                 </button>
                             </div>
                             
                             @if($maintenanceStatus)
-                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-info-circle text-red-600 dark:text-red-400 mr-2"></i>
                                         <p class="text-red-800 dark:text-red-200 text-sm">
@@ -264,31 +254,31 @@
                 </div>
                 
                 <!-- Section Restrictions Géographiques -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
                                     <i class="fas fa-map-marked-alt text-blue-600 dark:text-blue-400"></i>
                                 </span>
                                 Restrictions Géographiques
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 Contrôlez si les vendeurs doivent respecter les zones géographiques autorisées pour publier leurs articles.
                             </p>
                         </div>
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full" id="location-status-icon">
                                         <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white" id="location-status-text">
+                                        <p class="font-medium text-slate-900 dark:text-white" id="location-status-text">
                                             Chargement...
                                         </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400" id="location-status-description">
+                                        <p class="text-sm text-slate-500 dark:text-slate-400" id="location-status-description">
                                             Récupération du statut en cours...
                                         </p>
                                     </div>
@@ -297,13 +287,13 @@
                                 <button type="button" 
                                         onclick="toggleLocationRestrictions()"
                                         id="location-toggle-btn"
-                                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas fa-sync-alt mr-2 animate-spin"></i>
                                     Chargement...
                                 </button>
                             </div>
                             
-                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
                                 <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
                                     <p class="flex items-start">
                                         <i class="fas fa-check-circle mr-2 mt-0.5"></i>
@@ -320,16 +310,16 @@
                 </div>
                 
                 <!-- Section Pré-inscription -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                                     <i class="fas fa-user-plus text-primary-600 dark:text-primary-400"></i>
                                 </span>
                                 Mode Pré-inscription
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 <strong>⚠️ ATTENTION :</strong> Quand activé, toute l'application devient inaccessible aux visiteurs (comme le mode maintenance) et redirige vers la page de pré-inscription. Seuls les admins connectés peuvent accéder à l'application.
                             </p>
                         </div>
@@ -341,16 +331,16 @@
                         @endphp
                         
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center space-x-3">
-                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30' }}">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+                                <div class="flex items-start sm:items-center space-x-3">
+                                    <div class="p-2 rounded-full {{ $preregEnabled ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30' }} flex-shrink-0">
                                         <i class="fas {{ $preregEnabled ? 'fa-check-circle text-green-600 dark:text-green-400' : 'fa-times-circle text-red-600 dark:text-red-400' }} text-lg"></i>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-gray-900 dark:text-white">
+                                        <p class="font-medium text-slate-900 dark:text-white">
                                             Statut : {{ $preregEnabled ? 'MODE PRÉ-INSCRIPTION ACTIF' : 'MODE NORMAL' }}
                                         </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">
                                             {{ $preregEnabled ? '🔒 Application verrouillée - Seule la pré-inscription est accessible' : '✅ Application accessible normalement' }}
                                         </p>
                                     </div>
@@ -358,7 +348,7 @@
                                 
                                 <button type="button" 
                                         onclick="{{ $preregEnabled ? 'disablePreregistration()' : 'enablePreregistration()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas {{ $preregEnabled ? 'fa-lock-open' : 'fa-lock' }} mr-2"></i>
                                     {{ $preregEnabled ? 'Désactiver' : 'Activer' }}
                                 </button>
@@ -366,11 +356,11 @@
                             
                             <!-- Statistiques -->
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
+                                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-300">Total inscriptions</p>
-                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregCount }}</p>
+                                            <p class="text-sm text-slate-600 dark:text-slate-300">Total inscriptions</p>
+                                            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $preregCount }}</p>
                                         </div>
                                         <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
                                             <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
@@ -378,11 +368,11 @@
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
+                                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-300">Limite configurée</p>
-                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
+                                            <p class="text-sm text-slate-600 dark:text-slate-300">Limite configurée</p>
+                                            <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $preregLimit > 0 ? $preregLimit : '∞' }}</p>
                                         </div>
                                         <div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-xl">
                                             <i class="fas fa-chart-line text-yellow-600 dark:text-yellow-400 text-xl"></i>
@@ -390,11 +380,11 @@
                                     </div>
                                 </div>
                                 
-                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-all duration-200">
+                                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 hover:shadow-md transition-all duration-200">
                                     <div class="flex items-center justify-between">
                                         <div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-300">Places restantes</p>
-                                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                                            <p class="text-sm text-slate-600 dark:text-slate-300">Places restantes</p>
+                                            <p class="text-2xl font-bold text-slate-900 dark:text-white">
                                                 @if($preregLimit > 0)
                                                     {{ max(0, $preregLimit - $preregCount) }}
                                                 @else
@@ -412,27 +402,27 @@
                             <!-- Actions rapides -->
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('admin.settings.preregistration') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas fa-cog mr-2"></i>
                                     Configurer
                                 </a>
                                 
                                 <a href="{{ route('admin.waiting-users.index') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas fa-list mr-2"></i>
                                     Gérer les inscriptions
                                 </a>
                                 
                                 <a href="{{ route('preregistration.index') }}" 
                                    target="_blank"
-                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
                                     <i class="fas fa-external-link-alt mr-2"></i>
                                     Voir la page publique
                                 </a>
                             </div>
                             
                             @if($preregLimit > 0 && $preregCount >= $preregLimit)
-                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-exclamation-triangle text-red-600 dark:text-red-400 mr-2"></i>
                                         <p class="text-red-800 dark:text-red-200 text-sm">
@@ -443,7 +433,7 @@
                             @endif
                             
                             @if(!$preregEnabled)
-                                <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+                                <div class="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
                                     <div class="flex items-center">
                                         <i class="fas fa-info-circle text-orange-600 dark:text-orange-400 mr-2"></i>
                                         <p class="text-orange-800 dark:text-orange-200 text-sm">
@@ -457,35 +447,35 @@
                 </div>
                 
                 <!-- Section Carrousel Hero (Page d'Accueil) -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                                     <i class="fas fa-images text-primary-600 dark:text-primary-400"></i>
                                 </span>
                                 Carrousel Hero - Page d'Accueil
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 Gérez les images et le contenu du carrousel sur la page d'accueil
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center">
                                             <i class="fas fa-sliders-h text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Gestion des Slides</h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                        <h4 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Gestion des Slides</h4>
+                                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
                                             Ajoutez, modifiez ou supprimez les slides du carrousel principal. <br>
                                             Vous pouvez également réordonner les slides par glisser-déposer.
                                         </p>
-                                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 mb-4">
+                                        <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-1 mb-4">
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Titre et sous-titre personnalisables</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>2 boutons d'action configurables</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Images haute résolution (recommandé 1920x600px)</li>
@@ -493,7 +483,7 @@
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Réordonnancement par glisser-déposer</li>
                                         </ul>
                                         <a href="{{ route('admin.settings.hero-slides.index') }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
                                             <i class="fas fa-cog mr-2"></i>
                                             Gérer les Slides du Carrousel
                                         </a>
@@ -505,34 +495,34 @@
                 </div>
                 
                 <!-- Section Newsletter -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
                                     <i class="fas fa-envelope text-blue-600 dark:text-blue-400"></i>
                                 </span>
                                 Newsletter
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 Gérez vos abonnés et envoyez des newsletters automatiques
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-blue-200 dark:border-blue-900/50 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center">
                                             <i class="fas fa-paper-plane text-2xl text-blue-600 dark:text-blue-400"></i>
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 class="text-base font-semibold text-gray-900 dark:text-white mb-2">Gestion de la Newsletter</h4>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                                        <h4 class="text-base font-semibold text-slate-900 dark:text-white mb-2">Gestion de la Newsletter</h4>
+                                        <p class="text-sm text-slate-600 dark:text-slate-300 mb-4">
                                             Gérez vos abonnés, consultez les statistiques et envoyez des newsletters personnalisées.
                                         </p>
-                                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1 mb-4">
+                                        <ul class="text-sm text-slate-600 dark:text-slate-300 space-y-1 mb-4">
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Liste complète des abonnés avec statistiques</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Emails automatiques de bienvenue</li>
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Notifications des nouveaux articles</li>
@@ -542,12 +532,12 @@
                                         </ul>
                                         <div class="flex gap-2">
                                             <a href="{{ route('admin.settings.newsletter.subscribers') }}" 
-                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
                                                 <i class="fas fa-users mr-2"></i>
                                                 Voir les Abonnés
                                             </a>
                                             <a href="{{ route('admin.settings.newsletter.send') }}" 
-                                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
+                                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
                                                 <i class="fas fa-paper-plane mr-2"></i>
                                                 Envoyer une Newsletter
                                             </a>
@@ -560,31 +550,31 @@
                 </div>
                 
                 <!-- Section Wallet Entreprise (Commissions) -->
-                <div class="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
+                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
                         <div class="mb-6">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                                     <i class="fas fa-building text-primary-600 dark:text-primary-400"></i>
                                 </span>
                                 Wallet Entreprise - Commissions
                             </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                            <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">
                                 Gestion des commissions collectées sur chaque vente ({{ $enterpriseWallets['commission_rate'] }}% par défaut)
                             </p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Wallet USD -->
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center mr-4">
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center mr-4">
                                             <i class="fas fa-dollar-sign text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet USD</h4>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Commissions en dollars</p>
+                                            <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase">Wallet USD</h4>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">Commissions en dollars</p>
                                         </div>
                                     </div>
                                 </div>
@@ -592,17 +582,17 @@
                                 @if($enterpriseWallets['usd'])
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Solde actuel</span>
+                                            <span class="text-sm text-slate-600 dark:text-slate-300">Solde actuel</span>
                                             <span class="text-2xl font-bold text-primary-600">
                                                 ${{ number_format($enterpriseWallets['usd']->balance, 2) }}
                                             </span>
                                         </div>
-                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700 dark:text-gray-200">#{{ $enterpriseWallets['usd']->id }}</span>
+                                        <div class="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-700">
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">ID Wallet</span>
+                                            <span class="text-xs font-mono text-slate-700 dark:text-slate-200">#{{ $enterpriseWallets['usd']->id }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                                                 {{ $enterpriseWallets['usd']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
@@ -611,21 +601,21 @@
                                 @else
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">Wallet USD non créé</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-300">Wallet USD non créé</p>
                                     </div>
                                 @endif
                             </div>
                             
                             <!-- Wallet CDF -->
-                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-indigo-200 dark:border-indigo-900/50 p-6">
+                            <div class="bg-white dark:bg-slate-800 rounded-xl border border-indigo-200 dark:border-indigo-900/50 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-lg flex items-center justify-center mr-4">
+                                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center mr-4">
                                             <i class="fas fa-coins text-2xl text-indigo-600 dark:text-indigo-400"></i>
                                         </div>
                                         <div>
-                                            <h4 class="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase">Wallet CDF</h4>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Commissions en francs</p>
+                                            <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase">Wallet CDF</h4>
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">Commissions en francs</p>
                                         </div>
                                     </div>
                                 </div>
@@ -633,17 +623,17 @@
                                 @if($enterpriseWallets['cdf'])
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-600 dark:text-gray-300">Solde actuel</span>
+                                            <span class="text-sm text-slate-600 dark:text-slate-300">Solde actuel</span>
                                             <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
                                                 {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
                                             </span>
                                         </div>
-                                        <div class="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-700">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">ID Wallet</span>
-                                            <span class="text-xs font-mono text-gray-700 dark:text-gray-200">#{{ $enterpriseWallets['cdf']->id }}</span>
+                                        <div class="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-700">
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">ID Wallet</span>
+                                            <span class="text-xs font-mono text-slate-700 dark:text-slate-200">#{{ $enterpriseWallets['cdf']->id }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-xs text-gray-500 dark:text-gray-400">Statut</span>
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">Statut</span>
                                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                                                 {{ $enterpriseWallets['cdf']->is_active ? 'Actif' : 'Inactif' }}
                                             </span>
@@ -652,23 +642,23 @@
                                 @else
                                     <div class="text-center py-4">
                                         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-2"></i>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">Wallet CDF non créé</p>
+                                        <p class="text-sm text-slate-600 dark:text-slate-300">Wallet CDF non créé</p>
                                     </div>
                                 @endif
                             </div>
                         </div>
                         
                         <!-- Informations sur les commissions -->
-                        <div class="mt-6 bg-white dark:bg-gray-800 rounded-lg border border-primary-200 dark:border-primary-900/50 p-4">
+                        <div class="mt-6 bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-info-circle text-primary-600 dark:text-primary-400 text-xl"></i>
                                 </div>
                                 <div class="ml-3 flex-1">
-                                    <h5 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                                    <h5 class="text-sm font-semibold text-slate-900 dark:text-white mb-2">
                                         Comment fonctionnent les commissions ?
                                     </h5>
-                                    <ul class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
+                                    <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1">
                                         <li class="flex items-start">
                                             <i class="fas fa-check text-green-500 mr-2 mt-0.5"></i>
                                             <span>Sur chaque vente confirmée, {{ $enterpriseWallets['commission_rate'] }}% est prélevé automatiquement</span>
@@ -693,12 +683,12 @@
                         <!-- Boutons d'action -->
                         <div class="mt-6 flex flex-wrap gap-3">
                             <a href="{{ route('admin.wallets.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-colors duration-200">
                                 <i class="fas fa-wallet mr-2"></i>
                                 Voir tous les wallets
                             </a>
                             <a href="{{ route('admin.transactions.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors duration-200">
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Historique des transactions
                             </a>
@@ -706,13 +696,13 @@
                     </div>
                 </div>
                 
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
                     <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>
                         Enregistrer les modifications
                     </button>
                     
-                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-xl shadow-sm transition-all duration-200" onclick="resetForm()">
+                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-xl shadow-sm transition-all duration-200" onclick="resetForm()">
                         <i class="fas fa-undo mr-2"></i>
                         Réinitialiser
                     </button>
@@ -869,7 +859,7 @@ function handleFormSubmit(event) {
 
 function showTooltip(event) {
     const tooltip = document.createElement('div');
-    tooltip.className = 'absolute z-50 px-3 py-2 text-xs text-white bg-gray-900 rounded-lg shadow-lg whitespace-nowrap';
+    tooltip.className = 'absolute z-50 px-3 py-2 text-xs text-white bg-slate-900 rounded-xl shadow-lg whitespace-nowrap';
     tooltip.textContent = event.target.getAttribute('data-tooltip');
     tooltip.id = 'tooltip';
     
@@ -903,7 +893,7 @@ function resetForm() {
         // Nettoyer tous les indicateurs de changement
         const changedContainers = document.querySelectorAll('.bg-yellow-50');
         changedContainers.forEach(container => {
-            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-xl', 'p-3', '-m-1');
             container.classList.add('bg-transparent');
             
             const indicator = container.querySelector('.change-indicator');
@@ -997,7 +987,7 @@ function previewLogo(input) {
 function showNotification(message, type = 'info') {
     const isDark = document.documentElement.classList.contains('dark');
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full opacity-0 transition-all duration-300`;
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform translate-x-full opacity-0 transition-all duration-300`;
     
     const colors = {
         success: isDark ? 'bg-green-800 text-green-100' : 'bg-green-500 text-white',
@@ -1010,7 +1000,7 @@ function showNotification(message, type = 'info') {
     notification.innerHTML = `
         <div class="flex items-center">
             <span class="flex-1">${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-slate-200">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -1050,7 +1040,7 @@ function markChangedField(event) {
     const container = input.closest('.space-y-2');
     if (container) {
         if (isChanged) {
-            container.classList.add('bg-yellow-50 dark:bg-yellow-900/20', 'border', 'border-yellow-300 dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.add('bg-yellow-50 dark:bg-yellow-900/20', 'border', 'border-yellow-300 dark:border-yellow-700', 'rounded-xl', 'p-3', '-m-1');
             container.classList.remove('bg-transparent');
             
             // Ajouter un indicateur visuel si pas déjà présent
@@ -1064,7 +1054,7 @@ function markChangedField(event) {
                 }
             }
         } else {
-            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-lg', 'p-3', '-m-1');
+            container.classList.remove('bg-yellow-50', 'dark:bg-yellow-900/20', 'border', 'border-yellow-300', 'dark:border-yellow-700', 'rounded-xl', 'p-3', '-m-1');
             container.classList.add('bg-transparent');
             
             // Enlever l'indicateur visuel
@@ -1350,7 +1340,7 @@ function updateLocationRestrictionsUI(enabled) {
         statusText.textContent = 'Restrictions ACTIVÉES';
         statusDescription.textContent = 'Les vendeurs ne peuvent publier que dans les villes autorisées';
         toggleBtn.innerHTML = '<i class="fas fa-times mr-2"></i>Désactiver';
-        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200';
     } else {
         // État DÉSACTIVÉ
         statusIcon.innerHTML = '<i class="fas fa-globe text-blue-600 dark:text-blue-400 text-lg"></i>';
@@ -1358,24 +1348,24 @@ function updateLocationRestrictionsUI(enabled) {
         statusText.textContent = 'Restrictions DÉSACTIVÉES';
         statusDescription.textContent = 'Les vendeurs peuvent publier dans n\'importe quelle ville du monde';
         toggleBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Activer';
-        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200';
     }
 }
 </script>
 
 <!-- Modal pour activer le mode maintenance -->
-<div id="maintenanceModal" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
-    <div class="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+<div id="maintenanceModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
+    <div class="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
         <div class="mt-2 sm:mt-3">
             <div class="flex items-center justify-between mb-4 sm:mb-5">
-                <h3 class="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900 mr-3">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-900 mr-3">
                         <i class="fas fa-tools text-orange-600 dark:text-orange-400 text-sm"></i>
                     </span>
                     <span class="hidden sm:inline">Activer le Mode Maintenance</span>
                     <span class="sm:hidden">Mode Maintenance</span>
                 </h3>
-                <button onclick="hideMaintenanceModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors">
+                <button onclick="hideMaintenanceModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors">
                     <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
@@ -1383,22 +1373,22 @@ function updateLocationRestrictionsUI(enabled) {
             <form id="maintenanceForm" onsubmit="event.preventDefault(); enableMaintenance();">
                 <div class="space-y-3 sm:space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 sm:mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1 sm:mb-2">
                             Message personnalisé
                         </label>
                         <textarea name="message" 
-                                  class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                  class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                   rows="3" 
                                   placeholder="Nous effectuons actuellement des travaux de maintenance..."></textarea>
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 sm:mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1 sm:mb-2">
                             Temps estimé (optionnel)
                         </label>
                         <input type="text" 
                                name="estimated_time" 
-                               class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
                                placeholder="Ex: 2 heures, 30 minutes...">
                     </div>
                 </div>
@@ -1406,11 +1396,11 @@ function updateLocationRestrictionsUI(enabled) {
                 <div class="flex flex-col xs:flex-row items-center justify-end pt-4 sm:pt-6 space-y-2 xs:space-y-0 xs:space-x-3">
                     <button type="button" 
                             onclick="hideMaintenanceModal()" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200">
                         <i class="fas fa-tools mr-2"></i>
                         <span class="hidden xs:inline">Activer la maintenance</span>
                         <span class="xs:hidden">Activer</span>

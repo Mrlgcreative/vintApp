@@ -8,8 +8,8 @@
     <div class="mb-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Support Client</h1>
-                <p class="text-gray-500 dark:text-gray-400 mt-1">Gérez les demandes d'assistance des utilisateurs</p>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Support Client</h1>
+                <p class="text-slate-500 dark:text-slate-400 mt-1">Gérez les demandes d'assistance des utilisateurs</p>
             </div>
             <div class="flex gap-2">
                 <button onclick="refreshStats()" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
@@ -24,11 +24,11 @@
         <!-- Statistiques rapides -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
             <!-- Total -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-blue-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-blue-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total</p>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] }}</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Total</p>
+                        <h3 class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                         <i class="fas fa-comments text-blue-600 dark:text-blue-400"></i>
@@ -37,10 +37,10 @@
             </div>
 
             <!-- Ouvert -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-red-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-red-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Ouvert</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Ouvert</p>
                         <h3 class="text-2xl font-bold text-red-600">{{ $stats['open'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
@@ -50,10 +50,10 @@
             </div>
 
             <!-- En cours -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-yellow-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-yellow-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">En cours</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">En cours</p>
                         <h3 class="text-2xl font-bold text-yellow-600">{{ $stats['in_progress'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
@@ -63,10 +63,10 @@
             </div>
 
             <!-- En attente -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-violet-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-violet-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">En attente</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">En attente</p>
                         <h3 class="text-2xl font-bold text-violet-600">{{ $stats['waiting_user'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
@@ -76,10 +76,10 @@
             </div>
 
             <!-- Fermés aujourd'hui -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-green-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-green-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Fermés aujourd'hui</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Fermés aujourd'hui</p>
                         <h3 class="text-2xl font-bold text-green-600">{{ $stats['closed_today'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
@@ -89,10 +89,10 @@
             </div>
 
             <!-- Non assignés -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-amber-500 p-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border-l-4 border-amber-500 p-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Non assignés</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Non assignés</p>
                         <h3 class="text-2xl font-bold text-amber-600">{{ $stats['unassigned'] }}</h3>
                     </div>
                     <div class="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
@@ -104,19 +104,19 @@
     </div>
 
     <!-- Filtres -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm mb-6">
         <div class="p-4 sm:p-6">
             <form method="GET" action="{{ route('admin.support.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Recherche</label>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Recherche</label>
                     <input type="text" name="search" value="{{ request('search') }}" 
                            placeholder="Référence, sujet..." 
-                           class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                           class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Statut</label>
-                    <select name="status" class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Statut</label>
+                    <select name="status" class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous les statuts</option>
                         <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Ouvert</option>
                         <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>En cours</option>
@@ -126,8 +126,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Priorité</label>
-                    <select name="priority" class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Priorité</label>
+                    <select name="priority" class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Toutes les priorités</option>
                         <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Faible</option>
                         <option value="normal" {{ request('priority') === 'normal' ? 'selected' : '' }}>Normale</option>
@@ -137,8 +137,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Catégorie</label>
-                    <select name="category" class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Catégorie</label>
+                    <select name="category" class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Toutes les catégories</option>
                         <option value="technical" {{ request('category') === 'technical' ? 'selected' : '' }}>Technique</option>
                         <option value="account" {{ request('category') === 'account' ? 'selected' : '' }}>Compte</option>
@@ -149,8 +149,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assigné à</label>
-                    <select name="assigned_to" class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Assigné à</label>
+                    <select name="assigned_to" class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Tous</option>
                         <option value="unassigned" {{ request('assigned_to') === 'unassigned' ? 'selected' : '' }}>Non assigné</option>
                         @foreach($admins as $admin)
@@ -165,7 +165,7 @@
                     <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-search mr-1"></i>Filtrer
                     </button>
-                    <a href="{{ route('admin.support.index') }}" class="inline-flex items-center justify-center px-3 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors">
+                    <a href="{{ route('admin.support.index') }}" class="inline-flex items-center justify-center px-3 py-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-lg transition-colors">
                         <i class="fas fa-times"></i>
                     </a>
                 </div>
@@ -174,27 +174,27 @@
     </div>
 
     <!-- Liste des conversations -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+                <thead class="bg-slate-50 dark:bg-slate-700">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Référence</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Utilisateur</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Sujet</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Statut</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Priorité</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Assigné à</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Dernier message</th>
-                        <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Référence</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Utilisateur</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Sujet</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Statut</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Priorité</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Assigné à</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Dernier message</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                     @forelse($chats as $chat)
-                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                             <td class="px-4 py-4">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-medium text-gray-900 dark:text-white">{{ $chat->reference }}</span>
+                                    <span class="font-medium text-slate-900 dark:text-white">{{ $chat->reference }}</span>
                                     @if($chat->unread_count_for_admin > 0)
                                         <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400 rounded-full">
                                             {{ $chat->unread_count_for_admin }} nouveau(x)
@@ -208,22 +208,22 @@
                                     @if($chat->user?->avatar)
                                         <img class="w-8 h-8 rounded-full object-cover" src="{{ $chat->user->avatar_url }}" alt="">
                                     @else
-                                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                                            <i class="fas fa-user text-gray-500 dark:text-gray-400 text-xs"></i>
+                                        <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
+                                            <i class="fas fa-user text-slate-500 dark:text-slate-400 text-xs"></i>
                                         </div>
                                     @endif
                                     <div>
-                                        <div class="font-medium text-gray-900 dark:text-white text-sm">{{ $chat->user?->name ?? 'Utilisateur supprimé' }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $chat->user?->email ?? 'N/A' }}</div>
+                                        <div class="font-medium text-slate-900 dark:text-white text-sm">{{ $chat->user?->name ?? 'Utilisateur supprimé' }}</div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ $chat->user?->email ?? 'N/A' }}</div>
                                     </div>
                                 </div>
                             </td>
                             
                             <td class="px-4 py-4">
-                                <div class="font-medium text-gray-900 dark:text-white text-sm">
+                                <div class="font-medium text-slate-900 dark:text-white text-sm">
                                     {{ $chat->subject ?: 'Demande d\'assistance' }}
                                 </div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $chat->formatted_category }}</div>
+                                <div class="text-xs text-slate-500 dark:text-slate-400">{{ $chat->formatted_category }}</div>
                             </td>
                             
                             <td class="px-4 py-4">
@@ -238,7 +238,7 @@
                             
                             <td class="px-4 py-4">
                                 <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full
-                                    {{ $chat->priority === 'low' ? 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-300' : '' }}
+                                    {{ $chat->priority === 'low' ? 'bg-slate-100 text-slate-800 dark:bg-slate-600 dark:text-slate-300' : '' }}
                                     {{ $chat->priority === 'normal' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
                                     {{ $chat->priority === 'high' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : '' }}
                                     {{ $chat->priority === 'urgent' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : '' }}">
@@ -256,14 +256,14 @@
                                                 <i class="fas fa-user text-blue-600 dark:text-blue-400" style="font-size: 0.6rem;"></i>
                                             </div>
                                         @endif
-                                        <span class="text-sm text-gray-700 dark:text-gray-300">{{ $chat->admin->name }}</span>
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">{{ $chat->admin->name }}</span>
                                     </div>
                                 @else
-                                    <span class="text-sm text-gray-400 dark:text-gray-500 italic">Non assigné</span>
+                                    <span class="text-sm text-slate-400 dark:text-slate-500 italic">Non assigné</span>
                                 @endif
                             </td>
                             
-                            <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+                            <td class="px-4 py-4 text-sm text-slate-500 dark:text-slate-400">
                                 @if($chat->last_message_at)
                                     {{ $chat->last_message_at->diffForHumans() }}
                                 @else
@@ -301,7 +301,7 @@
                     @empty
                         <tr>
                             <td colspan="8" class="px-4 py-12 text-center">
-                                <div class="text-gray-400 dark:text-gray-500">
+                                <div class="text-slate-400 dark:text-slate-500">
                                     <i class="fas fa-comments text-5xl mb-4"></i>
                                     <p class="text-lg font-medium mb-1">Aucune conversation de support</p>
                                     <p class="text-sm">Les demandes d'assistance apparaîtront ici.</p>
@@ -315,7 +315,7 @@
 
         <!-- Pagination -->
         @if($chats->hasPages())
-            <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-3 border-t border-slate-200 dark:border-slate-700">
                 {{ $chats->links() }}
             </div>
         @endif
@@ -329,12 +329,12 @@
         <div class="fixed inset-0 bg-black/50 transition-opacity modal-overlay" onclick="closeAssignModal()"></div>
         
         <!-- Modal content -->
-        <div class="relative bg-white dark:bg-gray-800 rounded-xl shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full mx-4">
+        <div class="relative bg-white dark:bg-slate-800 rounded-xl shadow-xl transform transition-all sm:my-8 sm:max-w-md w-full mx-4">
             <form id="assignForm">
                 <!-- Header -->
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Assigner la conversation</h3>
-                    <button type="button" onclick="closeAssignModal()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg transition-colors">
+                <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Assigner la conversation</h3>
+                    <button type="button" onclick="closeAssignModal()" class="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg transition-colors">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -348,14 +348,14 @@
                             Auto-assignation (agent le moins chargé)
                         </button>
                         <div class="relative flex items-center">
-                            <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                            <span class="flex-shrink mx-3 text-xs text-gray-400">ou manuellement</span>
-                            <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
+                            <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
+                            <span class="flex-shrink mx-3 text-xs text-slate-400">ou manuellement</span>
+                            <div class="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
                         </div>
                     @endif
 
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sélectionner un agent</label>
-                    <select id="adminSelect" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Sélectionner un agent</label>
+                    <select id="adminSelect" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <option value="">Choisir un agent...</option>
                         @foreach($admins as $admin)
                             <option value="{{ $admin->id }}">{{ $admin->name }}</option>
@@ -364,8 +364,8 @@
                 </div>
                 
                 <!-- Footer -->
-                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                    <button type="button" onclick="closeAssignModal()" class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg font-medium transition-colors">
+                <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+                    <button type="button" onclick="closeAssignModal()" class="px-4 py-2 text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg font-medium transition-colors">
                         Annuler
                     </button>
                     <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">

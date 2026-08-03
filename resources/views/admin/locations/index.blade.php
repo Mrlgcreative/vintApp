@@ -7,11 +7,11 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <i class="fas fa-map-marked-alt text-primary-600"></i>
                 Zones Autorisées
             </h1>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                 Gérez les villes et régions ayant accès à VintApp
             </p>
         </div>
@@ -111,20 +111,20 @@
     </div>
 
     <!-- 🗺️ Carte GPS Interactive -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <i class="fas fa-map-marker-alt text-primary-600"></i>
                     Carte GPS Interactive
                 </h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">
                     <span id="map-city-count">0</span> villes avec coordonnées GPS
                 </p>
             </div>
             <div class="flex gap-2">
                 <button onclick="fitAllMarkers()" 
-                        class="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 text-sm rounded-lg transition-colors">
+                        class="px-3 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm rounded-lg transition-colors">
                     <i class="fas fa-compress-arrows-alt mr-2"></i>
                     Tout afficher
                 </button>
@@ -143,12 +143,12 @@
         
         <!-- Carte -->
         <div class="relative">
-            <div id="map" class="w-full h-96 rounded-lg border border-gray-300 dark:border-gray-600"></div>
-            <div id="map-loading" class="absolute inset-0 bg-white/90 dark:bg-gray-800/90 rounded-lg hidden">
+            <div id="map" class="w-full h-96 rounded-lg border border-slate-300 dark:border-slate-600"></div>
+            <div id="map-loading" class="absolute inset-0 bg-white/90 dark:bg-slate-800/90 rounded-lg hidden">
                 <div class="flex items-center justify-center h-full">
                     <div class="text-center">
                         <i class="fas fa-spinner fa-spin text-4xl text-primary-600 mb-3"></i>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Chargement de la carte...</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-400">Chargement de la carte...</p>
                     </div>
                 </div>
             </div>
@@ -174,18 +174,18 @@
         <div class="mt-4 flex flex-wrap gap-4 text-sm">
             <div class="flex items-center gap-2">
                 <i class="fas fa-map-marker-alt text-green-500 text-lg"></i>
-                <span class="text-gray-700 dark:text-gray-300">Villes actives</span>
+                <span class="text-slate-700 dark:text-slate-300">Villes actives</span>
             </div>
             <div class="flex items-center gap-2">
-                <i class="fas fa-map-marker-alt text-gray-400 text-lg"></i>
-                <span class="text-gray-700 dark:text-gray-300">Villes inactives</span>
+                <i class="fas fa-map-marker-alt text-slate-400 text-lg"></i>
+                <span class="text-slate-700 dark:text-slate-300">Villes inactives</span>
             </div>
         </div>
     </div>
 
     <!-- Tabs -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="border-b border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="border-b border-slate-200 dark:border-slate-700">
             <nav class="flex -mb-px">
                 <button id="tab-cities" onclick="switchTab('cities')" 
                         class="tab-button active px-6 py-3 text-sm font-medium border-b-2 border-primary-600 text-primary-600">
@@ -193,7 +193,7 @@
                     Villes ({{ $cities->total() }})
                 </button>
                 <button id="tab-regions" onclick="switchTab('regions')" 
-                        class="tab-button px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300">
+                        class="tab-button px-6 py-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 dark:text-slate-400 dark:hover:text-slate-300">
                     <i class="fas fa-map mr-2"></i>
                     Régions ({{ $regions->total() }})
                 </button>
@@ -204,30 +204,30 @@
         <div id="content-cities" class="tab-content p-6">
             @if($cities->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900">
+                    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                        <thead class="bg-slate-50 dark:bg-slate-900">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Ville</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Région</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pays</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">GPS</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ville</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Région</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pays</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">GPS</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                             @foreach($cities as $city)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $city->name }}</div>
+                                    <div class="text-sm font-medium text-slate-900 dark:text-white">{{ $city->name }}</div>
                                     @if($city->description)
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($city->description, 40) }}</div>
+                                        <div class="text-xs text-slate-500 dark:text-slate-400">{{ Str::limit($city->description, 40) }}</div>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300">
                                     {{ $city->region ?? '-' }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300">
                                     {{ $city->country }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
@@ -243,7 +243,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <button onclick="toggleCityStatus({{ $city->id }})" 
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $city->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 hover:bg-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200' }}">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $city->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 hover:bg-green-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-200' }}">
                                         <i class="fas fa-circle text-xs mr-1"></i>
                                         {{ $city->is_active ? 'Active' : 'Inactive' }}
                                     </button>
@@ -266,8 +266,8 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-city text-gray-400 text-5xl mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Aucune ville trouvée</p>
+                    <i class="fas fa-city text-slate-400 text-5xl mb-4"></i>
+                    <p class="text-slate-500 dark:text-slate-400">Aucune ville trouvée</p>
                     <button onclick="openModal('addCityModal')" 
                             class="mt-4 inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">
                         <i class="fas fa-plus mr-2"></i>
@@ -281,27 +281,27 @@
         <div id="content-regions" class="tab-content hidden p-6">
             @if($regions->count() > 0)
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900">
+                    <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                        <thead class="bg-slate-50 dark:bg-slate-900">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Région</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pays</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Statut</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Région</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pays</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Statut</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                             @foreach($regions as $region)
-                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $region->name }}</div>
+                                    <div class="text-sm font-medium text-slate-900 dark:text-white">{{ $region->name }}</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300">
                                     {{ $region->country }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <button onclick="toggleRegionStatus({{ $region->id }})" 
-                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $region->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200' }}">
+                                            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $region->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200' }}">
                                         <i class="fas fa-circle text-xs mr-1"></i>
                                         {{ $region->is_active ? 'Active' : 'Inactive' }}
                                     </button>
@@ -324,8 +324,8 @@
                 </div>
             @else
                 <div class="text-center py-12">
-                    <i class="fas fa-map text-gray-400 text-5xl mb-4"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Aucune région trouvée</p>
+                    <i class="fas fa-map text-slate-400 text-5xl mb-4"></i>
+                    <p class="text-slate-500 dark:text-slate-400">Aucune région trouvée</p>
                 </div>
             @endif
         </div>
@@ -335,15 +335,15 @@
 <!-- Modal: Ajouter une ville -->
 <div id="addCityModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('addCityModal')"></div>
+        <div class="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" onclick="closeModal('addCityModal')"></div>
         
-        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full p-6">
+        <div class="relative bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-2xl w-full p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">
                     <i class="fas fa-city mr-2 text-primary-600"></i>
                     Ajouter une ville
                 </h3>
-                <button onclick="closeModal('addCityModal')" class="text-gray-400 hover:text-gray-600">
+                <button onclick="closeModal('addCityModal')" class="text-slate-400 hover:text-slate-600">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -353,11 +353,11 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Pays <span class="text-red-500">*</span>
                         </label>
                         <select name="country_code" id="worldCountrySelect" required onchange="onCountryChange()"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="">-- Sélectionnez d'abord un pays --</option>
                             <option value="CD">🇨🇩 Congo (RDC)</option>
                             <option value="US">🇺🇸 États-Unis</option>
@@ -369,54 +369,54 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             🔍 Rechercher une ville dans ce pays
                         </label>
                         <input type="text" id="citySearchInput" placeholder="Sélectionnez d'abord un pays, puis tapez 3 lettres..."
                                oninput="searchCityNominatim(this.value)" disabled
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed">
                         <div id="searchResults" class="mt-2 max-h-48 overflow-y-auto hidden"></div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Nom de la ville <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="name" id="cityNameInput" required
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Région
                         </label>
                         <input type="text" name="region" id="cityRegionInput" list="regionsList"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <datalist id="regionsList"></datalist>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Latitude <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="latitude" id="cityLatitudeInput" step="0.000001" required
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Longitude <span class="text-red-500">*</span>
                         </label>
                         <input type="number" name="longitude" id="cityLongitudeInput" step="0.000001" required
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Code ville
                         </label>
                         <input type="text" name="city_code" id="cityCityCodeInput" list="cityCodesList"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <datalist id="cityCodesList">
                             <option value="KIN">Kinshasa</option>
                             <option value="FIH">Kinshasa (Aéroport)</option>
@@ -429,12 +429,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Population
                         </label>
                         <input type="number" name="population" id="cityPopulationInput" list="populationHints"
                                placeholder="Ex: 15000000"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <datalist id="populationHints">
                             <option value="50000">Petite ville (50k)</option>
                             <option value="100000">Ville moyenne (100k)</option>
@@ -445,32 +445,32 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Fuseau horaire
                         </label>
                         <input type="text" name="timezone" id="cityTimezoneInput" placeholder="Africa/Kinshasa"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Description
                         </label>
                         <textarea name="description" id="cityDescriptionInput" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"></textarea>
+                                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"></textarea>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="flex items-center">
                             <input type="checkbox" name="is_active" value="1" checked class="mr-2 w-4 h-4 text-primary-600 focus:ring-primary-500 rounded">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Ville active</span>
+                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Ville active</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" onclick="closeModal('addCityModal')" 
-                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+                            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg transition-colors">
                         Annuler
                     </button>
                     <button type="submit" id="submitCityBtn"
@@ -487,15 +487,15 @@
 <!-- Modal: Ajouter une région -->
 <div id="addRegionModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
     <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeModal('addRegionModal')"></div>
+        <div class="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" onclick="closeModal('addRegionModal')"></div>
         
-        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full p-6">
+        <div class="relative bg-white dark:bg-slate-800 rounded-lg shadow-xl max-w-lg w-full p-6">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white">
                     <i class="fas fa-map mr-2 text-accent-600"></i>
                     Ajouter une région
                 </h3>
-                <button onclick="closeModal('addRegionModal')" class="text-gray-400 hover:text-gray-600">
+                <button onclick="closeModal('addRegionModal')" class="text-slate-400 hover:text-slate-600">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
@@ -505,40 +505,40 @@
                 
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Nom de la région <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="name" required
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Pays <span class="text-red-500">*</span>
                         </label>
                         <input type="text" name="country" required
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent">
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Description
                         </label>
                         <textarea name="description" rows="3"
-                                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent"></textarea>
+                                  class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-accent-500 focus:border-transparent"></textarea>
                     </div>
 
                     <div>
                         <label class="flex items-center">
                             <input type="checkbox" name="is_active" value="1" checked class="mr-2 w-4 h-4 text-accent-600 focus:ring-accent-500 rounded">
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Région active</span>
+                            <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Région active</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="flex justify-end gap-3 mt-6">
                     <button type="button" onclick="closeModal('addRegionModal')" 
-                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+                            class="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-lg transition-colors">
                         Annuler
                     </button>
                     <button type="submit"
@@ -647,7 +647,7 @@ function addCityMarkerToMap(city) {
     
     if (isNaN(lat) || isNaN(lng)) return;
     
-    const iconColor = city.is_active ? '#10b981' : '#9ca3af';
+    const iconColor = city.is_active ? '#10b981' : '#94a3b8';
     
     const customIcon = L.icon({
         iconUrl: `data:image/svg+xml;base64,${btoa(`
@@ -665,8 +665,8 @@ function addCityMarkerToMap(city) {
     marker.bindPopup(`
         <div class="p-2">
             <h4 class="font-bold text-lg mb-1">${city.name}</h4>
-            <p class="text-sm text-gray-600">${city.country}</p>
-            <p class="text-xs text-gray-500 mt-1">📍 ${lat.toFixed(4)}°, ${lng.toFixed(4)}°</p>
+            <p class="text-sm text-slate-600">${city.country}</p>
+            <p class="text-xs text-slate-500 mt-1">📍 ${lat.toFixed(4)}°, ${lng.toFixed(4)}°</p>
         </div>
     `);
     
@@ -699,7 +699,7 @@ function onMapClick(e) {
     tempMarker.bindPopup(`
         <div class="p-2">
             <h4 class="font-bold mb-2">Nouvelle ville</h4>
-            <p class="text-sm text-gray-600 mb-2">📍 ${e.latlng.lat.toFixed(6)}°, ${e.latlng.lng.toFixed(6)}°</p>
+            <p class="text-sm text-slate-600 mb-2">📍 ${e.latlng.lat.toFixed(6)}°, ${e.latlng.lng.toFixed(6)}°</p>
             <button onclick="openAddCityWithCoords(${e.latlng.lat}, ${e.latlng.lng})" 
                     class="px-3 py-1 bg-primary-600 text-white text-sm rounded hover:bg-primary-700">
                 Ajouter ville
@@ -749,13 +749,13 @@ function switchTab(tab) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
     document.querySelectorAll('.tab-button').forEach(b => {
         b.classList.remove('border-primary-600', 'text-primary-600');
-        b.classList.add('border-transparent', 'text-gray-500');
+        b.classList.add('border-transparent', 'text-slate-500');
     });
     
     document.getElementById(`content-${tab}`).classList.remove('hidden');
     const activeBtn = document.getElementById(`tab-${tab}`);
     activeBtn.classList.add('border-primary-600', 'text-primary-600');
-    activeBtn.classList.remove('border-transparent', 'text-gray-500');
+    activeBtn.classList.remove('border-transparent', 'text-slate-500');
 }
 
 // Actions CRUD
@@ -975,11 +975,11 @@ function searchCityNominatim(query) {
             .then(response => response.json())
             .then(data => {
                 if (data.length === 0) {
-                    resultsDiv.innerHTML = '<div class="p-3 text-sm text-gray-500 dark:text-gray-400">Aucune ville trouvée dans ce pays</div>';
+                    resultsDiv.innerHTML = '<div class="p-3 text-sm text-slate-500 dark:text-slate-400">Aucune ville trouvée dans ce pays</div>';
                     return;
                 }
                 
-                let html = '<div class="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg divide-y divide-gray-200 dark:divide-gray-600">';
+                let html = '<div class="bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg divide-y divide-slate-200 dark:divide-slate-600">';
                 
                 data.forEach(place => {
                     const displayName = place.display_name;
@@ -991,7 +991,7 @@ function searchCityNominatim(query) {
                     const lon = parseFloat(place.lon);
                     
                     html += `
-                        <div class="p-3 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer transition-colors" 
+                        <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-600 cursor-pointer transition-colors" 
                              onclick='fillCityData(${JSON.stringify({
                                  name: city,
                                  country: country,
@@ -1004,9 +1004,9 @@ function searchCityNominatim(query) {
                             <div class="flex items-start gap-2">
                                 <i class="fas fa-map-marker-alt text-primary-600 mt-1"></i>
                                 <div class="flex-1">
-                                    <p class="text-sm font-medium text-gray-900 dark:text-white">${city}</p>
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">${region ? region + ', ' : ''}${country}</p>
-                                    <p class="text-xs text-gray-400 mt-1">📍 ${lat.toFixed(4)}°, ${lon.toFixed(4)}°</p>
+                                    <p class="text-sm font-medium text-slate-900 dark:text-white">${city}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400">${region ? region + ', ' : ''}${country}</p>
+                                    <p class="text-xs text-slate-400 mt-1">📍 ${lat.toFixed(4)}°, ${lon.toFixed(4)}°</p>
                                 </div>
                             </div>
                         </div>

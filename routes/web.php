@@ -810,6 +810,15 @@ Route::prefix('payments')->group(function () {
     Route::post('/maishapay/checkout', [PaymentController::class, 'maishapayCheckout'])->name('payments.maishapay.checkout');
     Route::get('/maishapay/status/{transaction}', [PaymentController::class, 'checkMaishaStatus'])->name('payments.maishapay.status');
     
+    // PawaPay routes
+    Route::post('/pawapay/checkout', [PaymentController::class, 'pawapayCheckout'])->name('payments.pawapay.checkout');
+    Route::post('/pawapay/initiate', [PaymentController::class, 'initiatePawaPayPayment'])->name('payments.pawapay.initiate');
+    Route::get('/pawapay/status/{transaction}', [PaymentController::class, 'checkPawaPayStatus'])->name('payments.pawapay.status');
+    Route::get('/pawapay/check-status/{transaction}', [PaymentController::class, 'checkPawaPayStatus'])->name('payments.pawapay.check-status');
+    
+    // PawaPay Webhook (pas d'authentification requise)
+    Route::post('/pawapay/notify', [PaymentController::class, 'handlePawaPayCallback'])->name('payments.pawapay.notify');
+    
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {
         $transaction = \App\Models\Transaction::findOrFail($transactionId);

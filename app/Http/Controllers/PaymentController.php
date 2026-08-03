@@ -924,39 +924,61 @@ class PaymentController extends Controller
             ],
         ]);
 
-        // Initialiser CinetPay
-        $cinetPay = new \App\Services\CinetPay(
-            config('services.cinetpay.site_id'),
-            config('services.cinetpay.api_key'),
-            config('services.cinetpay.platform'),
-            config('services.cinetpay.version')
-        );
+        // Générer le lien de paiement CinetPay (redirection vers le comptoir)
+        try {
+            $paymentUrl = $this->createCinetPayCheckoutLink(
+                $payment,
+                'checkout',
+                ['delivery_address_id' => $request->delivery_address_id],
+                route('cart.checkout')
+            );
+        } catch (\Throwable $e) {
+            Log::error('CinetPay checkout error: ' . $e->getMessage(), ['transaction_id' => $transactionId]);
+            return view('payments.checkout', [
+                'payment' => $payment,
+                'cinetpayError' => $e->getMessage(),
+            ]);
+        }
 
-        // Configurer le paiement
-        $cinetPay->setTransId($transactionId)
-            ->setAmount($totalAmount)
-            ->setDesignation($payment->designation)
-            ->setCurrency($currency)
-            ->setCustom(json_encode([
-                'user_id' => Auth::id(),
-                'payment_id' => $payment->id,
-                'type' => 'checkout',
-                'delivery_address_id' => $request->delivery_address_id,
-            ]))
-            ->setNotifyUrl(route('payments.cinetpay.notify'))
-            ->setReturnUrl(route('payments.cinetpay.return'))
-            ->setCancelUrl(route('cart.checkout'))
-            ->setDebug(config('app.debug'));
-
-        // Afficher le formulaire de paiement
+        // Afficher la page de paiement avec le bouton de redirection
         return view('payments.checkout', [
             'payment' => $payment,
-            'cinetPay' => $cinetPay,
+            'paymentUrl' => $paymentUrl,
             'isCheckout' => true,
             'cartItems' => $cartItems,
             'totalAmount' => $totalAmount,
             'currency' => $currency,
         ]);
+    }
+
+    /**
+     * Construire et générer un lien de paiement CinetPay pour un paiement donné.
+     */
+    private function createCinetPayCheckoutLink(\App\Models\Payment $payment, string $type, array $extra = [], ?string $cancelUrl = null): string
+    {
+        $params = [
+            'apikey' => config('services.cinetpay.api_key'),
+            'site_id' => config('services.cinetpay.site_id'),
+            'transaction_id' => $payment->transaction_id,
+            'amount' => (int) round($payment->amount),
+            'currency' => $payment->currency,
+            'description' => str_replace(['#', '/', '$', '_', '&'], '', $payment->designation),
+            'notify_url' => route('payments.cinetpay.notify'),
+            'return_url' => route('payments.cinetpay.return'),
+            'channels' => 'MOBILE_MONEY',
+            'lang' => 'fr',
+            'metadata' => json_encode(array_merge([
+                'payment_id' => $payment->id,
+                'user_id' => Auth::id(),
+                'type' => $type,
+            ], $extra)),
+        ];
+
+        if ($cancelUrl) {
+            $params['cancel_url'] = $cancelUrl;
+        }
+
+        return \App\Services\CinetPay::createPaymentLink($params);
     }
 
     /**
@@ -996,33 +1018,28 @@ class PaymentController extends Controller
             'payment_status' => 'pending',
         ]);
 
-        // Initialiser CinetPay
-        $cinetPay = new \App\Services\CinetPay(
-            config('services.cinetpay.site_id'),
-            config('services.cinetpay.api_key'),
-            config('services.cinetpay.platform'),
-            config('services.cinetpay.version')
-        );
+        // Générer le lien de paiement CinetPay (redirection vers le comptoir)
+        try {
+            $paymentUrl = $this->createCinetPayCheckoutLink(
+                $payment,
+                'order',
+                ['order_id' => $order->id],
+                route('orders.show', $order)
+            );
+        } catch (\Throwable $e) {
+            Log::error('CinetPay order payment error: ' . $e->getMessage(), ['transaction_id' => $transactionId]);
+            return view('payments.checkout', [
+                'order' => $order,
+                'payment' => $payment,
+                'cinetpayError' => $e->getMessage(),
+            ]);
+        }
 
-        // Configurer le paiement
-        $cinetPay->setTransId($transactionId)
-            ->setAmount($order->total_amount)
-            ->setDesignation($payment->designation)
-            ->setCustom(json_encode([
-                'user_id' => Auth::id(),
-                'order_id' => $order->id,
-                'payment_id' => $payment->id,
-            ]))
-            ->setNotifyUrl(route('payments.cinetpay.notify'))
-            ->setReturnUrl(route('payments.cinetpay.return'))
-            ->setCancelUrl(route('orders.show', $order))
-            ->setDebug(config('app.debug'));
-
-        // Afficher le formulaire de paiement
+        // Afficher la page de paiement avec le bouton de redirection
         return view('payments.checkout', [
             'order' => $order,
             'payment' => $payment,
-            'cinetPay' => $cinetPay,
+            'paymentUrl' => $paymentUrl,
         ]);
     }
 
@@ -1196,30 +1213,26 @@ class PaymentController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
-        // Initialiser CinetPay
-        $cinetPay = new \App\Services\CinetPay(
-            config('services.cinetpay.site_id'),
-            config('services.cinetpay.api_key'),
-            config('services.cinetpay.platform'),
-            config('services.cinetpay.version')
-        );
-
-        $cinetPay->setTransId($transactionId)
-            ->setAmount($amount)
-            ->setDesignation($payment->designation)
-            ->setCustom(json_encode([
-                'user_id' => Auth::id(),
-                'payment_id' => $payment->id,
-                'type' => 'wallet_topup',
-            ]))
-            ->setNotifyUrl(route('payments.cinetpay.notify'))
-            ->setReturnUrl(route('wallet.index'))
-            ->setCancelUrl(route('wallet.index'))
-            ->setDebug(config('app.debug'));
+        // Générer le lien de paiement CinetPay (redirection vers le comptoir)
+        try {
+            $paymentUrl = $this->createCinetPayCheckoutLink(
+                $payment,
+                'wallet_topup',
+                [],
+                route('wallet.index')
+            );
+        } catch (\Throwable $e) {
+            Log::error('CinetPay wallet topup error: ' . $e->getMessage(), ['transaction_id' => $transactionId]);
+            return view('payments.checkout', [
+                'payment' => $payment,
+                'cinetpayError' => $e->getMessage(),
+                'isWalletTopup' => true,
+            ]);
+        }
 
         return view('payments.checkout', [
             'payment' => $payment,
-            'cinetPay' => $cinetPay,
+            'paymentUrl' => $paymentUrl,
             'isWalletTopup' => true,
         ]);
     }
@@ -1828,6 +1841,240 @@ class PaymentController extends Controller
             'currency' => $currency,
             'deliveryAddress' => $deliveryAddress,
         ]);
+    }
+
+
+
+    /**
+     * Afficher le formulaire de paiement PawaPay (depuis le checkout)
+     */
+    public function pawapayCheckout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|string',
+            'total_amount' => 'required|numeric|min:1',
+            'currency' => 'sometimes|string|in:CDF,USD',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $cart = json_decode($request->cart_items, true);
+        $total = $request->total_amount;
+        $currency = $request->input('currency', 'CDF');
+        $deliveryAddressId = $request->delivery_address_id;
+
+        $deliveryAddress = \App\Models\DeliveryAddress::findOrFail($deliveryAddressId);
+
+        // Stocker les données en session pour le paiement PawaPay
+        session([
+            'pawapay_checkout' => [
+                'cart' => $cart,
+                'total' => $total,
+                'currency' => $currency,
+                'delivery_address_id' => $deliveryAddressId,
+                'delivery_address' => $deliveryAddress,
+            ]
+        ]);
+
+        return view('payments.pawapay', [
+            'cart' => $cart,
+            'total' => $total,
+            'currency' => $currency,
+            'deliveryAddress' => $deliveryAddress,
+        ]);
+    }
+
+    /**
+     * Initier un dépôt PawaPay (l'utilisateur choisit opérateur + numéro)
+     */
+    public function initiatePawaPayPayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'phone' => 'required|string|min:9|max:13',
+            'currency' => 'sometimes|string|in:CDF,USD',
+            'operator' => 'required|string|in:VODACOM,AIRTEL,ORANGE,AFRICELL',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            $pawaPay = new \App\Services\PawaPay();
+
+            if (!$pawaPay->isConfigured() || !$pawaPay->isEnabled()) {
+                Log::error('PawaPay: service non configuré ou désactivé');
+                return back()->with('error', 'Service de paiement PawaPay non disponible.');
+            }
+
+            // Mapper l'opérateur vers le code PawaPay (RDC)
+            $providers = [
+                'VODACOM' => 'VODACOM_CD',
+                'AIRTEL' => 'AIRTEL_CD',
+                'ORANGE' => 'ORANGE_CD',
+                'AFRICELL' => 'AFRICELL_CD',
+            ];
+            $provider = $providers[$request->operator];
+
+            $session = session('pawapay_checkout', []);
+            $cart = $session['cart'] ?? [];
+            $deliveryAddressId = $session['delivery_address_id'] ?? null;
+
+            $transactionId = 'PAWAPAY-' . strtoupper(\Illuminate\Support\Str::random(10)) . '-' . time();
+
+            $transaction = Transaction::create([
+                'user_id' => Auth::id(),
+                'buyer_id' => Auth::id(),
+                'transaction_id' => $transactionId,
+                'transaction_ref' => $transactionId,
+                'amount' => $request->amount,
+                'currency' => $request->input('currency', 'CDF'),
+                'provider' => 'pawapay',
+                'status' => 'pending',
+                'purpose' => 'Paiement VintApp',
+                'phone' => $request->phone,
+                'metadata' => json_encode([
+                    'gateway' => 'pawapay',
+                    'operator' => $request->operator,
+                    'provider' => $provider,
+                    'cart' => $cart,
+                    'delivery_address_id' => $deliveryAddressId,
+                ]),
+            ]);
+
+            $result = $pawaPay->initiateDeposit([
+                'depositId' => $pawaPay->generatePaymentId(),
+                'amount' => $request->amount,
+                'currency' => $request->input('currency', 'CDF'),
+                'phoneNumber' => $request->phone,
+                'provider' => $provider,
+                'clientReferenceId' => $transactionId,
+                'metadata' => [
+                    'transaction_id' => $transactionId,
+                    'user_id' => Auth::id(),
+                ],
+            ]);
+
+            if ($result['success'] && in_array($result['status'], ['ACCEPTED', 'DUPLICATE_IGNORED'], true)) {
+                $transaction->update([
+                    'transaction_ref' => $result['payment_id'],
+                    'status' => 'pending',
+                ]);
+
+                return redirect()->route('payments.pawapay.status', $transaction->id);
+            }
+
+            $transaction->update(['status' => 'failed']);
+
+            Log::error('PawaPay: échec initiation dépôt', ['result' => $result]);
+
+            return redirect()->route('payments.error', [
+                'error' => $result['message'] ?? 'Erreur lors du paiement PawaPay',
+                'amount' => $request->amount,
+                'provider' => 'PawaPay',
+                'transaction_id' => $transaction->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('PawaPay: exception initiation dépôt', ['error' => $e->getMessage()]);
+
+            return redirect()->route('payments.error', [
+                'error' => $e->getMessage(),
+                'amount' => $request->amount,
+                'provider' => 'PawaPay',
+            ]);
+        }
+    }
+
+    /**
+     * Page de statut PawaPay (avec polling AJAX)
+     */
+    public function checkPawaPayStatus(Request $request, Transaction $transaction)
+    {
+        if ($transaction->provider !== 'pawapay') {
+            abort(404);
+        }
+
+        // Endpoint AJAX de polling
+        if ($request->wantsJson()) {
+            $pawaPay = new \App\Services\PawaPay();
+            $result = $pawaPay->checkDepositStatus($transaction->transaction_ref);
+
+            $current = $result['status'] ?? null;
+            if ($result['success'] && $current && !in_array($current, ['FOUND', 'NOT_FOUND'], true)) {
+                $newStatus = $pawaPay->mapStatus($current);
+                if ($newStatus !== $transaction->status) {
+                    $transaction->update(['status' => $newStatus]);
+                }
+                if ($newStatus === 'completed') {
+                    clear_cart();
+                    session()->forget('pawapay_checkout');
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'status' => $transaction->status,
+                'is_final' => in_array($transaction->status, ['completed', 'failed'], true),
+            ]);
+        }
+
+        return view('payments.pawapay-status', compact('transaction'));
+    }
+
+    /**
+     * Webhook PawaPay (statut final du dépôt)
+     */
+    public function handlePawaPayCallback(Request $request)
+    {
+        Log::info('PawaPay Callback', $request->all());
+
+        try {
+            $payload = $request->json() ? $request->json()->all() : [];
+            $depositId = $payload['depositId'] ?? $request->query('id');
+
+            if (!$depositId) {
+                return response()->json(['success' => false, 'message' => 'depositId manquant'], 400);
+            }
+
+            $transaction = Transaction::where('provider', 'pawapay')
+                ->where('transaction_ref', $depositId)
+                ->first();
+
+            if (!$transaction) {
+                return response()->json(['success' => false, 'message' => 'Transaction introuvable'], 404);
+            }
+
+            $pawaPay = new \App\Services\PawaPay();
+            $status = $payload['depositStatus'] ?? $payload['payoutStatus'] ?? null;
+            $newStatus = $pawaPay->mapStatus($status);
+
+            if ($newStatus !== $transaction->status) {
+                $transaction->update([
+                    'status' => $newStatus,
+                    'metadata' => json_encode(array_merge(
+                        json_decode($transaction->metadata ?? '{}', true) ?: [],
+                        ['pawapay_callback' => $payload]
+                    )),
+                ]);
+
+                if ($newStatus === 'completed') {
+                    clear_cart();
+                    session()->forget('pawapay_checkout');
+                }
+            }
+
+            return response()->json(['success' => true], 200);
+
+        } catch (\Exception $e) {
+            Log::error('PawaPay: erreur callback', ['error' => $e->getMessage()]);
+
+            return response()->json(['success' => false, 'message' => 'Erreur interne'], 500);
+        }
     }
 
 

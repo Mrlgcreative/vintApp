@@ -321,35 +321,66 @@
 
                     <!-- Bouton de paiement (masqué par défaut) -->
                     <div id="paymentButtonContainer" class="hidden mt-6">
-                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                            <div class="flex items-start">
-                                <i class="fas fa-bolt text-green-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
-                                <div>
-                                    <h3 class="font-semibold text-green-900 text-sm mb-1">Paiement sécurisé via MaishaPay</h3>
-                                    <p class="text-green-800 text-sm">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
-                                </div>
+                        <!-- Sélecteur de méthode de paiement -->
+                        <div class="mb-4">
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center">
+                                <i class="fas fa-wallet mr-2"></i>Méthode de paiement
+                            </p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- MaishaPay -->
+                                <button type="button" id="method-maishapay" data-method="maishapay"
+                                        class="pay-method-card relative rounded-xl border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 text-left transition-all duration-200">
+                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-bolt text-white"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-white">MaishaPay</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange, M-Pesa, Airtel, Africell</p>
+                                        </div>
+                                    </div>
+                                </button>
+                                <!-- CinetPay -->
+                                <button type="button" id="method-cinetpay" data-method="cinetpay"
+                                        class="pay-method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
+                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-credit-card text-white"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-white">CinetPay</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Mobile Money & cartes</p>
+                                        </div>
+                                    </div>
+                                </button>
+                                <!-- PawaPay -->
+                                <button type="button" id="method-pawapay" data-method="pawapay"
+                                        class="pay-method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
+                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
+                                            <i class="fas fa-mobile-alt text-white"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-white">PawaPay</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Mobile Money panafricain</p>
+                                        </div>
+                                    </div>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Opérateurs supportés -->
-                        <div class="mb-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-2 text-center">Opérateurs acceptés :</p>
-                            <div class="flex justify-center items-center gap-3">
-                                <div class="text-center">
-                                    <span class="text-lg">🟠</span>
-                                    <p class="text-xs text-gray-600">Orange</p>
-                                </div>
-                                <div class="text-center">
-                                    <span class="text-lg">🟢</span>
-                                    <p class="text-xs text-gray-600">M-Pesa</p>
-                                </div>
-                                <div class="text-center">
-                                    <span class="text-lg">🔴</span>
-                                    <p class="text-xs text-gray-600">Airtel</p>
-                                </div>
-                                <div class="text-center">
-                                    <span class="text-lg">🟡</span>
-                                    <p class="text-xs text-gray-600">Africell</p>
+                        <!-- Zone info méthode sélectionnée -->
+                        <div id="payMethodInfo" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-bolt text-green-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
+                                <div>
+                                    <h3 class="font-semibold text-green-900 text-sm mb-1" id="payMethodInfoTitle">Paiement sécurisé via MaishaPay</h3>
+                                    <p class="text-green-800 text-sm" id="payMethodInfoText">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
                                 </div>
                             </div>
                         </div>
@@ -369,7 +400,35 @@
                             </button>
                         </form>
 
-                        <!-- Paiement Simulé (Test) -->
+                        <!-- Formulaire CinetPay -->
+                        <form action="{{ route('payments.checkout.initiate') }}" method="POST" id="cinetpayForm" class="payment-gateway-form hidden">
+                            @csrf
+                            <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
+                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
+                            <input type="hidden" name="total_amount" value="{{ $total }}">
+                            <input type="hidden" name="currency" value="{{ $currency }}">
+
+                            <button type="submit" 
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
+                                <i class="fas fa-credit-card mr-2"></i>
+                                Payer {{ number_format($total, 2) }} {{ $currency }} avec CinetPay
+                            </button>
+                        </form>
+
+                        <!-- Formulaire PawaPay -->
+                        <form action="{{ route('payments.pawapay.checkout') }}" method="POST" id="pawapayForm" class="payment-gateway-form hidden">
+                            @csrf
+                            <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
+                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
+                            <input type="hidden" name="total_amount" value="{{ $total }}">
+                            <input type="hidden" name="currency" value="{{ $currency }}">
+
+                            <button type="submit" 
+                                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
+                                <i class="fas fa-mobile-alt mr-2"></i>
+                                Payer {{ number_format($total, 2) }} {{ $currency }} avec PawaPay
+                            </button>
+                        </form>
                     </div>
 
                         <!-- Moyens de paiement acceptés -->
@@ -379,6 +438,8 @@
                                 <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">🔒 SSL</div>
                                 <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">✅ Vérifié</div>
                                 <div class="bg-green-100 dark:bg-green-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300">⚡ MaishaPay</div>
+                                <div class="bg-blue-100 dark:bg-blue-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">💳 CinetPay</div>
+                                <div class="bg-purple-100 dark:bg-purple-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300">📱 PawaPay</div>
                             </div>
                         </div>
 
@@ -644,10 +705,79 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Gestion du formulaire de paiement MaishaPay
-    const maishapayForm = document.getElementById('maishapayForm');
-    if (maishapayForm) {
-        maishapayForm.addEventListener('submit', function(e) {
+    // Sélection de la méthode de paiement (MaishaPay / CinetPay)
+    const payMethodMeta = {
+        maishapay: {
+            active: 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30',
+            badge: 'border-green-500 bg-green-500',
+            title: 'Paiement sécurisé via MaishaPay',
+            text: 'Tous les opérateurs Mobile Money RDC sont acceptés.',
+            icon: 'fa-bolt',
+            iconClass: 'text-green-600',
+            form: 'maishapayForm',
+            btn: 'bg-green-600 hover:bg-green-700',
+            label: 'MaishaPay'
+        },
+        cinetpay: {
+            active: 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
+            badge: 'border-blue-500 bg-blue-500',
+            title: 'Paiement sécurisé via CinetPay',
+            text: 'Mobile Money, cartes bancaires et autres moyens de paiement.',
+            icon: 'fa-credit-card',
+            iconClass: 'text-blue-600',
+            form: 'cinetpayForm',
+            btn: 'bg-blue-600 hover:bg-blue-700',
+            label: 'CinetPay'
+        },
+        pawapay: {
+            active: 'border-purple-500 bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-900/30 dark:to-fuchsia-900/30',
+            badge: 'border-purple-500 bg-purple-500',
+            title: 'Paiement sécurisé via PawaPay',
+            text: 'Mobile Money via PawaPay (Vodacom, Airtel, Orange, Africell).',
+            icon: 'fa-mobile-alt',
+            iconClass: 'text-purple-600',
+            form: 'pawapayForm',
+            btn: 'bg-purple-600 hover:bg-purple-700',
+            label: 'PawaPay'
+        }
+    };
+    const payCheckSvg = `<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>`;
+
+    function selectPayMethod(method) {
+        const meta = payMethodMeta[method];
+        const base = 'pay-method-card relative rounded-xl border-2 p-4 text-left transition-all duration-200 ';
+
+        document.querySelectorAll('.pay-method-card').forEach(function(card) {
+            const m = card.dataset.method;
+            const isActive = m === method;
+            card.className = base + (isActive ? payMethodMeta[m].active : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800');
+            const badge = card.querySelector('.pay-method-badge');
+            badge.className = 'pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 flex items-center justify-center ' +
+                (isActive ? payMethodMeta[m].badge : 'border-gray-300 dark:border-gray-500');
+            badge.innerHTML = isActive ? payCheckSvg : '';
+        });
+
+        // Basculer les formulaires
+        document.querySelectorAll('.payment-gateway-form').forEach(function(form) {
+            form.classList.toggle('hidden', form.id !== meta.form);
+        });
+
+        // Mettre à jour la zone d'info
+        const infoIcon = document.querySelector('#payMethodInfo i');
+        infoIcon.className = 'fas ' + meta.icon + ' ' + meta.iconClass + ' mt-0.5 mr-3 flex-shrink-0 text-xl';
+        document.getElementById('payMethodInfoTitle').textContent = meta.title;
+        document.getElementById('payMethodInfoText').textContent = meta.text;
+    }
+
+    document.querySelectorAll('.pay-method-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            selectPayMethod(this.dataset.method);
+        });
+    });
+
+    // Gestion du formulaire de paiement (MaishaPay ou CinetPay)
+    document.querySelectorAll('.payment-gateway-form').forEach(function(gatewayForm) {
+        gatewayForm.addEventListener('submit', function(e) {
             if (savedAddressId) {
                 const addressInput = this.querySelector('.delivery_address_id_input');
                 if (addressInput) {
@@ -661,10 +791,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const submitBtn = this.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection vers MaishaPay...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection vers la plateforme de paiement...';
             submitBtn.className = 'w-full bg-gray-400 text-white py-3 px-6 rounded-lg cursor-not-allowed font-medium text-lg flex items-center justify-center';
         });
-    }
+    });
 });
 </script>
 @endpush

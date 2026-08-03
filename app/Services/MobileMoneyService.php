@@ -29,6 +29,16 @@ class MobileMoneyService
     protected ?MaishaPay $maishaPay = null;
 
     /**
+     * Instance CinetPay pour les payouts via API de transfert
+     */
+    protected ?CinetPay $cinetPay = null;
+
+    /**
+     * Utiliser CinetPay comme agrégateur de décaissement
+     */
+    protected bool $useCinetPayAggregator = false;
+
+    /**
      * Utiliser MaishaPay comme agrégateur par défaut
      */
     protected bool $useMaishaPayAggregator = true;
@@ -70,11 +80,40 @@ class MobileMoneyService
     ];
 
     /**
-     * Constructor - Initialise MaishaPay si configuré
+     * Constructor - Initialise MaishaPay et CinetPay si configurés
      */
     public function __construct()
     {
         $this->initializeMaishaPay();
+        $this->initializeCinetPay();
+    }
+
+    /**
+     * Initialiser le service CinetPay pour les décaissements
+     */
+    protected function initializeCinetPay(): void
+    {
+        try {
+            $this->cinetPay = new CinetPay(
+                config('services.cinetpay.site_id'),
+                config('services.cinetpay.api_key'),
+                config('services.cinetpay.platform'),
+                config('services.cinetpay.version')
+            );
+
+            $this->useCinetPayAggregator = $this->cinetPay->isTransferConfigured();
+
+            if ($this->useCinetPayAggregator) {
+                Log::info('MobileMoneyService: CinetPay transfer initialisé', [
+                    'enabled' => true,
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::warning('MobileMoneyService: Impossible d\'initialiser CinetPay', [
+                'error' => $e->getMessage(),
+            ]);
+            $this->useCinetPayAggregator = false;
+        }
     }
 
     /**
@@ -130,7 +169,13 @@ class MobileMoneyService
                 'currency' => $currency,
                 'transaction_id' => $transaction->id,
                 'use_maishapay' => $this->useMaishaPayAggregator,
+                'use_cinetpay' => $this->useCinetPayAggregator,
             ]);
+
+            // Si cinetpay est spécifié directement, utiliser l'API de transfert
+            if ($provider === 'cinetpay') {
+                return $this->cashOutCinetPay($normalizedPhone, $amount, $currency, $transaction);
+            }
 
             // Si maishapay est spécifié directement, utiliser l'API B2C MaishaPay
             if ($provider === 'maishapay') {
@@ -248,6 +293,71 @@ class MobileMoneyService
                 'provider_reference' => null,
             ],
         };
+    }
+
+    /**
+     * Cash-out via l'API de transfert CinetPay (payout)
+     */
+    private function cashOutCinetPay(string $phone, float $amount, string $currency, WalletTransaction $transaction): array
+    {
+        if (!$this->cinetPay || !$this->useCinetPayAggregator) {
+            throw new Exception("CinetPay n'est pas configuré pour les transferts");
+        }
+
+        Log::info("Cash-out via CinetPay", [
+            'phone' => substr($phone, 0, 7) . '***',
+            'amount' => $amount,
+            'currency' => $currency,
+        ]);
+
+        [$prefix, $localPhone] = $this->extractPrefixAndPhone($phone);
+
+        $result = $this->cinetPay->initiateTransfer(
+            $prefix,
+            $localPhone,
+            $amount,
+            $transaction->reference,
+            route('withdrawals.webhook.provider', ['provider' => 'cinetpay'])
+        );
+
+        if (!$result['success']) {
+            throw new Exception("CinetPay transfert échoué: " . ($result['message'] ?? 'Erreur inconnue'));
+        }
+
+        return [
+            'status' => $result['status'] ?? 'processing',
+            'message' => $result['message'] ?? 'Retrait en cours via CinetPay',
+            'provider_reference' => $result['transaction_id'] ?? $result['client_transaction_id'],
+            'provider_response' => $result['data'] ?? $result,
+            'aggregator' => 'cinetpay',
+        ];
+    }
+
+    /**
+     * Extrait l'indicatif pays (prefix) et le numéro local d'un numéro E.164.
+     *
+     * @return array [prefix, phone] Ex: ['243', '812345678']
+     */
+    private function extractPrefixAndPhone(string $phone): array
+    {
+        $phone = preg_replace('/[^\d+]/', '', $phone);
+        $phone = ltrim($phone, '+');
+
+        // Indicatifs pays supportés par CinetPay (3 chiffres)
+        $prefixes3 = ['243', '225', '221', '223', '226', '229', '228', '237', '241', '242', '261', '224', '227', '232', '233', '250', '256', '254', '257', '260', '212', '213', '216', '218'];
+
+        if (strlen($phone) >= 3 && in_array(substr($phone, 0, 3), $prefixes3, true)) {
+            return [substr($phone, 0, 3), substr($phone, 3)];
+        }
+
+        // Indicatifs à 2 chiffres (ex: 27 pour l'Afrique du Sud)
+        $prefixes2 = ['27', '20', '94', '95', '91', '92', '93', '81', '84', '96'];
+        if (strlen($phone) >= 2 && in_array(substr($phone, 0, 2), $prefixes2, true)) {
+            return [substr($phone, 0, 2), substr($phone, 2)];
+        }
+
+        // Fallback : sans indicatif, renvoyer le numéro tel quel
+        return ['243', $phone];
     }
 
     /**
@@ -1035,6 +1145,7 @@ class MobileMoneyService
 
             // TODO: Implémenter les vraies vérifications de statut par provider
             return match ($provider) {
+                'cinetpay' => $this->checkCinetPayStatus($providerReference),
                 'orange_money' => $this->checkOrangeMoneyStatus($providerReference),
                 'airtel_money' => $this->checkAirtelMoneyStatus($providerReference),
                 'mpesa' => $this->checkMPesaStatus($providerReference),
@@ -1058,6 +1169,28 @@ class MobileMoneyService
     }
 
     // Méthodes de vérification de statut (à implémenter selon les APIs)
+    private function checkCinetPayStatus(string $reference): array
+    {
+        if (!$this->cinetPay || !$this->useCinetPayAggregator) {
+            return ['status' => 'processing', 'message' => 'CinetPay non configuré'];
+        }
+
+        $result = $this->cinetPay->checkTransferStatus($reference);
+
+        if (!$result['success']) {
+            return [
+                'status' => 'error',
+                'message' => $result['message'] ?? 'Erreur de vérification CinetPay',
+            ];
+        }
+
+        return [
+            'status' => $result['status'] ?? 'processing',
+            'message' => $result['comment'] ?? $result['message'] ?? 'Statut CinetPay',
+            'provider_reference' => $result['transaction_id'] ?? null,
+        ];
+    }
+
     private function checkOrangeMoneyStatus(string $reference): array
     {
         // TODO: Implémenter l'appel API de vérification
@@ -1100,6 +1233,7 @@ class MobileMoneyService
         try {
             return match ($provider) {
                 'maishapay' => $this->verifyMaishaPayWebhook($request),
+                'cinetpay' => $this->verifyCinetPayWebhook($request),
                 'orange_money' => $this->verifyOrangeMoneyWebhook($request),
                 'airtel_money' => $this->verifyAirtelMoneyWebhook($request),
                 'mpesa' => $this->verifyMPesaWebhook($request),
@@ -1123,6 +1257,7 @@ class MobileMoneyService
     {
         return match ($provider) {
             'maishapay' => $request->input('reference') ?? $request->input('data.reference') ?? $request->input('metadata.reference'),
+            'cinetpay' => $request->input('client_transaction_id') ?? $request->input('transaction_id'),
             'orange_money' => $request->input('reference') ?? $request->input('order_id'),
             'airtel_money' => $request->input('transaction.id') ?? $request->input('reference'),
             'mpesa' => $request->input('input_TransactionReference') ?? $request->input('ThirdPartyConversationID'),
@@ -1139,6 +1274,7 @@ class MobileMoneyService
     {
         $status = match ($provider) {
             'maishapay' => $request->input('status') ?? $request->input('data.status'),
+            'cinetpay' => $request->input('treatment_status') ?? $request->input('status'),
             'orange_money' => $request->input('status') ?? $request->input('payment_status'),
             'airtel_money' => $request->input('status.success') ? 'completed' : 'failed',
             'mpesa' => $request->input('output_ResponseCode') === '0' ? 'completed' : 'failed',
@@ -1149,9 +1285,9 @@ class MobileMoneyService
 
         // Normaliser les statuts
         return match (strtolower($status)) {
-            'success', 'successful', 'completed', 'paid', 'true', '1' => 'completed',
-            'failed', 'failure', 'error', 'declined', 'false', '0' => 'failed',
-            'pending', 'processing', 'initiated' => 'processing',
+            'success', 'successful', 'completed', 'paid', 'true', '1', 'val', 'validated' => 'completed',
+            'failed', 'failure', 'error', 'declined', 'false', '0', 'rej', 'rejected', 'canc', 'cancelled', 'exp', 'expired' => 'failed',
+            'pending', 'processing', 'initiated', 'new' => 'processing',
             default => 'processing',
         };
     }
@@ -1163,6 +1299,7 @@ class MobileMoneyService
     {
         return match ($provider) {
             'maishapay' => $request->input('transaction_id') ?? $request->input('data.transaction_id'),
+            'cinetpay' => $request->input('transaction_id') ?? $request->input('lot'),
             'orange_money' => $request->input('payment_token') ?? $request->input('txnid'),
             'airtel_money' => $request->input('data.transaction.id') ?? $request->input('transaction_id'),
             'mpesa' => $request->input('output_ConversationID') ?? $request->input('ConversationID'),
@@ -1173,6 +1310,14 @@ class MobileMoneyService
     }
 
     // Méthodes de vérification de signature par provider
+
+    private function verifyCinetPayWebhook($request): bool
+    {
+        // L'API de transfert CinetPay n'envoie pas de signature sur les callbacks.
+        // La validation repose sur la cohérence des données reçues (client_transaction_id
+        // correspondant à une transaction de retrait existante).
+        return true;
+    }
 
     private function verifyMaishaPayWebhook($request): bool
     {

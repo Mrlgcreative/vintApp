@@ -189,36 +189,60 @@
                             </p>
                         </div>
 
-                        <!-- Opérateur MaishaPay -->
+                        <!-- Méthode de retrait -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
                                 <span class="flex items-center space-x-1">
                                     <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                     </svg>
-                                    <span>Opérateur de retrait</span>
+                                    <span>Méthode de retrait</span>
                                 </span>
                             </label>
-                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border border-green-200 dark:border-green-800/50 rounded-xl p-4 flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- MaishaPay -->
+                                <button type="button" id="method-maishapay" data-method="maishapay"
+                                        class="method-card relative rounded-xl border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 text-left transition-all duration-200">
+                                    <span class="method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/>
                                         </svg>
+                                    </span>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-white">MaishaPay</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange, M-Pesa, Airtel, Africell</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="font-bold text-gray-900 dark:text-white">MaishaPay</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400">Orange, M-Pesa, Airtel, Africell</p>
+                                </button>
+                                <!-- CinetPay -->
+                                <button type="button" id="method-cinetpay" data-method="cinetpay"
+                                        class="method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
+                                    <span class="method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-gray-900 dark:text-white">CinetPay</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange Money, MTN, M-Pesa…</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <span class="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">Actif</span>
+                                </button>
                             </div>
-                            <input type="hidden" name="payment_method" value="maishapay">
+                            <input type="hidden" name="payment_method" id="payment_method" value="maishapay">
                             <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
-                                <span>Détection automatique de l'opérateur via le numéro</span>
+                                <span>MaishaPay détecte automatiquement l'opérateur · CinetPay envoie vers votre compte mobile money</span>
                             </p>
                         </div>
 
@@ -270,7 +294,7 @@
                             </div>
                         </div>
 
-                        <!-- Info MaishaPay -->
+                        <!-- Info traitement -->
                         <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-4">
                             <div class="flex space-x-3">
                                 <div class="flex-shrink-0">
@@ -279,8 +303,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200">⚡ Traitement MaishaPay</h4>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur.</p>
+                                    <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200">⚡ Traitement <span id="withdrawInfoMethod">MaishaPay</span></h4>
+                                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-1" id="withdrawInfoText">Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur.</p>
                                 </div>
                             </div>
                         </div>
@@ -373,9 +397,9 @@
                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
                 </svg>
-                <span>Opérateurs MaishaPay</span>
+                <span>Opérateurs supportés</span>
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
                     <div class="text-2xl mb-1">🟠</div>
                     <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Orange Money</p>
@@ -395,6 +419,11 @@
                     <div class="text-2xl mb-1">🔵</div>
                     <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Africell</p>
                     <p class="text-xs text-gray-500 dark:text-gray-400">090/091/092</p>
+                </div>
+                <div class="bg-gradient-to-br from-cyan-50 to-sky-100 dark:from-cyan-900/30 dark:to-sky-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
+                    <div class="text-2xl mb-1">⚡</div>
+                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">CinetPay</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Orange, MTN, M-Pesa…</p>
                 </div>
             </div>
         </div>
@@ -487,15 +516,17 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('submit', function(e) {
             const phone = phoneInput.value.trim();
             const amount = parseFloat(amountInput.value);
-            
-            const confirmMessage = `🔄 RETRAIT VIA MAISHAPAY\n\n` +
+            const paymentMethod = document.getElementById('payment_method').value;
+            const methodLabel = paymentMethod === 'cinetpay' ? 'CINETPAY' : 'MAISHAPAY';
+
+            const confirmMessage = `🔄 RETRAIT VIA ${methodLabel}\n\n` +
                 `Montant : ${currency === 'CDF' ? amount.toLocaleString('fr-FR') + ' FC' : '$' + amount.toLocaleString('en-US')}\n` +
                 `Vers : ${phone}\n\n` +
                 `⚡ Transfert automatique en 2-10 minutes.\n` +
                 `💰 Wallet débité immédiatement.\n` +
                 `🔄 Remboursement auto en cas d'échec.\n\n` +
                 `Confirmer ?`;
-            
+
             if (!confirm(confirmMessage)) {
                 e.preventDefault();
             } else {
@@ -510,6 +541,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Sélection de la méthode de retrait (MaishaPay / CinetPay)
+    const methodMeta = {
+        maishapay: {
+            active: 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30',
+            badge: 'border-green-500 bg-green-500',
+            label: 'MaishaPay',
+            text: "Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur."
+        },
+        cinetpay: {
+            active: 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
+            badge: 'border-blue-500 bg-blue-500',
+            label: 'CinetPay',
+            text: 'Transfert CinetPay. Fonds envoyés vers votre compte mobile money (Orange Money, MTN, M-Pesa).'
+        }
+    };
+    const checkSvg = `<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>`;
+
+    function selectWithdrawMethod(method) {
+        document.getElementById('payment_method').value = method;
+        const meta = methodMeta[method];
+        const base = 'method-card relative rounded-xl border-2 p-4 text-left transition-all duration-200 ';
+
+        document.querySelectorAll('.method-card').forEach(function(card) {
+            const m = card.dataset.method;
+            const isActive = m === method;
+            card.className = base + (isActive ? methodMeta[m].active : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800');
+            const badge = card.querySelector('.method-badge');
+            badge.className = 'method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 flex items-center justify-center ' +
+                (isActive ? methodMeta[m].badge : 'border-gray-300 dark:border-gray-500');
+            badge.innerHTML = isActive ? checkSvg : '';
+        });
+
+        document.getElementById('withdrawInfoMethod').textContent = meta.label;
+        document.getElementById('withdrawInfoText').textContent = meta.text;
+    }
+
+    document.querySelectorAll('.method-card').forEach(function(card) {
+        card.addEventListener('click', function() {
+            selectWithdrawMethod(this.dataset.method);
+        });
+    });
 });
 </script>
 @endpush

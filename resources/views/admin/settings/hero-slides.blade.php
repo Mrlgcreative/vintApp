@@ -1,6 +1,13 @@
 @extends('layouts.admin')
 
 @section('title', 'Gestion du Carrousel Hero')
+@section('page-title', 'Gestion du Carrousel Hero')
+
+@section('page-actions')
+<button onclick="showAddModal()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+    <i class="fas fa-plus"></i>Ajouter une Slide
+</button>
+@endsection
 
 @push('styles')
 <style>
@@ -8,7 +15,7 @@
 .slider {
     -webkit-appearance: none;
     appearance: none;
-    background: #e5e7eb;
+    background: #e2e8f0;
     outline: none;
     border-radius: 0.5rem;
 }
@@ -47,48 +54,33 @@
 @endpush
 
 @section('content')
-<div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
+<div class="space-y-6">
     @if(session('success'))
-        <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
-                <button type="button" class="ml-2 text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
+            <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
+            <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
+            <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-4 sm:mb-6 bg-red-50 border border-red-200 text-red-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
-                <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
+            <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
+            <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                <i class="fas fa-images mr-2 sm:mr-3 text-gray-600 dark:text-gray-300 text-base sm:text-xl"></i>
-                Carrousel Hero - Page d'Accueil
-            </h1>
-            <button onclick="showAddModal()" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
-                <i class="fas fa-plus mr-2"></i>
-                Ajouter une Slide
-            </button>
-        </div>
-        
-        <div class="p-4 sm:p-6">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="p-5 sm:p-6">
             <!-- Aperçu du carrousel -->
-            <div class="mb-8 bg-gray-50 dark:bg-gray-900 rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+            <div class="mb-8 bg-slate-50 dark:bg-slate-900 rounded-xl p-4 sm:p-6 border border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                         <i class="fas fa-eye text-primary-600 dark:text-primary-400"></i>
                     </span>
                     Aperçu du Carrousel
@@ -97,7 +89,7 @@
                     @php $activeSlides = $slides->where('is_active', true)->values(); @endphp
                     <div id="twCarousel" class="relative rounded-xl overflow-hidden shadow-lg">
                         <!-- Slides -->
-                        <div class="relative" style="min-height: 400px;">
+                        <div class="relative min-h-[480px] sm:min-h-[440px] md:min-h-[420px] lg:min-h-[400px]">
                             @foreach($activeSlides as $index => $slide)
                                 <div class="carousel-slide absolute inset-0 flex items-center p-6 sm:p-10 transition-all duration-500 {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
                                      data-slide-index="{{ $index }}"
@@ -112,12 +104,12 @@
                                                 @endif
                                                 <div class="flex flex-wrap gap-3 {{ $slide->text_position === 'center' ? 'justify-center' : ($slide->text_position === 'right' ? 'justify-end' : 'justify-start') }}">
                                                     @if($slide->button_primary_text)
-                                                        <a href="{{ $slide->button_primary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-white text-gray-900 font-semibold rounded-lg shadow-md hover:bg-gray-100 hover:shadow-lg transition-all duration-200">
+                                                        <a href="{{ $slide->button_primary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-white text-slate-900 font-semibold rounded-xl shadow-md hover:bg-slate-100 hover:shadow-lg transition-all duration-200">
                                                             {{ $slide->button_primary_text }}
                                                         </a>
                                                     @endif
                                                     @if($slide->button_secondary_text)
-                                                        <a href="{{ $slide->button_secondary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-transparent text-white font-semibold rounded-lg border-2 border-white/70 hover:bg-white/10 hover:border-white transition-all duration-200">
+                                                        <a href="{{ $slide->button_secondary_url ?? '#' }}" class="inline-flex items-center px-5 py-2.5 bg-transparent text-white font-semibold rounded-xl border-2 border-white/70 hover:bg-white/10 hover:border-white transition-all duration-200">
                                                             {{ $slide->button_secondary_text }}
                                                         </a>
                                                     @endif
@@ -126,7 +118,7 @@
                                             <!-- Image -->
                                             <div class="flex-1 flex justify-center">
                                                 <img src="/storage/{{ $slide->image_url }}" 
-                                                     class="object-contain drop-shadow-2xl rounded-lg"
+                                                     class="object-contain drop-shadow-2xl rounded-xl"
                                                      style="max-height: {{ $slide->image_size === 'small' ? '250px' : ($slide->image_size === 'medium' ? '350px' : ($slide->image_size === 'large' ? '450px' : '100%')) }};"
                                                      alt="{{ $slide->title }}">
                                             </div>
@@ -154,8 +146,8 @@
                         </div>
                     </div>
                 @else
-                    <div class="text-center py-12 text-gray-500 dark:text-gray-400">
-                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+                    <div class="text-center py-12 text-slate-500 dark:text-slate-400">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 mb-4">
                             <i class="fas fa-image text-3xl opacity-50"></i>
                         </div>
                         <p class="text-sm">Aucune slide active. Ajoutez et activez des slides pour voir l'aperçu.</p>
@@ -165,46 +157,46 @@
 
             <!-- Liste des slides -->
             <div class="space-y-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                         <i class="fas fa-list text-primary-600 dark:text-primary-400"></i>
                     </span>
                     Toutes les Slides
-                    <span class="ml-2 inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">{{ $slides->count() }}</span>
+                    <span class="ml-2 inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300">{{ $slides->count() }}</span>
                 </h3>
 
                 @if($slides->count() > 0)
                     <div id="slidesList" class="space-y-3">
                         @foreach($slides as $slide)
-                            <div class="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 slide-item" data-slide-id="{{ $slide->id }}">
+                            <div class="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-300 slide-item" data-slide-id="{{ $slide->id }}">
                                 <div class="flex flex-col md:flex-row gap-4">
                                     <!-- Image -->
-                                    <div class="flex-shrink-0 relative overflow-hidden rounded-lg">
-                                        <img src="/storage/{{ $slide->image_url }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-lg group-hover:scale-105 transition-transform duration-300">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg"></div>
+                                    <div class="flex-shrink-0 relative overflow-hidden rounded-xl">
+                                        <img src="/storage/{{ $slide->image_url }}" alt="{{ $slide->title }}" class="w-full md:w-48 h-32 object-cover rounded-xl group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl"></div>
                                     </div>
                                     
                                     <!-- Contenu -->
                                     <div class="flex-grow">
                                         <div class="flex items-start justify-between mb-2">
                                             <div>
-                                                <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $slide->title }}</h4>
+                                                <h4 class="text-lg font-semibold text-slate-900 dark:text-white">{{ $slide->title }}</h4>
                                                 @if($slide->subtitle)
-                                                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">{{ $slide->subtitle }}</p>
+                                                    <p class="text-sm text-slate-600 dark:text-slate-300 mt-1">{{ $slide->subtitle }}</p>
                                                 @endif
                                                 <!-- Affichage de la durée -->
                                                 <div class="flex items-center gap-4 mt-2">
                                                     <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
                                                         <i class="fas fa-clock mr-1"></i>{{ $slide->display_duration ?? 6 }}s
                                                     </span>
-                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200">
+                                                    <span class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">
                                                         <i class="fas fa-expand-arrows-alt mr-1"></i>{{ ucfirst($slide->image_size ?? 'medium') }}
                                                     </span>
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-2">
                                                 <!-- Handle de glisser-déposer -->
-                                                <button class="drag-handle cursor-move p-2 text-gray-400 hover:text-gray-600 dark:text-gray-300">
+                                                <button class="drag-handle cursor-move p-2 text-slate-400 hover:text-slate-600 dark:text-slate-300">
                                                     <i class="fas fa-grip-vertical"></i>
                                                 </button>
                                                 
@@ -214,7 +206,7 @@
                                                         <i class="fas fa-check-circle mr-1"></i>Active
                                                     </span>
                                                 @else
-                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100">
+                                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100">
                                                         <i class="fas fa-eye-slash mr-1"></i>Inactive
                                                     </span>
                                                 @endif
@@ -265,13 +257,13 @@
                         @endforeach
                     </div>
                 @else
-                    <div class="text-center py-16 bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                            <i class="fas fa-images text-4xl text-gray-400"></i>
+                    <div class="text-center py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-700 mb-4">
+                            <i class="fas fa-images text-4xl text-slate-400"></i>
                         </div>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune slide</h3>
-                        <p class="text-gray-600 dark:text-gray-300 mb-6 max-w-sm mx-auto">Commencez par ajouter votre première slide pour le carrousel hero.</p>
-                        <button onclick="showAddModal()" class="inline-flex items-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                        <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-2">Aucune slide</h3>
+                        <p class="text-slate-600 dark:text-slate-300 mb-6 max-w-sm mx-auto">Commencez par ajouter votre première slide pour le carrousel hero.</p>
+                        <button onclick="showAddModal()" class="inline-flex items-center px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
                             <i class="fas fa-plus mr-2"></i>
                             Ajouter une Slide
                         </button>
@@ -283,17 +275,17 @@
 </div>
 
 <!-- Modal Ajouter/Modifier Slide -->
-<div id="slideModal" class="hidden fixed inset-0 bg-gray-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
-    <div class="relative top-10 sm:top-16 mx-auto p-6 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 mb-10">
+<div id="slideModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
+    <div class="relative top-10 sm:top-16 mx-auto p-6 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-10">
         <div class="mt-2">
             <div class="flex items-center justify-between mb-5">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900 mr-3">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
                         <i class="fas fa-image text-primary-600 dark:text-primary-400"></i>
                     </span>
                     <span id="modalTitle">Ajouter une Slide</span>
                 </h3>
-                <button onclick="hideModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors">
+                <button onclick="hideModal()" class="inline-flex items-center justify-center w-8 h-8 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors">
                     <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
@@ -304,73 +296,73 @@
                 
                 <!-- Titre -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Titre <span class="text-red-500">*</span>
                     </label>
                     <input type="text" name="title" id="slideTitle" required 
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                            placeholder="Ex: Bienvenue sur VintApp">
                 </div>
                 
                 <!-- Sous-titre -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Sous-titre
                     </label>
                     <textarea name="subtitle" id="slideSubtitle" rows="2"
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                              class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                               placeholder="Description courte..."></textarea>
                 </div>
                 
                 <!-- Image -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Image <span class="text-red-500" id="imageRequired">*</span>
                     </label>
                     <input type="file" name="image" id="slideImage" accept="image/*"
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                            onchange="previewImage(this)">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formats: JPG, PNG, GIF - Max 5MB - Recommandé: 1920x1080px (PNG haute résolution)</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Formats: JPG, PNG, GIF - Max 5MB - Recommandé: 1920x1080px (PNG haute résolution)</p>
                     <div id="imagePreview" class="mt-3 hidden">
-                        <img id="previewImg" src="" alt="Aperçu" class="w-full h-48 object-contain rounded-lg bg-gray-50 dark:bg-gray-900">
+                        <img id="previewImg" src="" alt="Aperçu" class="w-full h-48 object-contain rounded-xl bg-slate-50 dark:bg-slate-900">
                     </div>
                 </div>
                 
                 <!-- Couleur de fond personnalisable -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Couleur de fond <span class="text-red-500">*</span>
                     </label>
                     <div class="flex items-center gap-3">
                         <input type="color" name="background_color" id="backgroundColor" value="#6A0DAD"
-                               class="h-10 w-20 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
+                               class="h-10 w-20 border border-slate-300 dark:border-slate-600 rounded cursor-pointer">
                         <input type="text" id="backgroundColorHex" value="#6A0DAD" 
                                pattern="^#[0-9A-Fa-f]{6}$"
-                               class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               class="flex-1 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="#6A0DAD">
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Choisissez la couleur de fond du carrousel</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Choisissez la couleur de fond du carrousel</p>
                 </div>
                 
                 <!-- Position du texte et de l'image -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             Position du texte <span class="text-red-500">*</span>
                         </label>
                         <select name="text_position" id="textPosition" required
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="left">À gauche</option>
                             <option value="center">Au centre</option>
                             <option value="right">À droite</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             Position de l'image <span class="text-red-500">*</span>
                         </label>
                         <select name="image_position" id="imagePosition" required
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                                class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <option value="right">À droite</option>
                             <option value="left">À gauche</option>
                         </select>
@@ -379,52 +371,52 @@
                 
                 <!-- Taille de l'image -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Taille de l'image <span class="text-red-500">*</span>
                     </label>
                     <select name="image_size" id="imageSize" required
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         <option value="small">Petite (250px)</option>
                         <option value="medium" selected>Moyenne (350px)</option>
                         <option value="large">Grande (450px)</option>
                         <option value="full">Pleine hauteur (100%)</option>
                     </select>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Définit la hauteur maximale de l'image dans le carrousel</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Définit la hauteur maximale de l'image dans le carrousel</p>
                 </div>
                 
                 <!-- Durée d'affichage -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Durée d'affichage <span class="text-red-500">*</span>
                     </label>
                     <div class="flex items-center gap-3">
                         <input type="number" name="display_duration" id="displayDuration" 
                                min="3" max="15" step="1" value="6" required
-                               class="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center">
-                        <span class="text-sm text-gray-600 dark:text-gray-300 font-medium">secondes</span>
+                               class="w-24 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent text-center">
+                        <span class="text-sm text-slate-600 dark:text-slate-300 font-medium">secondes</span>
                         <input type="range" id="durationRange" 
                                min="3" max="15" step="1" value="6"
-                               class="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider">
+                               class="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-xl appearance-none cursor-pointer slider">
                     </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Temps d'affichage de cette slide avant passage automatique à la suivante (3-15 secondes)</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Temps d'affichage de cette slide avant passage automatique à la suivante (3-15 secondes)</p>
                 </div>
                 
                 <!-- Bouton Principal -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             Texte Bouton Principal
                         </label>
                         <input type="text" name="button_primary_text" id="buttonPrimaryText"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="Ex: Commencer">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             URL Bouton Principal
                         </label>
                         <input type="text" name="button_primary_url" id="buttonPrimaryUrl"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="/register">
                     </div>
                 </div>
@@ -432,19 +424,19 @@
                 <!-- Bouton Secondaire -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             Texte Bouton Secondaire
                         </label>
                         <input type="text" name="button_secondary_text" id="buttonSecondaryText"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="Ex: Explorer">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                             URL Bouton Secondaire
                         </label>
                         <input type="text" name="button_secondary_url" id="buttonSecondaryUrl"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                placeholder="/items">
                     </div>
                 </div>
@@ -452,20 +444,20 @@
                 <!-- Statut -->
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="slideIsActive" value="1" checked
-                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                    <label for="slideIsActive" class="ml-2 block text-sm text-gray-700 dark:text-gray-200">
+                           class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600 rounded">
+                    <label for="slideIsActive" class="ml-2 block text-sm text-slate-700 dark:text-slate-200">
                         Activer cette slide immédiatement
                     </label>
                 </div>
                 
                 <!-- Boutons -->
-                <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex justify-end gap-3 mt-6 pt-5 border-t border-slate-200 dark:border-slate-700">
                     <button type="button" onclick="hideModal()" 
-                            class="px-5 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg transition-all duration-200">
+                            class="px-5 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-xl transition-all duration-200">
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
+                            class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>
                         <span id="submitButtonText">Ajouter</span>
                     </button>
@@ -673,7 +665,7 @@ function updateSlidesOrder() {
 // Afficher une notification
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg transform translate-x-full opacity-0 transition-all duration-300`;
+    notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-xl shadow-lg transform translate-x-full opacity-0 transition-all duration-300`;
     
     switch(type) {
         case 'success':
@@ -689,7 +681,7 @@ function showNotification(message, type = 'info') {
     notification.innerHTML = `
         <div class="flex items-center">
             <span class="flex-1">${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-slate-200">
                 <i class="fas fa-times"></i>
             </button>
         </div>

@@ -4,6 +4,9 @@ namespace App\Services;
 
 use Exception;
 use DateTime;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * CinetPay
@@ -216,6 +219,45 @@ class CinetPay
         $this->_signatureUri = $htpp_prefixe . $this->getSignatureHost();
         $this->_checkPayStatusUri = $htpp_prefixe . $this->getCheckPayStatusHost();
         $this->_webSiteUri = $htpp_prefixe . $this->getWebSiteHost();
+    }
+
+    /**
+     * Créer un lien de paiement via l'API moderne CinetPay (checkout v2).
+     * La page du lien affiche le comptoir CinetPay (choix de l'opérateur + numéro).
+     *
+     * @param array $params clés: apikey, site_id, transaction_id, amount, currency,
+     *                      description, notify_url, return_url, channels, lang, metadata
+     * @return string URL du guichet de paiement
+     * @throws \Exception
+     */
+    public static function createPaymentLink(array $params): string
+    {
+        $url = 'https://api-checkout.cinetpay.com/v2/payment';
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($params),
+            CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+            CURLOPT_TIMEOUT => 45,
+        ));
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            throw new \Exception("Erreur CinetPay: " . $err);
+        }
+
+        $decoded = json_decode($response, true);
+        if (!is_array($decoded) || !isset($decoded['data']['payment_url'])) {
+            $message = $decoded['description'] ?? ($decoded['message'] ?? 'Réponse CinetPay invalide');
+            throw new \Exception($message);
+        }
+
+        return $decoded['data']['payment_url'];
     }
 
     /**
@@ -813,5 +855,340 @@ class CinetPay
             $d = new DateTime(date($format, strtotime($date)));
         }
         return $d && $d->format($format) == $date;
+    }
+
+    // =====================================================================
+    // API de Transfert (Payout / Décaissement) - v1.0
+    // Docs : https://docs.cinetpay.com/api/1.0-en/transfert/utilisation
+    // =====================================================================
+
+    const URI_TRANSFER_API_PROD = 'https://client.cinetpay.com/v1';
+    const URI_TRANSFER_API_DEV = 'https://client.cinetpay.com/v1';
+
+    /**
+     * URL de base de l'API de transfert (identique en TEST et PROD).
+     */
+    private function getTransferApiUrl(): string
+    {
+        // L'API de transfert utilise la même URL en test et en production
+        return self::URI_TRANSFER_API_PROD;
+    }
+
+    /**
+     * Génère un token d'accès à l'API de transfert (valable 5 minutes).
+     *
+     * @param bool $force Force le rafraîchissement du token (ignorer le cache)
+     * @return string|null Token, ou null si les credentials sont invalides/absentes
+     */
+    public function getTransferToken(bool $force = false): ?string
+    {
+        $apiKey = $this->_cfg_apikey;
+        $password = config('services.cinetpay.api_password');
+
+        if (empty($apiKey) || empty($password)) {
+            return null;
+        }
+
+        $cacheKey = 'cinetpay_transfer_token_' . md5($apiKey);
+
+        if (!$force && $cached = Cache::get($cacheKey)) {
+            return $cached;
+        }
+
+        try {
+            $response = Http::asForm()->timeout(30)
+                ->post($this->getTransferApiUrl() . '/auth/login', [
+                    'apikey' => $apiKey,
+                    'password' => $password,
+                ]);
+
+            if (!$response->successful()) {
+                return null;
+            }
+
+            $json = $response->json();
+            if (($json['code'] ?? -1) !== 0) {
+                return null;
+            }
+
+            $token = $json['data']['token'] ?? null;
+            if ($token) {
+                // Le token expire après 5 minutes, on le cache 4 minutes
+                Cache::put($cacheKey, $token, now()->addMinutes(4));
+            }
+
+            return $token;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Vérifie le solde du compte de transfert CinetPay.
+     *
+     * @return array ['success' => bool, 'balance' => ?, 'available' => ?, 'in_using' => ?, 'message' => ?]
+     */
+    public function checkTransferBalance(): array
+    {
+        $token = $this->getTransferToken();
+        if (!$token) {
+            return ['success' => false, 'message' => 'Impossible d\'obtenir le token de transfert CinetPay'];
+        }
+
+        try {
+            $response = Http::timeout(30)
+                ->get($this->getTransferApiUrl() . '/transfer/check/balance', [
+                    'token' => $token,
+                    'lang' => 'fr',
+                ]);
+
+            if (!$response->successful()) {
+                return ['success' => false, 'message' => 'Erreur HTTP ' . $response->status()];
+            }
+
+            $json = $response->json();
+            if (($json['code'] ?? -1) !== 0) {
+                return [
+                    'success' => false,
+                    'message' => $json['description'] ?? $json['message'] ?? 'Erreur CinetPay',
+                    'code' => $json['code'] ?? null,
+                ];
+            }
+
+            return [
+                'success' => true,
+                'balance' => $json['data']['amount'] ?? null,
+                'available' => $json['data']['available'] ?? null,
+                'in_using' => $json['data']['inUsing'] ?? null,
+                'message' => $json['message'] ?? 'OK',
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Ajoute un contact sur CinetPay (obligatoire avant un transfert).
+     *
+     * @param string $prefix Indicatif pays (ex: 225 pour la Côte d'Ivoire)
+     * @param string $phone Numéro sans l'indicatif
+     * @param string|null $name Nom du contact
+     * @param string|null $surname Prénom du contact
+     * @param string|null $email Email du contact
+     * @return array Résultat de l'opération
+     */
+    public function addTransferContact(
+        string $prefix,
+        string $phone,
+        ?string $name = null,
+        ?string $surname = null,
+        ?string $email = null
+    ): array {
+        $token = $this->getTransferToken();
+        if (!$token) {
+            return ['success' => false, 'message' => 'Impossible d\'obtenir le token de transfert CinetPay'];
+        }
+
+        $contact = [
+            'prefix' => ltrim($prefix, '+'),
+            'phone' => $phone,
+            'name' => $name ?? 'VintApp',
+            'surname' => $surname ?? 'Utilisateur',
+            'email' => $email ?? '',
+        ];
+
+        try {
+            $response = Http::asForm()->timeout(30)
+                ->post($this->getTransferApiUrl() . '/transfer/contact', [
+                    'token' => $token,
+                    'lang' => 'fr',
+                    'data' => json_encode([$contact]),
+                ]);
+
+            if (!$response->successful()) {
+                return ['success' => false, 'message' => 'Erreur HTTP ' . $response->status()];
+            }
+
+            $json = $response->json();
+            $first = $json['data'][0] ?? [];
+
+            if (($json['code'] ?? -1) !== 0 || (($first['code'] ?? -1) !== 0)) {
+                return [
+                    'success' => false,
+                    'message' => $json['description'] ?? $json['message'] ?? 'Erreur ajout contact',
+                    'code' => $json['code'] ?? ($first['code'] ?? null),
+                ];
+            }
+
+            return [
+                'success' => true,
+                'lot' => $first['lot'] ?? null,
+                'message' => $first['status'] ?? 'OK',
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Initie un transfert d'argent (payout) vers un numéro mobile money.
+     *
+     * @param string $prefix Indicatif pays (ex: 225)
+     * @param string $phone Numéro du bénéficiaire sans l'indicatif
+     * @param float $amount Montant (doit être un multiple de 5)
+     * @param string $clientTransactionId Identifiant marchand (référence)
+     * @param string|null $notifyUrl URL de notification (statut du transfert)
+     * @param string|null $paymentMethod Portefeuille spécifique (ex: WAVECI)
+     * @return array Résultat de l'opération
+     */
+    public function initiateTransfer(
+        string $prefix,
+        string $phone,
+        float $amount,
+        string $clientTransactionId,
+        ?string $notifyUrl = null,
+        ?string $paymentMethod = null
+    ): array {
+        $token = $this->getTransferToken();
+        if (!$token) {
+            return ['success' => false, 'message' => 'Impossible d\'obtenir le token de transfert CinetPay'];
+        }
+
+        // Le bénéficiaire doit exister dans les contacts CinetPay
+        $contact = $this->addTransferContact($prefix, $phone);
+        if (!$contact['success']) {
+            // Si le contact existe déjà, CinetPay renvoie souvent une erreur,
+            // mais on tente quand même le transfert
+            Log::warning('CinetPay addTransferContact échec, tentative de transfert quand même', [
+                'message' => $contact['message'] ?? 'Unknown',
+            ]);
+        }
+
+        $transfer = [
+            'prefix' => ltrim($prefix, '+'),
+            'phone' => $phone,
+            'amount' => (int) round($amount),
+            'client_transaction_id' => $clientTransactionId,
+            'notify_url' => $notifyUrl ?? '',
+        ];
+        if (!empty($paymentMethod)) {
+            $transfer['payment_method'] = $paymentMethod;
+        }
+
+        try {
+            $response = Http::asForm()->timeout(45)
+                ->post($this->getTransferApiUrl() . '/transfer/money/send/contact', [
+                    'token' => $token,
+                    'lang' => 'fr',
+                    'data' => json_encode([$transfer]),
+                ]);
+
+            if (!$response->successful()) {
+                return ['success' => false, 'message' => 'Erreur HTTP ' . $response->status()];
+            }
+
+            $json = $response->json();
+            $first = $json['data'][0] ?? [];
+
+            if (($json['code'] ?? -1) !== 0 || (($first['code'] ?? -1) !== 0)) {
+                return [
+                    'success' => false,
+                    'message' => $json['description'] ?? $json['message'] ?? ($first['description'] ?? 'Erreur transfert'),
+                    'code' => $json['code'] ?? ($first['code'] ?? null),
+                ];
+            }
+
+            return [
+                'success' => true,
+                'transaction_id' => $first['transaction_id'] ?? null,
+                'client_transaction_id' => $first['client_transaction_id'] ?? $clientTransactionId,
+                'treatment_status' => $first['treatment_status'] ?? null,
+                'lot' => $first['lot'] ?? null,
+                'status' => $this->mapTransferStatus($first['treatment_status'] ?? ''),
+                'message' => $first['status'] ?? 'OK',
+                'data' => $first,
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Vérifie le statut d'un transfert via l'API CinetPay.
+     *
+     * @param string $clientTransactionId Identifiant marchand du transfert
+     * @return array Résultat avec le statut normalisé
+     */
+    public function checkTransferStatus(string $clientTransactionId): array
+    {
+        $token = $this->getTransferToken();
+        if (!$token) {
+            return ['success' => false, 'message' => 'Impossible d\'obtenir le token de transfert CinetPay'];
+        }
+
+        try {
+            $response = Http::timeout(30)
+                ->get($this->getTransferApiUrl() . '/transfer/check/money', [
+                    'token' => $token,
+                    'lang' => 'fr',
+                    'client_transaction_id' => $clientTransactionId,
+                ]);
+
+            if (!$response->successful()) {
+                return ['success' => false, 'message' => 'Erreur HTTP ' . $response->status()];
+            }
+
+            $json = $response->json();
+            if (($json['code'] ?? -1) !== 0) {
+                return [
+                    'success' => false,
+                    'message' => $json['description'] ?? $json['message'] ?? 'Erreur CinetPay',
+                    'code' => $json['code'] ?? null,
+                ];
+            }
+
+            $item = $json['data'][0] ?? [];
+
+            return [
+                'success' => true,
+                'transaction_id' => $item['transaction_id'] ?? null,
+                'client_transaction_id' => $item['client_transaction_id'] ?? $clientTransactionId,
+                'treatment_status' => $item['treatment_status'] ?? null,
+                'sending_status' => $item['sending_status'] ?? null,
+                'transfer_valid' => $item['transfer_valid'] ?? null,
+                'operator' => $item['operator'] ?? null,
+                'amount' => $item['amount'] ?? null,
+                'receiver' => $item['receiver'] ?? null,
+                'comment' => $item['comment'] ?? null,
+                'status' => $this->mapTransferStatus($item['treatment_status'] ?? ''),
+                'data' => $item,
+            ];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Convertit le statut CinetPay (treatment_status) en statut interne
+     * (completed / failed / processing).
+     *
+     * @param string $status Statut CinetPay (NEW, VAL, REJ, ...)
+     */
+    public function mapTransferStatus(string $status): string
+    {
+        return match (strtoupper(trim($status))) {
+            'VAL', 'VALIDATED', 'SUCCESS', 'SUCCES', 'PAID', 'COMPLETED' => 'completed',
+            'REJ', 'REJECTED', 'FAIL', 'FAILED', 'CANC', 'CANCELLED', 'EXP', 'EXPIRED', 'ERROR' => 'failed',
+            default => 'processing',
+        };
+    }
+
+    /**
+     * Indique si l'API de transfert CinetPay est configurée.
+     */
+    public function isTransferConfigured(): bool
+    {
+        return config('services.cinetpay.transfer_enabled', false)
+            && !empty(config('services.cinetpay.api_password'));
     }
 }

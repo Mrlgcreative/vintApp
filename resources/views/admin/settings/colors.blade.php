@@ -1,79 +1,69 @@
 @extends('layouts.admin')
 
 @section('title', 'Paramètres des Couleurs')
+@section('page-title', 'Paramètres des Couleurs')
+
+@section('page-actions')
+<div class="flex flex-wrap gap-2">
+    <button type="button" onclick="openImportModal()"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/30 px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors">
+        <i class="fas fa-upload"></i>Importer
+    </button>
+    <a href="{{ route('admin.settings.colors.export') }}"
+       class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+        <i class="fas fa-download"></i>Exporter
+    </a>
+</div>
+@endsection
 
 @section('content')
-<div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
+<div class="space-y-6">
     @if(session('success'))
-        <div class="mb-4 sm:mb-6 bg-green-50 border border-green-200 text-green-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('success') }}</span>
-                <button type="button" class="ml-2 text-green-600 hover:text-green-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
+            <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
+            <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
+            <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
     @if(session('error'))
-        <div class="mb-4 sm:mb-6 bg-red-50 border border-red-200 text-red-800 px-3 py-2 sm:px-4 sm:py-3 rounded-lg shadow-sm" role="alert">
-            <div class="flex items-center">
-                <i class="fas fa-exclamation-circle mr-2 text-sm sm:text-base"></i>
-                <span class="text-sm sm:text-base flex-1">{{ session('error') }}</span>
-                <button type="button" class="ml-2 text-red-600 hover:text-red-800" onclick="this.parentElement.parentElement.remove()">
-                    <i class="fas fa-times text-sm"></i>
-                </button>
-            </div>
+        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
+            <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
+            <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
+            <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
     @endif
 
-    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-3 sm:gap-0 sm:flex-row sm:items-center sm:justify-between">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
-                <i class="fas fa-palette mr-2 sm:mr-3 text-purple-600 text-base sm:text-xl"></i>
-                <span class="hidden sm:inline">Paramètres des Couleurs</span>
-                <span class="sm:hidden">Couleurs</span>
-            </h1>
-            <div class="flex flex-col xs:flex-row gap-2 sm:gap-3">
-                <button onclick="openImportModal()" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-green-300 text-green-700 bg-green-50 rounded-lg hover:bg-green-100 transition-colors duration-200">
-                    <i class="fas fa-upload mr-2"></i>
-                    <span class="hidden xs:inline">Importer</span>
-                    <span class="xs:hidden">Import</span>
-                </button>
-                <a href="{{ route('admin.settings.colors.export') }}" class="inline-flex items-center justify-center px-3 py-2 sm:px-4 text-sm border border-blue-300 text-blue-700 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors duration-200">
-                    <i class="fas fa-download mr-2"></i>
-                    <span class="hidden xs:inline">Exporter</span>
-                    <span class="xs:hidden">Export</span>
-                </a>
-            </div>
-        </div>
-
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <!-- Navigation par onglets -->
-        <div class="border-b border-gray-200 bg-gray-50 dark:bg-gray-900">
-            <nav class="flex space-x-4 px-4 sm:px-6" aria-label="Paramètres">
+        <div class="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+            <nav class="flex space-x-1 px-4 sm:px-6 overflow-x-auto" aria-label="Paramètres">
                 <a href="{{ route('admin.settings.index') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-sliders-h mr-2"></i>
                     Général
                 </a>
                 <a href="{{ route('admin.settings.colors') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-purple-500 text-sm font-medium text-purple-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-slate-800/60 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-palette mr-2"></i>
                     Couleurs
                 </a>
                 <a href="{{ route('admin.settings.preregistration') }}" 
-                   class="inline-flex items-center px-3 py-2 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-200 hover:border-gray-300 dark:border-gray-600 whitespace-nowrap">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-transparent text-sm font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:border-slate-300 whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-user-clock mr-2"></i>
                     Préinscription
                 </a>
             </nav>
         </div>
 
-        <div class="space-y-6 p-4 sm:p-6">
+        <div class="space-y-6 p-5 sm:p-6">
             <!-- Aperçu en direct -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
                     <i class="fas fa-eye mr-2 text-blue-600"></i>
                     Aperçu en Direct
                 </h3>
@@ -81,10 +71,10 @@
                     @foreach($currentColors as $colorName => $colorValue)
                         @if($colorName !== 'name')
                             <div class="text-center">
-                                <div class="w-16 h-16 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm mx-auto mb-2"
+                                <div class="w-16 h-16 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mx-auto mb-2"
                                      style="background-color: {{ $colorValue }}"></div>
-                                <span class="text-xs text-gray-600 dark:text-gray-300 capitalize">{{ $colorName }}</span>
-                                <div class="text-xs text-gray-400 font-mono">{{ $colorValue }}</div>
+                                <span class="text-xs text-slate-600 dark:text-slate-300 capitalize">{{ $colorName }}</span>
+                                <div class="text-xs text-slate-400 font-mono">{{ $colorValue }}</div>
                             </div>
                         @endif
                     @endforeach
@@ -92,8 +82,8 @@
             </div>
 
             <!-- Sélecteur de palette -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                     <i class="fas fa-swatchbook text-blue-600"></i>
                     Choisir une Palette
                 </h3>
@@ -101,19 +91,19 @@
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="paletteGrid">
                         @foreach(config('colors.palettes') as $paletteKey => $palette)
-                            <div class="palette-card cursor-pointer group border-2 rounded-lg p-4 transition-all hover:shadow-md {{ ($activePaletteName ?? 'default') === $paletteKey ? 'border-blue-500 bg-blue-50' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:border-gray-600' }}"
+                            <div class="palette-card cursor-pointer group border-2 rounded-xl p-4 transition-all hover:shadow-md {{ ($activePaletteName ?? 'default') === $paletteKey ? 'border-blue-500 bg-blue-50' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:border-slate-600' }}"
                                  data-palette="{{ $paletteKey }}"
                                  onclick="changePalette('{{ $paletteKey }}')">
                                 <!-- Nom de la palette -->
-                                <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-3">{{ $palette['name'] }}</h4>
+                                <h4 class="text-sm font-medium text-slate-900 dark:text-white mb-3">{{ $palette['name'] }}</h4>
                                 
                                 <!-- Aperçu des couleurs -->
                                 <div class="flex gap-1 mb-3">
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: {{ $palette['primary'] }}"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: {{ $palette['secondary'] }}"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: {{ $palette['success'] }}"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: {{ $palette['danger'] }}"></div>
-                                    <div class="w-6 h-6 rounded-sm border border-gray-200 dark:border-gray-700" style="background-color: {{ $palette['accent'] }}"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-slate-200 dark:border-slate-700" style="background-color: {{ $palette['primary'] }}"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-slate-200 dark:border-slate-700" style="background-color: {{ $palette['secondary'] }}"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-slate-200 dark:border-slate-700" style="background-color: {{ $palette['success'] }}"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-slate-200 dark:border-slate-700" style="background-color: {{ $palette['danger'] }}"></div>
+                                    <div class="w-6 h-6 rounded-sm border border-slate-200 dark:border-slate-700" style="background-color: {{ $palette['accent'] }}"></div>
                                 </div>
                                 
                                 <!-- Badge active -->
@@ -126,7 +116,7 @@
                     </div>
                     
                     <div class="flex justify-end pt-4">
-                        <div id="processingMessage" class="hidden text-sm text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <div id="processingMessage" class="hidden text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
                             <i class="fas fa-spinner fa-spin"></i>
                             <span>Application de la palette en cours...</span>
                         </div>
@@ -135,14 +125,14 @@
             </div>
 
             <!-- Palette personnalisée -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
                         <i class="fas fa-brush text-purple-600"></i>
                         Créer une Palette Personnalisée
                     </h3>
                     <button onclick="toggleCustomPalette()" 
-                            class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
+                            class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 self-start sm:self-auto">
                         <i class="fas fa-plus"></i> 
                         <span>Nouveau</span>
                     </button>
@@ -153,20 +143,20 @@
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="palette_name" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                <label for="palette_name" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">
                                     Nom de la palette <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="name" id="palette_name" 
                                        placeholder="Ex: Ma palette"
                                        required
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-9 gap-4">
                             @foreach(['primary', 'secondary', 'success', 'danger', 'warning', 'info', 'light', 'dark', 'accent'] as $colorName)
                                 <div class="text-center">
-                                    <label for="color_{{ $colorName }}" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1 capitalize">
+                                    <label for="color_{{ $colorName }}" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1 capitalize">
                                         {{ $colorName }} <span class="text-red-500">*</span>
                                     </label>
                                     <input type="color" 
@@ -174,19 +164,19 @@
                                            id="color_{{ $colorName }}"
                                            value="{{ $currentColors[$colorName] ?? '#000000' }}"
                                            required
-                                           class="w-full h-12 border border-gray-300 dark:border-gray-600 rounded cursor-pointer">
-                                    <small class="text-xs text-gray-500 font-mono" id="value_{{ $colorName }}">{{ $currentColors[$colorName] ?? '#000000' }}</small>
+                                           class="w-full h-12 border border-slate-300 dark:border-slate-600 rounded cursor-pointer">
+                                    <small class="text-xs text-slate-500 font-mono" id="value_{{ $colorName }}">{{ $currentColors[$colorName] ?? '#000000' }}</small>
                                 </div>
                             @endforeach
                         </div>
 
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="toggleCustomPalette()"
-                                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                                    class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-colors">
                                 Annuler
                             </button>
                             <button type="submit"
-                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
                                 <i class="fas fa-save mr-1"></i>
                                 Créer la Palette
                             </button>
@@ -196,7 +186,7 @@
 
                 <!-- Palettes personnalisées existantes -->
                 <div class="mt-6">
-                    <h4 class="font-medium text-gray-900 dark:text-white mb-3">Palettes Personnalisées</h4>
+                    <h4 class="font-medium text-slate-900 dark:text-white mb-3">Palettes Personnalisées</h4>
                     <div id="customPalettesList" class="space-y-2">
                         <!-- Les palettes personnalisées seront chargées ici via JavaScript -->
                     </div>
@@ -204,42 +194,42 @@
             </div>
 
             <!-- Paramètres avancés -->
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
                 <button onclick="toggleAdvancedSettings()" 
-                        class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                        <i class="fas fa-cog text-gray-600 dark:text-gray-300"></i>
+                        class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="fas fa-cog text-slate-600 dark:text-slate-300"></i>
                         Paramètres Avancés
                     </h3>
                     <i class="fas fa-chevron-down transition-transform duration-300" id="advancedSettingsChevron"></i>
                 </button>
                 
-                <div id="advancedSettingsContent" class="hidden border-t border-gray-200 dark:border-gray-700 p-6">
+                <div id="advancedSettingsContent" class="hidden border-t border-slate-200 dark:border-slate-700 p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Mode Sombre -->
                         <div>
-                            <h4 class="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <h4 class="font-medium text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="fas fa-moon text-indigo-600"></i>
                                 Mode Sombre
                             </h4>
                             <div class="space-y-3">
-                                <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                                <label class="flex items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors cursor-pointer">
                                     <input type="checkbox" id="darkModeToggle" 
                                            onchange="toggleDarkMode()"
-                                           class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-                                    <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                           class="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                         Activer le mode sombre
                                     </span>
                                 </label>
-                                <label class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+                                <label class="flex items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors cursor-pointer">
                                     <input type="checkbox" id="autoDarkMode" 
                                            onchange="toggleAutoDarkMode()"
-                                           class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
-                                    <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                           class="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
+                                    <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                         Basculement automatique (19h-7h)
                                     </span>
                                 </label>
-                                <div id="darkModeStatus" class="mt-2 text-xs text-gray-500 dark:text-gray-400 pl-3">
+                                <div id="darkModeStatus" class="mt-2 text-xs text-slate-500 dark:text-slate-400 pl-3">
                                     <!-- Status sera affiché ici -->
                                 </div>
                             </div>
@@ -247,45 +237,45 @@
 
                         <!-- Mode Jour/Nuit Automatique Multi-Palettes -->
                         <div>
-                            <h4 class="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <h4 class="font-medium text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="fas fa-sun text-yellow-500"></i>
                                 <i class="fas fa-moon text-indigo-400 -ml-1"></i>
                                 Mode Jour / Nuit Automatique
                             </h4>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">
                                 Change automatiquement les couleurs selon l'heure. Choisissez une palette pour le jour et une pour la nuit.
                             </p>
                             <div class="space-y-3">
-                                <label class="flex items-center p-3 bg-gradient-to-r from-yellow-50 to-indigo-50 dark:from-gray-700 dark:to-gray-700 rounded-lg hover:from-yellow-100 hover:to-indigo-100 dark:hover:from-gray-600 dark:hover:to-gray-600 transition-colors cursor-pointer">
+                                <label class="flex items-center p-3 bg-gradient-to-r from-yellow-50 to-indigo-50 dark:from-slate-700 dark:to-slate-700 rounded-xl hover:from-yellow-100 hover:to-indigo-100 dark:hover:from-slate-600 dark:hover:to-slate-600 transition-colors cursor-pointer">
                                     <input type="checkbox" id="dayNightToggle" 
                                            onchange="toggleDayNightMode()"
                                            {{ config('colors.day_night.enabled', false) ? 'checked' : '' }}
-                                           class="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-2 focus:ring-indigo-500">
-                                    <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                                           class="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-2 focus:ring-indigo-500">
+                                    <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                         Activer le mode jour/nuit automatique
                                     </span>
                                 </label>
 
                                 <div id="dayNightSettings" class="{{ config('colors.day_night.enabled', false) ? '' : 'hidden' }}">
                                     <!-- Aperçu mode actuel -->
-                                    <div id="dayNightPreview" class="p-4 rounded-lg border-2 mb-3 transition-all duration-300">
+                                    <div id="dayNightPreview" class="p-4 rounded-xl border-2 mb-3 transition-all duration-300">
                                         <div class="flex items-center justify-between">
                                             <div>
                                                 <span id="dayNightCurrentIcon" class="text-2xl"></span>
                                                 <span id="dayNightCurrentLabel" class="ml-2 font-semibold text-sm"></span>
                                             </div>
-                                            <span id="dayNightNextSwitch" class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                            <span id="dayNightNextSwitch" class="text-xs text-slate-500 dark:text-slate-400"></span>
                                         </div>
                                     </div>
 
                                     <!-- Horaires -->
                                     <div class="grid grid-cols-2 gap-3">
-                                        <div class="p-3 bg-yellow-50 dark:bg-gray-700 rounded-lg">
+                                        <div class="p-3 bg-yellow-50 dark:bg-slate-700 rounded-xl">
                                             <label class="block text-xs font-medium text-yellow-700 dark:text-yellow-300 mb-1">
                                                 <i class="fas fa-sun mr-1"></i> Début du jour
                                             </label>
                                             <select id="dayStartHour" onchange="updateDayNightSchedule()" 
-                                                    class="w-full text-sm border-yellow-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md">
+                                                    class="w-full text-sm border-yellow-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md">
                                                 @for($h = 4; $h <= 10; $h++)
                                                     <option value="{{ $h }}" {{ config('colors.day_night.day_start', 7) == $h ? 'selected' : '' }}>
                                                         {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
@@ -293,12 +283,12 @@
                                                 @endfor
                                             </select>
                                         </div>
-                                        <div class="p-3 bg-indigo-50 dark:bg-gray-700 rounded-lg">
+                                        <div class="p-3 bg-indigo-50 dark:bg-slate-700 rounded-xl">
                                             <label class="block text-xs font-medium text-indigo-700 dark:text-indigo-300 mb-1">
                                                 <i class="fas fa-moon mr-1"></i> Début de la nuit
                                             </label>
                                             <select id="nightStartHour" onchange="updateDayNightSchedule()" 
-                                                    class="w-full text-sm border-indigo-200 dark:border-gray-600 dark:bg-gray-800 dark:text-white rounded-md">
+                                                    class="w-full text-sm border-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md">
                                                 @for($h = 17; $h <= 22; $h++)
                                                     <option value="{{ $h }}" {{ config('colors.day_night.night_start', 19) == $h ? 'selected' : '' }}>
                                                         {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
@@ -331,8 +321,8 @@
                                                 <button type="button" 
                                                         onclick="selectDayPalette('{{ $key }}')" 
                                                         id="dayPalette_{{ $key }}"
-                                                        class="palette-card p-3 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeDayKey === $key ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 ring-2 ring-yellow-300' : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 hover:border-yellow-300' }}">
-                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeDayKey === $key ? 'text-yellow-700 dark:text-yellow-300' : 'text-gray-700 dark:text-gray-300' }}">
+                                                        class="palette-card p-3 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeDayKey === $key ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20 ring-2 ring-yellow-300' : 'border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-yellow-300' }}">
+                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeDayKey === $key ? 'text-yellow-700 dark:text-yellow-300' : 'text-slate-700 dark:text-slate-300' }}">
                                                         {{ $palette['name'] ?? $key }}
                                                     </div>
                                                     <div class="flex flex-wrap gap-0.5">
@@ -341,7 +331,7 @@
                                                         <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['success'] }}" title="Success"></div>
                                                         <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['danger'] }}" title="Danger"></div>
                                                         <div class="w-5 h-5 rounded-sm" style="background-color: {{ $palette['warning'] }}" title="Warning"></div>
-                                                        <div class="w-5 h-5 rounded-sm border border-gray-200" style="background-color: {{ $palette['background'] }}" title="Background"></div>
+                                                        <div class="w-5 h-5 rounded-sm border border-slate-200" style="background-color: {{ $palette['background'] }}" title="Background"></div>
                                                     </div>
                                                     @if($activeDayKey === $key)
                                                         <div class="text-xs text-yellow-600 dark:text-yellow-400 mt-1 font-medium">
@@ -365,8 +355,8 @@
                                                 <button type="button" 
                                                         onclick="selectNightPalette('{{ $key }}')" 
                                                         id="nightPalette_{{ $key }}"
-                                                        class="palette-card p-3 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeNightKey === $key ? 'border-indigo-500 bg-indigo-900/20 ring-2 ring-indigo-400' : 'border-gray-600 bg-gray-800 hover:border-indigo-400' }}">
-                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeNightKey === $key ? 'text-indigo-300' : 'text-gray-300' }}">
+                                                        class="palette-card p-3 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-md {{ $activeNightKey === $key ? 'border-indigo-500 bg-indigo-900/20 ring-2 ring-indigo-400' : 'border-slate-600 bg-slate-800 hover:border-indigo-400' }}">
+                                                    <div class="text-xs font-semibold mb-1.5 truncate {{ $activeNightKey === $key ? 'text-indigo-300' : 'text-slate-300' }}">
                                                         {{ $palette['name'] ?? $key }}
                                                     </div>
                                                     <div class="flex flex-wrap gap-0.5">
@@ -389,19 +379,19 @@
 
                                     <!-- Boutons de test -->
                                     <div class="flex gap-2 mt-3">
-                                        <button onclick="testDayMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded-lg transition-colors">
+                                        <button onclick="testDayMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded-xl transition-colors">
                                             <i class="fas fa-sun mr-1"></i> Tester Jour
                                         </button>
-                                        <button onclick="testNightMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-lg transition-colors">
+                                        <button onclick="testNightMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-xl transition-colors">
                                             <i class="fas fa-moon mr-1"></i> Tester Nuit
                                         </button>
-                                        <button onclick="resetDayNightAuto()" class="flex-1 px-3 py-2 text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
+                                        <button onclick="resetDayNightAuto()" class="flex-1 px-3 py-2 text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl transition-colors">
                                             <i class="fas fa-sync mr-1"></i> Auto
                                         </button>
                                     </div>
                                 </div>
 
-                                <div id="dayNightStatus" class="text-xs text-gray-500 dark:text-gray-400 pl-3">
+                                <div id="dayNightStatus" class="text-xs text-slate-500 dark:text-slate-400 pl-3">
                                     <!-- Status sera affiché dynamiquement -->
                                 </div>
                             </div>
@@ -409,60 +399,60 @@
                         
                         <!-- Couleurs par Rôle -->
                         <div>
-                            <h4 class="font-medium text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                            <h4 class="font-medium text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                                 <i class="fas fa-users-cog text-purple-600"></i>
                                 Couleurs par Rôle
                             </h4>
                             <div class="space-y-2">
-                                <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                      onclick="showRoleColorPicker('admin', '#DC2626')">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 shadow-sm" 
+                                        <div class="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 shadow-sm" 
                                              style="background-color: #DC2626" id="roleColor_admin"></div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Admin</span>
+                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Admin</span>
                                     </div>
-                                    <span class="text-xs text-gray-400 font-mono">#DC2626</span>
+                                    <span class="text-xs text-slate-400 font-mono">#DC2626</span>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                      onclick="showRoleColorPicker('expert', '#7C3AED')">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 shadow-sm" 
+                                        <div class="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 shadow-sm" 
                                              style="background-color: #7C3AED" id="roleColor_expert"></div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Expert</span>
+                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Expert</span>
                                     </div>
-                                    <span class="text-xs text-gray-400 font-mono">#7C3AED</span>
+                                    <span class="text-xs text-slate-400 font-mono">#7C3AED</span>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                      onclick="showRoleColorPicker('seller', '#059669')">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 shadow-sm" 
+                                        <div class="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 shadow-sm" 
                                              style="background-color: #059669" id="roleColor_seller"></div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Vendeur</span>
+                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Vendeur</span>
                                     </div>
-                                    <span class="text-xs text-gray-400 font-mono">#059669</span>
+                                    <span class="text-xs text-slate-400 font-mono">#059669</span>
                                 </div>
-                                <div class="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer"
                                      onclick="showRoleColorPicker('buyer', '#2563EB')">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full border-2 border-gray-300 dark:border-gray-600 shadow-sm" 
+                                        <div class="w-8 h-8 rounded-full border-2 border-slate-300 dark:border-slate-600 shadow-sm" 
                                              style="background-color: #2563EB" id="roleColor_buyer"></div>
-                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Acheteur</span>
+                                        <span class="text-sm font-medium text-slate-700 dark:text-slate-200">Acheteur</span>
                                     </div>
-                                    <span class="text-xs text-gray-400 font-mono">#2563EB</span>
+                                    <span class="text-xs text-slate-400 font-mono">#2563EB</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Actions -->
-                    <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-2">
+                    <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
                         <button onclick="resetAdvancedSettings()" 
-                                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
                             <i class="fas fa-undo mr-1"></i>
                             Réinitialiser
                         </button>
                         <button onclick="saveAdvancedSettings()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
                             <i class="fas fa-save mr-1"></i>
                             Enregistrer
                         </button>
@@ -474,28 +464,28 @@
 </div>
 
 <!-- Modal d'import -->
-<div id="importModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-10 mx-auto p-5 border max-w-md shadow-lg rounded-lg bg-white dark:bg-gray-800">
+<div id="importModal" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+    <div class="relative top-10 mx-auto p-5 w-full max-w-md border shadow-lg rounded-xl bg-white dark:bg-slate-800">
         <div class="mt-3">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Importer Configuration</h3>
+            <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-4">Importer Configuration</h3>
             
             <form action="{{ route('admin.settings.colors.import') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-4">
-                    <label for="config_file" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    <label for="config_file" class="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-2">
                         Fichier de configuration (JSON)
                     </label>
                     <input type="file" name="config_file" id="config_file" accept=".json"
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 </div>
                 
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeImportModal()"
-                            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-300 transition-colors">
+                            class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-colors">
                         Annuler
                     </button>
                     <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                            class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors">
                         <i class="fas fa-upload mr-1"></i>
                         Importer
                     </button>
@@ -557,7 +547,7 @@ function closeImportModal() {
 // Charger les palettes personnalisées
 function loadCustomPalettes() {
     const container = document.getElementById('customPalettesList');
-    container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Chargement...</p>';
+    container.innerHTML = '<p class="text-sm text-slate-500 dark:text-slate-400">Chargement...</p>';
     
     fetch('{{ route("admin.settings.colors.custom.list") }}', {
         method: 'GET',
@@ -572,14 +562,14 @@ function loadCustomPalettes() {
             let html = '';
             Object.entries(data.palettes).forEach(([key, palette]) => {
                 html += `
-                    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
                         <div class="flex items-center gap-3">
                             <div class="flex gap-1">
                                 ${['primary', 'secondary', 'accent'].map(color => 
                                     `<div class="w-6 h-6 rounded" style="background-color: ${palette[color]}"></div>`
                                 ).join('')}
                             </div>
-                            <span class="font-medium text-gray-900 dark:text-white">${palette.name}</span>
+                            <span class="font-medium text-slate-900 dark:text-white">${palette.name}</span>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="changePalette('${key}')" 
@@ -596,7 +586,7 @@ function loadCustomPalettes() {
             });
             container.innerHTML = html;
         } else {
-            container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Aucune palette personnalisée trouvée.</p>';
+            container.innerHTML = '<p class="text-sm text-slate-500 dark:text-slate-400">Aucune palette personnalisée trouvée.</p>';
         }
     })
     .catch(error => {
@@ -707,8 +697,8 @@ function updateActivePalette(newPalette) {
     // Retirer les styles actifs de toutes les cartes
     document.querySelectorAll('.palette-card').forEach(card => {
         card.classList.remove('border-blue-500', 'bg-blue-50');
-        card.classList.add('border-gray-200');
-        card.classList.add('dark:border-gray-700');
+        card.classList.add('border-slate-200');
+        card.classList.add('dark:border-slate-700');
         const badge = card.querySelector('.active-badge');
         if (badge) badge.classList.add('hidden');
     });
@@ -716,8 +706,8 @@ function updateActivePalette(newPalette) {
     // Ajouter les styles actifs à la carte sélectionnée
     const activeCard = document.querySelector(`[data-palette="${newPalette}"]`);
     if (activeCard) {
-        activeCard.classList.remove('border-gray-200');
-        activeCard.classList.remove('dark:border-gray-700');
+        activeCard.classList.remove('border-slate-200');
+        activeCard.classList.remove('dark:border-slate-700');
         activeCard.classList.add('border-blue-500', 'bg-blue-50');
         const activeBadge = activeCard.querySelector('.active-badge');
         if (activeBadge) activeBadge.classList.remove('hidden');
@@ -730,7 +720,7 @@ function showToast(type, message) {
     const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
     
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 z-50 ${bgColor} text-white px-6 py-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+    toast.className = `fixed top-4 right-4 z-50 ${bgColor} text-white px-6 py-4 rounded-xl shadow-lg transform transition-all duration-300 translate-x-full`;
     toast.innerHTML = `
         <div class="flex items-center gap-3">
             <i class="fas ${icon} text-xl"></i>
@@ -988,7 +978,7 @@ function selectDayPalette(key) {
     // Mettre à jour le visuel des cartes
     document.querySelectorAll('#dayPaletteGrid button').forEach(function(btn) {
         btn.classList.remove('border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/20', 'ring-2', 'ring-yellow-300');
-        btn.classList.add('border-gray-200', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+        btn.classList.add('border-slate-200', 'dark:border-slate-600', 'bg-white', 'dark:bg-slate-800');
         
         // Retirer l'indicateur "Active"
         const activeIndicator = btn.querySelector('.active-indicator');
@@ -998,19 +988,19 @@ function selectDayPalette(key) {
         const title = btn.querySelector('div:first-child');
         if (title) {
             title.classList.remove('text-yellow-700', 'dark:text-yellow-300');
-            title.classList.add('text-gray-700', 'dark:text-gray-300');
+            title.classList.add('text-slate-700', 'dark:text-slate-300');
         }
     });
     
     // Activer la carte sélectionnée
     const selectedCard = document.getElementById('dayPalette_' + key);
     if (selectedCard) {
-        selectedCard.classList.remove('border-gray-200', 'dark:border-gray-600', 'bg-white', 'dark:bg-gray-800');
+        selectedCard.classList.remove('border-slate-200', 'dark:border-slate-600', 'bg-white', 'dark:bg-slate-800');
         selectedCard.classList.add('border-yellow-500', 'bg-yellow-50', 'dark:bg-yellow-900/20', 'ring-2', 'ring-yellow-300');
         
         const title = selectedCard.querySelector('div:first-child');
         if (title) {
-            title.classList.remove('text-gray-700', 'dark:text-gray-300');
+            title.classList.remove('text-slate-700', 'dark:text-slate-300');
             title.classList.add('text-yellow-700', 'dark:text-yellow-300');
         }
         
@@ -1040,7 +1030,7 @@ function selectNightPalette(key) {
     // Mettre à jour le visuel des cartes
     document.querySelectorAll('#nightPaletteGrid button').forEach(function(btn) {
         btn.classList.remove('border-indigo-500', 'bg-indigo-900/20', 'ring-2', 'ring-indigo-400');
-        btn.classList.add('border-gray-600', 'bg-gray-800');
+        btn.classList.add('border-slate-600', 'bg-slate-800');
         
         const activeIndicator = btn.querySelector('.active-indicator');
         if (activeIndicator) activeIndicator.remove();
@@ -1048,18 +1038,18 @@ function selectNightPalette(key) {
         const title = btn.querySelector('div:first-child');
         if (title) {
             title.classList.remove('text-indigo-300');
-            title.classList.add('text-gray-300');
+            title.classList.add('text-slate-300');
         }
     });
     
     const selectedCard = document.getElementById('nightPalette_' + key);
     if (selectedCard) {
-        selectedCard.classList.remove('border-gray-600', 'bg-gray-800');
+        selectedCard.classList.remove('border-slate-600', 'bg-slate-800');
         selectedCard.classList.add('border-indigo-500', 'bg-indigo-900/20', 'ring-2', 'ring-indigo-400');
         
         const title = selectedCard.querySelector('div:first-child');
         if (title) {
-            title.classList.remove('text-gray-300');
+            title.classList.remove('text-slate-300');
             title.classList.add('text-indigo-300');
         }
         
@@ -1094,14 +1084,14 @@ function updateDayNightPreview() {
     const isDay = hour >= dayStart && hour < nightStart;
     
     if (isDay) {
-        preview.className = 'p-4 rounded-lg border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200';
+        preview.className = 'p-4 rounded-xl border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200';
         iconEl.textContent = '☀️';
         labelEl.textContent = 'Mode Jour — ' + selectedDayPalette;
         labelEl.className = 'ml-2 font-semibold text-sm text-yellow-800';
         const nextSwitch = nightStart > hour ? nightStart + ':00' : 'demain';
         nextEl.textContent = 'Nuit à ' + nextSwitch;
     } else {
-        preview.className = 'p-4 rounded-lg border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-indigo-900 to-purple-900 border-indigo-500/30';
+        preview.className = 'p-4 rounded-xl border-2 mb-3 transition-all duration-300 bg-gradient-to-r from-indigo-900 to-purple-900 border-indigo-500/30';
         iconEl.textContent = '🌙';
         labelEl.textContent = 'Mode Nuit — ' + selectedNightPalette;
         labelEl.className = 'ml-2 font-semibold text-sm text-indigo-200';

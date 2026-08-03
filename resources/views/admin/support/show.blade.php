@@ -5,17 +5,17 @@
 @section('content')
 <div>
     <!-- En-tête de la conversation -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm mb-6">
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm mb-6">
+        <div class="p-6 border-b border-slate-200 dark:border-slate-700">
             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('admin.support.index') }}" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                        <a href="{{ route('admin.support.index') }}" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
                             <i class="fas fa-arrow-left text-xl"></i>
                         </a>
                         <div>
-                            <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ $supportChat->reference }}</h1>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm">{{ $supportChat->subject ?: 'Demande d\'assistance' }}</p>
+                            <h1 class="text-xl font-bold text-slate-900 dark:text-white">{{ $supportChat->reference }}</h1>
+                            <p class="text-slate-500 dark:text-slate-400 text-sm">{{ $supportChat->subject ?: 'Demande d\'assistance' }}</p>
                         </div>
                     </div>
                 </div>
@@ -23,9 +23,9 @@
                 <div class="flex flex-wrap items-center gap-4">
                     <!-- Statut -->
                     <div class="flex items-center gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Statut:</label>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Statut:</label>
                         <select id="statusSelect" data-chat-id="{{ $supportChat->id }}" 
-                                class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                class="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="open" {{ $supportChat->status === 'open' ? 'selected' : '' }}>Ouvert</option>
                             <option value="in_progress" {{ $supportChat->status === 'in_progress' ? 'selected' : '' }}>En cours</option>
                             <option value="waiting_user" {{ $supportChat->status === 'waiting_user' ? 'selected' : '' }}>En attente utilisateur</option>
@@ -35,9 +35,9 @@
                     
                     <!-- Priorité -->
                     <div class="flex items-center gap-2">
-                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Priorité:</label>
+                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Priorité:</label>
                         <select id="prioritySelect" data-chat-id="{{ $supportChat->id }}" 
-                                class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                class="px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <option value="low" {{ $supportChat->priority === 'low' ? 'selected' : '' }}>Faible</option>
                             <option value="normal" {{ $supportChat->priority === 'normal' ? 'selected' : '' }}>Normale</option>
                             <option value="high" {{ $supportChat->priority === 'high' ? 'selected' : '' }}>Élevée</option>
@@ -55,23 +55,23 @@
                              src="{{ $supportChat->user->avatar_url }}" 
                              alt="">
                     @else
-                        <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                            <i class="fas fa-user text-gray-500 dark:text-gray-400"></i>
+                        <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 flex items-center justify-center">
+                            <i class="fas fa-user text-slate-500 dark:text-slate-400"></i>
                         </div>
                     @endif
                     <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $supportChat->user?->name ?? 'Utilisateur supprimé' }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $supportChat->user?->email ?? '-' }}</p>
+                        <p class="text-sm font-medium text-slate-900 dark:text-white">{{ $supportChat->user?->name ?? 'Utilisateur supprimé' }}</p>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">{{ $supportChat->user?->email ?? '-' }}</p>
                     </div>
                 </div>
                 
                 <div>
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Catégorie</p>
-                    <p class="text-sm text-gray-900 dark:text-white">{{ $supportChat->formatted_category }}</p>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Catégorie</p>
+                    <p class="text-sm text-slate-900 dark:text-white">{{ $supportChat->formatted_category }}</p>
                 </div>
                 
                 <div>
-                    <p class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Assigné à</p>
+                    <p class="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">Assigné à</p>
                     @if($supportChat->admin)
                         <div class="flex items-center gap-2">
                             @if($supportChat->admin->avatar)
@@ -83,19 +83,19 @@
                                     <i class="fas fa-user text-blue-600 dark:text-blue-400 text-xs"></i>
                                 </div>
                             @endif
-                            <span class="text-sm text-gray-900 dark:text-white">{{ $supportChat->admin->name }}</span>
+                            <span class="text-sm text-slate-900 dark:text-white">{{ $supportChat->admin->name }}</span>
                         </div>
                     @else
-                        <p class="text-sm text-gray-400 dark:text-gray-500 italic">Non assigné</p>
+                        <p class="text-sm text-slate-400 dark:text-slate-500 italic">Non assigné</p>
                     @endif
                 </div>
             </div>
             
             <!-- Métadonnées si disponibles -->
             @if($supportChat->metadata)
-                <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Informations système:</p>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <div class="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Informations système:</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600 dark:text-slate-400">
                         @if(isset($supportChat->metadata['browser']))
                             <div><span class="font-medium">Navigateur:</span> {{ $supportChat->metadata['browser'] }}</div>
                         @endif
@@ -117,11 +117,11 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Messages -->
         <div class="lg:col-span-2">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+            <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
                 <!-- En-tête des messages -->
-                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
-                    <h2 class="text-base font-semibold text-gray-900 dark:text-white">Conversation</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }} message(s)</p>
+                <div class="px-6 py-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
+                    <h2 class="text-base font-semibold text-slate-900 dark:text-white">Conversation</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ $supportChat->messages->count() }} message(s)</p>
                 </div>
                 
                 <!-- Liste des messages -->
@@ -138,15 +138,15 @@
                                                      src="{{ $message->user->avatar_url }}" 
                                                      alt="">
                                             @else
-                                                <div class="w-8 h-8 rounded-full {{ $message->is_admin ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-gray-200 dark:bg-gray-600' }} flex items-center justify-center">
-                                                    <i class="fas fa-user {{ $message->is_admin ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400' }} text-xs"></i>
+                                                <div class="w-8 h-8 rounded-full {{ $message->is_admin ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-slate-200 dark:bg-slate-600' }} flex items-center justify-center">
+                                                    <i class="fas fa-user {{ $message->is_admin ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400' }} text-xs"></i>
                                                 </div>
                                             @endif
                                         </div>
                                         
                                         <!-- Message -->
                                         <div class="flex flex-col {{ $message->is_admin ? 'items-end' : 'items-start' }}">
-                                            <div class="px-4 py-3 rounded-2xl {{ $message->is_admin ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white' }}">
+                                            <div class="px-4 py-3 rounded-2xl {{ $message->is_admin ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' }}">
                                                 <p class="text-sm whitespace-pre-wrap">{{ $message->message }}</p>
                                                 
                                                 <!-- Pièces jointes -->
@@ -165,12 +165,12 @@
                                             
                                             <!-- Métadonnées du message -->
                                             <div class="flex items-center gap-2 mt-1">
-                                                <span class="text-xs text-gray-500 dark:text-gray-400">{{ $message->sender_name }}</span>
-                                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ $message->created_at->format('d/m/Y H:i') }}</span>
+                                                <span class="text-xs text-slate-500 dark:text-slate-400">{{ $message->sender_name }}</span>
+                                                <span class="text-xs text-slate-400 dark:text-slate-500">{{ $message->created_at->format('d/m/Y H:i') }}</span>
                                                 @if($message->is_read)
                                                     <i class="fas fa-check-double text-xs text-green-500" title="Lu"></i>
                                                 @else
-                                                    <i class="fas fa-check text-xs text-gray-400" title="Envoyé"></i>
+                                                    <i class="fas fa-check text-xs text-slate-400" title="Envoyé"></i>
                                                 @endif
                                             </div>
                                         </div>
@@ -179,8 +179,8 @@
                             </div>
                         @empty
                             <div class="text-center py-12">
-                                <i class="fas fa-comments text-5xl text-gray-300 dark:text-gray-600 mb-4"></i>
-                                <p class="text-gray-500 dark:text-gray-400">Aucun message dans cette conversation</p>
+                                <i class="fas fa-comments text-5xl text-slate-300 dark:text-slate-600 mb-4"></i>
+                                <p class="text-slate-500 dark:text-slate-400">Aucun message dans cette conversation</p>
                             </div>
                         @endforelse
                     </div>
@@ -188,29 +188,29 @@
                 
                 <!-- Formulaire de réponse -->
                 @if($supportChat->status !== 'closed')
-                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700">
+                    <div class="px-6 py-4 bg-slate-50 dark:bg-slate-700/50 border-t border-slate-200 dark:border-slate-700">
                         <form action="{{ route('admin.support.reply', $supportChat) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Votre réponse</label>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Votre réponse</label>
                                     <textarea name="message" rows="4" required
-                                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                            class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                             placeholder="Tapez votre réponse..."></textarea>
                                 </div>
                                 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pièces jointes (optionnel)</label>
+                                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Pièces jointes (optionnel)</label>
                                     <input type="file" name="attachments[]" multiple 
-                                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                            accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt">
-                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Formats acceptés: JPG, PNG, PDF, DOC, TXT (5MB max par fichier)</p>
+                                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">Formats acceptés: JPG, PNG, PDF, DOC, TXT (5MB max par fichier)</p>
                                 </div>
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <label class="flex items-center gap-2 cursor-pointer">
-                                        <input type="checkbox" id="changeStatus" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <span class="text-sm text-gray-700 dark:text-gray-300">Marquer comme "En attente utilisateur" après envoi</span>
+                                        <input type="checkbox" id="changeStatus" class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                                        <span class="text-sm text-slate-700 dark:text-slate-300">Marquer comme "En attente utilisateur" après envoi</span>
                                     </label>
                                     
                                     <button type="submit" class="inline-flex items-center justify-center px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
@@ -221,9 +221,9 @@
                         </form>
                     </div>
                 @else
-                    <div class="px-6 py-8 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 text-center">
-                        <i class="fas fa-lock text-3xl text-gray-400 dark:text-gray-500 mb-2"></i>
-                        <p class="text-gray-500 dark:text-gray-400 mb-3">Cette conversation est fermée</p>
+                    <div class="px-6 py-8 bg-slate-50 dark:bg-slate-700/50 border-t border-slate-200 dark:border-slate-700 text-center">
+                        <i class="fas fa-lock text-3xl text-slate-400 dark:text-slate-500 mb-2"></i>
+                        <p class="text-slate-500 dark:text-slate-400 mb-3">Cette conversation est fermée</p>
                         <button onclick="reopenChat({{ $supportChat->id }})" 
                                 class="text-blue-600 hover:text-blue-700 dark:text-blue-400 text-sm font-medium">
                             Rouvrir la conversation
@@ -237,9 +237,9 @@
         <div class="lg:col-span-1">
             <div class="flex flex-col gap-6">
                 <!-- Actions rapides -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
                     <div class="p-5">
-                        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Actions rapides</h3>
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Actions rapides</h3>
                         <div class="flex flex-col gap-3">
                             @if($supportChat->status !== 'closed')
                                 <button onclick="closeChat({{ $supportChat->id }})" 
@@ -269,30 +269,30 @@
                 </div>
                 
                 <!-- Informations -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm overflow-hidden">
                     <div class="p-5">
-                        <h3 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Informations</h3>
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white mb-4">Informations</h3>
                         <div class="flex flex-col gap-4 text-sm">
                             <div>
-                                <span class="font-medium text-gray-900 dark:text-white block mb-1">Créé le:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->created_at->format('d/m/Y à H:i') }}</p>
+                                <span class="font-medium text-slate-900 dark:text-white block mb-1">Créé le:</span>
+                                <p class="text-slate-500 dark:text-slate-400">{{ $supportChat->created_at->format('d/m/Y à H:i') }}</p>
                             </div>
                             
                             @if($supportChat->closed_at)
                                 <div>
-                                    <span class="font-medium text-gray-900 dark:text-white block mb-1">Fermé le:</span>
-                                    <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->closed_at->format('d/m/Y à H:i') }}</p>
+                                    <span class="font-medium text-slate-900 dark:text-white block mb-1">Fermé le:</span>
+                                    <p class="text-slate-500 dark:text-slate-400">{{ $supportChat->closed_at->format('d/m/Y à H:i') }}</p>
                                 </div>
                             @endif
                             
                             <div>
-                                <span class="font-medium text-gray-900 dark:text-white block mb-1">Dernière activité:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->last_message_at ? $supportChat->last_message_at->diffForHumans() : 'Aucune' }}</p>
+                                <span class="font-medium text-slate-900 dark:text-white block mb-1">Dernière activité:</span>
+                                <p class="text-slate-500 dark:text-slate-400">{{ $supportChat->last_message_at ? $supportChat->last_message_at->diffForHumans() : 'Aucune' }}</p>
                             </div>
                             
                             <div>
-                                <span class="font-medium text-gray-900 dark:text-white block mb-1">Nombre de messages:</span>
-                                <p class="text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }}</p>
+                                <span class="font-medium text-slate-900 dark:text-white block mb-1">Nombre de messages:</span>
+                                <p class="text-slate-500 dark:text-slate-400">{{ $supportChat->messages->count() }}</p>
                             </div>
                         </div>
                     </div>

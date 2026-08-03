@@ -91,11 +91,30 @@
             </div>
         </div>
 
-        {{-- Formulaire de paiement CinetPay Seamless --}}
+        {{-- Paiement CinetPay (redirection vers le comptoir) --}}
         <div class="space-y-4">
-            <div id="cinetpay-payment-form">
-                {{-- Le formulaire CinetPay sera injecté ici --}}
-            </div>
+            @if(isset($paymentUrl))
+                <div class="bg-gray-50 rounded-lg p-6 text-center">
+                    <p class="text-sm text-gray-600 mb-4">
+                        Cliquez sur le bouton ci-dessous pour être redirigé vers le comptoir CinetPay,
+                        où vous choisirez votre opérateur Mobile Money et saisirez votre numéro de téléphone.
+                    </p>
+                    <a href="{{ $paymentUrl }}" target="_blank" rel="noopener"
+                       class="inline-block w-full max-w-[340px] bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition text-center">
+                        Payer avec CinetPay
+                    </a>
+                </div>
+            @else
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 flex-shrink-0"></i>
+                        <div>
+                            <p class="font-semibold text-red-800 text-sm">Paiement temporairement indisponible</p>
+                            <p class="text-red-700 text-xs mt-1">{{ $cinetpayError ?? 'Service de paiement CinetPay indisponible.' }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div class="text-center">
                 @if(isset($order))
@@ -124,80 +143,4 @@
     </div>
 </div>
 
-@push('styles')
-<style>
-    /* Personnaliser le formulaire CinetPay */
-    #cinetpay-payment-form {
-        min-height: 400px;
-    }
-    
-    /* Style du SDK CinetPay */
-    .cp-seamless-container {
-        border-radius: 0.5rem;
-        overflow: hidden;
-    }
-</style>
-@endpush
-
-@push('scripts')
-<script src="https://cdn.cinetpay.com/seamless/main.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configuration du paiement CinetPay Seamless
-        CinetPay.setConfig({
-            apikey: '{{ config("services.cinetpay.api_key") }}',
-            site_id: '{{ config("services.cinetpay.site_id") }}',
-            notify_url: '{{ route("payments.cinetpay.notify") }}',
-            mode: '{{ config("services.cinetpay.platform") }}'
-        });
-
-        // Démarrer le paiement
-        CinetPay.getCheckout({
-            transaction_id: '{{ $payment->transaction_id }}',
-            amount: {{ $payment->amount }},
-            currency: '{{ $payment->currency }}',
-            channels: 'ALL',
-            description: '{{ $payment->designation }}',
-            customer_name: '{{ auth()->user()->name }}',
-            customer_email: '{{ auth()->user()->email }}',
-            @if(auth()->user()->phone)
-            customer_phone_number: '{{ auth()->user()->phone }}',
-            @endif
-            customer_country: 'CD',
-            customer_city: '{{ auth()->user()->city ?? "Kinshasa" }}',
-            customer_zip_code: '00000',
-            
-            // Callbacks
-            onComplete: function(data) {
-                console.log('Paiement complété:', data);
-                
-                // Rediriger vers la page de retour
-                window.location.href = '{{ route("payments.cinetpay.return") }}?transaction_id={{ $payment->transaction_id }}';
-            },
-            
-            onError: function(error) {
-                console.error('Erreur de paiement:', error);
-                
-                // Afficher un message d'erreur
-                alert('Une erreur est survenue lors du paiement. Veuillez réessayer.');
-            }
-        });
-
-        // Personnaliser l'affichage
-        CinetPay.waitResponse(function(data) {
-            if (data.status == "REFUSED") {
-                alert('Paiement refusé');
-                @if(isset($order))
-                window.location.href = '{{ route("orders.show", $order ?? 0) }}';
-                @else
-                window.location.href = '{{ route("wallet.index") }}';
-                @endif
-            } else if (data.status == "ACCEPTED") {
-                alert('Paiement accepté avec succès !');
-                window.location.href = '{{ route("payments.cinetpay.return") }}?transaction_id={{ $payment->transaction_id }}';
-            }
-        });
-    });
-</script>
-@endpush
 @endsection

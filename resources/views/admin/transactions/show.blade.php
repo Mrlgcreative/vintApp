@@ -2,50 +2,68 @@
 
 @section('title', 'Détails de la transaction')
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-3xl font-semibold">Détails de la transaction</h1>
-        <a href="{{ route('admin.transactions.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">
-            Retour à la liste
-        </a>
-    </div>
+@section('page-title', 'Détails de la transaction')
 
-    <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+@section('page-actions')
+<a href="{{ route('admin.transactions.index') }}"
+   class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+    <i class="fas fa-arrow-left"></i>Retour à la liste
+</a>
+@endsection
+
+@section('content')
+<div class="space-y-6">
+    @php
+        $statusClasses = [
+            'pending' => 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300',
+            'completed' => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300',
+            'failed' => 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300',
+            'refunded' => 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300',
+        ];
+        $statusLabels = [
+            'pending' => 'En attente',
+            'completed' => 'Complétée',
+            'failed' => 'Échouée',
+            'refunded' => 'Remboursée',
+        ];
+    @endphp
+
+    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
         <!-- Informations principales -->
-        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="border-b border-slate-100 p-5 sm:p-6 dark:border-slate-700">
+            <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                    <h2 class="text-xl font-semibold mb-4">Informations générales</h2>
+                    <h2 class="mb-4 text-base font-semibold text-slate-900 dark:text-white">Informations générales</h2>
                     <dl class="grid grid-cols-1 gap-4">
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID Transaction</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $transaction->id }}</dd>
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">ID Transaction</dt>
+                            <dd class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">{{ $transaction->id }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Montant</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Montant</dt>
+                            <dd class="mt-1 text-sm font-semibold tabular-nums text-slate-900 dark:text-white">
                                 {{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}
                             </dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Type</dt>
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Type</dt>
                             <dd class="mt-1">
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $transaction->type === 'deposit' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100' }}">
-                                    {{ $transaction->type === 'deposit' ? 'Dépôt' : 'Retrait' }}
-                                </span>
+                                @if($transaction->type === 'deposit')
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300">Dépôt</span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300">Retrait</span>
+                                @endif
                             </dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Méthode de paiement</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Méthode de paiement</dt>
+                            <dd class="mt-1 text-sm text-slate-900 dark:text-white">
                                 {{ ucfirst($transaction->payment_method) }}
                             </dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Date</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Date</dt>
+                            <dd class="mt-1 text-sm text-slate-900 dark:text-white">
                                 {{ $transaction->created_at->format('d/m/Y H:i') }}
                             </dd>
                         </div>
@@ -53,28 +71,27 @@
                 </div>
 
                 <div>
-                    <h2 class="text-xl font-semibold mb-4">Informations utilisateur</h2>
-                    <div class="flex items-center mb-4">
-                        <div class="flex-shrink-0 h-12 w-12">
-                            <img class="h-12 w-12 rounded-full" src="{{ $transaction->user->profile_photo_url }}" alt="{{ $transaction->user->name }}">
-                        </div>
-                        <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    <h2 class="mb-4 text-base font-semibold text-slate-900 dark:text-white">Informations utilisateur</h2>
+                    <div class="mb-4 flex items-center gap-4">
+                        <img class="h-12 w-12 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600"
+                             src="{{ $transaction->user->profile_photo_url }}" alt="{{ $transaction->user->name }}">
+                        <div>
+                            <div class="text-sm font-semibold text-slate-900 dark:text-white">
                                 {{ $transaction->user->name }}
                             </div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                            <div class="text-sm text-slate-500 dark:text-slate-400">
                                 {{ $transaction->user->email }}
                             </div>
                         </div>
                     </div>
                     <dl class="grid grid-cols-1 gap-4">
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">ID Utilisateur</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $transaction->user->id }}</dd>
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">ID Utilisateur</dt>
+                            <dd class="mt-1 text-sm font-semibold text-slate-900 dark:text-white">{{ $transaction->user->id }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Date d'inscription</dt>
-                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                            <dt class="text-sm font-medium text-slate-500 dark:text-slate-400">Date d'inscription</dt>
+                            <dd class="mt-1 text-sm text-slate-900 dark:text-white">
                                 {{ $transaction->user->created_at->format('d/m/Y') }}
                             </dd>
                         </div>
@@ -84,69 +101,53 @@
         </div>
 
         <!-- Statut et actions -->
-        <div class="p-6 bg-gray-50 dark:bg-gray-900 dark:bg-gray-900">
-            <div class="flex justify-between items-center">
+        <div class="bg-slate-50 p-5 sm:p-6 dark:bg-slate-900/40">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Statut actuel</h3>
-                    @php
-                        $statusClasses = [
-                            'pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100',
-                            'completed' => 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100',
-                            'failed' => 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100',
-                            'refunded' => 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:bg-gray-800 dark:text-gray-100',
-                        ];
-                        $statusLabels = [
-                            'pending' => 'En attente',
-                            'completed' => 'Complétée',
-                            'failed' => 'Échouée',
-                            'refunded' => 'Remboursée',
-                        ];
-                    @endphp
-                    <span class="mt-2 px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full {{ $statusClasses[$transaction->status] }}">
+                    <h3 class="text-base font-medium text-slate-900 dark:text-white">Statut actuel</h3>
+                    <span class="mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $statusClasses[$transaction->status] }}">
                         {{ $statusLabels[$transaction->status] }}
                     </span>
                 </div>
 
                 @if($transaction->status === 'pending')
-                <div class="flex space-x-4">
-                    <button type="button" 
+                <div class="flex flex-col gap-2 sm:flex-row">
+                    <button type="button"
                             data-status-update="completed"
                             data-transaction-id="{{ $transaction->id }}"
-                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">
-                        Marquer comme complétée
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                        <i class="fas fa-check"></i>Marquer comme complétée
                     </button>
                     <button type="button"
                             data-status-update="failed"
                             data-transaction-id="{{ $transaction->id }}"
-                            class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">
-                        Marquer comme échouée
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                        <i class="fas fa-times"></i>Marquer comme échouée
                     </button>
                 </div>
                 @elseif($transaction->status === 'completed')
                 <button type="button"
                         data-status-update="refunded"
                         data-transaction-id="{{ $transaction->id }}"
-                        class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">
-                    Marquer comme remboursée
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-rotate-left"></i>Marquer comme remboursée
                 </button>
                 @endif
             </div>
         </div>
 
         <!-- Historique des mises à jour -->
-        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Historique des mises à jour</h3>
+        <div class="border-t border-slate-100 p-5 sm:p-6 dark:border-slate-700">
+            <h3 class="mb-4 text-base font-medium text-slate-900 dark:text-white">Historique des mises à jour</h3>
             <div class="space-y-4">
                 @foreach($transaction->status_history ?? [] as $history)
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0">
-                        <span class="w-2 h-2 rounded-full {{ $statusClasses[$history->status] }} inline-block"></span>
-                    </div>
+                <div class="flex items-center gap-4">
+                    <span class="inline-block h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-inset {{ $statusClasses[$history->status] }}"></span>
                     <div class="min-w-0 flex-1">
-                        <p class="text-sm text-gray-900 dark:text-gray-100">
+                        <p class="text-sm font-medium text-slate-900 dark:text-white">
                             {{ $statusLabels[$history->status] }}
                         </p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                        <p class="text-sm text-slate-500 dark:text-slate-400">
                             {{ $history->created_at->format('d/m/Y H:i') }}
                         </p>
                     </div>
@@ -192,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const transactionId = this.dataset.transactionId;
             const newStatus = this.dataset.statusUpdate;
-            
+
             if (confirm('Êtes-vous sûr de vouloir modifier le statut de cette transaction ?')) {
                 updateTransactionStatus(transactionId, newStatus);
             }

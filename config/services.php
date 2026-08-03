@@ -141,6 +141,10 @@ return [
         'api_key' => env('CINETPAY_API_KEY'),
         'platform' => env('CINETPAY_PLATFORM', 'TEST'), // TEST or PROD
         'version' => env('CINETPAY_VERSION', 'V2'), // V1 or V2
+        // API de transfert (payout) : mot de passe API défini dans le back-office
+        // (https://cinetpay.com/marchand/integration/)
+        'api_password' => env('CINETPAY_API_PASSWORD'),
+        'transfer_enabled' => env('CINETPAY_TRANSFER_ENABLED', false),
     ],
 
     /*
@@ -189,6 +193,35 @@ return [
         'merchant_id' => env('MAISHAPAY_MERCHANT_ID'),
         'environment' => env('MAISHAPAY_ENVIRONMENT', 'sandbox'),
         'enabled' => env('MAISHAPAY_ENABLED', false),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | PawaPay Configuration
+    |--------------------------------------------------------------------------
+    |
+    | PawaPay est un agrégateur mobile money pan-africain (deposits, payouts,
+    | refunds). L'environnement sandbox est isolé de la production et utilise
+    | un token API et des URLs différentes.
+    |
+    | Voir https://docs.pawapay.io
+    |
+    */
+    'pawapay' => [
+        'enabled' => env('PAWAPAY_ENABLED', false),
+        'environment' => env('PAWAPAY_ENVIRONMENT', 'sandbox'), // sandbox or production
+        'token' => env('PAWAPAY_API_TOKEN'),
+        'base_url' => env('PAWAPAY_BASE_URL'), // Surcharge optionnelle (ex: derrière un proxy)
+        'sandbox_url' => 'https://api.sandbox.pawapay.io',
+        'production_url' => 'https://api.pawapay.io',
+
+        // Signatures RFC-9421 sur les requêtes financières sortantes (optionnel)
+        'sign_requests' => env('PAWAPAY_SIGN_REQUESTS', false),
+        'key_id' => env('PAWAPAY_KEY_ID'),
+        'private_key_path' => env('PAWAPAY_PRIVATE_KEY_PATH'),
+
+        // Callback (webhook) de statut final des payments
+        'callback_url' => env('PAWAPAY_CALLBACK_URL'),
     ],
 
 ];

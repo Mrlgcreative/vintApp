@@ -4,13 +4,13 @@
 
 @section('content')
 <div class="max-w-7xl mx-auto py-4 px-3 sm:py-6 sm:px-6 lg:px-8">
-    <div class="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 dark:border-gray-700">
-            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white">
+    <div class="bg-white dark:bg-slate-800 rounded-lg sm:rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+        <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-200 dark:border-slate-700">
+            <h1 class="text-xl sm:text-2xl font-semibold text-slate-900 dark:text-white">
                 <i class="fas fa-palette mr-2 sm:mr-3 text-primary"></i>
                 Test des Couleurs VintApp avec Tailwind
             </h1>
-            <p class="text-gray-600 dark:text-gray-300 mt-2">Palette active : <span class="font-semibold text-primary">{{ $activePaletteName ?? 'default' }}</span></p>
+            <p class="text-slate-600 dark:text-slate-300 mt-2">Palette active : <span class="font-semibold text-primary">{{ $activePaletteName ?? 'default' }}</span></p>
         </div>
         
         <div class="p-4 sm:p-6 space-y-8">
@@ -70,15 +70,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="card-primary p-4 rounded-lg">
                         <h4 class="font-semibold text-primary mb-2">Carte Primary</h4>
-                        <p class="text-gray-600 dark:text-gray-300">Contenu avec bordure primary</p>
+                        <p class="text-slate-600 dark:text-slate-300">Contenu avec bordure primary</p>
                     </div>
                     <div class="card-success p-4 rounded-lg">
                         <h4 class="font-semibold text-success mb-2">Carte Success</h4>
-                        <p class="text-gray-600 dark:text-gray-300">Contenu avec bordure success</p>
+                        <p class="text-slate-600 dark:text-slate-300">Contenu avec bordure success</p>
                     </div>
                     <div class="card-danger p-4 rounded-lg">
                         <h4 class="font-semibold text-danger mb-2">Carte Danger</h4>
-                        <p class="text-gray-600 dark:text-gray-300">Contenu avec bordure danger</p>
+                        <p class="text-slate-600 dark:text-slate-300">Contenu avec bordure danger</p>
                     </div>
                 </div>
             </div>
@@ -143,9 +143,9 @@
             </div>
             
             <!-- Actions -->
-            <div class="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg">
                 <h3 class="text-lg font-semibold mb-4">Changer de Palette</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-4">Testez les différentes palettes pour voir l'effet en temps réel :</p>
+                <p class="text-slate-600 dark:text-slate-300 mb-4">Testez les différentes palettes pour voir l'effet en temps réel :</p>
                 <div class="flex flex-wrap gap-2">
                     <a href="{{ route('admin.settings.colors') }}" 
                        class="bg-primary hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors inline-flex items-center">

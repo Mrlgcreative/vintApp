@@ -1,276 +1,264 @@
 @extends('layouts.admin')
 
+@section('title', 'Remboursements')
+
+@section('page-title', 'Gestion des remboursements')
+
+@section('page-actions')
+<div class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
+    <span class="text-sm text-slate-500 dark:text-slate-400">Total des demandes :</span>
+    <span class="text-base font-semibold tabular-nums text-primary-600 dark:text-primary-400">{{ $refunds->total() }}</span>
+</div>
+@endsection
+
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Messages Flash -->
-        @if(session('success'))
-            <div class="mb-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle mr-2"></i>
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-                <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
-                    <i class="fas fa-times text-green-500"></i>
+<div class="space-y-6">
+    <!-- Messages Flash -->
+    @if(session('success'))
+        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 animate-fade-in dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300" role="alert">
+            <i class="fas fa-check-circle text-emerald-500"></i>
+            <span class="flex-1">{{ session('success') }}</span>
+            <button type="button" class="text-emerald-400 transition-colors hover:text-emerald-600" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 animate-fade-in dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-300" role="alert">
+            <i class="fas fa-exclamation-circle text-red-500"></i>
+            <span class="flex-1">{{ session('error') }}</span>
+            <button type="button" class="text-red-400 transition-colors hover:text-red-600" onclick="this.parentElement.remove()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    @endif
+
+    <!-- Filtres -->
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-700 dark:bg-slate-800">
+        <form method="GET" action="{{ route('admin.refunds.index') }}" class="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <div>
+                <label for="status" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Statut</label>
+                <select name="status" id="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                    <option value="">Tous les statuts</option>
+                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
+                    <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approuvé</option>
+                    <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejeté</option>
+                    <option value="negotiation" {{ request('status') === 'negotiation' ? 'selected' : '' }}>Négociation</option>
+                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Terminé</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="refund_type" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Type</label>
+                <select name="refund_type" id="refund_type" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                    <option value="">Tous les types</option>
+                    <option value="full" {{ request('refund_type') === 'full' ? 'selected' : '' }}>Complet</option>
+                    <option value="partial" {{ request('refund_type') === 'partial' ? 'selected' : '' }}>Partiel</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="search" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Recherche</label>
+                <input type="text" name="search" id="search" value="{{ request('search') }}"
+                       placeholder="Numéro de commande, acheteur..."
+                       class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+            </div>
+
+            <div class="flex items-end">
+                <button type="submit" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <i class="fas fa-search"></i>Filtrer
                 </button>
             </div>
-        @endif
+        </form>
+    </div>
 
-        @if(session('error'))
-            <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle mr-2"></i>
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-                <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
-                    <i class="fas fa-times text-red-500"></i>
-                </button>
-            </div>
-        @endif
-        
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Gestion des remboursements</h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-300">Gérez les demandes de remboursement de votre boutique</p>
-                </div>
-                <div class="mt-4 md:mt-0">
-                    <div class="flex items-center space-x-4">
-                        <div class="bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border border-gray-200 dark:border-gray-700">
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Total des demandes:</span>
-                            <span class="ml-2 text-lg font-semibold text-blue-600">{{ $refunds->total() }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Liste des demandes -->
+    <div class="space-y-4">
+        @php
+            $statusClasses = [
+                'pending' => 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300',
+                'approved' => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300',
+                'rejected' => 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300',
+                'negotiation' => 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300',
+                'completed' => 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300',
+            ];
+        @endphp
 
-        <!-- Filtres -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
-            <form method="GET" action="{{ route('admin.refunds.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Statut</label>
-                    <select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Tous les statuts</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
-                        <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approuvé</option>
-                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejeté</option>
-                        <option value="negotiation" {{ request('status') === 'negotiation' ? 'selected' : '' }}>Négociation</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Terminé</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="refund_type" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Type</label>
-                    <select name="refund_type" id="refund_type" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Tous les types</option>
-                        <option value="full" {{ request('refund_type') === 'full' ? 'selected' : '' }}>Complet</option>
-                        <option value="partial" {{ request('refund_type') === 'partial' ? 'selected' : '' }}>Partiel</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Recherche</label>
-                    <input type="text" name="search" id="search" value="{{ request('search') }}" 
-                           placeholder="Numéro de commande, acheteur..."
-                           class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                </div>
-
-                <div class="flex items-end">
-                    <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                        <i class="fas fa-search mr-2"></i>Filtrer
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Liste des demandes -->
-        <div class="space-y-4">
-            @forelse($refunds as $refund)
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-200">
-                    <div class="p-6">
-                        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                            
-                            <!-- Informations principales -->
-                            <div class="flex-1">
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0">
-                                        @if(!empty($refund->order?->item?->images) && count($refund->order->item->images) > 0)
-                                            <img src="{{ asset('storage/' . $refund->order->item->images[0]) }}" 
-                                                 alt="{{ $refund->order?->item?->name ?? 'Article' }}" 
-                                                 class="w-16 h-16 object-cover rounded-lg">
-                                        @else
-                                            <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                                <i class="fas fa-image text-gray-400"></i>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    
-                                    <div class="flex-1 min-w-0">
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white truncate">
-                                            {{ $refund->order?->item?->name ?? 'Article supprimé' }}
-                                        </h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            Commande #{{ $refund->order?->order_number ?? 'N/A' }}
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                            Acheteur: {{ $refund->buyer?->name ?? 'Utilisateur supprimé' }} ({{ $refund->buyer?->email ?? 'N/A' }})
-                                        </p>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">
-                                            Demandé le: {{ $refund->created_at?->format('d/m/Y à H:i') ?? 'N/A' }}
-                                        </p>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-4 text-sm text-gray-700 dark:text-gray-200">
-                                    <strong>Raison:</strong> {{ Str::limit($refund->reason, 100) }}
-                                </div>
-                            </div>
-
-                            <!-- Montants et statut -->
-                            <div class="lg:text-right">
-                                <div class="space-y-2">
-                                    <div>
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Montant original:</span>
-                                        <div class="text-lg font-semibold text-gray-900 dark:text-white">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->original_amount, 2) }}</div>
-                                    </div>
-                                    <div>
-                                        <span class="text-sm text-gray-500 dark:text-gray-400">Remboursement demandé:</span>
-                                        <div class="text-lg font-semibold text-blue-600">{{ $refund->formatted_refund_amount }}</div>
-                                    </div>
-                                    @if($refund->status === 'negotiation' && $refund->counter_offer_amount)
-                                        <div>
-                                            <span class="text-sm text-gray-500 dark:text-gray-400">Contre-offre:</span>
-                                            <div class="text-lg font-semibold text-orange-600">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->counter_offer_amount, 2) }}</div>
+        @forelse($refunds as $refund)
+            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+                <div class="p-5 sm:p-6">
+                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                        <!-- Informations principales -->
+                        <div class="flex-1">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0">
+                                    @if(!empty($refund->order?->item?->images) && count($refund->order->item->images) > 0)
+                                        <img src="{{ asset('storage/' . $refund->order->item->images[0]) }}"
+                                             alt="{{ $refund->order?->item?->name ?? 'Article' }}"
+                                             class="h-16 w-16 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-600">
+                                    @else
+                                        <div class="flex h-16 w-16 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-700">
+                                            <i class="fas fa-image text-slate-400"></i>
                                         </div>
                                     @endif
                                 </div>
-                                
-                                <div class="mt-4">
-                                    @php
-                                        $statusClasses = [
-                                            'pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                                            'approved' => 'bg-green-100 text-green-800 border-green-200',
-                                            'rejected' => 'bg-red-100 text-red-800 border-red-200',
-                                            'negotiation' => 'bg-orange-100 text-orange-800 border-orange-200',
-                                            'completed' => 'bg-blue-100 text-blue-800 border-blue-200'
-                                        ];
-                                    @endphp
-                                    
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border {{ $statusClasses[$refund->status] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border-gray-200 dark:border-gray-700' }}">
-                                        {{ $refund->status_text }}
-                                    </span>
-                                    
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Type: {{ $refund->refund_type === 'full' ? 'Complet' : 'Partiel' }}
-                                    </div>
+
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="truncate text-lg font-semibold text-slate-900 dark:text-white">
+                                        {{ $refund->order?->item?->name ?? 'Article supprimé' }}
+                                    </h3>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">
+                                        Commande #{{ $refund->order?->order_number ?? 'N/A' }}
+                                    </p>
+                                    <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                                        Acheteur: {{ $refund->buyer?->name ?? 'Utilisateur supprimé' }} ({{ $refund->buyer?->email ?? 'N/A' }})
+                                    </p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                                        Demandé le: {{ $refund->created_at?->format('d/m/Y à H:i') ?? 'N/A' }}
+                                    </p>
                                 </div>
+                            </div>
+
+                            <div class="mt-4 text-sm text-slate-700 dark:text-slate-200">
+                                <strong>Raison:</strong> {{ Str::limit($refund->reason, 100) }}
                             </div>
                         </div>
 
-                        <!-- Actions -->
-                        @if($refund->status === 'pending')
-                            <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                                <div class="flex flex-wrap gap-3">
-                                    <a href="{{ route('admin.refunds.show', $refund) }}" 
-                                       class="inline-flex items-center px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200">
-                                        <i class="fas fa-eye mr-2"></i>Examiner
-                                    </a>
-                                    
-                                    <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
-                                        @csrf
-                                        <input type="hidden" name="action" value="approve">
-                                        <button type="submit" 
-                                                onclick="return confirm('Approuver cette demande de remboursement ?')"
-                                                class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-200">
-                                            <i class="fas fa-check mr-2"></i>Approuver
-                                        </button>
-                                    </form>
-                                    
-                                    <button onclick="openNegotiationModal('{{ $refund->id }}')" 
-                                            class="inline-flex items-center px-4 py-2 bg-orange-600 text-white font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200">
-                                        <i class="fas fa-handshake mr-2"></i>Négocier
-                                    </button>
-                                    
-                                    <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
-                                        @csrf
-                                        <input type="hidden" name="action" value="reject">
-                                        <button type="submit" 
-                                                onclick="return confirm('Rejeter cette demande de remboursement ?')"
-                                                class="inline-flex items-center px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-200">
-                                            <i class="fas fa-times mr-2"></i>Rejeter
-                                        </button>
-                                    </form>
+                        <!-- Montants et statut -->
+                        <div class="lg:text-right">
+                            <div class="space-y-2">
+                                <div>
+                                    <span class="text-sm text-slate-500 dark:text-slate-400">Montant original:</span>
+                                    <div class="text-lg font-semibold tabular-nums text-slate-900 dark:text-white">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->original_amount, 2) }}</div>
+                                </div>
+                                <div>
+                                    <span class="text-sm text-slate-500 dark:text-slate-400">Remboursement demandé:</span>
+                                    <div class="text-lg font-semibold tabular-nums text-primary-600 dark:text-primary-400">{{ $refund->formatted_refund_amount }}</div>
+                                </div>
+                                @if($refund->status === 'negotiation' && $refund->counter_offer_amount)
+                                    <div>
+                                        <span class="text-sm text-slate-500 dark:text-slate-400">Contre-offre:</span>
+                                        <div class="text-lg font-semibold tabular-nums text-amber-600 dark:text-amber-400">{{ $refund->currency === 'USD' ? '$' : 'FC' }} {{ number_format($refund->counter_offer_amount, 2) }}</div>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="mt-4">
+                                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $statusClasses[$refund->status] ?? 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300' }}">
+                                    {{ $refund->status_text }}
+                                </span>
+
+                                <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                    Type: {{ $refund->refund_type === 'full' ? 'Complet' : 'Partiel' }}
                                 </div>
                             </div>
-                        @endif
+                        </div>
                     </div>
-                </div>
-            @empty
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 p-12 text-center">
-                    <i class="fas fa-inbox text-gray-400 text-4xl mb-4"></i>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune demande de remboursement</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Il n'y a actuellement aucune demande de remboursement à traiter.</p>
-                </div>
-            @endforelse
-        </div>
 
-        <!-- Pagination -->
-        @if($refunds->hasPages())
-            <div class="mt-8">
-                {{ $refunds->links() }}
+                    <!-- Actions -->
+                    @if($refund->status === 'pending')
+                        <div class="mt-6 flex flex-col gap-2 border-t border-slate-100 pt-6 sm:flex-row sm:flex-wrap dark:border-slate-700">
+                            <a href="{{ route('admin.refunds.show', $refund) }}"
+                               class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                                <i class="fas fa-eye"></i>Examiner
+                            </a>
+
+                            <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
+                                @csrf
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit"
+                                        onclick="return confirm('Approuver cette demande de remboursement ?')"
+                                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                                    <i class="fas fa-check"></i>Approuver
+                                </button>
+                            </form>
+
+                            <button onclick="openNegotiationModal('{{ $refund->id }}')"
+                                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                                <i class="fas fa-handshake"></i>Négocier
+                            </button>
+
+                            <form method="POST" action="{{ route('refund.process', $refund) }}" class="inline-flex">
+                                @csrf
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit"
+                                        onclick="return confirm('Rejeter cette demande de remboursement ?')"
+                                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                                    <i class="fas fa-times"></i>Rejeter
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
             </div>
-        @endif
+        @empty
+            <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <i class="fas fa-inbox mb-3 text-4xl text-slate-200 dark:text-slate-600"></i>
+                <h3 class="mb-2 text-lg font-medium text-slate-900 dark:text-white">Aucune demande de remboursement</h3>
+                <p class="text-slate-500 dark:text-slate-400">Il n'y a actuellement aucune demande de remboursement à traiter.</p>
+            </div>
+        @endforelse
     </div>
+
+    <!-- Pagination -->
+    @if($refunds->hasPages())
+        <div class="mt-8">
+            {{ $refunds->links() }}
+        </div>
+    @endif
 </div>
 
 <!-- Modal de négociation -->
-<div id="negotiationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-2xl bg-white dark:bg-gray-800">
-        <div class="mt-3">
-            <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
-                <i class="fas fa-handshake text-orange-500 mr-2"></i>
+<div id="negotiationModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm">
+    <div class="relative mx-auto my-16 w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-800">
+        <div class="mb-6 flex items-center justify-between">
+            <h3 class="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
+                <i class="fas fa-handshake text-amber-500"></i>
                 Proposer une contre-offre
             </h3>
-            
-            <form id="negotiationForm">
-                @csrf
-                <input type="hidden" id="refundId" name="refund_id">
-                <input type="hidden" name="action" value="negotiate">
-                
-                <div class="mb-4">
-                    <label for="counterOffer" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Montant proposé</label>
-                    <div class="relative">
-                        <input type="number" id="counterOffer" name="counter_offer" step="0.01" min="0" required
-                               class="w-full pl-8 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
-                        <span class="absolute left-3 top-2 text-gray-500 dark:text-gray-400">$</span>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label for="adminNotes" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Notes (optionnel)</label>
-                    <textarea id="adminNotes" name="admin_notes" rows="3"
-                              placeholder="Expliquez votre contre-offre..."
-                              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
-                </div>
-
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeNegotiationModal()"
-                            class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 dark:text-gray-200 font-semibold rounded-lg hover:bg-gray-400 transition-colors duration-200">
-                        Annuler
-                    </button>
-                    <button type="submit"
-                            class="flex-1 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200">
-                        Proposer
-                    </button>
-                </div>
-            </form>
+            <button type="button" onclick="closeNegotiationModal()" class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
+
+        <form id="negotiationForm">
+            @csrf
+            <input type="hidden" id="refundId" name="refund_id">
+            <input type="hidden" name="action" value="negotiate">
+
+            <div class="mb-4">
+                <label for="counterOffer" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Montant proposé</label>
+                <div class="relative">
+                    <input type="number" id="counterOffer" name="counter_offer" step="0.01" min="0" required
+                           class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 pl-8 pr-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition-colors">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 dark:text-slate-400">$</span>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label for="adminNotes" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-300">Notes (optionnel)</label>
+                <textarea id="adminNotes" name="admin_notes" rows="3"
+                          placeholder="Expliquez votre contre-offre..."
+                          class="w-full resize-none rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-500 transition-colors"></textarea>
+            </div>
+
+            <div class="flex flex-col-reverse gap-2 sm:flex-row">
+                <button type="button" onclick="closeNegotiationModal()"
+                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Annuler
+                </button>
+                <button type="submit"
+                        class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    Proposer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+@endsection
 
+@push('scripts')
 <script>
 // Fonctions pour gérer le modal de négociation
 function openNegotiationModal(refundId) {
@@ -295,16 +283,16 @@ document.getElementById('negotiationModal').addEventListener('click', function(e
 // Soumission du formulaire de négociation
 document.getElementById('negotiationForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const refundId = document.getElementById('refundId').value;
     const submitButton = this.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
-    
+
     // Désactiver le bouton et afficher le chargement
     submitButton.disabled = true;
     submitButton.textContent = 'Traitement...';
-    
+
     fetch(`/refunds/${refundId}/process`, {
         method: 'POST',
         headers: {
@@ -333,5 +321,4 @@ document.getElementById('negotiationForm').addEventListener('submit', function(e
     });
 });
 </script>
-
-@endsection
+@endpush

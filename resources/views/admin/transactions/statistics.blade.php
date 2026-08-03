@@ -2,129 +2,99 @@
 
 @section('title', 'Statistiques des transactions')
 
-@section('content')
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-6 flex justify-between items-center">
-        <h1 class="text-3xl font-semibold">Statistiques des transactions</h1>
-        <a href="{{ route('admin.transactions.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">
-            Retour à la liste
-        </a>
-    </div>
+@section('page-title', 'Statistiques des transactions')
 
+@section('page-actions')
+<a href="{{ route('admin.transactions.index') }}"
+   class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+    <i class="fas fa-arrow-left"></i>Retour à la liste
+</a>
+@endsection
+
+@section('content')
+<div class="space-y-6">
     <!-- Cartes de statistiques -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <!-- Total des transactions -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-primary-100 dark:bg-primary-900 rounded-md p-3">
-                    <svg class="h-6 w-6 text-primary-600 dark:text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                    </svg>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
+                    <i class="fas fa-arrow-right-arrow-left"></i>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Total des transactions
-                        </dt>
-                        <dd class="flex items-baseline">
-                            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $stats['total_transactions'] }}
-                            </div>
-                        </dd>
-                    </dl>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-slate-500 dark:text-slate-400">Total des transactions</p>
+                    <p class="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">{{ $stats['total_transactions'] }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Transactions en attente -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-yellow-100 dark:bg-yellow-900 rounded-md p-3">
-                    <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300">
+                    <i class="fas fa-clock"></i>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            En attente
-                        </dt>
-                        <dd class="flex items-baseline">
-                            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $stats['pending_transactions'] }}
-                            </div>
-                        </dd>
-                    </dl>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-slate-500 dark:text-slate-400">En attente</p>
+                    <p class="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">{{ $stats['pending_transactions'] }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Transactions complétées -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-green-100 dark:bg-green-900 rounded-md p-3">
-                    <svg class="h-6 w-6 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300">
+                    <i class="fas fa-circle-check"></i>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Complétées
-                        </dt>
-                        <dd class="flex items-baseline">
-                            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $stats['completed_transactions'] }}
-                            </div>
-                        </dd>
-                    </dl>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-slate-500 dark:text-slate-400">Complétées</p>
+                    <p class="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">{{ $stats['completed_transactions'] }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Total des transactions Mobile Money -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <div class="flex items-center">
-                <div class="flex-shrink-0 bg-blue-100 dark:bg-blue-900 rounded-md p-3">
-                    <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                    </svg>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-300">
+                    <i class="fas fa-mobile-screen-button"></i>
                 </div>
-                <div class="ml-5 w-0 flex-1">
-                    <dl>
-                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                            Mobile Money
-                        </dt>
-                        <dd class="flex items-baseline">
-                            <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                                {{ $stats['mobile_money_transactions'] }}
-                            </div>
-                        </dd>
-                    </dl>
+                <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-slate-500 dark:text-slate-400">Mobile Money</p>
+                    <p class="text-2xl font-bold tabular-nums text-slate-900 dark:text-white">{{ $stats['mobile_money_transactions'] }}</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Graphiques et tableaux détaillés -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <!-- Transactions par méthode de paiement -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                Transactions par méthode de paiement
-            </h3>
-            <div class="relative">
-                <canvas id="paymentMethodChart"></canvas>
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+                <h3 class="font-semibold text-slate-900 dark:text-white">Transactions par méthode de paiement</h3>
+            </div>
+            <div class="p-5 sm:p-6">
+                <div class="relative h-80">
+                    <canvas id="paymentMethodChart"></canvas>
+                </div>
             </div>
         </div>
 
         <!-- Montant total aujourd'hui -->
-        <div class="bg-white dark:bg-gray-800 dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                Montant total aujourd'hui
-            </h3>
-            <div class="text-4xl font-bold text-gray-900 dark:text-gray-100">
-                {{ number_format($stats['total_amount_today'], 2) }} USD
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+                <h3 class="font-semibold text-slate-900 dark:text-white">Montant total aujourd'hui</h3>
+            </div>
+            <div class="flex h-full flex-col items-center justify-center p-5 sm:p-6">
+                <div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
+                    <i class="fas fa-sack-dollar text-2xl"></i>
+                </div>
+                <div class="mt-4 text-4xl font-bold tabular-nums text-slate-900 dark:text-white">
+                    {{ number_format($stats['total_amount_today'], 2) }} USD
+                </div>
+                <p class="mt-2 text-sm text-slate-400">Transactions réalisées aujourd'hui</p>
             </div>
         </div>
     </div>
@@ -137,7 +107,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Données pour le graphique des méthodes de paiement
     const paymentMethodData = @json($stats['transactions_by_payment_method']);
-    
+
     // Configuration du graphique des méthodes de paiement
     const paymentMethodChart = new Chart(
         document.getElementById('paymentMethodChart'),

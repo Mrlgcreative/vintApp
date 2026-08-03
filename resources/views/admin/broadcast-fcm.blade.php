@@ -7,13 +7,13 @@
     <title>Broadcast FCM - Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100">
+<body class="bg-slate-100">
     <div class="min-h-screen py-8">
         <div class="max-w-4xl mx-auto px-4">
             <!-- Header -->
             <div class="bg-white rounded-lg shadow-lg p-8 mb-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h1 class="text-3xl font-bold text-gray-800">
+                    <h1 class="text-3xl font-bold text-slate-800">
                         📢 Broadcast Notification Push
                     </h1>
                     <a href="{{ route('admin.dashboard') }}" class="text-purple-600 hover:text-purple-700">
@@ -33,16 +33,16 @@
                     <h2 class="text-xl font-bold text-blue-900 mb-4">📊 Statistiques des appareils</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white rounded-lg p-4">
-                            <p class="text-gray-600 text-sm">Total utilisateurs</p>
-                            <p id="totalUsers" class="text-3xl font-bold text-gray-800">-</p>
+                            <p class="text-slate-600 text-sm">Total utilisateurs</p>
+                            <p id="totalUsers" class="text-3xl font-bold text-slate-800">-</p>
                         </div>
                         <div class="bg-white rounded-lg p-4">
-                            <p class="text-gray-600 text-sm">Appareils avec notifications</p>
+                            <p class="text-slate-600 text-sm">Appareils avec notifications</p>
                             <p id="devicesWithFCM" class="text-3xl font-bold text-green-600">-</p>
                         </div>
                         <div class="bg-white rounded-lg p-4">
-                            <p class="text-gray-600 text-sm">Dernière mise à jour</p>
-                            <p id="lastUpdate" class="text-sm font-semibold text-gray-800">-</p>
+                            <p class="text-slate-600 text-sm">Dernière mise à jour</p>
+                            <p id="lastUpdate" class="text-sm font-semibold text-slate-800">-</p>
                         </div>
                     </div>
                     <button onclick="loadStats()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
@@ -56,7 +56,7 @@
                     
                     <form id="broadcastForm" class="space-y-4">
                         <div>
-                            <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="title" class="block text-sm font-semibold text-slate-700 mb-2">
                                 Titre de la notification
                             </label>
                             <input 
@@ -66,12 +66,12 @@
                                 maxlength="255"
                                 required
                                 placeholder="Ex: Nouvelle fonctionnalité !"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             >
                         </div>
 
                         <div>
-                            <label for="message" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="message" class="block text-sm font-semibold text-slate-700 mb-2">
                                 Message
                             </label>
                             <textarea 
@@ -81,9 +81,9 @@
                                 maxlength="500"
                                 required
                                 placeholder="Ex: Découvrez notre nouveau système de messagerie instantanée !"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             ></textarea>
-                            <p class="text-xs text-gray-500 mt-1">
+                            <p class="text-xs text-slate-500 mt-1">
                                 <span id="charCount">0</span>/500 caractères
                             </p>
                         </div>
@@ -98,7 +98,7 @@
                 </div>
 
                 <!-- Console de debug -->
-                <div class="bg-gray-900 rounded-lg p-6">
+                <div class="bg-slate-900 rounded-lg p-6">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold text-green-400">💻 Console</h2>
                         <button onclick="clearConsole()" class="text-red-400 hover:text-red-300 text-sm">
@@ -138,7 +138,7 @@
             
             const logEntry = document.createElement('div');
             logEntry.className = `${colors[type] || colors.info} py-1`;
-            logEntry.innerHTML = `<span class="text-gray-500">[${timestamp}]</span> ${message}`;
+            logEntry.innerHTML = `<span class="text-slate-500">[${timestamp}]</span> ${message}`;
             console.appendChild(logEntry);
             console.scrollTop = console.scrollHeight;
         }

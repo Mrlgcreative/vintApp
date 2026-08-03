@@ -6,8 +6,8 @@
         <!-- Header -->
         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
             <div>
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">📈 Monitoring & Métriques</h1>
-                <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <h1 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">📈 Monitoring & Métriques</h1>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
                     Dernière mise à jour: <span id="last-update">{{ now()->format('d/m/Y H:i:s') }}</span>
                     <span id="refresh-indicator" class="ml-2 hidden">
                         <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
@@ -35,7 +35,7 @@
 
         <!-- Health Status -->
         <div class="mb-6">
-            <div id="health-status" class="px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center justify-between bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 animate-pulse">
+            <div id="health-status" class="px-4 sm:px-6 py-3 sm:py-4 rounded-lg font-semibold text-base sm:text-lg flex items-center justify-between bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 animate-pulse">
                 État du système: <span class="uppercase">Chargement...</span>
             </div>
             
@@ -43,14 +43,14 @@
             <div id="health-checks" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mt-4">
                 <!-- Skeleton placeholders -->
                 @for($i = 0; $i < 3; $i++)
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 animate-pulse">
+                <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4 animate-pulse">
                     <div class="flex items-center justify-between">
-                        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-                        <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
+                        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-24"></div>
+                        <div class="h-5 bg-slate-200 dark:bg-slate-700 rounded w-12"></div>
                     </div>
                     <div class="mt-3 space-y-2">
-                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-                        <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-32"></div>
+                        <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-28"></div>
                     </div>
                 </div>
                 @endfor
@@ -60,14 +60,14 @@
         <!-- Stats Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6">
             <!-- Database Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Base de données</h3>
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100">Base de données</h3>
                     <span class="text-xl sm:text-3xl">🗄️</span>
                 </div>
                 <div id="db-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
-                        <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
+                        <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
             </div>
@@ -87,27 +87,27 @@
             </div>
 
             <!-- Cache Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Cache</h3>
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100">Cache</h3>
                     <span class="text-xl sm:text-3xl">⚡</span>
                 </div>
                 <div id="cache-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
-                        <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
+                        <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
             </div>
 
             <!-- Performance Stats -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 sm:p-6">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
                 <div class="flex items-center justify-between mb-3 sm:mb-4">
-                    <h3 class="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100">Performance</h3>
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100">Performance</h3>
                     <span class="text-xl sm:text-3xl">📊</span>
                 </div>
                 <div id="performance-stats" class="space-y-1.5 sm:space-y-2 text-xs sm:text-base">
                     <div class="flex justify-between">
-                        <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
+                        <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
             </div>
@@ -116,35 +116,35 @@
         <!-- Business Events & Errors -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
             <!-- Business Events -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
-                <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-3 sm:mb-4 flex items-center">
                     <span class="mr-2">📈</span>
                     Événements Business
                 </h3>
                 <div id="business-events" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
+                        <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
             </div>
 
             <!-- Errors -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6">
-                <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <h3 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-3 sm:mb-4 flex items-center">
                     <span class="mr-2">🚨</span>
                     Erreurs
                 </h3>
                 <div id="errors-section" class="space-y-2 sm:space-y-3 text-sm sm:text-base">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-600 dark:text-gray-400">Chargement...</span>
+                        <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="mt-4 sm:mt-6 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 sm:p-6">
-            <h3 class="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4">Actions Rapides</h3>
+        <div class="mt-4 sm:mt-6 bg-slate-50 dark:bg-slate-800 rounded-lg p-4 sm:p-6">
+            <h3 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100 mb-3 sm:mb-4">Actions Rapides</h3>
             <div class="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 sm:gap-3">
                 <a href="/telescope" target="_blank" 
                    class="px-4 py-2.5 sm:py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition text-sm sm:text-base text-center">
@@ -152,7 +152,7 @@
                 </a>
                 <form action="/admin/monitoring/reset" method="POST">
                     @csrf
-                    <button type="submit" class="w-full px-4 py-2.5 sm:py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition text-sm sm:text-base">
+                    <button type="submit" class="w-full px-4 py-2.5 sm:py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition text-sm sm:text-base">
                         🔄 Réinitialiser métriques
                     </button>
                 </form>
@@ -197,7 +197,7 @@ function getHealthColor(status) {
         degraded: 'text-yellow-700 dark:text-yellow-300 bg-yellow-100 dark:bg-yellow-900/40',
         unhealthy: 'text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/40',
     };
-    return colors[status] || 'text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700';
+    return colors[status] || 'text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700';
 }
 
 async function refreshStats() {
@@ -233,7 +233,7 @@ async function refreshStats() {
         const toggleBtn = document.getElementById('toggle-refresh');
         toggleBtn.innerHTML = '\u23f8\ufe0f <span class="hidden sm:inline">Auto-refresh</span> OFF';
         toggleBtn.classList.remove('bg-green-600');
-        toggleBtn.classList.add('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+        toggleBtn.classList.add('bg-slate-300', 'dark:bg-slate-600', 'text-slate-700', 'dark:text-slate-300');
     } finally {
         const btn = document.getElementById('refresh-btn');
         const indicator = document.getElementById('refresh-indicator');
@@ -259,9 +259,9 @@ function updateDashboard(data) {
     // Update health checks
     const healthChecks = document.getElementById('health-checks');
     healthChecks.innerHTML = Object.entries(health.checks).map(([name, check]) => `
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-lg shadow p-4">
             <div class="flex items-center justify-between">
-                <h3 class="font-medium text-gray-700 dark:text-gray-300 capitalize text-sm sm:text-base">${name}</h3>
+                <h3 class="font-medium text-slate-700 dark:text-slate-300 capitalize text-sm sm:text-base">${name}</h3>
                 <span class="px-2 py-1 text-xs rounded ${  
                     check.status === 'ok' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' :
                     check.status === 'warning' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400' :
@@ -271,9 +271,9 @@ function updateDashboard(data) {
                 </span>
             </div>
             ${check.usage_percent ? `
-                <div class="mt-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                <div class="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                     <p>Utilisation: ${check.usage_percent}%</p>
-                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 mt-1">
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 mt-1">
                         <div class="h-1.5 rounded-full transition-all ${check.usage_percent > 90 ? 'bg-red-500' : check.usage_percent > 70 ? 'bg-yellow-500' : 'bg-green-500'}" style="width: ${check.usage_percent}%"></div>
                     </div>
                     <p class="mt-1">Libre: ${check.free_gb} GB</p>
@@ -286,15 +286,15 @@ function updateDashboard(data) {
     // Update database stats
     document.getElementById('db-stats').innerHTML = `
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Utilisateurs:</span>
-            <span class="font-bold dark:text-gray-100">${formatNumber(stats.database.total_users)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Utilisateurs:</span>
+            <span class="font-bold dark:text-slate-100">${formatNumber(stats.database.total_users)}</span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Annonces actives:</span>
-            <span class="font-bold dark:text-gray-100">${formatNumber(stats.database.active_items)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Annonces actives:</span>
+            <span class="font-bold dark:text-slate-100">${formatNumber(stats.database.active_items)}</span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Commandes en attente:</span>
+            <span class="text-slate-600 dark:text-slate-400">Commandes en attente:</span>
             <span class="font-bold text-orange-600">${formatNumber(stats.database.pending_orders)}</span>
         </div>
     `;
@@ -320,46 +320,46 @@ function updateDashboard(data) {
     // Update cache stats
     document.getElementById('cache-stats').innerHTML = `
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Taux de succès:</span>
+            <span class="text-slate-600 dark:text-slate-400">Taux de succès:</span>
             <span class="font-bold text-green-600">${stats.cache.hit_rate}%</span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Hits:</span>
-            <span class="font-medium dark:text-gray-100">${formatNumber(stats.cache.hits)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Hits:</span>
+            <span class="font-medium dark:text-slate-100">${formatNumber(stats.cache.hits)}</span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Misses:</span>
-            <span class="font-medium dark:text-gray-100">${formatNumber(stats.cache.misses)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Misses:</span>
+            <span class="font-medium dark:text-slate-100">${formatNumber(stats.cache.misses)}</span>
         </div>
     `;
     
     // Update performance stats
     document.getElementById('performance-stats').innerHTML = `
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Temps moyen:</span>
-            <span class="font-bold dark:text-gray-100">${stats.performance.avg_response_time}ms</span>
+            <span class="text-slate-600 dark:text-slate-400">Temps moyen:</span>
+            <span class="font-bold dark:text-slate-100">${stats.performance.avg_response_time}ms</span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Opérations lentes:</span>
+            <span class="text-slate-600 dark:text-slate-400">Opérations lentes:</span>
             <span class="font-medium ${stats.performance.slow_operations > 0 ? 'text-red-600' : 'text-green-600'}">
                 ${stats.performance.slow_operations}
             </span>
         </div>
         <div class="flex justify-between">
-            <span class="text-gray-600 dark:text-gray-400">Total:</span>
-            <span class="font-medium dark:text-gray-100">${formatNumber(stats.performance.total_operations)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Total:</span>
+            <span class="font-medium dark:text-slate-100">${formatNumber(stats.performance.total_operations)}</span>
         </div>
     `;
     
     // Update business events
     document.getElementById('business-events').innerHTML = `
         <div class="flex justify-between items-center">
-            <span class="text-gray-600 dark:text-gray-400">Total événements:</span>
-            <span class="font-bold dark:text-gray-100">${formatNumber(stats.business.total_events)}</span>
+            <span class="text-slate-600 dark:text-slate-400">Total événements:</span>
+            <span class="font-bold dark:text-slate-100">${formatNumber(stats.business.total_events)}</span>
         </div>
         ${stats.business.last_event ? `
-            <div class="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-700 p-3 rounded">
-                <p class="font-medium text-gray-800 dark:text-gray-200">Dernier événement:</p>
+            <div class="text-sm text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 p-3 rounded">
+                <p class="font-medium text-slate-800 dark:text-slate-200">Dernier événement:</p>
                 <p class="mt-1">${stats.business.last_event.event}</p>
                 <p class="text-xs mt-1">${new Date(stats.business.last_event.timestamp).toLocaleString('fr-FR')}</p>
             </div>
@@ -369,13 +369,13 @@ function updateDashboard(data) {
     // Update errors
     document.getElementById('errors-section').innerHTML = `
         <div class="flex justify-between items-center">
-            <span class="text-gray-600 dark:text-gray-400">Total erreurs:</span>
+            <span class="text-slate-600 dark:text-slate-400">Total erreurs:</span>
             <span class="font-bold ${stats.errors.total_errors > 0 ? 'text-red-600' : 'text-green-600'}">
                 ${stats.errors.total_errors}
             </span>
         </div>
         ${stats.errors.last_error ? `
-            <div class="text-sm text-gray-600 bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
+            <div class="text-sm text-slate-600 bg-red-50 dark:bg-red-900/20 p-3 rounded border border-red-200 dark:border-red-800">
                 <p class="font-medium text-red-800 dark:text-red-400">Dernière erreur:</p>
                 <p class="mt-1 text-red-700 dark:text-red-300">${stats.errors.last_error.message}</p>
                 <p class="text-xs mt-1 text-red-600 dark:text-red-400">
@@ -399,11 +399,11 @@ document.getElementById('toggle-refresh').addEventListener('click', function() {
         : '\u23f8\ufe0f <span class="hidden sm:inline">Auto-refresh</span> OFF';
     
     if (autoRefresh) {
-        this.classList.remove('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+        this.classList.remove('bg-slate-300', 'dark:bg-slate-600', 'text-slate-700', 'dark:text-slate-300');
         this.classList.add('bg-green-600', 'text-white');
     } else {
         this.classList.remove('bg-green-600', 'text-white');
-        this.classList.add('bg-gray-300', 'dark:bg-gray-600', 'text-gray-700', 'dark:text-gray-300');
+        this.classList.add('bg-slate-300', 'dark:bg-slate-600', 'text-slate-700', 'dark:text-slate-300');
     }
 });
 

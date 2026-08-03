@@ -6,43 +6,43 @@
 @section('page-actions')
 <div class="flex flex-wrap gap-3">
     <a href="{{ route('admin.items.create') }}"
-       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors">
-        <i class="fas fa-plus mr-2"></i>Nouvel article
+       class="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+        <i class="fas fa-plus"></i>Nouvel article
     </a>
 </div>
 @endsection
 
 @section('content')
 @if(session('success'))
-    <div class="flex items-center rounded-xl bg-green-50 p-4 text-green-800 animate-fade-in mb-6">
-        <i class="fas fa-check-circle mr-3 text-green-500"></i>
+    <div class="mb-6 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 animate-fade-in dark:border-emerald-900/30 dark:bg-emerald-900/20 dark:text-emerald-300" role="alert">
+        <i class="fas fa-circle-check text-emerald-500"></i>
         <span class="flex-1">{{ session('success') }}</span>
-        <button type="button" class="ml-4 text-green-500 hover:text-green-700" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        <button type="button" class="text-emerald-400 transition-colors hover:text-emerald-600" onclick="this.parentElement.remove()"><i class="fas fa-xmark"></i></button>
     </div>
 @endif
 @if(session('error'))
-    <div class="flex items-center rounded-xl bg-red-50 p-4 text-red-800 animate-fade-in mb-6">
-        <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
+    <div class="mb-6 flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 animate-fade-in dark:border-red-900/30 dark:bg-red-900/20 dark:text-red-300" role="alert">
+        <i class="fas fa-circle-exclamation text-red-500"></i>
         <span class="flex-1">{{ session('error') }}</span>
-        <button type="button" class="ml-4 text-red-500 hover:text-red-700" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
+        <button type="button" class="text-red-400 transition-colors hover:text-red-600" onclick="this.parentElement.remove()"><i class="fas fa-xmark"></i></button>
     </div>
 @endif
 
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-    <div class="p-6">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+<div class="mb-6 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <div class="p-5 sm:p-6">
+        <form method="GET" class="grid grid-cols-1 gap-4 md:grid-cols-6">
             <div class="md:col-span-2">
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <i class="fas fa-search text-slate-400"></i>
                     </div>
                     <input type="text" name="search" value="{{ request('search') }}"
-                           class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500"
+                           class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 pl-10 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-slate-600 dark:bg-slate-800 dark:text-white"
                            placeholder="Rechercher un article...">
                 </div>
             </div>
             <div>
-                <select name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
+                <select name="status" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                     <option value="">Tous les statuts</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
                     <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>En attente</option>
@@ -51,18 +51,18 @@
                 </select>
             </div>
             <div>
-                <select name="moderation" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500">
+                <select name="moderation" class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 transition-colors focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:border-slate-600 dark:bg-slate-800 dark:text-white">
                     <option value="">Tous</option>
                     <option value="blocked" {{ request('moderation') === 'blocked' ? 'selected' : '' }}>Bloqués</option>
                     <option value="suspended" {{ request('moderation') === 'suspended' ? 'selected' : '' }}>Suspendus</option>
                     <option value="normal" {{ request('moderation') === 'normal' ? 'selected' : '' }}>Normaux</option>
                 </select>
             </div>
-            <div class="flex space-x-2">
-                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700">
+            <div class="flex flex-col gap-2 sm:flex-row sm:space-x-2">
+                <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
                     <i class="fas fa-search"></i>
                 </button>
-                <a href="{{ route('admin.items.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                <a href="{{ route('admin.items.index') }}" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -70,116 +70,116 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6 mb-8">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <p class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Total</p>
-        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total'] ?? $items->total() }}</p>
+<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-5">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Total</p>
+        <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total'] ?? $items->total() }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <p class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Actifs</p>
-        <p class="text-2xl font-bold text-green-600">{{ $stats['active'] ?? \App\Models\Item::where('status', 'active')->count() }}</p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Actifs</p>
+        <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['active'] ?? \App\Models\Item::where('status', 'active')->count() }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <p class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">En attente</p>
-        <p class="text-2xl font-bold text-yellow-600">{{ $stats['pending'] ?? \App\Models\Item::where('status', 'pending')->count() }}</p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">En attente</p>
+        <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ $stats['pending'] ?? \App\Models\Item::where('status', 'pending')->count() }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <p class="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">Bloqués</p>
-        <p class="text-2xl font-bold text-red-600">{{ $stats['blocked'] ?? \App\Models\Item::where('is_blocked', true)->count() }}</p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">Bloqués</p>
+        <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ $stats['blocked'] ?? \App\Models\Item::where('is_blocked', true)->count() }}</p>
     </div>
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <p class="text-xs font-semibold text-orange-600 uppercase tracking-wider mb-2">Suspendus</p>
-        <p class="text-2xl font-bold text-orange-600">{{ $stats['suspended'] ?? \App\Models\Item::where('is_suspended', true)->count() }}</p>
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
+        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">Suspendus</p>
+        <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ $stats['suspended'] ?? \App\Models\Item::where('is_suspended', true)->count() }}</p>
     </div>
 </div>
 
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-    <div class="p-4 md:p-6 border-b border-gray-200 dark:border-gray-700">
-        <h5 class="text-lg font-bold text-gray-900 dark:text-white">Liste des articles</h5>
+<div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <div class="border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+        <h5 class="font-semibold text-slate-900 dark:text-white">Liste des articles</h5>
     </div>
-    <div class="p-0">
+    <div>
         @if($items->count() > 0)
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <table class="w-full text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-900">
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Article</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Vendeur</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Prix</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Statut</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Modération</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Vues</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
-                        <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Article</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Vendeur</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Prix</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Statut</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Modération</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Vues</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Date</th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
                     @foreach($items as $item)
-                    <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors {{ $item->is_blocked ? 'bg-red-50 dark:bg-red-900/10' : ($item->is_suspended ? 'bg-orange-50 dark:bg-orange-900/10' : '') }}">
-                        <td class="px-6 py-4">
+                    <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/30 {{ $item->is_blocked ? 'bg-red-50 dark:bg-red-900/10' : ($item->is_suspended ? 'bg-orange-50 dark:bg-orange-900/10' : '') }}">
+                        <td class="px-4 py-3 align-middle">
                             <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 dark:bg-slate-700 dark:ring-slate-600">
                                     @if($item->images && count($item->images) > 0)
-                                        <img src="{{ asset('storage/' . $item->images[0]) }}" alt="" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/' . $item->images[0]) }}" alt="" class="h-12 w-12 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-600">
                                     @else
-                                        <i class="fas fa-image text-xl text-gray-400"></i>
+                                        <i class="fas fa-image text-xl text-slate-400"></i>
                                     @endif
                                 </div>
                                 <div>
-                                    <a href="{{ route('admin.items.show', $item) }}" class="font-medium text-gray-900 dark:text-white hover:text-primary-600">
+                                    <a href="{{ route('admin.items.show', $item) }}" class="font-medium text-slate-900 hover:text-primary-600 dark:text-white">
                                         {{ Str::limit($item->name, 40) }}
                                     </a>
-                                    <div class="text-xs text-gray-500">{{ $item->category?->name ?? 'N/A' }}</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">{{ $item->category?->name ?? 'N/A' }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4">
-                            <a href="{{ route('admin.users.show', $item->user) }}" class="text-sm text-primary-600 hover:text-primary-700">
+                        <td class="px-4 py-3 align-middle">
+                            <a href="{{ route('admin.users.show', $item->user) }}" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400">
                                 {{ $item->user?->name ?? 'N/A' }}
                             </a>
                         </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $item->formatted_price ?? ($item->currency === 'USD' ? '$' : '') . number_format($item->price, 2) . ($item->currency !== 'USD' ? ' FC' : '') }}</div>
+                        <td class="px-4 py-3 align-middle">
+                            <div class="text-sm font-semibold text-slate-900 dark:text-white">{{ $item->formatted_price ?? ($item->currency === 'USD' ? '$' : '') . number_format($item->price, 2) . ($item->currency !== 'USD' ? ' FC' : '') }}</div>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3 align-middle">
                             @php
                                 $statusClass = match($item->status) {
-                                    'active' => 'bg-green-100 text-green-800 border-green-200',
-                                    'pending' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                                    'sold' => 'bg-blue-100 text-blue-800 border-blue-200',
-                                    'inactive' => 'bg-gray-100 text-gray-800 border-gray-200',
-                                    default => 'bg-gray-100 text-gray-800 border-gray-200',
+                                    'active' => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300',
+                                    'pending' => 'bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300',
+                                    'sold' => 'bg-sky-50 text-sky-700 ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300',
+                                    'inactive' => 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300',
+                                    default => 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300',
                                 };
                             @endphp
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border {{ $statusClass }}">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $statusClass }}">
                                 {{ ucfirst($item->status) }}
                             </span>
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="px-4 py-3 align-middle">
                             @if($item->is_blocked)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20 dark:bg-red-900/30 dark:text-red-300">
                                     <i class="fas fa-ban mr-1"></i>Bloqué
                                 </span>
                             @elseif($item->is_suspended)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                                <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300">
                                     <i class="fas fa-pause-circle mr-1"></i>Suspendu
                                 </span>
                             @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                <span class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300">
                                     <i class="fas fa-check mr-1"></i>Normal
                                 </span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ number_format($item->views ?? 0) }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">{{ $item->created_at->format('d/m/Y') }}</td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex gap-1 justify-end">
+                        <td class="px-4 py-3 align-middle text-sm text-slate-500 dark:text-slate-400">{{ number_format($item->views ?? 0) }}</td>
+                        <td class="px-4 py-3 align-middle text-sm text-slate-500 dark:text-slate-400">{{ $item->created_at->format('d/m/Y') }}</td>
+                        <td class="px-4 py-3 align-middle text-right">
+                            <div class="flex justify-end gap-1">
                                 <a href="{{ route('admin.items.show', $item) }}"
-                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors" title="Voir">
+                                   class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-sky-600 transition-colors hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-900/20" title="Voir">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 <a href="{{ route('admin.items.edit', $item) }}"
-                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors" title="Modifier">
+                                   class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-primary-900/20" title="Modifier">
                                     <i class="fas fa-edit"></i>
                                 </a>
                             </div>
@@ -191,9 +191,9 @@
         </div>
 
         @if($items->hasPages())
-        <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-xs sm:text-sm text-gray-600">
+        <div class="border-t border-slate-100 px-5 py-4 dark:border-slate-700">
+            <div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
+                <div class="text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
                     Affichage de {{ $items->firstItem() }} à {{ $items->lastItem() }} sur {{ $items->total() }}
                 </div>
                 {{ $items->appends(request()->query())->links() }}
@@ -202,11 +202,11 @@
         @endif
         @else
         <div class="text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-                <i class="fas fa-box text-3xl text-gray-400"></i>
+            <div class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">
+                <i class="fas fa-box text-3xl text-slate-400"></i>
             </div>
-            <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun article</h5>
-            <p class="text-gray-500">Aucun article trouvé.</p>
+            <h5 class="mb-2 text-lg font-semibold text-slate-900 dark:text-white">Aucun article</h5>
+            <p class="text-slate-500 dark:text-slate-400">Aucun article trouvé.</p>
         </div>
         @endif
     </div>
