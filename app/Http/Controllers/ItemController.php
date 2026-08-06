@@ -20,8 +20,6 @@ use App\Services\ItemVerificationService;
 use App\Services\StorageSyncService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
-use App\Notifications\ItemApproved;
-use App\Notifications\ItemRejected;
 
 class ItemController extends Controller
 {
@@ -508,91 +506,6 @@ class ItemController extends Controller
     }
 
     /**
-     * Méthode admin : approuver un item après vérification manuelle
-     */
-    public function approveItem(Item $item)
-    {
-        // La vérification admin est déjà faite par le middleware
-        $user = Auth::user();
-
-        $item->status = 'active';
-        $item->verification_status = 'approved';
-        $item->verified_at = now();
-        $item->verified_by = $user->id;
-        
-        // Nettoyer les anciennes données de vérification
-        if (is_array($item->specifications) && isset($item->specifications['image_verification'])) {
-            unset($item->specifications['image_verification']);
-        }
-        
-        $item->save();
-
-        // Envoyer la notification au vendeur
-        try {
-            $item->user->notify(new ItemApproved($item, $user->name));
-            
-            Log::info('Notification d\'approbation envoyée', [
-                'item_id' => $item->id,
-                'seller_id' => $item->user_id,
-                'admin_id' => $user->id
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi notification approbation', [
-                'error' => $e->getMessage(),
-                'item_id' => $item->id
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Article approuvé et vendeur notifié.');
-    }
-
-    /**
-     * Méthode admin : rejeter un item après vérification manuelle
-     */
-    public function rejectItem(Item $item, Request $request)
-    {
-        // La vérification admin est déjà faite par le middleware
-        $user = Auth::user();
-
-        $reason = $request->input('reason', 'Rejeté par l\'équipe de modération');
-        
-        $item->status = 'inactive';
-        $item->verification_status = 'rejected';
-        $item->verified_at = now();
-        $item->verified_by = $user->id;
-        
-        // Ajouter la raison du rejet aux détails
-        $details = $item->verification_details ?? [];
-        $details['admin_rejection'] = [
-            'reason' => $reason,
-            'rejected_by' => $user->name,
-            'rejected_at' => now()->toDateTimeString(),
-        ];
-        $item->verification_details = $details;
-        
-        $item->save();
-
-        // Envoyer la notification au vendeur
-        try {
-            $item->user->notify(new ItemRejected($item, $reason, $user->name));
-            
-            Log::info('Notification de rejet envoyée', [
-                'item_id' => $item->id,
-                'seller_id' => $item->user_id,
-                'admin_id' => $user->id,
-                'reason' => $reason
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi notification rejet', [
-                'error' => $e->getMessage(),
-                'item_id' => $item->id
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Article rejeté et vendeur notifié.');
-    }
-
-    /**
      * Liste les articles en attente de vérification (admin)
      * L'admin peut approuver ou rejeter les articles soumis
      */
@@ -624,15 +537,6 @@ class ItemController extends Controller
         $categories = \App\Models\Category::orderBy('name')->get();
 
         return view('admin.items.pending_verification', compact('items', 'categories'));
-    }
-
-    /**
-     * Affiche les détails d'un item pour l'admin
-     */
-    public function adminShow(Item $item)
-    {
-        $item->load(['user', 'category', 'brand']);
-        return view('admin.items.show', compact('item'));
     }
 
     /**

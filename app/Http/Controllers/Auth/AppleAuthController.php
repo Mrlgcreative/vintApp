@@ -93,25 +93,4 @@ class AppleAuthController extends Controller
             return redirect('/login')->with('error', 'Échec de la connexion avec Apple. Veuillez réessayer.');
         }
     }
-
-    /**
-     * Révoquer l'accès Apple (optionnel)
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function revokeAppleAccess(Request $request)
-    {
-        $user = Auth::user();
-        
-        if ($user && $user->apple_id) {
-            // Supprimer l'association avec Apple
-            $user->apple_id = null;
-            $user->save();
-            
-            return redirect()->back()->with('success', 'L\'accès Apple a été révoqué avec succès.');
-        }
-        
-        return redirect()->back()->with('error', 'Aucun compte Apple associé.');
-    }
 }

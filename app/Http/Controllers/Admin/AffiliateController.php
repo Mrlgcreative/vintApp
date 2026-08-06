@@ -334,32 +334,6 @@ class AffiliateController extends Controller
     }
 
     /**
-     * API: Options pour le select des parrains
-     */
-    public function getReferrerOptions()
-    {
-        try {
-            $referrers = User::select('id', 'name')
-                ->whereHas('referrals')
-                ->withCount('referrals as referrals_count')
-                ->orderByDesc('referrals_count')
-                ->limit(100)
-                ->get();
-
-            return response()->json([
-                'success' => true,
-                'data' => $referrers
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Erreur options parrains: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Erreur lors du chargement des options'
-            ], 500);
-        }
-    }
-
-    /**
      * API: Créer une récompense
      */
     public function createReward(Request $request)

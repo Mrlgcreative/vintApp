@@ -370,9 +370,6 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::get('/', [MessageController::class, 'index']);
         Route::post('/', [MessageController::class, 'store']);
         Route::get('/{message}', [MessageController::class, 'show']);
-        Route::put('/{message}', [MessageController::class, 'update']);
-        Route::delete('/{message}', [MessageController::class, 'destroy']);
-        Route::get('/conversations', [MessageController::class, 'conversations']);
     });
 
     // Reviews routes (rate limit: 20/min)
@@ -386,18 +383,13 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
 
     // Notifications routes (rate limit: 60/min)
     Route::middleware('throttle:60,1')->prefix('notifications')->group(function () {
-        Route::get('/', [NotificationController::class, 'index']);
-        Route::put('/{notification}/read', [NotificationController::class, 'markAsRead']);
-        Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
-        Route::get('/stats', [NotificationController::class, 'getStats']);
-        Route::delete('/{notification}', [NotificationController::class, 'destroy']);
-        Route::delete('/', [NotificationController::class, 'clearAll']);
+        Route::get('/', [NotificationController::class, 'apiIndex']);
+        Route::get('/unread/count', [NotificationController::class, 'apiUnreadCount']);
     });
 
     // Dashboard routes (rate limit: 30/min)
     Route::middleware('throttle:30,1')->prefix('dashboard')->group(function () {
         Route::get('/analytics', [DashboardController::class, 'analytics']);
-        Route::get('/user', [DashboardController::class, 'userDashboard']);
         Route::get('/data', [DashboardController::class, 'apiData']);
     });
 
@@ -416,7 +408,6 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
     // Brands routes (rate limit: 100/min avec cache)
     Route::middleware(['throttle:100,1', 'cache.response:3600'])->prefix('brands')->group(function () {
         Route::get('/', [BrandController::class, 'index']);
-        Route::get('/{brand}', [BrandController::class, 'show']);
     });
     
     Route::middleware('throttle:10,1')->prefix('brands')->group(function () {
@@ -430,7 +421,6 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::get('/dashboard', [App\Http\Controllers\AffiliateController::class, 'dashboard']);
         Route::get('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'getReferralCodes']);
         Route::post('/referral-codes', [App\Http\Controllers\AffiliateController::class, 'createReferralCode']);
-        Route::post('/referral-codes/custom', [App\Http\Controllers\AffiliateController::class, 'createCustomReferralCode']);
         Route::get('/codes/stats', [App\Http\Controllers\AffiliateController::class, 'getCodesStats']);
         Route::get('/referrals', [App\Http\Controllers\AffiliateController::class, 'getReferrals']);
         Route::get('/points-history', [App\Http\Controllers\AffiliateController::class, 'getPointsHistory']);

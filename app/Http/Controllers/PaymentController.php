@@ -336,15 +336,6 @@ class PaymentController extends Controller
         return response()->json(['status' => 'pending', 'message' => 'Paiement Africell Money en cours...', 'provider' => 'africell']);
     }
 
-    // Callback générique pour tous les opérateurs
-    public function handleCallback(Request $request)
-    {
-        // TODO: Identifier l'opérateur, vérifier la transaction, mettre à jour le statut
-        // TODO: Si succès, appeler PaymentService::distributeFunds et enregistrer la distribution
-        // TODO: Retourner un message JSON clair avec le détail de la distribution
-        return response()->json(['status' => 'success', 'message' => 'Callback reçu', 'distribution' => null]);
-    }
-
     // Simulation de paiement mobile (pour tests)
     public function paymentSuccess($transaction_id)
     {
@@ -2397,114 +2388,6 @@ class PaymentController extends Controller
             'status' => $transaction->status,
             'transaction_id' => $transaction->id,
         ]);
-    }
-
-    /**
-     * Créer les commandes à partir du panier après un paiement réussi
-     */
-    private function createOrdersFromCart($buyerId, $transaction, $phone = null)
-    {
-        $cart = get_cart_array();
-        
-        if (empty($cart)) {
-            Log::info('Panier vide, aucune commande à créer', ['buyer_id' => $buyerId]);
-            return [];
-        }
-
-        $orders = [];
-        
-        // Récupérer l'adresse de livraison par défaut du client
-        $defaultDeliveryAddress = \App\Models\DeliveryAddress::where('user_id', $buyerId)
-            ->where('is_default', true)
-            ->first();
-
-        foreach ($cart as $itemId => $cartItem) {
-            $item = \App\Models\Item::find($itemId);
-            
-            if (!$item) {
-                Log::warning('Article non trouvé dans le panier', ['item_id' => $itemId]);
-                continue;
-            }
-
-            $orderAmount = $item->price * $cartItem['quantity'];
-            
-            // Créer ou récupérer le wallet "pending" du vendeur
-            $seller = \App\Models\User::find($item->user_id);
-            if (!$seller) {
-                Log::warning('Vendeur non trouvé', ['seller_id' => $item->user_id]);
-                continue;
-            }
-
-            $sellerPendingWallet = \App\Models\Wallet::firstOrCreate(
-                [
-                    'user_id' => $seller->id,
-                    'type' => 'pending',
-                    'currency' => $item->currency
-                ],
-                [
-                    'balance' => 0,
-                    'status' => 'active',
-                    'is_active' => true
-                ]
-            );
-            
-            // Ajouter le montant au wallet pending du vendeur
-            $sellerPendingWallet->increment('balance', $orderAmount);
-            
-            // Préparer les données de commande
-            $orderData = [
-                'buyer_id' => $buyerId,
-                'seller_id' => $item->user_id,
-                'item_id' => $item->id,
-                'quantity' => $cartItem['quantity'],
-                'unit_price' => $item->price,
-                'total_amount' => $orderAmount,
-                'currency' => $item->currency,
-                'status' => 'confirmed',
-                'paid_at' => now(),
-                'notes' => 'Paiement via MaishaPay - Transaction #' . $transaction->id,
-            ];
-            
-            // Ajouter l'adresse de livraison si disponible
-            if ($defaultDeliveryAddress) {
-                $orderData['delivery_address_id'] = $defaultDeliveryAddress->id;
-                $orderData['shipping_address'] = $defaultDeliveryAddress->address;
-                $orderData['shipping_city'] = $defaultDeliveryAddress->city;
-                $orderData['shipping_phone'] = $defaultDeliveryAddress->phone;
-            } else {
-                $orderData['shipping_address'] = 'À définir';
-                $orderData['shipping_city'] = 'À définir';
-                $orderData['shipping_phone'] = $phone ?? 'N/A';
-            }
-            
-            // Créer la commande
-            $order = \App\Models\Order::create($orderData);
-            $orders[] = $order;
-            
-            // Mettre à jour le stock
-            $item->quantity -= $cartItem['quantity'];
-            if ($item->quantity <= 0) {
-                $item->status = 'sold';
-            }
-            $item->save();
-            
-            Log::info("Commande créée via MaishaPay", [
-                'order_id' => $order->id,
-                'seller_id' => $seller->id,
-                'amount' => $orderAmount,
-                'currency' => $item->currency,
-            ]);
-        }
-        
-        clear_cart();
-        
-        Log::info('Commandes créées avec succès', [
-            'buyer_id' => $buyerId,
-            'transaction_id' => $transaction->id,
-            'orders_count' => count($orders),
-        ]);
-        
-        return $orders;
     }
 
 }

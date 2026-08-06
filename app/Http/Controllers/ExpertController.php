@@ -123,24 +123,6 @@ class ExpertController extends Controller
     }
 
     /**
-     * Test simple pour debug
-     */
-    public function testShow(ProductAuthenticityCheck $check)
-    {
-        // Charger les relations nécessaires
-        $check->load([
-            'item.category',
-            'item.brand', 
-            'item.user',
-            'vendor',
-            'verificationImages',
-            'auditLogs.performer'
-        ]);
-
-        return view('expert.test-show', compact('check'));
-    }
-
-    /**
      * Commencer l'examen d'une vérification
      */
     public function startReview(ProductAuthenticityCheck $check)

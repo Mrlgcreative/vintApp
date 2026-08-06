@@ -21,48 +21,6 @@ class ContactController extends Controller
         $this->notificationService = $notificationService;
     }
     /**
-     * Afficher les demandes de réduction pour un vendeur
-     */
-    public function index(Request $request)
-    {
-        $query = Discount::with(['item', 'user', 'message'])
-            ->fromSeller(Auth::id())
-            ->orderBy('created_at', 'desc');
-
-        // Filtrer par statut
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filtrer par période
-        if ($request->filled('period')) {
-            switch ($request->period) {
-                case 'today':
-                    $query->whereDate('created_at', today());
-                    break;
-                case 'week':
-                    $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
-                    break;
-                case 'month':
-                    $query->whereMonth('created_at', now()->month)
-                          ->whereYear('created_at', now()->year);
-                    break;
-            }
-        }
-
-        // Rechercher par nom de produit
-        if ($request->filled('search')) {
-            $query->whereHas('item', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            });
-        }
-
-        $discounts = $query->paginate(10);
-
-        return view('discounts.index', compact('discounts'));
-    }
-
-    /**
      * Envoyer un message automatique avec demande de réduction
      */
     public function contactSeller(Request $request, Item $item)
@@ -263,18 +221,5 @@ class ContactController extends Controller
         }
 
         return view('discounts.show', compact('discount'));
-    }
-
-    /**
-     * Obtenir les réductions disponibles pour un produit et un utilisateur
-     */
-    public function getAvailableDiscounts(Item $item)
-    {
-        $discounts = Discount::valid()
-            ->forUser(Auth::id())
-            ->where('item_id', $item->id)
-            ->get();
-
-        return response()->json($discounts);
     }
 }

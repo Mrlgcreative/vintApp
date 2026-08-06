@@ -62,20 +62,4 @@ class ThemeController extends Controller
             'message' => "Thème défini sur: $theme"
         ]);
     }
-
-    /**
-     * Récupérer la préférence de thème actuelle
-     */
-    public function get(): JsonResponse
-    {
-        $user = Auth::user();
-        
-        if (!$user) {
-            return response()->json(['theme' => 'auto']);
-        }
-
-        return response()->json([
-            'theme' => $user->theme_preference ?? 'auto'
-        ]);
-    }
 }

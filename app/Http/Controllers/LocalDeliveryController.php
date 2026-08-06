@@ -38,36 +38,6 @@ class LocalDeliveryController extends Controller
     }
 
     /**
-     * Afficher les livraisons locales pour l'utilisateur connecté
-     */
-    public function index(Request $request)
-    {
-        $user = Auth::user();
-        
-        // Récupérer les livraisons selon le rôle
-        $deliveriesQuery = LocalDelivery::with(['order.item', 'seller', 'buyer']);
-        
-        if ($request->get('role') === 'seller') {
-            $deliveriesQuery->where('seller_id', $user->id);
-        } else {
-            $deliveriesQuery->where('buyer_id', $user->id);
-        }
-
-        // Filtres
-        if ($request->get('status')) {
-            $deliveriesQuery->where('status', $request->get('status'));
-        }
-
-        if ($request->get('delivery_type')) {
-            $deliveriesQuery->where('delivery_type', $request->get('delivery_type'));
-        }
-
-        $deliveries = $deliveriesQuery->latest()->paginate(10);
-
-        return view('local-deliveries.index', compact('deliveries'));
-    }
-
-    /**
      * Afficher le formulaire de création d'une livraison locale
      */
     public function create()
@@ -402,57 +372,6 @@ class LocalDeliveryController extends Controller
         } catch (\Exception $e) {
             Log::error('Erreur lors de l\'annulation: ' . $e->getMessage());
             return response()->json(['error' => 'Erreur lors de l\'annulation'], 500);
-        }
-    }
-
-    /**
-     * Rechercher des vendeurs/acheteurs proches
-     */
-    public function findNearbyUsers(Request $request)
-    {
-        try {
-            $request->validate([
-                'latitude' => 'required|numeric|between:-90,90',
-                'longitude' => 'required|numeric|between:-180,180',
-                'radius_km' => 'nullable|integer|min:1|max:50',
-                'role' => 'required|in:seller,buyer'
-            ]);
-
-            $lat = $request->latitude;
-            $lng = $request->longitude;
-            $radius = $request->radius_km ?? 10; // Par défaut 10km
-
-            // Rechercher les utilisateurs proches avec des adresses GPS
-            $query = User::join('delivery_addresses', 'users.id', '=', 'delivery_addresses.user_id')
-                ->whereNotNull('delivery_addresses.latitude')
-                ->whereNotNull('delivery_addresses.longitude')
-                ->where('delivery_addresses.is_default', true)
-                ->where('users.id', '!=', Auth::id())
-                ->select('users.*', 'delivery_addresses.latitude', 'delivery_addresses.longitude', 
-                         'delivery_addresses.city', 'delivery_addresses.commune', 'delivery_addresses.address');
-
-            // Calcul de distance avec la formule Haversine
-            $query->selectRaw(
-                "(6371 * acos(cos(radians(?)) * cos(radians(delivery_addresses.latitude)) * 
-                cos(radians(delivery_addresses.longitude) - radians(?)) + 
-                sin(radians(?)) * sin(radians(delivery_addresses.latitude)))) AS distance",
-                [$lat, $lng, $lat]
-            );
-
-            $nearbyUsers = $query->having('distance', '<=', $radius)
-                ->orderBy('distance')
-                ->limit(20)
-                ->get();
-
-            return response()->json([
-                'success' => true,
-                'users' => $nearbyUsers,
-                'count' => $nearbyUsers->count()
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur lors de la recherche d\'utilisateurs proches: ' . $e->getMessage());
-            return response()->json(['error' => 'Erreur lors de la recherche'], 500);
         }
     }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Message;
 use App\Models\User;
 use App\Models\Discount;
-use App\Models\Notification;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -205,37 +204,6 @@ class MessageController extends Controller
                        ->count();
 
         return response()->json(['count' => $count]);
-    }
-
-    /**
-     * Récupérer les notifications en temps réel
-     */
-    public function getNotifications(): JsonResponse
-    {
-        $user = Auth::user();
-        
-        // Récupérer toutes les notifications récentes (pas seulement non lues)
-        $notifications = Notification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-            
-        $unreadCount = $this->notificationService->getUnreadCount($user->id);
-
-        return response()->json([
-            'notifications' => $notifications,
-            'unread_count' => $unreadCount,
-            'success' => true
-        ]);
-    }
-
-    /**
-     * Marquer une notification comme lue
-     */
-    public function markNotificationAsRead($id): JsonResponse
-    {
-        $this->notificationService->markAsRead($id, Auth::id());
-        return response()->json(['success' => true]);
     }
 
     /**
@@ -527,53 +495,6 @@ class MessageController extends Controller
         }
 
         return $receivedContacts->sortByDesc('last_message.created_at');
-    }
-
-    /**
-     * Récupérer les conversations de l'utilisateur
-     */
-    private function getConversations($user)
-    {
-        // Récupérer tous les utilisateurs avec qui l'utilisateur a échangé des messages
-        $conversationUsers = Message::where('sender_id', $user->id)
-            ->orWhere('receiver_id', $user->id)
-            ->get()
-            ->map(function($message) use ($user) {
-                return $message->sender_id === $user->id ? $message->receiver_id : $message->sender_id;
-            })
-            ->unique();
-
-        $conversations = collect();
-
-        foreach ($conversationUsers as $otherUserId) {
-            $otherUser = User::find($otherUserId);
-            
-            // Récupérer le dernier message
-            $lastMessage = Message::where(function($query) use ($user, $otherUserId) {
-                $query->where('sender_id', $user->id)
-                      ->where('receiver_id', $otherUserId);
-            })->orWhere(function($query) use ($user, $otherUserId) {
-                $query->where('sender_id', $otherUserId)
-                      ->where('receiver_id', $user->id);
-            })->orderBy('created_at', 'desc')->first();
-
-            // Compter les messages non lus
-            $unreadCount = Message::where('sender_id', $otherUserId)
-                                 ->where('receiver_id', $user->id)
-                                 ->where('is_read', false)
-                                 ->count();
-
-            $conversations->push((object) [
-                'id' => $otherUserId,
-                'other_user' => $otherUser,
-                'last_message' => $lastMessage,
-                'last_message_time' => $lastMessage ? $lastMessage->created_at->diffForHumans() : null,
-                'unread_count' => $unreadCount
-            ]);
-        }
-
-        // Trier par dernier message
-        return $conversations->sortByDesc('last_message.created_at');
     }
 
     // ==================== API Methods ====================

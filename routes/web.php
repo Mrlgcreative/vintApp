@@ -311,12 +311,8 @@ Route::middleware(['auth'])->group(function () {
 // Messagerie (type WhatsApp)
 Route::middleware(['auth'])->group(function () {
     Route::get('/messages', [App\Http\Controllers\MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/create', [App\Http\Controllers\MessageController::class, 'create'])->name('messages.create');
     Route::post('/messages', [App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
     Route::get('/messages/{user}', [App\Http\Controllers\MessageController::class, 'show'])->name('messages.show');
-    Route::get('/messages/{message}/edit', [App\Http\Controllers\MessageController::class, 'edit'])->name('messages.edit');
-    Route::put('/messages/{message}', [App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
-    Route::delete('/messages/{message}', [App\Http\Controllers\MessageController::class, 'destroy'])->name('messages.destroy');
     Route::post('/messages/{message}/read', [App\Http\Controllers\MessageController::class, 'markAsRead'])->name('messages.read');
     Route::get('/messages-unread-count', [App\Http\Controllers\MessageController::class, 'unreadCount'])->name('messages.unread-count');
     
@@ -343,7 +339,7 @@ Route::put('/categories/{category}', [CategoryController::class, 'update'])->nam
 Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware('auth');
 
 // Routes pour les marques
-Route::resource('brands', App\Http\Controllers\BrandController::class);
+Route::resource('brands', App\Http\Controllers\BrandController::class)->except(['show']);
 Route::resource('reviews', App\Http\Controllers\ReviewController::class);
 
 // Route pour la notation post-paiement
@@ -356,9 +352,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Dashboard
     Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'dashboard'])->name('dashboard');
     
-    // Notifications
-    Route::get('/notifications', [App\Http\Controllers\Admin\AdminController::class, 'getNotifications'])->name('notifications');
-    Route::post('/notifications/{id}/mark-read', [App\Http\Controllers\Admin\AdminController::class, 'markNotificationAsRead'])->name('notifications.mark-read');
+    // Notifications (alertes système JSON — la page notifications est servie plus bas)
     
     // Gestion des utilisateurs (CRUD complet)
     Route::prefix('users')->name('users.')->group(function () {
@@ -440,17 +434,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/reset', [App\Http\Controllers\Admin\MonitoringController::class, 'reset'])->name('reset');
     });
 
-    // Gestion des transactions
-    Route::prefix('transactions')->name('transactions.')->group(function () {
-        Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'transactions'])->name('index');
-        Route::get('/{transaction}', [App\Http\Controllers\Admin\AdminController::class, 'transactionShow'])->name('show');
-    });
-
     // Gestion des commandes
     Route::prefix('orders')->name('orders.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'orders'])->name('index');
         Route::get('/{order}', [App\Http\Controllers\Admin\AdminController::class, 'orderShow'])->name('show');
-        Route::patch('/{order}/status', [App\Http\Controllers\Admin\AdminController::class, 'orderUpdateStatus'])->name('update-status');
         
         // 🆕 Liste des commandes avec traçage GPS
         Route::get('/tracking/list', [App\Http\Controllers\Admin\AdminController::class, 'trackingList'])->name('tracking.list');
@@ -468,8 +455,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::prefix('items')->name('items.')->group(function () {
         Route::get('/pending-verification', [App\Http\Controllers\ItemController::class, 'pendingVerificationList'])
             ->name('pending_verification');
-        Route::get('/{item}', [App\Http\Controllers\ItemController::class, 'adminShow'])
-            ->name('show');
     });
 
     // Gestion des marques (CRUD complet)
@@ -660,34 +645,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
             
             // Statistiques par niveau (pour graphique)
             Route::get('/level-stats', [App\Http\Controllers\Admin\AffiliateController::class, 'getLevelStats'])->name('level-stats');
-            
-            // Statistiques des codes
-            Route::get('/codes/stats', [App\Http\Controllers\Admin\AffiliateController::class, 'getCodesStats'])->name('codes-stats');
         });
         
-        // Gestion des récompenses
+        // Gestion des récompenses (création uniquement — le reste non implémenté)
         Route::prefix('rewards')->name('rewards.')->group(function () {
             Route::post('/', [App\Http\Controllers\Admin\AffiliateController::class, 'createReward'])->name('create');
-            Route::get('/', [App\Http\Controllers\Admin\AffiliateController::class, 'getRewards'])->name('index');
-            Route::get('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'getReward'])->name('show');
-            Route::put('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'updateReward'])->name('update');
-            Route::delete('/{reward}', [App\Http\Controllers\Admin\AffiliateController::class, 'revokeReward'])->name('revoke');
-        });
-        
-        // Actions sur les parrains
-        Route::prefix('referrers')->name('referrers.')->group(function () {
-            Route::get('/{user}/details', [App\Http\Controllers\Admin\AffiliateController::class, 'getReferrerDetails'])->name('details');
-            Route::post('/{user}/promote', [App\Http\Controllers\Admin\AffiliateController::class, 'promoteReferrer'])->name('promote');
-            Route::post('/{user}/suspend', [App\Http\Controllers\Admin\AffiliateController::class, 'suspendReferrer'])->name('suspend');
-            Route::post('/{user}/message', [App\Http\Controllers\Admin\AffiliateController::class, 'sendMessageToReferrer'])->name('message');
-            Route::get('/{user}/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportReferrerData'])->name('export');
-        });
-        
-        // Export et rapports
-        Route::prefix('reports')->name('reports.')->group(function () {
-            Route::get('/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportReport'])->name('export');
-            Route::get('/top-performers/export', [App\Http\Controllers\Admin\AffiliateController::class, 'exportTopPerformers'])->name('top-performers.export');
-            Route::post('/bulk-reward', [App\Http\Controllers\Admin\AffiliateController::class, 'bulkReward'])->name('bulk-reward');
         });
     });
 
@@ -803,7 +765,6 @@ Route::prefix('payments')->group(function () {
     Route::post('/airtel-money', [PaymentController::class, 'payWithAirtelMoney'])->name('payments.airtel_money');
     Route::post('/mpesa', [PaymentController::class, 'payWithMpesa'])->name('payments.mpesa');
     Route::post('/africell', [PaymentController::class, 'payWithAfricell'])->name('payments.africell');
-    Route::post('/callback', [PaymentController::class, 'handleCallback'])->name('payments.callback');
     
     // MaishaPay routes
     Route::post('/maishapay/initiate', [PaymentController::class, 'initiateMaishaPayment'])->name('payments.maishapay.initiate');
@@ -1027,13 +988,6 @@ Route::prefix('firebase')->name('firebase.')->group(function () {
     
     // Gestion du token FCM pour les notifications push
     Route::post('/fcm-token', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'saveFcmToken'])->name('fcm-token')->middleware('auth');
-    Route::delete('/fcm-token', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'removeFcmToken'])->name('fcm-token.remove')->middleware('auth');
-    
-    // Routes de test Firebase (à supprimer en production)
-    if (app()->environment(['local', 'testing'])) {
-        Route::get('/test-config', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'testConfig'])->name('test-config');
-        Route::get('/test-notification/{userId}', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'testNotification'])->name('test-notification');
-    }
 });
 
 require __DIR__.'/auth.php';

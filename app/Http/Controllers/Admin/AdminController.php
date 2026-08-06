@@ -211,39 +211,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Gestion des wallets
-     */
-    public function wallets(Request $request)
-    {
-        $query = Wallet::with(['user']);
-        
-        // Filtres
-        if ($request->filled('currency')) {
-            $query->where('currency', $request->currency);
-        }
-        
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-        
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-        
-        $wallets = $query->paginate(20);
-        
-        return view('admin.wallets.index', compact('wallets'));
-    }
-
-    /**
      * Wallets en attente de validation
      */
     public function pendingWallets()
@@ -456,61 +423,6 @@ class AdminController extends Controller
             
             return redirect()->back()->with('error', 'Une erreur est survenue.');
         }
-    }
-
-    /**
-     * Gestion des transactions
-     */
-    public function transactions(Request $request)
-    {
-        $query = Transaction::with(['user', 'wallet']);
-        
-        // Filtres
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-        
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-        
-        if ($request->filled('currency')) {
-            $query->where('currency', $request->currency);
-        }
-        
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-        
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-        
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('reference', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhereHas('user', function($q2) use ($search) {
-                      $q2->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%");
-                  });
-            });
-        }
-        
-        $transactions = $query->latest()->paginate(20);
-        
-        return view('admin.transactions.index', compact('transactions'));
-    }
-
-    /**
-     * Détails d'une transaction
-     */
-    public function transactionShow(Transaction $transaction)
-    {
-        $transaction->load(['user', 'wallet']);
-        
-        return view('admin.transactions.show', compact('transaction'));
     }
 
     /**
@@ -973,17 +885,6 @@ class AdminController extends Controller
             ->orderBy('favorites_count', 'desc')
             ->take(10)
             ->get();
-    }
-
-    /**
-     * Afficher les paramètres système
-     */
-    public function systemSettings(SettingService $settingService)
-    {
-        $settings = $settingService->getAllForAdmin()->groupBy('category');
-        $categories = $settingService->getCategories();
-        
-        return view('admin.settings.index', compact('settings', 'categories'));
     }
 
     /**
@@ -3846,69 +3747,6 @@ class AdminController extends Controller
                 'message' => 'Une erreur est survenue',
             ], 500);
         }
-    }
-
-    /**
-     * Récupérer les notifications de l'admin
-     */
-    public function getNotifications(Request $request)
-    {
-        try {
-            $user = Auth::user();
-            
-            // Récupérer les notifications (limitée à 10)
-            $notifications = $user->notifications()
-                ->latest()
-                ->take(10)
-                ->get()
-                ->map(function ($notification) {
-                    return [
-                        'id' => $notification->id,
-                        'type' => $notification->type,
-                        'message' => $notification->data['message'] ?? 'Nouvelle notification',
-                        'icon' => $this->getNotificationIcon($notification->type),
-                        'link' => $notification->data['link'] ?? '#',
-                        'created_at' => $notification->created_at->diffForHumans(),
-                        'read_at' => $notification->read_at,
-                    ];
-                });
-
-            $unreadCount = $user->unreadNotifications()->count();
-
-            return response()->json([
-                'success' => true,
-                'notifications' => $notifications,
-                'unread_count' => $unreadCount,
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error('Erreur notifications', [
-                'error' => $e->getMessage(),
-                'user_id' => Auth::id(),
-            ]);
-
-            return response()->json([
-                'success' => false,
-                'notifications' => [],
-                'unread_count' => 0,
-            ], 200);
-        }
-    }
-
-    /**
-     * Obtenir l'icône pour un type de notification
-     */
-    private function getNotificationIcon($type)
-    {
-        $icons = [
-            'App\Notifications\NewUserRegistered' => 'fa-user-plus',
-            'App\Notifications\NewOrder' => 'fa-shopping-cart',
-            'App\Notifications\NewTransaction' => 'fa-dollar-sign',
-            'App\Notifications\ItemVerificationRequest' => 'fa-check-circle',
-            'App\Notifications\NewSupportTicket' => 'fa-question-circle',
-        ];
-
-        return $icons[$type] ?? 'fa-bell';
     }
 
     // ==================== API Methods ====================

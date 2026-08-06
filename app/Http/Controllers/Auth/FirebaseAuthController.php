@@ -22,18 +22,6 @@ class FirebaseAuthController extends Controller
     }
 
     /**
-     * Afficher la page de connexion Firebase
-     */
-    public function showLogin()
-    {
-        if (Auth::check()) {
-            return redirect()->route('home');
-        }
-
-        return view('auth.firebase-login');
-    }
-
-    /**
      * Authentification avec Firebase ID Token
      */
     public function loginWithFirebase(Request $request)
@@ -430,16 +418,6 @@ class FirebaseAuthController extends Controller
             'success' => false,
             'message' => 'Utilisateur non authentifié'
         ], 401);
-    }
-
-    /**
-     * Obtenir les informations de configuration Firebase pour le frontend
-     */
-    public function getFirebaseConfig()
-    {
-        return response()->json([
-            'config' => config('firebase.web_config')
-        ]);
     }
 
     /**
