@@ -726,10 +726,6 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
         ->name('api.v1.payments.maishapay.status');
 });
 
-// MaishaPay webhook (public - no auth)
-Route::post('v1/payments/maishapay/callback', [PaymentController::class, 'handleMaishaCallback'])
-    ->withoutMiddleware(['auth:sanctum', 'web']);
-
 // MaishaPay payout webhook (public - no auth)
 Route::post('v1/wallet/withdrawals/maishapay/callback', [WalletController::class, 'handleWithdrawalWebhook'])
     ->defaults('provider', 'maishapay')

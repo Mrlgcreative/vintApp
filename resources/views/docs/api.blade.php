@@ -979,7 +979,7 @@
                     @foreach([
                         ['POST', '/api/payment-callbacks/{provider}', 'Callback universel (mpesa, orange_money, ...)'],
                         ['GET', '/api/payment-callbacks/status', 'Vérifier statut (?transaction_id=TX-123)'],
-                        ['POST', '/api/v1/payments/maishapay/callback', 'Webhook MaishaPay'],
+                        ['POST', '/payments/maishapay/callback/{reference?}', 'Webhook MaishaPay (GET ou POST)'],
                         ['POST', '/api/v1/wallet/withdrawals/maishapay/callback', 'Webhook retrait MaishaPay'],
                     ] as $ep)
                     <div class="endpoint-card bg-gray-900 border border-gray-800 rounded-xl px-6 py-4 flex items-center gap-3">
