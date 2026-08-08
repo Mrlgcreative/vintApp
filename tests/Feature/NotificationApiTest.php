@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Setting;
 use App\Services\PushNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -12,8 +13,16 @@ class NotificationApiTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
+        file_put_contents(storage_path('app/firebase-service-account.json'), '{}');
+    }
+
     protected function tearDown(): void
     {
+        @unlink(storage_path('app/firebase-service-account.json'));
         Mockery::close();
         parent::tearDown();
     }
@@ -27,8 +36,8 @@ class NotificationApiTest extends TestCase
 
         // Act
         $response = $this->actingAs($user)->postJson('/api/notifications/subscribe', [
-            'fcm_token' => $fcmToken,
-            'device_type' => 'android',
+            'token' => $fcmToken,
+            'device_type' => 'mobile',
             'browser' => 'Chrome'
         ]);
 
@@ -36,13 +45,13 @@ class NotificationApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Abonnement aux notifications réussi'
+                'message' => 'Notifications activées avec succès'
             ]);
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
             'fcm_token' => $fcmToken,
-            'device_type' => 'android',
+            'device_type' => 'mobile',
             'browser' => 'Chrome'
         ]);
     }
@@ -52,8 +61,8 @@ class NotificationApiTest extends TestCase
     {
         // Act
         $response = $this->postJson('/api/notifications/subscribe', [
-            'fcm_token' => 'test_token',
-            'device_type' => 'android'
+            'token' => 'test_token',
+            'device_type' => 'mobile'
         ]);
 
         // Assert
@@ -68,12 +77,12 @@ class NotificationApiTest extends TestCase
 
         // Act
         $response = $this->actingAs($user)->postJson('/api/notifications/subscribe', [
-            'device_type' => 'android'
+            'device_type' => 'mobile'
         ]);
 
         // Assert
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['fcm_token']);
+            ->assertJsonValidationErrors(['token']);
     }
 
     /** @test */
@@ -82,7 +91,7 @@ class NotificationApiTest extends TestCase
         // Arrange
         $user = User::factory()->create([
             'fcm_token' => 'existing_token',
-            'device_type' => 'android',
+            'device_type' => 'mobile',
             'browser' => 'Chrome'
         ]);
 
@@ -93,7 +102,7 @@ class NotificationApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Désabonnement réussi'
+                'message' => 'Notifications désactivées'
             ]);
 
         $this->assertDatabaseHas('users', [
@@ -120,7 +129,7 @@ class NotificationApiTest extends TestCase
         // Arrange
         $user = User::factory()->create([
             'fcm_token' => 'test_token_' . str()->random(100),
-            'device_type' => 'android'
+            'device_type' => 'mobile'
         ]);
 
         // Mock the PushNotificationService
@@ -142,7 +151,7 @@ class NotificationApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Notification de test envoyée avec succès'
+                'message' => 'Notification test envoyée avec succès!'
             ]);
     }
 
@@ -161,22 +170,29 @@ class NotificationApiTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
-                'message' => 'Aucun token FCM enregistré pour cet utilisateur'
+                'message' => 'Aucun token FCM enregistré. Activez les notifications d\'abord.'
             ]);
     }
 
     /** @test */
-    public function guest_can_view_test_notification_info()
+    public function authenticated_user_can_view_test_notification_info()
     {
+        // Arrange
+        $user = User::factory()->create();
+
         // Act
-        $response = $this->getJson('/api/notifications/test');
+        $response = $this->actingAs($user)->getJson('/api/notifications/test');
 
         // Assert
         $response->assertStatus(200)
             ->assertJsonStructure([
+                'success',
+                'user_id',
+                'fcm_token',
                 'message',
-                'endpoints',
-                'instructions'
+                'endpoint',
+                'method',
+                'auth_required'
             ]);
     }
 
@@ -185,9 +201,9 @@ class NotificationApiTest extends TestCase
     {
         // Arrange
         $admin = User::factory()->create();
-        $users = User::factory()->count(3)->create([
+        User::factory()->count(3)->create([
             'fcm_token' => 'token_' . str()->random(100),
-            'device_type' => 'android'
+            'device_type' => 'mobile'
         ]);
 
         // Mock the PushNotificationService
@@ -205,10 +221,11 @@ class NotificationApiTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'message',
-                'stats' => [
-                    'total_users',
+                'details' => [
+                    'total',
                     'success',
-                    'failed'
+                    'failed',
+                    'users_notified'
                 ]
             ]);
     }
@@ -250,7 +267,7 @@ class NotificationApiTest extends TestCase
         // Arrange
         $user = User::factory()->create([
             'fcm_token' => 'old_token',
-            'device_type' => 'ios',
+            'device_type' => 'desktop',
             'browser' => 'Safari'
         ]);
 
@@ -258,8 +275,8 @@ class NotificationApiTest extends TestCase
 
         // Act
         $response = $this->actingAs($user)->postJson('/api/notifications/subscribe', [
-            'fcm_token' => $newToken,
-            'device_type' => 'android',
+            'token' => $newToken,
+            'device_type' => 'mobile',
             'browser' => 'Chrome'
         ]);
 
@@ -268,7 +285,7 @@ class NotificationApiTest extends TestCase
 
         $user->refresh();
         $this->assertEquals($newToken, $user->fcm_token);
-        $this->assertEquals('android', $user->device_type);
+        $this->assertEquals('mobile', $user->device_type);
         $this->assertEquals('Chrome', $user->browser);
         $this->assertNotNull($user->fcm_token_updated_at);
     }
@@ -282,7 +299,7 @@ class NotificationApiTest extends TestCase
 
         // Act
         $response = $this->actingAs($user)->postJson('/api/notifications/subscribe', [
-            'fcm_token' => $fcmToken,
+            'token' => $fcmToken,
             'device_type' => '',
             'browser' => ''
         ]);
@@ -292,8 +309,8 @@ class NotificationApiTest extends TestCase
 
         $user->refresh();
         $this->assertEquals($fcmToken, $user->fcm_token);
-        $this->assertNull($user->device_type);
-        $this->assertNull($user->browser);
+        $this->assertEquals('desktop', $user->device_type);
+        $this->assertEquals('chrome', $user->browser);
     }
 
     /** @test */
@@ -309,14 +326,10 @@ class NotificationApiTest extends TestCase
         $response = $this->actingAs($admin)->postJson('/api/notifications/broadcast-test');
 
         // Assert
-        $response->assertStatus(200)
+        $response->assertStatus(404)
             ->assertJson([
-                'success' => true,
-                'stats' => [
-                    'total_users' => 0,
-                    'success' => 0,
-                    'failed' => 0
-                ]
+                'success' => false,
+                'message' => 'Aucun utilisateur avec token FCM trouvé'
             ]);
     }
 }

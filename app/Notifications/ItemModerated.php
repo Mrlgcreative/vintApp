@@ -37,6 +37,8 @@ class ItemModerated extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $subject = match ($this->action) {
+            'approved' => 'Votre article a été approuvé',
+            'rejected' => 'Votre article a été rejeté',
             'blocked' => 'Votre article a été bloqué',
             'suspended' => 'Votre article a été suspendu',
             'unsuspended' => 'Votre article a été rétabli',
@@ -44,6 +46,13 @@ class ItemModerated extends Notification implements ShouldQueue
         };
 
         $lines = match ($this->action) {
+            'approved' => [
+                "Bonne nouvelle ! Votre article \"{$this->item->name}\" a été approuvé et est maintenant visible sur la plateforme.",
+            ],
+            'rejected' => [
+                "Votre article \"{$this->item->name}\" a été rejeté par notre équipe de modération.",
+                $this->reason ? "Raison : {$this->reason}" : null,
+            ],
             'blocked' => [
                 "Votre article \"{$this->item->name}\" a été bloqué par notre équipe de modération.",
                 "Il n'est plus visible sur la plateforme.",
@@ -78,12 +87,17 @@ class ItemModerated extends Notification implements ShouldQueue
     public function toArray(object $notifiable): array
     {
         $titles = [
+            'approved' => 'Article approuvé',
+            'rejected' => 'Article rejeté',
             'blocked' => 'Article bloqué',
             'suspended' => 'Article suspendu',
             'unsuspended' => 'Article rétabli',
         ];
 
         $messages = [
+            'approved' => "Votre article \"{$this->item->name}\" a été approuvé et publié.",
+            'rejected' => "Votre article \"{$this->item->name}\" a été rejeté."
+                . ($this->reason ? " Raison : {$this->reason}" : ''),
             'blocked' => "Votre article \"{$this->item->name}\" a été bloqué."
                 . ($this->reason ? " Raison : {$this->reason}" : ''),
             'suspended' => "Votre article \"{$this->item->name}\" a été suspendu."
@@ -120,12 +134,17 @@ class ItemModerated extends Notification implements ShouldQueue
             $fcmService = app(FirebasePushService::class);
 
             $titles = [
+                'approved' => 'Article approuvé',
+                'rejected' => 'Article rejeté',
                 'blocked' => 'Article bloqué',
                 'suspended' => 'Article suspendu',
                 'unsuspended' => 'Article rétabli',
             ];
 
             $bodies = [
+                'approved' => "Votre article \"{$this->item->name}\" a été approuvé et publié.",
+                'rejected' => "Votre article \"{$this->item->name}\" a été rejeté."
+                    . ($this->reason ? " Raison : {$this->reason}" : ''),
                 'blocked' => "Votre article \"{$this->item->name}\" a été bloqué."
                     . ($this->reason ? " Raison : {$this->reason}" : ''),
                 'suspended' => "Votre article \"{$this->item->name}\" a été suspendu."

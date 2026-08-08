@@ -10,26 +10,23 @@ use App\Models\User;
 use App\Models\Setting;
 use App\Models\AllowedCity;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Builder;
 use App\Services\CacheService;
 use App\Services\MonitoringService;
-use App\Services\ItemVerificationService;
-use App\Services\StorageSyncService;
+use App\Services\ItemService;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
 
 class ItemController extends Controller
 {
     protected $cacheService;
-    protected $verificationService;
+    protected $itemService;
 
-    public function __construct(CacheService $cacheService, ItemVerificationService $verificationService)
+    public function __construct(CacheService $cacheService, ItemService $itemService)
     {
         $this->cacheService = $cacheService;
-        $this->verificationService = $verificationService;
+        $this->itemService = $itemService;
     }
     /**
      * Display a listing of the resource.
@@ -175,118 +172,7 @@ class ItemController extends Controller
                 'image_count' => $request->hasFile('images') ? count($request->file('images')) : 0
             ]);
 
-            $item = new Item();
-        $item->user_id = Auth::id();
-        $item->name = $request->name;
-        $item->description = $request->description;
-        $item->price = $request->price;
-        $item->currency = $request->currency;
-        $item->quantity = $request->quantity;
-        $item->condition = $request->condition;
-        $item->category_id = $request->category_id;
-        $item->brand_id = $request->brand_id;
-        $item->color = $request->color;
-        $item->size = $request->size;
-        $item->item_number = $request->item_number;
-        // Tous les articles doivent passer par la vérification admin
-        $item->status = 'pending_verification';
-
-        // Gestion des spécifications
-        if ($request->filled('specifications') && is_array($request->specifications)) {
-            $specifications = [];
-            $keys = $request->specifications['key'] ?? [];
-            $values = $request->specifications['value'] ?? [];
-            
-            foreach ($keys as $index => $key) {
-                if (!empty($key) && isset($values[$index]) && !empty($values[$index])) {
-                    $specifications[$key] = $values[$index];
-                }
-            }
-            
-            if (!empty($specifications)) {
-                $item->specifications = $specifications;
-            }
-        }
-
-        // Gestion des images
-        if ($request->hasFile('images')) {
-            $images = [];
-            // S'assurer que le dossier existe
-            if (!Storage::disk('public')->exists('items')) {
-                Storage::disk('public')->makeDirectory('items');
-            }
-            foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
-                $path = $image->storeAs('items', $filename, 'public');
-                // Vérifier que le fichier a bien été créé
-                if (!Storage::disk('public')->exists($path)) {
-                    throw new \Exception('Erreur lors de l\'upload de l\'image.');
-                }
-                // Synchroniser le fichier vers le bon emplacement (Hostinger ou standard)
-                StorageSyncService::syncFile($path);
-                $images[] = $path;
-            }
-            $item->images = $images;
-        }
-
-        // Avant d'enregistrer définitivement, vérifier les images automatiquement avec le nouveau service
-        if ($item->images && is_array($item->images) && count($item->images) >= 3) {
-            try {
-                Log::info('Vérification des images - Début');
-                
-                // Récupérer les noms de catégorie et marque pour la vérification
-                $category = Category::find($item->category_id);
-                $brand = Brand::find($item->brand_id);
-                
-                $verification = $this->verificationService->verifyItem(
-                    $item->images,
-                    $item->name,
-                    $item->description ?? '',
-                    $brand->name ?? null,
-                    $category->name ?? null
-                );
-                
-                Log::info('Vérification des images - Résultat', [
-                    'status' => $verification['status'],
-                    'score' => $verification['score']
-                ]);
-                
-                // Appliquer le résultat de la vérification IA (pré-vérification)
-                $item->verification_status = $verification['status'];
-                $item->verification_score = $verification['score'];
-                $item->verification_details = $verification['details'];
-                // Note: verified_at sera défini par l'expert lors de la vérification manuelle
-                
-                // Tous les articles restent en attente de vérification manuelle par l'admin ET expert
-                // Mettre le verification_status à 'pending' pour que les experts puissent vérifier
-                if ($item->verification_status !== 'rejected') {
-                    $item->verification_status = 'pending';
-                }
-                $item->status = 'pending_verification';
-            } catch (\Exception $e) {
-                // Si la vérification échoue, on met en attente de vérification manuelle
-                Log::error('Erreur vérification automatique', [
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-                
-                $item->verification_status = 'pending';
-                $item->status = 'pending_verification';
-                $item->verification_details = [
-                    'error' => 'Erreur lors de la vérification automatique',
-                    'message' => $e->getMessage()
-                ];
-            }
-        } else {
-            // Moins de 3 images = mise en attente automatique
-            $item->verification_status = 'pending';
-            $item->status = 'pending_verification';
-            $item->verification_details = [
-                'reason' => 'Nombre d\'images insuffisant (minimum 3 requises)'
-            ];
-        }
-
-            $item->save();
+            $item = $this->itemService->createItem($request);
 
             Log::info('Article créé avec succès', [
                 'item_id' => $item->id,
@@ -308,9 +194,6 @@ class ItemController extends Controller
                 'user_id' => $item->user_id,
                 'images_count' => count($item->images ?? []),
             ]);
-
-            // Déclencher l'événement pour envoyer les emails newsletter
-            event(new \App\Events\ItemCreated($item));
 
             // Message personnalisé selon le statut de vérification
             $message = 'Article créé avec succès et envoyé pour vérification !';
@@ -426,80 +309,7 @@ class ItemController extends Controller
     {
         // Validation et autorisation déjà effectuées par UpdateItemRequest
 
-        $item->name = $request->name;
-        $item->description = $request->description;
-        $item->price = $request->price;
-        $item->currency = $request->currency;
-        $item->quantity = $request->quantity;
-        $item->condition = $request->condition;
-        $item->category_id = $request->category_id;
-        $item->brand_id = $request->brand_id;
-        $item->color = $request->color;
-        $item->size = $request->size;
-        $item->item_number = $request->item_number;
-
-        // Gestion des spécifications
-        if ($request->filled('specifications') && is_array($request->specifications)) {
-            $specifications = [];
-            $keys = $request->specifications['key'] ?? [];
-            $values = $request->specifications['value'] ?? [];
-            
-            foreach ($keys as $index => $key) {
-                if (!empty($key) && isset($values[$index]) && !empty($values[$index])) {
-                    $specifications[$key] = $values[$index];
-                }
-            }
-            
-            if (!empty($specifications)) {
-                $item->specifications = $specifications;
-            } else {
-                $item->specifications = null;
-            }
-        }
-
-        // Gestion des nouvelles images
-        $hasNewImages = $request->hasFile('images');
-        if ($hasNewImages) {
-            $currentImages = $item->images ?? [];
-            if (!Storage::disk('public')->exists('items')) {
-                Storage::disk('public')->makeDirectory('items');
-            }
-            foreach ($request->file('images') as $image) {
-                $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
-                $path = $image->storeAs('items', $filename, 'public');
-                if (!Storage::disk('public')->exists($path)) {
-                    throw new \Exception('Erreur lors de l\'upload de l\'image.');
-                }
-                StorageSyncService::syncFile($path);
-                $currentImages[] = $path;
-            }
-            $item->images = $currentImages;
-        }
-
-        // Ne relancer la vérification que si de nouvelles images sont uploadées
-        if ($hasNewImages) {
-            $category = Category::find($item->category_id);
-            $brand = Brand::find($item->brand_id);
-            
-            $verification = $this->verificationService->verifyItem(
-                $item->images,
-                $item->name,
-                $item->description ?? '',
-                $brand->name ?? null,
-                $category->name ?? null
-            );
-            
-            $item->verification_status = $verification['status'];
-            $item->verification_score = $verification['score'];
-            $item->verification_details = $verification['details'];
-            
-            if ($verification['status'] !== 'rejected') {
-                $item->verification_status = 'pending';
-            }
-            $item->status = 'pending_verification';
-        }
-
-        $item->save();
+        $item = $this->itemService->updateItem($item, $request);
 
         return redirect()->route('items.show', $item)
             ->with('success', "Article mis à jour avec succès ! Score de vérification: {$item->verification_score}/100");
@@ -556,22 +366,8 @@ class ItemController extends Controller
                 abort(403, 'Vous n\'êtes pas autorisé à supprimer cet article.');
         }
 
-            // Supprimer les images
-            if ($item->images && is_array($item->images)) {
-        foreach ($item->images as $image) {
-                    try {
-                        if (Storage::disk('public')->exists($image)) {
-                            Storage::disk('public')->delete($image);
-                        }
-                    } catch (\Exception $e) {
-                        // Log l'erreur mais continue
-                        Log::warning("Impossible de supprimer l'image: {$image}", ['error' => $e->getMessage()]);
-                    }
-                }
-            }
-
-            // Supprimer l'article
-        $item->delete();
+            // Supprimer les images puis l'article
+            $this->itemService->deleteItem($item);
 
             if (request()->expectsJson()) {
         return response()->json([
@@ -911,33 +707,7 @@ class ItemController extends Controller
     public function apiStore(StoreItemRequest $request)
     {
         try {
-            $item = new Item();
-            $item->user_id = Auth::id();
-            $item->name = $request->name;
-            $item->description = $request->description;
-            $item->price = $request->price;
-            $item->currency = $request->currency;
-            $item->quantity = $request->quantity;
-            $item->condition = $request->condition;
-            $item->category_id = $request->category_id;
-            $item->brand_id = $request->brand_id;
-            $item->color = $request->color;
-            $item->size = $request->size;
-            $item->status = 'pending_verification';
-
-            // Upload d'images
-            if ($request->hasFile('images')) {
-                $images = [];
-                foreach ($request->file('images') as $image) {
-                    $filename = time() . '_' . Str::random(10) . '.' . $image->guessExtension();
-                    $path = $image->storeAs('items', $filename, 'public');
-                    StorageSyncService::syncFile($path);
-                    $images[] = $path;
-                }
-                $item->images = $images;
-            }
-
-            $item->save();
+            $item = $this->itemService->createItem($request);
 
             return response()->json([
                 'success' => true,
@@ -968,7 +738,7 @@ class ItemController extends Controller
                 ], 403);
             }
 
-            $item->update($request->validated());
+            $item = $this->itemService->updateItem($item, $request);
 
             return response()->json([
                 'success' => true,
@@ -999,7 +769,7 @@ class ItemController extends Controller
                 ], 403);
             }
 
-            $item->delete();
+            $this->itemService->deleteItem($item);
 
             return response()->json([
                 'success' => true,

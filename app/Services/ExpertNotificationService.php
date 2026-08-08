@@ -108,65 +108,6 @@ class ExpertNotificationService
     /**
      * Notifier un expert que son article a été approuvé
      */
-    public function notifyItemApproved(Item $item, User $expert): void
-    {
-        try {
-            ExpertNotification::create([
-                'user_id' => $expert->id,
-                'item_id' => $item->id,
-                'type' => 'item_approved',
-                'title' => "Article approuvé",
-                'message' => "L'article '{$item->name}' a été approuvé et publié",
-                'icon' => 'fa-check-circle',
-                'action_url' => route('expert.items.pending'),
-                'data' => ['item_id' => $item->id]
-            ]);
-
-            $this->sendFCMNotification(
-                $expert,
-                "Article approuvé",
-                "L'article '{$item->name}' a été approuvé",
-                route('expert.items.pending')
-            );
-
-        } catch (\Exception $e) {
-            Log::error('Error notifying item approved', ['error' => $e->getMessage()]);
-        }
-    }
-
-    /**
-     * Notifier un expert que son article a été rejeté
-     */
-    public function notifyItemRejected(Item $item, User $expert, ?string $reason = null): void
-    {
-        try {
-            $message = $reason 
-                ? "L'article '{$item->name}' a été rejeté. Raison : {$reason}"
-                : "L'article '{$item->name}' a été rejeté";
-
-            ExpertNotification::create([
-                'user_id' => $expert->id,
-                'item_id' => $item->id,
-                'type' => 'item_rejected',
-                'title' => "Article rejeté",
-                'message' => $message,
-                'icon' => 'fa-times-circle',
-                'action_url' => route('expert.items.pending'),
-                'data' => ['item_id' => $item->id, 'reason' => $reason]
-            ]);
-
-            $this->sendFCMNotification(
-                $expert,
-                "Article rejeté",
-                $message,
-                route('expert.items.pending')
-            );
-
-        } catch (\Exception $e) {
-            Log::error('Error notifying item rejected', ['error' => $e->getMessage()]);
-        }
-    }
-
     /**
      * Envoyer une notification FCM
      */

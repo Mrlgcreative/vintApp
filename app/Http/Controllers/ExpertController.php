@@ -4,23 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Models\ProductAuthenticityCheck;
 use App\Models\VerificationImage;
 use App\Models\AuthenticityAuditLog;
-use App\Models\VintPass;
 use App\Services\AuthenticityVerificationService;
-use App\Services\VintPassService;
+use App\Services\ItemModerationService;
 use Illuminate\Support\Facades\Validator;
 
 
 class ExpertController extends Controller
 {
     protected $verificationService;
+    protected $moderationService;
 
-    public function __construct(AuthenticityVerificationService $verificationService)
+    public function __construct(AuthenticityVerificationService $verificationService, ItemModerationService $moderationService)
     {
-        
         $this->verificationService = $verificationService;
+        $this->moderationService = $moderationService;
     }
 
     /**
@@ -396,61 +398,17 @@ class ExpertController extends Controller
         ]);
 
         try {
-            \Illuminate\Support\Facades\DB::beginTransaction();
-
-            $notificationService = new \App\Services\ExpertNotificationService();
+            DB::beginTransaction();
 
             if ($validated['decision'] === 'approved') {
-                $item->update([
-                    'verification_status' => 'approved',
-                    'status' => 'active', // Publication directe par l'expert
-                    'verified_at' => now(),
-                    'verified_by' => $expert->id,
-                    'authenticity_verified' => true
-                ]);
-
-                \Illuminate\Support\Facades\Log::info("Article approuvé et publié par expert", [
-                    'item_id' => $item->id,
-                    'expert_id' => $expert->id
-                ]);
-
-                // Créer automatiquement un VintPass pour l'article approuvé
-                try {
-                    if (!VintPass::where('item_id', $item->id)->exists()) {
-                        $vintPassService = app(VintPassService::class);
-                        $vintPass = $vintPassService->createVintPass($item, null, $expert);
-                        \Illuminate\Support\Facades\Log::info("VintPass créé automatiquement", [
-                            'item_id' => $item->id,
-                            'vintpass_id' => $vintPass->pass_id
-                        ]);
-                    }
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::warning("Échec création VintPass", [
-                        'item_id' => $item->id,
-                        'error' => $e->getMessage()
-                    ]);
-                }
-
-                // Notifier le vendeur
-                $notificationService->notifyItemApproved($item, $item->user);
-
+                $this->moderationService->approveItem($item, $expert, 'expert');
             } else {
-                $item->update([
-                    'verification_status' => 'rejected',
-                    'status' => 'inactive', // Article rejeté = inactif
-                    'verified_at' => now(),
-                    'verified_by' => $expert->id,
-                    'rejection_reason' => $validated['rejection_reason'] ?? null
-                ]);
-
-                \Illuminate\Support\Facades\Log::info("Article rejeté par expert", [
-                    'item_id' => $item->id,
-                    'expert_id' => $expert->id,
-                    'reason' => $validated['rejection_reason'] ?? null
-                ]);
-
-                // Notifier le vendeur du rejet
-                $notificationService->notifyItemRejected($item, $item->user, $validated['rejection_reason'] ?? null);
+                $this->moderationService->rejectItem(
+                    $item,
+                    $expert,
+                    $validated['rejection_reason'] ?? null,
+                    'expert'
+                );
             }
 
             // Créer un enregistrement ProductAuthenticityCheck pour que l'article
@@ -470,7 +428,7 @@ class ExpertController extends Controller
                 'submitted_at' => $item->created_at,
             ]);
 
-            \Illuminate\Support\Facades\DB::commit();
+            DB::commit();
 
             // Mettre à jour les stats de l'expert
             $expertProfile = $expert->expertProfile;
@@ -491,8 +449,8 @@ class ExpertController extends Controller
             return redirect()->route('expert.items.pending')
                 ->with('success', 'Vérification soumise avec succès.');
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\DB::rollBack();
-            \Illuminate\Support\Facades\Log::error("Erreur lors de la vérification", [
+            DB::rollBack();
+            Log::error("Erreur lors de la vérification", [
                 'error' => $e->getMessage()
             ]);
 

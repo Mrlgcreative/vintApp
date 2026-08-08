@@ -14,6 +14,9 @@ use App\Models\Setting;
 use App\Models\SupportChat;
 use App\Models\ProductAuthenticityCheck;
 use App\Services\SettingService;
+use App\Services\WalletService;
+use App\Services\ItemModerationService;
+use App\Services\StatsService;
 use App\Http\Middleware\MaintenanceMode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,63 +33,27 @@ use App\Notifications\ItemModerated;
 class AdminController extends Controller
 {
     use ApiResponses;
+
+    protected $walletService;
+    protected $moderationService;
+    protected $statsService;
+
+    public function __construct(WalletService $walletService, ItemModerationService $moderationService, StatsService $statsService)
+    {
+        $this->walletService = $walletService;
+        $this->moderationService = $moderationService;
+        $this->statsService = $statsService;
+    }
     /**
      * Dashboard administrateur
      */
     public function dashboard()
     {
         // Statistiques générales
-        $stats = [
-            'total_users' => User::count(),
-            'new_users_today' => User::whereDate('created_at', today())->count(),
-            'active_users' => User::where('last_seen', '>=', Carbon::now()->subDays(7))->count(),
-            
-            'total_transactions' => Transaction::count(),
-            'transactions_today' => Transaction::whereDate('created_at', today())->count(),
-            'total_transaction_amount' => Transaction::where('status', 'completed')->sum('amount'),
-            
-            // Revenus plateforme = sous-wallets entreprise
-            'total_revenue_usd' => Wallet::getEnterpriseSubWallets('USD')->sum('balance'),
-            'total_revenue_cdf' => Wallet::getEnterpriseSubWallets('CDF')->sum('balance'),
-            
-            // Wallets en attente de confirmation (type='pending')
-            'pending_wallets' => Wallet::where('type', 'pending')->count(),
-            'pending_wallets_usd' => Wallet::where('type', 'pending')
-                ->where('currency', 'USD')
-                ->sum('balance'),
-            'pending_wallets_cdf' => Wallet::where('type', 'pending')
-                ->where('currency', 'CDF')
-                ->sum('balance'),
-            'total_wallet_balance' => Wallet::where('is_active', true)->sum('balance'),
-            
-            // Nouveaux sous-wallets entreprise
-            'enterprise_commission_usd' => Wallet::getEnterpriseSubWallet('commission', 'USD')->balance ?? 0,
-            'enterprise_transport_usd' => Wallet::getEnterpriseSubWallet('transport', 'USD')->balance ?? 0,
-            'enterprise_boost_usd' => Wallet::getEnterpriseSubWallet('boost', 'USD')->balance ?? 0,
-            
-            // Statistiques de vérification d'authenticité
-            'total_verifications' => ProductAuthenticityCheck::count(),
-            'pending_verifications' => ProductAuthenticityCheck::whereIn('status', ['pending', 'expert_review'])->count(),
-            'completed_verifications' => ProductAuthenticityCheck::where('payment_completed', true)->count(),
-            'verification_revenue_usd' => ProductAuthenticityCheck::where('payment_completed', true)->sum('verification_fee') ?? 0,
-            
-            'total_orders' => Order::count(),
-            'orders_today' => Order::whereDate('created_at', today())->count(),
-            'pending_orders' => Order::where('status', 'pending')->count(),
-            
-            'total_items' => Item::count(),
-            'active_items' => Item::where('status', 'active')->count(),
-            
-            // Statistiques de support
-            'total_support_chats' => SupportChat::count(),
-            'open_support_chats' => SupportChat::where('status', 'open')->count(),
-            'pending_support_chats' => SupportChat::whereIn('status', ['open', 'in_progress'])->count(),
-            'unassigned_support_chats' => SupportChat::whereNull('admin_id')
-                ->whereIn('status', ['open', 'in_progress'])->count(),
-        ];
+        $stats = $this->statsService->getAdminDashboardStats();
 
         // Graphiques des derniers 30 jours
-        $dailyStats = $this->getDailyStats();
+        $dailyStats = $this->statsService->getDailyStats();
         
         // Dernières activités
         $recentTransactions = Transaction::with(['user'])
@@ -230,28 +197,8 @@ class AdminController extends Controller
     public function approveWallet(Wallet $wallet)
     {
         try {
-            DB::beginTransaction();
-            
-            $wallet->update([
-                'status' => 'active',
-                'verified_at' => now(),
-                'verified_by' => Auth::id()
-            ]);
-            
-            // Créer une transaction de confirmation
-            Transaction::create([
-                'user_id' => $wallet->user_id,
-                'wallet_id' => $wallet->id,
-                'type' => 'wallet_approval',
-                'amount' => 0,
-                'currency' => $wallet->currency,
-                'status' => 'completed',
-                'description' => 'Wallet approuvé par l\'administrateur',
-                'processed_by' => Auth::id()
-            ]);
-            
-            DB::commit();
-            
+            $this->walletService->approveWallet($wallet, Auth::id());
+
             Log::info("Wallet approuvé", [
                 'admin_id' => Auth::id(),
                 'wallet_id' => $wallet->id,
@@ -261,7 +208,6 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Wallet approuvé avec succès.');
             
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error("Erreur lors de l'approbation du wallet", [
                 'error' => $e->getMessage(),
                 'wallet_id' => $wallet->id
@@ -281,28 +227,8 @@ class AdminController extends Controller
         ]);
         
         try {
-            DB::beginTransaction();
-            
-            $wallet->update([
-                'status' => 'rejected',
-                'rejection_reason' => $request->reason,
-                'verified_by' => Auth::id()
-            ]);
-            
-            // Créer une transaction de rejet
-            Transaction::create([
-                'user_id' => $wallet->user_id,
-                'wallet_id' => $wallet->id,
-                'type' => 'wallet_rejection',
-                'amount' => 0,
-                'currency' => $wallet->currency,
-                'status' => 'failed',
-                'description' => 'Wallet rejeté: ' . $request->reason,
-                'processed_by' => Auth::id()
-            ]);
-            
-            DB::commit();
-            
+            $this->walletService->rejectWallet($wallet, Auth::id(), $request->reason);
+
             Log::info("Wallet rejeté", [
                 'admin_id' => Auth::id(),
                 'wallet_id' => $wallet->id,
@@ -313,7 +239,6 @@ class AdminController extends Controller
             return redirect()->back()->with('success', 'Wallet rejeté avec succès.');
             
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error("Erreur lors du rejet du wallet", [
                 'error' => $e->getMessage(),
                 'wallet_id' => $wallet->id
@@ -334,20 +259,13 @@ class AdminController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-            
             $approvedCount = 0;
             
             foreach ($request->wallet_ids as $walletId) {
                 $wallet = Wallet::find($walletId);
                 
                 if ($wallet && $wallet->status === 'pending') {
-                    $wallet->update([
-                        'status' => 'active',
-                        'verified_at' => now(),
-                        'verified_by' => Auth::id()
-                    ]);
-                    
+                    $this->walletService->approveWallet($wallet, Auth::id());
                     $approvedCount++;
                     
                     Log::info("Wallet approuvé en lot", [
@@ -358,16 +276,9 @@ class AdminController extends Controller
                 }
             }
             
-            DB::commit();
-            
             return redirect()->back()->with('success', "{$approvedCount} wallet(s) approuvé(s) avec succès.");
             
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Erreur lors de l'approbation en lot des wallets", [
-                'error' => $e->getMessage(),
-                'wallet_ids' => $request->wallet_ids
-            ]);
             
             return redirect()->back()->with('error', 'Une erreur est survenue.');
         }
@@ -803,30 +714,6 @@ class AdminController extends Controller
         }
         
         return response()->json($notifications);
-    }
-
-    /**
-     * Obtenir les statistiques quotidiennes
-     */
-    private function getDailyStats()
-    {
-        $days = collect();
-        
-        for ($i = 29; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i);
-            
-            $days->push([
-                'date' => $date->format('Y-m-d'),
-                'users' => User::whereDate('created_at', $date)->count(),
-                'transactions' => Transaction::whereDate('created_at', $date)->count(),
-                'revenue' => Transaction::whereDate('created_at', $date)
-                    ->where('status', 'completed')
-                    ->sum('amount'),
-                'orders' => Order::whereDate('created_at', $date)->count()
-            ]);
-        }
-        
-        return $days;
     }
 
     /**
@@ -1953,28 +1840,7 @@ class AdminController extends Controller
      */
     public function itemApprove(Request $request, Item $item)
     {
-        $admin = auth()->user();
-
-        $item->update([
-            'status' => 'active',
-            'verification_status' => 'approved',
-            'verified_at' => now(),
-            'verified_by' => $admin->id,
-            'authenticity_verified' => true,
-            'authenticity_badge_type' => 'vintapp_verified',
-        ]);
-
-        try {
-            if (!\App\Models\VintPass::where('item_id', $item->id)->exists()) {
-                $vintPassService = app(\App\Services\VintPassService::class);
-                $vintPassService->createVintPass($item, null, $admin);
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning("Échec création VintPass", [
-                'item_id' => $item->id,
-                'error' => $e->getMessage()
-            ]);
-        }
+        $this->moderationService->approveItem($item, auth()->user(), 'admin');
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -1993,17 +1859,12 @@ class AdminController extends Controller
     {
         $request->validate(['reason' => 'nullable|string|max:1000']);
 
-        $data = [
-            'status' => 'inactive',
-            'verification_status' => 'rejected',
-            'verified_at' => now(),
-            'verified_by' => auth()->id(),
-        ];
-        if ($request->filled('reason')) {
-            $data['rejection_reason'] = $request->reason;
-        }
-
-        $item->update($data);
+        $this->moderationService->rejectItem(
+            $item,
+            auth()->user(),
+            $request->filled('reason') ? $request->reason : null,
+            'admin'
+        );
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -3757,29 +3618,7 @@ class AdminController extends Controller
     public function apiDashboard()
     {
         try {
-            $stats = [
-                'total_users' => User::count(),
-                'new_users_today' => User::whereDate('created_at', today())->count(),
-                'active_users' => User::where('last_seen', '>=', Carbon::now()->subDays(7))->count(),
-                
-                'total_transactions' => Transaction::count(),
-                'transactions_today' => Transaction::whereDate('created_at', today())->count(),
-                'total_revenue_usd' => Transaction::where('status', 'completed')
-                    ->where('currency', 'USD')
-                    ->sum('amount'),
-                'total_revenue_cdf' => Transaction::where('status', 'completed')
-                    ->where('currency', 'CDF')
-                    ->sum('amount'),
-                
-                'pending_wallets' => Wallet::where('type', 'pending')->count(),
-                'total_orders' => Order::count(),
-                'pending_orders' => Order::where('status', 'pending')->count(),
-                'total_items' => Item::count(),
-                'active_items' => Item::where('status', 'active')->count(),
-                
-                'total_support_chats' => SupportChat::count(),
-                'open_support_chats' => SupportChat::where('status', 'open')->count(),
-            ];
+            $stats = $this->statsService->getAdminApiStats();
 
             return $this->successResponse($stats, 'Statistiques dashboard admin');
         } catch (\Exception $e) {
@@ -3897,29 +3736,10 @@ class AdminController extends Controller
         try {
             $wallet = Wallet::findOrFail($walletId);
             
-            DB::beginTransaction();
-            
-            $wallet->update([
-                'status' => 'approved',
-                'is_active' => true,
-                'verified_by' => Auth::id()
-            ]);
-            
-            Transaction::create([
-                'user_id' => $wallet->user_id,
-                'wallet_id' => $wallet->id,
-                'type' => 'wallet_approval',
-                'amount' => $wallet->balance,
-                'currency' => $wallet->currency,
-                'status' => 'completed',
-                'processed_by' => Auth::id()
-            ]);
-            
-            DB::commit();
+            $this->walletService->approveWallet($wallet, Auth::id());
             
             return $this->successResponse($wallet, 'Wallet approuvé avec succès');
         } catch (\Exception $e) {
-            DB::rollBack();
             return $this->errorResponse('Erreur approbation wallet', 500);
         }
     }
@@ -3940,30 +3760,10 @@ class AdminController extends Controller
         try {
             $wallet = Wallet::findOrFail($walletId);
             
-            DB::beginTransaction();
-            
-            $wallet->update([
-                'status' => 'rejected',
-                'rejection_reason' => $request->reason,
-                'verified_by' => Auth::id()
-            ]);
-            
-            Transaction::create([
-                'user_id' => $wallet->user_id,
-                'wallet_id' => $wallet->id,
-                'type' => 'wallet_rejection',
-                'amount' => $wallet->balance,
-                'currency' => $wallet->currency,
-                'status' => 'failed',
-                'failure_reason' => $request->reason,
-                'processed_by' => Auth::id()
-            ]);
-            
-            DB::commit();
+            $this->walletService->rejectWallet($wallet, Auth::id(), $request->reason);
             
             return $this->successResponse(null, 'Wallet rejeté avec succès');
         } catch (\Exception $e) {
-            DB::rollBack();
             return $this->errorResponse('Erreur rejet wallet', 500);
         }
     }
@@ -4282,41 +4082,21 @@ class AdminController extends Controller
         }
 
         try {
-            DB::beginTransaction();
-            
-            $wallets = Wallet::whereIn('id', $request->wallet_ids)
-                ->where('type', 'pending')
-                ->get();
-            
             $approvedCount = 0;
-            
-            foreach ($wallets as $wallet) {
-                $wallet->update([
-                    'status' => 'approved',
-                    'is_active' => true,
-                    'verified_by' => Auth::id()
-                ]);
-                
-                Transaction::create([
-                    'user_id' => $wallet->user_id,
-                    'wallet_id' => $wallet->id,
-                    'type' => 'wallet_approval',
-                    'amount' => $wallet->balance,
-                    'currency' => $wallet->currency,
-                    'status' => 'completed',
-                    'processed_by' => Auth::id()
-                ]);
-                
-                $approvedCount++;
+
+            foreach ($request->wallet_ids as $walletId) {
+                $wallet = Wallet::find($walletId);
+
+                if ($wallet && $wallet->status === 'pending') {
+                    $this->walletService->approveWallet($wallet, Auth::id());
+                    $approvedCount++;
+                }
             }
-            
-            DB::commit();
-            
+
             return $this->successResponse([
                 'approved_count' => $approvedCount
             ], "{$approvedCount} wallets approuvés avec succès");
         } catch (\Exception $e) {
-            DB::rollBack();
             return $this->errorResponse('Erreur approbation en masse', 500);
         }
     }
@@ -4412,59 +4192,7 @@ class AdminController extends Controller
     public function apiStatsSummary()
     {
         try {
-            $stats = [
-                'users' => [
-                    'total' => User::count(),
-                    'today' => User::whereDate('created_at', today())->count(),
-                    'active_7d' => User::where('last_seen', '>=', Carbon::now()->subDays(7))->count(),
-                    'verified' => User::whereNotNull('email_verified_at')->count()
-                ],
-                'transactions' => [
-                    'total' => Transaction::count(),
-                    'today' => Transaction::whereDate('created_at', today())->count(),
-                    'completed' => Transaction::where('status', 'completed')->count(),
-                    'total_amount_usd' => Transaction::where('status', 'completed')
-                        ->where('currency', 'USD')
-                        ->sum('amount'),
-                    'total_amount_cdf' => Transaction::where('status', 'completed')
-                        ->where('currency', 'CDF')
-                        ->sum('amount')
-                ],
-                'orders' => [
-                    'total' => Order::count(),
-                    'today' => Order::whereDate('created_at', today())->count(),
-                    'pending' => Order::where('status', 'pending')->count(),
-                    'completed' => Order::where('status', 'completed')->count()
-                ],
-                'items' => [
-                    'total' => Item::count(),
-                    'active' => Item::where('status', 'active')->count(),
-                    'pending' => Item::where('status', 'pending')->count(),
-                    'sold' => Item::where('status', 'sold')->count()
-                ],
-                'wallets' => [
-                    'pending' => Wallet::where('type', 'pending')->count(),
-                    'total_balance_usd' => Wallet::where('is_active', true)
-                        ->where('currency', 'USD')
-                        ->sum('balance'),
-                    'total_balance_cdf' => Wallet::where('is_active', true)
-                        ->where('currency', 'CDF')
-                        ->sum('balance')
-                ],
-                'support' => [
-                    'total' => SupportChat::count(),
-                    'open' => SupportChat::where('status', 'open')->count(),
-                    'pending' => SupportChat::whereIn('status', ['open', 'in_progress'])->count(),
-                    'unassigned' => SupportChat::whereNull('admin_id')
-                        ->whereIn('status', ['open', 'in_progress'])
-                        ->count()
-                ],
-                'verifications' => [
-                    'total' => ProductAuthenticityCheck::count(),
-                    'pending' => ProductAuthenticityCheck::whereIn('status', ['pending', 'expert_review'])->count(),
-                    'completed' => ProductAuthenticityCheck::where('payment_completed', true)->count()
-                ]
-            ];
+            $stats = $this->statsService->getStatsSummary();
             
             return $this->successResponse($stats, 'Résumé statistiques admin');
         } catch (\Exception $e) {

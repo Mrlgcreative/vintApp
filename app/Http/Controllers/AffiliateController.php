@@ -586,7 +586,7 @@ class AffiliateController extends Controller
         $referralCode = $user->referralCodes()->active()->first();
         
         if (!$referralCode) {
-            $referralCode = $user->createReferralCode();
+            $referralCode = $user->generateReferralCode();
         }
         
         $link = route('referral.link', ['code' => $referralCode->code]);

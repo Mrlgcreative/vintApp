@@ -153,7 +153,7 @@ class BrandController extends Controller
     {
         $brands = Cache::remember('api.brands.list', 3600, function () {
             return Brand::withCount(['items as items_count' => function($q) {
-                    $q->where('status', 'approved');
+                    $q->where('status', 'active');
                 }])
                 ->withCount(['items as total_items_count'])
                 ->where('is_active', true)
@@ -217,7 +217,7 @@ class BrandController extends Controller
     {
         try {
             $brand = Brand::withCount(['items' => function($q) {
-                    $q->where('status', 'approved');
+                    $q->where('status', 'active');
                 }])
                 ->findOrFail($id);
 
@@ -319,7 +319,7 @@ class BrandController extends Controller
 
             $query = Item::with(['category', 'brand', 'user'])
                 ->where('brand_id', $brand->id)
-                ->where('status', 'approved');
+                ->where('status', 'active');
 
             // Filtres optionnels
             if ($request->has('category_id')) {

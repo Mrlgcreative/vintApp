@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Item;
 
 class UpdateItemRequest extends FormRequest
 {
@@ -11,8 +12,17 @@ class UpdateItemRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        if (!auth()->check()) {
+            return false;
+        }
+
         $item = $this->route('item');
-        return auth()->check() && auth()->id() === $item->user_id;
+
+        if (!$item && $this->route('id')) {
+            $item = Item::find($this->route('id'));
+        }
+
+        return $item && auth()->id() === $item->user_id;
     }
 
     /**

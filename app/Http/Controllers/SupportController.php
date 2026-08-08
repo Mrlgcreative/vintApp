@@ -9,11 +9,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Services\StorageSyncService;
+use App\Services\SupportService;
 use App\Traits\ApiResponses;
 
 class SupportController extends Controller
 {
     use ApiResponses;
+
+    public function __construct(
+        private readonly SupportService $supportService
+    ) {
+    }
     /**
      * Afficher les conversations de support de l'utilisateur
      */
@@ -159,37 +165,13 @@ class SupportController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-
-            // Gérer les pièces jointes s'il y en a
-            $attachments = [];
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $path = $file->store('support/attachments', 'public');
-                    StorageSyncService::syncFile($path);
-                    $attachments[] = [
-                        'name' => $file->getClientOriginalName(),
-                        'path' => $path,
-                        'size' => $file->getSize()
-                    ];
-                }
-            }
-
-            // Créer le message
-            SupportMessage::createNew(
-                $supportChat->id,
+            $this->supportService->replyToChat(
+                $supportChat,
                 Auth::id(),
                 $request->message,
-                false, // is_admin
-                !empty($attachments) ? $attachments : null
+                false,
+                $request->file('attachments') ?? []
             );
-
-            // Mettre à jour le statut de la conversation si elle était "en attente utilisateur"
-            if ($supportChat->status === 'waiting_user') {
-                $supportChat->update(['status' => 'in_progress']);
-            }
-
-            DB::commit();
 
             // TODO: Notifier l'admin assigné de la nouvelle réponse
 
@@ -197,7 +179,6 @@ class SupportController extends Controller
                 ->with('success', 'Votre message a été envoyé avec succès.');
 
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Erreur lors de l\'envoi de la réponse utilisateur', [
                 'error' => $e->getMessage(),
                 'support_chat_id' => $supportChat->id,
@@ -221,7 +202,7 @@ class SupportController extends Controller
         }
 
         try {
-            $supportChat->close();
+            $this->supportService->closeChat($supportChat);
 
             return response()->json([
                 'success' => true,
@@ -511,41 +492,19 @@ class SupportController extends Controller
                 return $this->errorResponse('Conversation fermée', 400);
             }
 
-            DB::beginTransaction();
-
-            $attachments = [];
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $path = $file->store('support/attachments', 'public');
-                    StorageSyncService::syncFile($path);
-                    $attachments[] = [
-                        'name' => $file->getClientOriginalName(),
-                        'path' => $path,
-                        'size' => $file->getSize()
-                    ];
-                }
-            }
-
-            $message = SupportMessage::createNew(
-                $chat->id,
+            $message = $this->supportService->replyToChat(
+                $chat,
                 $request->user()->id,
                 $request->message,
                 false,
-                !empty($attachments) ? $attachments : null
+                $request->file('attachments') ?? []
             );
-
-            if ($chat->status === 'waiting_user') {
-                $chat->update(['status' => 'in_progress']);
-            }
-
-            DB::commit();
 
             return $this->successResponse(
                 $message->load('user'),
                 'Message envoyé avec succès'
             );
         } catch (\Exception $e) {
-            DB::rollBack();
             return $this->errorResponse('Erreur lors de l\'envoi', 500);
         }
     }
@@ -560,7 +519,7 @@ class SupportController extends Controller
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
-            $chat->close();
+            $this->supportService->closeChat($chat);
 
             return $this->successResponse(null, 'Conversation fermée avec succès');
         } catch (\Exception $e) {
@@ -574,18 +533,7 @@ class SupportController extends Controller
     public function apiStats(Request $request)
     {
         try {
-            $userId = $request->user()->id;
-
-            $stats = [
-                'total_chats' => SupportChat::where('user_id', $userId)->count(),
-                'open_chats' => SupportChat::where('user_id', $userId)
-                    ->whereIn('status', ['open', 'in_progress', 'waiting_user'])
-                    ->count(),
-                'closed_chats' => SupportChat::where('user_id', $userId)
-                    ->where('status', 'closed')
-                    ->count(),
-                'average_response_time' => null, // TODO: Calculate based on message timestamps
-            ];
+            $stats = $this->supportService->getUserStats($request->user()->id);
 
             return $this->successResponse($stats, 'Statistiques de support');
         } catch (\Exception $e) {

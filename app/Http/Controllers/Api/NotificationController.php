@@ -29,12 +29,11 @@ class NotificationController extends Controller
                 ], 401);
             }
             
-            $user->update([
-                'fcm_token' => $validated['token'],
-                'device_type' => !empty($validated['device_type']) ? $validated['device_type'] : 'desktop',
-                'browser' => !empty($validated['browser']) ? $validated['browser'] : 'chrome',
-                'fcm_token_updated_at' => now()
-            ]);
+            $user->fcm_token = $validated['token'];
+            $user->device_type = $validated['device_type'] ?? 'desktop';
+            $user->browser = $validated['browser'] ?? 'chrome';
+            $user->fcm_token_updated_at = now();
+            $user->save();
 
             Log::info('✅ Token FCM sauvegardé', [
                 'user_id' => $user->id,
@@ -66,12 +65,11 @@ class NotificationController extends Controller
         try {
             $user = $request->user();
             
-            $user->update([
-                'fcm_token' => null,
-                'device_type' => null,
-                'browser' => null,
-                'fcm_token_updated_at' => null
-            ]);
+            $user->fcm_token = null;
+            $user->device_type = null;
+            $user->browser = null;
+            $user->fcm_token_updated_at = null;
+            $user->save();
 
             Log::info('🔕 Désabonnement notifications', [
                 'user_id' => $user->id

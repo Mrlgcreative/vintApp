@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\User;
 use App\Models\Discount;
 use App\Services\NotificationService;
+use App\Services\DiscountService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -13,16 +14,19 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\StorageSyncService;
 use App\Traits\ApiResponses;
+use DomainException;
 
 class MessageController extends Controller
 {
     use ApiResponses;
     
     private $notificationService;
+    private $discountService;
 
-    public function __construct(NotificationService $notificationService)
+    public function __construct(NotificationService $notificationService, DiscountService $discountService)
     {
         $this->notificationService = $notificationService;
+        $this->discountService = $discountService;
     }
 
     /**
@@ -223,76 +227,36 @@ class MessageController extends Controller
             ]);
 
             $seller = Auth::user();
-            $item = \App\Models\Item::findOrFail($request->item_id);
 
-        // Vérifier que le vendeur est bien le propriétaire de l'article
-        if ($item->user_id !== $seller->id) {
-            return response()->json(['success' => false, 'error' => 'Vous n\'êtes pas le propriétaire de cet article.'], 403);
-        }
+            $discount = $this->discountService->applyDiscount(
+                (int) $request->item_id,
+                (int) $request->buyer_id,
+                (float) $request->discount_percentage,
+                $seller,
+                $request->filled('message_id') ? (int) $request->message_id : null,
+                (int) ($request->expires_hours ?? 24)
+            );
 
-        // Vérifier s'il n'y a pas déjà une réduction active pour ce client sur cet article
-        $existingDiscount = \App\Models\Discount::where('item_id', $request->item_id)
-                                               ->where('user_id', $request->buyer_id)
-                                               ->where('status', 'approved')
-                                               ->where('expires_at', '>', now())
-                                               ->first();
+            // Message automatique au client (spécifique au canal web)
+            Message::create([
+                'sender_id' => $seller->id,
+                'receiver_id' => $request->buyer_id,
+                'content' => $this->discountService->buildDiscountMessage($discount),
+                'subject' => 'Réduction appliquée',
+                'item_id' => $request->item_id
+            ]);
 
-        if ($existingDiscount) {
-            return response()->json(['success' => false, 'error' => 'Une réduction est déjà active pour ce client sur cet article.'], 409);
-        }
-
-        // Calculer les montants
-        $originalPrice = $item->price;
-        $discountAmount = ($originalPrice * $request->discount_percentage) / 100;
-        $finalPrice = $originalPrice - $discountAmount;
-
-        // Créer la réduction
-        $discount = \App\Models\Discount::create([
-            'item_id' => $request->item_id,
-            'user_id' => $request->buyer_id,
-            'seller_id' => $seller->id,
-            'message_id' => $request->message_id,
-            'original_price' => $originalPrice,
-            'discount_percentage' => $request->discount_percentage,
-            'discount_amount' => $discountAmount,
-            'final_price' => $finalPrice,
-            'status' => 'approved',
-            'expires_at' => now()->addHours((int)($request->expires_hours ?? 24)),
-            'reason' => 'Réduction appliquée par le vendeur'
-        ]);
-
-        // Envoyer un message automatique au client
-        $currencySymbol = $item->currency_symbol;
-        $discountMessage = "🎉 Bonne nouvelle ! Le vendeur vous propose une réduction de {$request->discount_percentage}% sur l'article \"{$item->name}\".\n\n";
-        $discountMessage .= "Prix original: {$currencySymbol} {$originalPrice}\n";
-        $discountMessage .= "Prix avec réduction: {$currencySymbol} {$finalPrice}\n";
-        $discountMessage .= "Cette offre expire le " . $discount->expires_at->format('d/m/Y à H:i') . ".\n\n";
-        $discountMessage .= "Commandez vite pour profiter de cette offre !";
-
-        Message::create([
-            'sender_id' => $seller->id,
-            'receiver_id' => $request->buyer_id,
-            'content' => $discountMessage,
-            'subject' => 'Réduction appliquée',
-            'item_id' => $request->item_id
-        ]);
-
-        // Créer une notification pour l'acheteur
-        $this->notificationService->createDiscountNotification(
-            $seller->id,
-            $request->buyer_id,
-            $item->name,
-            $request->discount_percentage,
-            $item->currency_symbol . ' ' . $finalPrice
-        );
-
-        return response()->json([
-            'success' => true,
-            'discount' => $discount,
-            'message' => 'Réduction appliquée avec succès !'
-        ]);
-        
-    } catch (\Exception $e) {
+            return response()->json([
+                'success' => true,
+                'discount' => $discount,
+                'message' => 'Réduction appliquée avec succès !'
+            ]);
+        } catch (DomainException $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], $this->discountService->errorStatusCode($e));
+        } catch (\Exception $e) {
             Log::error('Erreur dans applyDiscount: ' . $e->getMessage(), [
                 'request' => $request->all(),
                 'trace' => $e->getTraceAsString()
@@ -331,11 +295,7 @@ class MessageController extends Controller
             return response()->json([]);
         }
 
-        $discounts = Discount::where('item_id', $itemId)
-            ->where('user_id', Auth::id())
-            ->where('status', 'approved')
-            ->where('expires_at', '>', now())
-            ->get();
+        $discounts = $this->discountService->getAvailableDiscounts((int) $itemId, (int) Auth::id());
 
         return response()->json($discounts);
     }
@@ -760,49 +720,18 @@ class MessageController extends Controller
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $seller = $request->user();
-            $item = \App\Models\Item::findOrFail($request->item_id);
-
-            if ($item->user_id !== $seller->id) {
-                return $this->errorResponse('Vous n\'êtes pas le propriétaire de cet article', 403);
-            }
-
-            $existingDiscount = \App\Models\Discount::where('item_id', $request->item_id)
-                                                   ->where('user_id', $request->buyer_id)
-                                                   ->where('status', 'approved')
-                                                   ->where('expires_at', '>', now())
-                                                   ->first();
-
-            if ($existingDiscount) {
-                return $this->errorResponse('Une réduction est déjà active pour ce client', 409);
-            }
-
-            $originalPrice = $item->price;
-            $discountAmount = ($originalPrice * $request->discount_percentage) / 100;
-            $finalPrice = $originalPrice - $discountAmount;
-
-            $discount = \App\Models\Discount::create([
-                'item_id' => $request->item_id,
-                'user_id' => $request->buyer_id,
-                'seller_id' => $seller->id,
-                'original_price' => $originalPrice,
-                'discount_percentage' => $request->discount_percentage,
-                'discount_amount' => $discountAmount,
-                'final_price' => $finalPrice,
-                'status' => 'approved',
-                'expires_at' => now()->addHours($request->expires_hours ?? 24),
-                'reason' => 'Réduction appliquée par le vendeur'
-            ]);
-
-            $this->notificationService->createDiscountNotification(
-                $seller->id,
-                $request->buyer_id,
-                $item->name,
-                $request->discount_percentage,
-                $item->currency_symbol . ' ' . $finalPrice
+            $discount = $this->discountService->applyDiscount(
+                (int) $request->item_id,
+                (int) $request->buyer_id,
+                (float) $request->discount_percentage,
+                $request->user(),
+                null,
+                (int) ($request->expires_hours ?? 24)
             );
 
             return $this->successResponse($discount, 'Réduction appliquée avec succès');
+        } catch (DomainException $e) {
+            return $this->errorResponse($e->getMessage(), $this->discountService->errorStatusCode($e));
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de l\'application de la réduction', 500);
         }
@@ -814,11 +743,7 @@ class MessageController extends Controller
     public function apiGetAvailableDiscounts(Request $request, $itemId)
     {
         try {
-            $discounts = Discount::where('item_id', $itemId)
-                ->where('user_id', $request->user()->id)
-                ->where('status', 'approved')
-                ->where('expires_at', '>', now())
-                ->get();
+            $discounts = $this->discountService->getAvailableDiscounts((int) $itemId, (int) $request->user()->id);
 
             return $this->successResponse($discounts, 'Réductions récupérées avec succès');
         } catch (\Exception $e) {

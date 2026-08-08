@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Agent;
 use App\Http\Controllers\Controller;
 use App\Models\SupportAgent;
 use App\Models\SupportChat;
-use App\Models\SupportMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Services\SupportService;
 
 class AgentSupportController extends Controller
 {
+    public function __construct(
+        private readonly SupportService $supportService
+    ) {
+    }
     /**
      * Dashboard de l'agent
      */
@@ -153,46 +156,17 @@ class AgentSupportController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-
-            $attachments = [];
-            if ($request->hasFile('attachments')) {
-                foreach ($request->file('attachments') as $file) {
-                    $path = $file->store('support/attachments', 'public');
-                    $attachments[] = [
-                        'name' => $file->getClientOriginalName(),
-                        'path' => $path,
-                        'size' => $file->getSize(),
-                    ];
-                }
-            }
-
-            SupportMessage::createNew(
-                $supportChat->id,
+            $this->supportService->replyToChat(
+                $supportChat,
                 $userId,
                 $request->message,
                 true,
-                !empty($attachments) ? $attachments : null
+                $request->file('attachments') ?? []
             );
-
-            // Auto-assigner si pas encore assigné
-            if (!$supportChat->admin_id) {
-                $supportChat->update([
-                    'admin_id' => $userId,
-                    'status' => 'in_progress',
-                ]);
-            } elseif ($supportChat->status === 'open') {
-                $supportChat->update(['status' => 'in_progress']);
-            } elseif ($supportChat->status === 'waiting_user') {
-                $supportChat->update(['status' => 'in_progress']);
-            }
-
-            DB::commit();
 
             return redirect()->route('agent.show', $supportChat)
                 ->with('success', 'Réponse envoyée.');
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Agent reply error', ['error' => $e->getMessage(), 'chat' => $supportChat->id]);
             return redirect()->back()->with('error', 'Erreur lors de l\'envoi.')->withInput();
         }
@@ -205,22 +179,12 @@ class AgentSupportController extends Controller
     {
         $userId = Auth::id();
 
-        if ($supportChat->admin_id) {
-            return response()->json(['success' => false, 'message' => 'Ce ticket est déjà assigné.'], 422);
-        }
-
-        $agent = SupportAgent::where('user_id', $userId)->first();
-        if ($agent && !$agent->canAcceptChats()) {
-            return response()->json(['success' => false, 'message' => 'Vous avez atteint votre limite de tickets.'], 422);
-        }
-
         try {
-            $supportChat->assignToAdmin($userId);
-            if ($agent) {
-                $agent->update(['last_assigned_at' => now()]);
-            }
+            $this->supportService->claimChat($supportChat, $userId);
 
             return response()->json(['success' => true, 'message' => 'Ticket pris en charge.']);
+        } catch (\DomainException $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Erreur.'], 500);
         }

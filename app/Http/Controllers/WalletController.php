@@ -8,10 +8,10 @@ use App\Models\WithdrawalRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use App\Services\PaymentService;
 use App\Services\MobileMoneyService;
+use App\Services\WalletService;
 use App\Traits\ApiResponses;
 
 class WalletController extends Controller
@@ -20,11 +20,13 @@ class WalletController extends Controller
     
     private $paymentService;
     private $mobileMoneyService;
+    private $walletService;
 
-    public function __construct(PaymentService $paymentService, MobileMoneyService $mobileMoneyService)
+    public function __construct(PaymentService $paymentService, MobileMoneyService $mobileMoneyService, WalletService $walletService)
     {
         $this->paymentService = $paymentService;
         $this->mobileMoneyService = $mobileMoneyService;
+        $this->walletService = $walletService;
     }
     
     /**
@@ -36,8 +38,8 @@ class WalletController extends Controller
         $user = Auth::user();
         
         // Créer les wallets s'ils n'existent pas
-        $usdWallet = $this->getOrCreateUserWallet($user, 'USD');
-        $cdfWallet = $this->getOrCreateUserWallet($user, 'CDF');
+        $usdWallet = $this->walletService->getOrCreateUserWallet($user, 'USD');
+        $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
 
         // Récupérer les transactions récentes avec pagination
         $recentTransactions = WalletTransaction::whereIn('wallet_id', [$usdWallet->id, $cdfWallet->id])
@@ -46,24 +48,6 @@ class WalletController extends Controller
             ->paginate(15); // Pagination de 15 par page
 
         return view('wallet.index', compact('usdWallet', 'cdfWallet', 'recentTransactions'));
-    }
-
-    /**
-     * Obtient ou crée un wallet pour un utilisateur et une devise donnée.
-     */
-    private function getOrCreateUserWallet($user, $currency)
-    {
-        $wallet = $user->wallets()->where('currency', $currency)->first();
-        
-        if (!$wallet) {
-            $wallet = $user->wallets()->create([
-                'currency' => $currency,
-                'balance' => 0.00,
-                'is_active' => true,
-            ]);
-        }
-        
-        return $wallet;
     }
 
     /**
@@ -168,58 +152,7 @@ class WalletController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-
-            // Vérifier le solde avec un lock pessimiste pour éviter les double-retraits
-            $wallet = Wallet::where('id', $wallet->id)->lockForUpdate()->first();
-
-            if ($validated['amount'] > $wallet->balance) {
-                DB::rollBack();
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Solde insuffisant pour effectuer ce retrait.');
-            }
-
-            // 1. Créer la transaction de retrait
-            // Construire les métadonnées du retrait (inclut info agent si fournie)
-            $metadata = [
-                'phone_number' => $validated['phone_number'],
-                'payment_method' => $validated['payment_method'],
-                'withdrawal_date' => now()->toDateTimeString(),
-            ];
-            if (!empty($validated['agent_id'])) {
-                $metadata['agent_id'] = $validated['agent_id'];
-            }
-            if (!empty($validated['agent_phone'])) {
-                $metadata['agent_phone'] = $validated['agent_phone'];
-            }
-
-            $transaction = $wallet->transactions()->create([
-                'type' => 'debit',
-                'amount' => $validated['amount'],
-                'balance_after' => $wallet->balance, // Balance avant débit
-                'description' => $validated['description'] ?? 'Retrait de fonds vers ' . $validated['phone_number'],
-                'reference' => 'WTH-' . time() . '-' . rand(1000, 9999),
-                'status' => 'processing',
-                'provider' => $validated['payment_method'],
-                'metadata' => json_encode($metadata)
-            ]);
-
-            // 2. Créer la demande de retrait
-            $withdrawalRequest = WithdrawalRequest::create([
-                'wallet_transaction_id' => $transaction->id,
-                'phone_number' => $validated['phone_number'],
-                'payment_method' => $validated['payment_method'],
-                'amount' => $validated['amount'],
-                'currency' => $wallet->currency,
-                'status' => 'processing',
-            ]);
-
-            // 3. Débiter immédiatement le wallet (fonds bloqués)
-            $wallet->decrement('balance', $validated['amount']);
-            $transaction->update(['balance_after' => $wallet->fresh()->balance]);
-
-            DB::commit();
+            [$transaction, $withdrawalRequest] = $this->walletService->createWithdrawal($wallet, $validated);
 
             // 4. Appeler l'API de décaissement (asynchrone)
             try {
@@ -317,9 +250,12 @@ class WalletController extends Controller
                     ->with('warning', 'La demande de retrait a été enregistrée mais l\'envoi a échoué. Notre équipe va réessayer manuellement.');
             }
 
+        } catch (\DomainException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+
         } catch (\Exception $e) {
-            DB::rollBack();
-            
             Log::error('Withdrawal creation error', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id()
@@ -428,79 +364,16 @@ class WalletController extends Controller
         $fromWallet = Wallet::findOrFail($validated['from_wallet_id']);
         $toWallet = Wallet::findOrFail($validated['to_wallet_id']);
 
-        // Vérifier que les deux wallets appartiennent à l'utilisateur connecté
-        if ($fromWallet->user_id !== Auth::id() || $toWallet->user_id !== Auth::id()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Accès non autorisé'
-            ], 403);
-        }
-
-        // Vérifier que les devises sont différentes
-        if ($fromWallet->currency === $toWallet->currency) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Les deux wallets ont la même devise'
-            ], 400);
-        }
-
-        // Vérifier que le solde est suffisant
-        if ($fromWallet->balance < $validated['amount']) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Solde insuffisant dans le wallet source'
-            ], 400);
-        }
-
         try {
-            // Récupérer le taux de change
-            $rate = Cache::remember('usd_cdf_rate', 3600, function () {
-                return 2500.00; // Taux fixe, vous pouvez le rendre dynamique
-            });
+            $result = $this->walletService->convertCurrency($fromWallet, $toWallet, (float) $validated['amount'], Auth::id());
 
-            // Calculer le montant converti
-            $convertedAmount = $fromWallet->currency === 'USD'
-                ? $validated['amount'] * $rate    // USD vers CDF
-                : $validated['amount'] / $rate;   // CDF vers USD
+            return response()->json(array_merge(['status' => 'success', 'message' => 'Conversion effectuée avec succès'], $result));
 
-            DB::transaction(function () use ($fromWallet, $toWallet, $validated, $convertedAmount, $rate) {
-                // Débiter le wallet source
-                $fromWallet->decrement('balance', $validated['amount']);
-                
-                $fromWallet->transactions()->create([
-                    'type' => 'debit',
-                    'amount' => $validated['amount'],
-                    'balance_after' => $fromWallet->fresh()->balance,
-                    'description' => 'Conversion de ' . $fromWallet->currency . ' vers ' . $toWallet->currency,
-                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
-                    'status' => 'completed',
-                ]);
-
-                // Créditer le wallet destination
-                $toWallet->increment('balance', $convertedAmount);
-                
-                $toWallet->transactions()->create([
-                    'type' => 'credit',
-                    'amount' => $convertedAmount,
-                    'balance_after' => $toWallet->fresh()->balance,
-                    'description' => 'Conversion de ' . $fromWallet->currency . ' vers ' . $toWallet->currency,
-                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
-                    'status' => 'completed',
-                ]);
-            });
-
+        } catch (\DomainException $e) {
             return response()->json([
-                'status' => 'success',
-                'message' => 'Conversion effectuée avec succès',
-                'from_currency' => $fromWallet->currency,
-                'to_currency' => $toWallet->currency,
-                'amount' => $validated['amount'],
-                'converted_amount' => round($convertedAmount, 2),
-                'rate' => $rate,
-                'from_balance' => $fromWallet->fresh()->balance,
-                'to_balance' => $toWallet->fresh()->balance,
-            ]);
-
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -724,159 +597,22 @@ class WalletController extends Controller
         ]);
 
         try {
-            DB::beginTransaction();
-
-            $orderId = $request->order_id;
-            $amount = $request->amount;
-            $sellerId = $request->seller_id;
-            $currency = $request->currency;
-
-            // Récupérer le wallet entreprise pour cette devise (avec lock)
-            $enterpriseWallet = Wallet::where('type', 'enterprise')
-                ->where('currency', $currency)
-                ->whereNull('user_id')
-                ->lockForUpdate()
-                ->first();
-
-            if (!$enterpriseWallet) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Wallet entreprise {$currency} introuvable",
-                ], 404);
-            }
-
-            // Récupérer le wallet pending du vendeur (avec lock)
-            $pendingWallet = Wallet::where('user_id', $sellerId)
-                ->where('type', 'pending')
-                ->where('currency', $currency)
-                ->lockForUpdate()
-                ->first();
-
-            if (!$pendingWallet) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Wallet pending du vendeur introuvable',
-                ], 404);
-            }
-
-            // Récupérer le wallet principal du vendeur (avec lock)
-            $sellerWallet = Wallet::where('user_id', $sellerId)
-                ->where('type', 'main')
-                ->where('currency', $currency)
-                ->lockForUpdate()
-                ->first();
-
-            if (!$sellerWallet) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Wallet principal du vendeur introuvable',
-                ], 404);
-            }
-
-            // Vérifier que le pending wallet a suffisamment de fonds
-            if ($pendingWallet->balance < $amount) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Solde insuffisant dans le wallet pending',
-                    'available_balance' => $pendingWallet->balance,
-                    'required_amount' => $amount,
-                ], 400);
-            }
-
-            // Calculer la commission (récupérer le taux du wallet entreprise)
-            $commissionRate = $enterpriseWallet->commission_rate;
-            $commissionAmount = round(($amount * $commissionRate) / 100, 2);
-            $sellerAmount = round($amount - $commissionAmount, 2);
-
-            // 1. Débiter le pending wallet
-            DB::statement(
-                'UPDATE wallets SET balance = balance - ? WHERE id = ?',
-                [$amount, $pendingWallet->id]
+            $result = $this->walletService->transferCommission(
+                $request->order_id,
+                (float) $request->amount,
+                $request->seller_id,
+                $request->currency
             );
 
-            // 2. Créditer le wallet entreprise (commission)
-            DB::statement(
-                'UPDATE wallets SET balance = balance + ? WHERE id = ?',
-                [$commissionAmount, $enterpriseWallet->id]
-            );
+            return response()->json(array_merge(['success' => true, 'message' => 'Commission transférée avec succès'], ['data' => $result]), 200);
 
-            // 3. Créditer le wallet du vendeur (montant net)
-            DB::statement(
-                'UPDATE wallets SET balance = balance + ? WHERE id = ?',
-                [$sellerAmount, $sellerWallet->id]
-            );
-
-            // Logger les transactions
-            // Transaction 1: Débit du pending
-            WalletTransaction::create([
-                'wallet_id' => $pendingWallet->id,
-                'type' => 'debit',
-                'amount' => $amount,
-                'currency' => $currency,
-                'status' => 'completed',
-                'description' => "Transfert commission vente #{$orderId}",
-                'reference' => "SALE_CONFIRMED_{$orderId}",
-            ]);
-
-            // Transaction 2: Crédit entreprise (commission)
-            WalletTransaction::create([
-                'wallet_id' => $enterpriseWallet->id,
-                'type' => 'credit',
-                'amount' => $commissionAmount,
-                'currency' => $currency,
-                'status' => 'completed',
-                'description' => "Commission {$commissionRate}% sur vente #{$orderId}",
-                'reference' => "COMMISSION_{$orderId}",
-            ]);
-
-            // Transaction 3: Crédit vendeur (net)
-            WalletTransaction::create([
-                'wallet_id' => $sellerWallet->id,
-                'type' => 'credit',
-                'amount' => $sellerAmount,
-                'currency' => $currency,
-                'status' => 'completed',
-                'description' => "Paiement vente #{$orderId} (net après commission)",
-                'reference' => "PAYMENT_{$orderId}",
-            ]);
-
-            DB::commit();
-
-            // Rafraîchir les wallets pour obtenir les nouveaux soldes
-            $enterpriseWallet->refresh();
-            $sellerWallet->refresh();
-            $pendingWallet->refresh();
-
-            Log::info('Commission transférée avec succès', [
-                'order_id' => $orderId,
-                'amount_total' => $amount,
-                'commission' => $commissionAmount,
-                'seller_net' => $sellerAmount,
-                'currency' => $currency,
-                'commission_rate' => $commissionRate,
-            ]);
-
+        } catch (\DomainException $e) {
             return response()->json([
-                'success' => true,
-                'message' => 'Commission transférée avec succès',
-                'data' => [
-                    'order_id' => $orderId,
-                    'montant_total' => $amount,
-                    'montant_commission' => $commissionAmount,
-                    'taux_commission' => $commissionRate,
-                    'montant_vendeur_net' => $sellerAmount,
-                    'currency' => $currency,
-                    'wallets' => [
-                        'entreprise_balance' => $enterpriseWallet->balance,
-                        'vendeur_balance' => $sellerWallet->balance,
-                        'pending_balance' => $pendingWallet->balance,
-                    ],
-                ],
-            ], 200);
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
 
         } catch (\Exception $e) {
-            DB::rollBack();
-
             Log::error('Erreur lors du transfert de commission', [
                 'order_id' => $request->order_id,
                 'error' => $e->getMessage(),
@@ -901,8 +637,8 @@ class WalletController extends Controller
         try {
             $user = $request->user();
             
-            $usdWallet = $this->getOrCreateUserWallet($user, 'USD');
-            $cdfWallet = $this->getOrCreateUserWallet($user, 'CDF');
+            $usdWallet = $this->walletService->getOrCreateUserWallet($user, 'USD');
+            $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
 
             return $this->successResponse([
                 'usd_wallet' => $usdWallet,
@@ -1023,42 +759,7 @@ class WalletController extends Controller
                 return $this->errorResponse('Accès non autorisé', 403);
             }
 
-            if ($request->amount > $wallet->balance) {
-                return $this->errorResponse('Solde insuffisant', 400);
-            }
-
-            DB::beginTransaction();
-
-            $metadata = [
-                'phone_number' => $request->phone_number,
-                'payment_method' => $request->payment_method,
-                'withdrawal_date' => now()->toDateTimeString(),
-            ];
-
-            $transaction = $wallet->transactions()->create([
-                'type' => 'debit',
-                'amount' => $request->amount,
-                'balance_after' => $wallet->balance,
-                'description' => 'Retrait de fonds vers ' . $request->phone_number,
-                'reference' => 'WTH-' . time() . '-' . rand(1000, 9999),
-                'status' => 'processing',
-                'provider' => $request->payment_method,
-                'metadata' => json_encode($metadata)
-            ]);
-
-            $withdrawalRequest = WithdrawalRequest::create([
-                'wallet_transaction_id' => $transaction->id,
-                'phone_number' => $request->phone_number,
-                'payment_method' => $request->payment_method,
-                'amount' => $request->amount,
-                'currency' => $wallet->currency,
-                'status' => 'processing',
-            ]);
-
-            $wallet->decrement('balance', $request->amount);
-            $transaction->update(['balance_after' => $wallet->fresh()->balance]);
-
-            DB::commit();
+            [$transaction, $withdrawalRequest] = $this->walletService->createWithdrawal($wallet, $request->all());
 
             try {
                 $cashOutResponse = $this->mobileMoneyService->cashOut(
@@ -1092,8 +793,9 @@ class WalletController extends Controller
                     'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.'
                 ], 'Retrait en attente', 202);
             }
+        } catch (\DomainException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
-            DB::rollBack();
             return $this->errorResponse('Erreur lors du retrait', 500);
         }
     }
@@ -1117,57 +819,11 @@ class WalletController extends Controller
             $fromWallet = Wallet::findOrFail($request->from_wallet_id);
             $toWallet = Wallet::findOrFail($request->to_wallet_id);
 
-            if ($fromWallet->user_id !== $request->user()->id || $toWallet->user_id !== $request->user()->id) {
-                return $this->errorResponse('Accès non autorisé', 403);
-            }
+            $result = $this->walletService->convertCurrency($fromWallet, $toWallet, (float) $request->amount, $request->user()->id);
 
-            if ($fromWallet->currency === $toWallet->currency) {
-                return $this->errorResponse('Les deux wallets ont la même devise', 400);
-            }
-
-            if ($fromWallet->balance < $request->amount) {
-                return $this->errorResponse('Solde insuffisant', 400);
-            }
-
-            $rate = Cache::remember('usd_cdf_rate', 3600, function () {
-                return 2500.00;
-            });
-
-            $convertedAmount = $fromWallet->currency === 'USD'
-                ? $request->amount * $rate
-                : $request->amount / $rate;
-
-            DB::transaction(function () use ($fromWallet, $toWallet, $request, $convertedAmount, $rate) {
-                $fromWallet->decrement('balance', $request->amount);
-                $fromWallet->transactions()->create([
-                    'type' => 'debit',
-                    'amount' => $request->amount,
-                    'balance_after' => $fromWallet->fresh()->balance,
-                    'description' => 'Conversion ' . $fromWallet->currency . ' → ' . $toWallet->currency,
-                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
-                    'status' => 'completed',
-                ]);
-
-                $toWallet->increment('balance', $convertedAmount);
-                $toWallet->transactions()->create([
-                    'type' => 'credit',
-                    'amount' => $convertedAmount,
-                    'balance_after' => $toWallet->fresh()->balance,
-                    'description' => 'Conversion ' . $fromWallet->currency . ' → ' . $toWallet->currency,
-                    'reference' => 'CONV-' . time() . '-' . rand(1000, 9999),
-                    'status' => 'completed',
-                ]);
-            });
-
-            return $this->successResponse([
-                'from_currency' => $fromWallet->currency,
-                'to_currency' => $toWallet->currency,
-                'amount' => $request->amount,
-                'converted_amount' => round($convertedAmount, 2),
-                'rate' => $rate,
-                'from_balance' => $fromWallet->fresh()->balance,
-                'to_balance' => $toWallet->fresh()->balance,
-            ], 'Conversion effectuée avec succès');
+            return $this->successResponse($result, 'Conversion effectuée avec succès');
+        } catch (\DomainException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de la conversion', 500);
         }

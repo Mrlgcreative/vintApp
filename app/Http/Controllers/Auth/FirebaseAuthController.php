@@ -3,22 +3,21 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use App\Services\AuthService;
 use App\Services\FirebaseService;
 
 class FirebaseAuthController extends Controller
 {
     protected $firebaseService;
+    protected $authService;
 
-    public function __construct(FirebaseService $firebaseService)
+    public function __construct(FirebaseService $firebaseService, AuthService $authService)
     {
         $this->firebaseService = $firebaseService;
+        $this->authService = $authService;
     }
 
     /**
@@ -76,95 +75,32 @@ class FirebaseAuthController extends Controller
             ]);
 
             // Trouver ou créer l'utilisateur local
-            $user = User::where('email', $email)
-                       ->orWhere('firebase_uid', $firebaseUid)
-                       ->first();
-
-            if ($user) {
-                // Mettre à jour les informations Firebase si nécessaire
-                // IMPORTANT: Ne pas mettre à jour email_verified_at depuis Firebase
-                // Laisser la vérification d'email à notre système de code
-                $user->update([
-                    'firebase_uid' => $firebaseUid,
-                    'name' => $name,
-                    'avatar' => $avatar,
-                    // email_verified_at n'est pas modifié ici
-                ]);
-            } else {
-                // Créer un nouvel utilisateur
-                // IMPORTANT: email_verified_at reste NULL - l'utilisateur doit vérifier via notre code
-                $user = User::create([
-                    'name' => $name,
-                    'email' => $email,
-                    'firebase_uid' => $firebaseUid,
-                    'avatar' => $avatar,
-                    'email_verified_at' => null, // FORCER NULL - Vérification via code requis
-                    'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
-                ]);
-            }
+            // IMPORTANT: email_verified_at n'est jamais mis à jour depuis Firebase ici
+            // Laisser la vérification d'email à notre système de code
+            $user = $this->authService->findOrCreateFirebaseUser($firebaseUid, $email, $name, $avatar);
 
             // Enregistrer le token FCM si fourni
             if ($request->filled('fcmToken')) {
-                $user->fcm_token = $request->fcmToken;
-                $user->save();
+                $this->authService->saveFcmToken($user, $request->fcmToken);
             }
 
-            // Connecter l'utilisateur
-            Auth::login($user, true);
-            if ($request->hasSession()) {
-                $request->session()->regenerate();
-            }
+            // Connecter l'utilisateur (remember=on comme avant : sessions persistantes Firebase)
+            $this->authService->loginUser($user, $request, true);
 
             // Vérifier si l'email doit être vérifié (TOUJOURS pour Firebase!)
             if (!$user->email_verified_at) {
                 // Générer et envoyer un code de vérification
-                $this->sendVerificationCode($user);
-                
+                $this->authService->sendVerificationCode($user);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Connexion réussie ! Veuillez vérifier votre email.',
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'avatar' => $user->avatar,
-                    ],
+                    'user' => $this->authService->userPayload($user),
                     'redirect' => route('verification.code')
                 ]);
             }
 
-            // Vérifier si 2FA est activé pour cet utilisateur
-            if ($user->google2fa_enabled) {
-                // Marquer que l'utilisateur doit passer par 2FA
-                session(['2fa_required' => true, '2fa_user_id' => $user->id]);
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Veuillez entrer votre code d\'authentification à deux facteurs',
-                    'user' => [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'email' => $user->email,
-                        'avatar' => $user->avatar,
-                    ],
-                    'redirect' => route('two-factor.challenge')
-                ]);
-            }
-
-            // Marquer la session comme complètement authentifiée
-            session(['2fa_verified' => true]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Connexion réussie',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'avatar' => $user->avatar,
-                ],
-                'redirect' => route('home')
-            ]);
+            return response()->json($this->authService->completeFirebaseLogin($user));
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('🔥 Firebase validation failed', ['errors' => $e->errors()]);
@@ -240,77 +176,24 @@ class FirebaseAuthController extends Controller
                 ], 400);
             }
 
-            // Vérifier si l'utilisateur existe déjà
-            $existingUser = User::where('email', $email)
-                               ->orWhere('firebase_uid', $firebaseUid)
-                               ->first();
-
-            if ($existingUser) {
-                // Utilisateur existant - connexion
-                $existingUser->update([
-                    'firebase_uid' => $firebaseUid,
-                    'name' => $name,
-                    'avatar' => $avatar,
-                    'email_verified_at' => $emailVerified ? now() : $existingUser->email_verified_at,
-                ]);
-
-                // Enregistrer le token FCM si fourni
-                if ($request->filled('fcmToken')) {
-                    $existingUser->fcm_token = $request->fcmToken;
-                    $existingUser->save();
-                }
-
-                Auth::login($existingUser, true);
-                if ($request->hasSession()) {
-                    $request->session()->regenerate();
-                }
-
-                // Vérifier si 2FA est activé
-                if ($existingUser->google2fa_enabled) {
-                    session(['2fa_required' => true, '2fa_user_id' => $existingUser->id]);
-                    
-                    return response()->json([
-                        'success' => true,
-                        'message' => 'Veuillez entrer votre code d\'authentification à deux facteurs',
-                        'user' => [
-                            'id' => $existingUser->id,
-                            'name' => $existingUser->name,
-                            'email' => $existingUser->email,
-                            'avatar' => $existingUser->avatar,
-                        ],
-                        'redirect' => route('two-factor.challenge')
-                    ]);
-                }
-
-                session(['2fa_verified' => true]);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Connexion réussie',
-                    'user' => [
-                        'id' => $existingUser->id,
-                        'name' => $existingUser->name,
-                        'email' => $existingUser->email,
-                        'avatar' => $existingUser->avatar,
-                    ],
-                    'redirect' => route('home')
-                ]);
-            }
-
-            // Nouveau utilisateur - inscription
-            $user = User::create([
-                'name' => $name,
-                'email' => $email,
+            // Trouver ou créer l'utilisateur local
+            $user = $this->authService->findOrCreateFirebaseUser($firebaseUid, $email, $name, $avatar, [
                 'phone' => $request->phone ?? '',
-                'firebase_uid' => $firebaseUid,
-                'avatar' => $avatar,
-                'email_verified_at' => null, // Forcer verification par code pour tous
                 'newsletter_subscribed' => $request->boolean('newsletter'),
-                'password' => Hash::make(Str::random(32)), // Mot de passe aléatoire
             ]);
 
-            // Générer et envoyer le code de vérification
-            $this->sendVerificationCode($user);
+            $isNewUser = $user->wasRecentlyCreated;
+
+            // Divergence historique : le register peut marquer l'email vérifié depuis Firebase,
+            // contrairement au login (vérification par code uniquement)
+            if (!$isNewUser && $emailVerified) {
+                $user->update(['email_verified_at' => now()]);
+            }
+
+            // Générer et envoyer le code de vérification pour un nouveau compte
+            if ($isNewUser) {
+                $this->authService->sendVerificationCode($user);
+            }
 
             // Appliquer le code de parrainage s'il est fourni
             $referralMessage = '';
@@ -323,27 +206,22 @@ class FirebaseAuthController extends Controller
 
             // Enregistrer le token FCM si fourni
             if ($request->filled('fcmToken')) {
-                $user->fcm_token = $request->fcmToken;
-                $user->save();
+                $this->authService->saveFcmToken($user, $request->fcmToken);
             }
 
-            // Connecter l'utilisateur
-            Auth::login($user, true);
-            if ($request->hasSession()) {
-                $request->session()->regenerate();
+            // Connecter l'utilisateur (remember=on comme avant : sessions persistantes Firebase)
+            $this->authService->loginUser($user, $request, true);
+
+            if ($isNewUser) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inscription réussie ! Vérifiez votre email pour un code de vérification.' . $referralMessage,
+                    'user' => $this->authService->userPayload($user),
+                    'redirect' => route('verification.code')
+                ]);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Inscription réussie ! Vérifiez votre email pour un code de vérification.' . $referralMessage,
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'avatar' => $user->avatar,
-                ],
-                'redirect' => route('verification.code')
-            ]);
+            return response()->json($this->authService->completeFirebaseLogin($user));
 
         } catch (\Exception $e) {
             Log::error('🔥 Firebase register error: ' . $e->getMessage(), [
@@ -366,17 +244,8 @@ class FirebaseAuthController extends Controller
     public function logout(Request $request)
     {
         try {
-            // Supprimer le token FCM
-            if (Auth::check()) {
-                $authUser = Auth::user();
-                $authUser->fcm_token = null;
-                $authUser->save();
-            }
-
-            Auth::logout();
-            
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
+            // Supprimer le token FCM puis déconnecter
+            $this->authService->logout($request, true);
 
             return response()->json([
                 'success' => true,
@@ -404,9 +273,7 @@ class FirebaseAuthController extends Controller
         ]);
 
         if (Auth::check()) {
-            Auth::user()->update([
-                'fcm_token' => $request->fcm_token
-            ]);
+            $this->authService->saveFcmToken(Auth::user(), $request->fcm_token);
 
             return response()->json([
                 'success' => true,
@@ -428,32 +295,12 @@ class FirebaseAuthController extends Controller
         if (Auth::check()) {
             return response()->json([
                 'authenticated' => true,
-                'user' => [
-                    'id' => Auth::user()->id,
-                    'name' => Auth::user()->name,
-                    'email' => Auth::user()->email,
-                    'avatar' => Auth::user()->avatar,
-                ]
+                'user' => $this->authService->userPayload(Auth::user())
             ]);
         }
 
         return response()->json([
             'authenticated' => false
         ]);
-    }
-
-    /**
-     * Envoyer le code de vérification par email
-     */
-    private function sendVerificationCode($user)
-    {
-        $code = $user->generateVerificationCode();
-        
-        try {
-            Mail::to($user->email)->send(new \App\Mail\VerificationCodeMail($user, $code));
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi email verification: ' . $e->getMessage());
-            // En cas d'erreur d'envoi, on peut quand même continuer
-        }
     }
 }

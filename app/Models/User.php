@@ -631,7 +631,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function generateReferralCode(): ReferralCode
     {
         return $this->referralCodes()->create([
-            'title' => $title ?? 'Code principal',
+            'title' => 'Code principal',
             'description' => 'Code de parrainage principal',
             'is_active' => true,
         ]);
