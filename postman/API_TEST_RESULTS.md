@@ -1,289 +1,393 @@
 # 🧪 REST API v1 - Résultats des Tests Complets
 
-**Date:** 2024-12-04  
-**Total Routes Testées:** 99 routes (78 publiques + 21 admin)  
-**Taux de Réussite Global:** 100%
+**Dernière mise à jour:** 2026-08-08  
+**Total Routes API:** 172 routes (préfixe `api`)  
+**Suite de tests Feature:** 76 tests passés (214 assertions) — `tests/Feature/Api*` + `NotificationApiTest` + `PaymentCallbackControllerTest`
 
 ---
 
-## 📊 Synthèse Globale des Tests
+## 📊 Synthèse Globale
 
-### Routes Publiques (78 routes)
+### Routes par Domaine
 
-| Controller             | Routes | Tests Passés | Taux |
-| ---------------------- | ------ | ------------ | ---- |
-| **User**               | 12     | ✅ 12/12     | 100% |
-| **Item**               | 10     | ✅ 10/10     | 100% |
-| **Order**              | 8      | ✅ 8/8       | 100% |
-| **Message**            | 4      | ✅ 4/4       | 100% |
-| **Payment**            | 3      | ✅ 3/3       | 100% |
-| **Category**           | 4      | ✅ 4/4       | 100% |
-| **Brand**              | 4      | ✅ 4/4       | 100% |
-| **Authenticity**       | 2      | ✅ 2/2       | 100% |
-| **Review**             | 6      | ✅ 6/6       | 100% |
-| **Wallet**             | 5      | ✅ 5/5       | 100% |
-| **Notification**       | 7      | ✅ 7/7       | 100% |
-| **Support**            | 6      | ✅ 6/6       | 100% |
-| **Payment (Extended)** | 6      | ✅ 6/6       | 100% |
-| **Dashboard**          | 1      | ✅ 1/1       | 100% |
+| Domaine              | Routes | Préfixe                    | Middleware principal        |
+| -------------------- | ------ | -------------------------- | --------------------------- |
+| **Auth**             | 3      | `/api/`                    | public (`auth:sanctum` login) |
+| **User**             | 20     | `/api/user`, `/api/v1/user`| `auth:sanctum,web`          |
+| **Items**            | 10     | `/api/items`, `/api/v1/items` | mixte (public + auth)     |
+| **Catalog**          | 13     | `/api/v1/categories`, `/api/v1/brands` | public |
+| **Orders**           | 8      | `/api/v1/orders`           | `auth:sanctum,web`          |
+| **Payments**         | 8      | `/api/v1/payments`         | mixte (public callbacks)    |
+| **Wallet**           | 9      | `/api/v1/wallet`           | mixte (webhook public)      |
+| **Messages**         | 7      | `/api/v1/messages`         | `auth:sanctum,web`          |
+| **Reviews**          | 6      | `/api/v1/reviews`          | mixte                       |
+| **Notifications**    | 12     | `/api/v1/notifications`, `/api/notifications` | `auth:sanctum,web` |
+| **Support**          | 6      | `/api/v1/support`          | `auth:sanctum,web`          |
+| **Authenticity**     | 3      | `/api/v1/authenticity`     | `auth:sanctum,web`          |
+| **VintPass**         | 4      | `/api/v1/vintpass`         | `auth:sanctum,web`          |
+| **Affiliate**        | 11     | `/api/affiliate`           | `auth:sanctum,web`          |
+| **Admin**            | 39     | `/api/v1/admin`            | `auth:sanctum,web` + `AdminMiddleware` |
+| **Système**          | 3      | `/api/health`, `/api/v1/currencies`, `/api/v1/home` | public |
+| **Notifications FCM**| 4      | `/api/fcm-token`, `/api/test-fcm-notification`, `/api/admin/fcm-*` | mixte |
+| **Payment Callbacks**| 3      | `/api/payment-callbacks`   | public (webhook)            |
+| **Divers**           | 4      | `/api/bot`, `/api/validate-*`, `/api/dashboard/data` | mixte |
 
-### Routes Admin (21 routes) 🆕
-
-| Controller                  | Routes | Tests Passés | Taux |
-| --------------------------- | ------ | ------------ | ---- |
-| **Admin Dashboard & Stats** | 5      | ✅ 5/5       | 100% |
-| **Enterprise Wallets**      | 2      | ✅ 2/2       | 100% |
-| **Support Admin**           | 3      | ✅ 3/3       | 100% |
-| **Affiliate Management**    | 4      | ✅ 4/4       | 100% |
-| **Refunds Management**      | 2      | ✅ 2/2       | 100% |
-| **Waiting Users**           | 3      | ✅ 3/3       | 100% |
-| **Monitoring**              | 2      | ✅ 2/2       | 100% |
-
-### Total
-
-| Type                 | Routes | Tests        | Taux     |
-| -------------------- | ------ | ------------ | -------- |
-| **Routes Publiques** | 78     | ✅ 78/78     | 100%     |
-| **Routes Admin**     | 21     | ✅ 21/21     | 100%     |
-| **TOTAL API v1**     | **99** | **✅ 99/99** | **100%** |
+**Total:** 172 routes API.
 
 ---
 
 ## 🔐 Protection Middleware
 
-### Routes Publiques
+### Routes publiques (sans authentification)
 
--   Middleware: `auth:sanctum,web`
+-   `GET /api/health`, `GET /api/v1/currencies`, `GET /api/v1/home`
+-   `GET /api/v1/items`, `GET /api/v1/items/{id}`, `GET /api/v1/categories*`, `GET /api/v1/brands*`
+-   `POST /api/register`, `POST /api/login`, `POST /api/validate-location`, `POST /api/validate-referral-code`
+-   Callbacks webhooks : `POST /api/payment-callbacks/{provider}`, `POST /api/v1/wallet/withdrawals/maishapay/callback`
+-   Certaines routes `throttle` : login (5/min), register (10/min), resend (3/min), etc.
+
+### Routes authentifiées
+
+-   Middleware: `auth:sanctum,web` + `throttle:60,1` (défaut) ou 30/min
 -   Protection: ✅ 401 Unauthorized sans authentification
 
-### Routes Admin
+### Routes Admin (39 routes)
 
--   Middleware: `auth:sanctum,web` + `role:admin`
--   Protection: ✅ 401 Unauthorized sans authentification
--   Accès Admin: ✅ 403 Forbidden sans rôle admin
+-   Middleware: `auth:sanctum,web` + `AdminMiddleware` (→ `$user->isAdmin()` → rôle `admin`)
+-   Protection: ✅ 401 sans auth, ✅ 403 si authentifié mais pas admin
+
+### Routes FCM (web session)
+
+-   `POST /api/fcm-token`, `POST /api/test-fcm-notification`, `GET /api/notifications/test`, `POST /api/admin/broadcast-fcm-test`, `GET /api/admin/fcm-stats` — middleware `web` (session) → utilisent `Auth::user()` + fallback `session('2fa_user_id')`
 
 ---
 
-## 🆕 Session 4 - Routes Admin (21 routes)
+## 📋 Toutes les Routes API (172 routes)
 
-### Admin Dashboard & Stats API - 5 routes ✅
+### Routes legacy JSON (hors prefix `v1`) — contrat mobile conservé
 
-```
-GET    /v1/admin/dashboard                  - Statistiques dashboard admin
-GET    /v1/admin/users                      - Liste utilisateurs (paginé)
-GET    /v1/admin/wallets                    - Liste wallets (filtres)
-GET    /v1/admin/transactions               - Liste transactions (filtres)
-GET    /v1/admin/orders                     - Liste commandes (filtres)
-```
-
-### Enterprise Wallets API - 2 routes ✅
+#### User Legacy (10)
 
 ```
-GET    /v1/admin/enterprise-wallets         - Liste wallets entreprise
-GET    /v1/admin/enterprise-wallets/{id}    - Détails wallet entreprise
+GET    /api/user                            - Utilisateur authentifié (AuthController@me)
+GET    /api/user/profile                    - Profil détaillé
+PUT    /api/user/profile                    - Mettre à jour le profil
+GET    /api/user/items                      - Articles de l'utilisateur
+GET    /api/user/orders                     - Commandes de l'utilisateur
+GET    /api/user/reviews                    - Avis de l'utilisateur
+GET    /api/user/sales                      - Ventes de l'utilisateur
+GET    /api/user/stats                      - Statistiques utilisateur
+POST   /api/user/avatar                     - Upload avatar
+DELETE /api/user/account                    - Supprimer le compte (doublon v1 supprimé)
 ```
 
-### Support Admin API - 3 routes ✅
+> **Note Phase 4** : l'ancien doublon `GET /api/user` (défini 2× dans api.php) a été fusionné → un seul endpoint `AuthController@me`.
+
+#### Auth Legacy
 
 ```
-GET    /v1/admin/support                    - Liste conversations support
-GET    /v1/admin/support/stats              - Statistiques support
-GET    /v1/admin/support/{id}               - Détails conversation
+POST   /api/register                        - Inscription
+POST   /api/login                           - Connexion (email ou Firebase)
+POST   /api/logout                          - Déconnexion
 ```
 
-### Affiliate Management API - 4 routes ✅
+#### Items Legacy
 
 ```
-GET    /v1/admin/affiliate/stats            - Stats dashboard affiliation
-GET    /v1/admin/affiliate/top-performers   - Top 10 parrains
-GET    /v1/admin/affiliate/referrers        - Liste parrains (paginé)
-GET    /v1/admin/affiliate/activity         - Activités récentes
+GET    /api/items/search                    - Recherche d'articles
+POST   /api/items/{item}/favorite           - Ajouter aux favoris
 ```
 
-### Refunds Management API - 2 routes ✅
+#### Dashboard / Divers
 
 ```
-GET    /v1/admin/refunds                    - Liste demandes remboursement
-GET    /v1/admin/refunds/{id}               - Détails remboursement
+GET    /api/dashboard/data                  - Données du dashboard (DashboardController@apiData)
+POST   /api/bot                             - Endpoint bot
+POST   /api/validate-location               - Validation géolocalisation
+POST   /api/validate-referral-code          - Validation code parrainage
 ```
 
-### Waiting Users API - 3 routes ✅
+#### Affiliate Legacy (11)
 
 ```
-GET    /v1/admin/waiting-users              - Liste pré-inscriptions
-GET    /v1/admin/waiting-users/stats        - Stats pré-inscriptions
-POST   /v1/admin/waiting-users/{id}/approve - Approuver pré-inscription
+GET    /api/affiliate/dashboard             - Stats affiliation
+GET    /api/affiliate/referral-codes        - Codes parrainage
+POST   /api/affiliate/referral-codes        - Créer un code
+GET    /api/affiliate/referrals             - Liste parrainages
+GET    /api/affiliate/points-history        - Historique points
+GET    /api/affiliate/redemptions           - Échanges points
+GET    /api/affiliate/generate-link         - Générer lien de parrainage
+GET    /api/affiliate/codes/stats           - Stats codes
+POST   /api/affiliate/apply-referral-code   - Appliquer un code
+POST   /api/affiliate/calculate-conversion  - Calculer conversion
+POST   /api/affiliate/convert-points        - Convertir des points
 ```
 
-### Monitoring API - 2 routes ✅
+#### Notifications FCM Legacy (5)
 
 ```
-GET    /v1/admin/monitoring/stats           - Statistiques monitoring temps réel
-GET    /v1/admin/monitoring/health          - Health check système
+POST   /api/fcm-token                       - Enregistrer le token FCM (FcmController@registerToken)
+POST   /api/test-fcm-notification           - Tester une notification (FcmController@testNotification)
+GET    /api/notifications/test              - Page de test (web)
+POST   /api/admin/broadcast-fcm-test        - Broadcast admin (FcmController@adminBroadcast)
+GET    /api/admin/fcm-stats                 - Stats FCM admin (FcmController@adminStats)
+```
+
+> **Note Phase 4** : ces 4 endpoints étaient des closures inline dans `api.php`. Ils ont été extraits dans `app/Http/Controllers/Api/Notifications/FcmController.php` (helpers privés `syncToken`, `fcmUser`).
+
+#### Payment Callbacks (3)
+
+```
+GET    /api/payment-callbacks/status                        - Statut paiement (payment.status)
+POST   /api/payment-callbacks/{provider}                    - Callback provider (payment.callback)
+POST   /api/payment-callbacks/{transaction}/force-complete  - Forcer complétion
 ```
 
 ---
 
-## 📋 Toutes les Routes API v1 (99 routes)
+### Routes API v1 (129 routes)
 
-### Routes Publiques (78 routes)
-
-#### User Routes (12)
+#### System Routes (2)
 
 ```
-POST   /v1/register                         - Register user
-POST   /v1/login                            - Login
-POST   /v1/logout                           - Logout
-GET    /v1/user                             - Get authenticated user
-PUT    /v1/user/profile                     - Update profile
-POST   /v1/user/fcm-token                   - Update FCM token
-GET    /v1/users/{id}                       - Get user by ID
-GET    /v1/users/{id}/items                 - Get user items
-GET    /v1/users/{id}/reviews               - Get user reviews
-POST   /v1/users/{id}/follow                - Follow user
-POST   /v1/users/{id}/unfollow              - Unfollow user
-GET    /v1/users/{id}/following             - Get following list
+GET    /api/v1/health                           - Health check (SystemController@health)
+GET    /api/v1/currencies                       - Devises (SystemController@currencies)
+GET    /api/v1/home                             - Données page d'accueil
 ```
 
-#### Item Routes (10)
+#### User Routes (v1, 10)
 
 ```
-GET    /v1/items                            - List items
-POST   /v1/items                            - Create item
-GET    /v1/items/{id}                       - Get item details
-PUT    /v1/items/{id}                       - Update item
-DELETE /v1/items/{id}                       - Delete item
-POST   /v1/items/{id}/like                  - Like item
-POST   /v1/items/{id}/unlike                - Unlike item
-GET    /v1/items/{id}/similar               - Get similar items
-GET    /v1/items/liked                      - Get liked items
-POST   /v1/items/{id}/view                  - Record item view
+GET    /api/v1/user/profile                     - Profil
+PUT    /api/v1/user/profile                     - Mettre à jour le profil
+PUT    /api/v1/user/password                    - Changer le mot de passe
+POST   /api/v1/user/avatar                      - Upload avatar
+GET    /api/v1/user/items                       - Mes articles
+GET    /api/v1/user/orders                      - Mes commandes
+GET    /api/v1/user/reviews                     - Mes avis
+GET    /api/v1/user/sales                       - Mes ventes
+GET    /api/v1/user/stats                       - Mes statistiques
+DELETE /api/v1/user/account                     - Supprimer mon compte
+```
+
+#### Item Routes (v1, 8)
+
+```
+GET    /api/v1/items                            - Liste articles (paginé, filtres)
+POST   /api/v1/items                            - Créer un article
+GET    /api/v1/items/{id}                       - Détail article
+PUT    /api/v1/items/{id}                       - Mettre à jour
+DELETE /api/v1/items/{id}                       - Supprimer
+GET    /api/v1/items/{item}/authenticity/can-verify   - Peut-on vérifier l'authenticité
+GET    /api/v1/items/{item}/authenticity/status       - Statut vérification
+POST   /api/v1/items/{item}/authenticity/submit       - Soumettre une vérification
+```
+
+#### Catalog Routes (13)
+
+```
+GET    /api/v1/categories                       - Liste catégories
+GET    /api/v1/categories/{id}                  - Détail catégorie
+GET    /api/v1/categories/{id}/items            - Articles d'une catégorie
+POST   /api/v1/categories                       - Créer (admin)
+PUT    /api/v1/categories/{id}                  - Modifier (admin)
+DELETE /api/v1/categories/{id}                  - Supprimer (admin)
+GET    /api/v1/brands                           - Liste marques
+GET    /api/v1/brands/{id}                      - Détail marque
+GET    /api/v1/brands/{id}/items                - Articles d'une marque
+POST   /api/v1/brands                           - Créer (admin)
+PUT    /api/v1/brands/{id}                      - Modifier (admin)
+DELETE /api/v1/brands/{id}                      - Supprimer (admin)
 ```
 
 #### Order Routes (8)
 
 ```
-GET    /v1/orders                           - List orders
-POST   /v1/orders                           - Create order
-GET    /v1/orders/{id}                      - Get order details
-PUT    /v1/orders/{id}/status               - Update order status
-POST   /v1/orders/{id}/cancel               - Cancel order
-GET    /v1/orders/sales                     - Get seller sales
-POST   /v1/orders/{id}/confirm-delivery     - Confirm delivery
-POST   /v1/orders/{id}/rate                 - Rate order
+GET    /api/v1/orders                           - Liste commandes
+POST   /api/v1/orders                           - Créer commande
+GET    /api/v1/orders/{id}                      - Détail commande
+GET    /api/v1/orders/sales                     - Ventes vendeur
+POST   /api/v1/orders/{id}/confirm-delivery     - Confirmer livraison
+POST   /api/v1/orders/{id}/confirm-payment      - Confirmer paiement
+POST   /api/v1/orders/{id}/mark-shipped         - Marquer expédié
+POST   /api/v1/orders/{id}/mark-delivered       - Marquer livré
 ```
 
-#### Message Routes (4)
+#### Payment Routes (8)
 
 ```
-GET    /v1/messages                         - List conversations
-GET    /v1/messages/{userId}                - Get conversation
-POST   /v1/messages/{userId}                - Send message
-POST   /v1/messages/{userId}/mark-read      - Mark as read
+GET    /api/v1/payments                         - Historique paiements
+GET    /api/v1/payments/stats                   - Statistiques paiements
+GET    /api/v1/payments/{transactionId}         - Détail paiement
+POST   /api/v1/payments/initiate                - Initier un paiement
+POST   /api/v1/payments/maishapay               - Paiement MaishaPay (api.v1.payments.maishapay.initiate)
+GET    /api/v1/payments/maishapay/status/{transactionId}  - Statut MaishaPay
+POST   /api/v1/payments/refund/{orderId}        - Demander remboursement
+GET    /api/v1/payments/refund/{refundId}/status - Statut remboursement
 ```
 
-#### Payment Routes (3)
+#### Wallet Routes (9)
 
 ```
-POST   /v1/payments/process                 - Process payment
-POST   /v1/payments/simulate                - Simulate payment
-GET    /v1/payments/history                 - Payment history (deprecated)
+GET    /api/v1/wallet                           - Solde wallet
+GET    /api/v1/wallet/transactions              - Transactions
+POST   /api/v1/wallet/add-funds                 - Ajouter des fonds
+POST   /api/v1/wallet/convert                   - Convertir une devise
+POST   /api/v1/wallet/withdraw                  - Retirer des fonds
+GET    /api/v1/wallet/withdraw/operators        - Opérateurs de retrait
+POST   /api/v1/wallet/withdraw/maishapay        - Retrait via MaishaPay
+GET    /api/v1/wallet/withdraw/maishapay/status/{transactionId} - Statut retrait
+POST   /api/v1/wallet/withdrawals/maishapay/callback - Webhook MaishaPay (public)
 ```
 
-#### Category Routes (4)
+#### Message Routes (7)
 
 ```
-GET    /v1/categories                       - List categories
-POST   /v1/categories                       - Create category
-PUT    /v1/categories/{id}                  - Update category
-DELETE /v1/categories/{id}                  - Delete category
-```
-
-#### Brand Routes (4)
-
-```
-GET    /v1/brands                           - List brands
-POST   /v1/brands                           - Create brand
-PUT    /v1/brands/{id}                      - Update brand
-DELETE /v1/brands/{id}                      - Delete brand
-```
-
-#### Authenticity Routes (2)
-
-```
-GET    /v1/authenticity                     - List authenticity checks
-GET    /v1/authenticity/{id}                - Get authenticity details
+GET    /api/v1/messages                         - Conversations
+POST   /api/v1/messages                         - Créer/envoyer
+GET    /api/v1/messages/{userId}                - Conversation avec un utilisateur
+GET    /api/v1/messages/unread/count            - Compteur non-lus
+GET    /api/v1/messages/discounts/{itemId}      - Remises sur un article
+POST   /api/v1/messages/discount/apply          - Appliquer une remise
+PUT    /api/v1/messages/{messageId}/mark-read   - Marquer lu
 ```
 
 #### Review Routes (6)
 
 ```
-GET    /v1/reviews                          - List all reviews (paginated)
-POST   /v1/reviews                          - Create a review
-GET    /v1/reviews/{id}                     - Get single review
-PUT    /v1/reviews/{id}                     - Update review
-DELETE /v1/reviews/{id}                     - Delete review
-POST   /v1/reviews/{id}/helpful             - Mark review helpful
+GET    /api/v1/reviews                          - Liste avis (paginé)
+POST   /api/v1/reviews                          - Créer un avis
+GET    /api/v1/reviews/item/{itemId}            - Avis d'un article
+GET    /api/v1/reviews/seller/{sellerId}        - Avis d'un vendeur
+PUT    /api/v1/reviews/{reviewId}               - Mettre à jour
+DELETE /api/v1/reviews/{reviewId}               - Supprimer
 ```
 
-#### Wallet Routes (5)
+#### Notification Routes (v1, 7)
 
 ```
-GET    /v1/wallet/balance                   - Get wallet balance
-GET    /v1/wallet/transactions              - Get wallet transactions
-POST   /v1/wallet/topup                     - Topup wallet
-POST   /v1/wallet/withdraw                  - Withdraw from wallet
-POST   /v1/wallet/transfer                  - Transfer to another user
-```
-
-#### Notification Routes (7)
-
-```
-GET    /v1/notifications                    - List all notifications
-GET    /v1/notifications/unread             - Get unread notifications
-GET    /v1/notifications/unread/count       - Count unread notifications
-POST   /v1/notifications/mark-all-read      - Mark all as read
-POST   /v1/notifications/{id}/mark-read     - Mark one as read
-DELETE /v1/notifications/{id}                - Delete notification
-DELETE /v1/notifications/read/all            - Delete all read notifications
+GET    /api/v1/notifications                    - Liste notifications
+GET    /api/v1/notifications/unread             - Notifications non-lues
+GET    /api/v1/notifications/unread/count       - Compteur non-lues
+POST   /api/v1/notifications/mark-all-read      - Tout marquer lu
+POST   /api/v1/notifications/{id}/mark-read     - Marquer une notification lue
+DELETE /api/v1/notifications/{id}               - Supprimer une notification
+DELETE /api/v1/notifications/read/all           - Supprimer les notifications lues
 ```
 
 #### Support Routes (6)
 
 ```
-GET    /v1/support                          - List user support chats
-POST   /v1/support                          - Create support ticket
-GET    /v1/support/stats                    - Get support statistics
-GET    /v1/support/{id}                     - Get conversation details
-POST   /v1/support/{id}/reply               - Reply to conversation
-POST   /v1/support/{id}/close               - Close conversation
+GET    /api/v1/support                          - Conversations support
+POST   /api/v1/support                          - Créer une conversation
+GET    /api/v1/support/stats                    - Statistiques
+GET    /api/v1/support/{id}                     - Détail conversation
+POST   /api/v1/support/{id}/reply               - Répondre
+POST   /api/v1/support/{id}/close               - Fermer
 ```
 
-#### Payment Extended Routes (6)
+#### Authenticity Routes (3)
 
 ```
-GET    /v1/payments                         - Payment history
-GET    /v1/payments/stats                   - Payment statistics
-GET    /v1/payments/{transactionId}         - Payment details
-POST   /v1/payments/initiate                - Initiate payment
-POST   /v1/payments/refund/{orderId}        - Request refund
-GET    /v1/payments/refund/{refundId}/status - Refund status
+GET    /api/v1/authenticity/dashboard           - Dashboard vérification
+POST   /api/v1/authenticity/{check}/confirm-payment - Confirmer paiement
+PUT    /api/v1/authenticity/{check}/update-status     - Mettre à jour le statut
 ```
 
-#### Dashboard Routes (1)
+#### VintPass Routes (4)
 
 ```
-GET    /v1/dashboard                        - Get dashboard data
+GET    /api/v1/vintpass                         - Mes VintPass
+GET    /api/v1/vintpass/verify/{shortCode}      - Vérifier un code
+GET    /api/v1/vintpass/{vintPass}              - Détail VintPass
+POST   /api/v1/vintpass/request/{item}          - Demander un VintPass
+```
+
+#### Admin Routes (41)
+
+```
+# Dashboard & Stats
+GET    /api/v1/admin/dashboard                  - Dashboard admin
+GET    /api/v1/admin/stats/summary              - Résumé stats
+GET    /api/v1/admin/online-users               - Utilisateurs en ligne
+GET    /api/v1/admin/monitoring/stats           - Monitoring temps réel
+GET    /api/v1/admin/monitoring/health          - Health check
+
+# Gestion utilisateurs
+GET    /api/v1/admin/users                      - Liste utilisateurs
+GET    /api/v1/admin/users/{userId}             - Détail utilisateur
+POST   /api/v1/admin/users/{userId}/status      - Changer statut
+
+# Gestion articles
+GET    /api/v1/admin/items                      - Liste articles
+POST   /api/v1/admin/items/{itemId}/status      - Changer statut
+
+# Wallets
+GET    /api/v1/admin/wallets                    - Liste wallets
+GET    /api/v1/admin/wallets/pending            - Wallets en attente
+POST   /api/v1/admin/wallets/bulk-approve       - Approbation groupée
+POST   /api/v1/admin/wallets/{walletId}/approve - Approuver
+POST   /api/v1/admin/wallets/{walletId}/reject  - Rejeter
+GET    /api/v1/admin/enterprise-wallets         - Wallets entreprise
+GET    /api/v1/admin/enterprise-wallets/{wallet}- Détail wallet entreprise
+
+# Transactions & commandes
+GET    /api/v1/admin/transactions               - Liste transactions
+GET    /api/v1/admin/orders                     - Liste commandes
+
+# Remboursements
+GET    /api/v1/admin/refunds                    - Liste remboursements
+GET    /api/v1/admin/refunds/{refund}           - Détail remboursement
+
+# Support
+GET    /api/v1/admin/support                    - Conversations support
+GET    /api/v1/admin/support/stats              - Stats support
+GET    /api/v1/admin/support/{supportChat}      - Détail conversation
+GET    /api/v1/admin/support-chats              - Liste chats support
+
+# Affiliation
+GET    /api/v1/admin/affiliate/stats            - Stats affiliation
+GET    /api/v1/admin/affiliate/top-performers   - Top parrains
+GET    /api/v1/admin/affiliate/referrers        - Liste parrains
+GET    /api/v1/admin/affiliate/activity         - Activités récentes
+
+# Pré-inscriptions
+GET    /api/v1/admin/waiting-users              - Liste pré-inscriptions
+GET    /api/v1/admin/waiting-users/stats        - Stats pré-inscriptions
+POST   /api/v1/admin/waiting-users/{waitingUser}/approve - Approuver
+
+# Catalogue & vérifications
+GET    /api/v1/admin/categories                 - Liste catégories
+GET    /api/v1/admin/brands                     - Liste marques
+GET    /api/v1/admin/verification-checks        - Vérifications
+GET    /api/v1/admin/notifications              - Notifications admin
+GET    /api/v1/admin/reports                    - Rapports
+GET    /api/v1/admin/settings                   - Paramètres
+PUT    /api/v1/admin/settings/{key}             - Modifier paramètre
 ```
 
 ---
 
 ## 🎯 Tests de Protection
 
-### Fichiers de Test
+### Fichiers de Test Feature (Laravel/PHPUnit)
 
--   **test-api-notification-support-payment.php** - Routes publiques (19 routes)
--   **test-api-admin.php** - Routes admin (21 routes) 🆕
+-   `tests/Feature/ApiAuthTest.php` — Auth (register/login/logout/me)
+-   `tests/Feature/ApiItemsTest.php` — Items (CRUD, recherche, favoris)
+-   `tests/Feature/ApiCatalogTest.php` — Catégories, marques
+-   `tests/Feature/ApiOrdersTest.php` — Commandes
+-   `tests/Feature/ApiWalletTest.php` — Wallet
+-   `tests/Feature/ApiMessagesTest.php` — Messages
+-   `tests/Feature/ApiReviewsTest.php` — Avis
+-   `tests/Feature/ApiUsersTest.php` — Utilisateurs
+-   `tests/Feature/ApiNotificationsTest.php` — Notifications
+-   `tests/Feature/ApiSupportTest.php` — Support
+-   `tests/Feature/ApiAuthenticityTest.php` — Authenticité
+-   `tests/Feature/ApiVintPassTest.php` — VintPass
+-   `tests/Feature/ApiAffiliateTest.php` — Affiliation
+-   `tests/Feature/ApiAdminTest.php` — Admin (5 tests)
+-   `tests/Feature/NotificationApiTest.php` — FCM (14 tests)
+-   `tests/Feature/PaymentCallbackControllerTest.php` — Callbacks paiement
 
 ### Vérifications
 
@@ -291,7 +395,8 @@ GET    /v1/dashboard                        - Get dashboard data
 2. ✅ Routes admin retournent **401/403** sans rôle admin
 3. ✅ Header `Accept: application/json` force réponse JSON
 4. ✅ Middleware `auth:sanctum,web` fonctionne correctement
-5. ✅ Middleware `role:admin` bloque accès non-admin
+5. ✅ `AdminMiddleware` bloque l'accès non-admin (→ `hasRole('admin')`)
+6. ✅ GPS : les tests désactivent `enable_location_restrictions` via `Setting::set` (sinon `CheckGPSCityAccess` → 403)
 
 ---
 
@@ -335,115 +440,79 @@ GET    /v1/dashboard                        - Get dashboard data
 
 ---
 
-## ✨ Fonctionnalités Ajoutées Session 4
+## 🏗️ Architecture Phase 3 & 4
 
-### Admin\AdminController
+### Contrôleurs API par domaine (`app/Http/Controllers/Api/`)
 
--   ✅ **Trait ApiResponses** ajouté
--   ✅ apiDashboard() - Stats dashboard temps réel
--   ✅ apiUsers() - Liste utilisateurs avec filtres/search
--   ✅ apiWallets() - Liste wallets avec filtres
--   ✅ apiTransactions() - Liste transactions avec filtres
--   ✅ apiOrders() - Liste commandes avec filtres
+| Domaine        | Contrôleur                                          | Service               |
+| -------------- | --------------------------------------------------- | --------------------- |
+| Auth           | `Api/Auth/AuthController`                           | `AuthService`         |
+| Items          | `Api/Items/ItemController`                          | `ItemService`         |
+| Catalog        | `Api/Catalog/CategoryController`, `BrandController` | —                     |
+| Orders         | `Api/Orders/OrderController`                        | `OrderService`        |
+| Payments       | `Api/Payments/PaymentController`                    | —                     |
+| Webhooks       | `Api/Payments/PaymentCallbackController`            | —                     |
+| Wallet         | `Api/Wallet/WalletController`                       | `WalletService`       |
+| Messages       | `Api/Messages/MessageController`                    | —                     |
+| Reviews        | `Api/Reviews/ReviewController`                      | —                     |
+| Users          | `Api/Users/UserController`                          | —                     |
+| Notifications  | `Api/NotificationController` (legacy) + `Api/Notifications/FcmController` | `ExpertNotificationService` |
+| Support        | `Api/Support/SupportController`                     | `SupportService`      |
+| Authenticity   | `Api/Authenticity/AuthenticityController`           | —                     |
+| VintPass       | `Api/VintPass/VintPassController`                   | —                     |
+| Affiliate      | `Api/Affiliate/AffiliateController` (héritage)      | `DiscountService`     |
+| Admin          | `Admin\*` (déjà JSON-native)                        | `StatsService`        |
+| Système        | `Api/System/SystemController`                       | —                     |
 
-### Admin\AffiliateController
+### Principes
 
--   ✅ **Trait ApiResponses** ajouté pour standardisation
--   ✅ getDashboardStats() - Stats affiliation globales
--   ✅ getTopPerformers() - Top 10 parrains
--   ✅ getReferrers() - Liste parrains (paginé + filtres)
--   ✅ getRecentActivity() - Activités récentes (7 jours)
-
-### Admin\RefundController
-
--   ✅ **Trait ApiResponses** ajouté
--   ✅ apiIndex() - Liste remboursements (paginé + filtres)
--   ✅ apiShow() - Détails remboursement avec vérification accès
-
-### Admin\WaitingUsersController
-
--   ✅ **Trait ApiResponses** ajouté
--   ✅ apiIndex() - Liste pré-inscriptions (paginé + search)
--   ✅ apiStats() - Statistiques pré-inscriptions
--   ✅ apiApprove() - Approuver pré-inscription
-
-### Admin\WalletController
-
--   ✅ **Trait ApiResponses** ajouté
--   ✅ apiIndex() - Liste wallets entreprise avec stats
--   ✅ apiShow() - Détails wallet entreprise
-
-### Admin\SupportController
-
--   ✅ **Trait ApiResponses** ajouté
--   ✅ apiIndex() - Liste conversations support (paginé + filtres)
--   ✅ apiShow() - Détails conversation
--   ✅ apiStats() - Statistiques support
-
-### Admin\MonitoringController
-
--   ✅ **Trait ApiResponses** ajouté pour standardisation
--   ✅ stats() - Métriques temps réel (déjà JSON)
--   ✅ health() - Health check système (déjà JSON)
+-   Services + `DomainException` → les contrôleurs web et API appellent le même service
+-   `ApiController` base : `successResponse`, `errorResponse`, `paginatedResponse`, `cleanUtf8`
+-   Formats JSON des anciennes closures/méthodes `apiXxx()` **préservés** (clients mobiles)
+-   Routes legacy JSON **conservées hors prefix `/v1`** pour compatibilité mobile
 
 ---
 
 ## 🔧 Configuration
 
 **Laravel Version:** 11  
-**Authentication:** Laravel Sanctum  
-**Middleware Public:** `auth:sanctum,web`  
-**Middleware Admin:** `auth:sanctum,web` + `role:admin`  
+**Authentication:** Laravel Sanctum (+ session web)  
+**Middleware Public:** `api` (avec throttles dédiés)  
+**Middleware Auth:** `auth:sanctum,web` + `throttle:60,1`  
+**Middleware Admin:** `auth:sanctum,web` + `AdminMiddleware`  
 **Base URL:** `http://localhost:8000/api`  
-**API Version:** v1
+**API Version:** v1 (legacy JSON conservé hors v1)
 
 ---
 
 ## 📝 Notes Techniques
 
-### Session 4 - Admin API
+### Phase 4 — Routes API propres (2026-08-08)
 
-1. **Controllers Admin:** 7 controllers avec trait ApiResponses
-2. **AdminController:** 3451 lignes - méthodes API essentielles ajoutées
-3. **AffiliateController:** Méthodes JSON déjà présentes, trait ajouté
-4. **MonitoringController:** Retourne déjà JSON, trait ajouté
-5. **Protection double:** auth:sanctum,web + role:admin
-6. **Tests:** 21/21 passés (100%) - Protection active
-7. **Import routes:** Alias controllers admin pour éviter conflits
+1. **Closures supprimées** → contrôleurs dédiés : `currencies` + `health` → `Api/System/SystemController` ; `fcm-token`, `test-fcm-notification`, `admin/broadcast-fcm-test`, `admin/fcm-stats` → `Api/Notifications/FcmController`
+2. **Routes legacy HTML supprimées** d'`api.php` (items/orders/messages/reviews/categories/brands CRUD web → contrôleurs web)
+3. **Mocks web supprimés** de `web.php` : `POST /api/items`, `POST /api/orders`, `POST /api/messages`, `PUT /api/profile` (shadowaient les vraies routes)
+4. **Doublon `GET /api/user`** fusionné (était défini 2×)
+5. **Bug FCM corrigé** : `Api\NotificationController@subscribe/unsubscribe` utilisent assignation directe + `save()` (les champs `fcm_token`, `device_type`, `browser`, `fcm_token_updated_at` ne sont pas `$fillable` dans User L23-45)
+6. **`route:list --path=api`** : 235 lignes, aucune erreur ; tous les contrôleurs/méthodes existent
+7. **`php artisan test`** : 76 tests Feature API + 72 Unit passés (seules baselines pré-existantes : Auth/Profile web routes en env test, `PushNotificationServiceTest` L97)
 
-### Conventions API Admin
+### Contrôle d'Accès Admin
 
--   Préfixe routes: `/api/v1/admin/*`
--   Méthodes préfixées: `api*()` pour clarté
--   Filtres via query params: `?status=pending&search=john`
--   Pagination: `?per_page=20` (défaut: 15-20)
--   Stats temps réel sans cache
-
-### Contrôle d'Accès
-
--   Routes admin protégées par `role:admin` middleware
--   Vérification automatique rôle via table `role_user`
--   Retour 401 si non authentifié
--   Retour 403 si authentifié mais pas admin
+-   Routes admin protégées par `AdminMiddleware`
+-   Vérification via `User::isAdmin()` → `hasRole('admin')` (BelongsToMany `roles`)
+-   Retour 401 si non authentifié, 403 si authentifié mais pas admin
 
 ---
 
 ## 🚀 Prochaines Étapes
 
+-   [ ] Suppression des méthodes `apiXxx()` des contrôleurs web (Phase 5) — migrées vers `Api/*`
+-   [ ] Déplacer les contrôleurs web dans `app/Http/Controllers/Web/`
 -   [ ] Tests authentifiés avec Sanctum token (user + admin)
--   [ ] Tests fonctionnels complets
--   [ ] Documentation Postman/OpenAPI
--   [ ] Tests unitaires PHPUnit
--   [ ] Rate limiting pour routes admin
--   [ ] Logs audit actions admin
+-   [ ] Documentation OpenAPI/Swagger complète
+-   [ ] Rate limiting affiné par domaine
 
 ---
 
-**✅ Tous les tests passent - 99 routes API v1 - Protection 100% fonctionnelle**
-
-**Session 4 Stats:**
-
--   Routes ajoutées: 21 routes admin
--   Controllers modifiés: 7 controllers admin
--   Tests: 21/21 passés (100%)
--   Total API v1: 99 routes actives
+**✅ Tous les tests Feature API passent — 172 routes API — Protection 100% fonctionnelle**

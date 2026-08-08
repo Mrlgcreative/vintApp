@@ -1,130 +1,154 @@
 @extends('app')
 
+@section('title', 'Vérifiez votre email - VintApp')
+
 @section('content')
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5 px-3" style="background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 50%, #faf5ff 100%);">
-    <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-accent-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="w-full max-w-md">
         <!-- Card principale -->
-        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-            <!-- Header avec icône -->
-            <div class="card-header text-white text-center py-4 border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="d-inline-flex align-items-center justify-content-center bg-white dark:bg-gray-800 rounded-circle mb-3" style="width: 80px; height: 80px;">
-                    <i class="fas fa-envelope-open-text fa-3x text-primary"></i>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-primary-600 to-accent-600 px-8 py-8 text-center">
+                <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
                 </div>
-                <h1 class="h3 fw-bold mb-2">Vérifiez votre email</h1>
-                <p class="mb-0 opacity-90 small">Dernière étape avant d'accéder à VintApp</p>
+                <h1 class="text-2xl font-bold text-white">Vérifiez votre email</h1>
+                <p class="text-primary-100 mt-2">Dernière étape avant d'accéder à VintApp</p>
             </div>
 
             <!-- Contenu -->
-            <div class="card-body p-4 p-md-5">
-                <!--  Message d'avertissement FORT -->
-                <div class="alert alert-danger border-danger shadow-sm mb-4" role="alert">
-                    <div class="d-flex align-items-start">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-lock fa-2x text-danger me-3"></i>
-                        </div>
+            <div class="px-8 py-8">
+                <!-- Avertissement accès restreint -->
+                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
                         <div>
-                            <h5 class="alert-heading fw-bold mb-2">
-                                <i class="fas fa-exclamation-triangle me-1"></i>
-                                Accès Restreint
-                            </h5>
-                            <p class="mb-2 fw-semibold">
-                                Votre compte est actuellement <span class="text-danger">suspendu</span> en attente de vérification d'email.
-                            </p>
-                            <p class="mb-0 small">
-                                <i class="fas fa-ban me-1"></i>
-                                Vous ne pouvez pas accéder aux fonctionnalités tant que votre email n'est pas vérifié.
+                            <p class="text-sm font-bold text-red-800 dark:text-red-200">Accès restreint</p>
+                            <p class="text-sm text-red-700 dark:text-red-300 mt-1">
+                                Votre compte est actuellement en attente de vérification d'email. Vous ne pouvez pas accéder aux fonctionnalités tant que votre email n'est pas vérifié.
                             </p>
                         </div>
                     </div>
                 </div>
 
                 @if (session('status') == 'verification-link-sent')
-                    <!-- Message de succès -->
-                    <div class="alert alert-success d-flex align-items-start mb-4" role="alert">
-                        <i class="fas fa-check-circle fs-4 me-3 mt-1"></i>
-                        <div>
-                            <h6 class="alert-heading mb-1">Email envoyé !</h6>
-                            <p class="mb-0 small">
-                                Un nouveau lien de vérification a été envoyé à votre adresse email.
-                            </p>
+                    <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-semibold text-green-800 dark:text-green-200">Email envoyé !</p>
+                                <p class="text-xs text-green-700 dark:text-green-300 mt-1">
+                                    Un nouveau lien de vérification a été envoyé à votre adresse email.
+                                </p>
+                            </div>
                         </div>
                     </div>
                 @endif
 
                 @if (session('success'))
-                    <div class="alert alert-success d-flex align-items-start mb-4" role="alert">
-                        <i class="fas fa-check-circle fs-4 me-3 mt-1"></i>
-                        <div>
-                            <p class="mb-0 fw-semibold">{{ session('success') }}</p>
+                    <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
                         </div>
                     </div>
                 @endif
 
                 @if (session('warning'))
-                    <div class="alert alert-warning d-flex align-items-start mb-4" role="alert">
-                        <i class="fas fa-exclamation-triangle fs-4 me-3 mt-1"></i>
-                        <div>
-                            <p class="mb-0 fw-semibold">{{ session('warning') }}</p>
+                    <div class="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.008v.008H12v-.008z"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-amber-800 dark:text-amber-200">{{ session('warning') }}</p>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('info'))
+                    <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-sm font-medium text-blue-800 dark:text-blue-200">{{ session('info') }}</p>
                         </div>
                     </div>
                 @endif
 
                 <!-- Message d'information -->
-                <div class="text-center mb-4">
-                    <p class="text-dark mb-3">
+                <div class="text-center mb-6">
+                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
                         Merci de vous être inscrit ! Avant de commencer, pourriez-vous vérifier votre adresse email en cliquant sur le lien que nous venons de vous envoyer ?
                     </p>
-                    <p class="text-muted small">
-                        <i class="fas fa-info-circle me-1"></i>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
                         Vérifiez votre boîte de réception et vos spams
                     </p>
                 </div>
 
                 <!-- Email utilisateur -->
-                <div class="bg-light rounded-3 p-3 mb-4">
-                    <div class="d-flex align-items-center justify-content-center gap-2">
-                        <i class="fas fa-at text-primary"></i>
-                        <span class="fw-semibold text-dark">{{ Auth::user()->email }}</span>
+                <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
+                    <div class="flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span class="font-semibold text-gray-800 dark:text-gray-100">{{ Auth::user()->email }}</span>
                     </div>
                 </div>
 
                 <!-- Instructions -->
-                <div class="mb-4">
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width: 36px; height: 36px; min-width: 36px;">
-                            <span class="text-primary fw-bold small">1</span>
+                <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center text-sm font-bold">
+                            1
                         </div>
-                        <p class="mb-0 text-muted small pt-1">Ouvrez votre boîte email</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 pt-1.5">Ouvrez votre boîte email</p>
                     </div>
-                    <div class="d-flex align-items-start gap-3 mb-3">
-                        <div class="flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width: 36px; height: 36px; min-width: 36px;">
-                            <span class="text-primary fw-bold small">2</span>
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center text-sm font-bold">
+                            2
                         </div>
-                        <p class="mb-0 text-muted small pt-1">Cliquez sur le lien de vérification</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 pt-1.5">Cliquez sur le lien de vérification</p>
                     </div>
-                    <div class="d-flex align-items-start gap-3">
-                        <div class="flex-shrink-0 rounded-circle d-flex align-items-center justify-content-center bg-primary bg-opacity-10" style="width: 36px; height: 36px; min-width: 36px;">
-                            <span class="text-primary fw-bold small">3</span>
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center text-sm font-bold">
+                            3
                         </div>
-                        <p class="mb-0 text-muted small pt-1">Revenez sur VintApp pour commencer</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 pt-1.5">Revenez sur VintApp pour commencer</p>
                     </div>
                 </div>
 
                 <!-- Bouton renvoyer -->
                 <form method="POST" action="{{ route('verification.send') }}" class="mb-3">
                     @csrf
-                    <button type="submit" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm">
-                        <i class="fas fa-paper-plane"></i>
-                        <span>Renvoyer l'email de vérification</span>
+                    <button type="submit" class="w-full px-6 py-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"></path>
+                        </svg>
+                        Renvoyer l'email de vérification
                     </button>
                 </form>
 
-                <!-- Lien déconnexion -->
+                <!-- Déconnexion -->
                 <div class="text-center">
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="btn btn-link text-muted text-decoration-none small">
-                            <i class="fas fa-sign-out-alt me-1"></i>
+                        <button type="submit" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 py-2 inline-flex items-center gap-1.5 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
                             Se déconnecter
                         </button>
                     </form>
@@ -132,19 +156,21 @@
             </div>
 
             <!-- Footer -->
-            <div class="card-footer bg-light border-top py-3">
-                <div class="d-flex align-items-center justify-content-center gap-2 text-muted small">
-                    <i class="fas fa-shield-alt text-success"></i>
-                    <span>Vos données sont sécurisées et confidentielles</span>
+            <div class="px-8 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"></path>
+                    </svg>
+                    Vos données sont sécurisées et confidentielles
                 </div>
             </div>
         </div>
 
         <!-- Aide supplémentaire -->
-        <div class="text-center mt-4">
-            <p class="small text-muted">
-                Vous n'avez pas reçu l'email ? 
-                <a href="mailto:{{ config('mail.from.address') }}" class="text-primary text-decoration-none fw-medium">
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                Vous n'avez pas reçu l'email ?
+                <a href="mailto:{{ config('mail.from.address') }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
                     Contactez le support
                 </a>
             </p>
@@ -152,24 +178,4 @@
     </div>
 </div>
 
-<style>
-    .btn-primary {
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
-    }
-
-    .card {
-        transition: transform 0.3s ease;
-    }
-
-    @media (max-width: 768px) {
-        .card-body {
-            padding: 1.5rem !important;
-        }
-    }
-</style>
 @endsection
