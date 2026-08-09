@@ -783,6 +783,23 @@
                     return;
                 }
 
+                // Nettoyer les anciens Service Workers orphelins/cassés (ex:
+                // /firebase-messaging-sw.js d'un déploiement précédent) qui
+                // peuvent bloquer les mises à jour du SW courant et produire
+                // l'erreur "The object is in an invalid state".
+                try {
+                    const existingRegs = await navigator.serviceWorker.getRegistrations();
+                    for (const reg of existingRegs) {
+                        const script = reg.active?.scriptURL || reg.installing?.scriptURL || reg.waiting?.scriptURL || '';
+                        if (script && !script.endsWith('/sw.js')) {
+                            await reg.unregister();
+                            console.info('SW orphelin désenregistré:', script);
+                        }
+                    }
+                } catch (e) {
+                    // Non bloquant
+                }
+
                 // Enregistrer le Service Worker principal (qui inclut Firebase)
                 let registration = await navigator.serviceWorker.register('/sw.js');
 

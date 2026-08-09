@@ -262,35 +262,25 @@ class AffiliateDashboard {
         }
     }
 
-    async loadDashboard() {
+async loadDashboard() {
         try {
             this.showLoader('statsCards');
             
-            // Essayer de charger les vraies données depuis l'API
-            const response = await fetch('/affiliate/dashboard-data', {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                credentials: 'same-origin'
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-            
-            const data = await response.json();
+            // Charger les données depuis l'API (fetchJSON gère 401/403 -> redirect login)
+            const data = await this.fetchJSON('/affiliate/dashboard-data');
             
             if (data.success && data.data) {
                 this.userData = data.data;
                 this.renderDashboard(data.data);
             } else {
-                throw new Error('Données invalides reçues');
+                throw new Error(data.message || 'Données invalides reçues');
             }
         } catch (error) {
+            // fetchJSONactive déjà le redirect + alerte sur 401/403
+            if (error.message === 'Session expirée') {
+                return;
+            }
+            
             console.error('Erreur dashboard:', error);
             
             // Fallback avec données par défaut mais afficher vraiment les points utilisateur
