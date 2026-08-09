@@ -42,7 +42,17 @@ class AffiliateDashboard {
                     setTimeout(() => window.location.href = '/login', 2000);
                     throw new Error('Session expirée');
                 }
-                throw new Error(`HTTP error! status: ${response.status}`);
+
+                // Lire le corps JSON pour récupérer le message serveur si disponible
+                let serverMessage = null;
+                try {
+                    const errorData = await response.json();
+                    serverMessage = errorData?.message || null;
+                } catch (e) {
+                    // Corps non-JSON
+                }
+
+                throw new Error(serverMessage || `HTTP error! status: ${response.status}`);
             }
 
             // Vérifier le Content-Type
@@ -570,6 +580,11 @@ class AffiliateDashboard {
             return;
         }
 
+        if (parseFloat(points) < 100) {
+            this.showAlert('Le minimum est de 100 points', 'warning');
+            return;
+        }
+
         try {
             const data = await this.fetchJSON('/affiliate/points/generate-discount', {
                 method: 'POST',
@@ -599,7 +614,7 @@ class AffiliateDashboard {
             }
         } catch (error) {
             console.error('Erreur génération code:', error);
-            this.showAlert('Erreur lors de la génération', 'error');
+            this.showAlert(error.message || 'Erreur lors de la génération', 'error');
         }
     }
 
