@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Orders\OrderController as ApiOrderController;
 use App\Http\Controllers\Api\Payments\PaymentController as ApiPaymentController;
 use App\Http\Controllers\Api\Wallet\WalletController as ApiWalletController;
 use App\Http\Controllers\Api\Webhooks\PaymentCallbackController as ApiPaymentCallbackController;
+use App\Http\Controllers\Api\Webhooks\PawaPayCallbackController as ApiPawaPayCallbackController;
 use App\Http\Controllers\Api\System\SystemController;
 use App\Http\Controllers\Api\Notifications\FcmController;
 use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
@@ -92,6 +93,23 @@ Route::prefix('payment-callbacks')->group(function () {
         ->middleware('throttle:5,1')
         ->where('transaction', '[0-9]+')
         ->name('payment.force-complete');
+});
+
+// ==================== Callbacks PawaPay (publics, sans auth) ====================
+// À configurer dans le dashboard PawaPay (un callback URL par opération) :
+//  Deposits  : https://votre-domaine.com/api/v1/pawapay/callback/deposit
+//  Checkouts : https://votre-domaine.com/api/v1/pawapay/callback/checkout
+//  Payouts   : https://votre-domaine.com/api/v1/pawapay/callback/payout
+//  Refunds   : https://votre-domaine.com/api/v1/pawapay/callback/refund
+Route::prefix('v1/pawapay/callback')->middleware('throttle:100,1')->group(function () {
+    Route::post('/deposit', [ApiPawaPayCallbackController::class, 'deposit'])->name('pawapay.callback.deposit');
+    Route::post('/checkout', [ApiPawaPayCallbackController::class, 'checkout'])->name('pawapay.callback.checkout');
+    Route::post('/payout', [ApiPawaPayCallbackController::class, 'payout'])->name('pawapay.callback.payout');
+    Route::post('/refund', [ApiPawaPayCallbackController::class, 'refund'])->name('pawapay.callback.refund');
+    // Point d'entrée générique paramétré : /api/v1/pawapay/callback/{type}
+    Route::post('/{type}', [ApiPawaPayCallbackController::class, 'handleTyped'])
+        ->where('type', 'deposit|checkout|payout|refund')
+        ->name('pawapay.callback.typed');
 });
 
 // ==================== Authentification API (Sanctum) ====================

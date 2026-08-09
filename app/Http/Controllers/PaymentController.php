@@ -2019,54 +2019,11 @@ class PaymentController extends Controller
 
     /**
      * Webhook PawaPay (statut final du dépôt)
+     * @deprecated Le traitement des callbacks PawaPay est désormais centralisé
+     *             dans App\Http\Controllers\Api\Webhooks\PawaPayCallbackController.
+     *             L'ancien handler lisait à tort `depositStatus`/`payoutStatus`
+     *             (PawaPay envoie `status`) et ne vérifiait pas la signature.
      */
-    public function handlePawaPayCallback(Request $request)
-    {
-        Log::info('PawaPay Callback', $request->all());
-
-        try {
-            $payload = $request->json() ? $request->json()->all() : [];
-            $depositId = $payload['depositId'] ?? $request->query('id');
-
-            if (!$depositId) {
-                return response()->json(['success' => false, 'message' => 'depositId manquant'], 400);
-            }
-
-            $transaction = Transaction::where('provider', 'pawapay')
-                ->where('transaction_ref', $depositId)
-                ->first();
-
-            if (!$transaction) {
-                return response()->json(['success' => false, 'message' => 'Transaction introuvable'], 404);
-            }
-
-            $pawaPay = new \App\Services\PawaPay();
-            $status = $payload['depositStatus'] ?? $payload['payoutStatus'] ?? null;
-            $newStatus = $pawaPay->mapStatus($status);
-
-            if ($newStatus !== $transaction->status) {
-                $transaction->update([
-                    'status' => $newStatus,
-                    'metadata' => json_encode(array_merge(
-                        json_decode($transaction->metadata ?? '{}', true) ?: [],
-                        ['pawapay_callback' => $payload]
-                    )),
-                ]);
-
-                if ($newStatus === 'completed') {
-                    clear_cart();
-                    session()->forget('pawapay_checkout');
-                }
-            }
-
-            return response()->json(['success' => true], 200);
-
-        } catch (\Exception $e) {
-            Log::error('PawaPay: erreur callback', ['error' => $e->getMessage()]);
-
-            return response()->json(['success' => false, 'message' => 'Erreur interne'], 500);
-        }
-    }
 
 
 

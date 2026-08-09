@@ -18,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth/firebase/*',
             'payments/callback',
             'payments/maishapay/callback*',
+            'payments/pawapay/notify',
+            'payments/pawapay/callback*',
             'wallet/withdrawals/webhook/*',
         ]);
 

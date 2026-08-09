@@ -729,7 +729,10 @@ Route::prefix('payments')->group(function () {
     Route::get('/pawapay/check-status/{transaction}', [PaymentController::class, 'checkPawaPayStatus'])->name('payments.pawapay.check-status');
     
     // PawaPay Webhook (pas d'authentification requise)
-    Route::post('/pawapay/notify', [PaymentController::class, 'handlePawaPayCallback'])->name('payments.pawapay.notify');
+    Route::post('/pawapay/notify', [App\Http\Controllers\Api\Webhooks\PawaPayCallbackController::class, 'deposit'])->name('payments.pawapay.notify');
+    Route::post('/pawapay/callback/{type}', [App\Http\Controllers\Api\Webhooks\PawaPayCallbackController::class, 'handleTyped'])
+        ->where('type', 'deposit|checkout|payout|refund')
+        ->name('payments.pawapay.callback');
     
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {

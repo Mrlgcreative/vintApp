@@ -220,6 +220,11 @@ return [
         'key_id' => env('PAWAPAY_KEY_ID'),
         'private_key_path' => env('PAWAPAY_PRIVATE_KEY_PATH'),
 
+        // Callbacks entrants : exiger qu'ils soient signés (RFC-9421 + Content-Digest).
+        // Par défaut false (mode non signé) — la sécurité repose alors sur l'idempotence
+        // et le rapprochement avec une transaction connue.
+        'signed_callbacks' => env('PAWAPAY_SIGNED_CALLBACKS', env('PAWAPAY_SIGN_REQUESTS', false)),
+
         // Callback (webhook) de statut final des payments
         'callback_url' => env('PAWAPAY_CALLBACK_URL'),
     ],
