@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -97,5 +99,61 @@ class ApiAuthTest extends TestCase
         $this->assertDatabaseMissing('personal_access_tokens', [
             'id' => $token->accessToken->id,
         ]);
+    }
+
+    /** @test */
+    public function user_can_request_a_password_reset_link()
+    {
+        $user = User::factory()->create(['email' => 'jean@example.com']);
+        Mail::fake();
+
+        $this->postJson('/api/password/email', ['email' => 'jean@example.com'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => 'jean@example.com']);
+    }
+
+    /** @test */
+    public function requesting_a_password_reset_link_for_unknown_email_fails()
+    {
+        $this->postJson('/api/password/email', ['email' => 'inconnu@example.com'])
+            ->assertStatus(422)
+            ->assertJson(['success' => false]);
+    }
+
+    /** @test */
+    public function user_can_reset_password_with_a_valid_token()
+    {
+        $user = User::factory()->create([
+            'email' => 'jean@example.com',
+            'password' => Hash::make('oldpassword123'),
+        ]);
+
+        $token = Password::createToken($user);
+
+        $this->postJson('/api/password/reset', [
+            'token' => $token,
+            'email' => 'jean@example.com',
+            'password' => 'newpassword456',
+            'password_confirmation' => 'newpassword456',
+        ])->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertTrue(Hash::check('newpassword456', $user->fresh()->password));
+    }
+
+    /** @test */
+    public function resetting_password_with_an_invalid_token_fails()
+    {
+        $user = User::factory()->create(['email' => 'jean@example.com']);
+
+        $this->postJson('/api/password/reset', [
+            'token' => 'token-invalide',
+            'email' => 'jean@example.com',
+            'password' => 'newpassword456',
+            'password_confirmation' => 'newpassword456',
+        ])->assertStatus(422)
+            ->assertJson(['success' => false]);
     }
 }

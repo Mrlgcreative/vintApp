@@ -118,6 +118,10 @@ Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
+// ==================== Réinitialisation de mot de passe (public) ====================
+Route::middleware('throttle:5,1')->post('/password/email', [AuthController::class, 'forgotPassword']);
+Route::middleware('throttle:5,1')->post('/password/reset', [AuthController::class, 'resetPassword']);
+
 // ==================== Routes protégées ====================
 Route::middleware(['auth:sanctum,web'])->group(function () {
 
