@@ -179,4 +179,117 @@ class ApiAuthTest extends TestCase
         ])->assertStatus(422)
             ->assertJson(['success' => false]);
     }
+
+    /** @test */
+    public function login_returns_pending_token_when_2fa_is_enabled()
+    {
+        User::factory()->create([
+            'email' => 'jean@example.com',
+            'password' => Hash::make('password123'),
+            'google2fa_enabled' => true,
+            'google2fa_secret' => (new \PragmaRX\Google2FA\Google2FA())->generateSecretKey(),
+        ]);
+
+        $response = $this->postJson('/api/login', [
+            'email' => 'jean@example.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'two_factor_required' => true,
+            ]);
+        $this->assertNotEmpty($response->json('pending_token'));
+        $this->assertNull($response->json('token'));
+    }
+
+    /** @test */
+    public function verify_2fa_with_valid_totp_code_returns_access_token()
+    {
+        $secret = (new \PragmaRX\Google2FA\Google2FA())->generateSecretKey();
+        $user = User::factory()->create([
+            'google2fa_enabled' => true,
+            'google2fa_secret' => $secret,
+        ]);
+
+        $pending = $user->createToken('2fa_pending', ['2fa:pending']);
+        $otp = (new \PragmaRX\Google2FA\Google2FA())->getCurrentOtp($secret);
+
+        $response = $this->postJson('/api/two-factor/verify', [
+            'code' => $otp,
+        ], [
+            'Authorization' => 'Bearer ' . $pending->plainTextToken,
+        ]);
+
+        $response->assertOk()
+            ->assertJson(['success' => true])
+            ->assertJson(['user' => ['id' => $user->id, 'two_factor_enabled' => true]]);
+        $this->assertNotEmpty($response->json('token'));
+        $this->assertDatabaseMissing('personal_access_tokens', ['id' => $pending->accessToken->id]);
+    }
+
+    /** @test */
+    public function verify_2fa_with_invalid_code_fails()
+    {
+        $secret = (new \PragmaRX\Google2FA\Google2FA())->generateSecretKey();
+        $user = User::factory()->create([
+            'google2fa_enabled' => true,
+            'google2fa_secret' => $secret,
+        ]);
+
+        $pending = $user->createToken('2fa_pending', ['2fa:pending']);
+
+        $this->postJson('/api/two-factor/verify', [
+            'code' => '000000',
+        ], [
+            'Authorization' => 'Bearer ' . $pending->plainTextToken,
+        ])->assertStatus(422)
+            ->assertJson(['success' => false]);
+    }
+
+    /** @test */
+    public function full_2fa_enable_and_confirm_flow_works()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $enable = $this->postJson('/api/two-factor/enable')
+            ->assertOk()
+            ->assertJson(['success' => true]);
+        $secret = $enable->json('data.secret');
+        $this->assertNotEmpty($secret);
+        $this->assertNotEmpty($enable->json('data.recoveryCodes'));
+
+        $otp = (new \PragmaRX\Google2FA\Google2FA())->getCurrentOtp($secret);
+
+        $this->postJson('/api/two-factor/confirm', ['code' => $otp])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertTrue($user->fresh()->google2fa_enabled);
+    }
+
+    /** @test */
+    public function disable_2fa_requires_valid_password()
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
+            'google2fa_enabled' => true,
+            'google2fa_secret' => 'TESTSECRETTESTSECRETTEST',
+        ]);
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/two-factor/disable', ['password' => 'wrong-password'])
+            ->assertStatus(422)
+            ->assertJson(['success' => false]);
+
+        $this->postJson('/api/two-factor/disable', ['password' => 'password123'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $fresh = $user->fresh();
+        $this->assertFalse($fresh->google2fa_enabled);
+        $this->assertNull($fresh->google2fa_secret);
+    }
 }

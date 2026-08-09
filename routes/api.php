@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\TwoFactorAuthController;
 use App\Http\Controllers\Api\Items\ItemController as ApiItemController;
 use App\Http\Controllers\Api\Catalog\CategoryController as ApiCategoryController;
 use App\Http\Controllers\Api\Catalog\BrandController as ApiBrandController;
@@ -117,6 +118,15 @@ Route::middleware('throttle:5,1')->post('/register', [AuthController::class, 're
 Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
+
+// ==================== Authentification à deux facteurs (API) ====================
+Route::middleware(['auth:sanctum', 'ability:2fa:pending', 'throttle:10,1'])->post('/two-factor/verify', [TwoFactorAuthController::class, 'verify']);
+Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function () {
+    Route::post('/two-factor/enable', [TwoFactorAuthController::class, 'enable']);
+    Route::post('/two-factor/confirm', [TwoFactorAuthController::class, 'confirm']);
+    Route::post('/two-factor/disable', [TwoFactorAuthController::class, 'disable']);
+    Route::post('/two-factor/regenerate-codes', [TwoFactorAuthController::class, 'regenerateRecoveryCodes']);
+});
 
 // ==================== Réinitialisation de mot de passe (public) ====================
 Route::middleware('throttle:5,1')->post('/password/email', [AuthController::class, 'forgotPassword']);

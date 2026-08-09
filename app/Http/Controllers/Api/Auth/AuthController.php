@@ -67,6 +67,19 @@ class AuthController extends ApiController
             ], 401);
         }
 
+        // Si la 2FA est active, émettre un pending_token pour le challenge au lieu du token complet
+        if ($user->google2fa_enabled) {
+            $pendingToken = $user->createToken('2fa_pending', ['2fa:pending']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Code 2FA requis.',
+                'two_factor_required' => true,
+                'pending_token' => $pendingToken->plainTextToken,
+                'token_type' => 'Bearer',
+            ], 200);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         Log::info('API Login réussi', ['user_id' => $user->id]);
@@ -81,6 +94,7 @@ class AuthController extends ApiController
                 'avatar' => $user->avatar,
                 'email_verified_at' => $user->email_verified_at,
                 'role' => $user->role ?? 'user',
+                'two_factor_enabled' => (bool) $user->google2fa_enabled,
             ],
             'token' => $token,
             'token_type' => 'Bearer',
@@ -116,6 +130,7 @@ class AuthController extends ApiController
                 'avatar' => $user->avatar,
                 'email_verified_at' => $user->email_verified_at,
                 'role' => $user->role ?? 'user',
+                'two_factor_enabled' => (bool) $user->google2fa_enabled,
             ]
         ]);
     }

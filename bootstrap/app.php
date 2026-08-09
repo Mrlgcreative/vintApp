@@ -81,6 +81,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'mobile.optimize' => \App\Http\Middleware\MobileOptimization::class, // 📱 Optimisation mobile
             'referral' => \App\Http\Middleware\ReferralCodeMiddleware::class, // 🆕 Codes de parrainage
             '2fa' => \App\Http\Middleware\TwoFactorMiddleware::class, // 🔐 Authentification à deux facteurs
+            'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class, // 🔐 Abilités Sanctum
+            'abilities' => \Laravel\Sanctum\Http\Middleware\CheckAbilities::class, // 🔐 Abilités Sanctum
             'force.json' => \App\Http\Middleware\ForceJsonResponse::class, // 🔥 Force JSON response pour Firebase
             'redirect.role' => \App\Http\Middleware\RedirectAdminToDashboard::class, // 🔄 Redirige admin/agent vers leur dashboard
             'seller' => \App\Http\Middleware\SellerMiddleware::class, // 🛒 Espace vendeur
