@@ -123,6 +123,29 @@ class ApiAuthTest extends TestCase
     }
 
     /** @test */
+    public function user_can_request_a_password_reset_link_via_forgot_endpoint()
+    {
+        $user = User::factory()->create(['email' => 'jean@example.com']);
+        Mail::fake();
+
+        $this->postJson('/api/password/forgot', ['email' => 'jean@example.com'])
+            ->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseHas('password_reset_tokens', ['email' => 'jean@example.com']);
+    }
+
+    /** @test */
+    public function forgot_endpoint_rejects_invalid_email()
+    {
+        $this->postJson('/api/password/forgot', ['email' => 'pas-un-email'])
+            ->assertStatus(422);
+
+        $this->postJson('/api/password/forgot', [])
+            ->assertStatus(422);
+    }
+
+    /** @test */
     public function user_can_reset_password_with_a_valid_token()
     {
         $user = User::factory()->create([
