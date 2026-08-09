@@ -4,11 +4,6 @@
 
 @section('content')
 
-<!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
-
 <!-- Toast Container -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
@@ -519,24 +514,9 @@
 </div>
 
 <script>
-// ============ FIREBASE CONFIG ============
-const firebaseConfig = {
-    apiKey: "{{ config('firebase.web_config.apiKey') }}",
-    authDomain: "{{ config('firebase.web_config.authDomain') }}",
-    projectId: "{{ config('firebase.web_config.projectId') }}",
-    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-    appId: "{{ config('firebase.web_config.appId') }}"
-};
-
-try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-} catch (error) {
-    console.error('Firebase init error:', error);
-    showToast('Erreur de configuration Firebase.', 'error');
-}
+// ============ FIREBASE ============
+// Le SDK Firebase (app + auth) est chargé et initialisé par la layout 'app'.
+// Les fonctions ci-dessous utilisent firebase.auth() directement.
 
 // ============ EMAIL REGISTRATION ============
 window.registerWithFirebaseEmail = async function() {
@@ -580,7 +560,7 @@ window.registerWithFirebaseEmail = async function() {
         
         const idToken = await user.getIdToken(true);
         
-        const response = await fetch('{{ route("auth.firebase.login") }}', {
+        const response = await fetch('{{ route("auth.firebase.register") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -597,13 +577,18 @@ window.registerWithFirebaseEmail = async function() {
                 provider: 'email'
             })
         });
-        
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('Réponse serveur invalide. Veuillez réessayer.');
+        }
+
         const data = await response.json();
-        
-        if (response.ok) {
+
+        if (response.ok && data.success !== false) {
             showLoading(false);
             showToast('Inscription réussie ! Vérifiez votre email.', 'success');
-            window.location.href = '{{ route("verification.code") }}';
+            window.location.href = data.redirect || '{{ route("verification.code") }}';
         } else {
             throw new Error(data.message || 'Erreur lors de l\'inscription');
         }
@@ -612,11 +597,7 @@ window.registerWithFirebaseEmail = async function() {
         showLoading(false);
         
         // DEBUG: afficher l'erreur complète dans la console
-        console.error('Firebase signUp error:', {
-            code: error.code,
-            message: error.message,
-            fullError: error
-        });
+        console.error('Firebase signUp error:', error.code, '-', error.message, error);
         
         const messages = {
             'auth/email-already-in-use': 'Cette adresse email est déjà utilisée',

@@ -4,11 +4,6 @@
 
 @section('content')
 
-<!-- Firebase Scripts -->
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore-compat.js"></script>
-
 <!-- Toast Container -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
@@ -482,19 +477,8 @@ document.addEventListener('DOMContentLoaded', function() {
     emailInput.focus();
 });
 
-const firebaseConfig = {
-    apiKey: "{{ config('firebase.web_config.apiKey') }}",
-    authDomain: "{{ config('firebase.web_config.authDomain') }}",
-    projectId: "{{ config('firebase.web_config.projectId') }}",
-    storageBucket: "{{ config('firebase.web_config.storageBucket') }}",
-    messagingSenderId: "{{ config('firebase.web_config.messagingSenderId') }}",
-    appId: "{{ config('firebase.web_config.appId') }}"
-};
-
 try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    // Le SDK Firebase (app + auth) est initialisé par la layout 'app'
     firebase.auth().onAuthStateChanged(() => {});
 } catch (error) {
     showToast('Erreur de configuration Firebase. Contactez l\'administrateur.', 'error');

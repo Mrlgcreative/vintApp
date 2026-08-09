@@ -400,6 +400,26 @@
         </nav>
     @endif
 
+    <!-- Firebase SDK : app + auth chargés pour toutes les pages (guest et connecté) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script>
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp({
+                    apiKey: "{{ config('services.firebase.api_key') }}",
+                    authDomain: "{{ config('services.firebase.auth_domain') }}",
+                    projectId: "{{ config('services.firebase.project_id') }}",
+                    storageBucket: "{{ config('services.firebase.storage_bucket') }}",
+                    messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
+                    appId: "{{ config('services.firebase.app_id') }}"
+                });
+            }
+        } catch (error) {
+            console.error('Firebase init error:', error);
+        }
+    </script>
+
     <!-- Contenu principal -->
     <main class="flex-1 pb-20 lg:pb-0">
         @yield('content')
@@ -740,23 +760,12 @@
     </script>
 
     @auth
-    <!-- Firebase SDK pour notifications push -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <!-- Firebase SDK pour notifications push (app + auth déjà chargés ci-dessus) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     
     <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "{{ config('services.firebase.api_key') }}",
-            authDomain: "{{ config('services.firebase.auth_domain') }}",
-            projectId: "{{ config('services.firebase.project_id') }}",
-            storageBucket: "{{ config('services.firebase.storage_bucket') }}",
-            messagingSenderId: "{{ config('services.firebase.messaging_sender_id') }}",
-            appId: "{{ config('services.firebase.app_id') }}"
-        };
-
-        // Initialiser Firebase
-        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        // Récupérer l'application Firebase déjà initialisée pour toutes les pages
+        const firebaseApp = firebase.app();
         const messaging = firebase.messaging();
 
         // VAPID Key pour les notifications push web
