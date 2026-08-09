@@ -574,7 +574,8 @@ window.registerWithFirebaseEmail = async function() {
                 phone: phone,
                 referral_code: referralCode,
                 newsletter: newsletter,
-                provider: 'email'
+                provider: 'email',
+                password: password
             })
         });
 

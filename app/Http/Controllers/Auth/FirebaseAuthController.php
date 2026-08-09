@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rules;
 use App\Services\AuthService;
 use App\Services\FirebaseService;
 
@@ -152,6 +154,7 @@ class FirebaseAuthController extends Controller
                 'phone' => 'nullable|string|max:20',
                 'newsletter' => 'boolean',
                 'referral_code' => 'nullable|string|exists:referral_codes,code',
+                'password' => ['nullable', 'string', 'max:255', Rules\Password::defaults()],
             ]);
 
             Log::info('🔥 Firebase register attempt', [
@@ -183,6 +186,13 @@ class FirebaseAuthController extends Controller
             ]);
 
             $isNewUser = $user->wasRecentlyCreated;
+
+            // Synchroniser le mot de passe choisi en local pour permettre le login
+            // par email/mot de passe (Auth::attempt) des comptes créés via Firebase.
+            // Uniquement pour les nouveaux comptes : on ne réécrase pas un mot de passe existant.
+            if ($isNewUser && $request->filled('password')) {
+                $user->update(['password' => Hash::make($request->password)]);
+            }
 
             // Divergence historique : le register peut marquer l'email vérifié depuis Firebase,
             // contrairement au login (vérification par code uniquement)
