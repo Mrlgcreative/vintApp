@@ -95,7 +95,7 @@ class ItemService
     {
         $fields = [
             'name', 'description', 'price', 'currency', 'quantity', 'condition',
-            'category_id', 'brand_id', 'color', 'size', 'item_number',
+            'category_id', 'brand_id', 'color', 'size', 'item_number', 'status',
         ];
 
         foreach ($fields as $field) {
