@@ -397,6 +397,9 @@
                                 Sauvegarder les modifications
                             </button>
                         </div>
+
+                        <!-- Chemins des images existantes à supprimer -->
+                        <div id="removeImagesContainer" style="display:none;"></div>
                     </form>
                 </div>
             </div>
@@ -469,7 +472,13 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             const image = this.dataset.image;
             if (confirm('Êtes-vous sûr de vouloir supprimer cette image ?')) {
-                // Ici vous pourriez ajouter une logique pour supprimer l'image du serveur
+                // Enregistrer le chemin de l'image à supprimer côté serveur
+                const container = document.getElementById('removeImagesContainer');
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'remove_images[]';
+                input.value = image;
+                container.appendChild(input);
                 this.closest('.relative').remove();
             }
         });

@@ -8,6 +8,7 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class ItemService
@@ -53,6 +54,11 @@ class ItemService
     {
         $this->applyItemData($item, $request);
 
+        // Supprimer les images explicitement retirées (web + API)
+        if ($request->filled('remove_images') && is_array($request->remove_images)) {
+            $this->removeImages($item, $request->remove_images);
+        }
+
         if ($request->hasFile('images')) {
             $currentImages = $item->images ?? [];
             $item->images = array_merge($currentImages, $this->uploadImages($request->file('images')));
@@ -65,6 +71,56 @@ class ItemService
         $item->save();
 
         return $item;
+    }
+
+    /**
+     * Retire des images de l'article et les supprime du disque (et de la copie synchronisée).
+     */
+    protected function removeImages(Item $item, array $pathsToRemove): void
+    {
+        $currentImages = $item->images ?? [];
+
+        if (empty($currentImages)) {
+            return;
+        }
+
+        $remaining = [];
+
+        foreach ($currentImages as $image) {
+            if (in_array($image, $pathsToRemove, true)) {
+                $this->deleteImageFile($image);
+                continue;
+            }
+
+            $remaining[] = $image;
+        }
+
+        $item->images = $remaining;
+    }
+
+    /**
+     * Supprime un fichier image du stockage public et de la copie synchronisée.
+     */
+    protected function deleteImageFile(string $image): void
+    {
+        try {
+            if (Storage::disk('public')->exists($image)) {
+                Storage::disk('public')->delete($image);
+            }
+        } catch (\Exception $e) {
+            Log::warning("Impossible de supprimer l'image: {$image}", ['error' => $e->getMessage()]);
+        }
+
+        try {
+            $isHostinger = str_contains(base_path(), 'public_html');
+            $syncedPath = $isHostinger ? base_path('storage/' . $image) : public_path('storage/' . $image);
+
+            if (File::exists($syncedPath)) {
+                File::delete($syncedPath);
+            }
+        } catch (\Exception $e) {
+            Log::warning("Impossible de supprimer l'image synchronisée: {$image}", ['error' => $e->getMessage()]);
+        }
     }
 
     /**

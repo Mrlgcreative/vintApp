@@ -46,6 +46,8 @@ class UpdateItemRequest extends FormRequest
             'status' => ['sometimes', 'in:active,sold,inactive'],
             'images' => ['sometimes', 'array', 'min:1', 'max:10'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:5120'],
+            'remove_images' => ['nullable', 'array'],
+            'remove_images.*' => ['string', 'max:255'],
             'tags' => ['nullable', 'array', 'max:10'],
             'tags.*' => ['string', 'max:50'],
         ];

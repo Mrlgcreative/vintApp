@@ -3,15 +3,56 @@
 namespace App\Observers;
 
 use App\Models\Item;
+use App\Services\CacheService;
 use App\Services\ExpertNotificationService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ItemObserver
 {
     private $notificationService;
 
-    public function __construct(ExpertNotificationService $notificationService)
+    private $cacheService;
+
+    public function __construct(ExpertNotificationService $notificationService, CacheService $cacheService)
     {
         $this->notificationService = $notificationService;
+        $this->cacheService = $cacheService;
+    }
+
+    /**
+     * Invalider le cache public dès qu'un changement de statut affecte la visibilité
+     * (approbation, rejet, désactivation, mise en vente).
+     */
+    public function saved(Item $item)
+    {
+        if ($item->wasChanged('status') || $item->wasChanged('verification_status')) {
+            $this->cacheService->forgetItem($item->id);
+            $this->cacheService->forgetHomepage();
+            $this->purgePublicHttpCache();
+        }
+    }
+
+    /**
+     * Purge le cache HTTP des listes publiques (api/items, api/categories, api/brands...)
+     * pour que les nouveaux statuts soient visibles immédiatement côté API/mobile.
+     */
+    protected function purgePublicHttpCache(): void
+    {
+        if (config('cache.default') !== 'database') {
+            return;
+        }
+
+        try {
+            $table = config('cache.stores.database.table', 'cache');
+            DB::table($table)
+                ->where('key', 'like', '%http_cache:%')
+                ->delete();
+        } catch (\Exception $e) {
+            Log::warning('Échec purge du cache HTTP public', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
