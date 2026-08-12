@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\FirebaseAuthController;
 use App\Http\Controllers\Api\Auth\TwoFactorAuthController;
 use App\Http\Controllers\Api\Items\ItemController as ApiItemController;
 use App\Http\Controllers\Api\Catalog\CategoryController as ApiCategoryController;
@@ -116,6 +117,7 @@ Route::prefix('v1/pawapay/callback')->middleware('throttle:100,1')->group(functi
 // ==================== Authentification API (Sanctum) ====================
 Route::middleware('throttle:5,1')->post('/register', [AuthController::class, 'register']);
 Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:5,1')->post('/auth/firebase/login', [FirebaseAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
