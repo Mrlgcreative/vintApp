@@ -117,11 +117,17 @@ class OrderService
 
         DB::transaction(function () use ($order) {
             $item = $order->item;
-            $item->quantity += $order->quantity;
-            if ($item->status === 'sold') {
-                $item->status = 'active';
+
+            // Si l'article a été supprimé entre-temps (suppression définitive),
+            // on ne peut plus restaurer le stock : la commande est supprimée
+            // quand même pour ne pas bloquer l'acheteur.
+            if ($item) {
+                $item->quantity += $order->quantity;
+                if ($item->status === 'sold') {
+                    $item->status = 'active';
+                }
+                $item->save();
             }
-            $item->save();
 
             $order->delete();
         });

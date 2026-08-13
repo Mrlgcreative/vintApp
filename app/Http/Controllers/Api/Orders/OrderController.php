@@ -253,12 +253,16 @@ class OrderController extends ApiController
     /**
      * API: Annuler une commande (acheteur, uniquement en attente de paiement)
      */
-    public function destroy($id): JsonResponse
+    public function destroy(Request $request, $id): JsonResponse
     {
         try {
             $order = Order::findOrFail($id);
 
-            if ($order->buyer_id !== Auth::id()) {
+            // En API Sanctum, Auth::id() (garde par défaut 'web') peut être
+            // null : on privilégie $request->user()->id.
+            $userId = $request->user()?->id ?? Auth::id();
+
+            if ($order->buyer_id !== $userId) {
                 return $this->errorResponse('Vous n\'êtes pas autorisé à annuler cette commande.', 403);
             }
 
@@ -268,7 +272,10 @@ class OrderController extends ApiController
         } catch (DomainException $e) {
             return $this->errorResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
-            Log::error('Erreur lors de l\'annulation de commande API: ' . $e->getMessage());
+            Log::error('Erreur lors de l\'annulation de commande API: ' . $e->getMessage(), [
+                'order_id' => $order->id ?? null,
+                'trace' => $e->getTraceAsString(),
+            ]);
             return $this->errorResponse('Une erreur est survenue lors de l\'annulation de la commande.', 500);
         }
     }
