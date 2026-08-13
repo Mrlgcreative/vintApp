@@ -72,12 +72,23 @@ class UserSession extends Model
             $data
         );
 
+        // Mettre à jour last_seen pour alimenter User::isOnline() et les stats
+        static::updateUserLastSeen($userId);
+
         // Géolocaliser si latitude/longitude vide (une seule fois par session)
         if (empty($session->latitude) && !static::isLocalIp($ip)) {
             static::geolocateSession($session, $ip);
         }
 
         return $session;
+    }
+
+    /**
+     * Mettre à jour last_seen de l'utilisateur (2 min pour être "en ligne").
+     */
+    protected static function updateUserLastSeen($userId)
+    {
+        User::whereKey($userId)->update(['last_seen' => now()]);
     }
 
     /**

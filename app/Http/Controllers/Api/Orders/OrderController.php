@@ -249,4 +249,27 @@ class OrderController extends ApiController
             return $this->errorResponse('Une erreur est survenue lors de la confirmation de livraison.', 500);
         }
     }
+
+    /**
+     * API: Annuler une commande (acheteur, uniquement en attente de paiement)
+     */
+    public function destroy($id): JsonResponse
+    {
+        try {
+            $order = Order::findOrFail($id);
+
+            if ($order->buyer_id !== Auth::id()) {
+                return $this->errorResponse('Vous n\'êtes pas autorisé à annuler cette commande.', 403);
+            }
+
+            $this->orderService->cancel($order);
+
+            return $this->successResponse(null, 'Commande annulée avec succès');
+        } catch (DomainException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'annulation de commande API: ' . $e->getMessage());
+            return $this->errorResponse('Une erreur est survenue lors de l\'annulation de la commande.', 500);
+        }
+    }
 }

@@ -70,6 +70,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'verification_code_expires_at' => 'datetime',
             'newsletter_subscribed' => 'boolean',
             'google2fa_enabled' => 'boolean',
+            'last_seen' => 'datetime',
         ];
     }
 

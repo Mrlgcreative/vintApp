@@ -4046,10 +4046,12 @@ class AdminController extends Controller
                     'user_name' => $session->user->name ?? 'Unknown',
                     'user_email' => $session->user->email ?? '',
                     'device_type' => $session->device_type,
+                    'device_icon' => $session->device_icon,
                     'browser' => $session->browser,
-                    'last_activity' => $session->last_activity_at,
+                    'os' => $session->os,
+                    'last_activity' => $session->last_activity?->toIso8601String(),
                     'ip_address' => $session->ip_address,
-                    'location' => $session->location
+                    'location' => $session->location_text,
                 ];
             });
             

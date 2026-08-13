@@ -67,4 +67,60 @@ class ApiOrdersTest extends TestCase
             ->assertStatus(403)
             ->assertJsonPath('success', false);
     }
+
+    /** @test */
+    public function buyer_can_cancel_pending_order()
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $order = $this->order($buyer, $seller);
+
+        $initialStock = $order->item->quantity;
+
+        Sanctum::actingAs($buyer);
+
+        $this->deleteJson('/api/v1/orders/' . $order->id)
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseMissing('orders', ['id' => $order->id]);
+        $this->assertDatabaseHas('items', [
+            'id' => $order->item->id,
+            'quantity' => $initialStock + 1,
+        ]);
+    }
+
+    /** @test */
+    public function only_buyer_can_cancel_order()
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $order = $this->order($buyer, $seller);
+
+        Sanctum::actingAs($seller);
+
+        $this->deleteJson('/api/v1/orders/' . $order->id)
+            ->assertStatus(403)
+            ->assertJsonPath('success', false);
+
+        $this->assertDatabaseHas('orders', ['id' => $order->id]);
+    }
+
+    /** @test */
+    public function confirmed_order_cannot_be_cancelled()
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $order = $this->order($buyer, $seller);
+
+        $order->update(['status' => 'confirmed']);
+
+        Sanctum::actingAs($buyer);
+
+        $this->deleteJson('/api/v1/orders/' . $order->id)
+            ->assertStatus(400)
+            ->assertJsonPath('success', false);
+
+        $this->assertDatabaseHas('orders', ['id' => $order->id, 'status' => 'confirmed']);
+    }
 }

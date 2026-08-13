@@ -17,15 +17,31 @@ class TrackUserSession
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Tracker la session uniquement pour les utilisateurs authentifiés
-        if (Auth::check()) {
+        // Web (session) ou API mobile (token Sanctum)
+        $user = Auth::user() ?: Auth::guard('sanctum')->user();
+
+        if ($user) {
             UserSession::trackSession(
-                Auth::id(),
-                $request->session()->getId(),
+                $user->id,
+                $this->resolveSessionId($request, $user),
                 $request
             );
         }
 
         return $next($request);
+    }
+
+    /**
+     * Identifier la session : token Sanctum pour l'API, session PHP pour le web.
+     */
+    protected function resolveSessionId(Request $request, $user): string
+    {
+        $token = $user->currentAccessToken();
+
+        if ($token) {
+            return 'sanctum-' . $token->id;
+        }
+
+        return $request->session()->getId();
     }
 }

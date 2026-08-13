@@ -29,10 +29,19 @@ class AuthService
      */
     public function logout(Request $request, bool $clearFcm = false): void
     {
+        $sessionId = $request->hasSession() ? $request->session()->getId() : null;
+
         if ($clearFcm && Auth::check()) {
             // fcm_token n'est pas fillable : assignation directe requise
             Auth::user()->fcm_token = null;
             Auth::user()->save();
+        }
+
+        // Marquer la session utilisateur comme inactive
+        if ($sessionId) {
+            \App\Models\UserSession::where('session_id', $sessionId)
+                ->where('is_active', true)
+                ->update(['is_active' => false, 'logout_at' => now()]);
         }
 
         Auth::logout();

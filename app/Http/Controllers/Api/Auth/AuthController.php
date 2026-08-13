@@ -106,7 +106,15 @@ class AuthController extends ApiController
      */
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        $token = $request->user()->currentAccessToken();
+
+        if ($token) {
+            \App\Models\UserSession::where('session_id', 'sanctum-' . $token->id)
+                ->where('is_active', true)
+                ->update(['is_active' => false, 'logout_at' => now()]);
+
+            $token->delete();
+        }
 
         return response()->json([
             'success' => true,

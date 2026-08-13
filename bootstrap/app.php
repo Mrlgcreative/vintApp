@@ -54,6 +54,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // API Middleware Group
         $middleware->api(append: [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \App\Http\Middleware\TrackUserSession::class, // 🆕 Tracker les sessions API/mobile
         ]);
 
         // Named Middleware Aliases

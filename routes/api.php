@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\Authenticity\AuthenticityController as ApiAuthentic
 use App\Http\Controllers\Api\VintPass\VintPassController as ApiVintPassController;
 use App\Http\Controllers\Api\Affiliate\AffiliateController as ApiAffiliateController;
 use App\Http\Controllers\Api\Orders\OrderController as ApiOrderController;
+use App\Http\Controllers\Api\Cart\CartController as ApiCartController;
+use App\Http\Controllers\Api\DeliveryAddress\DeliveryAddressController as ApiDeliveryAddressController;
 use App\Http\Controllers\Api\Payments\PaymentController as ApiPaymentController;
 use App\Http\Controllers\Api\Wallet\WalletController as ApiWalletController;
 use App\Http\Controllers\Api\Webhooks\PaymentCallbackController as ApiPaymentCallbackController;
@@ -201,6 +203,27 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::post('/{id}/mark-shipped', [ApiOrderController::class, 'markAsShipped']);
         Route::post('/{id}/mark-delivered', [ApiOrderController::class, 'markAsDelivered']);
         Route::post('/{id}/confirm-delivery', [ApiOrderController::class, 'confirmDelivery']);
+        Route::delete('/{id}', [ApiOrderController::class, 'destroy']);
+    });
+
+    // ---- API V1 : Cart ----
+    Route::prefix('v1/cart')->group(function () {
+        Route::get('/', [ApiCartController::class, 'index']);
+        Route::get('/summary', [ApiCartController::class, 'summary']);
+        Route::post('/', [ApiCartController::class, 'add']);
+        Route::put('/{itemId}', [ApiCartController::class, 'update']);
+        Route::delete('/', [ApiCartController::class, 'clear']);
+        Route::delete('/{itemId}', [ApiCartController::class, 'remove']);
+    });
+
+    // ---- API V1 : Adresses de livraison ----
+    Route::prefix('v1/delivery-addresses')->group(function () {
+        Route::get('/', [ApiDeliveryAddressController::class, 'index']);
+        Route::post('/', [ApiDeliveryAddressController::class, 'store']);
+        Route::get('/{id}', [ApiDeliveryAddressController::class, 'show']);
+        Route::put('/{id}', [ApiDeliveryAddressController::class, 'update']);
+        Route::delete('/{id}', [ApiDeliveryAddressController::class, 'destroy']);
+        Route::post('/{id}/default', [ApiDeliveryAddressController::class, 'setDefault']);
     });
 
     // ---- API V1 : Messages ----
