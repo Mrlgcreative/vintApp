@@ -32,6 +32,7 @@ Thumbs.db
 
 # Docs et fichiers personnels
 /docs/
+!/docs/order-management-api.md
 
 # Fichiers SQL volumineux
 *.sql
