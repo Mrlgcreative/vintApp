@@ -2,10 +2,12 @@
 
 namespace App\Notifications;
 
+use App\Mail\ItemModeratedMail;
 use App\Models\Item;
 use App\Services\FirebasePushService;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ItemModerated extends Notification
 {
@@ -52,6 +54,7 @@ class ItemModerated extends Notification
         ];
 
         $this->sendFCMNotification();
+        $this->sendMailNotification();
 
         return [
             'type' => 'item_moderated',
@@ -116,6 +119,30 @@ class ItemModerated extends Notification
 
         } catch (\Exception $e) {
             Log::error('Erreur envoi notification FCM (modération)', [
+                'error' => $e->getMessage(),
+                'item_id' => $this->item->id,
+                'action' => $this->action,
+            ]);
+        }
+    }
+
+    /**
+     * Email envoyé en arrière-plan (file d'attente) : ne bloque jamais l'action
+     * et ne casse rien si aucun worker ne tourne ou si le SMTP échoue.
+     */
+    protected function sendMailNotification(): void
+    {
+        try {
+            $user = $this->item->user;
+
+            if (!$user || empty($user->email)) {
+                return;
+            }
+
+            Mail::queue((new ItemModeratedMail($this->item, $this->action, $this->reason, $this->days))
+                ->to($user->email));
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi email modération', [
                 'error' => $e->getMessage(),
                 'item_id' => $this->item->id,
                 'action' => $this->action,
