@@ -39,9 +39,11 @@ trait SendsExpoPush
                 ->post('https://exp.host/--/api/v2/push/send', $payload);
 
             $result = $response->json();
-            $ticket = is_array($result) && isset($result['data'][0]) && is_array($result['data'][0])
-                ? $result['data'][0]
-                : null;
+            $data = is_array($result) ? ($result['data'] ?? null) : null;
+            if (is_array($data) && array_key_exists(0, $data)) {
+                $data = $data[0];
+            }
+            $ticket = is_array($data) ? $data : null;
             $ticketStatus = is_array($ticket) ? ($ticket['status'] ?? null) : null;
 
             if ($response->successful() && $ticketStatus && $ticketStatus !== 'error') {
