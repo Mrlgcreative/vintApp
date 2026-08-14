@@ -85,9 +85,15 @@ class ItemController extends ApiController
     public function show($id): JsonResponse
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
-            ->where('status', 'active')
-            ->visible()
             ->findOrFail($id);
+
+        $isOwner = Auth::check() && $item->user_id === Auth::id();
+
+        // Un article non actif (bloqué/suspendu/rejeté/vendu) reste visible
+        // uniquement pour son propriétaire (ex. depuis la notification de modération).
+        if (!$isOwner && ($item->status !== 'active' || !$item->isAvailable())) {
+            abort(404);
+        }
 
         return response()->json([
             'success' => true,

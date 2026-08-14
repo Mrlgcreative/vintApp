@@ -699,9 +699,13 @@ class ItemController extends Controller
     public function apiShow($id)
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
-            ->where('status', 'active')
-            ->visible()
             ->findOrFail($id);
+
+        $isOwner = Auth::check() && $item->user_id === Auth::id();
+
+        if (!$isOwner && ($item->status !== 'active' || !$item->isAvailable())) {
+            abort(404);
+        }
 
         return response()->json([
             'success' => true,
