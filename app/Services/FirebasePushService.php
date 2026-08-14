@@ -8,9 +8,12 @@ use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\WebPushConfig;
 use Illuminate\Support\Facades\Log;
+use App\Services\Concerns\SendsExpoPush;
 
 class FirebasePushService
 {
+    use SendsExpoPush;
+
     protected $messaging;
 
     public function __construct()
@@ -39,6 +42,12 @@ class FirebasePushService
      */
     public function sendNotification(string $fcmToken, string $title, string $body, array $data = [], ?string $imageUrl = null): bool
     {
+        // Token Expo (expo-notifications) : à envoyer via l'API Expo Push,
+        // pas via FCM.
+        if ($this->isExpoToken($fcmToken)) {
+            return $this->sendViaExpoPush($fcmToken, $title, $body, $data);
+        }
+
         if (!$this->messaging) {
             Log::error('Firebase Messaging non initialisé');
             return false;
@@ -127,41 +136,66 @@ class FirebasePushService
      */
     public function sendMulticast(array $fcmTokens, string $title, string $body, array $data = [], ?string $imageUrl = null): array
     {
-        if (!$this->messaging || empty($fcmTokens)) {
-            return ['success' => 0, 'failure' => count($fcmTokens)];
+        if (empty($fcmTokens)) {
+            return ['success' => 0, 'failure' => 0, 'failed_tokens' => []];
         }
 
-        try {
-            $notification = FirebaseNotification::create($title, $body);
-            
-            if ($imageUrl) {
-                $notification = $notification->withImageUrl($imageUrl);
+        $expoTokens = array_values(array_filter($fcmTokens, fn ($token) => $this->isExpoToken($token)));
+        $nativeTokens = array_values(array_filter($fcmTokens, fn ($token) => !$this->isExpoToken($token)));
+
+        $success = 0;
+        $failedTokens = [];
+
+        // Tokens Expo : envoi via l'API Expo Push.
+        foreach ($expoTokens as $expoToken) {
+            if ($this->sendViaExpoPush($expoToken, $title, $body, $data)) {
+                $success++;
+            } else {
+                $failedTokens[] = $expoToken;
             }
-
-            $message = CloudMessage::new()
-                ->withNotification($notification)
-                ->withData($data);
-
-            $report = $this->messaging->sendMulticast($message, $fcmTokens);
-
-            Log::info('Notification FCM multicast envoyée', [
-                'success' => $report->successes()->count(),
-                'failure' => $report->failures()->count()
-            ]);
-
-            return [
-                'success' => $report->successes()->count(),
-                'failure' => $report->failures()->count(),
-                'failed_tokens' => $report->invalidTokens()
-            ];
-
-        } catch (\Exception $e) {
-            Log::error('Erreur envoi notification multicast FCM', [
-                'error' => $e->getMessage()
-            ]);
-
-            return ['success' => 0, 'failure' => count($fcmTokens)];
         }
+
+        // Tokens natifs FCM.
+        if (!empty($nativeTokens)) {
+            if (!$this->messaging) {
+                Log::error('Firebase Messaging non initialisé');
+                $failedTokens = array_merge($failedTokens, $nativeTokens);
+            } else {
+                try {
+                    $notification = FirebaseNotification::create($title, $body);
+
+                    if ($imageUrl) {
+                        $notification = $notification->withImageUrl($imageUrl);
+                    }
+
+                    $message = CloudMessage::new()
+                        ->withNotification($notification)
+                        ->withData($data);
+
+                    $report = $this->messaging->sendMulticast($message, $nativeTokens);
+
+                    $success += $report->successes()->count();
+                    $failedTokens = array_merge($failedTokens, $report->invalidTokens());
+
+                    Log::info('Notification FCM multicast envoyée', [
+                        'success' => $report->successes()->count(),
+                        'failure' => $report->failures()->count()
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Erreur envoi notification multicast FCM', [
+                        'error' => $e->getMessage()
+                    ]);
+
+                    $failedTokens = array_merge($failedTokens, $nativeTokens);
+                }
+            }
+        }
+
+        return [
+            'success' => $success,
+            'failure' => count($fcmTokens) - $success,
+            'failed_tokens' => $failedTokens,
+        ];
     }
 
     /**

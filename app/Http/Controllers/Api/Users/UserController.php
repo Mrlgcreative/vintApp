@@ -53,13 +53,31 @@ class UserController extends ApiController
                 'city' => 'nullable|string|max:255',
                 'bio' => 'nullable|string|max:1000',
                 'location' => 'nullable|string|max:255',
+                'fcm_token' => 'nullable|string|max:500',
+                'device_type' => 'nullable|string|in:android,ios,web',
             ]);
 
             if ($validator->fails()) {
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $user->update($request->only(['name', 'email', 'phone', 'city', 'bio', 'location']));
+            $user->update($request->only([
+                'name', 'email', 'phone', 'city', 'bio', 'location',
+            ]));
+
+            // Token de notification push (expo-notifications) : affectation
+            // directe, ces champs ne sont volontairement pas mass-assignables
+            // sur le modèle User.
+            if ($request->has('fcm_token')) {
+                $user->fcm_token = $request->input('fcm_token') ?: null;
+                $user->fcm_token_updated_at = $user->fcm_token ? now() : null;
+            }
+            if ($request->has('device_type')) {
+                $user->device_type = $request->input('device_type');
+            }
+            if ($request->has('fcm_token') || $request->has('device_type')) {
+                $user->save();
+            }
 
             return $this->successResponse($user, 'Profil mis à jour avec succès');
         } catch (\Exception $e) {

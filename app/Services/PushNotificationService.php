@@ -5,9 +5,12 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\User;
+use App\Services\Concerns\SendsExpoPush;
 
 class PushNotificationService
 {
+    use SendsExpoPush;
+
     private string $fcmUrl = 'https://fcm.googleapis.com/v1/projects/vintapp-e6fa7/messages:send';
     private string $serviceAccountPath;
 
@@ -34,6 +37,15 @@ class PushNotificationService
      */
     public function sendToToken(string $token, array $notification, array $data = []): bool
     {
+        $title = $notification['title'] ?? 'VintApp';
+        $body = $notification['body'] ?? '';
+
+        // Token Expo (expo-notifications) : à envoyer via l'API Expo Push,
+        // pas via FCM.
+        if ($this->isExpoToken($token)) {
+            return $this->sendViaExpoPush($token, $title, $body, $data);
+        }
+
         try {
             $accessToken = $this->getAccessToken();
 
@@ -41,8 +53,8 @@ class PushNotificationService
                 'message' => [
                     'token' => $token,
                     'notification' => [
-                        'title' => $notification['title'] ?? 'VintApp',
-                        'body' => $notification['body'] ?? '',
+                        'title' => $title,
+                        'body' => $body,
                         'image' => $notification['image'] ?? null,
                     ],
                     'data' => array_merge([
@@ -95,7 +107,7 @@ class PushNotificationService
             if ($response->successful()) {
                 Log::info('✅ Notification push envoyée', [
                     'token' => substr($token, 0, 20) . '...',
-                    'title' => $notification['title'] ?? 'VintApp'
+                    'title' => $title
                 ]);
                 return true;
             }
