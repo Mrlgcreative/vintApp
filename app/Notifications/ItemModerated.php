@@ -4,16 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Item;
 use App\Services\FirebasePushService;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
-class ItemModerated extends Notification implements ShouldQueue
+class ItemModerated extends Notification
 {
-    use Queueable;
-
     protected Item $item;
     protected string $action;
     protected ?string $reason;
@@ -31,57 +26,7 @@ class ItemModerated extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database'];
-    }
-
-    public function toMail(object $notifiable): MailMessage
-    {
-        $subject = match ($this->action) {
-            'approved' => 'Votre article a été approuvé',
-            'rejected' => 'Votre article a été rejeté',
-            'blocked' => 'Votre article a été bloqué',
-            'suspended' => 'Votre article a été suspendu',
-            'unsuspended' => 'Votre article a été rétabli',
-            default => 'Mise à jour de votre article',
-        };
-
-        $lines = match ($this->action) {
-            'approved' => [
-                "Bonne nouvelle ! Votre article \"{$this->item->name}\" a été approuvé et est maintenant visible sur la plateforme.",
-            ],
-            'rejected' => [
-                "Votre article \"{$this->item->name}\" a été rejeté par notre équipe de modération.",
-                $this->reason ? "Raison : {$this->reason}" : null,
-            ],
-            'blocked' => [
-                "Votre article \"{$this->item->name}\" a été bloqué par notre équipe de modération.",
-                "Il n'est plus visible sur la plateforme.",
-                $this->reason ? "Raison : {$this->reason}" : null,
-            ],
-            'suspended' => [
-                "Votre article \"{$this->item->name}\" a été suspendu temporairement.",
-                $this->reason ? "Raison : {$this->reason}" : null,
-                $this->days
-                    ? "Cette suspension prendra fin le " . now()->addDays($this->days)->format('d/m/Y') . "."
-                    : "La suspension est pour une durée indéterminée.",
-            ],
-            'unsuspended' => [
-                "Bonne nouvelle ! Votre article \"{$this->item->name}\" est de nouveau visible sur la plateforme.",
-            ],
-            default => ["Votre article \"{$this->item->name}\" a été mis à jour."],
-        };
-
-        $mail = (new MailMessage)
-            ->subject($subject)
-            ->greeting('Information importante');
-
-        foreach (array_filter($lines) as $line) {
-            $mail->line($line);
-        }
-
-        return $mail
-            ->action('Voir mon article', route('items.show', $this->item))
-            ->line('Merci pour votre compréhension.');
+        return ['database'];
     }
 
     public function toArray(object $notifiable): array
