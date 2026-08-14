@@ -123,6 +123,9 @@ Route::middleware('throttle:5,1')->post('/auth/firebase/login', [FirebaseAuthCon
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
+// ==================== Broadcasting Pusher (realtime mobile) ====================
+Route::middleware('auth:sanctum')->post('/broadcasting/auth', [\App\Http\Controllers\Api\BroadcastAuthController::class, 'auth']);
+
 // ==================== Authentification à deux facteurs (API) ====================
 Route::middleware(['auth:sanctum', 'ability:2fa:pending', 'throttle:10,1'])->post('/two-factor/verify', [TwoFactorAuthController::class, 'verify']);
 Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function () {
