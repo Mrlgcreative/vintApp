@@ -8,6 +8,8 @@ use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\WebPushConfig;
 use Illuminate\Support\Facades\Log;
+use App\Models\Notification;
+use App\Models\User;
 use App\Services\Concerns\SendsExpoPush;
 
 class FirebasePushService
@@ -45,7 +47,11 @@ class FirebasePushService
         // Token Expo (expo-notifications) : à envoyer via l'API Expo Push,
         // pas via FCM.
         if ($this->isExpoToken($fcmToken)) {
-            return $this->sendViaExpoPush($fcmToken, $title, $body, $data);
+            $sent = $this->sendViaExpoPush($fcmToken, $title, $body, $data);
+            if ($sent) {
+                $this->persistInAppNotification($fcmToken, $title, $body, $data);
+            }
+            return $sent;
         }
 
         if (!$this->messaging) {
@@ -106,6 +112,8 @@ class FirebasePushService
                 'title' => $title
             ]);
 
+            $this->persistInAppNotification($fcmToken, $title, $body, $data);
+
             return true;
 
         } catch (\Kreait\Firebase\Exception\Messaging\NotFound $e) {
@@ -150,6 +158,7 @@ class FirebasePushService
         foreach ($expoTokens as $expoToken) {
             if ($this->sendViaExpoPush($expoToken, $title, $body, $data)) {
                 $success++;
+                $this->persistInAppNotification($expoToken, $title, $body, $data);
             } else {
                 $failedTokens[] = $expoToken;
             }
@@ -176,6 +185,12 @@ class FirebasePushService
 
                     $success += $report->successes()->count();
                     $failedTokens = array_merge($failedTokens, $report->invalidTokens());
+
+                    foreach ($nativeTokens as $nativeToken) {
+                        if (!in_array($nativeToken, $failedTokens, true)) {
+                            $this->persistInAppNotification($nativeToken, $title, $body, $data);
+                        }
+                    }
 
                     Log::info('Notification FCM multicast envoyée', [
                         'success' => $report->successes()->count(),
@@ -236,5 +251,38 @@ class FirebasePushService
             ],
             $itemData['item_image'] ? asset("storage/{$itemData['item_image']}") : null
         );
+    }
+
+    /**
+     * Enregistrer la notification dans la liste in-app de l'utilisateur
+     * (table `notifications`, celle qui alimente l'écran notifications du mobile).
+     */
+    protected function persistInAppNotification(string $token, string $title, string $body, array $data): void
+    {
+        try {
+            $user = User::where('fcm_token', $token)->first();
+            if (!$user) {
+                return;
+            }
+
+            $notification = Notification::create([
+                'user_id' => $user->id,
+                'type' => $data['type'] ?? 'system',
+                'title' => $title,
+                'message' => $body,
+                'data' => $data,
+                'action_url' => $data['url'] ?? null,
+            ]);
+
+            try {
+                \App\Events\NewNotification::dispatch($notification);
+            } catch (\Exception $e) {
+                Log::error('Erreur broadcast notification in-app: ' . $e->getMessage());
+            }
+        } catch (\Exception $e) {
+            Log::error('Erreur enregistrement notification in-app', [
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
