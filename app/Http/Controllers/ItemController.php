@@ -52,12 +52,14 @@ class ItemController extends Controller
         $boostedItemsQuery = Item::with($eagerLoad)
             ->whereHas('activeBoosts')
             ->where('status', 'active')
+            ->visible()
             ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Récupérer les articles réguliers (non-boostés)
         $regularItemsQuery = Item::with(array_diff($eagerLoad, ['activeBoosts.boostType:id,name,icon,visual_config']))
             ->whereDoesntHave('activeBoosts')
             ->where('status', 'active')
+            ->visible()
             ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Appliquer les filtres à toutes les requêtes
@@ -270,6 +272,7 @@ class ItemController extends Controller
             return Item::where('category_id', $item->category_id)
                 ->where('id', '!=', $item->id)
                 ->where('status', 'active')
+                ->visible()
                 ->with([
                     'category:id,name,slug',
                     'brand:id,name',
@@ -413,11 +416,13 @@ class ItemController extends Controller
         // Prioriser les articles boostés dans les résultats de recherche
         $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
             ->whereHas('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         $regularItems = Item::with(['category', 'brand', 'user'])
             ->whereDoesntHave('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         $queries = [$boostedItems, $regularItems];
         
@@ -635,7 +640,8 @@ class ItemController extends Controller
     public function apiIndex(Request $request)
     {
         $query = Item::with(['category', 'brand', 'user'])
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         // Filtres
         if ($request->has('category_id')) {
@@ -693,6 +699,8 @@ class ItemController extends Controller
     public function apiShow($id)
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
+            ->where('status', 'active')
+            ->visible()
             ->findOrFail($id);
 
         return response()->json([

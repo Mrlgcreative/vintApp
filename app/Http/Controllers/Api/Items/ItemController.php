@@ -26,7 +26,8 @@ class ItemController extends ApiController
     public function index(Request $request): JsonResponse
     {
         $query = Item::with(['category', 'brand', 'user'])
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         // Filtres
         if ($request->has('category_id')) {
@@ -84,6 +85,8 @@ class ItemController extends ApiController
     public function show($id): JsonResponse
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
+            ->where('status', 'active')
+            ->visible()
             ->findOrFail($id);
 
         return response()->json([
@@ -105,11 +108,13 @@ class ItemController extends ApiController
 
         $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
             ->whereHas('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         $regularItems = Item::with(['category', 'brand', 'user'])
             ->whereDoesntHave('activeBoosts')
-            ->where('status', 'active');
+            ->where('status', 'active')
+            ->visible();
 
         foreach ([$boostedItems, $regularItems] as $items) {
             if ($query) {

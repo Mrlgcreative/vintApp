@@ -101,6 +101,7 @@ class CacheService
         return Cache::remember("items.popular.{$limit}", self::CACHE_POPULAR_ITEMS, function () use ($limit) {
             return Item::with(['category', 'brand', 'user:id,name,avatar,avatar_url'])
                 ->where('status', 'active')
+                ->visible()
                 ->orderByDesc('views')
                 ->limit($limit)
                 ->get();
@@ -116,6 +117,7 @@ class CacheService
             return Item::with(['category', 'brand', 'user:id,name,avatar,avatar_url', 'activeBoosts.boostType'])
                 ->whereHas('activeBoosts')
                 ->where('status', 'active')
+                ->visible()
                 ->orderByDesc('created_at')
                 ->limit($limit)
                 ->get();
@@ -244,7 +246,7 @@ class CacheService
     {
         return Cache::remember('homepage.data', self::CACHE_ITEMS_LIST, function () {
             $categories = \App\Models\Category::withCount(['items' => function ($q) {
-                $q->where('status', 'active');
+                $q->where('status', 'active')->visible();
             }])->where('is_active', true)->orderBy('sort_order')->get();
 
             $spotlightItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
@@ -254,6 +256,7 @@ class CacheService
                     })->where('status', 'active')->where('expires_at', '>', now());
                 })
                 ->where('status', 'active')
+                ->visible()
                 ->orderBy('created_at', 'desc')
                 ->limit(6)
                 ->get();
@@ -261,6 +264,7 @@ class CacheService
             $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
                 ->whereHas('activeBoosts')
                 ->where('status', 'active')
+                ->visible()
                 ->orderBy('created_at', 'desc')
                 ->limit(8)
                 ->get();
@@ -268,6 +272,7 @@ class CacheService
             $regularItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
                 ->whereDoesntHave('activeBoosts')
                 ->where('status', 'active')
+                ->visible()
                 ->orderBy('created_at', 'desc')
                 ->limit(8)
                 ->get();
@@ -276,9 +281,9 @@ class CacheService
 
             $stats = [
                 'users' => \App\Models\User::count(),
-                'items' => Item::where('status', 'active')->count(),
+                'items' => Item::where('status', 'active')->visible()->count(),
                 'categories' => \App\Models\Category::where('is_active', true)->count(),
-                'boosted_items' => Item::whereHas('activeBoosts')->where('status', 'active')->count(),
+                'boosted_items' => Item::whereHas('activeBoosts')->where('status', 'active')->visible()->count(),
             ];
 
             return compact('categories', 'spotlightItems', 'boostedItems', 'regularItems', 'latestItems', 'stats');

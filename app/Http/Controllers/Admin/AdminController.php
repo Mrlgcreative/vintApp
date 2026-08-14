@@ -37,12 +37,14 @@ class AdminController extends Controller
     protected $walletService;
     protected $moderationService;
     protected $statsService;
+    protected $cacheService;
 
-    public function __construct(WalletService $walletService, ItemModerationService $moderationService, StatsService $statsService)
+    public function __construct(WalletService $walletService, ItemModerationService $moderationService, StatsService $statsService, \App\Services\CacheService $cacheService)
     {
         $this->walletService = $walletService;
         $this->moderationService = $moderationService;
         $this->statsService = $statsService;
+        $this->cacheService = $cacheService;
     }
     /**
      * Dashboard administrateur
@@ -1841,7 +1843,7 @@ class AdminController extends Controller
     public function itemApprove(Request $request, Item $item)
     {
         $this->moderationService->approveItem($item, auth()->user(), 'admin');
-
+        $this->clearItemCaches($item);
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
@@ -1866,6 +1868,8 @@ class AdminController extends Controller
             'admin'
         );
 
+        $this->clearItemCaches($item);
+
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
@@ -1874,6 +1878,15 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.items.show', $item)->with('success', 'Article rejeté avec succès.');
+    }
+
+    /**
+     * Invalider les caches liés à un article (homepage, listes publiques, détail)
+     */
+    protected function clearItemCaches(Item $item)
+    {
+        $this->cacheService->forgetItem($item->id);
+        $this->cacheService->forgetHomepage();
     }
 
     /**
@@ -1889,6 +1902,8 @@ class AdminController extends Controller
             'blocked_by' => auth()->id(),
             'block_reason' => $request->reason,
         ]);
+
+        $this->clearItemCaches($item);
 
         $item->user->notify(new ItemModerated(
             $item,
@@ -1919,6 +1934,8 @@ class AdminController extends Controller
             'blocked_by' => null,
             'block_reason' => null,
         ]);
+
+        $this->clearItemCaches($item);
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -1955,6 +1972,8 @@ class AdminController extends Controller
 
         $item->update($data);
 
+        $this->clearItemCaches($item);
+
         $item->user->notify(new ItemModerated(
             $item,
             'suspended',
@@ -1985,6 +2004,8 @@ class AdminController extends Controller
             'suspended_by' => null,
             'suspend_reason' => null,
         ]);
+
+        $this->clearItemCaches($item);
 
         $item->user->notify(new ItemModerated(
             $item,

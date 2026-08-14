@@ -103,6 +103,7 @@ class CategoryController extends Controller
         $items = Item::with(['category', 'brand', 'user'])
             ->where('category_id', $category->id)
             ->where('status', 'active')
+            ->visible()
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
