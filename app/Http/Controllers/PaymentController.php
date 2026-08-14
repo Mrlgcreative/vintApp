@@ -1265,10 +1265,24 @@ class PaymentController extends Controller
                     $payment->update(['order_id' => $order->id]);
                 }
 
-                // TODO: Logique métier
-                // - Réduire le stock de l'article
-                // - Créer une transaction wallet pour le vendeur
-                // - Envoyer notification au vendeur et acheteur
+                // Notifier le vendeur (in-app + push) et confirmer à l'acheteur
+                try {
+                    $this->notificationService->createOrderNotification(
+                        $payment->user_id,
+                        $itemModel->user_id,
+                        $itemModel->name,
+                        $order->id,
+                        $order->order_number
+                    );
+                    $this->notificationService->createOrderConfirmedNotification(
+                        $payment->user_id,
+                        $order->id,
+                        $order->order_number,
+                        $itemModel->name
+                    );
+                } catch (\Exception $e) {
+                    Log::error('Erreur notification commande: ' . $e->getMessage());
+                }
 
                 Log::info("Order created from checkout", [
                     'order_id' => $order->id,

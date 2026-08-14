@@ -42,13 +42,13 @@ class FirebasePushService
      * @param string|null $imageUrl URL de l'image
      * @return bool
      */
-    public function sendNotification(string $fcmToken, string $title, string $body, array $data = [], ?string $imageUrl = null): bool
+    public function sendNotification(string $fcmToken, string $title, string $body, array $data = [], ?string $imageUrl = null, bool $persistInApp = true): bool
     {
         // Token Expo (expo-notifications) : à envoyer via l'API Expo Push,
         // pas via FCM.
         if ($this->isExpoToken($fcmToken)) {
             $sent = $this->sendViaExpoPush($fcmToken, $title, $body, $data);
-            if ($sent) {
+            if ($sent && $persistInApp) {
                 $this->persistInAppNotification($fcmToken, $title, $body, $data);
             }
             return $sent;
@@ -112,7 +112,9 @@ class FirebasePushService
                 'title' => $title
             ]);
 
-            $this->persistInAppNotification($fcmToken, $title, $body, $data);
+            if ($persistInApp) {
+                $this->persistInAppNotification($fcmToken, $title, $body, $data);
+            }
 
             return true;
 
@@ -142,7 +144,7 @@ class FirebasePushService
      * @param string|null $imageUrl
      * @return array Résultat avec succès et échecs
      */
-    public function sendMulticast(array $fcmTokens, string $title, string $body, array $data = [], ?string $imageUrl = null): array
+    public function sendMulticast(array $fcmTokens, string $title, string $body, array $data = [], ?string $imageUrl = null, bool $persistInApp = true): array
     {
         if (empty($fcmTokens)) {
             return ['success' => 0, 'failure' => 0, 'failed_tokens' => []];
@@ -158,7 +160,9 @@ class FirebasePushService
         foreach ($expoTokens as $expoToken) {
             if ($this->sendViaExpoPush($expoToken, $title, $body, $data)) {
                 $success++;
-                $this->persistInAppNotification($expoToken, $title, $body, $data);
+                if ($persistInApp) {
+                    $this->persistInAppNotification($expoToken, $title, $body, $data);
+                }
             } else {
                 $failedTokens[] = $expoToken;
             }
@@ -187,7 +191,7 @@ class FirebasePushService
                     $failedTokens = array_merge($failedTokens, $report->invalidTokens());
 
                     foreach ($nativeTokens as $nativeToken) {
-                        if (!in_array($nativeToken, $failedTokens, true)) {
+                        if (!in_array($nativeToken, $failedTokens, true) && $persistInApp) {
                             $this->persistInAppNotification($nativeToken, $title, $body, $data);
                         }
                     }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\Item;
 use App\Events\NewNotification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -20,6 +21,30 @@ class NotificationService
         }
         return $notification;
     }
+
+    /**
+     * Envoyer un push (Expo/FCM) sans recréer la notification in-app,
+     * puisque celle-ci est déjà créée et broadcastée par le service.
+     */
+    private function sendPushWithoutDuplicate(?User $user, string $title, string $body, array $data): void
+    {
+        try {
+            if (!$user || empty($user->fcm_token)) {
+                return;
+            }
+            app(FirebasePushService::class)->sendNotification(
+                $user->fcm_token,
+                $title,
+                $body,
+                $data,
+                null,
+                false
+            );
+        } catch (\Exception $e) {
+            Log::error('Erreur envoi push notification: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Créer une notification pour un nouveau message
      */
@@ -27,7 +52,8 @@ class NotificationService
     {
         try {
             $sender = User::find($senderId);
-            
+            $receiver = User::find($receiverId);
+
             $this->createAndBroadcast([
                 'user_id' => $receiverId,
                 'type' => 'new_message',
@@ -42,6 +68,20 @@ class NotificationService
                 ],
             ]);
 
+            $this->sendPushWithoutDuplicate(
+                $receiver,
+                'Nouveau message',
+                $sender->name . ' vous a envoyé un message',
+                [
+                    'type' => 'new_message',
+                    'sender_id' => (string) $senderId,
+                    'sender_name' => $sender->name,
+                    'conversation_id' => (string) $senderId,
+                    'message_preview' => \Str::limit($messageContent, 99),
+                    'url' => '/messages/' . $senderId,
+                ]
+            );
+
             return true;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
@@ -52,28 +92,189 @@ class NotificationService
     /**
      * Créer une notification pour une nouvelle commande
      */
-    public function createOrderNotification($buyerId, $sellerId, $itemName)
+    public function createOrderNotification($buyerId, $sellerId, $itemName, $orderId = null, $orderNumber = null)
     {
         try {
             $buyer = User::find($buyerId);
-            
+            $seller = User::find($sellerId);
+
+            $data = [
+                'buyer_id' => $buyerId,
+                'buyer_name' => $buyer->name,
+                'item_name' => $itemName,
+                'url' => '/orders',
+            ];
+
+            if ($orderId) {
+                $data['order_id'] = (string) $orderId;
+                $data['order_number'] = $orderNumber;
+                $data['url'] = '/orders/' . $orderId;
+            }
+
             $this->createAndBroadcast([
                 'user_id' => $sellerId,
                 'type' => 'new_order',
                 'title' => 'Nouvelle commande',
                 'message' => $buyer->name . ' a commandé votre article "' . $itemName . '"',
-                'data' => [
-                    'buyer_id' => $buyerId,
-                    'buyer_name' => $buyer->name,
-                    'item_name' => $itemName,
-                    'url' => '/orders',
-                ],
+                'data' => $data,
             ]);
+
+            $this->sendPushWithoutDuplicate(
+                $seller,
+                'Nouvelle commande',
+                $buyer->name . ' a commandé votre article "' . $itemName . '"',
+                $data
+            );
 
             return true;
         } catch (\Exception $e) {
             Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Notification de confirmation de commande pour l'acheteur
+     */
+    public function createOrderConfirmedNotification($buyerId, $orderId, $orderNumber, $itemName)
+    {
+        try {
+            $buyer = User::find($buyerId);
+
+            $this->createAndBroadcast([
+                'user_id' => $buyerId,
+                'type' => 'order_confirmed',
+                'title' => 'Commande confirmée',
+                'message' => 'Votre commande ' . $orderNumber . ' (' . $itemName . ') a été confirmée',
+                'data' => [
+                    'order_id' => (string) $orderId,
+                    'order_number' => $orderNumber,
+                    'item_name' => $itemName,
+                    'url' => '/orders/' . $orderId,
+                ],
+            ]);
+
+            $this->sendPushWithoutDuplicate(
+                $buyer,
+                'Commande confirmée',
+                'Votre commande ' . $orderNumber . ' (' . $itemName . ') a été confirmée',
+                [
+                    'type' => 'order_confirmed',
+                    'order_id' => (string) $orderId,
+                    'order_number' => $orderNumber,
+                    'item_name' => $itemName,
+                    'url' => '/orders/' . $orderId,
+                ]
+            );
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Notification au vendeur quand il publie un nouvel article
+     */
+    public function createItemPublishedNotification($sellerId, Item $item)
+    {
+        try {
+            $seller = User::find($sellerId);
+
+            $this->createAndBroadcast([
+                'user_id' => $sellerId,
+                'type' => 'item_published',
+                'title' => 'Article publié',
+                'message' => 'Votre article "' . $item->name . '" a été publié et est en cours de vérification',
+                'data' => [
+                    'item_id' => (string) $item->id,
+                    'item_name' => $item->name,
+                    'url' => '/items/' . $item->id,
+                ],
+            ]);
+
+            $this->sendPushWithoutDuplicate(
+                $seller,
+                'Article publié',
+                'Votre article "' . $item->name . '" a été publié et est en cours de vérification',
+                [
+                    'type' => 'item_published',
+                    'item_id' => (string) $item->id,
+                    'item_name' => $item->name,
+                    'url' => '/items/' . $item->id,
+                ]
+            );
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la création de la notification: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Broadcast aux clients qu'un vendeur a publié un nouvel article.
+     * Message personnalisé tiré au sort parmi plusieurs modèles.
+     * Push uniquement (pas de record in-app pour éviter d'inonder la table).
+     */
+    public function notifyClientsOfNewItem(Item $item): void
+    {
+        try {
+            $tokens = User::query()
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->unique()
+                ->values()
+                ->all();
+
+            if (empty($tokens)) {
+                Log::info('Broadcast article publié : aucun token FCM', ['item_id' => $item->id]);
+                return;
+            }
+
+            $sellerName = $item->user?->name ?? 'Un vendeur';
+            $price = $item->formatted_price ?? number_format((float) $item->price, 0, ',', ' ');
+            $itemName = $item->name;
+
+            $templates = [
+                "Nouveau sur VintApp : \"{item}\" à {price} par {seller}",
+                "{seller} vient de publier \"{item}\" sur VintApp !",
+                "Découvrez \"{item}\" à {price} avant qu'il ne parte !",
+                "Nouveauté VintApp : \"{item}\" est maintenant disponible",
+                "Il vient de paraître : \"{item}\" ({price}) par {seller}",
+            ];
+
+            $message = str_replace(
+                ['{item}', '{price}', '{seller}'],
+                [$itemName, $price, $sellerName],
+                $templates[array_rand($templates)]
+            );
+
+            $result = app(FirebasePushService::class)->sendMulticast(
+                $tokens,
+                'Nouveau produit',
+                $message,
+                [
+                    'type' => 'item_published',
+                    'item_id' => (string) $item->id,
+                    'item_name' => $itemName,
+                    'seller_name' => $sellerName,
+                    'price' => $price,
+                    'url' => '/items/' . $item->id,
+                ],
+                null,
+                false
+            );
+
+            Log::info('Broadcast article publié envoyé', [
+                'item_id' => $item->id,
+                'devices' => count($tokens),
+                'success' => $result['success'] ?? 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur broadcast article publié: ' . $e->getMessage());
         }
     }
 

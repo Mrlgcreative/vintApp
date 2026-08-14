@@ -60,6 +60,16 @@ class ItemObserver
      */
     public function updated(Item $item)
     {
+        // Quand l'article passe à 'active' (publié après vérification),
+        // broadcast aux clients avec un message personnalisé aléatoire.
+        if ($item->wasChanged('status') && $item->status === 'active') {
+            try {
+                app(\App\Services\NotificationService::class)->notifyClientsOfNewItem($item);
+            } catch (\Throwable $e) {
+                Log::error('Erreur broadcast article publié (observer): ' . $e->getMessage());
+            }
+        }
+
         // Vérifier si le statut vient de passer à 'pending' ou 'pending_verification'
         if ($item->wasChanged('verification_status') && $item->verification_status === 'pending') {
             $this->notificationService->notifyExpertsForItem($item);
@@ -76,6 +86,13 @@ class ItemObserver
      */
     public function created(Item $item)
     {
+        // Notifier le vendeur que son article a bien été publié (in-app + push)
+        try {
+            app(\App\Services\NotificationService::class)->createItemPublishedNotification($item->user_id, $item);
+        } catch (\Throwable $e) {
+            Log::error('Erreur notification article publié: ' . $e->getMessage());
+        }
+
         // Déclencher la notification si l'article est créé avec le statut pending_verification et verification_status pending
         if ($item->status === 'pending_verification' && $item->verification_status === 'pending') {
             $this->notificationService->notifyExpertsForItem($item);

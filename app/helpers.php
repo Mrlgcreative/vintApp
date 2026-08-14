@@ -452,6 +452,24 @@ if (!function_exists('create_orders_from_transaction')) {
             $order = \App\Models\Order::create($orderData);
             $orders[] = $order;
 
+            try {
+                app(\App\Services\NotificationService::class)->createOrderNotification(
+                    $buyerId,
+                    $item->user_id,
+                    $item->name,
+                    $order->id,
+                    $order->order_number
+                );
+                app(\App\Services\NotificationService::class)->createOrderConfirmedNotification(
+                    $buyerId,
+                    $order->id,
+                    $order->order_number,
+                    $item->name
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Erreur notification commande (transaction): ' . $e->getMessage());
+            }
+
             $item->quantity -= $cartItem['quantity'];
             if ($item->quantity <= 0) {
                 $item->status = 'sold';
