@@ -46,7 +46,7 @@ class ApiNotificationsTest extends TestCase
 
         $this->getJson('/api/v1/notifications/unread/count')
             ->assertOk()
-            ->assertJsonPath('data.unread_count', 1);
+            ->assertJsonPath('data.count', 1);
     }
 
     /** @test */

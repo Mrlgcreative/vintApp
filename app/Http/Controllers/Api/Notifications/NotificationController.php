@@ -36,7 +36,7 @@ class NotificationController extends ApiController
                 ->count();
 
             return $this->successResponse([
-                'unread_count' => $count
+                'count' => $count
             ], 'Nombre de notifications non lues');
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors du comptage', 500);
