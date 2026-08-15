@@ -21,6 +21,7 @@
 /storage/*.key
 /storage/pail
 /storage/app/firebase-service-account.json
+/storage/firebase/serviceAccountKey.json*
 /vendor
 
 # Firebase Admin SDK - NE JAMAIS COMMITER

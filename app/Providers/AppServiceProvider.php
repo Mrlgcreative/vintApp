@@ -56,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Enregistrer les Observers
         \App\Models\Item::observe(\App\Observers\ItemObserver::class);
+        \App\Models\Notification::observe(\App\Observers\NotificationObserver::class);
 
         // Injecter la palette de couleurs active
         view()->composer('*', function ($view) {

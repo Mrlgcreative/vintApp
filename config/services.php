@@ -229,4 +229,19 @@ return [
         'callback_url' => env('PAWAPAY_CALLBACK_URL'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Firebase Firestore (signal temps réel mobile)
+    |--------------------------------------------------------------------------
+    |
+    | À chaque notification créée, un signal léger est écrit dans
+    | users/{userId}/realtime/last. Le mobile écoute ce document (onSnapshot)
+    | et rafraîchit instantanément ses compteurs. Désactivable si Hostinger
+    | rend l'appel trop lent : FIRESTORE_ENABLED=false.
+    |
+    */
+    'firestore' => [
+        'enabled' => env('FIRESTORE_ENABLED', true),
+    ],
+
 ];
