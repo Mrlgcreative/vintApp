@@ -135,11 +135,11 @@
                                         <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-lg shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 hidden z-10" 
                                              id="actions-{{ $category->id }}">
                                             <div class="py-1">
-                                                <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryStatus('{{ $category->id }}')">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryStatus('{{ $category->id }}', {{ $category->is_active ? 'false' : 'true' }})">
                                                     <i class="fas fa-{{ $category->is_active ? 'pause' : 'play' }} mr-2 text-{{ $category->is_active ? 'warning' : 'success' }}"></i>
                                                     {{ $category->is_active ? 'Désactiver' : 'Activer' }}
                                                 </button>
-                                                <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryFeatured({{ $category->id }})">
+                                                <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryFeatured('{{ $category->id }}', {{ $category->is_featured ? 'false' : 'true' }})">
                                                     <i class="fas fa-star mr-2 text-yellow-500"></i>
                                                     {{ $category->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
                                                 </button>
@@ -198,11 +198,11 @@
                                             <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="editCategory({{ $category->id }})">
                                                 <i class="fas fa-edit w-4"></i> Modifier
                                             </button>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryStatus({{ $category->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryStatus('{{ $category->id }}', {{ $category->is_active ? 'false' : 'true' }})">
                                                 <i class="fas {{ $category->is_active ? 'fa-pause' : 'fa-play' }} w-4"></i>
                                                 {{ $category->is_active ? 'Désactiver' : 'Activer' }}
                                             </button>
-                                            <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryFeatured({{ $category->id }})">
+                                            <button class="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:bg-slate-800" onclick="toggleCategoryFeatured('{{ $category->id }}', {{ $category->is_featured ? 'false' : 'true' }})">
                                                 <i class="fas fa-star w-4"></i>
                                                 {{ $category->is_featured ? 'Retirer vedette' : 'Mettre en vedette' }}
                                             </button>
@@ -347,23 +347,21 @@
 
 @push('scripts')
 <script>
-// Gestion des dropdowns
+const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(dropdownId);
     const allDropdowns = document.querySelectorAll('[id$="-dropdown"], [id^="actions-"], [id^="mobile-dropdown-"]');
     
-    // Fermer tous les autres dropdowns
     allDropdowns.forEach(d => {
         if (d.id !== dropdownId) {
             d.classList.add('hidden');
         }
     });
     
-    // Toggle le dropdown actuel
     dropdown.classList.toggle('hidden');
 }
 
-// Fermer les dropdowns en cliquant en dehors
 document.addEventListener('click', function(event) {
     if (!event.target.closest('button[onclick*="toggleDropdown"]') && 
         !event.target.closest('button[onclick*="toggleMobileDropdown"]')) {
@@ -372,52 +370,88 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Gestion du modal
-function openModal() {
-    document.getElementById('categoryModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal() {
-    document.getElementById('categoryModal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-// Fermer le modal avec la touche Escape
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeModal();
-    }
-});
-
 function toggleMobileDropdown(categoryId) {
     toggleDropdown('mobile-dropdown-' + categoryId);
 }
 
 function editCategory(id) {
-    // TODO: Charger les données de la catégorie et ouvrir le modal
-    alert('Édition catégorie ' + id);
-    openModal();
+    window.location.href = '{{ route("admin.categories.index") }}/' + id + '/edit';
 }
 
-function toggleCategoryStatus(id) {
+function toggleCategoryStatus(id, newStatus) {
     if (confirm('Voulez-vous changer le statut de cette catégorie ?')) {
-        // TODO: Appel AJAX pour changer le statut
-        alert('Toggle status catégorie ' + id);
+        fetch('{{ url("admin/categories") }}/' + id + '/status', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ is_active: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la mise à jour du statut');
+        });
     }
 }
 
-function toggleCategoryFeatured(id) {
+function toggleCategoryFeatured(id, newStatus) {
     if (confirm('Voulez-vous modifier le statut vedette de cette catégorie ?')) {
-        // TODO: Appel AJAX pour changer le statut vedette
-        alert('Toggle featured catégorie ' + id);
+        fetch('{{ url("admin/categories") }}/' + id + '/featured', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ is_featured: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la mise à jour du statut vedette');
+        });
     }
 }
 
 function deleteCategory(id, name) {
     if (confirm(`Êtes-vous sûr de vouloir supprimer la catégorie "${name}" ?\n\nCette action est irréversible.`)) {
-        // TODO: Appel AJAX pour supprimer
-        alert('Suppression catégorie ' + id);
+        fetch('{{ url("admin/categories") }}/' + id, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Erreur lors de la suppression');
+        });
     }
 }
 </script>

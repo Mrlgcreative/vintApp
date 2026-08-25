@@ -430,6 +430,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::put('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdate'])->name('update');
         Route::delete('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryDestroy'])->name('destroy');
         Route::patch('/{category}/status', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdateStatus'])->name('update-status');
+        Route::patch('/{category}/featured', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdateFeatured'])->name('update-featured');
     });
 
     // Gestion des articles/items (CRUD complet)

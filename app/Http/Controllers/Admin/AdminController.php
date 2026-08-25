@@ -1214,14 +1214,20 @@ class AdminController extends Controller
         try {
             // Vérifier s'il y a des articles associés
             if ($category->items()->count() > 0) {
-                return redirect()->route('admin.categories.index')
-                    ->with('error', 'Impossible de supprimer cette catégorie car elle contient des articles.');
+                $message = 'Impossible de supprimer cette catégorie car elle contient des articles.';
+                if ($this->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => $message], 422);
+                }
+                return redirect()->route('admin.categories.index')->with('error', $message);
             }
 
             // Vérifier s'il y a des sous-catégories
             if ($category->children()->count() > 0) {
-                return redirect()->route('admin.categories.index')
-                    ->with('error', 'Impossible de supprimer cette catégorie car elle contient des sous-catégories.');
+                $message = 'Impossible de supprimer cette catégorie car elle contient des sous-catégories.';
+                if ($this->expectsJson()) {
+                    return response()->json(['success' => false, 'message' => $message], 422);
+                }
+                return redirect()->route('admin.categories.index')->with('error', $message);
             }
 
             // Supprimer l'image
@@ -1231,11 +1237,17 @@ class AdminController extends Controller
 
             $category->delete();
 
+            if ($this->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Catégorie supprimée avec succès.']);
+            }
             return redirect()->route('admin.categories.index')
                 ->with('success', 'Catégorie supprimée avec succès.');
                 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de la catégorie: ' . $e->getMessage());
+            if ($this->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression.'], 500);
+            }
             return redirect()->route('admin.categories.index')
                 ->with('error', 'Erreur lors de la suppression de la catégorie.');
         }
@@ -1256,6 +1268,21 @@ class AdminController extends Controller
             'success' => true,
             'message' => 'Statut de la catégorie mis à jour avec succès.',
             'status' => $category->is_active
+        ]);
+    }
+
+    public function categoryUpdateFeatured(Request $request, Category $category)
+    {
+        $request->validate([
+            'is_featured' => 'required|boolean'
+        ]);
+
+        $category->update(['is_featured' => $request->is_featured]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Statut vedette de la catégorie mis à jour avec succès.',
+            'is_featured' => $category->is_featured
         ]);
     }
 
