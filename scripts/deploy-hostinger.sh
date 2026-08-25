@@ -43,7 +43,24 @@ if [ ! -L "build" ] && [ -d "public/build" ]; then
     echo "✅ Lien symbolique créé: build -> public/build"
 fi
 
-# 9. Optimisation Laravel
+# 9. Synchroniser le storage public
+echo "📁 Synchronisation du storage..."
+php artisan storage:link 2>/dev/null || {
+    # Si storage:link échoue (exec désactivé), créer le lien manuellement
+    if [ ! -L "public/storage" ] && [ ! -d "public/storage" ]; then
+        ln -s ../storage/app/public public/storage
+        echo "✅ Lien symbolique créé: public/storage -> ../storage/app/public"
+    elif [ -d "public/storage" ] && [ ! -L "public/storage" ]; then
+        # Si public/storage est un répertoire (pas un lien), le remplacer par un lien
+        rm -rf public/storage
+        ln -s ../storage/app/public public/storage
+        echo "✅ Répertoire remplacé par lien symbolique"
+    else
+        echo "✅ Lien symbolique déjà en place"
+    fi
+}
+
+# 10. Optimisation Laravel
 echo "⚡ Optimisation Laravel..."
 php artisan optimize
 
