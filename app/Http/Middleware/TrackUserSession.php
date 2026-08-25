@@ -48,10 +48,16 @@ class TrackUserSession
 
     /**
      * Résoudre le type d'appareil depuis les headers ou paramètres de la requête mobile.
+     * Uniquement pour les requêtes API (Sanctum), pas pour le web.
      */
     protected function resolveDeviceType(Request $request): ?string
     {
-        // Le mobile envoie device_type dans le body ou headers
+        // Ne lire device_type que pour les requêtes API (token Sanctum)
+        $token = Auth::guard('sanctum')->user()?->currentAccessToken();
+        if (!$token) {
+            return null;
+        }
+
         $deviceType = $request->input('device_type')
             ?? $request->header('X-Device-Type')
             ?? $request->header('X-Platform');
@@ -60,7 +66,6 @@ class TrackUserSession
             return null;
         }
 
-        // Mapper les valeurs du mobile (android/ios) vers mobile/tablet/desktop
         return match(strtolower($deviceType)) {
             'android', 'ios', 'mobile' => 'mobile',
             'tablet', 'ipad' => 'tablet',
