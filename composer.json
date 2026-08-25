@@ -59,8 +59,14 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
+        "post-install-cmd": [
+            "Illuminate\\Foundation\\ComposerScripts::postInstallDump",
+            "@php artisan package:discover --ansi",
+            "if [ ! -L public/storage ]; then rm -rf public/storage && ln -s ../storage/app/public public/storage; fi"
+        ],
         "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "if [ ! -L public/storage ]; then rm -rf public/storage && ln -s ../storage/app/public public/storage; fi"
         ],
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
