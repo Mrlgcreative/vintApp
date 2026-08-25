@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#F472B6"/>
+  <ellipse cx="200" cy="180" rx="60" ry="80" fill="white" opacity="0.9"/>
+  <ellipse cx="200" cy="120" rx="30" ry="20" fill="white" opacity="0.7"/>
+  <circle cx="200" cy="180" r="20" fill="#F472B6" opacity="0.4"/>
+  <text x="200" y="330" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Beauté</text>
+</svg>

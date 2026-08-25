@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#EC4899"/>
+  <rect x="140" y="120" width="120" height="120" rx="12" fill="white" opacity="0.9"/>
+  <circle cx="170" cy="170" r="12" fill="#EC4899" opacity="0.5"/>
+  <circle cx="230" cy="170" r="12" fill="#EC4899" opacity="0.5"/>
+  <rect x="170" y="200" width="60" height="8" rx="4" fill="#EC4899" opacity="0.3"/>
+  <circle cx="200" cy="300" r="40" fill="white" opacity="0.6"/>
+  <text x="200" y="350" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Jouets</text>
+</svg>

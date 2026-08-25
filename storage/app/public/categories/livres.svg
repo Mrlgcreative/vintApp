@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#10B981"/>
+  <rect x="120" y="100" width="160" height="200" rx="8" fill="white" opacity="0.9"/>
+  <rect x="130" y="110" width="140" height="20" rx="4" fill="#10B981" opacity="0.4"/>
+  <rect x="130" y="145" width="140" height="4" rx="2" fill="#10B981" opacity="0.2"/>
+  <rect x="130" y="160" width="100" height="4" rx="2" fill="#10B981" opacity="0.2"/>
+  <rect x="130" y="175" width="120" height="4" rx="2" fill="#10B981" opacity="0.2"/>
+  <text x="200" y="350" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Livres</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#EF4444"/>
+  <path d="M200 80 L300 180 L280 180 L280 300 L120 300 L120 180 L100 180 Z" fill="white" opacity="0.9"/>
+  <rect x="170" y="220" width="60" height="80" rx="4" fill="#EF4444" opacity="0.3"/>
+  <text x="200" y="350" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Maison</text>
+</svg>

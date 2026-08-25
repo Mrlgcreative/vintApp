@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#F97316"/>
+  <polygon points="200,80 230,160 320,160 250,210 275,290 200,245 125,290 150,210 80,160 170,160" fill="white" opacity="0.9"/>
+  <text x="200" y="350" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Collection</text>
+</svg>

@@ -19,6 +19,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'electronique', 
                 'description' => 'Appareils électroniques et gadgets',
                 'icon' => 'mobile-alt',
+                'image' => 'categories/electronique.svg',
                 'is_active' => true,
                 'sort_order' => 1
             ],
@@ -27,6 +28,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'vetements', 
                 'description' => 'Vêtements et accessoires',
                 'icon' => 'tshirt',
+                'image' => 'categories/vetements.svg',
                 'is_active' => true,
                 'sort_order' => 2
             ],
@@ -35,6 +37,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'livres', 
                 'description' => 'Livres et publications',
                 'icon' => 'book',
+                'image' => 'categories/livres.svg',
                 'is_active' => true,
                 'sort_order' => 3
             ],
@@ -43,6 +46,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'sport', 
                 'description' => 'Équipements sportifs',
                 'icon' => 'futbol',
+                'image' => 'categories/sport.svg',
                 'is_active' => true,
                 'sort_order' => 4
             ],
@@ -51,6 +55,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'maison', 
                 'description' => 'Articles pour la maison',
                 'icon' => 'home',
+                'image' => 'categories/maison.svg',
                 'is_active' => true,
                 'sort_order' => 5
             ],
@@ -59,6 +64,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'automobile', 
                 'description' => 'Pièces et accessoires auto',
                 'icon' => 'car',
+                'image' => 'categories/automobile.svg',
                 'is_active' => true,
                 'sort_order' => 6
             ],
@@ -67,6 +73,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'jouets', 
                 'description' => 'Jouets et jeux',
                 'icon' => 'gamepad',
+                'image' => 'categories/jouets.svg',
                 'is_active' => true,
                 'sort_order' => 7
             ],
@@ -75,6 +82,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'informatique', 
                 'description' => 'Ordinateurs et accessoires',
                 'icon' => 'laptop',
+                'image' => 'categories/informatique.svg',
                 'is_active' => true,
                 'sort_order' => 8
             ],
@@ -83,6 +91,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'beaute', 
                 'description' => 'Cosmétiques et produits de beauté',
                 'icon' => 'spa',
+                'image' => 'categories/beaute.svg',
                 'is_active' => true,
                 'sort_order' => 9
             ],
@@ -91,6 +100,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'musique', 
                 'description' => 'Instruments et équipements musicaux',
                 'icon' => 'music',
+                'image' => 'categories/musique.svg',
                 'is_active' => true,
                 'sort_order' => 10
             ],
@@ -99,6 +109,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'jardinage', 
                 'description' => 'Outils et plantes de jardin',
                 'icon' => 'seedling',
+                'image' => 'categories/jardinage.svg',
                 'is_active' => true,
                 'sort_order' => 11
             ],
@@ -107,6 +118,7 @@ class CategorySeeder extends Seeder
                 'slug' => 'collection', 
                 'description' => 'Objets de collection',
                 'icon' => 'gem',
+                'image' => 'categories/collection.svg',
                 'is_active' => true,
                 'sort_order' => 12
             ],

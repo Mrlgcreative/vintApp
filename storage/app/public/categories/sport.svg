@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <rect width="400" height="400" rx="24" fill="#F59E0B"/>
+  <circle cx="200" cy="180" r="80" fill="white" opacity="0.9"/>
+  <path d="M200 100 Q240 140 200 180 Q160 140 200 100" fill="#F59E0B" opacity="0.4"/>
+  <path d="M200 180 Q240 220 200 260 Q160 220 200 180" fill="#F59E0B" opacity="0.4"/>
+  <text x="200" y="330" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="24" font-weight="bold">Sport</text>
+</svg>
