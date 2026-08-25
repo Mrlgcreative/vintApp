@@ -1193,8 +1193,14 @@ class AdminController extends Controller
         // Définir les valeurs par défaut pour les booléens
         $data['is_active'] = $request->has('is_active');
         $data['is_featured'] = $request->has('is_featured');
+        $data['show_in_menu'] = $request->has('show_in_menu');
 
         $category->update($data);
+
+        if ($request->input('action') === 'save_and_continue') {
+            return redirect()->route('admin.categories.edit', $category)
+                ->with('success', 'Catégorie mise à jour avec succès.');
+        }
 
         return redirect()->route('admin.categories.show', $category)
             ->with('success', 'Catégorie mise à jour avec succès.');
