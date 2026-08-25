@@ -19,6 +19,12 @@ class Category extends Model
         'parent_id',
         'is_active',
         'sort_order',
+        'color',
+        'is_featured',
+        'show_in_menu',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
     ];
 
     protected $casts = [
