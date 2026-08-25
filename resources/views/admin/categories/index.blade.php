@@ -393,14 +393,15 @@ function toggleCategoryStatus(id, newStatus) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.reload();
+                showToast(data.message, 'success');
+                setTimeout(() => window.location.reload(), 800);
             } else {
-                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+                showToast(data.message || 'Une erreur est survenue', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Erreur lors de la mise à jour du statut');
+            showToast('Erreur lors de la mise à jour du statut', 'error');
         });
     }
 }
@@ -420,14 +421,15 @@ function toggleCategoryFeatured(id, newStatus) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.reload();
+                showToast(data.message, 'success');
+                setTimeout(() => window.location.reload(), 800);
             } else {
-                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+                showToast(data.message || 'Une erreur est survenue', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Erreur lors de la mise à jour du statut vedette');
+            showToast('Erreur lors de la mise à jour du statut vedette', 'error');
         });
     }
 }
@@ -446,14 +448,15 @@ function deleteCategory(id, name) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                window.location.reload();
+                showToast(data.message, 'success');
+                setTimeout(() => window.location.reload(), 800);
             } else {
-                alert('Erreur: ' + (data.message || 'Une erreur est survenue'));
+                showToast(data.message || 'Une erreur est survenue', 'error');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Erreur lors de la suppression');
+            showToast('Erreur lors de la suppression', 'error');
         });
     }
 }

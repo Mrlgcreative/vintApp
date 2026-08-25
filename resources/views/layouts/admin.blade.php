@@ -798,6 +798,82 @@
     <script src="{{ asset('js/expert-notifications.js') }}"></script>
     @endif
 
+    {{-- Toast Notification --}}
+    <div id="toast-container" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+    <style>
+        @keyframes toast-slide-in { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toast-slide-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
+        .toast-enter { animation: toast-slide-in 0.3s ease-out forwards; }
+        .toast-exit { animation: toast-slide-out 0.3s ease-in forwards; }
+    </style>
+
+    <script>
+    function showToast(message, type = 'success', duration = 4000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-circle',
+            warning: 'fa-exclamation-triangle',
+            info: 'fa-info-circle'
+        };
+        const colors = {
+            success: 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-900/30 dark:border-emerald-700 dark:text-emerald-200',
+            error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/30 dark:border-red-700 dark:text-red-200',
+            warning: 'bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-900/30 dark:border-amber-700 dark:text-amber-200',
+            info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-700 dark:text-blue-200'
+        };
+        const iconColors = {
+            success: 'text-emerald-500',
+            error: 'text-red-500',
+            warning: 'text-amber-500',
+            info: 'text-blue-500'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `pointer-events-auto flex items-start gap-3 p-4 rounded-xl border shadow-lg backdrop-blur-sm ${colors[type]} toast-enter`;
+        toast.innerHTML = `
+            <i class="fas ${icons[type]} mt-0.5 text-lg ${iconColors[type]} flex-shrink-0"></i>
+            <p class="text-sm font-medium leading-snug flex-1">${message}</p>
+            <button onclick="dismissToast(this)" class="flex-shrink-0 ml-2 opacity-60 hover:opacity-100 transition-opacity">
+                <i class="fas fa-times text-xs"></i>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.remove('toast-enter');
+            toast.classList.add('toast-exit');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+
+    function dismissToast(btn) {
+        const toast = btn.closest('div');
+        toast.classList.remove('toast-enter');
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        @if(session('success'))
+            showToast('{{ session('success') }}', 'success');
+        @endif
+        @if(session('error'))
+            showToast('{{ session('error') }}', 'error');
+        @endif
+        @if(session('warning'))
+            showToast('{{ session('warning') }}', 'warning');
+        @endif
+        @if(session('info'))
+            showToast('{{ session('info') }}', 'info');
+        @endif
+    });
+    </script>
+
     @stack('scripts')
 </body>
 </html>
