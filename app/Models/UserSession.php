@@ -48,21 +48,38 @@ class UserSession extends Model
     /**
      * Créer ou mettre à jour une session
      */
-    public static function trackSession($userId, $sessionId, $request = null)
+    public static function trackSession($userId, $sessionId, $request = null, $deviceTypeFromRequest = null)
     {
         $agent = new Agent();
-        $agent->setUserAgent($request ? $request->userAgent() : request()->userAgent());
+        $userAgent = $request ? $request->userAgent() : request()->userAgent();
+        $agent->setUserAgent($userAgent);
 
         $ip = $request ? $request->ip() : request()->ip();
+
+        // Détecter le device via Agent, ou utiliser la valeur du mobile si Agent échoue
+        $detectedDevice = static::getDeviceType($agent);
+        $deviceType = $detectedDevice !== 'unknown' ? $detectedDevice : ($deviceTypeFromRequest ?? 'unknown');
+
+        // Détecter le browser et OS, avec fallback pour les apps mobiles
+        $browser = $agent->browser();
+        $os = $agent->platform();
+
+        if (empty($browser) && $deviceTypeFromRequest) {
+            $browser = 'App Mobile';
+        }
+        if (empty($os) && $deviceTypeFromRequest) {
+            $os = $deviceTypeFromRequest === 'android' ? 'Android' 
+                : ($deviceTypeFromRequest === 'ios' ? 'iOS' : ucfirst($deviceTypeFromRequest));
+        }
 
         $data = [
             'user_id' => $userId,
             'session_id' => $sessionId,
             'ip_address' => $ip,
-            'user_agent' => $agent->getUserAgent(),
-            'device_type' => static::getDeviceType($agent),
-            'browser' => $agent->browser(),
-            'os' => $agent->platform(),
+            'user_agent' => $userAgent,
+            'device_type' => $deviceType,
+            'browser' => $browser,
+            'os' => $os,
             'last_activity' => now(),
             'is_active' => true,
         ];
@@ -202,7 +219,7 @@ class UserSession extends Model
             'mobile' => 'fa-mobile-alt',
             'tablet' => 'fa-tablet-alt',
             'desktop' => 'fa-desktop',
-            default => 'fa-question-circle'
+            default => 'fa-mobile-alt'
         };
     }
 
