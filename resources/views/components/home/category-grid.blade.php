@@ -45,8 +45,14 @@
                 @php $i = $index % count($lightBgs); @endphp
                 <a href="{{ route('items.index', ['category' => $category->id]) }}"
                    class="group flex flex-col items-center gap-1.5 p-3 lg:p-4 rounded-xl bg-white/70 hover:bg-white dark:bg-gray-800/50 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 transition-all duration-200 hover:shadow-sm">
-                    <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg {{ $lightBgs[$i] }} flex items-center justify-center group-hover:scale-110 transition-transform duration-200">
-                        <i class="{{ $category->icon ?? $icons[$index % count($icons)] }} text-sm lg:text-base"></i>
+                    <div class="w-10 h-10 lg:w-12 lg:h-12 rounded-lg overflow-hidden group-hover:scale-110 transition-transform duration-200">
+                        @if($category->image_url)
+                            <img src="{{ $category->image_url }}" alt="{{ $category->name }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full {{ $lightBgs[$i] }} flex items-center justify-center">
+                                <i class="{{ $category->icon ?? $icons[$index % count($icons)] }} text-sm lg:text-base"></i>
+                            </div>
+                        @endif
                     </div>
                     <h3 class="font-medium text-[11px] lg:text-xs text-gray-800 dark:text-gray-200 text-center leading-tight">
                         {{ $category->name }}
