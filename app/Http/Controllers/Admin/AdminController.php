@@ -1212,44 +1212,43 @@ class AdminController extends Controller
     public function categoryDestroy(Category $category)
     {
         try {
-            // Vérifier s'il y a des articles associés
             if ($category->items()->count() > 0) {
-                $message = 'Impossible de supprimer cette catégorie car elle contient des articles.';
-                if ($this->expectsJson()) {
-                    return response()->json(['success' => false, 'message' => $message], 422);
-                }
-                return redirect()->route('admin.categories.index')->with('error', $message);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Impossible de supprimer cette catégorie car elle contient des articles.'
+                ], 422);
             }
 
-            // Vérifier s'il y a des sous-catégories
             if ($category->children()->count() > 0) {
-                $message = 'Impossible de supprimer cette catégorie car elle contient des sous-catégories.';
-                if ($this->expectsJson()) {
-                    return response()->json(['success' => false, 'message' => $message], 422);
-                }
-                return redirect()->route('admin.categories.index')->with('error', $message);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Impossible de supprimer cette catégorie car elle contient des sous-catégories.'
+                ], 422);
             }
 
-            // Supprimer l'image
-            if ($category->image && Storage::disk('public')->exists($category->image)) {
-                Storage::disk('public')->delete($category->image);
+            if ($category->image) {
+                try {
+                    if (Storage::disk('public')->exists($category->image)) {
+                        Storage::disk('public')->delete($category->image);
+                    }
+                } catch (\Exception $e) {
+                    Log::warning('Erreur suppression image catégorie: ' . $e->getMessage());
+                }
             }
 
             $category->delete();
 
-            if ($this->expectsJson()) {
-                return response()->json(['success' => true, 'message' => 'Catégorie supprimée avec succès.']);
-            }
-            return redirect()->route('admin.categories.index')
-                ->with('success', 'Catégorie supprimée avec succès.');
+            return response()->json([
+                'success' => true, 
+                'message' => 'Catégorie supprimée avec succès.'
+            ]);
                 
         } catch (\Exception $e) {
             Log::error('Erreur lors de la suppression de la catégorie: ' . $e->getMessage());
-            if ($this->expectsJson()) {
-                return response()->json(['success' => false, 'message' => 'Erreur lors de la suppression.'], 500);
-            }
-            return redirect()->route('admin.categories.index')
-                ->with('error', 'Erreur lors de la suppression de la catégorie.');
+            return response()->json([
+                'success' => false, 
+                'message' => 'Erreur lors de la suppression: ' . $e->getMessage()
+            ], 500);
         }
     }
 
