@@ -100,9 +100,8 @@ class ItemObserver
             $this->notificationService->notifyExpertsForItem($item);
         }
 
-        if ($item->status === 'active') {
-            $this->ensureSellerRole($item->user_id);
-        }
+        // Dès qu'un produit est créé, l'utilisateur devient vendeur
+        $this->ensureSellerRole($item->user_id);
     }
 
     private function ensureSellerRole(int $userId): void
