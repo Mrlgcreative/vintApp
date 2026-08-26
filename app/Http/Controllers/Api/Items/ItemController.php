@@ -102,6 +102,20 @@ class ItemController extends ApiController
     }
 
     /**
+     * Incrémenter le compteur de vues d'un article
+     */
+    public function incrementViews($id): JsonResponse
+    {
+        $item = Item::findOrFail($id);
+        $item->incrementQuietly('views');
+
+        return response()->json([
+            'success' => true,
+            'views' => $item->views
+        ]);
+    }
+
+    /**
      * API: Recherche (priorise les articles boostés)
      */
     public function search(Request $request): JsonResponse

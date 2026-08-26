@@ -274,13 +274,6 @@ class DashboardApp {
                 return;
             }
 
-            const favoriteBtn = e.target.closest('.favorite-btn');
-            if (favoriteBtn) {
-                e.preventDefault();
-                this.handleFavoriteClick(favoriteBtn);
-                return;
-            }
-
             const filterToggle = e.target.closest('.filter-toggle');
             if (filterToggle) {
                 this.handleFilterToggle(filterToggle);

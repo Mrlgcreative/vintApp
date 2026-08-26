@@ -90,9 +90,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.favorite-btn').forEach(function(btn) {
+        var pending = false;
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            if (pending) return;
+            pending = true;
             var itemId = this.dataset.itemId;
             fetch('/api/items/' + itemId + '/favorite', {
                 method: 'POST',
@@ -104,6 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
+                pending = false;
                 if (data.success) {
                     var card = btn.closest('.group');
                     card.style.transition = 'all 0.3s';
@@ -112,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(function() { card.remove(); }, 300);
                 }
             })
-            .catch(function() {});
+            .catch(function() { pending = false; });
         });
     });
 });

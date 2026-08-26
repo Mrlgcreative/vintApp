@@ -788,9 +788,13 @@ function deleteItem() {
 
 const favoriteBtn = document.querySelector('.favorite-btn');
 if (favoriteBtn) {
+    let favoritePending = false;
     favoriteBtn.addEventListener('click', function(e) {
         e.preventDefault();
+        if (favoritePending) return;
+        favoritePending = true;
         const itemId = this.dataset.itemId;
+        const btn = this;
         fetch(`/api/items/${itemId}/favorite`, {
             method: 'POST',
             headers: {
@@ -801,21 +805,23 @@ if (favoriteBtn) {
         })
         .then(response => response.json())
         .then(data => {
+            favoritePending = false;
             if (data.success) {
-                const icon = this.querySelector('i');
+                const icon = btn.querySelector('i');
                 if (data.is_favorite) {
                     icon.classList.remove('far');
                     icon.classList.add('fas');
-                    this.classList.add('bg-red-50', 'border-red-400');
+                    btn.classList.add('bg-red-50', 'border-red-400');
                 } else {
                     icon.classList.remove('fas');
                     icon.classList.add('far');
-                    this.classList.remove('bg-red-50', 'border-red-400');
+                    btn.classList.remove('bg-red-50', 'border-red-400');
                 }
                 showNotification(data.message, 'success');
             }
         })
         .catch(error => {
+            favoritePending = false;
             console.error('Error:', error);
             showNotification('Une erreur est survenue', 'danger');
         });

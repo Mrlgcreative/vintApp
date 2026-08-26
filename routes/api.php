@@ -293,6 +293,13 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::middleware('throttle:30,1')->post('/{item}/favorite', [ApiItemController::class, 'toggleFavorite']);
     });
 
+    // Items V1 routes (mobile app)
+    Route::prefix('v1/items')->group(function () {
+        Route::middleware('throttle:30,1')->post('/{item}/favorite', [ApiItemController::class, 'toggleFavorite']);
+        Route::middleware('throttle:100,1', 'cache.response:120')->get('/search', [ApiItemController::class, 'search']);
+        Route::middleware('throttle:200,1')->post('/{item}/views', [ApiItemController::class, 'incrementViews']);
+    });
+
     // Dashboard routes (rate limit: 30/min)
     Route::middleware('throttle:30,1')->prefix('dashboard')->group(function () {
         Route::get('/data', [DashboardController::class, 'apiData']);

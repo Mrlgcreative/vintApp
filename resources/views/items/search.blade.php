@@ -249,9 +249,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Gestion des favoris
     document.querySelectorAll('.favorite-btn').forEach(btn => {
+        let pending = false;
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            if (pending) return;
+            pending = true;
             const itemId = this.dataset.itemId;
             const icon = this.querySelector('svg');
             
@@ -265,6 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                pending = false;
                 if (data.success) {
                     if (data.is_favorite) {
                         icon.classList.add('fill-red-500', 'text-red-500');
@@ -277,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
+                pending = false;
                 console.error('Error:', error);
                 showToast('Une erreur est survenue', 'error');
             });

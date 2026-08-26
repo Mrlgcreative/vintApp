@@ -357,9 +357,12 @@ function applyFilters() {
 
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.favorite-btn').forEach(function(btn) {
+        var pending = false;
         btn.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
+            if (pending) return;
+            pending = true;
             var itemId = this.dataset.itemId;
             var icon = this.querySelector('i');
             fetch('/api/items/' + itemId + '/favorite', {
@@ -372,13 +375,14 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(function(r) { return r.json(); })
             .then(function(data) {
+                pending = false;
                 if (data.success) {
                     icon.classList.toggle('text-gray-400', !data.is_favorite);
                     icon.classList.toggle('text-red-500', data.is_favorite);
                     showNotification(data.message, 'success');
                 }
             })
-            .catch(function() { showNotification('Une erreur est survenue', 'danger'); });
+            .catch(function() { pending = false; showNotification('Une erreur est survenue', 'danger'); });
         });
     });
 
