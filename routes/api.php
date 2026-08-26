@@ -230,14 +230,12 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::post('/{id}/default', [ApiDeliveryAddressController::class, 'setDefault']);
     });
 
-    // ---- API V1 : Localisation vendeur ----
+    // ---- API V1 : Localisation vendeur (auth) ----
     Route::prefix('v1/seller-location')->group(function () {
         Route::get('/', [ApiSellerLocationController::class, 'index']);
         Route::put('/', [ApiSellerLocationController::class, 'update']);
         Route::delete('/', [ApiSellerLocationController::class, 'destroy']);
     });
-    Route::get('/v1/seller-location/{userId}', [ApiSellerLocationController::class, 'show']);
-    Route::get('/v1/sellers/nearby', [ApiSellerLocationController::class, 'nearby']);
 
     // ---- API V1 : Messages ----
     Route::prefix('v1/messages')->group(function () {
@@ -389,6 +387,10 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
     Route::get('/maishapay/status/{transactionId}', [ApiPaymentController::class, 'checkMaishaStatus'])
         ->name('api.v1.payments.maishapay.status');
 });
+
+// ---- API V1 : Localisation vendeur (public) ----
+Route::get('/v1/seller-location/{userId}', [ApiSellerLocationController::class, 'show']);
+Route::get('/v1/sellers/nearby', [ApiSellerLocationController::class, 'nearby']);
 
 // MaishaPay payout webhook (public - no auth)
 Route::post('v1/wallet/withdrawals/maishapay/callback', [WalletController::class, 'handleWithdrawalWebhook'])
