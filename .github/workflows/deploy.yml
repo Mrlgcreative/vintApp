@@ -1,0 +1,20 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches: [sky]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          password: ${{ secrets.HOSTINGER_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/public_html
+            bash scripts/deploy-hostinger.sh
