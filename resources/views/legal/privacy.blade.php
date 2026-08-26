@@ -141,6 +141,166 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-amber-100 dark:bg-amber-800/50 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Données de l'appareil mobile</h3>
+                            <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                                <li class="flex items-start">
+                                    <span class="text-amber-500 mr-2">•</span>
+                                    Type d'appareil (mobile, tablette, ordinateur)
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-amber-500 mr-2">•</span>
+                                    Système d'exploitation (Android, iOS) et version
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-amber-500 mr-2">•</span>
+                                    Navigateur utilisé (Chrome, Safari, etc.)
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-amber-500 mr-2">•</span>
+                                    Token de notification push (FCM / Expo)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1b: Notifications push & géolocalisation -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 sm:p-10 mb-8">
+            <div class="border-l-4 border-cyan-500 pl-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">1b. Notifications push et géolocalisation</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Notifications push</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        VintApp utilise les services de notification push de <strong>Firebase Cloud Messaging (FCM)</strong> et <strong>Expo Push</strong> pour vous envoyer des alertes concernant :
+                    </p>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            Nouveaux messages entre utilisateurs
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            Statut de vos commandes (expédition, livraison)
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            Approbation ou rejet de vos articles
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            Offres personnalisées et promotions
+                        </li>
+                    </ul>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-3">
+                        Vous pouvez désactiver les notifications push à tout moment depuis les paramètres de votre appareil. Le token de notification est supprimé lors de la déconnexion.
+                    </p>
+                </div>
+
+                <div class="bg-cyan-50 dark:bg-cyan-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Géolocalisation</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        VintApp collecte des données de localisation dans les cas suivants :
+                    </p>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            <strong>Géolocalisation par adresse IP</strong> : utilisée pour déterminer votre ville et pays de connexion (via ip-api.com). Cette donnée est collectée automatiquement lors de chaque session.
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            <strong>Coordonnées GPS</strong> : si vous activez la géolocalisation sur votre appareil, les coordonnées latitude/longitude peuvent être utilisées pour la livraison locale entre utilisateurs proches.
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-cyan-500 mr-2">•</span>
+                            <strong>Adresses de livraison</strong> : les coordonnées GPS de vos adresses de livraison sont stockées pour faciliter la livraison locale.
+                        </li>
+                    </ul>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mt-3">
+                        La géolocalisation GPS n'est jamais activée sans votre consentement explicite. Vous pouvez refuser l'accès à votre position dans les paramètres de votre appareil.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1c: Interactions sociales -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 sm:p-10 mb-8">
+            <div class="border-l-4 border-pink-500 pl-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">1c. Interactions sociales</h2>
+            </div>
+
+            <p class="text-gray-600 dark:text-gray-300 mb-6">
+                VintApp est une plateforme de marketplace. Certaines de vos données sont visibles par d'autres utilisateurs :
+            </p>
+
+            <div class="space-y-4">
+                <div class="bg-pink-50 dark:bg-pink-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Données visibles par les autres utilisateurs</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Nom, pseudonyme et avatar
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Articles publiés (photos, descriptions, prix)
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Avis et évaluations reçus
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Ville de publication
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-pink-50 dark:bg-pink-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Données privées (non partagées)</h3>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Messages privés entre utilisateurs
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Articles mis en favoris
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Historique des achats et ventes
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Adresses de livraison
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-pink-500 mr-2">•</span>
+                            Solde du portefeuille
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-pink-50 dark:bg-pink-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-2">Messagerie privée</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Les messages échangés entre utilisateurs sont stockés de manière sécurisée et ne sont accessibles qu'aux participants de la conversation. Les messages sont conservés tant que votre compte est actif.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -503,9 +663,18 @@
             </div>
 
             <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
-                <p class="text-sm text-gray-600 dark:text-gray-300">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
                     Vous pouvez gérer vos préférences de cookies à tout moment dans les paramètres de votre navigateur.
                 </p>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <p class="mb-2"><strong>Cookies utilisés par VintApp :</strong></p>
+                    <ul class="space-y-1">
+                        <li>• <code>laravel_session</code> — session utilisateur (essentiel, expire à la fermeture du navigateur)</li>
+                        <li>• <code>csrf_token</code> — protection contre les attaques CSRF (essentiel, expire à la fermeture)</li>
+                        <li>• <code>XSRF-TOKEN</code> — token de sécurité pour les requêtes AJAX (essentiel, 24h)</li>
+                        <li>• <code>remember_web_*</code> — « Rester connecté » (optionnel, 5 ans)</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -539,6 +708,36 @@
                         <span>Résoudre d'éventuels litiges et faire respecter nos accords</span>
                     </li>
                 </ul>
+
+                <div class="mt-4 pt-4 border-t border-red-200 dark:border-red-800/50">
+                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Durées de conservation spécifiques :</h4>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Sessions mobile et web</strong> : 30 jours (nettoyage automatique des sessions inactives)
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Tokens FCM</strong> : supprimés lors de la déconnexion
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Historique de navigation</strong> : 30 jours
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Données de favoris</strong> : tant que le compte est actif
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Messages privés</strong> : tant que le compte est actif
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-500 mr-2">•</span>
+                            <strong>Données de commande</strong> : 10 ans (obligation comptable)
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -573,6 +772,87 @@
                             Mise à jour de la date en haut de cette page
                         </li>
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8b: Conformité légale RDC -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 sm:p-10 mb-8">
+            <div class="border-l-4 border-indigo-700 pl-6 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">8b. Conformité légale — République Démocratique du Congo</h2>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Cadre juridique applicable</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        VintApp est une application opérant en République Démocratique du Congo. Nous respectons les textes légaux suivants en matière de protection des données personnelles :
+                    </p>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Constitution de la RDC (2006, telle que révisée)</strong> — Article 19 : droit à la vie privée et au secret de la correspondance
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Loi n° 20/017 du 25 novembre 2020</strong> portant régime juridique des télécommunications et des services de télécommunication
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Ordonnance-loi n° 23/010 du 13 mars 2023</strong> portant protection des données à caractère personnel en RDC
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>RGPD (UE)</strong> — applicable aux utilisateurs résidant dans l'Espace Économique Européen
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Vos droits en RDC</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                        Conformément à la législation congolaise, vous disposez des droits suivants sur vos données personnelles :
+                    </p>
+                    <ul class="space-y-2 text-gray-600 dark:text-gray-300 text-sm">
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Droit d'accès</strong> : obtenir une copie de vos données personnelles
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Droit de rectification</strong> : corriger les données inexactes
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Droit de suppression</strong> : demander l'effacement de vos données
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Droit d'opposition</strong> : vous opposer au traitement de vos données
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-indigo-600 mr-2">•</span>
+                            <strong>Droit de porter plainte</strong> : auprès de l'autorité nationale de protection des données
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Transferts internationaux de données</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Vos données peuvent être stockées sur des serveurs situés en dehors de la RDC (hébergement cloud). 
+                        Dans ce cas, nous nous assurons que des garanties appropriées sont en place pour protéger vos données, 
+                        notamment des clauses contractuelles standards conformes au RGPD et à la législation congolaise.
+                    </p>
+                </div>
+
+                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-xl p-6">
+                    <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Autorité de contrôle</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        En cas de litige relatif à la protection de vos données personnelles, vous pouvez adresser une réclamation à notre Délégué à la Protection des Données (DPO) à 
+                        <a href="mailto:privacy@vintapp.com" class="underline font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800">privacy@vintapp.com</a>.
+                        Vous disposez également du droit d'introduire une réclamation auprès de l'autorité compétente en RDC.
+                    </p>
                 </div>
             </div>
         </div>
