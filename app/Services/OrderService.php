@@ -281,7 +281,7 @@ class OrderService
 
         Transaction::create([
             'transaction_id' => 'COMMISSION-' . strtoupper(Str::random(12)),
-            'user_id' => 1,
+            'user_id' => $seller->id,
             'buyer_id' => $order->buyer_id,
             'wallet_id' => $commissionWallet->id,
             'amount' => $commissionAmount,
@@ -296,7 +296,7 @@ class OrderService
 
         Transaction::create([
             'transaction_id' => 'TRANSPORT-' . strtoupper(Str::random(12)),
-            'user_id' => 1,
+            'user_id' => $seller->id,
             'buyer_id' => $order->buyer_id,
             'wallet_id' => $transportWallet->id,
             'amount' => $transportAmount,
@@ -319,7 +319,6 @@ class OrderService
                 'Commission: ' . number_format($commissionAmount, 2) . ' - ' .
                 'Transport: ' . number_format($transportAmount, 2) . ')',
             'action_url' => route('orders.show', $order->id),
-            'is_read' => false,
         ]);
 
         return $distribution;
