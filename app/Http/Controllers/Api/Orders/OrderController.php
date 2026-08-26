@@ -28,8 +28,10 @@ class OrderController extends ApiController
      */
     public function index(Request $request): JsonResponse
     {
+        $userId = $request->user()?->id ?? Auth::id();
+
         $orders = Order::with(['item', 'buyer', 'deliveryAddress'])
-            ->where('buyer_id', Auth::id())
+            ->where('buyer_id', $userId)
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
 
@@ -108,11 +110,13 @@ class OrderController extends ApiController
     /**
      * API: Détails d'une commande
      */
-    public function show($id): JsonResponse
+    public function show(Request $request, $id): JsonResponse
     {
         $order = Order::with(['item', 'buyer', 'deliveryAddress'])->findOrFail($id);
 
-        if ($order->buyer_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
+        $userId = $request->user()?->id ?? Auth::id();
+
+        if ($order->buyer_id !== $userId && $order->item->user_id !== $userId) {
             return $this->errorResponse('Non autorisé', 403);
         }
 
@@ -124,9 +128,11 @@ class OrderController extends ApiController
      */
     public function mySales(Request $request): JsonResponse
     {
+        $userId = $request->user()?->id ?? Auth::id();
+
         $orders = Order::with(['item', 'buyer', 'deliveryAddress'])
-            ->whereHas('item', function ($query) {
-                $query->where('user_id', Auth::id());
+            ->whereHas('item', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
             })
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 15));
@@ -137,12 +143,14 @@ class OrderController extends ApiController
     /**
      * API: Confirmer le paiement (acheteur)
      */
-    public function confirmPayment($id): JsonResponse
+    public function confirmPayment(Request $request, $id): JsonResponse
     {
         try {
             $order = Order::findOrFail($id);
 
-            if ($order->buyer_id !== Auth::id()) {
+            $userId = $request->user()?->id ?? Auth::id();
+
+            if ($order->buyer_id !== $userId) {
                 return $this->errorResponse('Vous n\'êtes pas autorisé à confirmer le paiement de cette commande.', 403);
             }
 
@@ -168,12 +176,14 @@ class OrderController extends ApiController
     /**
      * API: Marquer comme expédié (vendeur)
      */
-    public function markAsShipped($id): JsonResponse
+    public function markAsShipped(Request $request, $id): JsonResponse
     {
         try {
             $order = Order::findOrFail($id);
 
-            if ($order->item->user_id !== Auth::id()) {
+            $userId = $request->user()?->id ?? Auth::id();
+
+            if ($order->item->user_id !== $userId) {
                 return $this->errorResponse('Vous n\'êtes pas autorisé à modifier cette commande.', 403);
             }
 
@@ -199,12 +209,14 @@ class OrderController extends ApiController
     /**
      * API: Marquer comme livré (vendeur)
      */
-    public function markAsDelivered($id): JsonResponse
+    public function markAsDelivered(Request $request, $id): JsonResponse
     {
         try {
             $order = Order::findOrFail($id);
 
-            if ($order->item->user_id !== Auth::id()) {
+            $userId = $request->user()?->id ?? Auth::id();
+
+            if ($order->item->user_id !== $userId) {
                 return $this->errorResponse('Vous n\'êtes pas autorisé à modifier cette commande.', 403);
             }
 
@@ -235,7 +247,11 @@ class OrderController extends ApiController
         try {
             $order = Order::findOrFail($id);
 
-            if ($order->buyer_id !== Auth::id()) {
+            // En API Sanctum, Auth::id() (garde par défaut 'web') peut être
+            // null : on privilégie $request->user()->id.
+            $userId = $request->user()?->id ?? Auth::id();
+
+            if ($order->buyer_id !== $userId) {
                 return $this->errorResponse('Vous n\'êtes pas autorisé à confirmer la réception de cette commande.', 403);
             }
 
@@ -245,7 +261,10 @@ class OrderController extends ApiController
         } catch (DomainException $e) {
             return $this->errorResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
-            Log::error('Erreur lors de la confirmation de livraison API: ' . $e->getMessage());
+            Log::error('Erreur lors de la confirmation de livraison API: ' . $e->getMessage(), [
+                'order_id' => $id,
+                'trace' => $e->getTraceAsString(),
+            ]);
             return $this->errorResponse('Une erreur est survenue lors de la confirmation de livraison.', 500);
         }
     }
