@@ -339,7 +339,7 @@ Route::middleware(['web', 'auth:web'])->prefix('notifications')->group(function 
 });
 
 // ==================== FCM Token & Tests ====================
-Route::middleware(['web'])->post('/fcm-token', [FcmController::class, 'registerToken']);
+Route::middleware(['auth:sanctum'])->post('/fcm-token', [FcmController::class, 'registerToken']);
 
 Route::middleware(['web', 'auth:web'])->group(function () {
     Route::post('/test-fcm-notification', [FcmController::class, 'testNotification']);
@@ -352,7 +352,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
 Route::post('/bot', [BotController::class, 'ask']);
 
 // ==================== Notification Routes (API v1) ====================
-Route::prefix('v1/notifications')->middleware(['auth:sanctum,web'])->group(function () {
+Route::prefix('v1/notifications')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/', [ApiNotificationController::class, 'index']);
     Route::get('/unread', [ApiNotificationController::class, 'unread']);
     Route::get('/unread/count', [ApiNotificationController::class, 'unreadCount']);

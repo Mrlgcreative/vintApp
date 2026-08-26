@@ -31,13 +31,7 @@ class FcmController extends Controller
 
     private function fcmUser(Request $request): ?User
     {
-        $user = Auth::user();
-
-        if (!$user && session('2fa_user_id')) {
-            $user = User::find(session('2fa_user_id'));
-        }
-
-        return $user;
+        return $request->user();
     }
 
     public function registerToken(Request $request)
