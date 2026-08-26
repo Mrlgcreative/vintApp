@@ -42,6 +42,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at',
         'wallet_balance',
         'google2fa_enabled',
+        'latitude',
+        'longitude',
+        'city',
+        'commune',
+        'location_updated_at',
     ];
 
     /**
@@ -71,6 +76,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'newsletter_subscribed' => 'boolean',
             'google2fa_enabled' => 'boolean',
             'last_seen' => 'datetime',
+            'location_updated_at' => 'datetime',
         ];
     }
 

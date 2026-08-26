@@ -25,6 +25,7 @@ use App\Http\Controllers\Api\Webhooks\PawaPayCallbackController as ApiPawaPayCal
 use App\Http\Controllers\Api\System\SystemController;
 use App\Http\Controllers\Api\Notifications\FcmController;
 use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
+use App\Http\Controllers\Api\Location\SellerLocationController as ApiSellerLocationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BotController;
@@ -228,6 +229,15 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::delete('/{id}', [ApiDeliveryAddressController::class, 'destroy']);
         Route::post('/{id}/default', [ApiDeliveryAddressController::class, 'setDefault']);
     });
+
+    // ---- API V1 : Localisation vendeur ----
+    Route::prefix('v1/seller-location')->group(function () {
+        Route::get('/', [ApiSellerLocationController::class, 'index']);
+        Route::put('/', [ApiSellerLocationController::class, 'update']);
+        Route::delete('/', [ApiSellerLocationController::class, 'destroy']);
+    });
+    Route::get('/v1/seller-location/{userId}', [ApiSellerLocationController::class, 'show']);
+    Route::get('/v1/sellers/nearby', [ApiSellerLocationController::class, 'nearby']);
 
     // ---- API V1 : Messages ----
     Route::prefix('v1/messages')->group(function () {
