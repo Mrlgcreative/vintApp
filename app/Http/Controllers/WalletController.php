@@ -330,7 +330,7 @@ class WalletController extends Controller
             if ($response['status'] === 'pending') {
                 DB::transaction(function () use ($wallet, $validated, $response) {
                     $wallet->transactions()->create([
-                        'type' => 'credit_pending',
+                        'type' => 'credit',
                         'amount' => $validated['amount'],
                         'balance_after' => $wallet->balance,
                         'description' => 'Recharge via ' . ucfirst($validated['payment_method']),
@@ -720,7 +720,7 @@ class WalletController extends Controller
 
             if ($response['status'] === 'pending') {
                 $wallet->transactions()->create([
-                    'type' => 'credit_pending',
+                    'type' => 'credit',
                     'amount' => $request->amount,
                     'balance_after' => $wallet->balance,
                     'description' => 'Recharge via ' . ucfirst($request->payment_method),
