@@ -497,11 +497,11 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Vérifie si l'utilisateur est un vendeur (a au moins un article en vente).
+     * Vérifie si l'utilisateur est un vendeur (rôle persistant).
      */
     public function isSeller(): bool
     {
-        return $this->items()->where('status', 'active')->count() > 0;
+        return $this->hasRole('vendeur');
     }
 
     /**

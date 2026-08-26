@@ -68,6 +68,8 @@ class ItemObserver
             } catch (\Throwable $e) {
                 Log::error('Erreur broadcast article publié (observer): ' . $e->getMessage());
             }
+
+            $this->ensureSellerRole($item->user_id);
         }
 
         // Vérifier si le statut vient de passer à 'pending' ou 'pending_verification'
@@ -96,6 +98,21 @@ class ItemObserver
         // Déclencher la notification si l'article est créé avec le statut pending_verification et verification_status pending
         if ($item->status === 'pending_verification' && $item->verification_status === 'pending') {
             $this->notificationService->notifyExpertsForItem($item);
+        }
+
+        if ($item->status === 'active') {
+            $this->ensureSellerRole($item->user_id);
+        }
+    }
+
+    private function ensureSellerRole(int $userId): void
+    {
+        $user = \App\Models\User::find($userId);
+        if ($user && !$user->hasRole('vendeur')) {
+            $vendeurRole = \App\Models\Role::where('slug', 'vendeur')->first();
+            if ($vendeurRole) {
+                $user->roles()->attach($vendeurRole);
+            }
         }
     }
 }
