@@ -18,7 +18,7 @@ return new class extends Migration
         $vendeurRoleId = DB::table('roles')->where('slug', 'vendeur')->value('id');
         if ($vendeurRoleId) {
             $sellerUserIds = DB::table('items')
-                ->where('status', 'active')
+                ->whereIn('status', ['active', 'sold'])
                 ->pluck('user_id')
                 ->unique();
 
