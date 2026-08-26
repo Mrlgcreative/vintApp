@@ -18,8 +18,17 @@ class ForceJsonResponse
         $request->headers->set('X-Requested-With', 'XMLHttpRequest');
         
         try {
+            // Capture any stray print/echo output (e.g. from third-party libraries)
+            ob_start();
             $response = $next($request);
-            
+            $strayOutput = ob_get_clean();
+
+            // Prepend stray output to the response content so the regex below catches it
+            $content = $response->getContent();
+            if (!empty($strayOutput)) {
+                $content = $strayOutput . $content;
+            }
+
             // Ensure response is JSON
             if (!$response->headers->has('Content-Type') || 
                 strpos($response->headers->get('Content-Type'), 'application/json') === false) {
@@ -27,8 +36,7 @@ class ForceJsonResponse
             }
             
             // Si la réponse contient du HTML au lieu de JSON, convertir en JSON
-            $content = $response->getContent();
-            if (strpos($content, '<!DOCTYPE html>') !== false || strpos($content, '<html') !== false) {
+            if (preg_match('/<(!?DOCTYPE|html|style|script|form|body|head)/i', $content)) {
                 $response->setContent(json_encode([
                     'success' => false,
                     'message' => 'Une erreur inattendue s\'est produite. Veuillez réessayer.',
@@ -36,6 +44,9 @@ class ForceJsonResponse
                 ]));
                 $response->setStatusCode(500);
                 $response->headers->set('Content-Type', 'application/json');
+            } elseif (!empty($strayOutput)) {
+                // No HTML detected but there was stray output — strip it from the response
+                $response->setContent($content);
             }
             
             return $response;

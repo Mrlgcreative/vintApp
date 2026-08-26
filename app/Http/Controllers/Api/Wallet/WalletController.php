@@ -41,8 +41,10 @@ class WalletController extends ApiController
             $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
 
             return $this->successResponse([
-                'usd_wallet' => $usdWallet,
-                'cdf_wallet' => $cdfWallet,
+                'wallet' => [
+                    'USD' => $usdWallet,
+                    'CDF' => $cdfWallet,
+                ],
                 'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500)
             ], 'Wallets récupérés avec succès');
         } catch (\Exception $e) {
@@ -120,7 +122,7 @@ class WalletController extends ApiController
 
             if ($response['status'] === 'pending') {
                 $wallet->transactions()->create([
-                    'type' => 'credit_pending',
+                    'type' => 'credit',
                     'amount' => $request->amount,
                     'balance_after' => $wallet->balance,
                     'description' => 'Recharge via ' . ucfirst($request->payment_method),
