@@ -295,9 +295,9 @@
                     <h2 class="text-xl font-bold text-white mb-2">Des questions ?</h2>
                     <p class="text-sm text-slate-400 mb-6 max-w-md mx-auto">Pour toute question concernant ces conditions d'utilisation, n'hésitez pas à nous contacter.</p>
                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                        <a href="mailto:support@vintapp.com" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-slate-900 rounded-xl text-sm font-medium hover:bg-slate-100 transition-colors">
+                        <a href="mailto:support@vintapp.imasomo.com" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white text-slate-900 rounded-xl text-sm font-medium hover:bg-slate-100 transition-colors">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                            support@vintapp.com
+                            support@vintapp.imasomo.com
                         </a>
                         <a href="{{ route('help.index') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white/10 text-white rounded-xl text-sm font-medium hover:bg-white/20 transition-colors border border-white/10">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
