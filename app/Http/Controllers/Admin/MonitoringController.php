@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\MonitoringService;
+use App\Services\SecurityMonitoringService;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponses;
 
@@ -11,7 +12,8 @@ class MonitoringController extends Controller
 {
     use ApiResponses;
     public function __construct(
-        protected MonitoringService $monitoring
+        protected MonitoringService $monitoring,
+        protected SecurityMonitoringService $security
     ) {}
 
     /**
@@ -19,13 +21,18 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        // Capture un point + diffuse l'événement pour rafraîchir les autres fenêtres
-        $metrics = $this->monitoring->capture(true);
+        // Détection d'anomalies + alertes automatiques (avant capture pour
+        // que l'événement temps réel embarque aussi les alertes actives).
+        $metrics = $this->monitoring->capture(false);
+        $alerts = $this->security->detectAndAlert($metrics['health']);
+
+        $this->monitoring->captureWithPusher($metrics, $alerts);
 
         return view('admin.monitoring.dashboard', [
             'stats' => $metrics['stats'],
             'health' => $metrics['health'],
             'timestamp' => $metrics['timestamp'],
+            'alerts' => $alerts,
             'pusher' => [
                 'enabled' => config('broadcasting.default') === 'pusher',
                 'key' => config('broadcasting.connections.pusher.key'),
@@ -40,9 +47,12 @@ class MonitoringController extends Controller
      */
     public function stats()
     {
-        $metrics = $this->monitoring->capture(true);
+        $metrics = $this->monitoring->capture(false);
+        $alerts = $this->security->detectAndAlert($metrics['health']);
 
-        return response()->json($metrics);
+        $this->monitoring->captureWithPusher($metrics, $alerts);
+
+        return response()->json(array_merge($metrics, ['alerts' => $alerts]));
     }
 
     /**
@@ -62,6 +72,7 @@ class MonitoringController extends Controller
     public function reset()
     {
         $this->monitoring->resetMetrics();
+        $this->security->resetAlerts();
 
         return redirect()->back()->with('success', 'Métriques réinitialisées avec succès');
     }

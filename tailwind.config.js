@@ -220,6 +220,18 @@ export default {
                 'pulse-slow': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                 'shimmer': 'shimmer 1.5s infinite',
                 'shimmer-overlay': 'shimmer-overlay 2s infinite',
+                // Splash
+                'splash-cart': 'splashCartAppear 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards',
+                'splash-fill': 'splashCartFill 0.6s ease-out 1.2s forwards',
+                'splash-draw': 'splashStrokeDraw 1s cubic-bezier(0.4, 0, 0.2, 1) 0.4s forwards',
+                'splash-draw-delay': 'splashStrokeDraw 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.7s forwards',
+                'splash-item-1': 'splashItemPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1.0s forwards',
+                'splash-item-2': 'splashItemPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1.15s forwards',
+                'splash-item-3': 'splashItemPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 1.3s forwards',
+                'splash-tag': 'splashTagBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.45s forwards',
+                'splash-circle': 'splashCircleGrow 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards, splashCirclePulse 2.5s ease-in-out 1.2s infinite',
+                'splash-hint': 'splashFadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) 2.6s forwards',
+                'splash-outro': 'splashFadeOutZoom 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards',
             },
             keyframes: {
                 fadeIn: {
@@ -240,6 +252,44 @@ export default {
                 },
                 'shimmer-overlay': {
                     '100%': { transform: 'translateX(100%)' }
+                },
+                // Splash
+                splashCartAppear: {
+                    '0%': { opacity: '0', transform: 'scale(0) rotate(-180deg)' },
+                    '70%': { opacity: '1', transform: 'scale(1.08) rotate(5deg)' },
+                    '100%': { opacity: '1', transform: 'scale(1) rotate(0deg)' }
+                },
+                splashCartFill: {
+                    '100%': { fillOpacity: '0.12' }
+                },
+                splashStrokeDraw: {
+                    '100%': { strokeDashoffset: '0' }
+                },
+                splashItemPop: {
+                    '0%': { opacity: '0', transform: 'scale(0) translateY(4px)' },
+                    '70%': { transform: 'scale(1.15) translateY(0)' },
+                    '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
+                },
+                splashTagBounce: {
+                    '0%': { opacity: '0', transform: 'scale(0) rotate(-20deg)' },
+                    '60%': { transform: 'scale(1.2) rotate(5deg)' },
+                    '100%': { opacity: '1', transform: 'scale(1) rotate(0deg)' }
+                },
+                splashCircleGrow: {
+                    '0%': { opacity: '0', transform: 'scale(0)' },
+                    '100%': { opacity: '1', transform: 'scale(1)' }
+                },
+                splashCirclePulse: {
+                    '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+                    '50%': { transform: 'scale(1.06)', opacity: '0.7' }
+                },
+                splashFadeUp: {
+                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '100%': { opacity: '1', transform: 'translateY(0)' }
+                },
+                splashFadeOutZoom: {
+                    '0%': { opacity: '1', transform: 'scale(1)', filter: 'blur(0)' },
+                    '100%': { opacity: '0', transform: 'scale(1.1)', filter: 'blur(16px)' }
                 }
             },
             borderRadius: {

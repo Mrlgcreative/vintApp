@@ -21,12 +21,14 @@ class MonitoringUpdated implements ShouldBroadcastNow
     public array $stats;
     public array $health;
     public string $timestamp;
+    public array $alerts;
 
-    public function __construct(array $stats, array $health)
+    public function __construct(array $stats, array $health, array $alerts = [])
     {
         $this->stats = $stats;
         $this->health = $health;
         $this->timestamp = now()->toIso8601String();
+        $this->alerts = $alerts;
     }
 
     /**
@@ -54,6 +56,7 @@ class MonitoringUpdated implements ShouldBroadcastNow
             'stats' => $this->stats,
             'health' => $this->health,
             'timestamp' => $this->timestamp,
+            'alerts' => $this->alerts,
         ];
     }
 }

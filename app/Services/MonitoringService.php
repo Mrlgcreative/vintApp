@@ -220,7 +220,7 @@ class MonitoringService
      * Capture un instantané de métriques (enregistre un point
      * dans les séries temporelles et diffuse l'événement Pusher).
      */
-    public function capture(bool $broadcast = true): array
+    public function capture(bool $broadcast = true, array $alerts = []): array
     {
         $start = microtime(true);
 
@@ -252,6 +252,7 @@ class MonitoringService
             'health' => $health,
             'timestamp' => now()->toIso8601String(),
             'capture_ms' => round((microtime(true) - $start) * 1000, 2),
+            'alerts' => $alerts,
         ];
 
         if ($broadcast) {
@@ -282,6 +283,15 @@ class MonitoringService
     }
 
     /**
+     * Diffuse un événement MonitoringUpdated à partir de métriques déjà
+     * capturées, en incluant les alertes actives.
+     */
+    public function captureWithPusher(array $metrics, array $alerts): void
+    {
+        $this->broadcast(array_merge($metrics, ['alerts' => $alerts]));
+    }
+
+    /**
      * Diffuse l'événement de mise à jour du monitoring.
      */
     protected function broadcast(array $metrics): void
@@ -289,7 +299,8 @@ class MonitoringService
         try {
             \App\Events\MonitoringUpdated::dispatch(
                 $metrics['stats'],
-                $metrics['health']
+                $metrics['health'],
+                $metrics['alerts'] ?? []
             );
         } catch (\Throwable $e) {
             // Ne pas faire échouer la capture si la diffusion échoue
@@ -400,6 +411,15 @@ class MonitoringService
             'last_error' => $metrics[0] ?? null,
             'error_types' => array_count_values(array_column($metrics, 'message')),
         ];
+    }
+
+    /**
+     * Statistiques d'erreurs exposées publiquement pour la détection
+     * d'anomalies (utilisé par SecurityMonitoringService).
+     */
+    public function getErrorStatsForAlerts(): array
+    {
+        return $this->getErrorStats();
     }
 
     /**
