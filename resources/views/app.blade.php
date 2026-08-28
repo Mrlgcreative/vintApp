@@ -428,6 +428,9 @@
     <!-- Notifications en temps réel -->
     <x-notifications-realtime />
 
+    <!-- Toast global shadcn-style -->
+    <x-toast />
+
     <!-- Footer -->
     @if(!request()->routeIs('messages.*'))
         <x-footer />

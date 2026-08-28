@@ -3,33 +3,33 @@
 @section('title', 'Mon Profil')
 
 @section('content')
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-slate-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mon Profil</h1>
-            <p class="text-gray-600 dark:text-gray-400 mt-1">Gérez vos informations personnelles et vos préférences</p>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Gérez vos informations personnelles et vos préférences</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             <!-- Sidebar -->
             <div class="lg:col-span-1 space-y-6">
                 <!-- Profile Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
                     <div class="p-6 text-center">
                         @if($user->avatar_url)
-                            <img src="{{ $user->avatar_url }}" 
-                                 alt="{{ $user->name }}" 
-                                 class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-primary-100 dark:border-primary-900">
+                            <img src="{{ $user->avatar_url }}"
+                                 alt="{{ $user->name }}"
+                                 class="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-primary-400 dark:border-primary-700">
                         @else
-                            <div class="w-24 h-24 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center mx-auto mb-4 text-3xl font-bold border-4 border-primary-100 dark:border-primary-900">
+                            <div class="w-24 h-24 rounded-full bg-primary text-white flex items-center justify-center mx-auto mb-4 text-3xl font-bold border-4 border-primary-400 dark:border-primary-700">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
                         @endif
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{{ $user->name }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ $user->email }}</p>
-                        <button onclick="showAvatarModal()" 
-                                class="w-full px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all font-medium text-sm flex items-center justify-center gap-2">
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">{{ $user->email }}</p>
+                        <button onclick="showAvatarModal()"
+                                class="w-full px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all font-medium text-sm flex items-center justify-center gap-2 focus:outline-none focus:ring-4 focus:ring-primary-100">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -40,34 +40,34 @@
                 </div>
 
                 <!-- Stats Card -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
                     <div class="p-6">
                         <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                             </svg>
                             Statistiques
                         </h3>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="text-center p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ $stats['total_items'] }}</div>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Articles</div>
-                                <div class="text-[10px] text-gray-400 dark:text-gray-500">{{ $stats['active_items'] }} actifs</div>
+                            <div class="text-center p-3 bg-primary-400 dark:bg-primary-800 rounded-xl">
+                                <div class="text-2xl font-bold text-primary-700 dark:text-white">{{ $stats['total_items'] }}</div>
+                                <div class="text-[11px] text-primary-700 dark:text-primary-200 mt-0.5">Articles</div>
+                                <div class="text-[10px] text-primary-600 dark:text-primary-200">{{ $stats['active_items'] }} actifs</div>
                             </div>
-                            <div class="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $stats['completed_orders'] }}</div>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Vendus</div>
-                                <div class="text-[10px] text-gray-400 dark:text-gray-500">{{ $stats['sold_items'] }} soldés</div>
+                            <div class="text-center p-3 bg-success-400 dark:bg-success-800 rounded-xl">
+                                <div class="text-2xl font-bold text-success-700 dark:text-white">{{ $stats['completed_orders'] }}</div>
+                                <div class="text-[11px] text-success-700 dark:text-success-200 mt-0.5">Vendus</div>
+                                <div class="text-[10px] text-success-600 dark:text-success-300">{{ $stats['sold_items'] }} soldés</div>
                             </div>
-                            <div class="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ number_format($stats['total_revenue'], 0) }}$</div>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Revenus USD</div>
-                                <div class="text-[10px] text-gray-400 dark:text-gray-500">{{ number_format($stats['total_revenue_cdf'], 0) }} FC</div>
+                            <div class="text-center p-3 bg-info-400 dark:bg-info-800 rounded-xl">
+                                <div class="text-2xl font-bold text-info-700 dark:text-white">{{ number_format($stats['total_revenue'], 0) }}$</div>
+                                <div class="text-[11px] text-info-700 dark:text-info-200 mt-0.5">Revenus USD</div>
+                                <div class="text-[10px] text-info-600 dark:text-info-300">{{ number_format($stats['total_revenue_cdf'], 0) }} FC</div>
                             </div>
-                            <div class="text-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl">
-                                <div class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ number_format($stats['average_rating'], 1) }}</div>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Note</div>
-                                <div class="text-[10px] text-gray-400 dark:text-gray-500">{{ $stats['reviews_count'] }} avis</div>
+                            <div class="text-center p-3 bg-warning-400 dark:bg-warning-800 rounded-xl">
+                                <div class="text-2xl font-bold text-warning-700 dark:text-white">{{ number_format($stats['average_rating'], 1) }}</div>
+                                <div class="text-[11px] text-warning-700 dark:text-warning-200 mt-0.5">Note</div>
+                                <div class="text-[10px] text-warning-600 dark:text-warning-300">{{ $stats['reviews_count'] }} avis</div>
                             </div>
                         </div>
                         <hr class="my-3 border-gray-100 dark:border-gray-700">
@@ -76,7 +76,7 @@
                             <span class="font-semibold text-gray-900 dark:text-white">
                                 {{ $stats['unread_messages'] }}/{{ $stats['total_messages'] }}
                                 @if($stats['unread_messages'] > 0)
-                                    <span class="inline-flex w-2 h-2 bg-red-500 rounded-full ml-1"></span>
+                                    <span class="inline-flex w-2 h-2 bg-danger-500 rounded-full ml-1"></span>
                                 @endif
                             </span>
                         </div>
@@ -91,7 +91,7 @@
             <!-- Main Content -->
             <div class="lg:col-span-3">
                 <!-- Tabs -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden" x-data="{ activeTab: 'general' }">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden" x-data="{ activeTab: 'general' }">
                     <div class="border-b border-gray-200 dark:border-gray-700">
                         <nav class="flex flex-wrap gap-2 p-4">
                             <button @click="activeTab = 'general'" 
@@ -146,7 +146,7 @@
                                                id="name" 
                                                name="name" 
                                                value="{{ old('name', $user->name) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('name') border-red-500 @enderror"
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('name') border-red-500 @enderror"
                                                required>
                                         @error('name')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -161,7 +161,7 @@
                                                id="email" 
                                                name="email" 
                                                value="{{ old('email', $user->email) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('email') border-red-500 @enderror"
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('email') border-red-500 @enderror"
                                                required>
                                         @error('email')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -176,7 +176,7 @@
                                                id="phone" 
                                                name="phone" 
                                                value="{{ old('phone', $user->phone) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('phone') border-red-500 @enderror">
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('phone') border-red-500 @enderror">
                                         @error('phone')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                         @enderror
@@ -190,7 +190,7 @@
                                                id="location" 
                                                name="location" 
                                                value="{{ old('location', $user->location) }}" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('location') border-red-500 @enderror">
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('location') border-red-500 @enderror">
                                         @error('location')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                         @enderror
@@ -204,15 +204,15 @@
                                     <textarea id="bio" 
                                               name="bio" 
                                               rows="4" 
-                                              class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('bio') border-red-500 @enderror">{{ old('bio', $user->bio) }}</textarea>
+                                              class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('bio') border-red-500 @enderror">{{ old('bio', $user->bio) }}</textarea>
                                     @error('bio')
                                         <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                     @enderror
                                 </div>
 
                                 <div class="flex justify-end">
-                                    <button type="submit" 
-                                            class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+<button type="submit"
+                                            class="px-6 py-3 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-primary-100">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                         </svg>
@@ -238,7 +238,7 @@
                                         <input type="password" 
                                                id="current_password" 
                                                name="current_password" 
-                                               class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('current_password') border-red-500 @enderror"
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('current_password') border-red-500 @enderror"
                                                required>
                                         @error('current_password')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -253,7 +253,7 @@
                                             <input type="password" 
                                                    id="password" 
                                                    name="password" 
-                                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('password') border-red-500 @enderror"
+                                                   class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('password') border-red-500 @enderror"
                                                    required>
                                             @error('password')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -267,14 +267,14 @@
                                             <input type="password" 
                                                    id="password_confirmation" 
                                                    name="password_confirmation" 
-                                                   class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all"
+                                                   class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200"
                                                    required>
                                         </div>
                                     </div>
 
                                     <div class="flex justify-end">
                                         <button type="submit" 
-                                                class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center gap-2">
+                                                class="px-6 py-3 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-primary-100">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                                             </svg>
@@ -319,7 +319,7 @@
                                             </div>
                                         </div>
                                         <a href="{{ route('two-factor.index') }}" 
-                                           class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all font-medium text-sm flex items-center gap-2">
+                                           class="px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all font-medium text-sm flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-primary-100">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -330,7 +330,7 @@
                                 </div>
 
                                 <!-- Portabilité des données (RGPD) -->
-                                <div class="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-6">
                                     <div class="flex items-start gap-3 mb-4">
                                         <div class="flex items-center justify-center w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
                                             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,7 +358,7 @@
                                     </ul>
 
                                     <a href="{{ route('profile.data-export') }}"
-                                       class="inline-flex px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl items-center gap-2">
+                                       class="inline-flex px-6 py-3 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold transition-all shadow-sm hover:shadow-md items-center gap-2 focus:outline-none focus:ring-4 focus:ring-primary-100">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                         </svg>
@@ -371,7 +371,7 @@
                                 </div>
 
                                 <!-- Danger Zone -->
-                                <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-6">
+                                <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-6">
                                     <div class="flex items-start gap-3 mb-4">
                                         <div class="flex items-center justify-center w-10 h-10 bg-red-100 dark:bg-red-900 rounded-lg flex-shrink-0">
                                             <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,7 +396,7 @@
                                             <input type="password" 
                                                    id="delete_password" 
                                                    name="password" 
-                                                   class="w-full px-4 py-3 border-2 border-red-300 dark:border-red-700 rounded-xl focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:bg-red-900/20 dark:text-white transition-all @error('password', 'userDeletion') border-red-500 @enderror"
+                                                   class="w-full px-4 py-3 border border-red-300 dark:border-red-600 rounded-xl focus:outline-none focus:ring-4 focus:ring-red-100 focus:border-red-400 dark:bg-gray-800 dark:text-white transition-all duration-200 @error('password', 'userDeletion') border-red-500 @enderror"
                                                    required>
                                             @error('password', 'userDeletion')
                                                 <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -427,7 +427,7 @@
                                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                                         <label class="relative cursor-pointer">
                                             <input type="radio" name="theme_preference" value="auto" {{ $user->theme_preference === 'auto' ? 'checked' : '' }} class="peer sr-only">
-                                            <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
+                                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 peer-checked:border-primary dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-md">
                                                 <svg class="w-10 h-10 mx-auto mb-2 text-gray-400 dark:text-gray-500 peer-checked:text-primary-600 dark:peer-checked:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                                                 </svg>
@@ -437,7 +437,7 @@
                                         </label>
                                         <label class="relative cursor-pointer">
                                             <input type="radio" name="theme_preference" value="light" {{ $user->theme_preference === 'light' ? 'checked' : '' }} class="peer sr-only">
-                                            <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
+                                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 peer-checked:border-primary dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-md">
                                                 <svg class="w-10 h-10 mx-auto mb-2 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                                                 </svg>
@@ -447,7 +447,7 @@
                                         </label>
                                         <label class="relative cursor-pointer">
                                             <input type="radio" name="theme_preference" value="dark" {{ $user->theme_preference === 'dark' ? 'checked' : '' }} class="peer sr-only">
-                                            <div class="bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 peer-checked:border-primary-600 dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-lg">
+                                            <div class="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 peer-checked:border-primary dark:peer-checked:border-primary-400 rounded-xl p-5 text-center transition-all hover:border-primary-400 dark:hover:border-primary-500 peer-checked:shadow-md">
                                                 <svg class="w-10 h-10 mx-auto mb-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                                                 </svg>
@@ -457,7 +457,7 @@
                                         </label>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm transition-all">
+                                        <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold text-sm transition-all focus:outline-none focus:ring-4 focus:ring-primary-100">
                                             Appliquer le thème
                                         </button>
                                     </div>
@@ -499,7 +499,7 @@
                                         <input type="checkbox" name="push_enabled" value="1" checked class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500">
                                     </label>
                                     <div class="flex justify-end">
-                                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm transition-all">
+                                        <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold text-sm transition-all focus:outline-none focus:ring-4 focus:ring-primary-100">
                                             Sauvegarder
                                         </button>
                                     </div>
@@ -517,14 +517,14 @@
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label for="locale" class="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Langue</label>
-                                            <select id="locale" name="locale" class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all text-sm">
+                                            <select id="locale" name="locale" class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 text-sm">
                                                 <option value="fr" selected>Français</option>
                                                 <option value="en">English</option>
                                             </select>
                                         </div>
                                         <div>
                                             <label for="currency" class="block text-sm text-gray-600 dark:text-gray-400 mb-1.5">Devise</label>
-                                            <select id="currency" name="currency" class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all text-sm">
+                                            <select id="currency" name="currency" class="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 text-sm">
                                                 <option value="USD">$ USD</option>
                                                 <option value="CDF">FC CDF</option>
                                                 <option value="EUR">€ EUR</option>
@@ -532,7 +532,7 @@
                                         </div>
                                     </div>
                                     <div class="flex justify-end">
-                                        <button type="submit" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-sm transition-all">
+                                        <button type="submit" class="px-4 py-2 bg-primary hover:bg-primary-600 text-white rounded-xl font-semibold text-sm transition-all focus:outline-none focus:ring-4 focus:ring-primary-100">
                                             Sauvegarder
                                         </button>
                                     </div>
@@ -618,18 +618,18 @@
                     <input type="file" 
                            name="avatar" 
                            accept="image/*" 
-                           class="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all">
+                           class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200">
                     <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">PNG, JPG ou GIF (max. 2MB)</p>
                 </div>
 
                 <div class="flex gap-3 pt-4">
                     <button type="button" 
                             onclick="closeAvatarModal()" 
-                            class="flex-1 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium">
+class="flex-1 px-4 py-3 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium focus:outline-none focus:ring-4 focus:ring-gray-200">
                         Annuler
                     </button>
-                    <button type="submit" 
-                            class="flex-1 px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-all font-semibold">
+                    <button type="submit"
+                            class="flex-1 px-4 py-3 bg-primary hover:bg-primary-600 text-white rounded-xl transition-all font-semibold focus:outline-none focus:ring-4 focus:ring-primary-100">
                         Changer l'avatar
                     </button>
                 </div>
