@@ -1,6 +1,6 @@
 @props(['categories'])
 
-<section class="py-14 lg:py-20 bg-gray-50 dark:from-gray-800/60 dark:to-gray-900">
+<section class="py-14 lg:py-20 bg-gray-50 dark:bg-gray-800">
     <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-8">
             <div>

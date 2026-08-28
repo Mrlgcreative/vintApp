@@ -33,7 +33,7 @@
     <span id="toastMessage" class="text-sm font-medium">Success</span>
 </div>
 
-<div class="min-h-screen bg-white">
+<div class="min-h-screen bg-white dark:bg-gray-900">
 
     <!-- Hero Carousel Component -->
     <x-home.hero-carousel :slides="$heroSlides ?? collect()" />
@@ -45,12 +45,12 @@
     <x-home.category-grid :categories="$categories" />
 
     <!-- Articles Récents Section -->
-    <section id="collection" class="py-20 lg:py-32 bg-white">
+    <section id="collection" class="py-20 lg:py-32 bg-white dark:bg-gray-800">
         <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- En-tête Section -->
             <div class="mb-12">
-                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900">
+                <h2 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">
                     Articles Récents
                 </h2>
             </div>
@@ -66,7 +66,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Aucun article</h3>
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Aucun article</h3>
                         <a href="{{ route('items.create') ?? '#' }}" 
                            class="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 text-white rounded-full font-medium hover:bg-gray-800 transition-all">
                             <span>Ajouter un Article</span>

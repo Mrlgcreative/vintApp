@@ -8,18 +8,18 @@
     $isBoosted = $activeBoost !== null;
 @endphp
 
-<article class="group relative bg-white rounded-3xl overflow-hidden border-2 {{ $isBoosted ? 'border-gray-300 ring-2 ring-gray-100 shadow-lg shadow-gray-500/10' : 'border-gray-100 hover:border-gray-300' }} transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
+<article class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border-2 {{ $isBoosted ? 'border-gray-300 dark:border-gray-600 ring-2 ring-gray-100 dark:ring-gray-700 shadow-lg shadow-gray-500/10 dark:shadow-black/30' : 'border-gray-100 dark:border-gray-700 hover:border-gray-300' }} transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
     
     <!-- Image Container -->
-    <div class="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+    <div class="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
         @if($firstImage && Storage::disk('public')->exists($firstImage))
             <img src="{{ asset('storage/' . $firstImage) }}" 
                  alt="{{ $item->name }}" 
                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                  loading="lazy" />
         @else
-            <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                <svg class="w-16 h-16 text-gray-400 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700/50">
+                <svg class="w-16 h-16 text-gray-400 dark:text-gray-500 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
             </div>
@@ -77,19 +77,19 @@
     </div>
     
     <!-- Contenu -->
-    <div class="p-5 lg:p-6 {{ $isBoosted ? 'bg-gray-50/50' : '' }}">
+    <div class="p-5 lg:p-6 {{ $isBoosted ? 'bg-gray-50/50 dark:bg-gray-700/30' : '' }}">
         <div class="space-y-3">
-            <h3 class="font-bold text-base lg:text-lg {{ $isBoosted ? 'text-gray-900' : 'text-gray-900' }} line-clamp-2 min-h-[3rem] leading-tight">
+            <h3 class="font-bold text-base lg:text-lg text-gray-900 dark:text-white line-clamp-2 min-h-[3rem] leading-tight">
                 {{ $item->name }}
             </h3>
             
             <div class="flex items-center justify-between">
-                <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-semibold">
+                <span class="px-3 py-1 bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200 rounded-full text-xs font-semibold">
                     {{ $item->category->name ?? 'Vintage' }}
                 </span>
                 
                 @if($item->condition)
-                    <span class="text-xs text-gray-500">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">
                         {{ ucfirst($item->condition) }}
                     </span>
                 @endif
