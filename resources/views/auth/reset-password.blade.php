@@ -3,13 +3,17 @@
 @section('title', 'Réinitialiser le mot de passe - VintApp')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-primary-50 via-accent-50 to-blue-50 flex items-center justify-center p-4">
+<div class="min-h-screen bg-slate-50 dark:bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
+    <!-- Halos décoratifs -->
+    <div class="pointer-events-none absolute -top-32 -right-32 w-96 h-96 bg-primary-100 rounded-full blur-3xl"></div>
+    <div class="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 bg-primary-100 rounded-full blur-3xl"></div>
+
     <div class="w-full max-w-lg">
         <!-- Card Principal -->
-        <div class="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 transform transition-all duration-700 animate-fade-in-up">
+        <div class="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl border border-gray-100 dark:border-gray-700 shadow-2xl p-8">
             <!-- Header -->
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg ">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
@@ -21,14 +25,14 @@
 
             <!-- Messages d'erreur -->
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl">
-                    <div class="flex items-center text-red-800 mb-2">
+                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                    <div class="flex items-center text-red-800 dark:text-red-200 mb-2">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                         </svg>
                         <span class="font-medium">Erreur</span>
                     </div>
-                    <ul class="text-sm text-red-700 list-disc list-inside">
+                    <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside space-y-0.5">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -49,8 +53,8 @@
                         Adresse e-mail
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/>
                             </svg>
                         </div>
@@ -60,7 +64,7 @@
                                value="{{ old('email', $email ?? '') }}"
                                required 
                                autocomplete="email"
-                               class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 bg-gray-50 @error('email') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror">
+                               class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-300 @error('email') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror">
                     </div>
                 </div>
 
@@ -70,8 +74,8 @@
                         Nouveau mot de passe
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
                         </div>
@@ -81,7 +85,7 @@
                                required 
                                autocomplete="new-password"
                                placeholder="Minimum 8 caractères"
-                               class="w-full pl-10 pr-12 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300 @error('password') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror">
+                               class="w-full pl-10 pr-12 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-300 @error('password') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror">
                         <button type="button" 
                                 onclick="togglePassword('password', 'password-eye')" 
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -99,8 +103,8 @@
                         Confirmer le mot de passe
                     </label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                             </svg>
                         </div>
@@ -110,7 +114,7 @@
                                required 
                                autocomplete="new-password"
                                placeholder="Répétez le mot de passe"
-                               class="w-full pl-10 pr-12 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-green-500/20 focus:border-green-500 transition-all duration-300">
+                               class="w-full pl-10 pr-12 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-300">
                         <button type="button" 
                                 onclick="togglePassword('password_confirmation', 'password-confirm-eye')" 
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
@@ -125,17 +129,17 @@
                 <!-- Indicateur de force du mot de passe -->
                 <div class="space-y-2">
                     <div class="flex space-x-1">
-                        <div id="strength-1" class="h-1 flex-1 bg-gray-200 rounded-full transition-colors duration-300"></div>
-                        <div id="strength-2" class="h-1 flex-1 bg-gray-200 rounded-full transition-colors duration-300"></div>
-                        <div id="strength-3" class="h-1 flex-1 bg-gray-200 rounded-full transition-colors duration-300"></div>
-                        <div id="strength-4" class="h-1 flex-1 bg-gray-200 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-1" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-2" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-3" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"></div>
+                        <div id="strength-4" class="h-1 flex-1 bg-gray-200 dark:bg-gray-700 rounded-full transition-colors duration-300"></div>
                     </div>
-                    <p id="strength-text" class="text-xs text-gray-500"></p>
+                    <p id="strength-text" class="text-xs text-gray-500 dark:text-gray-400"></p>
                 </div>
 
                 <!-- Bouton Submit -->
                 <button type="submit" 
-                        class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center space-x-2">
+                        class="w-full bg-primary hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg  hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
@@ -146,7 +150,7 @@
             <!-- Retour à la connexion -->
             <div class="mt-8 text-center">
                 <a href="{{ route('login') }}" 
-                   class="inline-flex items-center text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors duration-300">
+                   class="inline-flex items-center text-primary dark:text-primary-300 hover:text-primary-600 transition-colors duration-300 text-sm font-medium">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
@@ -188,7 +192,7 @@ document.getElementById('password').addEventListener('input', function(e) {
     for (let i = 1; i <= 4; i++) {
         const el = document.getElementById('strength-' + i);
         el.className = 'h-1 flex-1 rounded-full transition-colors duration-300 ' + 
-            (i <= strength ? colors[strength - 1] : 'bg-gray-200');
+            (i <= strength ? colors[strength - 1] : 'bg-gray-200 dark:bg-gray-700');
     }
     
     document.getElementById('strength-text').textContent = password.length > 0 ? texts[strength - 1] || '' : '';

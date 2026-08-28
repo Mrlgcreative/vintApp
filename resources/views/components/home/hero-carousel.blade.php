@@ -10,7 +10,12 @@
     $slideDurations = $slides ? $slides->pluck('display_duration')->toArray() : [];
 @endphp
 
-<section class="relative h-[90vh] min-h-[500px] sm:min-h-[600px] overflow-hidden">
+<section class="relative h-[90vh] min-h-[500px] sm:min-h-[600px] overflow-hidden"
+         style="background-image: url('https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center;">
+    <!-- Voile sombre pour la lisibilité -->
+    <div class="absolute inset-0 bg-black/55 dark:bg-black/75 z-[5]"></div>
+    <div class="absolute inset-0 z-[5] bg-gradient-to-t from-black/80 via-transparent to-black/30 dark:from-black/90 dark:via-black/40 dark:to-black/60"></div>
+
     @if($slides && $slides->count() > 0)
         <!-- Carrousel Container -->
         <div class="relative h-full">
@@ -20,7 +25,7 @@
                     <div class="carousel-slide absolute inset-0 flex items-center transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
                          data-slide-index="{{ $index }}"
                          data-duration="{{ $slide->display_duration ?? 6 }}"
-                          style="background-color: {{ $slide->background_color ?? '#1a1a1a' }};">
+                          style="background-color: transparent;">
                         
                         <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
                             <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10 {{ ($slide->image_position ?? 'right') === 'left' ? 'md:flex-row-reverse' : '' }}">
@@ -104,7 +109,7 @@
         </div>
     @else
         <!-- Fallback Hero -->
-        <div class="relative h-full bg-gray-900 flex items-center justify-center overflow-hidden">
+        <div class="relative h-full bg-transparent flex items-center justify-center overflow-hidden">
             
             <div class="container max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 text-center relative z-10">
                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full mb-8">

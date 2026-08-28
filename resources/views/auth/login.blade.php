@@ -10,65 +10,63 @@
 <!-- Loading Overlay -->
 <div id="loading-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden items-center justify-center">
     <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl flex flex-col items-center gap-4">
-        <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+        <div class="w-12 h-12 border-4 border-primary-300 border-t-primary rounded-full animate-spin"></div>
         <p class="text-gray-700 dark:text-gray-200 font-medium">Connexion en cours...</p>
     </div>
 </div>
 
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+<div class="min-h-screen bg-slate-50 dark:bg-gray-900 flex">
 
     <!-- Panneau gauche décoratif (desktop) -->
-    <div class="hidden lg:flex lg:w-5/12 relative overflow-hidden bg-gradient-to-br from-purple-700 via-purple-800 to-gray-900 items-center justify-center">
+    <div class="hidden lg:flex lg:w-[42%] relative overflow-hidden bg-primary items-center justify-center">
         <div class="absolute inset-0 opacity-20">
-            <div class="absolute top-1/4 -left-20 w-80 h-80 bg-pink-500 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-1/3 right-0 w-96 h-96 bg-purple-400 rounded-full blur-3xl"></div>
-            <div class="absolute top-2/3 left-1/3 w-64 h-64 bg-fuchsia-400 rounded-full blur-3xl"></div>
+            <div class="absolute top-1/4 -left-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/3 right-0 w-96 h-96 bg-purple-300 rounded-full blur-3xl"></div>
+            <div class="absolute top-2/3 left-1/3 w-64 h-64 bg-purple-400 rounded-full blur-3xl"></div>
         </div>
         <div class="absolute inset-0 opacity-5 bg-[linear-gradient(rgba(255,255,255,.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+        <div class="absolute -bottom-24 -right-24 w-80 h-80 rounded-full border-2 border-white/20"></div>
 
         <div class="relative z-10 max-w-sm px-10 text-white space-y-8">
-            <div class="w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-xl">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                 </svg>
             </div>
             <h2 class="text-3xl font-bold leading-tight">
                 Bon retour sur
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 to-pink-300">VintApp</span>
+                <span class="text-white">VintApp</span>
             </h2>
-            <p class="text-white/60 text-lg leading-relaxed">
+            <p class="text-white/70 text-lg leading-relaxed">
                 Accédez à votre espace, suivez vos commandes et continuez à chiner des pièces vintage uniques.
             </p>
             <div class="space-y-4 pt-2">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                @php
+                    $points = [
+                        'Connexion sécurisée par email ou réseaux sociaux',
+                        'Historique et favoris synchronisés',
+                        'Paiements et données protégés',
+                    ];
+                @endphp
+                @foreach ($points as $point)
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-white/15 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-white/80 text-sm">{{ $point }}</span>
                     </div>
-                    <span class="text-white/70 text-sm">Connexion sécurisée par email ou réseaux sociaux</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    <span class="text-white/70 text-sm">Historique et favoris synchronisés</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    <span class="text-white/70 text-sm">Paiements et données protégés</span>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 
     <!-- Panneau droit : formulaire -->
     <div class="flex-1 flex items-center justify-center p-6 sm:p-8 overflow-y-auto">
-        <div class="w-full max-w-lg py-8">
+        <div class="w-full max-w-md py-8">
 
             <!-- Logo mobile -->
             <div class="lg:hidden text-center mb-6">
-                <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-purple-500/25">
+                <div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg ">
                     <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
                     </svg>
@@ -123,7 +121,7 @@
             <div class="space-y-3 mb-6">
                 <button onclick="signInWithGoogle()"
                         type="button"
-                        class="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-purple-500/20">
+                        class="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:border-primary-200 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-primary-100">
                     <svg class="w-5 h-5" viewBox="0 0 24 24">
                         <path fill="#4285f4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34a853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -132,8 +130,6 @@
                     </svg>
                     <span class="text-gray-700 dark:text-gray-200 font-medium text-sm">Continuer avec Google</span>
                 </button>
-
-               
             </div>
 
             <!-- Séparateur -->
@@ -142,7 +138,7 @@
                     <div class="w-full border-t border-gray-200 dark:border-gray-700"></div>
                 </div>
                 <div class="relative flex justify-center text-xs">
-                    <span class="px-3 bg-gray-50 dark:bg-gray-900 text-gray-400 font-medium uppercase tracking-wider">ou par email</span>
+                    <span class="px-3 bg-slate-50 dark:bg-gray-900 text-gray-400 font-medium uppercase tracking-wider">ou par email</span>
                 </div>
             </div>
 
@@ -166,7 +162,7 @@
                                required
                                value="{{ old('email') }}"
                                autocomplete="email"
-                               class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 @error('email') border-red-400 focus:border-red-500 @enderror"
+                               class="w-full pl-10 pr-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-200 @error('email') border-red-400 focus:border-red-500 @enderror"
                                placeholder="nom@exemple.com">
                     </div>
                     @error('email')
@@ -189,7 +185,7 @@
                                name="password"
                                required
                                autocomplete="current-password"
-                               class="w-full pl-10 pr-11 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 @error('password') border-red-400 focus:border-red-500 @enderror"
+                               class="w-full pl-10 pr-11 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-200 @error('password') border-red-400 focus:border-red-500 @enderror"
                                placeholder="Votre mot de passe">
                         <button type="button"
                                 onclick="togglePassword()"
@@ -210,25 +206,25 @@
                         <input type="checkbox"
                                id="remember"
                                name="remember"
-                               class="w-4 h-4 text-purple-600 border-gray-300 dark:border-gray-600 rounded focus:ring-purple-500 focus:ring-offset-0">
+                               class="w-4 h-4 text-primary border-gray-300 dark:border-gray-600 rounded focus:ring-primary focus:ring-offset-0">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Se souvenir de moi</span>
                     </label>
                     <a href="{{ route('password.request') }}"
-                       class="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors sm:text-right">
+                       class="text-sm text-primary dark:text-primary-300 hover:text-primary-600 dark:hover:text-primary-200 font-medium transition-colors sm:text-right">
                         Mot de passe oublié ?
                     </a>
                 </div>
 
                 <button type="submit"
                         id="login-submit-btn"
-                        class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-purple-500/50 text-sm">
+                        class="w-full bg-primary hover:bg-primary-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg  hover:shadow-xl  transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-primary text-sm">
                     Se connecter
                 </button>
             </form>
 
             <p class="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
                 Pas encore de compte ?
-                <a href="{{ route('register') }}" class="text-purple-600 dark:text-purple-400 hover:text-purple-700 font-semibold transition-colors">
+                <a href="{{ route('register') }}" class="text-primary dark:text-primary-300 hover:text-primary-600 font-semibold transition-colors">
                     Créer un compte
                 </a>
             </p>
@@ -393,7 +389,7 @@ function showLoading(show) {
 
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
-    const colors = { success: 'bg-emerald-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-purple-600' };
+    const colors = { success: 'bg-emerald-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-primary' };
     const icons = {
         success: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>',
         error: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>',
@@ -436,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = this.value.trim();
         if (email && !validateEmail(email)) {
             this.classList.add('border-red-400', 'focus:border-red-500');
-            this.classList.remove('border-gray-200', 'dark:border-gray-700', 'focus:border-purple-500');
+            this.classList.remove('border-gray-200', 'dark:border-gray-700', 'focus:border-primary');
         } else {
             this.classList.remove('border-red-400', 'focus:border-red-500');
             this.classList.add('border-gray-200', 'dark:border-gray-700');
