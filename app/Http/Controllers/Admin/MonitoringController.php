@@ -19,26 +19,30 @@ class MonitoringController extends Controller
      */
     public function index()
     {
-        $stats = $this->monitoring->getRealTimeStats();
-        $health = $this->monitoring->healthCheck();
+        // Capture un point + diffuse l'événement pour rafraîchir les autres fenêtres
+        $metrics = $this->monitoring->capture(true);
 
         return view('admin.monitoring.dashboard', [
-            'stats' => $stats,
-            'health' => $health,
-            'timestamp' => now()->toIso8601String(),
+            'stats' => $metrics['stats'],
+            'health' => $metrics['health'],
+            'timestamp' => $metrics['timestamp'],
+            'pusher' => [
+                'enabled' => config('broadcasting.default') === 'pusher',
+                'key' => config('broadcasting.connections.pusher.key'),
+                'cluster' => config('broadcasting.connections.pusher.options.cluster', 'us2'),
+            ],
         ]);
     }
 
     /**
-     * API pour récupérer les stats en temps réel (AJAX)
+     * API pour récupérer les stats en temps réel (AJAX).
+     * Capture un point + diffuse l'événement Pusher pour les autres onglets.
      */
     public function stats()
     {
-        return response()->json([
-            'stats' => $this->monitoring->getRealTimeStats(),
-            'health' => $this->monitoring->healthCheck(),
-            'timestamp' => now()->toIso8601String(),
-        ]);
+        $metrics = $this->monitoring->capture(true);
+
+        return response()->json($metrics);
     }
 
     /**

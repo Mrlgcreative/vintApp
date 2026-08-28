@@ -15,7 +15,11 @@
                 </p>
             </div>
             
-            <div class="flex gap-2 sm:gap-3">
+            <div class="flex gap-2 sm:gap-3 items-center flex-wrap">
+                <span id="live-connection" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hidden items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-slate-400"></span>
+                    <span id="live-connection-text">Connexion...</span>
+                </span>
                 <button
                     id="toggle-refresh"
                     class="px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium transition bg-green-600 text-white hover:bg-green-700"
@@ -110,6 +114,94 @@
                         <span class="text-slate-600 dark:text-slate-400">Chargement...</span>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Real-time Stats Grid (live) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6">
+            <!-- Users Online -->
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-md p-3 sm:p-6 text-white">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 class="text-xs sm:text-sm font-semibold">Utilisateurs en ligne</h3>
+                    <span class="text-lg sm:text-2xl">🟢</span>
+                </div>
+                <div id="users-online" class="text-2xl sm:text-3xl font-bold">—</div>
+                <p class="text-[11px] sm:text-xs mt-1 sm:mt-2 opacity-90">10 dernières minutes</p>
+            </div>
+
+            <!-- System Load -->
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">Charge serveur (1/5 min)</h3>
+                    <span class="text-lg sm:text-2xl">🧮</span>
+                </div>
+                <div id="system-load" class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">—</div>
+                <div id="load-bar" class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 mt-2">
+                    <div id="load-bar-fill" class="h-1.5 rounded-full bg-green-500 transition-all" style="width:0%"></div>
+                </div>
+            </div>
+
+            <!-- New users today -->
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">Nouveaux inscrits (24h)</h3>
+                    <span class="text-lg sm:text-2xl">👥</span>
+                </div>
+                <div id="new-users-today" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">—</div>
+                <p class="text-[11px] sm:text-xs mt-1 sm:mt-2 text-slate-500 dark:text-slate-400">Aujourd'hui</p>
+            </div>
+
+            <!-- Items pending -->
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-3 sm:p-6">
+                <div class="flex items-center justify-between mb-2 sm:mb-3">
+                    <h3 class="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-100">Annonces en attente</h3>
+                    <span class="text-lg sm:text-2xl">⏳</span>
+                </div>
+                <div id="items-pending" class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">—</div>
+                <p class="text-[11px] sm:text-xs mt-1 sm:mt-2 text-slate-500 dark:text-slate-400">À vérifier</p>
+            </div>
+        </div>
+
+        <!-- History Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6 mb-6">
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                        <span class="mr-2">💹</span> Revenus du jour
+                    </h3>
+                    <span class="text-xs text-slate-400">temps réel</span>
+                </div>
+                <canvas id="revenue-chart" style="height:170px;width:100%" height="200"></canvas>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                        <span class="mr-2">⚡</span> Temps de réponse moyen (ms)
+                    </h3>
+                    <span class="text-xs text-slate-400">temps réel</span>
+                </div>
+                <canvas id="performance-chart" style="height:170px;width:100%" height="200"></canvas>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                        <span class="mr-2">🟢</span> Utilisateurs connectés
+                    </h3>
+                    <span class="text-xs text-slate-400">temps réel</span>
+                </div>
+                <canvas id="users-chart" style="height:170px;width:100%" height="200"></canvas>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 sm:p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm sm:text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                        <span class="mr-2">🚨</span> Nombre d'erreurs
+                    </h3>
+                    <span class="text-xs text-slate-400">temps réel</span>
+                </div>
+                <canvas id="errors-chart" style="height:170px;width:100%" height="200"></canvas>
             </div>
         </div>
 
@@ -389,6 +481,11 @@ function updateDashboard(data) {
             </div>
         `}
     `;
+
+    // Temps réel : graphiques + cartes live
+    window.lastData = data;
+    renderCharts(data);
+    renderRealtimeStats(stats);
 }
 
 // Toggle auto-refresh
@@ -410,11 +507,171 @@ document.getElementById('toggle-refresh').addEventListener('click', function() {
 // Initial load
 refreshStats();
 
-// Auto-refresh every 5 seconds
+// Auto-refresh every 5 seconds (fallback si Pusher indisponible)
 refreshInterval = setInterval(() => {
     if (autoRefresh) {
         refreshStats();
     }
 }, 5000);
+
+/* ==================== Graphiques temps réel ==================== */
+
+let charts = {};
+
+function buildTimeSeries(points, valueKey) {
+    const labels = (points || []).map(p => {
+        const d = new Date(p.time);
+        return d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    });
+    let values = (points || []).map(p => {
+        let v = p.value;
+        if (valueKey && typeof v === 'object') {
+            v = Object.values(v).reduce((a, b) => a + Number(b), 0);
+        }
+        return Number(v) || 0;
+    });
+    return { labels, values };
+}
+
+function makeChart(canvasId, label, color, points, valueKey) {
+    const el = document.getElementById(canvasId);
+    if (!el || typeof Chart === 'undefined') return null;
+
+    const { labels, values } = buildTimeSeries(points, valueKey);
+
+    // Détruire l'ancien chart
+    if (charts[canvasId]) {
+        charts[canvasId].data.labels = labels;
+        charts[canvasId].data.datasets[0].data = values;
+        charts[canvasId].update();
+        return charts[canvasId];
+    }
+
+    charts[canvasId] = new Chart(el, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label,
+                data: values,
+                borderColor: color,
+                backgroundColor: color + '22',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                borderWidth: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { display: false },
+                y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,0.15)' } }
+            }
+        }
+    });
+    return charts[canvasId];
+}
+
+function renderCharts(data) {
+    if (!data) return;
+    const series = data.stats.series || data.series || {};
+    makeChart('revenue-chart', 'Revenus du jour', '#10b981', series.revenue);
+    makeChart('performance-chart', 'Temps moyen (ms)', '#6366f1', series.performance);
+    makeChart('users-chart', 'Utilisateurs connectés', '#3b82f6', series.users);
+    makeChart('errors-chart', 'Erreurs', '#ef4444', series.errors);
+}
+
+/* ==================== Stats temps réel (cartes) ==================== */
+
+function renderRealtimeStats(stats) {
+    const rt = stats.realtime || {};
+
+    const usersOnline = document.getElementById('users-online');
+    if (usersOnline) usersOnline.textContent = formatNumber(rt.users_online ?? 0);
+
+    const newUsers = document.getElementById('new-users-today');
+    if (newUsers) newUsers.textContent = formatNumber(rt.new_users_today ?? 0);
+
+    const itemsPending = document.getElementById('items-pending');
+    if (itemsPending) itemsPending.textContent = formatNumber(rt.items_pending ?? 0);
+
+    const systemLoad = document.getElementById('system-load');
+    const loadFill = document.getElementById('load-bar-fill');
+    if (systemLoad && rt.load_avg) {
+        systemLoad.textContent = `${rt.load_avg['1min']} / ${rt.load_avg['5min']}`;
+        if (loadFill) {
+            const load = (rt.load_avg['1min'] / 10) * 100;
+            loadFill.style.width = Math.min(100, load) + '%';
+            loadFill.className = 'h-1.5 rounded-full transition-all ' +
+                (load > 70 ? 'bg-red-500' : load > 40 ? 'bg-yellow-500' : 'bg-green-500');
+        }
+    } else if (systemLoad) {
+        systemLoad.textContent = 'N/A';
+    }
+}
+
+/* ==================== Connexion temps réel (Pusher) ==================== */
+
+function setLiveConnection(state, label) {
+    const pill = document.getElementById('live-connection');
+    const text = document.getElementById('live-connection-text');
+    if (!pill) return;
+
+    pill.classList.remove('hidden');
+    const dot = pill.querySelector('span');
+    if (state === 'live') {
+        dot.className = 'inline-block w-2 h-2 rounded-full bg-green-500 animate-pulse';
+        pill.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300';
+    } else if (state === 'polling') {
+        dot.className = 'inline-block w-2 h-2 rounded-full bg-yellow-500 animate-pulse';
+        pill.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300';
+    } else {
+        dot.className = 'inline-block w-2 h-2 rounded-full bg-red-500';
+        pill.className = 'px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium flex items-center gap-2 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300';
+    }
+    text.textContent = label;
+}
+
+function initRealtime() {
+    setLiveConnection('disconnected', 'Mode secours');
+
+    // Démarrer les graphiques vides, puis tenter la connexion Pusher
+    try {
+        @if($pusher['enabled'])
+        if (window.Echo && typeof window.Echo !== 'undefined') {
+            setLiveConnection('polling', 'Connexion temps réel...');
+            window.Echo.channel('monitoring.updates')
+                .listen('.monitoring.updated', (event) => {
+                    setLiveConnection('live', 'Temps réel (WebSocket)');
+                    updateDashboard({ stats: event.stats, health: event.health, timestamp: event.timestamp });
+                })
+                .error((error) => {
+                    console.warn('Monitoring: Pusher indisponible, mode polling actif.', error);
+                    setLiveConnection('polling', 'Polling (WebSocket indisponible)');
+                });
+        } else {
+            setLiveConnection('polling', 'Polling (5s)');
+        }
+        @else
+        setLiveConnection('polling', 'Polling (5s)');
+        @endif
+    } catch (e) {
+        console.warn('Monitoring: impossible d\'initialiser le temps réel, mode polling.', e);
+        setLiveConnection('polling', 'Polling (5s)');
+    }
+}
+
+// Initialise la connexion temps réel au chargement
+initRealtime();
+
+// Rend les graphiques initiaux (les séries viennent de refreshStats initial)
+setTimeout(() => {
+    try {
+        renderCharts(lastData);
+    } catch (e) { /* ignorer si pas encore de données */ }
+}, 800);
 </script>
 @endsection
