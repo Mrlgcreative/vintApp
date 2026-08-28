@@ -219,6 +219,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/stats', [ProfileController::class, 'stats'])->name('profile.stats');
     Route::get('/profile/security', [ProfileController::class, 'security'])->name('profile.security');
     Route::get('/profile/notifications', [ProfileController::class, 'notifications'])->name('profile.notifications');
+    Route::get('/profile/data-export', [ProfileController::class, 'dataExport'])->name('profile.data-export');
     
     // Settings page
     Route::get('/settings', function() {

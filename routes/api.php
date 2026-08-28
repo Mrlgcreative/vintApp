@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Messages\MessageController as ApiMessageController;
 use App\Http\Controllers\Api\Reviews\ReviewController as ApiReviewController;
 use App\Http\Controllers\Api\Users\UserController as ApiUserController;
 use App\Http\Controllers\Api\Notifications\NotificationController as ApiNotificationController;
+use App\Http\Controllers\Api\Users\DataExportController as ApiDataExportController;
 use App\Http\Controllers\Api\Support\SupportController as ApiSupportController;
 use App\Http\Controllers\Api\Authenticity\AuthenticityController as ApiAuthenticityController;
 use App\Http\Controllers\Api\VintPass\VintPassController as ApiVintPassController;
@@ -340,6 +341,12 @@ Route::middleware(['web', 'auth:web'])->prefix('notifications')->group(function 
 
 // ==================== FCM Token & Tests ====================
 Route::middleware(['auth:sanctum'])->post('/fcm-token', [FcmController::class, 'registerToken']);
+
+// ==================== Portabilité des données (RGPD article 20) ====================
+Route::prefix('v1/data-export')->middleware(['auth:sanctum'])->group(function () {
+    Route::get('/', [ApiDataExportController::class, 'preview']);
+    Route::get('/download', [ApiDataExportController::class, 'download']);
+});
 
 Route::middleware(['web', 'auth:web'])->group(function () {
     Route::post('/test-fcm-notification', [FcmController::class, 'testNotification']);

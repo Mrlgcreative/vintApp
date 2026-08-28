@@ -24,6 +24,27 @@ use Inertia\Response;
 class ProfileController extends Controller
 {
     /**
+     * Portabilité des données (RGPD article 20).
+     * Télécharge l'ensemble des données utilisateur en JSON.
+     */
+    public function dataExport(Request $request)
+    {
+        $user = $request->user();
+
+        $export = app(\App\Services\UserDataExportService::class)->export($user);
+
+        $filename = 'vintapp-donnees-' . strtolower($user->username ?? $user->name) . '-' . now()->format('Y-m-d') . '.json';
+        $filename = preg_replace('/[^a-z0-9\-\.]/i', '-', $filename);
+
+        $json = json_encode($export, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE);
+
+        return response($json, 200, [
+            'Content-Type' => 'application/json; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ])->setContent($json);
+    }
+
+    /**
      * Afficher la page d'accueil du profil
      */
     public function index(Request $request): View

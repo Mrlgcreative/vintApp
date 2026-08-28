@@ -329,6 +329,47 @@
                                     </div>
                                 </div>
 
+                                <!-- Portabilité des données (RGPD) -->
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
+                                    <div class="flex items-start gap-3 mb-4">
+                                        <div class="flex items-center justify-center w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+                                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-1">Portabilité de vos données (RGPD)</h4>
+                                            <p class="text-sm text-blue-800 dark:text-blue-200">
+                                                Conformément à l'article 20 du RGPD, récupérez l'ensemble de vos données personnelles dans un format structuré, couramment utilisé et lisible par machine (JSON).
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <ul class="mb-4 grid grid-cols-1 sm:grid-cols-2 gap-1 text-sm text-blue-800 dark:text-blue-200 list-disc list-inside">
+                                        <li>Profil et identité, rôles</li>
+                                        <li>Localisation vendeur</li>
+                                        <li>Annonces / produits et favoris</li>
+                                        <li>Commandes (achats et ventes)</li>
+                                        <li>Portefeuille et transactions</li>
+                                        <li>Messages échangés</li>
+                                        <li>Avis &amp; évaluations</li>
+                                        <li>Notifications reçues</li>
+                                        <li>Sessions et connexions</li>
+                                    </ul>
+
+                                    <a href="{{ route('profile.data-export') }}"
+                                       class="inline-flex px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                        </svg>
+                                        Télécharger mes données
+                                    </a>
+
+                                    <p class="mt-3 text-xs text-blue-700 dark:text-blue-300">
+                                        L'export est généré instantanément au format JSON. Aucune donnée n'est supprimée lors de l'export.
+                                    </p>
+                                </div>
+
                                 <!-- Danger Zone -->
                                 <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl p-6">
                                     <div class="flex items-start gap-3 mb-4">
