@@ -106,7 +106,7 @@
                         </div>
 
                         <!-- Filtres -->
-                        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 mb-6 shadow-sm">
+                        <div class="skeleton-card p-4 mb-6">
                             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div class="skeleton-loader h-10"></div>
                                 <div class="skeleton-loader h-10"></div>
@@ -116,7 +116,7 @@
                         </div>
 
                         <!-- Tableau -->
-                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+                        <div class="skeleton-card">
                             <!-- En-têtes du tableau -->
                             <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
                                 <div class="grid grid-cols-5 gap-4">
@@ -175,7 +175,7 @@
                             <!-- Colonne principale -->
                             <div class="lg:col-span-2 space-y-6">
                                 <!-- Card 1 -->
-                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                                <div class="skeleton-card p-6">
                                     <div class="skeleton-loader skeleton-title w-48 mb-6"></div>
                                     <div class="space-y-4">
                                         ${Array(5).fill(0).map(() => `
@@ -188,7 +188,7 @@
                                 </div>
 
                                 <!-- Card 2 -->
-                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                                <div class="skeleton-card p-6">
                                     <div class="skeleton-loader skeleton-title w-40 mb-6"></div>
                                     <div class="space-y-4">
                                         ${Array(3).fill(0).map(() => `
@@ -201,7 +201,7 @@
                             <!-- Sidebar -->
                             <div class="space-y-6">
                                 <!-- Card sidebar 1 -->
-                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                                <div class="skeleton-card p-6">
                                     <div class="skeleton-loader skeleton-title w-32 mb-4"></div>
                                     <div class="space-y-3">
                                         ${Array(4).fill(0).map(() => `
@@ -214,7 +214,7 @@
                                 </div>
 
                                 <!-- Card sidebar 2 -->
-                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                                <div class="skeleton-card p-6">
                                     <div class="skeleton-loader skeleton-avatar w-24 h-24 mx-auto mb-4"></div>
                                     <div class="skeleton-loader skeleton-text w-32 mx-auto mb-2"></div>
                                     <div class="skeleton-loader skeleton-text w-40 mx-auto"></div>
@@ -239,7 +239,7 @@
                         <!-- Stats Cards -->
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                             ${Array(4).fill(0).map(() => `
-                                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+                                <div class="skeleton-card p-6">
                                     <div class="flex items-center gap-4">
                                         <div class="skeleton-loader w-12 h-12 rounded-full"></div>
                                         <div class="flex-1">
@@ -254,7 +254,7 @@
                         <!-- Items Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             ${Array(6).fill(0).map(() => `
-                                <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-sm">
+                                <div class="skeleton-card">
                                     <div class="skeleton-loader skeleton-image h-48"></div>
                                     <div class="p-4">
                                         <div class="skeleton-loader skeleton-title w-3/4 mb-3"></div>

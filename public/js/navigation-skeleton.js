@@ -194,9 +194,9 @@ class NavigationSkeletonManager {
         const template = `
             <div class="max-w-4xl mx-auto px-4 py-8">
                 <!-- Header avec avatar -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6 shadow-sm">
+                <div class="skeleton-card p-6 mb-6">
                     <div class="flex items-center space-x-4">
-                        <div class="skeleton-loader skeleton-avatar w-20 h-20"></div>
+                        <div class="skeleton-loader skeleton-avatar" style="width:5rem;height:5rem"></div>
                         <div class="flex-1">
                             <div class="skeleton-loader skeleton-title w-48 mb-2"></div>
                             <div class="skeleton-loader skeleton-text w-64"></div>
@@ -205,16 +205,16 @@ class NavigationSkeletonManager {
                 </div>
 
                 <!-- Tabs -->
-                <div class="flex space-x-4 mb-6">
+                <div class="flex space-x-3 mb-6">
                     ${[...Array(4)].map(() => `
-                        <div class="skeleton-loader h-10 w-24 rounded-lg"></div>
+                        <div class="skeleton-loader skeleton-badge" style="width:6rem;height:2.5rem"></div>
                     `).join('')}
                 </div>
 
                 <!-- Content Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     ${[...Array(6)].map(() => `
-                        <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                        <div class="skeleton-card p-4">
                             <div class="skeleton-loader skeleton-text w-32 mb-3"></div>
                             <div class="skeleton-loader skeleton-text w-full mb-2"></div>
                             <div class="skeleton-loader skeleton-text w-3/4"></div>
@@ -242,7 +242,7 @@ class NavigationSkeletonManager {
                     <!-- Main Content -->
                     <div class="lg:col-span-2 space-y-4">
                         ${[...Array(4)].map(() => `
-                            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+                            <div class="skeleton-card p-6">
                                 <div class="skeleton-loader skeleton-text w-48 mb-4"></div>
                                 <div class="skeleton-loader skeleton-text w-full mb-2"></div>
                                 <div class="skeleton-loader skeleton-text w-full mb-2"></div>
@@ -254,9 +254,9 @@ class NavigationSkeletonManager {
                     <!-- Sidebar -->
                     <div class="space-y-4">
                         ${[...Array(3)].map(() => `
-                            <div class="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-sm">
+                            <div class="skeleton-card p-4">
                                 <div class="skeleton-loader skeleton-text w-32 mb-3"></div>
-                                <div class="skeleton-loader h-32 mb-2"></div>
+                                <div class="skeleton-loader" style="height:8rem;margin-bottom:0.5rem"></div>
                                 <div class="skeleton-loader skeleton-text w-full"></div>
                             </div>
                         `).join('')}
