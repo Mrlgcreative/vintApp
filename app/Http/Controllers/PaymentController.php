@@ -24,11 +24,13 @@ class PaymentController extends Controller
 
     protected $paymentService;
     protected $notificationService;
+    protected $orderService;
 
-    public function __construct(PaymentService $paymentService, NotificationService $notificationService)
+    public function __construct(PaymentService $paymentService, NotificationService $notificationService, \App\Services\OrderService $orderService)
     {
         $this->paymentService = $paymentService;
         $this->notificationService = $notificationService;
+        $this->orderService = $orderService;
     }
     
 
@@ -1108,8 +1110,19 @@ class PaymentController extends Controller
                     if ($payment->order_id) {
                         $payment->order->update([
                             'payment_status' => 'paid',
-                            'status' => 'processing',
+                            'status' => 'confirmed',
+                            'paid_at' => now(),
                         ]);
+
+                        // Créditer l'escrow (wallet pending) du vendeur
+                        try {
+                            $this->orderService->creditEscrow($payment->order->fresh());
+                        } catch (\Throwable $e) {
+                            Log::error('Erreur crédit escrow commande directe: ' . $e->getMessage(), [
+                                'order_id' => $payment->order_id,
+                                'payment_id' => $payment->id,
+                            ]);
+                        }
                     }
 
                     // Si c'est un paiement de checkout (panier), créer les commandes
@@ -1254,11 +1267,23 @@ class PaymentController extends Controller
                     'quantity' => $item['quantity'],
                     'item_price' => $item['price'],
                     'total_amount' => $item['price'] * $item['quantity'],
-                    'status' => 'processing',
+                    'currency' => $itemModel->currency ?? 'USD',
+                    'status' => 'confirmed',
+                    'paid_at' => now(),
                     'payment_status' => 'paid',
                     'payment_transaction_id' => $payment->transaction_id,
                     'delivery_address_id' => $deliveryAddressId,
                 ]);
+
+                // Créditer l'escrow (wallet pending) du vendeur
+                try {
+                    $this->orderService->creditEscrow($order);
+                } catch (\Throwable $e) {
+                    Log::error('Erreur crédit escrow commande checkout: ' . $e->getMessage(), [
+                        'order_id' => $order->id,
+                        'payment_id' => $payment->id,
+                    ]);
+                }
 
                 // Lier le paiement à la première commande créée
                 if (!$payment->order_id) {

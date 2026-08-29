@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Distribution;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\Transaction;
@@ -65,7 +66,8 @@ class OrderService
     }
 
     /**
-     * Marque une commande pending comme confirmée.
+     * Marque une commande pending comme confirmée et crédite le wallet pending
+     * (escrow) du vendeur du montant total de la commande.
      */
     public function confirmPayment(Order $order): void
     {
@@ -73,9 +75,72 @@ class OrderService
             throw new DomainException('Cette commande ne peut plus être confirmée.');
         }
 
-        $order->paid_at = now();
-        $order->status = 'confirmed';
-        $order->save();
+        DB::transaction(function () use ($order) {
+            $order->paid_at = now();
+            $order->status = 'confirmed';
+            $order->save();
+
+            $this->creditEscrow($order);
+        });
+    }
+
+    /**
+     * Crédite le wallet pending (escrow) du vendeur du montant total de la
+     * commande. Idempotent : ne crédite qu'une seule fois par commande pour
+     * éviter tout double-crédit (les commandes déjà créditées via
+     * create_orders_from_transaction sont ignorées).
+     */
+    public function creditEscrow(Order $order): void
+    {
+        $alreadyCredited = Transaction::where('type', 'deposit')
+            ->where('purpose', 'like', 'Escrow - Commande #' . $order->id . '%')
+            ->exists();
+
+        if ($alreadyCredited) {
+            return;
+        }
+
+        $seller = User::find($order->seller_id);
+        if (!$seller) {
+            throw new DomainException('Vendeur introuvable, fonds non crédités.');
+        }
+
+        $sellerPendingWallet = Wallet::firstOrCreate(
+            [
+                'user_id' => $seller->id,
+                'type' => 'pending',
+                'currency' => $order->currency,
+            ],
+            [
+                'balance' => 0,
+                'status' => 'active',
+                'is_active' => true,
+            ]
+        );
+
+        $sellerPendingWallet->increment('balance', $order->total_amount);
+
+        Transaction::create([
+            'transaction_id' => 'ESCROW-' . strtoupper(Str::random(12)),
+            'user_id' => $seller->id,
+            'buyer_id' => $order->buyer_id,
+            'wallet_id' => $sellerPendingWallet->id,
+            'amount' => $order->total_amount,
+            'currency' => $order->currency,
+            'type' => 'deposit',
+            'status' => 'completed',
+            'payment_method' => 'wallet',
+            'purpose' => 'Escrow - Commande #' . $order->id,
+            'provider' => 'Escrow Deposit',
+            'phone' => 'N/A',
+        ]);
+
+        Log::info("Escrow crédité pour la commande #{$order->id}", [
+            'seller_id' => $seller->id,
+            'amount' => $order->total_amount,
+            'currency' => $order->currency,
+            'pending_balance' => $sellerPendingWallet->fresh()->balance,
+        ]);
     }
 
     /**
@@ -136,9 +201,9 @@ class OrderService
     /**
      * Confirme la réception de la commande par l'acheteur et distribue les fonds.
      */
-    public function confirmDelivery(Order $order, ?string $note = null): void
+    public function confirmDelivery(Order $order, ?string $note = null): array
     {
-        if (!in_array($order->status, ['shipped', 'delivered'])) {
+        if (!in_array($order->status, ['shipped', 'delivered', 'completed'])) {
             throw new DomainException("Cette commande n'est pas encore expédiée.");
         }
 
@@ -146,21 +211,44 @@ class OrderService
             throw new DomainException('Vous avez déjà confirmé la réception de cette commande.');
         }
 
-        DB::transaction(function () use ($order, $note) {
+        return DB::transaction(function () use ($order, $note) {
+            // Verrouillage pessimiste de la commande : deux confirmations
+            // simultanées se sérialisent, empêchant tout double débit.
+            $locked = Order::whereKey($order->id)->lockForUpdate()->first();
+
+            // Idempotence : si les fonds ont déjà été distribués (doublon,
+            // retry après rollback partiel), on ne redébite/ne re-crédite rien.
+            $alreadyDistributed = Transaction::where('type', 'deposit')
+                ->where('purpose', 'like', 'Vente confirmée - Commande #' . $order->id . '%')
+                ->exists();
+
+            if ($alreadyDistributed || ($locked && $locked->confirmed_by_buyer_at)) {
+                $order->confirmed_by_buyer_at = now();
+                $order->buyer_confirmation_note = $note;
+                $order->status = 'completed';
+                $order->save();
+                return [];
+            }
+
+            $distribution = $this->distributeFunds($order);
+
             $order->confirmed_by_buyer_at = now();
             $order->buyer_confirmation_note = $note;
             $order->status = 'completed';
             $order->save();
 
-            $this->distributeFunds($order);
+            return $distribution;
         });
     }
 
     /**
      * Distribue le montant total d'une commande après confirmation de réception :
      * debite le wallet pending du vendeur, crédite son wallet main et les
-     * sous-wallets entreprise (commission + transport), puis crée les transactions.
+     * sous-wallets entreprise (commission + transport), enregistre les
+     * distributions pour l'audit, puis crée les transactions.
      *
+     * @throws \DomainException si le wallet pending du vendeur est introuvable
+     *                          ou insuffisant (la transaction est alors rollbackée).
      * @return array Détail de la distribution
      */
     public function distributeFunds(Order $order): array
@@ -174,9 +262,13 @@ class OrderService
             ->value('value') ?? 5);
 
         $totalAmount = (float) $order->total_amount;
+
+        // Arrondi exact : commission et transport sont arrondis, et le solde
+        // vendeur est la différence, de sorte que
+        // seller + commission + transport == total (aucun écart de centimes).
         $commissionAmount = round($totalAmount * ($commissionPercent / 100), 2);
         $transportAmount = round($totalAmount * ($transportPercent / 100), 2);
-        $sellerAmount = $totalAmount - $commissionAmount - $transportAmount;
+        $sellerAmount = round($totalAmount - $commissionAmount - $transportAmount, 2);
 
         $distribution = [
             'total_amount' => $totalAmount,
@@ -199,7 +291,7 @@ class OrderService
 
         $seller = User::find($order->seller_id);
         if (!$seller) {
-            return $distribution;
+            throw new DomainException('Vendeur introuvable, fonds non distribués.');
         }
 
         $sellerPendingWallet = Wallet::where('user_id', $seller->id)
@@ -207,9 +299,13 @@ class OrderService
             ->where('currency', $order->currency)
             ->first();
 
-        if (!$sellerPendingWallet || $sellerPendingWallet->balance < $order->total_amount) {
-            Log::warning("Solde insuffisant dans le wallet pending pour la commande #{$order->id}");
-            return $distribution;
+        if (!$sellerPendingWallet || $sellerPendingWallet->balance < $totalAmount) {
+            Log::error("Solde insuffisant dans le wallet pending du vendeur pour la commande #{$order->id}", [
+                'pending_balance' => $sellerPendingWallet?->balance ?? 'wallet absent',
+                'required' => $totalAmount,
+                'currency' => $order->currency,
+            ]);
+            throw new DomainException('Impossible de distribuer les fonds : solde vendeur en attente insuffisant.');
         }
 
         $sellerMainWallet = Wallet::firstOrCreate(
@@ -250,21 +346,7 @@ class OrderService
         $commissionWallet->increment('balance', $commissionAmount);
         $transportWallet->increment('balance', $transportAmount);
 
-        Log::info("Distribution effectuée", [
-            'seller_id' => $seller->id,
-            'order_id' => $order->id,
-            'total_amount' => $totalAmount,
-            'seller_amount' => $sellerAmount,
-            'commission_amount' => $commissionAmount,
-            'transport_amount' => $transportAmount,
-            'currency' => $order->currency,
-            'pending_balance' => $sellerPendingWallet->balance,
-            'main_balance' => $sellerMainWallet->balance,
-            'commission_wallet_balance' => $commissionWallet->fresh()->balance,
-            'transport_wallet_balance' => $transportWallet->fresh()->balance,
-        ]);
-
-        Transaction::create([
+        $sellerTransaction = Transaction::create([
             'transaction_id' => 'SELLER-' . strtoupper(Str::random(12)),
             'user_id' => $seller->id,
             'buyer_id' => $seller->id,
@@ -279,7 +361,7 @@ class OrderService
             'phone' => 'N/A',
         ]);
 
-        Transaction::create([
+        $commissionTransaction = Transaction::create([
             'transaction_id' => 'COMMISSION-' . strtoupper(Str::random(12)),
             'user_id' => $seller->id,
             'buyer_id' => $order->buyer_id,
@@ -294,7 +376,7 @@ class OrderService
             'phone' => 'N/A',
         ]);
 
-        Transaction::create([
+        $transportTransaction = Transaction::create([
             'transaction_id' => 'TRANSPORT-' . strtoupper(Str::random(12)),
             'user_id' => $seller->id,
             'buyer_id' => $order->buyer_id,
@@ -307,6 +389,46 @@ class OrderService
             'purpose' => 'Frais de transport (' . $transportPercent . '%) - Commande #' . $order->id,
             'provider' => 'Transport Fee',
             'phone' => 'N/A',
+        ]);
+
+        // Persistance pour l'audit : une Distribution par part, liée à la
+        // transaction correspondante et à la commande via metadata.
+        Distribution::create([
+            'transaction_id' => $sellerTransaction->id,
+            'beneficiary_id' => $seller->id,
+            'beneficiary_type' => 'seller',
+            'amount' => $sellerAmount,
+            'percentage' => (int) round(($sellerAmount / $totalAmount) * 100),
+        ]);
+
+        Distribution::create([
+            'transaction_id' => $commissionTransaction->id,
+            'beneficiary_id' => $commissionWallet->id,
+            'beneficiary_type' => 'platform_commission',
+            'amount' => $commissionAmount,
+            'percentage' => (int) $commissionPercent,
+        ]);
+
+        Distribution::create([
+            'transaction_id' => $transportTransaction->id,
+            'beneficiary_id' => $transportWallet->id,
+            'beneficiary_type' => 'transport',
+            'amount' => $transportAmount,
+            'percentage' => (int) $transportPercent,
+        ]);
+
+        Log::info("Distribution effectuée", [
+            'seller_id' => $seller->id,
+            'order_id' => $order->id,
+            'total_amount' => $totalAmount,
+            'seller_amount' => $sellerAmount,
+            'commission_amount' => $commissionAmount,
+            'transport_amount' => $transportAmount,
+            'currency' => $order->currency,
+            'pending_balance' => $sellerPendingWallet->balance,
+            'main_balance' => $sellerMainWallet->balance,
+            'commission_wallet_balance' => $commissionWallet->fresh()->balance,
+            'transport_wallet_balance' => $transportWallet->fresh()->balance,
         ]);
 
         $buyerName = $order->buyer?->name ?? 'L\'acheteur';

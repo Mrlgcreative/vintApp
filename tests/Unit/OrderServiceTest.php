@@ -139,17 +139,9 @@ class OrderServiceTest extends TestCase
             'shipping_address' => 'Adresse',
         ], $buyer);
 
-        $this->service->confirmPayment($order);
-        $this->assertSame('confirmed', $order->status);
-
-        $this->service->markShipped($order);
-        $this->assertSame('shipped', $order->status);
-
-        $this->service->markDelivered($order);
-        $this->assertSame('delivered', $order->status);
-
-        // Wallets vendeur + entreprise (commission/transport pré-seedés par migration)
-        $pending = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 100, 'status' => 'active']);
+        // Wallets vendeur (créés avant confirmation : escrow y sera crédité)
+        // + wallets entreprise (commission/transport pré-seedés par migration).
+        $pending = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 0, 'status' => 'active']);
         $main = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'main', 'balance' => 0, 'status' => 'active']);
         $commission = Wallet::where('type', 'enterprise')->whereNull('user_id')->where('currency', 'USD')->where('subtype', 'commission')->firstOrFail();
         $transport = Wallet::where('type', 'enterprise')->whereNull('user_id')->where('currency', 'USD')->where('subtype', 'transport')->firstOrFail();
@@ -162,16 +154,55 @@ class OrderServiceTest extends TestCase
             );
         }
 
+        // La confirmation du paiement crédite l'escrow (wallet pending) du vendeur
+        $this->service->confirmPayment($order);
+        $this->assertSame('confirmed', $order->status);
+        $this->assertSame(100.0, (float) $pending->fresh()->balance); // escrow crédité
+
+        $this->service->markShipped($order);
+        $this->assertSame('shipped', $order->status);
+
+        $this->service->markDelivered($order);
+        $this->assertSame('delivered', $order->status);
+
         $this->service->confirmDelivery($order);
 
         $this->assertSame('completed', $order->fresh()->status);
         $this->assertNotNull($order->fresh()->confirmed_by_buyer_at);
 
-        $this->assertSame(0.0, (float) $pending->fresh()->balance);      // débité de 100
+        $this->assertSame(0.0, (float) $pending->fresh()->balance);      // escrow débité de 100
         $this->assertSame(85.0, (float) $main->fresh()->balance);        // net après 10% + 5%
         $this->assertSame(10.0, (float) $commission->fresh()->balance);
         $this->assertSame(5.0, (float) $transport->fresh()->balance);
 
-        $this->assertSame(3, Transaction::count());
+        // ESCROW (confirmation paiement) + SELLER + COMMISSION + TRANSPORT
+        $this->assertSame(4, Transaction::count());
+    }
+
+    /** @test */
+    public function it_credits_the_seller_pending_wallet_on_payment_confirmation()
+    {
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $item = $this->makeSellerItem($seller, 2, 100);
+
+        $order = $this->service->create([
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'shipping_address' => 'Adresse',
+        ], $buyer);
+
+        $pending = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 0, 'status' => 'active']);
+
+        $this->service->confirmPayment($order);
+
+        // L'escrow est crédité du montant total lors de la confirmation du paiement
+        $this->assertSame('confirmed', $order->fresh()->status);
+        $this->assertSame(100.0, (float) $pending->fresh()->balance);
+        $this->assertSame(1, Transaction::where('purpose', 'like', 'Escrow - Commande #' . $order->id . '%')->count());
+
+        // On ne peut pas re-confirmer (status n'est plus 'pending')
+        $this->expectException(DomainException::class);
+        $this->service->confirmPayment($order);
     }
 }

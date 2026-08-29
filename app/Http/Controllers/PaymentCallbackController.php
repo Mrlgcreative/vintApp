@@ -512,10 +512,16 @@ class PaymentCallbackController extends Controller
         $order = Order::find($transaction->order_id);
         if (!$order) return;
 
-        $order->update([
-            'payment_status' => 'paid',
-            'status' => 'confirmed',
-        ]);
+        DB::transaction(function () use ($order) {
+            $order->update([
+                'payment_status' => 'paid',
+                'status' => 'confirmed',
+                'paid_at' => now(),
+            ]);
+
+            // Créditer l'escrow (wallet pending) du vendeur
+            app(\App\Services\OrderService::class)->creditEscrow($order->fresh());
+        });
 
         Log::info("Commande {$order->id} payée avec succès");
     }
