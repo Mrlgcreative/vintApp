@@ -140,19 +140,16 @@ class OrderServiceTest extends TestCase
         ], $buyer);
 
         // Wallets vendeur (créés avant confirmation : escrow y sera crédité)
-        // + wallets entreprise (commission/transport pré-seedés par migration).
+        // + wallet entreprise commission (pré-seedé par migration).
         $pending = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 0, 'status' => 'active']);
         $main = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'main', 'balance' => 0, 'status' => 'active']);
         $commission = Wallet::where('type', 'enterprise')->whereNull('user_id')->where('currency', 'USD')->where('subtype', 'commission')->firstOrFail();
-        $transport = Wallet::where('type', 'enterprise')->whereNull('user_id')->where('currency', 'USD')->where('subtype', 'transport')->firstOrFail();
 
-        // Settings déterministes : 10% commission, 5% transport
-        foreach (['platform_commission_percentage' => 10, 'transport_fee_percentage' => 5] as $key => $value) {
-            DB::table('settings')->updateOrInsert(
-                ['key' => $key],
-                ['value' => $value, 'type' => 'integer', 'category' => 'platform', 'label' => $key]
-            );
-        }
+        // Settings déterministes : 10% commission (transport payé par l'acheteur, non déduit)
+        DB::table('settings')->updateOrInsert(
+            ['key' => 'platform_commission_percentage'],
+            ['value' => 10, 'type' => 'integer', 'category' => 'platform', 'label' => 'plateforme']
+        );
 
         // La confirmation du paiement crédite l'escrow (wallet pending) du vendeur
         $this->service->confirmPayment($order);
@@ -171,12 +168,11 @@ class OrderServiceTest extends TestCase
         $this->assertNotNull($order->fresh()->confirmed_by_buyer_at);
 
         $this->assertSame(0.0, (float) $pending->fresh()->balance);      // escrow débité de 100
-        $this->assertSame(85.0, (float) $main->fresh()->balance);        // net après 10% + 5%
+        $this->assertSame(90.0, (float) $main->fresh()->balance);        // net après commission 10% (sans transport)
         $this->assertSame(10.0, (float) $commission->fresh()->balance);
-        $this->assertSame(5.0, (float) $transport->fresh()->balance);
 
-        // ESCROW (confirmation paiement) + SELLER + COMMISSION + TRANSPORT
-        $this->assertSame(4, Transaction::count());
+        // ESCROW (confirmation paiement) + SELLER + COMMISSION
+        $this->assertSame(3, Transaction::count());
     }
 
     /** @test */

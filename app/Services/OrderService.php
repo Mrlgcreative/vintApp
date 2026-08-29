@@ -242,10 +242,18 @@ class OrderService
     }
 
     /**
-     * Distribue le montant total d'une commande après confirmation de réception :
-     * debite le wallet pending du vendeur, crédite son wallet main et les
-     * sous-wallets entreprise (commission + transport), enregistre les
-     * distributions pour l'audit, puis crée les transactions.
+     * Distribue le montant total d'une commande après confirmation de réception.
+     *
+     * Modèle économique (transport payé par l'acheteur) :
+     * - L'acheteur règle "sous-total + frais de transport" au paiement.
+     * - L'escrow du vendeur ne contient que le sous-total (order.total_amount).
+     * - À la distribution, on débite l'escrow du sous-total, on prélève la
+     *   commission plateforme, et le vendeur reçoit le reste (sous-total net).
+     * - Les frais de transport (payés par l'acheteur en sus) ne transitent pas
+     *   par l'escrow et ne sont donc pas déduits de la part du vendeur.
+     *
+     * Persistance : une Distribution par part (vendeur, commission), chacune
+     * liée à sa transaction, pour l'audit.
      *
      * @throws \DomainException si le wallet pending du vendeur est introuvable
      *                          ou insuffisant (la transaction est alors rollbackée).
@@ -257,34 +265,26 @@ class OrderService
             ->where('key', 'platform_commission_percentage')
             ->value('value') ?? 10);
 
-        $transportPercent = (float) (DB::table('settings')
-            ->where('key', 'transport_fee_percentage')
-            ->value('value') ?? 5);
-
         $totalAmount = (float) $order->total_amount;
 
-        // Arrondi exact : commission et transport sont arrondis, et le solde
-        // vendeur est la différence, de sorte que
-        // seller + commission + transport == total (aucun écart de centimes).
+        // Arrondi exact : commission arrondie, le vendeur reçoit le solde,
+        // de sorte que seller + commission == total (aucun écart de centimes).
         $commissionAmount = round($totalAmount * ($commissionPercent / 100), 2);
-        $transportAmount = round($totalAmount * ($transportPercent / 100), 2);
-        $sellerAmount = round($totalAmount - $commissionAmount - $transportAmount, 2);
+        $sellerAmount = round($totalAmount - $commissionAmount, 2);
 
         $distribution = [
             'total_amount' => $totalAmount,
             'seller_amount' => $sellerAmount,
             'commission_amount' => $commissionAmount,
-            'transport_amount' => $transportAmount,
+            'transport_amount' => 0,
             'commission_percent' => $commissionPercent,
-            'transport_percent' => $transportPercent,
+            'transport_percent' => 0,
         ];
 
         Log::info("Distribution calculée pour commande #{$order->id}", [
             'total' => $totalAmount,
             'commission_percent' => $commissionPercent,
             'commission_amount' => $commissionAmount,
-            'transport_percent' => $transportPercent,
-            'transport_amount' => $transportAmount,
             'seller_amount' => $sellerAmount,
             'currency' => $order->currency,
         ]);
@@ -322,10 +322,9 @@ class OrderService
         );
 
         $commissionWallet = Wallet::getEnterpriseSubWallet('commission', $order->currency);
-        $transportWallet = Wallet::getEnterpriseSubWallet('transport', $order->currency);
 
-        if (!$commissionWallet || !$transportWallet) {
-            $enterpriseWallet = Wallet::firstOrCreate(
+        if (!$commissionWallet) {
+            $commissionWallet = Wallet::firstOrCreate(
                 [
                     'user_id' => null,
                     'type' => 'enterprise',
@@ -337,14 +336,11 @@ class OrderService
                     'is_active' => true,
                 ]
             );
-            $commissionWallet = $commissionWallet ?: $enterpriseWallet;
-            $transportWallet = $transportWallet ?: $enterpriseWallet;
         }
 
         $sellerPendingWallet->decrement('balance', $totalAmount);
         $sellerMainWallet->increment('balance', $sellerAmount);
         $commissionWallet->increment('balance', $commissionAmount);
-        $transportWallet->increment('balance', $transportAmount);
 
         $sellerTransaction = Transaction::create([
             'transaction_id' => 'SELLER-' . strtoupper(Str::random(12)),
@@ -356,7 +352,7 @@ class OrderService
             'type' => 'deposit',
             'status' => 'completed',
             'payment_method' => 'wallet',
-            'purpose' => 'Vente confirmée - Commande #' . $order->id . ' (Montant net après commission ' . $commissionPercent . '% et transport ' . $transportPercent . '%)',
+            'purpose' => 'Vente confirmée - Commande #' . $order->id . ' (Montant net après commission ' . $commissionPercent . '%)',
             'provider' => 'Wallet Transfer',
             'phone' => 'N/A',
         ]);
@@ -376,23 +372,8 @@ class OrderService
             'phone' => 'N/A',
         ]);
 
-        $transportTransaction = Transaction::create([
-            'transaction_id' => 'TRANSPORT-' . strtoupper(Str::random(12)),
-            'user_id' => $seller->id,
-            'buyer_id' => $order->buyer_id,
-            'wallet_id' => $transportWallet->id,
-            'amount' => $transportAmount,
-            'currency' => $order->currency,
-            'type' => 'deposit',
-            'status' => 'completed',
-            'payment_method' => 'wallet',
-            'purpose' => 'Frais de transport (' . $transportPercent . '%) - Commande #' . $order->id,
-            'provider' => 'Transport Fee',
-            'phone' => 'N/A',
-        ]);
-
         // Persistance pour l'audit : une Distribution par part, liée à la
-        // transaction correspondante et à la commande via metadata.
+        // transaction correspondante.
         Distribution::create([
             'transaction_id' => $sellerTransaction->id,
             'beneficiary_id' => $seller->id,
@@ -409,26 +390,16 @@ class OrderService
             'percentage' => (int) $commissionPercent,
         ]);
 
-        Distribution::create([
-            'transaction_id' => $transportTransaction->id,
-            'beneficiary_id' => $transportWallet->id,
-            'beneficiary_type' => 'transport',
-            'amount' => $transportAmount,
-            'percentage' => (int) $transportPercent,
-        ]);
-
         Log::info("Distribution effectuée", [
             'seller_id' => $seller->id,
             'order_id' => $order->id,
             'total_amount' => $totalAmount,
             'seller_amount' => $sellerAmount,
             'commission_amount' => $commissionAmount,
-            'transport_amount' => $transportAmount,
             'currency' => $order->currency,
             'pending_balance' => $sellerPendingWallet->balance,
             'main_balance' => $sellerMainWallet->balance,
             'commission_wallet_balance' => $commissionWallet->fresh()->balance,
-            'transport_wallet_balance' => $transportWallet->fresh()->balance,
         ]);
 
         $buyerName = $order->buyer?->name ?? 'L\'acheteur';
@@ -438,8 +409,7 @@ class OrderService
             'message' => $buyerName . ' a confirmé avoir reçu la commande #' . $order->id . '. ' .
                 'Montant reçu: ' . number_format($sellerAmount, 2) . ' ' . $order->currency . ' ' .
                 '(Total: ' . number_format($totalAmount, 2) . ' - ' .
-                'Commission: ' . number_format($commissionAmount, 2) . ' - ' .
-                'Transport: ' . number_format($transportAmount, 2) . ')',
+                'Commission: ' . number_format($commissionAmount, 2) . ')',
             'action_url' => route('orders.show', $order->id),
         ]);
 
