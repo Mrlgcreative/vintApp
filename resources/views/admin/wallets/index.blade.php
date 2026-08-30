@@ -77,6 +77,14 @@
         </div>
         <div class="p-5 sm:p-6">
             @if(!empty($enterpriseWallets) && count($enterpriseWallets) > 0)
+                @php
+                    $subtypeLabels = [
+                        'commission' => 'Commission',
+                        'transport' => 'Transport',
+                        'boost' => 'Boost',
+                        'verification' => 'Vérification',
+                    ];
+                @endphp
                 <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     @foreach($enterpriseWallets ?? [] as $wallet)
                         <div class="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
@@ -87,12 +95,12 @@
                                         Portefeuille Entreprise {{ $wallet->currency ?? 'N/A' }}
                                     </h6>
                                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                                        Commission: {{ $wallet->commission_rate ?? 5 }}%
+                                        {{ $subtypeLabels[$wallet->subtype] ?? 'Général' }} · Commission: {{ $wallet->commission_rate ?? 5 }}%
                                     </p>
                                 </div>
                                 <span class="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-medium text-sky-700 ring-1 ring-inset ring-sky-600/20 dark:bg-sky-900/30 dark:text-sky-300">
-                                    {{ $wallet->currency ?? 'N/A' }}
-                                </span>
+                                        {{ $subtypeLabels[$wallet->subtype] ?? 'Général' }}
+                                    </span>
                             </div>
 
                             <div class="mt-6 text-center">
