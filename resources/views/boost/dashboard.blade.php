@@ -30,7 +30,7 @@ use Illuminate\Support\Facades\Storage;
             <div class="flex justify-center mb-3">
                 <i class="fas fa-chart-line text-3xl"></i>
             </div>
-            <h3 class="text-2xl font-bold mb-1">{{ number_format($stats['total_spent'], 0, ',', ' ') }} CDF</h3>
+            <h3 class="text-2xl font-bold mb-1">{{ number_format($stats['total_spent'], 0, ',', ' ') }} {{ auth()->user()->preferred_currency ?? 'CDF' }}</h3>
             <p class="text-emerald-100">Total Dépensé</p>
         </div>
         <div class="bg-gradient-to-br from-cyan-500 to-cyan-700 text-white rounded-2xl p-6 text-center transform hover:-translate-y-1 transition-all duration-200 shadow-lg shadow-cyan-500/20">
@@ -161,7 +161,7 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                     <div class="text-center">
                         <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Coût total</div>
-                        <div class="font-semibold text-gray-900 dark:text-white text-sm">{{ number_format($boost->total_price, 0, ',', ' ') }} CDF</div>
+                        <div class="font-semibold text-gray-900 dark:text-white text-sm">{{ number_format($boost->total_price, 0, ',', ' ') }} {{ $boost->currency ?? 'CDF' }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">Résultats</div>
@@ -210,7 +210,7 @@ use Illuminate\Support\Facades\Storage;
                     </div>
                     <div class="text-center">
                         <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">Remboursé</div>
-                        <div class="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">{{ number_format($boost->refund_amount ?? 0, 0, ',', ' ') }} CDF</div>
+                        <div class="font-semibold text-emerald-600 dark:text-emerald-400 text-sm">{{ number_format($boost->refund_amount ?? 0, 0, ',', ' ') }} {{ $boost->currency ?? 'CDF' }}</div>
                     </div>
                     <div class="text-center">
                         <div class="text-xs text-gray-500 dark:text-gray-400 mb-2">Résultats</div>

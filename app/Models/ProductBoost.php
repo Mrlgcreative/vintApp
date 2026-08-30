@@ -15,6 +15,7 @@ class ProductBoost extends Model
         'user_id',
         'boost_type_id',
         'duration',
+        'currency',
         'total_price',
         'activated_at',
         'expires_at',

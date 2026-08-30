@@ -37,51 +37,75 @@
 <div class="space-y-6">
     <!-- Statistiques -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-primary-600/10 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300">
-                    <i class="fas fa-bolt"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Total types</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-bolt text-[10px] text-primary-500"></i>
+                    Types
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-layer-group text-xs text-primary-500"></i>
+                    Catalogue complet
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Total types</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Tous les types de boost</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300">
-                    <i class="fas fa-circle-check"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                    <i class="fas fa-circle-check text-[10px]"></i>
+                    Disponibles
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-circle-check text-xs text-emerald-500"></i>
+                    En ligne
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Types proposés aux vendeurs</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
-                    <i class="fas fa-crown"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Premium</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['premium']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-white px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800/40 dark:bg-slate-900 dark:text-amber-300">
+                    <i class="fas fa-crown text-[10px]"></i>
+                    VIP
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-crown text-xs text-amber-500"></i>
+                    Offres premium
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Premium</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['premium']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Types réservés aux meilleurs</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
-                    <i class="fas fa-rocket"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Boosts actifs</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_boosts']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-rocket text-[10px] text-sky-500"></i>
+                    En cours
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-rocket text-xs text-sky-500"></i>
+                    Appliqués aux articles
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Boosts actifs</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_boosts']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Boosts actuellement actifs</div>
             </div>
         </div>
     </div>

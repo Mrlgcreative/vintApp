@@ -2,15 +2,16 @@
 
 @section('title', 'Paramètres Système')
 @section('page-title', 'Paramètres Système')
+@section('page-subtitle', 'Gérez la configuration générale de la plateforme, le mode maintenance et bien plus.')
 
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
     <button type="button" onclick="clearCache()"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-cyan-300 dark:border-cyan-700 bg-cyan-50 dark:bg-cyan-900/30 px-4 py-2.5 text-sm font-medium text-cyan-700 dark:text-cyan-300 hover:bg-cyan-100 dark:hover:bg-cyan-900/50 transition-colors">
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
         <i class="fas fa-trash"></i>Vider Cache
     </button>
     <button type="button" onclick="backupSettings()"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-download"></i>Sauvegarder
     </button>
 </div>
@@ -19,7 +20,7 @@
 @section('content')
 <div class="space-y-6">
     @if(session('success'))
-        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
+        <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
             <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
             <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
             <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
@@ -29,7 +30,7 @@
     @endif
 
     @if(session('error'))
-        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
+        <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
             <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
             <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
             <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200" onclick="this.parentElement.remove()">
@@ -43,7 +44,7 @@
         <div class="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <nav class="flex space-x-1 px-4 sm:px-6 overflow-x-auto" aria-label="Paramètres">
                 <a href="{{ route('admin.settings.index') }}" 
-                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-slate-800/60 whitespace-nowrap transition-all duration-200">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-sm whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-sliders-h mr-2"></i>
                     Général
                 </a>
@@ -85,11 +86,11 @@
                                     ];
                                     $catIcon = $catIcons[strtolower($category)] ?? 'fa-cog';
                                 @endphp
-                                <div class="group bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+                                <div class="group bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
                                     <div class="mb-4 sm:mb-6">
                                         <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center">
-                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-700/50 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
-                                                <i class="fas {{ $catIcon }} text-slate-600 dark:text-slate-300 text-sm"></i>
+                                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-900/30 shadow-sm mr-3 group-hover:scale-110 transition-transform duration-300">
+                                                <i class="fas {{ $catIcon }} text-primary-600 dark:text-primary-400 text-sm"></i>
                                             </span>
                                             {{ ucfirst($category) }}
                                             <span class="ml-auto text-xs text-slate-400 font-normal">{{ count($settings[$category]) }} param.</span>
@@ -115,7 +116,7 @@
                                                              id="logo-preview">
                                                     </div>
                                                     <input type="file" 
-                                                           class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                                           class="block w-full text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-900/50 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg cursor-pointer focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                                                            name="logo_file"
                                                            accept="image/*"
                                                            onchange="previewLogo(this)">
@@ -124,7 +125,7 @@
                                                            value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">
                                                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Formats acceptés: JPG, PNG, GIF (max. 2MB)</p>
                                                             @elseif($setting->type === 'json' || $setting->type === 'array')
-                                                    <textarea class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
+                                                    <textarea class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 font-mono text-sm" 
                                                               name="settings[{{ $setting->key }}]"
                                                               rows="5"
                                                               data-original-value="{{ is_array($setting->value) ? json_encode($setting->value) : $setting->value }}">{{ is_array($setting->value) ? json_encode($setting->value, JSON_PRETTY_PRINT) : $setting->value }}</textarea>
@@ -140,7 +141,7 @@
                                                                    id="{{ $setting->key }}"
                                                                    value="1"
                                                                    {{ $setting->value ? 'checked' : '' }}>
-                                                            <div class="relative w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                                            <div class="relative w-11 h-6 bg-slate-200 dark:bg-slate-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-slate-800 after:border-slate-300 dark:border-slate-600 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                                                             <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200" id="{{ $setting->key }}_label">
                                                                 {{ $setting->value ? 'Activé' : 'Désactivé' }}
                                                             </span>
@@ -148,14 +149,14 @@
                                                     </div>
                                                 @elseif($setting->type === 'integer')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="1"
                                                            data-original-value="{{ $setting->value }}">
                                                 @elseif($setting->type === 'float')
                                                     <input type="number" 
-                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200" 
                                                            name="settings[{{ $setting->key }}]"
                                                            value="{{ $setting->value }}" 
                                                            step="0.01"
@@ -163,19 +164,19 @@
                                                 @else
                                                     @if(str_contains($setting->key, 'email'))
                                                         <input type="email" 
-                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @elseif(str_contains($setting->key, 'phone'))
                                                         <input type="tel" 
-                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
                                                     @else
                                                         <input type="text" 
-                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200" 
+                                                               class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200" 
                                                                name="settings[{{ $setting->key }}]"
                                                                value="{{ $setting->value }}"
                                                                data-original-value="{{ $setting->value }}">
@@ -189,12 +190,12 @@
                         @endforeach
                     @else
                         <div class="col-span-2">
-                            <div class="text-center py-16 bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-xl border-2 border-dashed border-blue-200 dark:border-slate-600">
-                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
-                                    <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 text-2xl"></i>
+                            <div class="text-center py-16 bg-gradient-to-b from-sky-50 to-white dark:from-slate-900 dark:to-slate-800 rounded-xl border-2 border-dashed border-sky-200 dark:border-slate-600">
+                                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-sky-100 dark:bg-sky-900 mb-4">
+                                    <i class="fas fa-info-circle text-sky-600 dark:text-sky-400 text-2xl"></i>
                                 </div>
-                                <h3 class="text-lg font-medium text-blue-900 dark:text-white mb-2">Aucun paramètre trouvé</h3>
-                                <p class="text-blue-700 dark:text-slate-300">Veuillez exécuter les migrations et seeders.</p>
+                                <h3 class="text-lg font-medium text-sky-900 dark:text-white mb-2">Aucun paramètre trouvé</h3>
+                                <p class="text-sky-700 dark:text-slate-300">Veuillez exécuter les migrations et seeders.</p>
                             </div>
                         </div>
                     @endif
@@ -202,7 +203,7 @@
                 
                 <!-- Section Mode Maintenance -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
-                    <div class="bg-gradient-to-r from-orange-50 to-red-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-orange-200 dark:border-orange-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100 dark:bg-orange-900/50 mr-3">
@@ -233,7 +234,7 @@
                                 
                                 <button type="button" 
                                         onclick="{{ $maintenanceStatus ? 'disableMaintenance()' : 'showMaintenanceModal()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }} text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                        class="inline-flex items-center px-4 py-2 {{ $maintenanceStatus ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas {{ $maintenanceStatus ? 'fa-play' : 'fa-pause' }} mr-2"></i>
                                     {{ $maintenanceStatus ? 'Désactiver' : 'Activer' }}
                                 </button>
@@ -255,11 +256,11 @@
                 
                 <!-- Section Restrictions Géographiques -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
-                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
-                                    <i class="fas fa-map-marked-alt text-blue-600 dark:text-blue-400"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900 mr-3">
+                                    <i class="fas fa-map-marked-alt text-sky-600 dark:text-sky-400"></i>
                                 </span>
                                 Restrictions Géographiques
                             </h3>
@@ -272,7 +273,7 @@
                             <div class="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                                 <div class="flex items-center space-x-3">
                                     <div class="p-2 rounded-full" id="location-status-icon">
-                                        <i class="fas fa-map-marker-alt text-blue-600 dark:text-blue-400 text-lg"></i>
+                                        <i class="fas fa-map-marker-alt text-sky-600 dark:text-sky-400 text-lg"></i>
                                     </div>
                                     <div>
                                         <p class="font-medium text-slate-900 dark:text-white" id="location-status-text">
@@ -287,14 +288,14 @@
                                 <button type="button" 
                                         onclick="toggleLocationRestrictions()"
                                         id="location-toggle-btn"
-                                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+class="inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-sync-alt mr-2 animate-spin"></i>
                                     Chargement...
                                 </button>
                             </div>
                             
-                            <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                <div class="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                            <div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 rounded-xl p-4">
+                                <div class="space-y-2 text-sm text-sky-800 dark:text-sky-200">
                                     <p class="flex items-start">
                                         <i class="fas fa-check-circle mr-2 mt-0.5"></i>
                                         <span><strong>Activé :</strong> Les vendeurs ne peuvent publier des articles que dans les villes autorisées par l'admin.</span>
@@ -311,7 +312,7 @@
                 
                 <!-- Section Pré-inscription -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
@@ -348,7 +349,7 @@
                                 
                                 <button type="button" 
                                         onclick="{{ $preregEnabled ? 'disablePreregistration()' : 'enablePreregistration()' }}"
-                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                        class="inline-flex items-center px-4 py-2 {{ $preregEnabled ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700' }} text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas {{ $preregEnabled ? 'fa-lock-open' : 'fa-lock' }} mr-2"></i>
                                     {{ $preregEnabled ? 'Désactiver' : 'Activer' }}
                                 </button>
@@ -362,8 +363,8 @@
                                             <p class="text-sm text-slate-600 dark:text-slate-300">Total inscriptions</p>
                                             <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $preregCount }}</p>
                                         </div>
-                                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-xl">
-                                            <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
+                                        <div class="p-3 bg-sky-100 dark:bg-sky-900 rounded-xl">
+                                            <i class="fas fa-users text-sky-600 dark:text-sky-400 text-xl"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -402,20 +403,20 @@
                             <!-- Actions rapides -->
                             <div class="flex flex-wrap gap-2">
                                 <a href="{{ route('admin.settings.preregistration') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-cog mr-2"></i>
                                     Configurer
                                 </a>
                                 
                                 <a href="{{ route('admin.waiting-users.index') }}" 
-                                   class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200">
                                     <i class="fas fa-list mr-2"></i>
                                     Gérer les inscriptions
                                 </a>
                                 
                                 <a href="{{ route('preregistration.index') }}" 
                                    target="_blank"
-                                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                   class="inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200">
                                     <i class="fas fa-external-link-alt mr-2"></i>
                                     Voir la page publique
                                 </a>
@@ -448,7 +449,7 @@
                 
                 <!-- Section Carrousel Hero (Page d'Accueil) -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-accent-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
@@ -461,11 +462,11 @@
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center">
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center">
                                             <i class="fas fa-sliders-h text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                     </div>
@@ -483,7 +484,7 @@
                                             <li><i class="fas fa-check text-green-500 mr-2"></i>Réordonnancement par glisser-déposer</li>
                                         </ul>
                                         <a href="{{ route('admin.settings.hero-slides.index') }}" 
-                                           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
                                             <i class="fas fa-cog mr-2"></i>
                                             Gérer les Slides du Carrousel
                                         </a>
@@ -496,11 +497,11 @@
                 
                 <!-- Section Newsletter -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-blue-200 dark:border-blue-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
-                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900 mr-3">
-                                    <i class="fas fa-envelope text-blue-600 dark:text-blue-400"></i>
+                                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-sky-100 dark:bg-sky-900 mr-3">
+                                    <i class="fas fa-envelope text-sky-600 dark:text-sky-400"></i>
                                 </span>
                                 Newsletter
                             </h3>
@@ -509,12 +510,12 @@
                             </p>
                         </div>
                         
-                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-blue-200 dark:border-blue-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-sky-200 dark:border-sky-900/50 p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
                                     <div class="flex-shrink-0">
-                                        <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/50 rounded-xl flex items-center justify-center">
-                                            <i class="fas fa-paper-plane text-2xl text-blue-600 dark:text-blue-400"></i>
+                                        <div class="w-12 h-12 bg-sky-100 dark:bg-sky-900/50 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-paper-plane text-2xl text-sky-600 dark:text-sky-400"></i>
                                         </div>
                                     </div>
                                     <div>
@@ -532,12 +533,12 @@
                                         </ul>
                                         <div class="flex gap-2">
                                             <a href="{{ route('admin.settings.newsletter.subscribers') }}" 
-                                               class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                               class="inline-flex items-center px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
                                                 <i class="fas fa-users mr-2"></i>
                                                 Voir les Abonnés
                                             </a>
                                             <a href="{{ route('admin.settings.newsletter.send') }}" 
-                                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-xl shadow-sm transition-colors duration-200">
+                                               class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-sm transition-colors duration-200">
                                                 <i class="fas fa-paper-plane mr-2"></i>
                                                 Envoyer une Newsletter
                                             </a>
@@ -551,7 +552,7 @@
                 
                 <!-- Section Wallet Entreprise (Commissions) -->
                 <div class="border-t border-slate-200 dark:border-slate-700 pt-6 mt-6">
-                    <div class="bg-gradient-to-r from-primary-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 rounded-xl border border-primary-200 dark:border-primary-800 p-6 shadow-sm">
+                    <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
                         <div class="mb-6">
                             <h3 class="text-lg font-semibold text-slate-900 dark:text-white flex items-center">
                                 <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-primary-100 dark:bg-primary-900 mr-3">
@@ -566,10 +567,10 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Wallet USD -->
-                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-6">
+                        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-xl flex items-center justify-center mr-4">
+                                        <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 rounded-lg flex items-center justify-center mr-4">
                                             <i class="fas fa-dollar-sign text-2xl text-primary-600 dark:text-primary-400"></i>
                                         </div>
                                         <div>
@@ -607,11 +608,11 @@
                             </div>
                             
                             <!-- Wallet CDF -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl border border-indigo-200 dark:border-indigo-900/50 p-6">
+                            <div class="bg-white dark:bg-slate-800 rounded-xl border border-violet-200 dark:border-violet-900/50 p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center mr-4">
-                                            <i class="fas fa-coins text-2xl text-indigo-600 dark:text-indigo-400"></i>
+                                        <div class="w-12 h-12 bg-violet-100 dark:bg-violet-900/50 rounded-lg flex items-center justify-center mr-4">
+                                            <i class="fas fa-coins text-2xl text-violet-600 dark:text-violet-400"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-200 uppercase">Wallet CDF</h4>
@@ -624,7 +625,7 @@
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center">
                                             <span class="text-sm text-slate-600 dark:text-slate-300">Solde actuel</span>
-                                            <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                                            <span class="text-2xl font-bold text-violet-600 dark:text-violet-400">
                                                 {{ number_format($enterpriseWallets['cdf']->balance, 0, ',', ' ') }} FC
                                             </span>
                                         </div>
@@ -649,7 +650,7 @@
                         </div>
                         
                         <!-- Informations sur les commissions -->
-                        <div class="mt-6 bg-white dark:bg-slate-800 rounded-xl border border-primary-200 dark:border-primary-900/50 p-4">
+                        <div class="mt-6 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
                                     <i class="fas fa-info-circle text-primary-600 dark:text-primary-400 text-xl"></i>
@@ -683,12 +684,12 @@
                         <!-- Boutons d'action -->
                         <div class="mt-6 flex flex-wrap gap-3">
                             <a href="{{ route('admin.wallets.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
                                 <i class="fas fa-wallet mr-2"></i>
                                 Voir tous les wallets
                             </a>
                             <a href="{{ route('admin.transactions.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl transition-colors duration-200">
+                               class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200">
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Historique des transactions
                             </a>
@@ -697,12 +698,12 @@
                 </div>
                 
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+                    <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-200">
                         <i class="fas fa-save mr-2"></i>
                         Enregistrer les modifications
                     </button>
                     
-                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-xl shadow-sm transition-all duration-200" onclick="resetForm()">
+                    <button type="button" class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium rounded-lg shadow-sm transition-all duration-200" onclick="resetForm()">
                         <i class="fas fa-undo mr-2"></i>
                         Réinitialiser
                     </button>
@@ -712,6 +713,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 // Configuration des URLs pour les requêtes AJAX
 const MAINTENANCE_ENABLE_URL = '{{ route('admin.settings.maintenance.enable') }}';
@@ -1093,11 +1095,13 @@ function updateChangeCounter() {
 // Fonctions pour le mode maintenance
 function showMaintenanceModal() {
     document.getElementById('maintenanceModal').classList.remove('hidden');
+    document.getElementById('maintenanceModal').classList.add('flex');
     document.body.classList.add('overflow-hidden');
 }
 
 function hideMaintenanceModal() {
     document.getElementById('maintenanceModal').classList.add('hidden');
+    document.getElementById('maintenanceModal').classList.remove('flex');
     document.body.classList.remove('overflow-hidden');
 }
 
@@ -1340,22 +1344,23 @@ function updateLocationRestrictionsUI(enabled) {
         statusText.textContent = 'Restrictions ACTIVÉES';
         statusDescription.textContent = 'Les vendeurs ne peuvent publier que dans les villes autorisées';
         toggleBtn.innerHTML = '<i class="fas fa-times mr-2"></i>Désactiver';
-        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
     } else {
         // État DÉSACTIVÉ
-        statusIcon.innerHTML = '<i class="fas fa-globe text-blue-600 dark:text-blue-400 text-lg"></i>';
-        statusIcon.className = 'p-2 rounded-full bg-blue-100 dark:bg-blue-900/30';
+        statusIcon.innerHTML = '<i class="fas fa-globe text-sky-600 dark:text-sky-400 text-lg"></i>';
+        statusIcon.className = 'p-2 rounded-full bg-sky-100 dark:bg-sky-900/30';
         statusText.textContent = 'Restrictions DÉSACTIVÉES';
         statusDescription.textContent = 'Les vendeurs peuvent publier dans n\'importe quelle ville du monde';
         toggleBtn.innerHTML = '<i class="fas fa-check mr-2"></i>Activer';
-        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-xl shadow-sm transition-colors duration-200';
+        toggleBtn.className = 'inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200';
     }
 }
 </script>
+@endpush
 
 <!-- Modal pour activer le mode maintenance -->
-<div id="maintenanceModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full z-50 px-4 transition-opacity duration-300">
-    <div class="relative top-10 sm:top-20 mx-auto p-5 sm:p-6 w-full max-w-md shadow-2xl rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+<div id="maintenanceModal" class="modal-wrapper hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="relative w-full max-w-md rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-5 sm:p-6 shadow-2xl">
         <div class="mt-2 sm:mt-3">
             <div class="flex items-center justify-between mb-4 sm:mb-5">
                 <h3 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white flex items-center">
@@ -1377,7 +1382,7 @@ function updateLocationRestrictionsUI(enabled) {
                             Message personnalisé
                         </label>
                         <textarea name="message" 
-                                  class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                                  class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                                   rows="3" 
                                   placeholder="Nous effectuons actuellement des travaux de maintenance..."></textarea>
                     </div>
@@ -1388,7 +1393,7 @@ function updateLocationRestrictionsUI(enabled) {
                         </label>
                         <input type="text" 
                                name="estimated_time" 
-                               class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                               class="w-full px-3 py-2 text-sm border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
                                placeholder="Ex: 2 heures, 30 minutes...">
                     </div>
                 </div>
@@ -1396,11 +1401,11 @@ function updateLocationRestrictionsUI(enabled) {
                 <div class="flex flex-col xs:flex-row items-center justify-end pt-4 sm:pt-6 space-y-2 xs:space-y-0 xs:space-x-3">
                     <button type="button" 
                             onclick="hideMaintenanceModal()" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-500 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors duration-200">
                         Annuler
                     </button>
                     <button type="submit" 
-                            class="w-full xs:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors duration-200">
+                            class="w-full xs:w-auto px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200">
                         <i class="fas fa-tools mr-2"></i>
                         <span class="hidden xs:inline">Activer la maintenance</span>
                         <span class="xs:hidden">Activer</span>

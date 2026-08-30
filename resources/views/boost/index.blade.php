@@ -29,7 +29,10 @@
     </div>
 
     @php
-        $walletBalance = auth()->user()->cdfWallet()?->balance ?? 0;
+        $payCurrency = auth()->user()->preferred_currency ?? 'CDF';
+        $walletBalance = $payCurrency === 'USD'
+            ? (auth()->user()->usdWallet()?->balance ?? 0)
+            : (auth()->user()->cdfWallet()?->balance ?? 0);
         $isLowBalance = $walletBalance < 1000;
     @endphp
     <div class="rounded-2xl border p-6 mb-8 flex flex-col sm:flex-row sm:items-center gap-4 {{ $isLowBalance ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800' : 'bg-primary-50 dark:bg-primary-900/10 border-primary-100 dark:border-primary-800' }}">
@@ -39,7 +42,7 @@
             </div>
             <div>
                 <h3 class="font-semibold {{ $isLowBalance ? 'text-red-900 dark:text-red-200' : 'text-primary-900 dark:text-primary-200' }}">Solde de votre portefeuille</h3>
-                <span class="text-2xl font-bold {{ $isLowBalance ? 'text-red-700 dark:text-red-400' : 'text-primary-700 dark:text-primary-400' }}">{{ number_format($walletBalance, 0, ',', ' ') }} CDF</span>
+                <span class="text-2xl font-bold {{ $isLowBalance ? 'text-red-700 dark:text-red-400' : 'text-primary-700 dark:text-primary-400' }}">{{ number_format($walletBalance, 0, ',', ' ') }} {{ $payCurrency }}</span>
                 @if($isLowBalance)
                     <p class="text-sm text-red-600 dark:text-red-400 mt-1"><i class="fas fa-exclamation-triangle mr-1"></i>Solde faible — Rechargez pour acheter des boosts</p>
                 @endif
@@ -159,7 +162,7 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Prix total</label>
                             <div class="flex">
                                 <input type="text" id="totalPrice" class="flex-1 px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-l-xl bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" readonly>
-                                <span class="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-l-0 border-gray-200 dark:border-gray-600 rounded-r-xl text-sm text-gray-700 dark:text-gray-300">CDF</span>
+                                <span class="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-l-0 border-gray-200 dark:border-gray-600 rounded-r-xl text-sm text-gray-700 dark:text-gray-300">{{ $payCurrency }}</span>
                             </div>
                         </div>
                     </div>
@@ -232,7 +235,8 @@
 
 @push('scripts')
 <script>
-    const WALLET_BALANCE = {{ auth()->user()->cdfWallet()?->balance ?? 0 }};
+    const PAY_CURRENCY = @json(auth()->user()->preferred_currency ?? 'CDF');
+    const WALLET_BALANCE = {{ $walletBalance }};
 
 document.addEventListener('DOMContentLoaded', function() {
     let selectedBoostTypeId = null;
@@ -353,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="${imageUrl}" alt="${item.title}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h6 class="font-medium text-gray-900 dark:text-white truncate">${item.title}</h6>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Prix: ${new Intl.NumberFormat('fr-FR').format(item.price)} CDF</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Prix: ${new Intl.NumberFormat('fr-FR').format(item.price)} ${PAY_CURRENCY}</p>
                                 ${boostInfo}
                             </div>
                             <div class="flex items-center flex-shrink-0">
@@ -498,7 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalPriceText = document.getElementById('totalPrice').value;
         const totalPrice = parseInt(totalPriceText.replace(/[^\d]/g, ''));
         if (totalPrice > WALLET_BALANCE) {
-            showNotification(`Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(WALLET_BALANCE)} CDF.`, 'error');
+            showNotification(`Solde insuffisant. Vous avez ${new Intl.NumberFormat('fr-FR').format(WALLET_BALANCE)} ${PAY_CURRENCY}.`, 'error');
             return;
         }
 

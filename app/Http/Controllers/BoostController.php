@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\BoostType;
 use App\Models\ProductBoost;
 use App\Models\Item;
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -76,48 +78,12 @@ class BoostController extends Controller
                 ], 400);
             }
 
-        // Prix de base selon la devise
-        $basePrice = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
-        
-        // Tarification dégressive fixe basée sur 17 000 CDF pour 30 jours (base 10 000)
-        // Progression cohérente pour toutes les durées
-        $duration = (int) $request->duration;
-        
-        switch ($duration) {
-            case 1:
-                $totalPrice = $basePrice; // 100% - Prix plein
-                break;
-            case 3:
-                $totalPrice = $basePrice * 2.4; // 8 000 par jour → 24 000 pour 3 jours (base 10k)
-                break;
-            case 7:
-                $totalPrice = $basePrice * 4.9; // 7 000 par jour → 49 000 pour 7 jours (base 10k)
-                break;
-            case 14:
-                $totalPrice = $basePrice * 8.4; // 6 000 par jour → 84 000 pour 14 jours (base 10k)
-                break;
-            case 21:
-                $totalPrice = $basePrice * 10.5; // 5 000 par jour → 105 000 pour 21 jours (base 10k)
-                break;
-            case 30:
-                $totalPrice = $basePrice * 1.7; // 567 par jour → 17 000 pour 30 jours (base 10k)
-                break;
-            default:
-                // Pour les durées non standard, interpolation proportionnelle
-                if ($duration <= 3) {
-                    $totalPrice = $basePrice * $duration * 0.80;
-                } elseif ($duration <= 7) {
-                    $totalPrice = $basePrice * $duration * 0.70;
-                } elseif ($duration <= 14) {
-                    $totalPrice = $basePrice * $duration * 0.60;
-                } elseif ($duration <= 21) {
-                    $totalPrice = $basePrice * $duration * 0.50;
-                } else {
-                    $totalPrice = $basePrice * $duration * 0.057;
-                }
-                break;
-        }
-        $currencySymbol = $userCurrency === 'USD' ? '$' : 'CDF';
+        // Devise de l'utilisateur
+        $userCurrency = $user->preferred_currency ?? 'CDF';
+
+            // Calcul du prix dégressif (partagé avec purchase)
+            $totalPrice = $this->resolvePrice($boostType, $durationInDays, $userCurrency);
+            $currencySymbol = $userCurrency === 'USD' ? '$' : 'CDF';
 
             return response()->json([
                 'success' => true,
@@ -208,59 +174,60 @@ class BoostController extends Controller
             // Calculer le prix total (même logique que calculatePrice)
             $user = Auth::user();
             $userCurrency = $user->preferred_currency ?? 'CDF';
-            $basePrice = $userCurrency === 'USD' ? $boostType->price_usd : $boostType->price_cdf;
-            
-            // Tarification dégressive fixe (identique à calculatePrice)
+
+            // Tarification dégressive (partagée avec calculatePrice)
             $duration = (int) $request->duration;
-            
-            switch ($duration) {
-                case 1:
-                    $totalPrice = $basePrice;
-                    break;
-                case 3:
-                    $totalPrice = $basePrice * 2.4;
-                    break;
-                case 7:
-                    $totalPrice = $basePrice * 4.9;
-                    break;
-                case 14:
-                    $totalPrice = $basePrice * 8.4;
-                    break;
-                case 21:
-                    $totalPrice = $basePrice * 10.5;
-                    break;
-                case 30:
-                    $totalPrice = $basePrice * 1.7;
-                    break;
-                default:
-                    if ($duration <= 3) {
-                        $totalPrice = $basePrice * $duration * 0.80;
-                    } elseif ($duration <= 7) {
-                        $totalPrice = $basePrice * $duration * 0.70;
-                    } elseif ($duration <= 14) {
-                        $totalPrice = $basePrice * $duration * 0.60;
-                    } elseif ($duration <= 21) {
-                        $totalPrice = $basePrice * $duration * 0.50;
-                    } else {
-                        $totalPrice = $basePrice * $duration * 0.057;
-                    }
-                    break;
-            }
+            $totalPrice = $this->resolvePrice($boostType, $duration, $userCurrency);
+            $payCurrency = $userCurrency === 'USD' ? 'USD' : 'CDF';
+
+            // Récupérer le wallet correspondant à la devise du prix (USD ou CDF)
+            $wallet = $payCurrency === 'USD'
+                ? $user->getOrCreateUsdWallet()
+                : $user->getOrCreateCdfWallet();
 
             // Vérifier le solde du wallet de l'utilisateur
-            $cdfWallet = $user->cdfWallet();
-            $cdfBalance = $cdfWallet ? $cdfWallet->balance : 0;
-            if ($cdfBalance < $totalPrice) {
+            $walletBalance = $wallet ? $wallet->balance : 0;
+            if ($walletBalance < $totalPrice) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Solde insuffisant. Votre solde: ' . number_format($cdfBalance, 0, ',', ' ') . ' CDF, Requis: ' . number_format($totalPrice, 0, ',', ' ') . ' CDF'
+                    'message' => 'Solde insuffisant. Votre solde: ' . number_format($walletBalance, 0, ',', ' ') . ' ' . $payCurrency . ', Requis: ' . number_format($totalPrice, 2) . ' ' . $payCurrency
                 ], 400);
             }
 
             DB::beginTransaction();
 
-            // Déduire le montant du wallet
-            $cdfWallet->decrement('balance', $totalPrice);
+            // Débiter le wallet de l'utilisateur dans la devise du prix
+            $wallet->debit($totalPrice);
+
+            // Enregistrer la transaction de débit (historique wallet)
+            $wallet->transactions()->create([
+                'type' => WalletTransaction::TYPE_DEBIT,
+                'amount' => $totalPrice,
+                'balance_after' => $wallet->fresh()->balance,
+                'description' => 'Achat boost "' . $boostType->display_name . '" - Produit #' . $item->id,
+                'reference' => 'BOOST_' . $boostType->id . '_' . $item->id . '_' . time(),
+                'status' => 'completed',
+                'metadata' => [
+                    'boost_duration_days' => $duration,
+                    'item_id' => $item->id,
+                    'boost_type_id' => $boostType->id,
+                ],
+            ]);
+
+            // Créditer le wallet entreprise dédié au boost (revenu plateforme)
+            $boostEnterpriseWallet = Wallet::getEnterpriseSubWallet(Wallet::SUBTYPE_BOOST, $payCurrency)
+                ?: Wallet::getEnterpriseWallet($payCurrency);
+            if ($boostEnterpriseWallet) {
+                $boostEnterpriseWallet->credit($totalPrice);
+                $boostEnterpriseWallet->transactions()->create([
+                    'type' => WalletTransaction::TYPE_CREDIT,
+                    'amount' => $totalPrice,
+                    'balance_after' => $boostEnterpriseWallet->fresh()->balance,
+                    'description' => 'Revenu boost "' . $boostType->display_name . '" - Produit #' . $item->id,
+                    'reference' => 'BOOST_REVENUE_' . $boostType->id . '_' . $item->id . '_' . time(),
+                    'status' => 'completed',
+                ]);
+            }
 
             // Créer l'enregistrement de boost
             $boost = ProductBoost::create([
@@ -269,6 +236,7 @@ class BoostController extends Controller
                 'boost_type_id' => $boostType->id,
                 'duration' => (int) $request->duration,
                 'total_price' => $totalPrice,
+                'currency' => $payCurrency,
                 'status' => 'active',
                 'activated_at' => now(),
                 'expires_at' => now()->addDays((int) $request->duration)
@@ -326,8 +294,13 @@ class BoostController extends Controller
             // Calculer le remboursement selon la politique
             $refundAmount = $this->calculateRefundAmount($productBoost);
 
-            // Récupérer le wallet CDF pour le remboursement
-            $cdfWallet = Auth::user()->cdfWallet();
+            // Devise du boost (fallback CDF pour les boosts antérieurs à la devise)
+            $boostCurrency = $productBoost->currency ?? 'CDF';
+
+            // Wallet de l'utilisateur correspondant à la devise du boost
+            $wallet = $boostCurrency === 'USD'
+                ? Auth::user()->getOrCreateUsdWallet()
+                : Auth::user()->getOrCreateCdfWallet();
 
             // Mettre à jour le boost
             $productBoost->update([
@@ -338,13 +311,36 @@ class BoostController extends Controller
 
             // Effectuer le remboursement si applicable
             if ($refundAmount > 0) {
-                $cdfWallet->increment('balance', $refundAmount);
+                $wallet->credit($refundAmount);
+                $wallet->transactions()->create([
+                    'type' => WalletTransaction::TYPE_CREDIT,
+                    'amount' => $refundAmount,
+                    'balance_after' => $wallet->fresh()->balance,
+                    'description' => 'Remboursement annulation boost #' . $productBoost->id,
+                    'reference' => 'BOOST_REFUND_' . $productBoost->id . '_' . time(),
+                    'status' => 'completed',
+                ]);
+
+                // Retirer le montant remboursé du revenu entreprise boost
+                $boostEnterpriseWallet = Wallet::getEnterpriseSubWallet(Wallet::SUBTYPE_BOOST, $boostCurrency)
+                    ?: Wallet::getEnterpriseWallet($boostCurrency);
+                if ($boostEnterpriseWallet && $boostEnterpriseWallet->balance >= $refundAmount) {
+                    $boostEnterpriseWallet->debit($refundAmount);
+                    $boostEnterpriseWallet->transactions()->create([
+                        'type' => WalletTransaction::TYPE_DEBIT,
+                        'amount' => $refundAmount,
+                        'balance_after' => $boostEnterpriseWallet->fresh()->balance,
+                        'description' => 'Remboursement annulation boost #' . $productBoost->id,
+                        'reference' => 'BOOST_REFUND_IN_' . $productBoost->id . '_' . time(),
+                        'status' => 'completed',
+                    ]);
+                }
             }
 
             DB::commit();
 
             $message = $refundAmount > 0 
-                ? "Boost annulé avec succès. Remboursement de " . number_format($refundAmount, 0, ',', ' ') . " CDF effectué."
+                ? "Boost annulé avec succès. Remboursement de " . number_format($refundAmount, 2) . " {$boostCurrency} effectué."
                 : "Boost annulé avec succès.";
 
             return response()->json([
@@ -541,5 +537,52 @@ class BoostController extends Controller
             'success' => true,
             'durations' => $durations
         ]);
+    }
+
+    /**
+     * Calcule le prix total d'un boost selon la durée et la devise de l'utilisateur.
+     * Tarification dégressive : plus la durée est longue, plus le prix par jour baisse.
+     */
+    private function resolvePrice(BoostType $boostType, int $duration, string $currency): float
+    {
+        // Prix de base selon la devise
+        $basePrice = $currency === 'USD' ? (float) $boostType->price_usd : (float) $boostType->price_cdf;
+
+        switch ($duration) {
+            case 1:
+                $totalPrice = $basePrice; // 100% - Prix plein
+                break;
+            case 3:
+                $totalPrice = $basePrice * 2.4; // 8 000 par jour → 24 000 pour 3 jours (base 10k)
+                break;
+            case 7:
+                $totalPrice = $basePrice * 4.9; // 7 000 par jour → 49 000 pour 7 jours (base 10k)
+                break;
+            case 14:
+                $totalPrice = $basePrice * 8.4; // 6 000 par jour → 84 000 pour 14 jours (base 10k)
+                break;
+            case 21:
+                $totalPrice = $basePrice * 10.5; // 5 000 par jour → 105 000 pour 21 jours (base 10k)
+                break;
+            case 30:
+                $totalPrice = $basePrice * 5.0; // ~1 667 par jour → 50 000 pour 30 jours (base 10k)
+                break;
+            default:
+                // Pour les durées non standard, interpolation proportionnelle dégressive
+                if ($duration <= 3) {
+                    $totalPrice = $basePrice * $duration * 0.80;
+                } elseif ($duration <= 7) {
+                    $totalPrice = $basePrice * $duration * 0.70;
+                } elseif ($duration <= 14) {
+                    $totalPrice = $basePrice * $duration * 0.60;
+                } elseif ($duration <= 21) {
+                    $totalPrice = $basePrice * $duration * 0.50;
+                } else {
+                    $totalPrice = $basePrice * $duration * 0.057;
+                }
+                break;
+        }
+
+        return round((float) $totalPrice, 2);
     }
 }

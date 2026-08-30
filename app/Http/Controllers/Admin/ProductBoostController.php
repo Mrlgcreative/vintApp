@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ProductBoost;
 use App\Models\Wallet;
+use App\Models\WalletTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -89,9 +90,36 @@ class ProductBoostController extends Controller
 
             if ($refundAmount > 0) {
                 $user = $productBoost->user;
-                $wallet = $user->cdfWallet();
-                if ($wallet) {
-                    $wallet->increment('balance', $refundAmount);
+                $boostCurrency = $productBoost->currency ?? 'CDF';
+
+                // Wallet de l'utilisateur dans la devise du boost
+                $wallet = $boostCurrency === 'USD'
+                    ? $user->getOrCreateUsdWallet()
+                    : $user->getOrCreateCdfWallet();
+
+                $wallet->credit($refundAmount);
+                $wallet->transactions()->create([
+                    'type' => WalletTransaction::TYPE_CREDIT,
+                    'amount' => $refundAmount,
+                    'balance_after' => $wallet->fresh()->balance,
+                    'description' => 'Remboursement annulation boost #' . $productBoost->id . ' (admin)',
+                    'reference' => 'BOOST_REFUND_ADMIN_' . $productBoost->id . '_' . time(),
+                    'status' => 'completed',
+                ]);
+
+                // Retirer le montant remboursé du revenu entreprise boost
+                $boostEnterpriseWallet = Wallet::getEnterpriseSubWallet(Wallet::SUBTYPE_BOOST, $boostCurrency)
+                    ?: Wallet::getEnterpriseWallet($boostCurrency);
+                if ($boostEnterpriseWallet && $boostEnterpriseWallet->balance >= $refundAmount) {
+                    $boostEnterpriseWallet->debit($refundAmount);
+                    $boostEnterpriseWallet->transactions()->create([
+                        'type' => WalletTransaction::TYPE_DEBIT,
+                        'amount' => $refundAmount,
+                        'balance_after' => $boostEnterpriseWallet->fresh()->balance,
+                        'description' => 'Remboursement annulation boost #' . $productBoost->id . ' (admin)',
+                        'reference' => 'BOOST_REFUND_ADMIN_IN_' . $productBoost->id . '_' . time(),
+                        'status' => 'completed',
+                    ]);
                 }
             }
 
@@ -99,7 +127,7 @@ class ProductBoostController extends Controller
 
             return redirect()->route('admin.product-boosts.show', $productBoost)
                 ->with('success', 'Boost annulé avec succès.'
-                    . ($refundAmount > 0 ? " Remboursement de {$refundAmount} CDF effectué." : ''));
+                    . ($refundAmount > 0 ? " Remboursement de {$refundAmount} effectué." : ''));
 
         } catch (\Exception $e) {
             DB::rollBack();

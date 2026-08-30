@@ -34,65 +34,98 @@
 @endphp
 
 <div class="space-y-6">
+    @php
+    $stats['active_pct'] = $stats['total'] > 0 ? round($stats['active'] / $stats['total'] * 100) : 0;
+@endphp
+
     <!-- Statistiques -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-primary-600/10 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300">
-                    <i class="fas fa-bolt"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Boosts au total</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-bolt text-[10px] text-primary-500"></i>
+                    Boost
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-fire text-xs text-primary-500"></i>
+                    Tous statuts confondus
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Boosts au total</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Sur l'ensemble des articles</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300">
-                    <i class="fas fa-circle-check"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                    <i class="fas fa-arrow-trend-up text-[10px]"></i>
+                    {{ $stats['active_pct'] }}%
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-circle-check text-xs text-emerald-500"></i>
+                    En cours d'exécution
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Des boosts au total</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
-                    <i class="fas fa-hourglass-end"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Expirés</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['expired']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-hourglass-end text-[10px] text-amber-500"></i>
+                    Terminés
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-hourglass-end text-xs text-amber-500"></i>
+                    Durée écoulée
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Expirés</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['expired']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Boosts arrivés à expiration</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-red-500/10 text-red-600 dark:bg-red-400/10 dark:text-red-300">
-                    <i class="fas fa-ban"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Annulés</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['cancelled']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-ban text-[10px] text-red-500"></i>
+                    Stoppés
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-xmark text-xs text-red-500"></i>
+                    Annulés par l'admin
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Annulés</p>
-                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['cancelled']) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Boosts interrompus</div>
             </div>
         </div>
 
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <div class="flex items-center gap-4">
-                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
-                    <i class="fas fa-chart-line"></i>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Revenus (actifs)</p>
+            <p class="mt-1 text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white sm:text-2xl">${{ number_format($stats['revenue'], 2) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    USD
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-chart-line text-xs text-sky-500"></i>
+                    Gains générés
                 </div>
-                <div class="min-w-0">
-                    <p class="text-sm text-slate-500 dark:text-slate-400">Revenus (actifs)</p>
-                    <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white sm:text-2xl">${{ number_format($stats['revenue'], 2) }}</p>
-                </div>
+                <div class="text-xs text-slate-400">Spotlight des boosts actifs</div>
             </div>
         </div>
     </div>

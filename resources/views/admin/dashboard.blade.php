@@ -10,43 +10,40 @@
 @endphp
 
 <div class="space-y-6">
-    {{-- ====== Cartes KPI (style dashboard-01) ====== --}}
-    <div class="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 xl:grid-cols-4">
+    {{-- ====== Cartes KPI (style section-cards) ====== --}}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
         {{-- Utilisateurs --}}
-        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
-            <div class="relative p-5 pb-2">
-                <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs</p>
-                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total_users']) }}</p>
-                <div class="absolute right-4 top-4">
-                    <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
-                        <i class="fas fa-arrow-trend-up text-[10px]"></i>
-                        +{{ $stats['new_users_today'] }}
-                    </span>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total_users']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-arrow-trend-up text-[10px] text-emerald-500"></i>
+                    +{{ $stats['new_users_today'] }}
+                </span>
             </div>
-            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
-                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
                     <i class="fas fa-user-plus text-xs text-emerald-500"></i>
-                    {{ $stats['new_users_today'] }} inscrit{{ $stats['new_users_today'] > 1 ? 's' : '' }} aujourd'hui
+                    {{ $stats['new_users_today'] }} inscription{{ $stats['new_users_today'] > 1 ? 's' : '' }} aujourd'hui
                 </div>
                 <div class="text-xs text-slate-400">Base totale de la plateforme</div>
             </div>
         </div>
 
         {{-- Revenus USD --}}
-        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
-            <div class="relative p-5 pb-2">
-                <p class="text-sm text-slate-500 dark:text-slate-400">Revenus USD</p>
-                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['total_revenue_usd']) }}</p>
-                <div class="absolute right-4 top-4">
-                    <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
-                        <i class="fas fa-arrow-right-arrow-left text-[10px]"></i>
-                        {{ $stats['transactions_today'] }}
-                    </span>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Revenus USD</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['total_revenue_usd']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-arrow-right-arrow-left text-[10px] text-sky-500"></i>
+                    {{ $stats['transactions_today'] }}
+                </span>
             </div>
-            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
-                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
                     <i class="fas fa-wallet text-xs text-primary-500"></i>
                     Sous-wallets entreprise
                 </div>
@@ -54,30 +51,115 @@
             </div>
         </div>
 
-        {{-- Articles actifs --}}
-        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
-            <div class="relative p-5 pb-2">
-                <p class="text-sm text-slate-500 dark:text-slate-400">Articles actifs</p>
-                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_items']) }}</p>
+        {{-- Revenus CDF --}}
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Revenus CDF</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatCdf($stats['total_revenue_cdf']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    FC
+                </span>
             </div>
-            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
-                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
-                    <i class="fas fa-box-open text-xs text-sky-500"></i>
-                    {{ number_format($stats['total_items']) }} au total
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-money-bill-wave text-xs text-primary-500"></i>
+                    Revenus de la plateforme
                 </div>
-                <div class="text-xs text-slate-400">Annonces disponibles</div>
+                <div class="text-xs text-slate-400">Franc Congolais</div>
+            </div>
+        </div>
+
+        {{-- Wallets en attente --}}
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-amber-600 dark:text-amber-300">Wallets en attente</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['pending_wallets'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-white px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800/40 dark:bg-slate-900 dark:text-amber-300">
+                    <i class="fas fa-clock text-[10px]"></i>
+                    À valider
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+                    <span>{{ $formatUsd($stats['pending_wallets_usd']) }}</span>
+                    <span class="h-3 w-px bg-slate-200 dark:bg-slate-600"></span>
+                    <span>{{ $formatCdf($stats['pending_wallets_cdf']) }}</span>
+                </div>
+                <div class="text-xs text-slate-400">
+                    <a href="{{ route('admin.wallets.pending') }}" class="font-medium text-amber-600 transition-colors hover:text-amber-700 dark:text-amber-300">Voir détails</a>
+                </div>
+            </div>
+        </div>
+
+        {{-- Articles actifs --}}
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Articles actifs</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_items']) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-box-open text-[10px] text-sky-500"></i>
+                    {{ number_format($stats['total_items']) }} au total
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-circle-check text-xs text-emerald-500"></i>
+                    Annonces disponibles
+                </div>
+                <div class="text-xs text-slate-400">Articles en vente sur la plateforme</div>
+            </div>
+        </div>
+
+        {{-- Vérifications --}}
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Vérifications</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['total_verifications'] ?? 0 }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border {{ ($stats['pending_verifications'] ?? 0) > 0 ? 'border-amber-200 bg-white text-amber-700 dark:border-amber-800/40 dark:bg-slate-900 dark:text-amber-300' : 'border-emerald-200 bg-white text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300' }} px-2 py-0.5 text-xs font-medium">
+                    <i class="fas fa-circle text-[5px] opacity-70"></i>
+                    {{ ($stats['pending_verifications'] ?? 0) > 0 ? ($stats['pending_verifications'] ?? 0) . ' en attente' : 'Aucune' }}
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-shield-halved text-xs text-orange-500"></i>
+                    Authenticité
+                </div>
+                <div class="text-xs text-slate-400">Contrôles expert des articles</div>
+            </div>
+        </div>
+
+        {{-- Commissions USD --}}
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Commissions</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_commission_usd'] ?? 0) }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    USD
+                </span>
+            </div>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-chart-line text-xs text-primary-500"></i>
+                    Sous-wallet commission
+                </div>
+                <div class="text-xs text-slate-400">Revenus de commission plateforme</div>
             </div>
         </div>
 
         {{-- Commandes en attente --}}
-        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-amber-500/5 to-white shadow-sm dark:border-slate-700 dark:from-amber-500/10 dark:to-slate-800">
-            <div class="relative p-5 pb-2">
-                <p class="text-sm text-slate-500 dark:text-slate-400">Commandes en attente</p>
-                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['pending_orders']) }}</p>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Commandes en attente</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['pending_orders'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                    <i class="fas fa-hourglass-half text-[10px] text-violet-500"></i>
+                    À traiter
+                </span>
             </div>
-            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
-                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
-                    <i class="fas fa-clock text-xs text-amber-500"></i>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-cart-shopping text-xs text-violet-500"></i>
                     À traiter
                 </div>
                 <div class="text-xs text-slate-400">En attente de traitement</div>
@@ -85,60 +167,137 @@
         </div>
     </div>
 
-    {{-- ====== Graphique interactif (style chart-area-interactive) ====== --}}
-    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-        <div class="relative flex flex-col gap-1 p-5 pb-3">
-            <h3 class="text-base font-semibold text-slate-900 dark:text-white">Évolution — activité</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs et revenus des 30 derniers jours</p>
-            <div class="absolute right-4 top-4 inline-flex items-center gap-0.5 rounded-md border border-slate-200 p-0.5 dark:border-slate-600">
-                <button type="button" data-range="7d"
-                        class="inline-flex h-7 items-center rounded px-3 text-xs font-medium transition-colors">
-                    7 derniers jours
-                </button>
-                <button type="button" data-range="30d"
-                        class="inline-flex h-7 items-center rounded bg-slate-100 px-3 text-xs font-semibold text-slate-900 transition-colors dark:bg-slate-700 dark:text-white">
-                    30 derniers jours
-                </button>
+    {{-- ====== Sous-wallets Entreprise ====== --}}
+    <div>
+        <h3 class="mb-3 px-1 text-sm font-semibold text-slate-900 dark:text-white">Sous-wallets Entreprise</h3>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-300"><i class="fas fa-truck text-[10px]"></i></span>
+                    Transport
+                </p>
+                <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_transport_usd'] ?? 0) }}</p>
             </div>
-        </div>
-        <div class="px-2 pb-4 pt-3 sm:px-6">
-            <div class="relative h-[250px] w-full">
-                <canvas id="activityChart"></canvas>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-md bg-primary-500/10 text-primary-600 dark:text-primary-300"><i class="fas fa-bolt text-[10px]"></i></span>
+                    Boost
+                </p>
+                <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_boost_usd'] ?? 0) }}</p>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+                <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-300"><i class="fas fa-shield-halved text-[10px]"></i></span>
+                    Vérifications
+                </p>
+                <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['verification_revenue_usd'] ?? 0) }}</p>
+                <p class="text-[11px] text-slate-400">{{ $stats['completed_verifications'] ?? 0 }} payées</p>
+            </div>
+            <div class="rounded-xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-sm dark:border-slate-600 dark:from-slate-700 dark:to-slate-800">
+                <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-300">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-md bg-white/10 text-white"><i class="fas fa-building-columns text-[10px]"></i></span>
+                    Total Entreprise
+                </p>
+                <p class="text-xl font-semibold tabular-nums tracking-tight text-white">{{ $formatUsd(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0)) }}</p>
+                <p class="text-[11px] text-slate-400">Sous-wallets USD</p>
             </div>
         </div>
     </div>
 
-    {{-- ====== Sous-wallets Entreprise ====== --}}
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-300"><i class="fas fa-truck text-[10px]"></i></span>
-                Transport
-            </p>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_transport_usd'] ?? 0) }}</p>
+    {{-- ====== Graphique + Aperçu rapide ====== --}}
+    <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
+        {{-- Graphique interactif (style chart-area-icons) --}}
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 xl:col-span-2">
+            <div class="relative flex flex-col gap-1 p-5 pb-3">
+                <h3 class="text-base font-semibold text-slate-900 dark:text-white">Évolution — activité</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs et revenus des 30 derniers jours</p>
+                <div class="absolute right-4 top-4 inline-flex items-center gap-0.5 rounded-md border border-slate-200 p-0.5 dark:border-slate-600">
+                    <button type="button" data-range="7d"
+                            class="inline-flex h-7 items-center rounded px-3 text-xs font-medium transition-colors">
+                        7 jours
+                    </button>
+                    <button type="button" data-range="30d"
+                            class="inline-flex h-7 items-center rounded bg-slate-100 px-3 text-xs font-semibold text-slate-900 transition-colors dark:bg-slate-700 dark:text-white">
+                        30 jours
+                    </button>
+                </div>
+            </div>
+            <div class="px-2 pt-3 sm:px-6">
+                <div class="relative h-[250px] w-full">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+            {{-- Légende --}}
+            <div class="mt-3 flex items-center justify-center gap-5 px-5 pb-3">
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <i class="fas fa-arrow-trend-up text-[11px] text-violet-500"></i>
+                    Utilisateurs
+                </span>
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                    <i class="fas fa-dollar-sign text-[11px] text-emerald-500"></i>
+                    Revenus (USD)
+                </span>
+            </div>
+            {{-- Pied --}}
+            <div class="flex items-center gap-2 border-t border-slate-100 px-5 py-3 text-sm dark:border-slate-700">
+                <i class="fas fa-arrow-trend-up text-xs text-emerald-500"></i>
+                <span class="font-medium text-slate-700 dark:text-slate-200">Progression continue ce mois-ci</span>
+                <span class="text-xs text-slate-400">— 30 derniers jours</span>
+            </div>
         </div>
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-primary-500/10 text-primary-600 dark:text-primary-300"><i class="fas fa-bolt text-[10px]"></i></span>
-                Boost
-            </p>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_boost_usd'] ?? 0) }}</p>
-        </div>
-        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-300"><i class="fas fa-shield-halved text-[10px]"></i></span>
-                Vérifications
-            </p>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['verification_revenue_usd'] ?? 0) }}</p>
-            <p class="text-xs text-slate-400">{{ $stats['completed_verifications'] ?? 0 }} payées</p>
-        </div>
-        <div class="rounded-xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-sm dark:border-slate-600 dark:from-slate-700 dark:to-slate-800">
-            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-300">
-                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-white/10 text-white"><i class="fas fa-building-columns text-[10px]"></i></span>
-                Total Entreprise
-            </p>
-            <p class="text-xl font-semibold tabular-nums tracking-tight text-white">{{ $formatUsd(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0)) }}</p>
-            <p class="text-xs text-slate-400">Sous-wallets USD</p>
+
+        {{-- Aperçu rapide --}}
+        <div class="flex flex-col rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <h3 class="border-b border-slate-200 px-5 py-4 text-sm font-semibold text-slate-900 dark:border-slate-700 dark:text-white">Aperçu rapide</h3>
+            <div class="flex flex-1 flex-col justify-between gap-4 p-5">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-300">
+                            <i class="fas fa-user-check text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Actifs (7j)</p>
+                            <p class="text-lg font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['active_users'] }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-300">
+                            <i class="fas fa-clock text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Commandes en attente</p>
+                            <p class="text-lg font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['pending_orders'] }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-8 w-8 items-center justify-center rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-300">
+                            <i class="fas fa-wallet text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Fonds en wallets</p>
+                            <p class="text-lg font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total_wallet_balance'], 2) }} <span class="text-xs font-normal text-slate-400">USD</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <a href="{{ route('admin.users.index') }}"
+                       class="flex w-full items-center justify-center gap-2 rounded-md bg-primary-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
+                        <i class="fas fa-users text-[11px]"></i>
+                        Gérer les utilisateurs
+                    </a>
+                    <a href="{{ route('admin.wallets.pending') }}"
+                       class="flex w-full items-center justify-center gap-2 rounded-md bg-amber-500 px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-amber-600">
+                        <i class="fas fa-wallet text-[11px]"></i>
+                        Wallets en attente
+                    </a>
+                    <a href="{{ route('admin.transactions.index') }}"
+                       class="flex w-full items-center justify-center gap-2 rounded-md bg-sky-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-sky-700">
+                        <i class="fas fa-arrow-right-arrow-left text-[11px]"></i>
+                        Voir les transactions
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -269,18 +428,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const d = new Date(dateStr);
         return d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
     };
-
-    const makeGradient = (hex, alphaTop, alphaBottom) => {
-        const g = ctx.getContext('2d').createLinearGradient(0, 0, 0, 250);
-        g.addColorStop(0, hex.replace(')', alphaTop).replace('rgb', 'rgba'));
-        g.addColorStop(1, hex.replace(')', alphaBottom).replace('rgb', 'rgba'));
-        return g;
-    };
     const hexToRgba = (hex, alpha) => {
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
         return `rgba(${r},${g},${b},${alpha})`;
+    };
+
+    const fillGradient = (color) => ({ chart: { ctx: c, chartArea } }) => {
+        if (!chartArea) return hexToRgba(color, 0);
+        const g = c.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+        g.addColorStop(0, hexToRgba(color, 0.35));
+        g.addColorStop(1, hexToRgba(color, 0));
+        return g;
     };
 
     const chart = new Chart(ctx, {
@@ -291,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Utilisateurs',
                 data: dailyStats.map(s => s.users),
                 borderColor: violet,
-                backgroundColor: hexToRgba(violet, isDark ? 0.18 : 0.08),
+                backgroundColor: fillGradient(violet),
                 borderWidth: 2,
                 fill: true,
                 tension: 0.35,
@@ -301,7 +461,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 label: 'Revenus (USD)',
                 data: dailyStats.map(s => s.revenue),
                 borderColor: emerald,
-                backgroundColor: hexToRgba(emerald, isDark ? 0.18 : 0.08),
+                backgroundColor: fillGradient(emerald),
                 borderWidth: 2,
                 fill: true,
                 tension: 0.35,
@@ -314,19 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             maintainAspectRatio: false,
             interaction: { intersect: false, mode: 'index' },
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    align: 'end',
-                    labels: {
-                        usePointStyle: true,
-                        pointStyle: 'circle',
-                        boxWidth: 6,
-                        boxHeight: 6,
-                        color: textColor,
-                        font: { size: 11 }
-                    }
-                },
+                legend: { display: false },
                 tooltip: {
                     backgroundColor: isDark ? '#1e293b' : '#ffffff',
                     titleColor: isDark ? '#f8fafc' : '#0f172a',

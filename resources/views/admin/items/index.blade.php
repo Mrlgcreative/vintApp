@@ -6,7 +6,7 @@
 @section('page-actions')
 <div class="flex flex-wrap gap-3">
     <a href="{{ route('admin.items.create') }}"
-       class="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+       class="inline-flex items-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-3 py-2 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-plus"></i>Nouvel article
     </a>
 </div>
@@ -59,10 +59,10 @@
                 </select>
             </div>
             <div class="flex flex-col gap-2 sm:flex-row sm:space-x-2">
-                <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
+                <button type="submit" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
                     <i class="fas fa-search"></i>
                 </button>
-                <a href="{{ route('admin.items.index') }}" class="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+                <a href="{{ route('admin.items.index') }}" class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                     <i class="fas fa-times"></i>
                 </a>
             </div>
@@ -70,32 +70,105 @@
     </div>
 </div>
 
-<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-5">
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">Total</p>
-        <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total'] ?? $items->total() }}</p>
+<div class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-5">
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Total</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['total'] ?? $items->total() }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                <i class="fas fa-boxes-stacked text-[10px] text-primary-500"></i>
+                Catalogue
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-box text-xs text-primary-500"></i>
+                Tous les articles
+            </div>
+            <div class="text-xs text-slate-400">Sur toute la plateforme</div>
+        </div>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Actifs</p>
-        <p class="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{{ $stats['active'] ?? \App\Models\Item::where('status', 'active')->count() }}</p>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['active'] ?? \App\Models\Item::where('status', 'active')->count() }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                <i class="fas fa-circle-check text-[10px]"></i>
+                En vente
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-circle-check text-xs text-emerald-500"></i>
+                Actuellement en vente
+            </div>
+            <div class="text-xs text-slate-400">Statut actif</div>
+        </div>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400">En attente</p>
-        <p class="text-2xl font-bold text-amber-600 dark:text-amber-400">{{ $stats['pending'] ?? \App\Models\Item::where('status', 'pending')->count() }}</p>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">En attente</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['pending'] ?? \App\Models\Item::where('status', 'pending')->count() }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-white px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-800/40 dark:bg-slate-900 dark:text-amber-300">
+                <i class="fas fa-clock text-[10px]"></i>
+                Modération
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-hourglass-half text-xs text-amber-500"></i>
+                En attente de validation
+            </div>
+            <div class="text-xs text-slate-400">À vérifier</div>
+        </div>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-red-600 dark:text-red-400">Bloqués</p>
-        <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ $stats['blocked'] ?? \App\Models\Item::where('is_blocked', true)->count() }}</p>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Bloqués</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['blocked'] ?? \App\Models\Item::where('is_blocked', true)->count() }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-2 py-0.5 text-xs font-medium text-red-700 dark:border-red-800/40 dark:bg-slate-900 dark:text-red-300">
+                <i class="fas fa-ban text-[10px]"></i>
+                Interdits
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-ban text-xs text-red-500"></i>
+                Bloqués par l'admin
+            </div>
+            <div class="text-xs text-slate-400">Retirés de la vente</div>
+        </div>
     </div>
-    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800 sm:p-6">
-        <p class="mb-1 text-xs font-semibold uppercase tracking-wider text-orange-600 dark:text-orange-400">Suspendus</p>
-        <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ $stats['suspended'] ?? \App\Models\Item::where('is_suspended', true)->count() }}</p>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Suspendus</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $stats['suspended'] ?? \App\Models\Item::where('is_suspended', true)->count() }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-orange-200 bg-white px-2 py-0.5 text-xs font-medium text-orange-700 dark:border-orange-800/40 dark:bg-slate-900 dark:text-orange-300">
+                <i class="fas fa-pause-circle text-[10px]"></i>
+                Pausés
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-pause-circle text-xs text-orange-500"></i>
+                Suspendus temporairement
+            </div>
+            <div class="text-xs text-slate-400">En pause</div>
+        </div>
     </div>
 </div>
 
 <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-    <div class="border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-700">
         <h5 class="font-semibold text-slate-900 dark:text-white">Liste des articles</h5>
+        <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
+            <i class="fas fa-box text-[10px]"></i>
+            {{ number_format($items->total()) }} article(s)
+        </span>
     </div>
     <div>
         @if($items->count() > 0)
@@ -118,13 +191,13 @@
                     <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/30 {{ $item->is_blocked ? 'bg-red-50 dark:bg-red-900/10' : ($item->is_suspended ? 'bg-orange-50 dark:bg-orange-900/10' : '') }}">
                         <td class="px-4 py-3 align-middle">
                             <div class="flex items-center gap-3">
-                                <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200 dark:bg-slate-700 dark:ring-slate-600">
-                                    @if($item->images && count($item->images) > 0)
-                                        <img src="{{ asset('storage/' . $item->images[0]) }}" alt="" class="h-12 w-12 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-600">
-                                    @else
-                                        <i class="fas fa-image text-xl text-slate-400"></i>
-                                    @endif
-                                </div>
+                                @if($item->images && count($item->images) > 0)
+                                    <img src="{{ asset('storage/' . $item->images[0]) }}" alt="" class="h-11 w-11 flex-shrink-0 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-slate-600">
+                                @else
+                                    <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 ring-1 ring-slate-200 dark:bg-slate-700 dark:ring-slate-600">
+                                        <i class="fas fa-image text-base text-slate-400"></i>
+                                    </div>
+                                @endif
                                 <div>
                                     <a href="{{ route('admin.items.show', $item) }}" class="font-medium text-slate-900 hover:text-primary-600 dark:text-white">
                                         {{ Str::limit($item->name, 40) }}

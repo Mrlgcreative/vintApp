@@ -40,3 +40,6 @@ Thumbs.db
 *.zip
 *.7z
 sql_parts/
+
+# Microservices en construction (développement local uniquement, non versionnés)
+/microservices/

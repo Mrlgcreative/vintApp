@@ -47,6 +47,20 @@
         .animate-fade-in { animation: admin-fade-in .35s ease-out }
         @keyframes admin-pop { from { opacity: 0; transform: scale(.97) translateY(4px) } to { opacity: 1; transform: scale(1) translateY(0) } }
         .animate-pop { animation: admin-pop .2s ease-out }
+        /* ===== Sidebar shadcn (sidebar-07) ===== */
+        #sidebar { width: 16rem; transition: width .2s ease-in-out, transform .3s ease-in-out }
+        #sidebar.sidebar-collapsed { width: 4.75rem }
+        #sidebar.sidebar-collapsed .sidebar-nav { padding-inline: .5rem }
+        #sidebar.sidebar-collapsed .sidebar-link { justify-content: center; padding-inline: .5rem }
+        #sidebar.sidebar-collapsed .sidebar-link > span { display: none }
+        #sidebar.sidebar-collapsed .sidebar-section-title,
+        #sidebar.sidebar-collapsed .sidebar-brand-block,
+        #sidebar.sidebar-collapsed .sidebar-footer-text,
+        #sidebar.sidebar-collapsed .sidebar-extra { display: none }
+        #sidebar.sidebar-collapsed .sidebar-footer { padding-inline: .75rem }
+        #sidebar.sidebar-collapsed .sidebar-link-btn { padding-inline: 0; border-color: transparent }
+        .sidebar-brand-glyph { display: none }
+        #sidebar.sidebar-collapsed .sidebar-brand-glyph { display: flex }
         @media (max-width: 1023px) {
             #sidebar { transform: translateX(-100%) }
             #sidebar.active { transform: translateX(0) }
@@ -54,50 +68,48 @@
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 font-sans text-sm leading-relaxed text-slate-800 dark:text-slate-100 antialiased">
+<body class="bg-slate-50 font-sans text-sm leading-relaxed text-slate-800 antialiased dark:bg-slate-950 dark:text-slate-100">
     @php
         $isExpert = auth()->check() && auth()->user()->isExpert();
 
-        $linkIdle = 'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-slate-300 hover:bg-white/[0.07] hover:text-white transition-all duration-150';
-        $linkActive = 'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-500 shadow-lg shadow-primary-900/30 transition-all duration-150';
-        $sectionTitle = 'flex items-center gap-2 pt-5 pb-2';
-        $sectionLabel = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500';
-        $icon = 'w-4 h-4 shrink-0 opacity-80';
+        $linkIdle = 'sidebar-link group flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white';
+        $linkActive = 'sidebar-link group flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-semibold bg-slate-200/80 text-slate-900 dark:bg-slate-800 dark:text-white';
+        $sectionTitle = 'sidebar-section-title flex items-center gap-2 px-2 pt-5 pb-2';
+        $sectionLabel = 'text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400 dark:text-slate-500';
+        $icon = 'sidebar-icon w-4 h-4 shrink-0 opacity-80';
     @endphp
 
     <div class="flex min-h-screen">
 
-        <!-- Fond décoratif (permet au glassmorphisme de la sidebar de se voir) -->
-        <div class="pointer-events-none fixed inset-0 -z-10 overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-indigo-100/70 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
-            <div class="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-primary-300/40 blur-3xl dark:bg-primary-700/20"></div>
-            <div class="absolute right-0 top-1/4 h-96 w-[28rem] rounded-full bg-sky-300/30 blur-3xl dark:bg-sky-700/15"></div>
-            <div class="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-violet-300/30 blur-3xl dark:bg-violet-700/15"></div>
-            <div class="absolute right-1/4 top-0 h-72 w-72 rounded-full bg-fuchsia-200/30 blur-3xl dark:bg-fuchsia-700/10"></div>
-        </div>
+        <!-- Fond décoratif neutre (permet au glassmorphisme de la sidebar de se voir) -->
+        <div class="pointer-events-none fixed inset-0 -z-10 bg-slate-50 dark:bg-slate-950"></div>
 
-        <!-- ===== Sidebar ===== -->
+        <!-- ===== Sidebar (shadcn) ===== -->
         <nav id="sidebar"
-             class="fixed left-0 top-0 z-50 flex h-screen w-72 flex-col border-r border-white/10 bg-gradient-to-b from-slate-900/80 via-slate-900/70 to-slate-950/80 shadow-xl shadow-slate-950/40 backdrop-blur-2xl transition-transform duration-300 ease-in-out">
+             class="fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-slate-200 bg-white text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
 
             <!-- Brand -->
-            <div class="relative flex items-center gap-3 border-b border-white/10 px-5 py-5">
-                <x-app-brand
-                    :show-logo="true"
-                    :show-name="true"
-                    logo-height="28px"
-                    logo-width="96px"
-                    name-size="1.15rem"
-                    name-class="text-white font-bold"
-                />
+            <div class="relative flex h-16 shrink-0 items-center gap-3 border-b border-slate-200 px-4 dark:border-slate-800">
+                <i class="sidebar-brand-glyph fas fa-cube flex items-center text-lg text-slate-900 dark:text-white" aria-hidden="true"></i>
+                <div class="sidebar-brand-block flex min-w-0 flex-1 items-center gap-2">
+                    <x-app-brand
+                        :show-logo="true"
+                        :show-name="true"
+                        logo-height="26px"
+                        logo-width="84px"
+                        name-size="1.05rem"
+                        name-class="text-slate-900 font-bold dark:text-white"
+                    />
+                </div>
                 <button type="button"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors lg:hidden"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-white lg:hidden"
                         id="sidebar-close">
                     <i class="fas fa-xmark text-sm"></i>
                 </button>
             </div>
 
             <!-- Navigation -->
-            <div class="flex-1 space-y-0.5 overflow-y-auto px-3 py-4 custom-scrollbar">
+            <div class="sidebar-nav flex-1 space-y-0.5 overflow-y-auto px-3 py-4 custom-scrollbar">
                 @if($isExpert)
                     <!-- ===== Menu Expert ===== -->
                     <a href="{{ route('expert.dashboard') }}"
@@ -107,9 +119,9 @@
                     </a>
 
                     <div class="{{ $sectionTitle }}">
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                         <span class="{{ $sectionLabel }}">Vérifications</span>
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                     </div>
 
                     @php $pendingVerifications = \App\Models\ProductAuthenticityCheck::where('expert_id', auth()->id())->where('status', 'expert_review')->count(); @endphp
@@ -154,9 +166,9 @@
                     </a>
 
                     <div class="{{ $sectionTitle }}">
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                         <span class="{{ $sectionLabel }}">Profil</span>
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                     </div>
 
                     <a href="{{ route('expert.profile') }}"
@@ -172,18 +184,18 @@
                             'approval_rate' => auth()->user()->expertProfile->approval_rate ?? 0,
                         ];
                     @endphp
-                    <div class="mt-6 rounded-2xl bg-white/[0.04] p-4 ring-1 ring-white/10">
-                        <p class="mb-3 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Statistiques</p>
-                        <div class="space-y-2 text-xs">
-                            <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2 ring-1 ring-white/5">
+                    <div class="sidebar-extra mt-5 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/[0.04]">
+                        <p class="mb-2.5 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">Statistiques</p>
+                        <div class="space-y-1.5 text-xs">
+                            <div class="flex items-center justify-between rounded-lg border border-slate-200/70 px-3 py-2 dark:border-white/5">
                                 <span class="text-slate-400">Total traité</span>
-                                <span class="font-semibold text-white">{{ $expertStats['total'] }}</span>
+                                <span class="font-semibold text-slate-900 dark:text-white">{{ $expertStats['total'] }}</span>
                             </div>
-                            <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2 ring-1 ring-white/5">
+                            <div class="flex items-center justify-between rounded-lg border border-slate-200/70 px-3 py-2 dark:border-white/5">
                                 <span class="text-slate-400">Aujourd'hui</span>
                                 <span class="font-semibold text-emerald-400">{{ $expertStats['completed_today'] }}</span>
                             </div>
-                            <div class="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2 ring-1 ring-white/5">
+                            <div class="flex items-center justify-between rounded-lg border border-slate-200/70 px-3 py-2 dark:border-white/5">
                                 <span class="text-slate-400">Taux succès</span>
                                 <span class="font-semibold text-blue-400">{{ number_format($expertStats['approval_rate'], 1) }}%</span>
                             </div>
@@ -228,9 +240,9 @@
                     </a>
 
                     <div class="{{ $sectionTitle }}">
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                         <span class="{{ $sectionLabel }}">Gestion</span>
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                     </div>
 
                     <a href="{{ route('admin.transactions.index') }}"
@@ -309,9 +321,9 @@
                     </a>
 
                     <div class="{{ $sectionTitle }}">
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                         <span class="{{ $sectionLabel }}">Catalogue & Services</span>
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                     </div>
 
                     <a href="{{ route('admin.brands.index') }}"
@@ -353,9 +365,9 @@
                     </a>
 
                     <div class="{{ $sectionTitle }}">
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                         <span class="{{ $sectionLabel }}">Système</span>
-                        <span class="h-px flex-1 bg-white/10"></span>
+                        <span class="h-px flex-1 bg-slate-200 dark:bg-white/10"></span>
                     </div>
 
                     <a href="{{ route('admin.reports') }}"
@@ -399,21 +411,21 @@
             </div>
 
             <!-- Footer -->
-            <div class="mt-auto space-y-2 border-t border-white/10 p-4">
+            <div class="sidebar-footer mt-auto space-y-2 border-t border-slate-200 p-4 dark:border-slate-800">
                 <a href="{{ route('home') }}"
-                   class="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-4 py-2.5 text-[13px] font-medium text-slate-300 transition-colors hover:bg-white/10 hover:text-white">
+                   class="sidebar-link-btn flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-[13px] font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-white/15 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white">
                     <i class="fas fa-arrow-left text-xs"></i>
-                    Retour au site
+                    <span class="sidebar-footer-text">Retour au site</span>
                 </a>
                 @if($isExpert)
-                    <div class="py-1 text-center text-[11px] text-slate-500">Interface Expert VintApp</div>
+                    <div class="sidebar-extra py-1 text-center text-[11px] text-slate-400 dark:text-slate-500">Interface Expert VintApp</div>
                 @endif
                 <form action="{{ route('logout') }}" method="POST" class="w-full">
                     @csrf
                     <button type="submit"
-                            class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 px-4 py-2.5 text-[13px] font-medium text-white shadow-lg shadow-red-900/30 transition-all hover:from-red-600 hover:to-red-700">
+                            class="sidebar-link-btn flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-[13px] font-medium text-white transition-colors hover:bg-slate-700 dark:bg-white/10 dark:text-white dark:hover:bg-white/20">
                         <i class="fas fa-right-from-bracket text-xs"></i>
-                        Déconnexion
+                        <span class="sidebar-footer-text">Déconnexion</span>
                     </button>
                 </form>
             </div>
@@ -429,10 +441,11 @@
             <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/85 backdrop-blur-lg dark:border-slate-700 dark:bg-slate-800/85">
                 <div class="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
                     <div class="flex min-w-0 items-center gap-3">
-                        <button class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:text-slate-300 dark:hover:bg-slate-700"
-                                id="sidebar-toggle" aria-label="Toggle sidebar">
+                        <button class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:text-slate-300 dark:hover:bg-slate-700"
+                                id="sidebar-toggle" aria-label="Replier/ouvrir la sidebar">
                             <i class="fas fa-bars"></i>
                         </button>
+                        <span class="hidden h-5 w-px bg-slate-200 sm:block dark:bg-slate-700" aria-hidden="true"></span>
                         <div class="min-w-0">
                             <h1 class="truncate text-base font-bold text-slate-900 dark:text-white sm:text-lg">@yield('page-title')</h1>
                             <p class="hidden truncate text-xs text-slate-400 sm:block">@yield('page-subtitle', 'Gestion de votre plateforme')</p>
@@ -616,18 +629,22 @@
                 flatpickr('.datetimepicker', { locale: 'fr', dateFormat: 'Y-m-d H:i', enableTime: true, time_24hr: true, allowInput: true });
             }
 
-            // ===== Sidebar responsive =====
+            // ===== Sidebar responsive (sidebar-07) =====
             const sidebarToggle = document.getElementById('sidebar-toggle');
             const sidebar = document.getElementById('sidebar');
             const sidebarClose = document.getElementById('sidebar-close');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
             const mainContent = document.getElementById('main-content');
+            const SIDEBAR_EXPANDED = 256;
+            const SIDEBAR_COLLAPSED = 76;
 
             function setDesktop(state) {
+                sidebar.classList.toggle('sidebar-collapsed', !state);
                 sidebar.classList.remove('active');
-                sidebar.style.transform = state ? 'translateX(0)' : 'translateX(-100%)';
-                mainContent.style.marginLeft = state ? '288px' : '0';
+                sidebar.style.transform = '';
+                mainContent.style.marginLeft = (state ? SIDEBAR_EXPANDED : SIDEBAR_COLLAPSED) + 'px';
                 if (sidebarOverlay) { sidebarOverlay.style.display = 'none'; sidebarOverlay.style.opacity = '0'; }
+                try { localStorage.setItem('sidebarCollapsed', state ? '0' : '1'); } catch (e) {}
             }
             function setMobile(state) {
                 sidebar.classList.toggle('active', state);
@@ -639,8 +656,13 @@
             }
 
             function initSidebar() {
-                if (window.innerWidth >= 1024) { setDesktop(true); }
-                else { setMobile(false); }
+                if (window.innerWidth >= 1024) {
+                    let saved = '0';
+                    try { saved = localStorage.getItem('sidebarCollapsed') || '0'; } catch (e) {}
+                    setDesktop(saved !== '1');
+                } else {
+                    setMobile(false);
+                }
             }
             initSidebar();
 
@@ -653,9 +675,7 @@
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
                     if (window.innerWidth >= 1024) {
-                        const isCollapsed = sidebar.classList.contains('active');
-                        setDesktop(isCollapsed);
-                        sidebar.classList.toggle('active', isCollapsed);
+                        setDesktop(sidebar.classList.contains('sidebar-collapsed'));
                     } else {
                         setMobile(!sidebar.classList.contains('active'));
                     }

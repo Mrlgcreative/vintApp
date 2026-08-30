@@ -458,6 +458,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     // Logs système
     Route::get('/logs', [App\Http\Controllers\Admin\AdminController::class, 'logs'])->name('logs');
+    Route::post('/logs/clear', [App\Http\Controllers\Admin\AdminController::class, 'clearLogs'])->name('logs.clear');
+    Route::get('/logs/download', [App\Http\Controllers\Admin\AdminController::class, 'downloadLogs'])->name('logs.download');
 
     // Paramètres système
     Route::prefix('settings')->name('settings.')->group(function () {

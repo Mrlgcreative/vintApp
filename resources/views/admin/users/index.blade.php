@@ -6,13 +6,13 @@
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
     <a href="{{ route('admin.users.create') }}"
-       class="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+       class="inline-flex items-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-plus"></i>
         <span class="hidden sm:inline">Nouvel utilisateur</span>
         <span class="sm:hidden">Nouveau</span>
     </a>
     <a href="{{ route('admin.users.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
-       class="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+       class="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
         <i class="fas fa-download"></i>
         <span class="hidden sm:inline">Exporter</span>
         <span class="sm:hidden">CSV</span>
@@ -22,55 +22,82 @@
 
 @section('content')
 {{-- Stats rapides --}}
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4 sm:mb-6">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-3 sm:p-4">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/30 flex-shrink-0">
-                <i class="fas fa-users text-sky-600 dark:text-sky-400"></i>
+<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4 sm:mb-6">
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Total</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($users->total()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                <i class="fas fa-users text-[10px] text-sky-500"></i>
+                Comptes
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-user-plus text-xs text-sky-500"></i>
+                Inscriptions
             </div>
-            <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Total</p>
-                <p class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">{{ $users->total() }}</p>
-            </div>
+            <div class="text-xs text-slate-400">Sur toute la plateforme</div>
         </div>
     </div>
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-3 sm:p-4">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex-shrink-0">
-                <i class="fas fa-circle text-emerald-500 text-xs"></i>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">En ligne</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($users->filter(fn($u) => $u->isOnline())->count()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                Direct
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-wifi text-xs text-emerald-500"></i>
+                Actuellement connectés
             </div>
-            <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">En ligne</p>
-                <p class="text-lg sm:text-xl font-bold text-emerald-600">{{ $users->filter(fn($u) => $u->isOnline())->count() }}</p>
-            </div>
+            <div class="text-xs text-slate-400">Présence en temps réel</div>
         </div>
     </div>
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-3 sm:p-4">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30 flex-shrink-0">
-                <i class="fas fa-check-circle text-violet-600 dark:text-violet-400"></i>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Vérifiés</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($users->filter(fn($u) => $u->email_verified_at)->count()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-400">
+                <i class="fas fa-check-circle text-[10px]"></i>
+                E-mails
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-envelope-circle-check text-xs text-violet-500"></i>
+                E-mails confirmés
             </div>
-            <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Vérifiés</p>
-                <p class="text-lg sm:text-xl font-bold text-violet-600">{{ $users->filter(fn($u) => $u->email_verified_at)->count() }}</p>
-            </div>
+            <div class="text-xs text-slate-400">Comptes authentifiés</div>
         </div>
     </div>
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-3 sm:p-4">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 dark:bg-red-900/30 flex-shrink-0">
-                <i class="fas fa-shield-halved text-red-600 dark:text-red-400"></i>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Admins</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($users->filter(fn($u) => $u->roles->contains('slug', 'admin'))->count()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400">
+                <i class="fas fa-shield-halved text-[10px]"></i>
+                Accès
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-shield-halved text-xs text-red-500"></i>
+                Comptes privilégiés
             </div>
-            <div>
-                <p class="text-xs text-slate-500 dark:text-slate-400">Admins</p>
-                <p class="text-lg sm:text-xl font-bold text-red-600">{{ $users->filter(fn($u) => $u->roles->contains('slug', 'admin'))->count() }}</p>
-            </div>
+            <div class="text-xs text-slate-400">Accès administration</div>
         </div>
     </div>
 </div>
 
 {{-- Filtres --}}
-<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm mb-4 sm:mb-6">
+<div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 mb-4 sm:mb-6">
     <div class="p-3 sm:p-4">
         <form method="GET" action="{{ route('admin.users.index') }}">
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -79,12 +106,12 @@
                     <div class="relative">
                         <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher nom, email..."
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
                     </div>
                 </div>
                 {{-- Rôle --}}
                 <div>
-                    <select name="role" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                    <select name="role" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
                         <option value="">Tous les rôles</option>
                         <option value="admin" {{ request('role') === 'admin' ? 'selected' : '' }}>Admin</option>
                         <option value="user" {{ request('role') === 'user' ? 'selected' : '' }}>Utilisateur</option>
@@ -94,7 +121,7 @@
                 </div>
                 {{-- Statut --}}
                 <div>
-                    <select name="status" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                    <select name="status" class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
                         <option value="">Tous les statuts</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif (7j)</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactif</option>
@@ -102,10 +129,10 @@
                 </div>
                 {{-- Boutons --}}
                 <div class="col-span-2 sm:col-span-1 lg:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-3 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
                         <i class="fas fa-search"></i>Filtrer
                     </button>
-                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center justify-center px-3.5 py-2.5 rounded-xl text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Réinitialiser">
+                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center justify-center px-3.5 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors" title="Réinitialiser">
                         <i class="fas fa-times"></i>
                     </a>
                 </div>
@@ -139,8 +166,8 @@
 </div>
 
 {{-- Tableau des utilisateurs --}}
-<div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-    <div class="px-4 sm:px-6 py-3.5 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+<div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+    <div class="px-5 py-3.5 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
         <h3 class="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
             {{ $users->total() }} utilisateur{{ $users->total() > 1 ? 's' : '' }}
         </h3>
@@ -165,7 +192,7 @@
                 </thead>
                 <tbody>
                     @foreach($users as $user)
-                        <tr class="border-t border-slate-100 dark:border-slate-700/50 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                        <tr class="border-t border-slate-100 dark:border-slate-700 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700/30">
                             {{-- User info --}}
                             <td class="px-4 py-3 align-middle">
                                 <div class="flex items-center gap-3">
@@ -311,7 +338,7 @@
         </div>
 
         {{-- Vue Mobile/Tablet --}}
-        <div class="lg:hidden divide-y divide-slate-100 dark:divide-slate-700/50">
+        <div class="lg:hidden divide-y divide-slate-100 dark:divide-slate-700">
             @foreach($users as $user)
                 <div class="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors" x-data="{ open: false }">
                     <div class="flex items-start justify-between gap-3">

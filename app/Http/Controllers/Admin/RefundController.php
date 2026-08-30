@@ -46,9 +46,24 @@ class RefundController extends Controller
             $query->where('seller_id', Auth::id());
         }
 
+        // Statistiques (mêmes règles de visibilité que la liste)
+        $statsQuery = Refund::query();
+        if (!$this->isAdmin()) {
+            $statsQuery->where('seller_id', Auth::id());
+        }
+
+        $stats = [
+            'total' => (clone $statsQuery)->count(),
+            'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'negotiation' => (clone $statsQuery)->where('status', 'negotiation')->count(),
+            'approved' => (clone $statsQuery)->where('status', 'approved')->count(),
+            'completed' => (clone $statsQuery)->where('status', 'completed')->count(),
+            'rejected' => (clone $statsQuery)->where('status', 'rejected')->count(),
+        ];
+
         $refunds = $query->paginate(10)->withQueryString();
 
-        return view('admin.refunds.index', compact('refunds'));
+        return view('admin.refunds.index', compact('refunds', 'stats'));
     }
 
     /**

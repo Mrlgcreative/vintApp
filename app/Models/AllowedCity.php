@@ -35,6 +35,17 @@ class AllowedCity extends Model
     ];
 
     /**
+     * Normalise le code pays en ISO alpha-2 à l'écriture (canonical), quelle que
+     * soit la forme reçue (CD, COD, ZR...).
+     */
+    public function setCountryCodeAttribute($value): void
+    {
+        $this->attributes['country_code'] = $value === null || $value === ''
+            ? null
+            : self::toAlpha2CountryCode((string) $value);
+    }
+
+    /**
      * Scopes
      */
     public function scopeActive($query)

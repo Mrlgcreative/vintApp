@@ -2,11 +2,19 @@
 
 @section('title', 'Wallets Pending')
 @section('page-title', 'Wallets Pending - Argent en Attente de Confirmation')
+@section('page-subtitle', "Paiements bloqués en attente de confirmation de réception")
+
+@push('styles')
+<style>
+    @keyframes pulse-dot { 0%,100%{ box-shadow:0 0 0 0 rgba(16,185,129,.55) } 50%{ box-shadow:0 0 0 6px rgba(16,185,129,0) } }
+    .pulse-dot{ animation:pulse-dot 2s infinite }
+</style>
+@endpush
 
 @section('content')
 <!-- Section d'information - Responsive -->
 <div class="mb-6">
-    <div class="flex items-start gap-4 rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sky-800 sm:p-6 dark:border-sky-800 dark:bg-sky-900/20 dark:text-sky-300">
+    <div class="flex items-start gap-4 rounded-xl border border-sky-200 bg-sky-50 p-4 text-sky-800 sm:p-6 dark:border-sky-800 dark:bg-sky-900/20 dark:text-sky-300">
         <div class="flex-shrink-0">
             <i class="fas fa-info-circle text-xl text-sky-600 dark:text-sky-300"></i>
         </div>
@@ -22,36 +30,92 @@
     </div>
 </div>
 
-<!-- Carte principale avec en-tête responsive -->
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-    <!-- En-tête avec totaux - Responsive -->
-    <div class="border-b border-slate-100 bg-slate-50 px-4 py-4 md:px-6 dark:border-slate-700 dark:bg-slate-900">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
-            <h3 class="flex items-center text-lg font-semibold text-slate-900 dark:text-white">
-                <i class="fas fa-wallet mr-2 text-amber-500"></i>
-                <span class="hidden sm:inline">Wallets Pending</span>
-                <span class="sm:hidden">Pending</span>
-                <span class="ml-2 inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-sm font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20 dark:bg-amber-900/30 dark:text-amber-300">
-                    {{ $pendingWallets->total() }}
-                </span>
-            </h3>
-
-            <!-- Totaux en grille responsive -->
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:flex lg:items-center lg:gap-6">
-                <div class="text-center lg:text-right">
-                    <span class="mb-1 block text-xs text-slate-500 dark:text-slate-300">Total USD</span>
-                    <span class="text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-                        ${{ number_format($pendingWallets->where('currency', 'USD')->sum('balance'), 2) }}
-                    </span>
-                </div>
-                <div class="text-center lg:text-right">
-                    <span class="mb-1 block text-xs text-slate-500 dark:text-slate-300">Total CDF</span>
-                    <span class="text-lg font-bold tabular-nums text-sky-600 dark:text-sky-400">
-                        {{ number_format($pendingWallets->where('currency', 'CDF')->sum('balance'), 0, ',', ' ') }} FC
-                    </span>
-                </div>
-            </div>
+{{-- Statistiques --}}
+<div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Wallets Pending</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($pendingWallets->total()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
+                <i class="fas fa-lock text-[10px]"></i>
+                En attente
+            </span>
         </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-wallet text-xs text-amber-500"></i>
+                Paiements sécurisés
+            </div>
+            <div class="text-xs text-slate-400">En attente de confirmation</div>
+        </div>
+    </div>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Total USD</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">${{ number_format($pendingWallets->where('currency', 'USD')->sum('balance'), 2) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <i class="fas fa-dollar-sign text-[10px]"></i>
+                USD
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-lock text-xs text-emerald-500"></i>
+                Montant bloqué
+            </div>
+            <div class="text-xs text-slate-400">Confirmation acheteur requise</div>
+        </div>
+    </div>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Total CDF</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($pendingWallets->where('currency', 'CDF')->sum('balance'), 0, ',', ' ') }} <span class="text-base font-medium text-slate-400">FC</span></p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-sky-200 bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/10 dark:text-sky-400">
+                <i class="fas fa-money-bill-wave text-[10px]"></i>
+                CDF
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-lock text-xs text-sky-500"></i>
+                Montant bloqué
+            </div>
+            <div class="text-xs text-slate-400">Confirmation acheteur requise</div>
+        </div>
+    </div>
+
+    <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p class="text-sm text-slate-500 dark:text-slate-400">Wallets Actifs</p>
+        <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($pendingWallets->where('is_active', true)->count()) }}</p>
+        <div class="absolute right-4 top-4">
+            <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 pulse-dot"></span>
+                Actifs
+            </span>
+        </div>
+        <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+            <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                <i class="fas fa-circle-check text-xs text-emerald-500"></i>
+                Opérationnels
+            </div>
+            <div class="text-xs text-slate-400">Retirables après confirmation</div>
+        </div>
+    </div>
+</div>
+
+<!-- Carte principale avec en-tête responsive -->
+<div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+    <!-- En-tête -->
+    <div class="flex flex-wrap items-center justify-between gap-2 px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
+            <i class="fas fa-wallet text-amber-500"></i>
+            Wallets Pending ({{ $pendingWallets->total() }})
+        </h3>
+        <span class="text-xs text-slate-500 dark:text-slate-400">
+            Page {{ $pendingWallets->currentPage() }}/{{ $pendingWallets->lastPage() }}
+        </span>
     </div>
 
     <!-- Contenu principal - Table sur desktop, cartes sur mobile -->
@@ -71,9 +135,9 @@
                             <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                    <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                         @foreach($pendingWallets as $wallet)
-                            <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/30">
+                            <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700/30">
                                 <td class="px-4 py-3 align-middle whitespace-nowrap">
                                     <div class="flex items-center gap-3">
                                         @if($wallet->user?->avatar)
@@ -158,7 +222,7 @@
             <div class="lg:hidden">
                 <div class="space-y-4 p-4">
                     @foreach($pendingWallets as $wallet)
-                        <div class="wallet-card rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow duration-150 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
+                        <div class="wallet-card rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow duration-150 hover:shadow-md dark:border-slate-700 dark:bg-slate-800">
                             <!-- En-tête de la carte avec utilisateur -->
                             <div class="mb-4 flex items-center gap-3">
                                 @if($wallet->user?->avatar)

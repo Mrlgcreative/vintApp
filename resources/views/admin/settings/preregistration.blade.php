@@ -2,15 +2,16 @@
 
 @section('title', 'Paramètres de pré-inscription')
 @section('page-title', 'Paramètres de pré-inscription')
+@section('page-subtitle', 'Configurez la page publique de pré-inscription et ses options.')
 
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
     <a href="{{ route('preregistration.index') }}" target="_blank"
-       class="inline-flex items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+       class="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
         <i class="fas fa-external-link-alt"></i>Voir la page
     </a>
     <a href="{{ route('admin.waiting-users.index') }}"
-       class="inline-flex items-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+       class="inline-flex items-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-users"></i>Gérer les inscriptions
     </a>
 </div>
@@ -20,7 +21,7 @@
 <div class="space-y-6">
     <!-- Messages -->
     @if(session('success'))
-        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3 animate-fade-in">
+        <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3 animate-fade-in">
             <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
             <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
             <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
@@ -30,7 +31,7 @@
     @endif
 
     @if($errors->any())
-        <div class="rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3 animate-fade-in">
+        <div class="rounded-xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3 animate-fade-in">
             <div class="flex items-center gap-3">
                 <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
                 <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">Veuillez corriger les erreurs ci-dessous :</p>
@@ -52,13 +53,13 @@
 
         <!-- Statut de la pré-inscription -->
         @php
-            $isEnabled = Setting::get('preregistration_enabled', false);
+            $isEnabled = \App\Models\Setting::get('preregistration_enabled', false);
         @endphp
 
-        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
-            <div class="px-5 py-4 bg-gradient-to-r from-primary-600 to-primary-700">
-                <h5 class="text-white font-semibold">
-                    <i class="fas fa-toggle-on mr-2"></i>Statut de la pré-inscription
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-5 py-4">
+                <h5 class="text-base font-semibold text-slate-900 dark:text-white">
+                    <i class="fas fa-toggle-on mr-2 text-primary-600"></i>Statut de la pré-inscription
                 </h5>
             </div>
             <div class="p-5 sm:p-6">
@@ -85,7 +86,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             <!-- Contenu de la page -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
                     <h5 class="text-base font-semibold text-slate-900 dark:text-white">
                         <i class="fas fa-edit mr-2 text-primary-600"></i>Contenu de la page
@@ -97,9 +98,9 @@
                             <i class="fas fa-heading mr-1"></i>Titre principal
                         </label>
                         <input type="text" id="preregistration_title" name="preregistration_title"
-                               value="{{ Setting::get('preregistration_title', 'Rejoignez-nous en avant-première !') }}"
+                               value="{{ \App\Models\Setting::get('preregistration_title', 'Rejoignez-nous en avant-première !') }}"
                                placeholder="Rejoignez-nous en avant-première !"
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                     </div>
 
                     <div>
@@ -107,9 +108,9 @@
                             <i class="fas fa-text-height mr-1"></i>Sous-titre
                         </label>
                         <input type="text" id="preregistration_subtitle" name="preregistration_subtitle"
-                               value="{{ Setting::get('preregistration_subtitle', 'Inscrivez-vous maintenant...') }}"
+                               value="{{ \App\Models\Setting::get('preregistration_subtitle', 'Inscrivez-vous maintenant...') }}"
                                placeholder="Inscrivez-vous maintenant..."
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                     </div>
 
                     <div>
@@ -118,7 +119,7 @@
                         </label>
                         <textarea id="preregistration_message" name="preregistration_message" rows="4"
                                   placeholder="Nous préparons quelque chose de spécial..."
-                                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">{{ Setting::get('preregistration_message', 'Nous préparons quelque chose de spécial...') }}</textarea>
+                                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ \App\Models\Setting::get('preregistration_message', 'Nous préparons quelque chose de spécial...') }}</textarea>
                     </div>
 
                     <div>
@@ -127,14 +128,14 @@
                         </label>
                         <textarea id="preregistration_closed_message" name="preregistration_closed_message" rows="3"
                                   placeholder="Les pré-inscriptions sont fermées..."
-                                  class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">{{ Setting::get('preregistration_closed_message', 'Les pré-inscriptions sont fermées...') }}</textarea>
+                                  class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">{{ \App\Models\Setting::get('preregistration_closed_message', 'Les pré-inscriptions sont fermées...') }}</textarea>
                         <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Affiché lorsque la pré-inscription est désactivée</p>
                     </div>
                 </div>
             </div>
 
             <!-- Avantages -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
                     <h5 class="text-base font-semibold text-slate-900 dark:text-white">
                         <i class="fas fa-gift mr-2 text-emerald-600 dark:text-emerald-400"></i>Avantages de la pré-inscription
@@ -143,29 +144,29 @@
                 <div class="p-5 sm:p-6">
                     <div id="benefits-container" class="space-y-2">
                         @php
-                            $benefits = Setting::get('preregistration_benefits', []);
+                            $benefits = \App\Models\Setting::get('preregistration_benefits', []);
                             if (is_string($benefits)) {
                                 $benefits = json_decode($benefits, true) ?? [];
                             }
                         @endphp
 
                         @forelse($benefits as $index => $benefit)
-                            <div class="benefit-item flex items-center gap-2 rounded-xl border border-indigo-100 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10 p-2 pl-3">
+                            <div class="benefit-item flex items-center gap-2 rounded-lg border border-primary-100 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/10 p-2 pl-3">
                                 <i class="fas fa-check-circle text-emerald-500"></i>
                                 <input type="text" name="preregistration_benefits[]" value="{{ $benefit }}"
                                        placeholder="Avantage {{ $index + 1 }}"
-                                       class="flex-1 rounded-xl border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
-                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
+                                       class="flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
+                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         @empty
-                            <div class="benefit-item flex items-center gap-2 rounded-xl border border-indigo-100 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10 p-2 pl-3">
+                            <div class="benefit-item flex items-center gap-2 rounded-lg border border-primary-100 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/10 p-2 pl-3">
                                 <i class="fas fa-check-circle text-emerald-500"></i>
                                 <input type="text" name="preregistration_benefits[]" value="Accès prioritaire lors du lancement"
                                        placeholder="Avantage 1"
-                                       class="flex-1 rounded-xl border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
-                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
+                                       class="flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
+                                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -173,14 +174,14 @@
                     </div>
 
                     <button type="button" onclick="addBenefit()"
-                            class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-600 px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:border-indigo-500 hover:text-indigo-500 dark:hover:border-indigo-500 dark:hover:text-indigo-400 transition-colors">
+                            class="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 dark:border-slate-600 px-4 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:border-primary-500 hover:text-primary-500 dark:hover:border-primary-500 dark:hover:text-primary-400 transition-colors">
                         <i class="fas fa-plus"></i>Ajouter un avantage
                     </button>
                 </div>
             </div>
 
             <!-- Options -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
                     <h5 class="text-base font-semibold text-slate-900 dark:text-white">
                         <i class="fas fa-sliders-h mr-2 text-amber-500 dark:text-amber-400"></i>Options du formulaire
@@ -195,7 +196,7 @@
                             </div>
                             <label class="relative inline-flex cursor-pointer items-center shrink-0">
                                 <input type="checkbox" id="preregistration_require_phone" name="preregistration_require_phone" value="1"
-                                       class="peer sr-only" {{ Setting::get('preregistration_require_phone', false) ? 'checked' : '' }}>
+                                       class="peer sr-only" {{ \App\Models\Setting::get('preregistration_require_phone', false) ? 'checked' : '' }}>
                                 <div class="h-6 w-11 rounded-full bg-slate-300 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all peer-checked:bg-primary-600 peer-checked:after:translate-x-5 peer-checked:after:border-white dark:bg-slate-600"></div>
                             </label>
                         </div>
@@ -209,7 +210,7 @@
                             </div>
                             <label class="relative inline-flex cursor-pointer items-center shrink-0">
                                 <input type="checkbox" id="preregistration_require_confirmation" name="preregistration_require_confirmation" value="1"
-                                       class="peer sr-only" {{ Setting::get('preregistration_require_confirmation', true) ? 'checked' : '' }}>
+                                       class="peer sr-only" {{ \App\Models\Setting::get('preregistration_require_confirmation', true) ? 'checked' : '' }}>
                                 <div class="h-6 w-11 rounded-full bg-slate-300 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-slate-300 after:bg-white after:transition-all peer-checked:bg-primary-600 peer-checked:after:translate-x-5 peer-checked:after:border-white dark:bg-slate-600"></div>
                             </label>
                         </div>
@@ -220,16 +221,16 @@
                             <i class="fas fa-users mr-1"></i>Limite de pré-inscriptions
                         </label>
                         <input type="number" id="preregistration_limit" name="preregistration_limit"
-                               value="{{ Setting::get('preregistration_limit', 0) }}" min="0"
+                               value="{{ \App\Models\Setting::get('preregistration_limit', 0) }}" min="0"
                                placeholder="0 = illimité"
-                               class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                               class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                         <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Nombre maximum de pré-inscriptions (0 = illimité)</p>
                     </div>
                 </div>
             </div>
 
             <!-- Notifications -->
-            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+            <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
                 <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 px-5 py-4">
                     <h5 class="text-base font-semibold text-slate-900 dark:text-white">
                         <i class="fas fa-bell mr-2 text-sky-500 dark:text-sky-400"></i>Notifications
@@ -240,22 +241,22 @@
                         <i class="fas fa-envelope mr-1"></i>Email de notification admin
                     </label>
                     <input type="email" id="preregistration_notification_email" name="preregistration_notification_email"
-                           value="{{ Setting::get('preregistration_notification_email', 'admin@vintapp.com') }}"
+                           value="{{ \App\Models\Setting::get('preregistration_notification_email', 'admin@vintapp.com') }}"
                            placeholder="admin@vintapp.com"
-                           class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                           class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
                     <p class="mt-1.5 text-xs text-slate-500 dark:text-slate-400">Recevra les notifications de nouvelles pré-inscriptions</p>
                 </div>
             </div>
         </div>
 
         <!-- Boutons d'action -->
-        <div class="mt-6 rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 px-5 py-4 flex flex-col-reverse sm:flex-row justify-between gap-3">
+        <div class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 px-5 py-4 flex flex-col-reverse sm:flex-row justify-between gap-3">
             <a href="{{ route('admin.dashboard') }}"
-               class="inline-flex justify-center items-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full sm:w-auto">
+               class="inline-flex justify-center items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full sm:w-auto">
                 <i class="fas fa-arrow-left"></i>Retour
             </a>
             <button type="submit"
-                    class="inline-flex justify-center items-center gap-2 w-full sm:w-auto rounded-xl bg-primary-600 hover:bg-primary-700 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    class="inline-flex justify-center items-center gap-2 w-full sm:w-auto rounded-lg bg-primary-600 hover:bg-primary-700 px-6 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
                 <i class="fas fa-save"></i>Enregistrer les paramètres
             </button>
         </div>
@@ -286,13 +287,13 @@
         const count = container.querySelectorAll('.benefit-item').length + 1;
 
         const benefitHtml = `
-            <div class="benefit-item flex items-center gap-2 rounded-xl border border-indigo-100 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10 p-2 pl-3">
+            <div class="benefit-item flex items-center gap-2 rounded-lg border border-primary-100 dark:border-primary-800 bg-primary-50/50 dark:bg-primary-900/10 p-2 pl-3">
                 <i class="fas fa-check-circle text-emerald-500"></i>
                 <input type="text"
                        name="preregistration_benefits[]"
                        placeholder="Avantage ${count}"
-                       class="flex-1 rounded-xl border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
-                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
+                       class="flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-colors">
+                <button type="button" class="inline-flex items-center justify-center w-8 h-8 shrink-0 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" onclick="this.parentElement.remove()">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>

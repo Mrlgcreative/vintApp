@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AllowedCity;
 use App\Models\AllowedRegion;
+use App\Services\LocationCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -49,7 +50,7 @@ class LocationAccessController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'country_code' => 'required|string|max:3', // ISO 3166-1 alpha-2 ou alpha-3
+            'country_code' => 'required|string|size:2', // ISO 3166-1 alpha-2 (canonical)
             'region' => 'nullable|string|max:255',
             'latitude' => 'required|numeric|between:-90,90', // ✅ OBLIGATOIRE pour système GPS
             'longitude' => 'required|numeric|between:-180,180', // ✅ OBLIGATOIRE pour système GPS
@@ -71,7 +72,7 @@ class LocationAccessController extends Controller
         ]);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         // Retourner JSON si c'est une requête AJAX
         if ($request->wantsJson() || $request->ajax()) {
@@ -104,7 +105,7 @@ class LocationAccessController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'country' => 'required|string|max:255',
-            'country_code' => 'required|string|size:3',
+            'country_code' => 'required|string|size:2',
             'region' => 'nullable|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -118,7 +119,7 @@ class LocationAccessController extends Controller
         $city->update($validated);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', "La ville {$city->name} a été mise à jour.");
@@ -133,7 +134,7 @@ class LocationAccessController extends Controller
         $city->delete();
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', "La ville {$cityName} a été supprimée.");
@@ -147,7 +148,7 @@ class LocationAccessController extends Controller
         $city->update(['is_active' => !$city->is_active]);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return response()->json([
             'success' => true,
@@ -183,7 +184,7 @@ class LocationAccessController extends Controller
         $region = AllowedRegion::create($validated);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', "La région {$region->name} a été ajoutée avec succès.");
@@ -205,7 +206,7 @@ class LocationAccessController extends Controller
         $region->update($validated);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', "La région {$region->name} a été mise à jour.");
@@ -220,7 +221,7 @@ class LocationAccessController extends Controller
         $region->delete();
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', "La région {$regionName} a été supprimée.");
@@ -234,7 +235,7 @@ class LocationAccessController extends Controller
         $region->update(['is_active' => !$region->is_active]);
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return response()->json([
             'success' => true,
@@ -249,14 +250,14 @@ class LocationAccessController extends Controller
     public function seedDefaultCities()
     {
         $defaultCities = [
-            ['name' => 'Kinshasa', 'region' => 'Kinshasa', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -4.3276, 'longitude' => 15.3136],
-            ['name' => 'Lubumbashi', 'region' => 'Haut-Katanga', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -11.6795, 'longitude' => 27.4794],
-            ['name' => 'Mbuji-Mayi', 'region' => 'Kasaï-Oriental', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -6.1200, 'longitude' => 23.5900],
-            ['name' => 'Kananga', 'region' => 'Kasaï-Central', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -5.8967, 'longitude' => 22.4169],
-            ['name' => 'Kisangani', 'region' => 'Tshopo', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => 0.5150, 'longitude' => 25.1908],
-            ['name' => 'Bukavu', 'region' => 'Sud-Kivu', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -2.5087, 'longitude' => 28.8617],
-            ['name' => 'Goma', 'region' => 'Nord-Kivu', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -1.6792, 'longitude' => 29.2228],
-            ['name' => 'Kolwezi', 'region' => 'Lualaba', 'country' => 'Congo (RDC)', 'country_code' => 'COD', 'latitude' => -10.7142, 'longitude' => 25.4731],
+            ['name' => 'Kinshasa', 'region' => 'Kinshasa', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -4.3276, 'longitude' => 15.3136],
+            ['name' => 'Lubumbashi', 'region' => 'Haut-Katanga', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -11.6795, 'longitude' => 27.4794],
+            ['name' => 'Mbuji-Mayi', 'region' => 'Kasaï-Oriental', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -6.1200, 'longitude' => 23.5900],
+            ['name' => 'Kananga', 'region' => 'Kasaï-Central', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -5.8967, 'longitude' => 22.4169],
+            ['name' => 'Kisangani', 'region' => 'Tshopo', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => 0.5150, 'longitude' => 25.1908],
+            ['name' => 'Bukavu', 'region' => 'Sud-Kivu', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -2.5087, 'longitude' => 28.8617],
+            ['name' => 'Goma', 'region' => 'Nord-Kivu', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -1.6792, 'longitude' => 29.2228],
+            ['name' => 'Kolwezi', 'region' => 'Lualaba', 'country' => 'Congo (RDC)', 'country_code' => 'CD', 'latitude' => -10.7142, 'longitude' => 25.4731],
         ];
 
         foreach ($defaultCities as $cityData) {
@@ -267,7 +268,7 @@ class LocationAccessController extends Controller
         }
 
         // Vider le cache
-        Cache::flush();
+        LocationCache::clear();
 
         return redirect()->route('admin.locations.index')
             ->with('success', 'Les villes par défaut ont été ajoutées avec succès.');
@@ -291,15 +292,22 @@ class LocationAccessController extends Controller
      */
     public function getMajorCitiesByCountry($countryCode)
     {
-        $majorCities = config('countries.major_cities');
-        
-        $cities = collect($majorCities)->filter(function($city) use ($countryCode) {
-            return $city['country_code'] === $countryCode;
-        })->values();
+        // Accepte indifféremment un code ISO alpha-2 (canonique) ou alpha-3 (clés de la config).
+        $alpha2ToAlpha3 = collect(config('countries.countries', []))
+            ->pluck('code_alpha2', 'code')
+            ->flip()
+            ->map(fn ($code) => strtoupper($code));
+        $code = $alpha2ToAlpha3[strtoupper($countryCode)] ?? strtoupper($countryCode);
+
+        $cities = collect(config('countries.major_cities', []))
+            ->filter(fn ($list, $key) => strtoupper($key) === $code)
+            ->flatten(1)
+            ->values();
 
         return response()->json([
             'success' => true,
             'country_code' => $countryCode,
+            'total' => $cities->count(),
             'cities' => $cities
         ]);
     }
@@ -387,7 +395,7 @@ class LocationAccessController extends Controller
     public function validateCoordinatesForCountry(Request $request)
     {
         $validated = $request->validate([
-            'country_code' => 'required|string|size:3',
+            'country_code' => 'required|string|size:2',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
         ]);
@@ -396,9 +404,10 @@ class LocationAccessController extends Controller
         $lat = $validated['latitude'];
         $lng = $validated['longitude'];
 
-        // Obtenir le centre du pays depuis la config
+        // Obtenir le centre du pays depuis la config (alpha-2 en priorité, alpha-3 en secours)
         $countries = collect(config('countries.countries'));
-        $country = $countries->firstWhere('code', $countryCode);
+        $country = $countries->firstWhere('code_alpha2', $countryCode)
+            ?? $countries->firstWhere('code', $countryCode);
 
         if (!$country) {
             return response()->json([
@@ -408,8 +417,8 @@ class LocationAccessController extends Controller
         }
 
         // Calculer la distance entre le point et le centre du pays
-        $centerLat = $country['center_latitude'];
-        $centerLng = $country['center_longitude'];
+        $centerLat = $country['latitude'];
+        $centerLng = $country['longitude'];
 
         $distance = $this->calculateDistance($lat, $lng, $centerLat, $centerLng);
 

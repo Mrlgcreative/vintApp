@@ -394,7 +394,9 @@ class AdminController extends Controller
      */
     public function categories()
     {
-        $categories = Category::withCount(['items'])->paginate(20);
+        $categories = Category::with('parent')
+            ->withCount(['items', 'children'])
+            ->paginate(20);
         
         return view('admin.categories.index', compact('categories'));
     }
@@ -434,8 +436,18 @@ class AdminController extends Controller
 
         if (file_exists($logFile)) {
             try {
-                // Lire le fichier de logs
-                $content = file_get_contents($logFile);
+                // Lire uniquement la fin du fichier pour limiter l'utilisation mémoire
+                $fileSize = filesize($logFile);
+                $maxReadBytes = 2 * 1024 * 1024; // 2 Mo
+                $content = '';
+                if ($fileSize > 0) {
+                    $handle = fopen($logFile, 'r');
+                    if ($handle) {
+                        fseek($handle, max(0, $fileSize - $maxReadBytes));
+                        $content = stream_get_contents($handle);
+                        fclose($handle);
+                    }
+                }
                 $lines = explode("\n", $content);
                 
                 // Parser les logs
@@ -490,14 +502,14 @@ class AdminController extends Controller
                         $currentLog['context'] .= $line . "\n";
                     }
                     
-                    // Limiter à 100 logs pour performance
-                    if (count($logs) >= 100) {
+                    // Limiter à 5000 logs pour performance (la fenêtre de lecture est de toute façon bornée à 2 Mo)
+                    if (count($logs) >= 5000) {
                         break;
                     }
                 }
                 
                 // Ajouter le dernier log
-                if ($currentLog !== null && count($logs) < 100) {
+                if ($currentLog !== null && count($logs) < 5000) {
                     $logs[] = $currentLog;
                 }
                 
@@ -509,7 +521,57 @@ class AdminController extends Controller
         // Taille du fichier
         $fileSize = file_exists($logFile) ? filesize($logFile) : 0;
 
+        // Pagination des entrées
+        $perPage = (int) $request->get('per_page', 25);
+        $total = count($logs);
+        $page = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $logs = new \Illuminate\Pagination\LengthAwarePaginator(
+            array_slice($logs, ($page - 1) * $perPage, $perPage),
+            $total,
+            $perPage,
+            $page,
+            [
+                'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath(),
+                'query' => $request->query(),
+            ]
+        );
+
         return view('admin.logs.index', compact('logs', 'stats', 'fileSize'));
+    }
+
+    /**
+     * Vider le fichier de logs
+     */
+    public function clearLogs()
+    {
+        try {
+            $logFile = storage_path('logs/laravel.log');
+            if (file_exists($logFile)) {
+                file_put_contents($logFile, '');
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Logs vidés avec succès'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la suppression des logs: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression des logs'
+            ], 500);
+        }
+    }
+
+    /**
+     * Télécharger le fichier de logs
+     */
+    public function downloadLogs()
+    {
+        $logFile = storage_path('logs/laravel.log');
+        if (!file_exists($logFile)) {
+            abort(404, 'Fichier de logs introuvable');
+        }
+        return response()->download($logFile, 'laravel-' . date('Y-m-d') . '.log');
     }
 
     /**

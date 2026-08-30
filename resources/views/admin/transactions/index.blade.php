@@ -7,11 +7,11 @@
 @section('page-actions')
 <div class="flex flex-col sm:flex-row gap-2">
     <button type="button" onclick="exportTransactions()"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
         <i class="fas fa-download"></i>Exporter
     </button>
     <button type="button" onclick="toggleFilterModal()"
-            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+            class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-filter"></i>Filtres
     </button>
 </div>
@@ -20,7 +20,7 @@
 @section('content')
 <!-- Filtres Modal -->
 <div id="filterModal" class="fixed inset-0 z-50 hidden flex items-start justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm sm:items-center">
-    <div class="w-full max-w-lg animate-pop rounded-2xl bg-white shadow-xl ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
+    <div class="w-full max-w-lg animate-pop rounded-xl bg-white shadow-xl ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700">
         <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-700">
             <h3 class="text-base font-semibold text-slate-900 dark:text-white">Filtrer les transactions</h3>
             <button type="button" onclick="toggleFilterModal()"
@@ -32,7 +32,7 @@
             <div>
                 <label for="status-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Statut</label>
                 <select name="status" id="status-filter"
-                        class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                        class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
                     <option value="">Tous</option>
                     <option value="pending" @if(request('status') == 'pending') selected @endif>En attente</option>
                     <option value="completed" @if(request('status') == 'completed') selected @endif>Complété</option>
@@ -43,7 +43,7 @@
             <div>
                 <label for="payment-method-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Méthode de paiement</label>
                 <select name="payment_method" id="payment-method-filter"
-                        class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
+                        class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors">
                     <option value="">Toutes</option>
                     <option value="wallet" @if(request('payment_method') == 'wallet') selected @endif>Wallet</option>
                     <option value="airtel_money" @if(request('payment_method') == 'airtel_money') selected @endif>Airtel Money</option>
@@ -57,23 +57,23 @@
                 <div>
                     <label for="start-date-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Date début</label>
                     <input type="date" name="start_date" id="start-date-filter"
-                           class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors"
+                           class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors"
                            value="{{ request('start_date') }}">
                 </div>
                 <div>
                     <label for="end-date-filter" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Date fin</label>
                     <input type="date" name="end_date" id="end-date-filter"
-                           class="w-full rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors"
+                           class="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500 transition-colors"
                            value="{{ request('end_date') }}">
                 </div>
             </div>
             <div class="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-2">
                 <button type="button" onclick="toggleFilterModal()"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                     Fermer
                 </button>
                 <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
                     <i class="fas fa-check"></i>Appliquer
                 </button>
             </div>
@@ -82,7 +82,16 @@
 </div>
 
 <!-- Tableau des transactions -->
-<div class="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+<div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-700 dark:bg-slate-800">
+    <div class="flex flex-wrap items-center justify-between gap-2 px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+        <h3 class="flex items-center gap-2 text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
+            <i class="fas fa-arrow-right-arrow-left text-primary-600"></i>
+            Transactions ({{ $transactions->total() }})
+        </h3>
+        <span class="text-xs text-slate-500 dark:text-slate-400">
+            Page {{ $transactions->currentPage() }}/{{ $transactions->lastPage() }}
+        </span>
+    </div>
     <div class="overflow-x-auto">
         <table class="w-full text-sm">
             <thead class="bg-slate-50 dark:bg-slate-900">
@@ -96,9 +105,9 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-100 dark:divide-slate-700/50">
+            <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                 @forelse ($transactions as $transaction)
-                    <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-700/30">
+                    <tr class="border-t border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700/30">
                         <td class="px-4 py-3 align-middle text-sm font-medium whitespace-nowrap text-slate-900 dark:text-white">{{ $transaction->id }}</td>
                         <td class="px-4 py-3 align-middle whitespace-nowrap">
                             <div class="flex items-center gap-3">

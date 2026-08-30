@@ -2,15 +2,16 @@
 
 @section('title', 'Paramètres des Couleurs')
 @section('page-title', 'Paramètres des Couleurs')
+@section('page-subtitle', 'Gérez l\'apparence et les palettes de couleurs de la plateforme.')
 
 @section('page-actions')
 <div class="flex flex-wrap gap-2">
     <button type="button" onclick="openImportModal()"
-            class="inline-flex items-center justify-center gap-2 rounded-xl border border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/30 px-4 py-2.5 text-sm font-medium text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors">
+            class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
         <i class="fas fa-upload"></i>Importer
     </button>
     <a href="{{ route('admin.settings.colors.export') }}"
-       class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/30 px-4 py-2.5 text-sm font-medium text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+       class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-download"></i>Exporter
     </a>
 </div>
@@ -19,7 +20,7 @@
 @section('content')
 <div class="space-y-6">
     @if(session('success'))
-        <div class="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
+        <div class="flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-900/20 px-4 py-3">
             <i class="fas fa-check-circle text-emerald-600 dark:text-emerald-400"></i>
             <p class="flex-1 text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ session('success') }}</p>
             <button type="button" class="text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-200" onclick="this.parentElement.remove()">
@@ -29,7 +30,7 @@
     @endif
 
     @if(session('error'))
-        <div class="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
+        <div class="flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20 px-4 py-3">
             <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
             <p class="flex-1 text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
             <button type="button" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200" onclick="this.parentElement.remove()">
@@ -48,7 +49,7 @@
                     Général
                 </a>
                 <a href="{{ route('admin.settings.colors') }}" 
-                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white/60 dark:bg-slate-800/60 whitespace-nowrap transition-all duration-200">
+                   class="inline-flex items-center px-4 py-3 border-b-2 border-primary-500 text-sm font-medium text-primary-600 dark:text-primary-400 bg-white dark:bg-slate-800 shadow-sm whitespace-nowrap transition-all duration-200">
                     <i class="fas fa-palette mr-2"></i>
                     Couleurs
                 </a>
@@ -64,7 +65,7 @@
             <!-- Aperçu en direct -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">
-                    <i class="fas fa-eye mr-2 text-blue-600"></i>
+                    <i class="fas fa-eye mr-2 text-sky-600"></i>
                     Aperçu en Direct
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
@@ -84,14 +85,14 @@
             <!-- Sélecteur de palette -->
             <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="fas fa-swatchbook text-blue-600"></i>
+                    <i class="fas fa-swatchbook text-sky-600"></i>
                     Choisir une Palette
                 </h3>
                 
                 <div class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="paletteGrid">
                         @foreach(config('colors.palettes') as $paletteKey => $palette)
-                            <div class="palette-card cursor-pointer group border-2 rounded-xl p-4 transition-all hover:shadow-md {{ ($activePaletteName ?? 'default') === $paletteKey ? 'border-blue-500 bg-blue-50' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:border-slate-600' }}"
+                            <div class="palette-card cursor-pointer group border-2 rounded-xl p-4 transition-all hover:shadow-md {{ ($activePaletteName ?? 'default') === $paletteKey ? 'border-primary-500 bg-primary-50' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:border-slate-600' }}"
                                  data-palette="{{ $paletteKey }}"
                                  onclick="changePalette('{{ $paletteKey }}')">
                                 <!-- Nom de la palette -->
@@ -107,7 +108,7 @@
                                 </div>
                                 
                                 <!-- Badge active -->
-                                <div class="active-badge {{ ($activePaletteName ?? 'default') === $paletteKey ? '' : 'hidden' }} flex items-center gap-1 text-xs text-blue-600">
+                                <div class="active-badge {{ ($activePaletteName ?? 'default') === $paletteKey ? '' : 'hidden' }} flex items-center gap-1 text-xs text-primary-600">
                                     <i class="fas fa-check-circle"></i>
                                     Active
                                 </div>
@@ -132,7 +133,7 @@
                         Créer une Palette Personnalisée
                     </h3>
                     <button onclick="toggleCustomPalette()" 
-                            class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1 self-start sm:self-auto">
+                            class="text-sm text-sky-600 hover:text-sky-800 flex items-center gap-1 self-start sm:self-auto">
                         <i class="fas fa-plus"></i> 
                         <span>Nouveau</span>
                     </button>
@@ -149,7 +150,7 @@
                                 <input type="text" name="name" id="palette_name" 
                                        placeholder="Ex: Ma palette"
                                        required
-                                       class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                       class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                             </div>
                         </div>
 
@@ -172,11 +173,11 @@
 
                         <div class="flex justify-end gap-2">
                             <button type="button" onclick="toggleCustomPalette()"
-                                    class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-colors">
+                                    class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                 Annuler
                             </button>
                             <button type="submit"
-                                    class="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors">
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
                                 <i class="fas fa-save mr-1"></i>
                                 Créer la Palette
                             </button>
@@ -216,7 +217,7 @@
                                 <label class="flex items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors cursor-pointer">
                                     <input type="checkbox" id="darkModeToggle" 
                                            onchange="toggleDarkMode()"
-                                           class="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
+                                           class="w-5 h-5 text-primary-600 border-slate-300 rounded focus:ring-2 focus:ring-primary-500">
                                     <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                         Activer le mode sombre
                                     </span>
@@ -224,7 +225,7 @@
                                 <label class="flex items-center p-3 bg-slate-50 dark:bg-slate-700 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors cursor-pointer">
                                     <input type="checkbox" id="autoDarkMode" 
                                            onchange="toggleAutoDarkMode()"
-                                           class="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500">
+                                           class="w-5 h-5 text-primary-600 border-slate-300 rounded focus:ring-2 focus:ring-primary-500">
                                     <span class="ml-3 text-sm font-medium text-slate-700 dark:text-slate-200">
                                         Basculement automatique (19h-7h)
                                     </span>
@@ -275,7 +276,7 @@
                                                 <i class="fas fa-sun mr-1"></i> Début du jour
                                             </label>
                                             <select id="dayStartHour" onchange="updateDayNightSchedule()" 
-                                                    class="w-full text-sm border-yellow-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md">
+                                                    class="w-full text-sm border-yellow-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg">
                                                 @for($h = 4; $h <= 10; $h++)
                                                     <option value="{{ $h }}" {{ config('colors.day_night.day_start', 7) == $h ? 'selected' : '' }}>
                                                         {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
@@ -288,7 +289,7 @@
                                                 <i class="fas fa-moon mr-1"></i> Début de la nuit
                                             </label>
                                             <select id="nightStartHour" onchange="updateDayNightSchedule()" 
-                                                    class="w-full text-sm border-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-md">
+                                                    class="w-full text-sm border-indigo-200 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg">
                                                 @for($h = 17; $h <= 22; $h++)
                                                     <option value="{{ $h }}" {{ config('colors.day_night.night_start', 19) == $h ? 'selected' : '' }}>
                                                         {{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
@@ -379,13 +380,13 @@
 
                                     <!-- Boutons de test -->
                                     <div class="flex gap-2 mt-3">
-                                        <button onclick="testDayMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded-xl transition-colors">
+                                        <button onclick="testDayMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-yellow-100 text-yellow-800 hover:bg-yellow-200 rounded-lg transition-colors">
                                             <i class="fas fa-sun mr-1"></i> Tester Jour
                                         </button>
-                                        <button onclick="testNightMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-xl transition-colors">
+                                        <button onclick="testNightMode()" class="flex-1 px-3 py-2 text-xs font-medium bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-lg transition-colors">
                                             <i class="fas fa-moon mr-1"></i> Tester Nuit
                                         </button>
-                                        <button onclick="resetDayNightAuto()" class="flex-1 px-3 py-2 text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl transition-colors">
+                                        <button onclick="resetDayNightAuto()" class="flex-1 px-3 py-2 text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg transition-colors">
                                             <i class="fas fa-sync mr-1"></i> Auto
                                         </button>
                                     </div>
@@ -447,12 +448,12 @@
                     <!-- Actions -->
                     <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2">
                         <button onclick="resetAdvancedSettings()" 
-                                class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                                class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                             <i class="fas fa-undo mr-1"></i>
                             Réinitialiser
                         </button>
                         <button onclick="saveAdvancedSettings()" 
-                                class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                                class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                             <i class="fas fa-save mr-1"></i>
                             Enregistrer
                         </button>
@@ -464,8 +465,8 @@
 </div>
 
 <!-- Modal d'import -->
-<div id="importModal" class="fixed inset-0 bg-slate-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
-    <div class="relative top-10 mx-auto p-5 w-full max-w-md border shadow-lg rounded-xl bg-white dark:bg-slate-800">
+<div id="importModal" class="modal-wrapper hidden fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 backdrop-blur-sm p-4">
+    <div class="relative w-full max-w-md rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-2xl">
         <div class="mt-3">
             <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-4">Importer Configuration</h3>
             
@@ -476,16 +477,16 @@
                         Fichier de configuration (JSON)
                     </label>
                     <input type="file" name="config_file" id="config_file" accept=".json"
-                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                           class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                 </div>
                 
                 <div class="flex justify-end gap-2">
                     <button type="button" onclick="closeImportModal()"
-                            class="px-4 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-300 transition-colors">
+                            class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         Annuler
                     </button>
                     <button type="submit"
-                            class="px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors">
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                         <i class="fas fa-upload mr-1"></i>
                         Importer
                     </button>
@@ -495,6 +496,7 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
 function toggleCustomPalette() {
     const form = document.getElementById('customPaletteForm');
@@ -538,10 +540,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function openImportModal() {
     document.getElementById('importModal').classList.remove('hidden');
+    document.getElementById('importModal').classList.add('flex');
 }
 
 function closeImportModal() {
     document.getElementById('importModal').classList.add('hidden');
+    document.getElementById('importModal').classList.remove('flex');
 }
 
 // Charger les palettes personnalisées
@@ -573,11 +577,11 @@ function loadCustomPalettes() {
                         </div>
                         <div class="flex gap-2">
                             <button onclick="changePalette('${key}')" 
-                                    class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                                    class="px-3 py-1 text-sm bg-primary-600 text-white rounded-lg hover:bg-primary-700">
                                 Appliquer
                             </button>
                             <button onclick="deleteCustomPalette('${key}')" 
-                                    class="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                                    class="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -696,7 +700,7 @@ function changePalette(paletteName) {
 function updateActivePalette(newPalette) {
     // Retirer les styles actifs de toutes les cartes
     document.querySelectorAll('.palette-card').forEach(card => {
-        card.classList.remove('border-blue-500', 'bg-blue-50');
+        card.classList.remove('border-primary-500', 'bg-primary-50');
         card.classList.add('border-slate-200');
         card.classList.add('dark:border-slate-700');
         const badge = card.querySelector('.active-badge');
@@ -708,7 +712,7 @@ function updateActivePalette(newPalette) {
     if (activeCard) {
         activeCard.classList.remove('border-slate-200');
         activeCard.classList.remove('dark:border-slate-700');
-        activeCard.classList.add('border-blue-500', 'bg-blue-50');
+        activeCard.classList.add('border-primary-500', 'bg-primary-50');
         const activeBadge = activeCard.querySelector('.active-badge');
         if (activeBadge) activeBadge.classList.remove('hidden');
     }
@@ -1239,4 +1243,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 60000);
 });
 </script>
+@endpush
 @endsection

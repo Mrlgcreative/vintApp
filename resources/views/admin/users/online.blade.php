@@ -9,6 +9,10 @@
     .pulse-dot{ animation:pulse-dot 2s infinite }
     @keyframes spin-icon { to{ transform:rotate(360deg) } }
     .spin-icon{ animation:spin-icon .8s linear infinite }
+    .leaflet-container{ font-family:'Inter',system-ui,sans-serif }
+    .leaflet-popup-content-wrapper{ border-radius:14px; padding:2px; box-shadow:0 12px 32px -12px rgba(2,6,23,.35); border:1px solid rgba(226,232,240,.8) }
+    .leaflet-popup-content{ margin:12px 14px }
+    .leaflet-popup-close-button{ top:6px !important; right:8px !important }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 @endpush
@@ -31,52 +35,84 @@
     {{-- Stat cards --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {{-- Total --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-600">Total connectés</span>
-                <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Total connectés</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white" id="stat-total">{{ $stats['total_online'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                    <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60"></span><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400"></span></span>
+                    En direct
+                </span>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-total">{{ $stats['total_online'] }}</p>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-users text-xs text-primary-500"></i>
+                    En ligne maintenant
+                </div>
+                <div class="text-xs text-slate-400">Toutes plateformes</div>
+            </div>
         </div>
 
         {{-- Mobile --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-600">Sur mobile</span>
-                <div class="w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4.5 h-4.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Sur mobile</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white" id="stat-mobile">{{ $stats['by_device']['mobile'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-white px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-800/40 dark:bg-slate-900 dark:text-blue-300">
+                    <i class="fas fa-mobile-screen-button text-[10px]"></i>
+                    Portable
+                </span>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-mobile">{{ $stats['by_device']['mobile'] }}</p>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-mobile-screen text-xs text-blue-500"></i>
+                    Appareils mobiles
+                </div>
+                <div class="text-xs text-slate-400">Téléphones</div>
+            </div>
         </div>
 
         {{-- Tablette --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-violet-600">Sur tablette</span>
-                <div class="w-9 h-9 bg-violet-50 dark:bg-violet-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4.5 h-4.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Sur tablette</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white" id="stat-tablet">{{ $stats['by_device']['tablet'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-white px-2 py-0.5 text-xs font-medium text-violet-700 dark:border-violet-800/40 dark:bg-slate-900 dark:text-violet-300">
+                    <i class="fas fa-tablet-screen-button text-[10px]"></i>
+                    Tablette
+                </span>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-tablet">{{ $stats['by_device']['tablet'] }}</p>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-tablet-screen-button text-xs text-violet-500"></i>
+                    Sur tablette
+                </div>
+                <div class="text-xs text-slate-400">Appareils tactiles</div>
+            </div>
         </div>
 
         {{-- Desktop --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-600">Sur ordinateur</span>
-                <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4.5 h-4.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                </div>
+        <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="text-sm text-slate-500 dark:text-slate-400">Sur ordinateur</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white" id="stat-desktop">{{ $stats['by_device']['desktop'] }}</p>
+            <div class="absolute right-4 top-4">
+                <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                    <i class="fas fa-computer text-[10px]"></i>
+                    Desktop
+                </span>
             </div>
-            <p class="text-2xl font-bold text-slate-900 dark:text-white" id="stat-desktop">{{ $stats['by_device']['desktop'] }}</p>
+            <div class="mt-2.5 flex flex-col gap-0.5 text-sm">
+                <div class="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-computer text-xs text-emerald-500"></i>
+                    Sur ordinateur
+                </div>
+                <div class="text-xs text-slate-400">Postes fixes</div>
+            </div>
         </div>
     </div>
 
     {{-- Filtres --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 p-4">
         <div class="flex flex-wrap items-center gap-3">
             <div class="flex-1 min-w-[220px] relative">
                 <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -90,7 +126,7 @@
                 <option value="tablet">Tablette</option>
                 <option value="desktop">Ordinateur</option>
             </select>
-            <button onclick="refreshData()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl transition-colors">
+            <button onclick="refreshData()" class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 Actualiser
             </button>
@@ -98,24 +134,39 @@
     </div>
 
     {{-- Carte géographique --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700/50">
-            <div class="flex items-center gap-2.5">
-                <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Localisation des utilisateurs</h3>
-                <span class="text-[11px] text-slate-400 font-normal" id="mapUserCount"></span>
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden dark:border-slate-700 dark:bg-slate-800">
+        <div class="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
+                    <i class="fas fa-map-location-dot text-sm"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Localisation des utilisateurs</h3>
+                    <p class="text-xs text-slate-400" id="mapUserCount"></p>
+                </div>
             </div>
-            <button onclick="resetMapView()" class="text-[11px] text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1 transition-colors">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            <button onclick="resetMapView()" class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                <i class="fas fa-crosshairs text-[11px]"></i>
                 Recentrer
             </button>
         </div>
-        <div id="usersMap" class="w-full h-[350px] sm:h-[420px] z-0"></div>
+        <div id="usersMap" class="w-full h-[340px] sm:h-[400px] z-0"></div>
+        <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 border-t border-slate-100 px-5 py-2.5 dark:border-slate-700">
+            <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-blue-500"></span> Mobile
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-violet-500"></span> Tablette
+            </span>
+            <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span> Ordinateur
+            </span>
+        </div>
     </div>
 
     {{-- Liste utilisateurs --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700/50 overflow-hidden">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100 dark:border-slate-700/50">
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800 overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
             <div class="flex items-center gap-2.5">
                 <svg class="w-4.5 h-4.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Utilisateurs Actifs</h3>
@@ -127,7 +178,7 @@
             <div id="usersGrid" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                 @forelse($onlineUsers as $userData)
                     @php $user = $userData['user']; $session = $userData['session']; @endphp
-                    <div class="rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 hover:shadow-md transition-all duration-200 user-card"
+                    <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 transition-all duration-200 hover:shadow-sm user-card"
                          data-device="{{ $session->device_type }}"
                          data-user-name="{{ strtolower($user->name) }}"
                          data-user-email="{{ strtolower($user->email) }}">
@@ -135,7 +186,7 @@
                             {{-- Avatar --}}
                             <div class="relative flex-shrink-0">
                                 <img src="{{ $user->avatar ?? asset('images/default-avatar.png') }}" alt="{{ $user->name }}"
-                                     class="w-11 h-11 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700">
+                                     class="w-11 h-11 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600">
                                 <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
                             </div>
 
@@ -180,7 +231,7 @@
                                 </div>
 
                                 {{-- IP + Détails --}}
-                                <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/30">
+                                <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
                                     <span class="text-[11px] text-slate-400 flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>
                                         {{ $session->ip_address }}
@@ -270,15 +321,31 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             const esc = s => s ? String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
+            const dType = u.device_type || 'desktop';
+            const dColor = deviceColors[dType] || deviceColors.desktop;
+            const dLabel = dType.charAt(0).toUpperCase() + dType.slice(1);
+            const uAvatar = esc(u.avatar || (u.user && u.user.avatar));
             const popup = `
-                <div style="font-family:system-ui;min-width:160px">
-                    <div style="font-weight:600;font-size:13px;margin-bottom:2px">${esc(u.name || (u.user && u.user.name))}</div>
-                    <div style="font-size:11px;color:#64748b;margin-bottom:4px">${esc(u.email || (u.user && u.user.email))}</div>
-                    <div style="font-size:11px;color:#64748b">📍 ${esc(u.location)}</div>
-                    <div style="font-size:11px;color:#64748b">📱 ${esc((u.device_type||'desktop').charAt(0).toUpperCase()+(u.device_type||'desktop').slice(1))}</div>
+                <div style="font-family:system-ui;min-width:210px;padding:2px">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                        <div style="width:38px;height:38px;border-radius:9999px;overflow:hidden;flex-shrink:0;border:2px solid ${dColor};background:#f1f5f9">${uAvatar ? `<img src="${uAvatar}" style="width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>` : ''}</div>
+                        <div style="min-width:0">
+                            <div style="font-weight:600;font-size:13px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(u.name || (u.user && u.user.name))}</div>
+                            <div style="font-size:11px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(u.email || (u.user && u.user.email))}</div>
+                        </div>
+                    </div>
+                    <div style="height:1px;background:#f1f5f9;margin-bottom:8px"></div>
+                    <div style="font-size:11px;color:#475569;display:flex;flex-direction:column;gap:4px">
+                        <div style="display:flex;align-items:center;gap:6px"><span style="color:#94a3b8;font-size:12px">📍</span><span>${esc(u.location)}</span></div>
+                        <div style="display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:${dColor}"></span><span>${dLabel}</span></div>
+                    </div>
+                    <a href="/admin/users/${u.user_id}" style="display:block;text-align:center;margin-top:10px;padding:7px 0;border-radius:8px;background:#0f172a;color:#fff;font-size:11px;font-weight:600;text-decoration:none">Voir le profil</a>
                 </div>`;
 
-            L.marker([lat, lng], { icon }).bindPopup(popup).addTo(markersLayer);
+            L.marker([lat, lng], { icon })
+                .bindPopup(popup, { closeButton: false })
+                .bindTooltip(esc(u.name || (u.user && u.user.name)), { direction: 'top', offset: [0, -16], opacity: 0.92 })
+                .addTo(markersLayer);
         });
 
         document.getElementById('mapUserCount').textContent = count > 0 ? `(${count} localisé${count > 1 ? 's' : ''})` : '(aucune position)';
@@ -399,11 +466,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const u = ud.user, dt = ud.device_type || 'desktop';
             const esc = s => s ? s.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
             return `
-            <div class="rounded-xl border border-slate-100 dark:border-slate-700/50 p-4 hover:shadow-md transition-all duration-200 user-card"
+            <div class="rounded-lg border border-slate-200 dark:border-slate-700 p-4 transition-all duration-200 hover:shadow-sm user-card"
                  data-device="${esc(dt)}" data-user-name="${esc(u.name.toLowerCase())}" data-user-email="${esc(u.email.toLowerCase())}">
                 <div class="flex items-start gap-3">
                     <div class="relative flex-shrink-0">
-                        <img src="${esc(u.avatar)}" alt="${esc(u.name)}" class="w-11 h-11 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700">
+                        <img src="${esc(u.avatar)}" alt="${esc(u.name)}" class="w-11 h-11 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600">
                         <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-slate-800 rounded-full"></span>
                     </div>
                     <div class="flex-1 min-w-0">
@@ -417,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${esc(ud.last_activity)}</span>
                             ${ud.location && ud.location !== 'Localisation inconnue' ? '<span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>'+esc(ud.location)+'</span>' : ''}
                         </div>
-                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/30">
+                        <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
                             <span class="text-[11px] text-slate-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"/></svg>${esc(ud.ip_address)}</span>
                             <button onclick="viewUserDetails(${u.id})" class="text-[11px] font-medium text-primary-600 hover:text-primary-700 flex items-center gap-1 transition-colors">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
