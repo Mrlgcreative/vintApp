@@ -28,14 +28,9 @@
     };
 
     $statusBadge = [
-        'active' => 'bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-900/30 dark:text-emerald-300',
-        'expired' => 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-300',
-        'cancelled' => 'bg-red-50 text-red-700 ring-red-600/20 dark:bg-red-900/30 dark:text-red-300',
-    ];
-    $statusDot = [
-        'active' => 'bg-emerald-500',
-        'expired' => 'bg-slate-400',
-        'cancelled' => 'bg-red-500',
+        'active' => 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300',
+        'expired' => 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+        'cancelled' => 'bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300',
     ];
     $statusLabel = [
         'active' => 'Actif',
@@ -47,7 +42,7 @@
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     <!-- Colonne gauche -->
     <div class="space-y-6 lg:col-span-1">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="mb-5 flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
                     <i class="fas fa-circle-info"></i>
@@ -58,8 +53,8 @@
                 <div class="flex items-center justify-between gap-4 py-3">
                     <dt class="text-slate-500 dark:text-slate-400">Statut</dt>
                     <dd>
-                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset {{ $statusBadge[$productBoost->status] ?? '' }}">
-                            <span class="mr-1.5 h-1.5 w-1.5 rounded-full {{ $statusDot[$productBoost->status] ?? 'bg-slate-400' }}"></span>
+                        <span class="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-0.5 text-xs font-medium {{ $statusBadge[$productBoost->status] ?? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' }}">
+                            <i class="fas fa-circle text-[5px] opacity-70"></i>
                             {{ $statusLabel[$productBoost->status] ?? ucfirst($productBoost->status) }}
                         </span>
                     </dd>
@@ -67,7 +62,7 @@
                 <div class="flex items-center justify-between gap-4 py-3">
                     <dt class="text-slate-500 dark:text-slate-400">Type de boost</dt>
                     <dd>
-                        <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset"
+                        <span class="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-0.5 text-xs font-medium"
                               style="background: {{ $productBoost->boostType?->color ?? '#7c3aed' }}1a; color: {{ $productBoost->boostType?->color ?? '#7c3aed' }}; border-color: {{ $productBoost->boostType?->color ?? '#7c3aed' }}40;">
                             <i class="{{ $productBoost->boostType?->icon ?? 'fas fa-bolt' }} text-[10px]"></i>
                             {{ $productBoost->boostType?->display_name ?? 'N/A' }}
@@ -109,7 +104,7 @@
             </dl>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="mb-5 flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-300">
                     <i class="fas fa-chart-line"></i>
@@ -133,7 +128,7 @@
 
     <!-- Colonne droite -->
     <div class="space-y-6 lg:col-span-2">
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="mb-5 flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-300">
                     <i class="fas fa-box-open"></i>
@@ -159,7 +154,7 @@
             @endif
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="mb-5 flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-300">
                     <i class="fas fa-user"></i>
@@ -182,7 +177,7 @@
         </div>
 
         @if($productBoost->cancellation_reason)
-        <div class="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm dark:border-red-900/30 dark:bg-red-900/20">
+        <div class="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm dark:border-red-900/30 dark:bg-red-900/20">
             <div class="mb-3 flex items-center gap-3">
                 <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-100 text-red-600 dark:bg-red-900/40 dark:text-red-300">
                     <i class="fas fa-circle-exclamation"></i>
