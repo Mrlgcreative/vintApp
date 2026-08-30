@@ -57,7 +57,7 @@
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
                                  class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden">
-                                <a href="{{ route('wallet.add-funds', $usdWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                     Ajouter des fonds
                                 </a>
@@ -82,7 +82,7 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
+                        <a href="{{ route('wallet.index') }}" 
                            class="flex-1 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                             Ajouter
@@ -122,7 +122,7 @@
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
                                  class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden">
-                                <a href="{{ route('wallet.add-funds', $cdfWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                     Ajouter des fonds
                                 </a>
@@ -147,7 +147,7 @@
                     </div>
                     
                     <div class="flex gap-3">
-                        <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
+                        <a href="{{ route('wallet.index') }}" 
                            class="flex-1 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                             Ajouter
@@ -607,12 +607,12 @@
                         </div>
                         
                         <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="{{ route('wallet.add-funds', $usdWallet) }}" 
+                            <a href="{{ route('wallet.index') }}" 
                                class="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                 Ajouter des fonds USD
                             </a>
-                            <a href="{{ route('wallet.add-funds', $cdfWallet) }}" 
+                            <a href="{{ route('wallet.index') }}" 
                                class="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                                 Ajouter des fonds CDF

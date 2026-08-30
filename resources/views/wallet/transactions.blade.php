@@ -26,7 +26,7 @@
                     </p>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="{{ route('wallet.add-funds', $wallet) }}" class="btn btn-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }}">
+                    <a href="{{ route('wallet.index') }}" class="btn btn-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }}">
                         <i class="fas fa-plus me-1"></i>Ajouter
                     </a>
                     <a href="{{ route('wallet.withdraw-funds', $wallet) }}" class="btn btn-outline-danger">
@@ -187,7 +187,7 @@
                             <h5 class="text-muted">Aucune transaction</h5>
                             <p class="text-muted mb-4">Ce wallet n'a encore aucune transaction.</p>
                             <div class="d-flex gap-2 justify-content-center">
-                                <a href="{{ route('wallet.add-funds', $wallet) }}" class="btn btn-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }}">
+                                <a href="{{ route('wallet.index') }}" class="btn btn-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }}">
                                     <i class="fas fa-plus me-1"></i>
                                     Ajouter des fonds {{ $wallet->currency }}
                                 </a>
@@ -207,7 +207,7 @@
                         </h6>
                         <div class="row">
                             <div class="col-md-4 mb-2">
-                                <a href="{{ route('wallet.add-funds', $wallet) }}" class="btn btn-outline-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }} w-100">
+                                <a href="{{ route('wallet.index') }}" class="btn btn-outline-{{ $wallet->currency === 'USD' ? 'success' : 'warning' }} w-100">
                                     <i class="fas fa-plus me-2"></i>Ajouter des fonds
                                 </a>
                             </div>

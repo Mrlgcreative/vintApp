@@ -75,6 +75,13 @@ class OrderService
             throw new DomainException('Cette commande ne peut plus être confirmée.');
         }
 
+        // Sécurité : refuser la confirmation sans preuve de paiement réellement reçu.
+        // L'escrow ne doit être crédité que si un paiement confirmé (Payment completed)
+        // est rattaché à la commande.
+        if (!$this->hasConfirmedPayment($order)) {
+            throw new DomainException('Impossible de confirmer : aucun paiement confirmé n\'a été reçu pour cette commande.');
+        }
+
         DB::transaction(function () use ($order) {
             $order->paid_at = now();
             $order->status = 'confirmed';
@@ -82,6 +89,18 @@ class OrderService
 
             $this->creditEscrow($order);
         });
+    }
+
+    /**
+     * Vérifie qu'un paiement réellement confirmé est lié à la commande.
+     * Exige l'existence d'un Payment "completed" rattaché à la commande
+     * (créé par initiateOrderPayment puis confirmé par le callback du provider).
+     */
+    protected function hasConfirmedPayment(Order $order): bool
+    {
+        return \App\Models\Payment::where('order_id', $order->id)
+            ->where('status', 'completed')
+            ->exists();
     }
 
     /**

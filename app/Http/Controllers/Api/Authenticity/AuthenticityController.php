@@ -272,6 +272,11 @@ class AuthenticityController extends ApiController
         try {
             $check = ProductAuthenticityCheck::findOrFail($checkId);
 
+            // Défense en profondeur : seuls les experts certifiés peuvent certifier
+            if (!Auth::user() || !Auth::user()->isExpert()) {
+                return $this->errorResponse('Accès réservé aux experts certifiés.', 403);
+            }
+
             $validator = Validator::make($request->all(), [
                 'status' => 'required|in:expert_approved,expert_rejected',
                 'expert_notes' => 'required|string|max:1000'

@@ -101,7 +101,7 @@
                         </div>
                         <h3 class="text-lg font-semibold text-amber-800 dark:text-amber-300 mb-2">Solde insuffisant</h3>
                         <p class="text-amber-600 dark:text-amber-400 mb-4">Vous n'avez pas de fonds disponibles pour effectuer un retrait.</p>
-                        <a href="{{ route('wallet.add-funds', $wallet) }}" class="inline-flex items-center px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
+                        <a href="{{ route('wallet.index') }}" class="inline-flex items-center px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                             </svg>

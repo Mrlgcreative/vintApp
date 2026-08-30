@@ -97,15 +97,15 @@ class PaymentCallbackController extends Controller
     {
         // IPs autorisées par provider (à configurer dans .env)
         $allowedIps = [
-            'mpesa' => explode(',', env('MPESA_CALLBACK_IPS', '196.250.0.0/16')),
-            'orange_money' => explode(',', env('ORANGE_CALLBACK_IPS', '41.191.0.0/16')),
-            'airtel_money' => explode(',', env('AIRTEL_CALLBACK_IPS', '41.242.0.0/16')),
-            'africell' => explode(',', env('AFRICELL_CALLBACK_IPS', '41.222.0.0/16')),
+            'mpesa' => explode(',', env('MPESA_CALLBACK_IPS', '')),
+            'orange_money' => explode(',', env('ORANGE_CALLBACK_IPS', '')),
+            'airtel_money' => explode(',', env('AIRTEL_CALLBACK_IPS', '')),
+            'africell' => explode(',', env('AFRICELL_CALLBACK_IPS', '')),
         ];
 
         // Vérification basique de l'IP (à améliorer selon les specs de chaque opérateur)
         $clientIp = $request->ip();
-        
+
         // ⚠️ SÉCURITÉ : En développement, logger mais TOUJOURS vérifier la signature
         if (app()->environment('local')) {
             Log::info("Environnement local détecté", [
@@ -114,31 +114,60 @@ class PaymentCallbackController extends Controller
             ]);
         }
 
+        // Helper : refuser si le secret attendu n'est pas configuré (null) ou placeholder
+        $hasRealSecret = fn (?string $secret): bool => filled($secret)
+            && !in_array($secret, ['DEMO_SECRET', 'DEMO_KEY', 'DEMO_TOKEN', 'DEMO_CLIENT', 'DEMO_MERCHANT', 'DEMO_CODE'], true);
+
         // Vérifier selon le provider
         switch ($provider) {
             case 'mpesa':
                 // M-Pesa utilise une signature HMAC
                 $signature = $request->header('X-Signature');
                 $secret = env('MPESA_CALLBACK_SECRET');
-                if ($signature && $secret) {
-                    $expectedSignature = hash_hmac('sha256', json_encode($request->all()), $secret);
-                    return hash_equals($expectedSignature, $signature);
+                if (!$hasRealSecret($secret) || !$signature) {
+                    Log::warning('M-Pesa callback: secret manquant/non configuré ou signature absente, refusé', [
+                        'ip' => $clientIp, 'provider' => $provider,
+                    ]);
+                    return false;
                 }
-                break;
+                $expectedSignature = hash_hmac('sha256', json_encode($request->all()), $secret);
+                return hash_equals($expectedSignature, $signature);
 
             case 'orange_money':
                 // Orange Money utilise une clé API
                 $apiKey = $request->header('X-Api-Key');
-                return $apiKey === env('ORANGE_CALLBACK_KEY');
+                $expectedKey = env('ORANGE_CALLBACK_KEY');
+                if (!$hasRealSecret($expectedKey) || !$apiKey) {
+                    Log::warning('Orange Money callback: clé API manquante/non configurée, refusé', [
+                        'ip' => $clientIp, 'provider' => $provider,
+                    ]);
+                    return false;
+                }
+                return hash_equals($expectedKey, $apiKey);
 
             case 'airtel_money':
                 // Airtel Money utilise une combinaison IP + token
                 $token = $request->header('Authorization');
-                return $token === 'Bearer ' . env('AIRTEL_CALLBACK_TOKEN');
+                $expectedToken = env('AIRTEL_CALLBACK_TOKEN');
+                if (!$hasRealSecret($expectedToken) || !$token) {
+                    Log::warning('Airtel Money callback: token manquant/non configuré, refusé', [
+                        'ip' => $clientIp, 'provider' => $provider,
+                    ]);
+                    return false;
+                }
+                return hash_equals('Bearer ' . $expectedToken, $token);
 
             case 'africell':
                 // Africell utilise un secret dans le payload
-                return $request->input('secret') === env('AFRICELL_CALLBACK_SECRET');
+                $providedSecret = $request->input('secret');
+                $expectedSecret = env('AFRICELL_CALLBACK_SECRET');
+                if (!$hasRealSecret($expectedSecret) || !$providedSecret) {
+                    Log::warning('Africell callback: secret manquant/non configuré, refusé', [
+                        'ip' => $clientIp, 'provider' => $provider,
+                    ]);
+                    return false;
+                }
+                return hash_equals($expectedSecret, $providedSecret);
 
             case 'maishapay':
                 $signature = $request->header('X-MaishaPay-Signature');
@@ -150,18 +179,19 @@ class PaymentCallbackController extends Controller
                     return false;
                 }
                 $maishaPay = new \App\Services\MaishaPay();
-                return $maishaPay->verifyWebhookSignature($request->getContent(), $signature);
-        }
-
-        // Si pas de vérification spécifique, vérifier juste l'IP
-        if (isset($allowedIps[$provider])) {
-            foreach ($allowedIps[$provider] as $allowedRange) {
-                if ($this->ipInRange($clientIp, trim($allowedRange))) {
-                    return true;
+                if (!$maishaPay->verifyWebhookSignature($request->getContent(), $signature)) {
+                    Log::warning("MaishaPay: signature invalide, callback refusé", ['ip' => $clientIp]);
+                    return false;
                 }
-            }
+                return true;
         }
 
+        // Aucune vérification spécifique configurée pour ce provider : on refuse
+        // par défaut (fail-closed) plutôt que de se reposer sur une plage IP
+        // potentiellement trop large.
+        Log::warning('Callback provider sans vérification configurée, refusé', [
+            'provider' => $provider, 'ip' => $clientIp,
+        ]);
         return false;
     }
 

@@ -68,56 +68,6 @@ class WalletController extends Controller
     }
 
     /**
-     * Affiche le formulaire d'ajout de fonds.
-     */
-    public function addFunds(Wallet $wallet)
-    {
-        // Vérifier que le wallet appartient à l'utilisateur connecté
-        if ($wallet->user_id !== Auth::id()) {
-            abort(403, 'Accès non autorisé');
-        }
-
-        return view('wallet.add-funds', compact('wallet'));
-    }
-
-    /**
-     * Traite l'ajout de fonds.
-     */
-    public function storeAddFunds(Request $request, Wallet $wallet)
-    {
-        // Vérifier que le wallet appartient à l'utilisateur connecté
-        if ($wallet->user_id !== Auth::id()) {
-            abort(403, 'Accès non autorisé');
-        }
-
-        $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01|max:999999.99',
-            'description' => 'nullable|string|max:255',
-        ]);
-
-        try {
-            DB::transaction(function () use ($wallet, $validated) {
-                $wallet->increment('balance', $validated['amount']);
-                
-                $wallet->transactions()->create([
-                    'type' => 'credit',
-                    'amount' => $validated['amount'],
-                    'balance_after' => $wallet->fresh()->balance,
-                    'description' => $validated['description'] ?? 'Ajout de fonds',
-                    'reference' => 'ADD-' . time() . '-' . rand(1000, 9999),
-                ]);
-            });
-
-            return redirect()->route('wallet.index')
-                ->with('success', 'Fonds ajoutés avec succès !');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Erreur lors de l\'ajout des fonds : ' . $e->getMessage());
-        }
-    }
-
-    /**
      * Affiche le formulaire de retrait de fonds.
      */
     public function withdrawFunds(Wallet $wallet)

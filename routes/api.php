@@ -169,7 +169,7 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::get('/dashboard', [ApiAuthenticityController::class, 'dashboard']);
         Route::post('/{check}/confirm-payment', [ApiAuthenticityController::class, 'confirmPayment']);
         Route::middleware('throttle:20,1')->group(function () {
-            Route::put('/{check}/update-status', [ApiAuthenticityController::class, 'updateStatus']);
+            Route::put('/{check}/update-status', [ApiAuthenticityController::class, 'updateStatus'])->middleware('expert');
         });
     });
     Route::get('/v1/items/{item}/authenticity/can-verify', [ApiAuthenticityController::class, 'canVerify']);

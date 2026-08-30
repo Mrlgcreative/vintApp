@@ -5,6 +5,7 @@ namespace Tests\Unit;
 use App\Models\Category;
 use App\Models\Item;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
@@ -41,6 +42,21 @@ class OrderServiceTest extends TestCase
             'status' => $status,
             'verification_status' => 'approved',
         ]);
+    }
+
+    private function markOrderPaid(Order $order, User $buyer, User $seller, float $amount)
+    {
+        Payment::create([
+            'buyer_id' => $buyer->id,
+            'seller_id' => $seller->id,
+            'order_id' => $order->id,
+            'amount' => $amount,
+            'currency' => 'USD',
+            'status' => 'completed',
+            'transaction_id' => 'PAY-' . uniqid(),
+        ]);
+
+        $order->update(['payment_status' => 'paid']);
     }
 
     /** @test */
@@ -152,6 +168,7 @@ class OrderServiceTest extends TestCase
         );
 
         // La confirmation du paiement crédite l'escrow (wallet pending) du vendeur
+        $this->markOrderPaid($order, $buyer, $seller, 100.0);
         $this->service->confirmPayment($order);
         $this->assertSame('confirmed', $order->status);
         $this->assertSame(100.0, (float) $pending->fresh()->balance); // escrow crédité
@@ -190,6 +207,7 @@ class OrderServiceTest extends TestCase
 
         $pending = Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 0, 'status' => 'active']);
 
+        $this->markOrderPaid($order, $buyer, $seller, 100.0);
         $this->service->confirmPayment($order);
 
         // L'escrow est crédité du montant total lors de la confirmation du paiement

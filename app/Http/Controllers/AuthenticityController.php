@@ -231,8 +231,11 @@ class AuthenticityController extends Controller
      */
     public function updateStatus(Request $request, ProductAuthenticityCheck $check)
     {
-        // TODO: Middleware pour vérifier que l'utilisateur est expert
-        
+        // Défense en profondeur : seuls les experts certifiés peuvent certifier
+        if (!auth()->user() || !auth()->user()->isExpert()) {
+            return response()->json(['message' => 'Accès réservé aux experts certifiés.'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'status' => 'required|in:expert_approved,expert_rejected',
             'expert_notes' => 'required|string|max:1000'
@@ -508,8 +511,11 @@ class AuthenticityController extends Controller
         try {
             $check = ProductAuthenticityCheck::findOrFail($checkId);
 
-            //  Vérifier que l'utilisateur est expert
-            
+            //  Défense en profondeur : seuls les experts certifiés peuvent certifier
+            if (!auth()->user() || !auth()->user()->isExpert()) {
+                return $this->errorResponse('Accès réservé aux experts certifiés.', 403);
+            }
+
             $validator = Validator::make($request->all(), [
                 'status' => 'required|in:expert_approved,expert_rejected',
                 'expert_notes' => 'required|string|max:1000'

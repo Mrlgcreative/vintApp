@@ -837,8 +837,6 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('wallet')->name('wallet.')->group(function () {
         Route::get('/', [App\Http\Controllers\WalletController::class, 'index'])->name('index');
         Route::get('/{wallet}/transactions', [App\Http\Controllers\WalletController::class, 'transactions'])->name('transactions');
-        Route::get('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'addFunds'])->name('add-funds');
-        Route::post('/{wallet}/add-funds', [App\Http\Controllers\WalletController::class, 'storeAddFunds'])->name('store-add-funds');
         Route::get('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'withdrawFunds'])->name('withdraw-funds');
         Route::post('/{wallet}/withdraw-funds', [App\Http\Controllers\WalletController::class, 'storeWithdrawFunds'])->name('store-withdraw-funds');
         Route::get('/{wallet}/balance', [App\Http\Controllers\WalletController::class, 'getBalance'])->name('balance');
@@ -1131,8 +1129,8 @@ Route::middleware(['auth'])->prefix('authenticity')->name('authenticity.')->grou
     // Statut de vérification
     Route::get('/status/{item}', [AuthenticityController::class, 'status'])->name('status');
     
-    // API pour les experts (mise à jour du statut)
-    Route::post('/update-status/{check}', [AuthenticityController::class, 'updateStatus'])->name('update.status');
+    // API pour les experts (mise à jour du statut) - réservé aux experts certifiés
+    Route::post('/update-status/{check}', [AuthenticityController::class, 'updateStatus'])->name('update.status')->middleware('expert');
 });
 
 // Routes temporaires pour tester le mode maintenance (à supprimer en production)
