@@ -1,300 +1,288 @@
 @extends('layouts.admin')
 
-@section('title', "Types de Boost")
-@section('page-title', "Types de Boost")
+@section('title', 'Types de Boost')
+@section('page-title', 'Types de Boost')
 
 @section('page-actions')
-<div class="flex flex-wrap gap-3">
+<div class="flex items-center gap-2">
     <a href="{{ route('admin.boost-types.create') }}"
-       class="inline-flex items-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors duration-200">
-        <i class="fas fa-plus mr-2"></i>Nouveau type
+       class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
+        <i class="fas fa-plus text-xs"></i>
+        Nouveau type
     </a>
 </div>
 @endsection
 
 @section('content')
-@if(session('success'))
-    <div class="flex items-center rounded-xl bg-green-50 p-4 text-green-800 animate-fade-in mb-6" role="alert">
-        <i class="fas fa-check-circle mr-3 text-green-500"></i>
-        <span class="flex-1">{{ session('success') }}</span>
-        <button type="button" class="ml-4 text-green-500 hover:text-green-700" onclick="this.parentElement.remove()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-@endif
+@php
+    $currentSort = request('sort', 'sort_order');
+    $sortUrl = function (string $col) use ($currentSort) {
+        $dir = $currentSort === $col ? '-' . $col : $col;
+        return request()->fullUrlWithQuery(['sort' => $dir]);
+    };
+    $sortDir = fn (string $col) => $currentSort === $col ? 'asc' : ($currentSort === '-' . $col ? 'desc' : null);
 
-@if(session('error'))
-    <div class="flex items-center rounded-xl bg-red-50 p-4 text-red-800 animate-fade-in mb-6" role="alert">
-        <i class="fas fa-exclamation-circle mr-3 text-red-500"></i>
-        <span class="flex-1">{{ session('error') }}</span>
-        <button type="button" class="ml-4 text-red-500 hover:text-red-700" onclick="this.parentElement.remove()">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-@endif
+    $stats = [
+        'total' => \App\Models\BoostType::count(),
+        'active' => \App\Models\BoostType::where('is_active', true)->count(),
+        'premium' => \App\Models\BoostType::where('is_premium', true)->count(),
+        'active_boosts' => \App\Models\ProductBoost::where('status', 'active')->count(),
+    ];
 
-<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 mb-6">
-    <div class="p-6">
-        <form method="GET" action="{{ route('admin.boost-types.index') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div class="md:col-span-2">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-slate-400"></i>
-                    </div>
-                    <input type="text"
-                           class="w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                           name="search"
-                           placeholder="Rechercher un type de boost..."
-                           value="{{ request('search') }}">
+    $iconColor = fn (string $hex) => ($hex ?? '#7c3aed');
+
+    $inputClasses = 'flex h-9 w-full rounded-md border border-slate-200 bg-white px-3 py-1 text-sm text-slate-900 shadow-sm transition-colors placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-500 dark:border-slate-600 dark:bg-slate-800 dark:text-white';
+@endphp
+
+<div class="space-y-6">
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-primary-600/10 text-primary-600 dark:bg-primary-400/10 dark:text-primary-300">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Total types</p>
+                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total']) }}</p>
                 </div>
             </div>
-            <div>
-                <select name="status" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                    <option value="">Tous les statuts</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
-                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactif</option>
-                </select>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-300">
+                    <i class="fas fa-circle-check"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Actifs</p>
+                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active']) }}</p>
+                </div>
             </div>
-            <div>
-                <select name="sort" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
-                    <option value="sort_order" {{ request('sort', 'sort_order') === 'sort_order' ? 'selected' : '' }}>Tri par défaut</option>
-                    <option value="name" {{ request('sort') === 'name' ? 'selected' : '' }}>Nom A-Z</option>
-                    <option value="-name" {{ request('sort') === '-name' ? 'selected' : '' }}>Nom Z-A</option>
-                    <option value="created_at" {{ request('sort') === 'created_at' ? 'selected' : '' }}>Plus ancien</option>
-                    <option value="-created_at" {{ request('sort') === '-created_at' ? 'selected' : '' }}>Plus récent</option>
-                </select>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-300">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Premium</p>
+                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['premium']) }}</p>
+                </div>
             </div>
-            <div class="flex space-x-2">
-                <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors">
-                    <i class="fas fa-search"></i>
+        </div>
+
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center gap-4">
+                <div class="flex h-10 w-10 items-center justify-center rounded-md bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-300">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Boosts actifs</p>
+                    <p class="text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_boosts']) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtres + Table -->
+    <div class="rounded-md border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <form method="GET" class="flex flex-col gap-3 border-b border-slate-200 p-3 dark:border-slate-700 md:flex-row md:items-center">
+            <div class="relative flex-1 md:max-w-xs">
+                <i class="fas fa-search pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+                <input type="text" name="search" value="{{ request('search') }}"
+                       placeholder="Rechercher un type de boost..." class="{{ $inputClasses }} pl-9">
+            </div>
+
+            <select name="status" class="{{ $inputClasses }} md:w-44">
+                <option value="">Tous les statuts</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Actif</option>
+                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactif</option>
+            </select>
+
+            <div class="flex items-center gap-2">
+                <button type="submit"
+                        class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-primary-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700">
+                    <i class="fas fa-filter text-xs"></i>
+                    Filtrer
                 </button>
-                <a href="{{ route('admin.boost-types.index') }}" class="inline-flex items-center justify-center px-4 py-2 border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 dark:bg-slate-900 transition-colors">
-                    <i class="fas fa-times"></i>
-                </a>
+                @if(request()->hasAny(['search', 'status']))
+                    <a href="{{ route('admin.boost-types.index') }}" title="Réinitialiser"
+                       class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-slate-200 text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700">
+                        <i class="fas fa-rotate-left text-xs"></i>
+                    </a>
+                @endif
             </div>
         </form>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <p class="text-xs font-semibold text-primary-600 uppercase tracking-wider mb-2">Total types</p>
-                    <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $boostTypes->total() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-bolt text-2xl text-primary-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-primary-500 to-primary-600"></div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <p class="text-xs font-semibold text-green-600 uppercase tracking-wider mb-2">Actifs</p>
-                    <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $boostTypes->where('is_active', true)->count() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-check-circle text-2xl text-green-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <p class="text-xs font-semibold text-yellow-600 uppercase tracking-wider mb-2">Premium</p>
-                    <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ $boostTypes->where('is_premium', true)->count() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-crown text-2xl text-yellow-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-yellow-500 to-yellow-600"></div>
-    </div>
-
-    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div class="p-6">
-            <div class="flex items-center justify-between">
-                <div class="flex-1">
-                    <p class="text-xs font-semibold text-blue-600 uppercase tracking-wider mb-2">Boosts actifs</p>
-                    <p class="text-2xl font-bold text-slate-900 dark:text-white">{{ \App\Models\ProductBoost::where('status', 'active')->count() }}</p>
-                </div>
-                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <i class="fas fa-rocket text-2xl text-blue-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
-    </div>
-</div>
-
-<div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-    <div class="p-4 md:p-6 border-b border-slate-200 dark:border-slate-700">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-            <div>
-                <h5 class="text-lg md:text-xl font-bold text-slate-900 dark:text-white mb-1">Liste des types de boost</h5>
-                <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">{{ $boostTypes->total() }} type(s)</p>
-            </div>
-        </div>
-    </div>
-    <div class="p-0">
-        @if($boostTypes->count() > 0)
         <div class="overflow-x-auto">
-            <table class="w-full">
-                <thead class="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
-                    <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Nom</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Prix</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Durées</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Statut</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Boosts</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Ordre</th>
-                        <th class="px-6 py-4 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">Actions</th>
+            <table class="w-full caption-bottom text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-700">
+                        <th class="h-11 px-3 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <a href="{{ $sortUrl('display_name') }}" class="-ml-2 inline-flex h-8 items-center gap-1.5 rounded-md px-2 font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white">
+                                Nom
+                                @if($sortDir('display_name'))<i class="fas fa-arrow-{{ $sortDir('display_name') === 'desc' ? 'down' : 'up' }} text-[10px]"></i>
+                                @else<i class="fas fa-sort text-[10px] text-slate-400"></i>@endif
+                            </a>
+                        </th>
+                        <th class="h-11 px-3 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Prix</th>
+                        <th class="h-11 px-3 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Durées</th>
+                        <th class="h-11 px-3 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Statut</th>
+                        <th class="h-11 px-3 text-right align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Boosts</th>
+                        <th class="h-11 px-3 text-right align-middle text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <a href="{{ $sortUrl('sort_order') }}" class="-mr-2 inline-flex h-8 items-center gap-1.5 rounded-md px-2 font-medium transition-colors hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-white">
+                                Ordre
+                                @if($sortDir('sort_order'))<i class="fas fa-arrow-{{ $sortDir('sort_order') === 'desc' ? 'down' : 'up' }} text-[10px]"></i>
+                                @else<i class="fas fa-sort text-[10px] text-slate-400"></i>@endif
+                            </a>
+                        </th>
+                        <th class="h-11 px-3 text-right align-middle text-xs font-medium text-slate-500 dark:text-slate-400">
+                            <span class="sr-only">Actions</span>
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200">
-                    @foreach($boostTypes as $bt)
-                    <tr class="hover:bg-slate-50 dark:bg-slate-900 transition-colors {{ !$bt->is_active ? 'opacity-60' : '' }}">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white" style="background: {{ $bt->color ?? '#3B82F6' }}">
-                                    <i class="{{ $bt->icon ?? 'fas fa-bolt' }}"></i>
-                                </div>
-                                <div>
-                                    <div class="font-semibold text-slate-900 dark:text-white">{{ $bt->display_name }}</div>
-                                    <div class="text-xs text-slate-500">({{ $bt->name }})</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="text-sm font-semibold text-slate-900 dark:text-white">${{ number_format($bt->price_usd ?? 0, 2) }}</div>
-                            <div class="text-xs text-slate-500">{{ number_format($bt->price_cdf ?? 0, 0, ',', ' ') }} FC</div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @foreach($bt->available_durations ?? [] as $d)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200">{{ $d }}j</span>
-                                @endforeach
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $bt->is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-slate-100 text-slate-800 border border-slate-200' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $bt->is_active ? 'bg-green-500' : 'bg-slate-500' }} mr-1.5"></span>
-                                {{ $bt->is_active ? 'Actif' : 'Inactif' }}
-                            </span>
-                            @if($bt->is_premium)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200 ml-1">
-                                    <i class="fas fa-crown mr-1"></i>Premium
-                                </span>
-                            @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="font-semibold text-primary-600">{{ $bt->product_boosts_count ?? 0 }}</span>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-slate-500">{{ $bt->sort_order }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex gap-1 justify-end items-center">
-                                <a href="{{ route('admin.boost-types.show', $bt) }}"
-                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors"
-                                   title="Voir">
-                                    <i class="fas fa-eye"></i>
+                <tbody>
+                    @forelse($boostTypes as $bt)
+                        <tr class="border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-800/40 {{ !$bt->is_active ? 'opacity-60' : '' }}">
+                            <td class="px-3 py-3 align-middle">
+                                <a href="{{ route('admin.boost-types.show', $bt) }}" class="flex items-center gap-3 font-medium text-slate-900 transition-colors hover:text-primary-600 dark:text-white">
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-white" style="background: {{ $iconColor($bt->color) }}">
+                                        <i class="{{ $bt->icon ?? 'fas fa-bolt' }} text-sm"></i>
+                                    </span>
+                                    <span class="min-w-0">
+                                        <span class="block truncate">{{ $bt->display_name }}</span>
+                                        <span class="block text-xs text-slate-400">({{ $bt->name }})</span>
+                                    </span>
                                 </a>
-                                <a href="{{ route('admin.boost-types.edit', $bt) }}"
-                                   class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-primary-600 hover:bg-primary-50 transition-colors"
-                                   title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('admin.boost-types.update-status', $bt) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="is_active" value="{{ $bt->is_active ? '0' : '1' }}">
-                                    <button type="submit"
-                                            class="inline-flex items-center justify-center w-8 h-8 rounded-lg {{ $bt->is_active ? 'text-yellow-600 hover:bg-yellow-50' : 'text-green-600 hover:bg-green-50' }} transition-colors"
-                                            title="{{ $bt->is_active ? 'Désactiver' : 'Activer' }}">
-                                        <i class="fas fa-{{ $bt->is_active ? 'pause' : 'play' }}"></i>
+                            </td>
+                            <td class="px-3 py-3 align-middle whitespace-nowrap">
+                                <div class="font-medium tabular-nums text-slate-900 dark:text-white">${{ number_format($bt->price_usd ?? 0, 2) }}</div>
+                                <div class="text-xs tabular-nums text-slate-400">{{ number_format($bt->price_cdf ?? 0, 0, ',', ' ') }} FC</div>
+                            </td>
+                            <td class="px-3 py-3 align-middle">
+                                <div class="flex flex-wrap gap-1">
+                                    @forelse($bt->available_durations ?? [] as $d)
+                                        <span class="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">{{ $d }}j</span>
+                                    @empty
+                                        <span class="text-xs text-slate-400">—</span>
+                                    @endforelse
+                                </div>
+                            </td>
+                            <td class="px-3 py-3 align-middle whitespace-nowrap">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    <span class="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2.5 py-0.5 text-xs font-medium {{ $bt->is_active ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' }}">
+                                        <i class="fas fa-circle text-[5px] opacity-70"></i>
+                                        {{ $bt->is_active ? 'Actif' : 'Inactif' }}
+                                    </span>
+                                    @if($bt->is_premium)
+                                        <span class="inline-flex items-center gap-1.5 rounded-md border border-transparent bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                            <i class="fas fa-crown text-[10px]"></i>
+                                            Premium
+                                        </span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-3 py-3 text-right align-middle whitespace-nowrap tabular-nums text-slate-700 dark:text-slate-200">
+                                {{ number_format($bt->product_boosts_count ?? 0) }}
+                            </td>
+                            <td class="px-3 py-3 text-right align-middle whitespace-nowrap tabular-nums text-slate-500 dark:text-slate-400">
+                                {{ $bt->sort_order }}
+                            </td>
+                            <td class="px-3 py-3 text-right align-middle whitespace-nowrap">
+                                <div class="flex items-center justify-end gap-0.5">
+                                    <a href="{{ route('admin.boost-types.show', $bt) }}" title="Voir le détail"
+                                       class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white">
+                                        <span class="sr-only">Voir le détail</span>
+                                        <i class="fas fa-eye text-sm"></i>
+                                    </a>
+                                    <a href="{{ route('admin.boost-types.edit', $bt) }}" title="Modifier"
+                                       class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-primary-50 hover:text-primary-600 dark:text-slate-400 dark:hover:bg-primary-900/20 dark:hover:text-primary-300">
+                                        <span class="sr-only">Modifier</span>
+                                        <i class="fas fa-pen text-sm"></i>
+                                    </a>
+                                    <form action="{{ route('admin.boost-types.update-status', $bt) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="is_active" value="{{ $bt->is_active ? '0' : '1' }}">
+                                        <button type="submit" title="{{ $bt->is_active ? 'Désactiver' : 'Activer' }}"
+                                                class="inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors {{ $bt->is_active ? 'text-slate-500 hover:bg-amber-50 hover:text-amber-600 dark:text-slate-400 dark:hover:bg-amber-900/20 dark:hover:text-amber-300' : 'text-slate-500 hover:bg-emerald-50 hover:text-emerald-600 dark:text-slate-400 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-300' }}">
+                                            <span class="sr-only">{{ $bt->is_active ? 'Désactiver' : 'Activer' }}</span>
+                                            <i class="fas fa-{{ $bt->is_active ? 'pause' : 'play' }} text-sm"></i>
+                                        </button>
+                                    </form>
+                                    <button onclick="confirmDelete({{ $bt->id }}, '{{ $bt->display_name }}')" title="Supprimer"
+                                            class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-900/20 dark:hover:text-red-300">
+                                        <span class="sr-only">Supprimer</span>
+                                        <i class="fas fa-trash text-sm"></i>
                                     </button>
-                                </form>
-                                <button onclick="confirmDelete({{ $bt->id }}, '{{ $bt->display_name }}')"
-                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
-                                        title="Supprimer">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="h-40 px-3 text-center align-middle">
+                                <div class="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-md bg-slate-100 dark:bg-slate-800">
+                                    <i class="fas fa-bolt text-lg text-slate-400"></i>
+                                </div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Aucun résultat</p>
+                                <p class="mt-1 text-xs text-slate-400">Essayez de modifier vos filtres.</p>
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
         @if($boostTypes->hasPages())
-        <div class="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                    Affichage de {{ $boostTypes->firstItem() }} à {{ $boostTypes->lastItem() }}
-                    sur {{ $boostTypes->total() }} résultats
+            <div class="flex flex-col gap-3 border-t border-slate-200 px-3 py-3 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
+                    Affichage de <span class="font-medium text-slate-700 dark:text-slate-200">{{ number_format($boostTypes->firstItem()) }}</span> à <span class="font-medium text-slate-700 dark:text-slate-200">{{ number_format($boostTypes->lastItem()) }}</span> sur <span class="font-medium text-slate-700 dark:text-slate-200">{{ number_format($boostTypes->total()) }}</span>
                 </div>
-                {{ $boostTypes->appends(request()->query())->links() }}
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-slate-600 dark:text-slate-300">Page {{ $boostTypes->currentPage() }} sur {{ $boostTypes->lastPage() }}</span>
+                    <a href="{{ $boostTypes->previousPageUrl() }}" {{ $boostTypes->onFirstPage() ? 'aria-disabled="true" tabindex="-1"' : '' }}
+                       class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 {{ $boostTypes->onFirstPage() ? 'pointer-events-none opacity-40' : '' }} dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                        <span class="sr-only">Page précédente</span>
+                        <i class="fas fa-chevron-left text-xs"></i>
+                    </a>
+                    <a href="{{ $boostTypes->nextPageUrl() }}" {{ $boostTypes->hasMorePages() ? '' : 'aria-disabled="true" tabindex="-1"' }}
+                       class="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 shadow-sm transition-colors hover:bg-slate-50 {{ $boostTypes->hasMorePages() ? '' : 'pointer-events-none opacity-40' }} dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700">
+                        <span class="sr-only">Page suivante</span>
+                        <i class="fas fa-chevron-right text-xs"></i>
+                    </a>
+                </div>
             </div>
-        </div>
-        @endif
-        @else
-        <div class="text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-4">
-                <i class="fas fa-bolt text-3xl text-primary-600"></i>
-            </div>
-            <h5 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">Aucun type de boost</h5>
-            <p class="text-slate-500 dark:text-slate-400 mb-4">Créez votre premier type de boost.</p>
-            <a href="{{ route('admin.boost-types.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                <i class="fas fa-plus mr-2"></i>Nouveau type
-            </a>
-        </div>
         @endif
     </div>
 </div>
 
-<div id="deleteModal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog">
-    <div class="fixed inset-0 bg-slate-500 bg-opacity-75 transition-opacity" onclick="closeDeleteModal()"></div>
-    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white dark:bg-slate-800 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div class="bg-red-50 px-6 py-4 border-b border-red-100">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-red-800 flex items-center">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>Confirmer la suppression
-                    </h3>
-                    <button type="button" onclick="closeDeleteModal()" class="text-red-400 hover:text-red-600">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
+<!-- Modale de confirmation -->
+<div id="deleteModal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onclick="closeDeleteModal()"></div>
+    <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
+        <div class="inline-block w-full max-w-md animate-pop rounded-xl border border-slate-200 bg-white p-6 text-left align-bottom shadow-2xl sm:align-middle dark:border-slate-700 dark:bg-slate-800">
+            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-md bg-red-50 dark:bg-red-900/20">
+                <i class="fas fa-triangle-exclamation text-lg text-red-600 dark:text-red-400"></i>
             </div>
-            <div class="bg-white dark:bg-slate-800 px-6 py-4">
-                <p class="text-slate-700 dark:text-slate-200 mb-4">
-                    Êtes-vous sûr de vouloir supprimer <strong class="text-slate-900 dark:text-white" id="deleteItemName"></strong> ?
-                </p>
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                    <p class="text-sm text-yellow-700">Cette action est irréversible.</p>
-                </div>
-            </div>
-            <div class="bg-slate-50 dark:bg-slate-900 px-6 py-4 flex flex-col-reverse sm:flex-row justify-end gap-3">
-                <button type="button" onclick="closeDeleteModal()" class="inline-flex justify-center items-center px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 transition-colors w-full sm:w-auto">
+            <h3 class="text-center text-lg font-semibold text-slate-900 dark:text-white">Confirmer la suppression</h3>
+            <p class="mt-2 text-center text-sm text-slate-500 dark:text-slate-400">
+                Êtes-vous sûr de vouloir supprimer <strong class="text-slate-900 dark:text-white" id="deleteItemName"></strong> ? Cette action est irréversible.
+            </p>
+            <div class="mt-6 flex items-center justify-end gap-2">
+                <button type="button" onclick="closeDeleteModal()"
+                        class="inline-flex h-9 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                     Annuler
                 </button>
-                <form id="deleteForm" method="POST" class="w-full sm:w-auto">
+                <form id="deleteForm" method="POST">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="inline-flex justify-center items-center w-full px-4 py-2 bg-red-600 border border-transparent rounded-lg text-sm font-medium text-white hover:bg-red-700 transition-colors">
-                        <i class="fas fa-trash mr-2"></i>Supprimer
+                    <button type="submit"
+                            class="inline-flex h-9 items-center justify-center gap-2 rounded-md bg-red-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-red-700">
+                        <i class="fas fa-trash text-xs"></i>
+                        Supprimer
                     </button>
                 </form>
             </div>
