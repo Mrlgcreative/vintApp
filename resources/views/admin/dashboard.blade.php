@@ -4,338 +4,249 @@
 @section('page-title', 'Tableau de bord')
 
 @section('content')
+@php
+    $formatUsd = fn ($n) => '$' . number_format((float) $n, 2);
+    $formatCdf = fn ($n) => number_format((float) $n, 0, ',', ' ') . ' FC';
+@endphp
 
-{{-- ====== Cartes KPI principales ====== --}}
-<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5 mb-6">
-
-    {{-- Utilisateurs --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-600">Utilisateurs</span>
-            <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_users']) }}</div>
-        <div class="flex items-center gap-1.5 mt-1">
-            <span class="inline-flex items-center text-[11px] font-medium text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded-md">+{{ $stats['new_users_today'] }}</span>
-            <span class="text-[11px] text-slate-400">aujourd'hui</span>
-        </div>
-    </div>
-
-    {{-- Revenus USD --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-green-600">Revenus USD</span>
-            <div class="w-9 h-9 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">${{ number_format($stats['total_revenue_usd'], 2) }}</div>
-        <p class="text-[11px] text-slate-400 mt-1">{{ $stats['transactions_today'] }} transactions aujourd'hui</p>
-    </div>
-
-    {{-- Revenus CDF --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-emerald-600">Revenus CDF</span>
-            <div class="w-9 h-9 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_revenue_cdf'], 0, ',', ' ') }} <span class="text-base font-semibold text-slate-400">FC</span></div>
-        <p class="text-[11px] text-slate-400 mt-1">Franc Congolais</p>
-    </div>
-
-    {{-- Wallets en attente --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-yellow-200 dark:border-yellow-800/30 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-yellow-600">Wallets Pending</span>
-            <div class="w-9 h-9 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['pending_wallets'] }}</div>
-        <div class="flex items-center gap-2 mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
-            <span>${{ number_format($stats['pending_wallets_usd'], 2) }}</span>
-            <span class="w-px h-3 bg-slate-200 dark:bg-slate-600"></span>
-            <span>{{ number_format($stats['pending_wallets_cdf'], 0, ',', ' ') }} FC</span>
-        </div>
-        <a href="{{ route('admin.wallets.pending') }}" class="inline-flex items-center gap-1 text-[11px] font-medium text-yellow-600 hover:text-yellow-700 mt-2 transition-colors">
-            Voir détails
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        </a>
-    </div>
-
-    {{-- Articles actifs --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-blue-600">Articles actifs</span>
-            <div class="w-9 h-9 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ number_format($stats['active_items']) }}</div>
-        <p class="text-[11px] text-slate-400 mt-1">{{ number_format($stats['total_items']) }} au total</p>
-    </div>
-
-    {{-- Vérifications --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-orange-600">Vérifications</span>
-            <div class="w-9 h-9 bg-orange-50 dark:bg-orange-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['total_verifications'] ?? 0 }}</div>
-        <div class="flex items-center gap-1.5 mt-1">
-            @if(($stats['pending_verifications'] ?? 0) > 0)
-                <span class="inline-flex items-center text-[11px] font-medium text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md">{{ $stats['pending_verifications'] ?? 0 }}</span>
-                <span class="text-[11px] text-slate-400">en attente</span>
-            @else
-                <span class="text-[11px] text-slate-400">Aucune en attente</span>
-            @endif
-        </div>
-    </div>
-
-    {{-- Commissions USD --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-primary-600">Commissions</span>
-            <div class="w-9 h-9 bg-primary-50 dark:bg-primary-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">${{ number_format($stats['enterprise_commission_usd'] ?? 0, 2) }}</div>
-        <p class="text-[11px] text-slate-400 mt-1">Sous-wallet commission</p>
-    </div>
-
-    {{-- Commandes en attente --}}
-    <div class="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-        <div class="flex items-center justify-between mb-3">
-            <span class="text-[11px] font-semibold uppercase tracking-wider text-violet-600">Commandes</span>
-            <div class="w-9 h-9 bg-violet-50 dark:bg-violet-900/20 rounded-lg flex items-center justify-center">
-                <svg class="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </div>
-        </div>
-        <div class="text-2xl font-bold text-slate-900 dark:text-white">{{ $stats['pending_orders'] }}</div>
-        <p class="text-[11px] text-slate-400 mt-1">en attente de traitement</p>
-    </div>
-</div>
-
-{{-- ====== Sous-wallets Entreprise ====== --}}
-<div class="mb-6">
-    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 px-1">Sous-wallets Entreprise</h3>
-    <div class="grid grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-5">
-
-        {{-- Transport --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 bg-cyan-50 dark:bg-cyan-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg>
-                </div>
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Transport</span>
-            </div>
-            <div class="text-xl font-bold text-slate-900 dark:text-white">${{ number_format($stats['enterprise_transport_usd'] ?? 0, 2) }}</div>
-        </div>
-
-        {{-- Boost --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 bg-accent-50 dark:bg-accent-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                </div>
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Boost</span>
-            </div>
-            <div class="text-xl font-bold text-slate-900 dark:text-white">${{ number_format($stats['enterprise_boost_usd'] ?? 0, 2) }}</div>
-        </div>
-
-        {{-- Revenus Vérifications --}}
-        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 bg-amber-50 dark:bg-amber-900/20 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                </div>
-                <span class="text-xs font-medium text-slate-500 dark:text-slate-400">Vérifications</span>
-            </div>
-            <div class="text-xl font-bold text-slate-900 dark:text-white">${{ number_format($stats['verification_revenue_usd'] ?? 0, 2) }}</div>
-            <p class="text-[11px] text-slate-400 mt-1">{{ $stats['completed_verifications'] ?? 0 }} payées</p>
-        </div>
-
-        {{-- Total Entreprise --}}
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-800 rounded-2xl shadow-sm p-5 transition-all duration-200 hover:shadow-md">
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                </div>
-                <span class="text-xs font-medium text-slate-300">Total Entreprise</span>
-            </div>
-            <div class="text-xl font-bold text-white">${{ number_format(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0), 2) }}</div>
-            <p class="text-[11px] text-slate-400 mt-1">Tous sous-wallets USD</p>
-        </div>
-    </div>
-</div>
-
-{{-- ====== Graphique + Sidebar ====== --}}
-<div class="grid grid-cols-1 xl:grid-cols-3 gap-5 mb-6">
-
-    {{-- Graphique 30 jours --}}
-    <div class="xl:col-span-2 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-            <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Évolution — 30 derniers jours</h3>
-            <div class="flex items-center gap-4 text-[11px]">
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Utilisateurs</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span> Transactions</span>
-                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Revenus</span>
-            </div>
-        </div>
-        <div class="p-5">
-            <canvas id="dailyStatsChart" height="320"></canvas>
-        </div>
-    </div>
-
-    {{-- Sidebar activité --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex flex-col">
-        <div class="px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-            <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Aperçu rapide</h3>
-        </div>
-        <div class="p-5 flex-1 flex flex-col justify-between">
-            <div class="space-y-5">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-green-50 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Actifs (7j)</p>
-                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['active_users'] }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Commandes en attente</p>
-                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ $stats['pending_orders'] }}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg flex items-center justify-center">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Fonds en wallets</p>
-                            <p class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($stats['total_wallet_balance'], 2) }} <span class="text-xs font-normal text-slate-400">USD</span></p>
-                        </div>
-                    </div>
+<div class="space-y-6">
+    {{-- ====== Cartes KPI (style dashboard-01) ====== --}}
+    <div class="grid grid-cols-1 gap-4 @xl/main:grid-cols-2 xl:grid-cols-4">
+        {{-- Utilisateurs --}}
+        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
+            <div class="relative p-5 pb-2">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs</p>
+                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['total_users']) }}</p>
+                <div class="absolute right-4 top-4">
+                    <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-white px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-800/40 dark:bg-slate-900 dark:text-emerald-300">
+                        <i class="fas fa-arrow-trend-up text-[10px]"></i>
+                        +{{ $stats['new_users_today'] }}
+                    </span>
                 </div>
             </div>
+            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
+                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-user-plus text-xs text-emerald-500"></i>
+                    {{ $stats['new_users_today'] }} inscrit{{ $stats['new_users_today'] > 1 ? 's' : '' }} aujourd'hui
+                </div>
+                <div class="text-xs text-slate-400">Base totale de la plateforme</div>
+            </div>
+        </div>
 
-            <div class="space-y-2.5 mt-6">
-                <a href="{{ route('admin.users.index') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-xl transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Gérer les utilisateurs
-                </a>
-                <a href="{{ route('admin.wallets.pending') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-yellow-500 hover:bg-yellow-600 text-white text-xs font-medium rounded-xl transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                    Wallets en attente
-                </a>
-                <a href="{{ route('admin.transactions.index') }}" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-xl transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                    Voir les transactions
+        {{-- Revenus USD --}}
+        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
+            <div class="relative p-5 pb-2">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Revenus USD</p>
+                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['total_revenue_usd']) }}</p>
+                <div class="absolute right-4 top-4">
+                    <span class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-0.5 text-xs font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                        <i class="fas fa-arrow-right-arrow-left text-[10px]"></i>
+                        {{ $stats['transactions_today'] }}
+                    </span>
+                </div>
+            </div>
+            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
+                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-wallet text-xs text-primary-500"></i>
+                    Sous-wallets entreprise
+                </div>
+                <div class="text-xs text-slate-400">{{ $stats['transactions_today'] }} transaction(s) aujourd'hui</div>
+            </div>
+        </div>
+
+        {{-- Articles actifs --}}
+        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-primary-500/5 to-white shadow-sm dark:border-slate-700 dark:from-primary-500/10 dark:to-slate-800">
+            <div class="relative p-5 pb-2">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Articles actifs</p>
+                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['active_items']) }}</p>
+            </div>
+            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
+                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-box-open text-xs text-sky-500"></i>
+                    {{ number_format($stats['total_items']) }} au total
+                </div>
+                <div class="text-xs text-slate-400">Annonces disponibles</div>
+            </div>
+        </div>
+
+        {{-- Commandes en attente --}}
+        <div class="rounded-xl border border-slate-200 bg-gradient-to-t from-amber-500/5 to-white shadow-sm dark:border-slate-700 dark:from-amber-500/10 dark:to-slate-800">
+            <div class="relative p-5 pb-2">
+                <p class="text-sm text-slate-500 dark:text-slate-400">Commandes en attente</p>
+                <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ number_format($stats['pending_orders']) }}</p>
+            </div>
+            <div class="flex flex-col gap-0.5 px-5 pb-4 text-sm">
+                <div class="flex items-center gap-2 font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-clock text-xs text-amber-500"></i>
+                    À traiter
+                </div>
+                <div class="text-xs text-slate-400">En attente de traitement</div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ====== Graphique interactif (style chart-area-interactive) ====== --}}
+    <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div class="relative flex flex-col gap-1 p-5 pb-3">
+            <h3 class="text-base font-semibold text-slate-900 dark:text-white">Évolution — activité</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Utilisateurs et revenus des 30 derniers jours</p>
+            <div class="absolute right-4 top-4 inline-flex items-center gap-0.5 rounded-md border border-slate-200 p-0.5 dark:border-slate-600">
+                <button type="button" data-range="7d"
+                        class="inline-flex h-7 items-center rounded px-3 text-xs font-medium transition-colors">
+                    7 derniers jours
+                </button>
+                <button type="button" data-range="30d"
+                        class="inline-flex h-7 items-center rounded bg-slate-100 px-3 text-xs font-semibold text-slate-900 transition-colors dark:bg-slate-700 dark:text-white">
+                    30 derniers jours
+                </button>
+            </div>
+        </div>
+        <div class="px-2 pb-4 pt-3 sm:px-6">
+            <div class="relative h-[250px] w-full">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- ====== Sous-wallets Entreprise ====== --}}
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-300"><i class="fas fa-truck text-[10px]"></i></span>
+                Transport
+            </p>
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_transport_usd'] ?? 0) }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-primary-500/10 text-primary-600 dark:text-primary-300"><i class="fas fa-bolt text-[10px]"></i></span>
+                Boost
+            </p>
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['enterprise_boost_usd'] ?? 0) }}</p>
+        </div>
+        <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-300"><i class="fas fa-shield-halved text-[10px]"></i></span>
+                Vérifications
+            </p>
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">{{ $formatUsd($stats['verification_revenue_usd'] ?? 0) }}</p>
+            <p class="text-xs text-slate-400">{{ $stats['completed_verifications'] ?? 0 }} payées</p>
+        </div>
+        <div class="rounded-xl border border-slate-700 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-sm dark:border-slate-600 dark:from-slate-700 dark:to-slate-800">
+            <p class="mb-1 flex items-center gap-2 text-xs font-medium text-slate-300">
+                <span class="flex h-6 w-6 items-center justify-center rounded-md bg-white/10 text-white"><i class="fas fa-building-columns text-[10px]"></i></span>
+                Total Entreprise
+            </p>
+            <p class="text-xl font-semibold tabular-nums tracking-tight text-white">{{ $formatUsd(($stats['enterprise_commission_usd'] ?? 0) + ($stats['enterprise_transport_usd'] ?? 0) + ($stats['enterprise_boost_usd'] ?? 0)) }}</p>
+            <p class="text-xs text-slate-400">Sous-wallets USD</p>
+        </div>
+    </div>
+
+    {{-- ====== Dernières transactions + Nouveaux utilisateurs ====== --}}
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {{-- Dernières transactions --}}
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center justify-between gap-3 px-4 py-3">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Dernières transactions</h3>
+                <a href="{{ route('admin.transactions.index') }}"
+                   class="inline-flex h-8 items-center rounded-md px-2.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white">
+                    Tout voir
                 </a>
             </div>
+            <div class="overflow-hidden rounded-b-xl">
+                <table class="w-full caption-bottom text-sm">
+                    <thead>
+                        <tr class="border-y border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60">
+                            <th class="h-9 px-4 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Utilisateur</th>
+                            <th class="h-9 px-4 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Statut</th>
+                            <th class="h-9 px-4 text-right align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentTransactions as $transaction)
+                            <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-800/40">
+                                <td class="px-4 py-2.5 align-middle">
+                                    <div class="min-w-0">
+                                        <p class="truncate font-medium text-slate-900 dark:text-white">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</p>
+                                        <p class="truncate text-xs text-slate-400">{{ $transaction->description }}</p>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-2.5 align-middle">
+                                    <span class="inline-flex items-center gap-1.5 rounded-md border border-transparent px-2 py-0.5 text-xs font-medium
+                                        {{ $transaction->status === 'completed' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                           : ($transaction->status === 'pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+                                           : 'bg-red-50 text-red-700 dark:bg-red-900/40 dark:text-red-300') }}">
+                                        <i class="fas fa-circle text-[5px] opacity-70"></i>
+                                        {{ ucfirst($transaction->status) }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-2.5 text-right align-middle whitespace-nowrap">
+                                    <p class="font-semibold tabular-nums text-slate-900 dark:text-white">{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}</p>
+                                    <p class="text-xs text-slate-400">{{ $transaction->created_at->diffForHumans() }}</p>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="h-24 px-4 text-center align-middle text-sm text-slate-400">Aucune transaction récente</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
-</div>
 
-{{-- ====== Dernières transactions + Nouveaux utilisateurs ====== --}}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-
-    {{-- Dernières transactions --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-            <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Dernières transactions</h3>
-            <a href="{{ route('admin.transactions.index') }}" class="text-[11px] font-medium text-primary-600 hover:text-primary-700 transition-colors">Tout voir</a>
-        </div>
-        <div class="divide-y divide-slate-100 dark:divide-slate-700/30">
-            @forelse($recentTransactions as $transaction)
-                <div class="flex items-center gap-3.5 px-5 py-3.5 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
-                    @if($transaction->status === 'completed')
-                        <div class="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                        </div>
-                    @elseif($transaction->status === 'pending')
-                        <div class="w-8 h-8 bg-yellow-50 dark:bg-yellow-900/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-3.5 h-3.5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        </div>
-                    @else
-                        <div class="w-8 h-8 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </div>
-                    @endif
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $transaction->user?->name ?? 'Utilisateur supprimé' }}</p>
-                        <p class="text-[11px] text-slate-400 truncate">{{ $transaction->description }}</p>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="text-sm font-semibold text-slate-900 dark:text-white">{{ number_format($transaction->amount, 2) }} {{ $transaction->currency }}</p>
-                        <p class="text-[11px] text-slate-400">{{ $transaction->created_at->diffForHumans() }}</p>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center py-10">
-                    <svg class="w-10 h-10 text-slate-200 dark:text-slate-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
-                    <p class="text-sm text-slate-400">Aucune transaction récente</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-
-    {{-- Nouveaux utilisateurs --}}
-    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-700">
-            <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Nouveaux utilisateurs</h3>
-            <a href="{{ route('admin.users.index') }}" class="text-[11px] font-medium text-primary-600 hover:text-primary-700 transition-colors">Tout voir</a>
-        </div>
-        <div class="divide-y divide-slate-100 dark:divide-slate-700/30">
-            @forelse($recentUsers as $user)
-                @if($user)
-                <div class="flex items-center gap-3.5 px-5 py-3.5 hover:bg-slate-50/50 dark:hover:bg-slate-700/20 transition-colors">
-                    <div class="flex-shrink-0">
-                        @if($user->avatar)
-                            <img src="{{ $user->avatar_url }}" class="w-9 h-9 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-700" alt="">
-                        @else
-                            <div class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold text-xs ring-2 ring-primary-100 dark:ring-primary-900/30">
-                                {{ $user->initial ?? substr($user->name ?? 'U', 0, 1) }}
-                            </div>
-                        @endif
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2">
-                            <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{ $user->name ?? 'Utilisateur' }}</p>
-                            @if(method_exists($user, 'isOnline') && $user->isOnline())
-                                <span class="w-2 h-2 bg-green-500 rounded-full flex-shrink-0" title="En ligne"></span>
+        {{-- Nouveaux utilisateurs --}}
+        <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
+            <div class="flex items-center justify-between gap-3 px-4 py-3">
+                <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Nouveaux utilisateurs</h3>
+                <a href="{{ route('admin.users.index') }}"
+                   class="inline-flex h-8 items-center rounded-md px-2.5 text-xs font-medium text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white">
+                    Tout voir
+                </a>
+            </div>
+            <div class="overflow-hidden rounded-b-xl">
+                <table class="w-full caption-bottom text-sm">
+                    <thead>
+                        <tr class="border-y border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60">
+                            <th class="h-9 px-4 text-left align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Utilisateur</th>
+                            <th class="h-9 px-4 text-right align-middle text-xs font-medium text-slate-500 dark:text-slate-400">Inscription</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($recentUsers as $user)
+                            @if($user)
+                                <tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-700/50 dark:hover:bg-slate-800/40">
+                                    <td class="px-4 py-2.5 align-middle">
+                                        <div class="flex items-center gap-3">
+                                            <span class="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary-500/10 text-xs font-semibold text-primary-600 dark:bg-primary-400/10 dark:text-primary-300">
+                                                @if($user->avatar)
+                                                    <img src="{{ $user->avatar_url }}" alt="" class="h-full w-full object-cover">
+                                                @else
+                                                    {{ $user->initial ?? strtoupper(substr($user->name ?? 'U', 0, 1)) }}
+                                                @endif
+                                                @if(method_exists($user, 'isOnline') && $user->isOnline())
+                                                    <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-800"></span>
+                                                @endif
+                                            </span>
+                                            <div class="min-w-0">
+                                                <p class="truncate font-medium text-slate-900 dark:text-white">{{ $user->name ?? 'Utilisateur' }}</p>
+                                                <p class="truncate text-xs text-slate-400">{{ $user->email ?? 'N/A' }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-right align-middle whitespace-nowrap text-slate-500 dark:text-slate-400">
+                                        {{ $user->created_at?->diffForHumans() ?? 'N/A' }}
+                                    </td>
+                                </tr>
                             @endif
-                        </div>
-                        <p class="text-[11px] text-slate-400 truncate">{{ $user->email ?? 'N/A' }}</p>
-                    </div>
-                    <span class="text-[11px] text-slate-400 flex-shrink-0">{{ $user->created_at?->diffForHumans() ?? 'N/A' }}</span>
-                </div>
-                @endif
-            @empty
-                <div class="text-center py-10">
-                    <svg class="w-10 h-10 text-slate-200 dark:text-slate-600 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <p class="text-sm text-slate-400">Aucun nouvel utilisateur</p>
-                </div>
-            @endforelse
+                        @empty
+                            <tr>
+                                <td colspan="2" class="h-24 px-4 text-center align-middle text-sm text-slate-400">Aucun nouvel utilisateur</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
@@ -344,34 +255,43 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('dailyStatsChart').getContext('2d');
+    const ctx = document.getElementById('activityChart');
+    if (!ctx) return;
+
     const dailyStats = @json($dailyStats);
     const isDark = document.documentElement.classList.contains('dark');
-    const gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)';
+    const gridColor = isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)';
     const textColor = isDark ? '#94a3b8' : '#64748b';
+    const violet = '#7c3aed';
+    const emerald = '#10b981';
 
-    new Chart(ctx, {
+    const formatLabel = (dateStr) => {
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
+    };
+
+    const makeGradient = (hex, alphaTop, alphaBottom) => {
+        const g = ctx.getContext('2d').createLinearGradient(0, 0, 0, 250);
+        g.addColorStop(0, hex.replace(')', alphaTop).replace('rgb', 'rgba'));
+        g.addColorStop(1, hex.replace(')', alphaBottom).replace('rgb', 'rgba'));
+        return g;
+    };
+    const hexToRgba = (hex, alpha) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r},${g},${b},${alpha})`;
+    };
+
+    const chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: dailyStats.map(s => {
-                const d = new Date(s.date);
-                return d.toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' });
-            }),
+            labels: dailyStats.map(s => formatLabel(s.date)),
             datasets: [{
                 label: 'Utilisateurs',
                 data: dailyStats.map(s => s.users),
-                borderColor: '#3b82f6',
-                backgroundColor: 'rgba(59,130,246,0.08)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.35,
-                pointRadius: 0,
-                pointHitRadius: 20
-            }, {
-                label: 'Transactions',
-                data: dailyStats.map(s => s.transactions),
-                borderColor: '#f43f5e',
-                backgroundColor: 'rgba(244,63,94,0.08)',
+                borderColor: violet,
+                backgroundColor: hexToRgba(violet, isDark ? 0.18 : 0.08),
                 borderWidth: 2,
                 fill: true,
                 tension: 0.35,
@@ -380,14 +300,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }, {
                 label: 'Revenus (USD)',
                 data: dailyStats.map(s => s.revenue),
-                borderColor: '#10b981',
-                backgroundColor: 'rgba(16,185,129,0.08)',
+                borderColor: emerald,
+                backgroundColor: hexToRgba(emerald, isDark ? 0.18 : 0.08),
                 borderWidth: 2,
                 fill: true,
                 tension: 0.35,
                 pointRadius: 0,
-                pointHitRadius: 20,
-                yAxisID: 'y1'
+                pointHitRadius: 20
             }]
         },
         options: {
@@ -395,39 +314,65 @@ document.addEventListener('DOMContentLoaded', function() {
             maintainAspectRatio: false,
             interaction: { intersect: false, mode: 'index' },
             plugins: {
-                legend: { display: false },
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        boxWidth: 6,
+                        boxHeight: 6,
+                        color: textColor,
+                        font: { size: 11 }
+                    }
+                },
                 tooltip: {
-                    backgroundColor: isDark ? '#1e293b' : '#fff',
+                    backgroundColor: isDark ? '#1e293b' : '#ffffff',
                     titleColor: isDark ? '#f8fafc' : '#0f172a',
                     bodyColor: isDark ? '#cbd5e1' : '#64748b',
                     borderColor: isDark ? '#334155' : '#e2e8f0',
                     borderWidth: 1,
                     padding: 12,
-                    cornerRadius: 10,
-                    titleFont: { weight: '600', size: 12 },
-                    bodyFont: { size: 11 },
-                    boxPadding: 4
+                    cornerRadius: 8,
+                    boxPadding: 4,
+                    usePointStyle: true
                 }
             },
             scales: {
                 x: {
                     grid: { display: false },
-                    ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkipPadding: 20 }
+                    ticks: { color: textColor, font: { size: 10 }, maxRotation: 0, autoSkipPadding: 24 }
                 },
                 y: {
-                    position: 'left',
                     beginAtZero: true,
                     grid: { color: gridColor },
                     ticks: { color: textColor, font: { size: 10 }, padding: 8 }
-                },
-                y1: {
-                    position: 'right',
-                    beginAtZero: true,
-                    grid: { drawOnChartArea: false },
-                    ticks: { color: textColor, font: { size: 10 }, padding: 8, callback: v => '$' + v }
                 }
             }
         }
+    });
+
+    const buttons = document.querySelectorAll('[data-range]');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const range = btn.dataset.range;
+            const days = range === '7d' ? 7 : 30;
+            const sliced = dailyStats.slice(-days);
+            chart.data.labels = sliced.map(s => formatLabel(s.date));
+            chart.data.datasets[0].data = sliced.map(s => s.users);
+            chart.data.datasets[1].data = sliced.map(s => s.revenue);
+            chart.update();
+
+            buttons.forEach(b => {
+                const active = b.dataset.range === range;
+                b.classList.toggle('bg-slate-100', active);
+                b.classList.toggle('dark:bg-slate-700', active);
+                b.classList.toggle('font-semibold', active);
+                b.classList.toggle('text-slate-900', active);
+                b.classList.toggle('dark:text-white', active);
+            });
+        });
     });
 });
 </script>
