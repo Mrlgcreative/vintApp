@@ -2206,22 +2206,33 @@ class PaymentController extends Controller
             'full_url' => $request->fullUrl(),
         ]);
 
-        // 1. Vérifier la signature HMAC si présente
-        $signature = $request->header('X-MaishaPay-Signature');
-        if ($signature) {
-            $payload = $request->getContent();
-            $maishaPay = new \App\Services\MaishaPay();
-            if (!$maishaPay->verifyWebhookSignature($payload, $signature)) {
-                Log::warning('MaishaPay: Signature HMAC invalide', [
-                    'reference' => $reference,
-                    'signature' => substr($signature, 0, 16) . '...',
-                ]);
-                return response()->json(['error' => 'Signature invalide'], 403);
-            }
+        // --- Sécurité : refuser toute requête GET (les callbacks sont en POST) ---
+        if ($request->isMethod('get')) {
+            Log::warning('MaishaPay: Callback reçu en GET (refusé)', ['reference' => $reference]);
+            return response()->json(['error' => 'Méthode non autorisée'], 405);
         }
 
-        // 2. MaishaPay envoie les données en POST (body JSON)
-        $data = $request->isMethod('get') ? $request->query() : $request->all();
+        // --- Sécurité : exiger la signature HMAC obligatoirement ---
+        // Sans signature valide, le callback est rejeté (évite la complétion
+        // frauduleuse d'une transaction par un attaquant).
+        $signature = $request->header('X-MaishaPay-Signature');
+        if (!$signature) {
+            Log::warning('MaishaPay: Signature HMAC manquante (refusé)', ['reference' => $reference]);
+            return response()->json(['error' => 'Signature manquante'], 403);
+        }
+
+        $payload = $request->getContent();
+        $maishaPay = new \App\Services\MaishaPay();
+        if (!$maishaPay->verifyWebhookSignature($payload, $signature)) {
+            Log::warning('MaishaPay: Signature HMAC invalide', [
+                'reference' => $reference,
+                'signature' => substr($signature, 0, 16) . '...',
+            ]);
+            return response()->json(['error' => 'Signature invalide'], 403);
+        }
+
+        // MaishaPay envoie les données en POST (body JSON)
+        $data = $request->all();
 
         // 3. Déterminer la référence : URL > originatingTransactionId (notre ref) > transactionId (MaishaPay)
         $transactionRef = $reference

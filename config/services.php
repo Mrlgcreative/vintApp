@@ -100,6 +100,8 @@ return [
         'api_url' => env('MPESA_ENVIRONMENT', 'sandbox') === 'production' 
             ? 'https://api.safaricom.co.ke'
             : 'https://sandbox.safaricom.co.ke',
+        // Secret partagé utilisé pour valider les webhooks de retrait
+        'webhook_secret' => env('MPESA_WEBHOOK_SECRET'),
     ],
 
     // Configuration autres opérateurs mobile money
@@ -107,24 +109,32 @@ return [
         'api_key' => env('ORANGE_MONEY_API_KEY'),
         'api_secret' => env('ORANGE_MONEY_API_SECRET'),
         'enabled' => env('ORANGE_MONEY_ENABLED', true),
+        // Secret partagé utilisé pour valider les webhooks de retrait
+        'webhook_secret' => env('ORANGE_MONEY_WEBHOOK_SECRET'),
     ],
 
     'airtel_money' => [
         'client_id' => env('AIRTEL_MONEY_API_KEY'),
         'client_secret' => env('AIRTEL_MONEY_API_SECRET'),
         'enabled' => env('AIRTEL_MONEY_ENABLED', true),
+        // Token utilisé pour valider les webhooks de retrait
+        'webhook_token' => env('AIRTEL_MONEY_WEBHOOK_TOKEN'),
     ],
 
     'africell' => [
         'merchant_id' => env('AFRICELL_API_KEY'),
         'api_secret' => env('AFRICELL_API_SECRET'),
         'enabled' => env('AFRICELL_ENABLED', true),
+        // Secret partagé utilisé pour valider les webhooks de retrait
+        'webhook_secret' => env('AFRICELL_WEBHOOK_SECRET'),
     ],
 
     'illicocash' => [
         'merchant_code' => env('ILLICOCASH_API_KEY'),
         'api_token' => env('ILLICOCASH_API_SECRET'),
         'enabled' => env('ILLICOCASH_ENABLED', true),
+        // Secret partagé utilisé pour valider les webhooks de retrait
+        'webhook_secret' => env('ILLICOCASH_WEBHOOK_SECRET'),
     ],
 
     /*

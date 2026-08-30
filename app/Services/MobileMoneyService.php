@@ -1315,21 +1315,59 @@ class MobileMoneyService
     {
         // L'API de transfert CinetPay n'envoie pas de signature sur les callbacks.
         // La validation repose sur la cohérence des données reçues (client_transaction_id
-        // correspondant à une transaction de retrait existante).
-        return true;
+        // correspondant à une transaction de retrait existante) et, si configurée,
+        // sur la restriction par IP dans le pool des IP CinetPay.
+        $allowedIps = config('services.cinetpay.allowed_ips', '');
+        if (empty($allowedIps)) {
+            return true;
+        }
+
+        $clientIp = $request->ip();
+        foreach (array_filter(array_map('trim', explode(',', $allowedIps))) as $range) {
+            if ($this->ipMatchesRange($clientIp, $range)) {
+                return true;
+            }
+        }
+
+        Log::warning('CinetPay webhook: IP non autorisée', ['ip' => $clientIp]);
+        return false;
+    }
+
+    private function ipMatchesRange(string $ip, string $range): bool
+    {
+        if (strpos($range, '/') === false) {
+            return $ip === $range;
+        }
+
+        [$subnet, $mask] = explode('/', $range);
+        if (!filter_var($subnet, FILTER_VALIDATE_IP) || (int)$mask < 0 || (int)$mask > 32) {
+            return false;
+        }
+
+        $ipLong = ip2long($ip);
+        $subnetLong = ip2long($subnet);
+        $maskLong = -1 << (32 - (int)$mask);
+
+        return ($ipLong !== false && $subnetLong !== false)
+            && ($ipLong & $maskLong) === ($subnetLong & $maskLong);
     }
 
     private function verifyMaishaPayWebhook($request): bool
     {
         $signature = $request->header('X-MaishaPay-Signature');
-        
+
         if (!$signature) {
-            // En mode sandbox, accepter tous les webhooks
-            $isSandbox = config('services.maishapay.environment', 'sandbox') === 'sandbox';
-            return $isSandbox;
+            // Signature obligatoire : plus d'acceptation en mode sandbox
+            Log::warning('MaishaPay webhook: signature manquante, refusé');
+            return false;
         }
 
         $secret = config('services.maishapay.secret_key', '');
+        if (empty($secret) || $secret === 'DEMO_SECRET') {
+            Log::warning('MaishaPay webhook: secret non configuré, refusé');
+            return false;
+        }
+
         $payload = $request->getContent();
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
@@ -1340,13 +1378,19 @@ class MobileMoneyService
     {
         // Orange Money utilise généralement une signature HMAC
         $signature = $request->header('X-Orange-Signature');
-        
+
         if (!$signature) {
-            return true; // En mode simulation, accepter tous les webhooks
+            Log::warning('Orange Money webhook: signature manquante, refusé');
+            return false;
         }
 
-        $secret = config('services.orange_money.webhook_secret', 'DEMO_SECRET');
-        $payload = json_encode($request->all());
+        $secret = config('services.orange_money.webhook_secret', '');
+        if (empty($secret) || $secret === 'DEMO_SECRET') {
+            Log::warning('Orange Money webhook: secret non configuré, refusé');
+            return false;
+        }
+
+        $payload = $request->getContent();
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
 
         return hash_equals($expectedSignature, $signature);
@@ -1356,38 +1400,55 @@ class MobileMoneyService
     {
         // Airtel Money utilise un token d'authentification
         $token = $request->header('X-Airtel-Webhook-Token');
-        
+
         if (!$token) {
-            return true; // Mode simulation
+            Log::warning('Airtel Money webhook: token manquant, refusé');
+            return false;
         }
 
-        $expectedToken = config('services.airtel_money.webhook_token', 'DEMO_TOKEN');
+        $expectedToken = config('services.airtel_money.webhook_token', '');
+        if (empty($expectedToken) || $expectedToken === 'DEMO_TOKEN') {
+            Log::warning('Airtel Money webhook: token non configuré, refusé');
+            return false;
+        }
+
         return hash_equals($expectedToken, $token);
     }
 
     private function verifyMPesaWebhook($request): bool
     {
-        // M-Pesa utilise une clé publique pour vérifier les signatures
+        // M-Pesa utilise une longueur d'en-tête de signature. Sans la config
+        // réelle du secret, on refuse tout webhook pour éviter les faux échecs/remboursements.
         $signature = $request->header('X-M-Signature');
-        
-        if (!$signature) {
-            return true; // Mode simulation
+        $secret = config('services.mpesa.webhook_secret', '');
+
+        if (!$signature || empty($secret) || $secret === 'DEMO_SECRET') {
+            Log::warning('M-Pesa webhook: signature/secret non configurés, refusé');
+            return false;
         }
 
-        // TODO: Implémenter la vérification avec la clé publique M-Pesa
-        return true;
+        $payload = $request->getContent();
+        $expectedSignature = hash_hmac('sha256', $payload, $secret);
+
+        return hash_equals($expectedSignature, $signature);
     }
 
     private function verifyAfricellWebhook($request): bool
     {
         // Africell utilise un secret partagé
         $providedSecret = $request->input('api_secret');
-        
+
         if (!$providedSecret) {
-            return true; // Mode simulation
+            Log::warning('Africell webhook: secret manquant, refusé');
+            return false;
         }
 
-        $expectedSecret = config('services.africell.webhook_secret', 'DEMO_SECRET');
+        $expectedSecret = config('services.africell.webhook_secret', '');
+        if (empty($expectedSecret) || $expectedSecret === 'DEMO_SECRET') {
+            Log::warning('Africell webhook: secret non configuré, refusé');
+            return false;
+        }
+
         return hash_equals($expectedSecret, $providedSecret);
     }
 
@@ -1395,12 +1456,18 @@ class MobileMoneyService
     {
         // Illicocash utilise une signature dans les headers
         $signature = $request->header('X-Illico-Signature');
-        
+
         if (!$signature) {
-            return true; // Mode simulation
+            Log::warning('Illicocash webhook: signature manquante, refusé');
+            return false;
         }
 
-        $secret = config('services.illicocash.webhook_secret', 'DEMO_SECRET');
+        $secret = config('services.illicocash.webhook_secret', '');
+        if (empty($secret) || $secret === 'DEMO_SECRET') {
+            Log::warning('Illicocash webhook: secret non configuré, refusé');
+            return false;
+        }
+
         $payload = $request->getContent();
         $expectedSignature = hash_hmac('sha256', $payload, $secret);
 

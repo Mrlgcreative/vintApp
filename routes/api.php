@@ -93,12 +93,6 @@ Route::prefix('payment-callbacks')->group(function () {
     Route::get('/status', [ApiPaymentCallbackController::class, 'checkStatus'])
         ->middleware('throttle:30,1')
         ->name('payment.status');
-
-    // Force complétion manuelle (quand le callback n'arrive pas)
-    Route::post('/{transaction}/force-complete', [ApiPaymentCallbackController::class, 'forceComplete'])
-        ->middleware('throttle:5,1')
-        ->where('transaction', '[0-9]+')
-        ->name('payment.force-complete');
 });
 
 // ==================== Callbacks PawaPay (publics, sans auth) ====================
@@ -476,4 +470,11 @@ Route::prefix('v1/admin')->middleware(['auth:sanctum,web', 'admin'])->group(func
     // Monitoring
     Route::get('/monitoring/stats', [MonitoringController::class, 'stats']);
     Route::get('/monitoring/health', [MonitoringController::class, 'health']);
+
+    // Force complétion manuelle d'une transaction (quand le callback n'arrive pas)
+    // Réservé aux administrateurs authentifiés (anciennement route publique = faille critique)
+    Route::post('/payment-callbacks/{transaction}/force-complete', [ApiPaymentCallbackController::class, 'forceComplete'])
+        ->middleware('throttle:5,1')
+        ->where('transaction', '[0-9]+')
+        ->name('payment.force-complete');
 });

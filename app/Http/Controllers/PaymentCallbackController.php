@@ -143,7 +143,11 @@ class PaymentCallbackController extends Controller
             case 'maishapay':
                 $signature = $request->header('X-MaishaPay-Signature');
                 if (!$signature) {
-                    return app()->environment('local');
+                    // Signature obligatoire : rejeter si absente (plus de mode local)
+                    Log::warning("MaishaPay: signature absente, callback refusé", [
+                        'ip' => $request->ip(),
+                    ]);
+                    return false;
                 }
                 $maishaPay = new \App\Services\MaishaPay();
                 return $maishaPay->verifyWebhookSignature($request->getContent(), $signature);
@@ -628,9 +632,17 @@ class PaymentCallbackController extends Controller
      * Force la complétion manuelle d'une transaction en attente.
      * Utilisé quand le callback MaishaPay n'arrive pas (localhost) ou quand
      * l'utilisateur a déjà confirmé sur son téléphone.
+     * Réservé aux administrateurs (route protégée par auth + middleware admin).
      */
     public function forceComplete(Request $request, int $transactionId)
     {
+        // Défense en profondeur : exiger un utilisateur administrateur authentifié,
+        // même si la méthode venait à être appelée hors du groupe protégé.
+        $user = $request->user();
+        if (!$user || !$user->isAdmin()) {
+            return response()->json(['status' => 'error', 'message' => 'Forbidden'], 403);
+        }
+
         $transaction = Transaction::find($transactionId);
 
         if (!$transaction) {
@@ -645,12 +657,14 @@ class PaymentCallbackController extends Controller
             'status' => 'completed',
         ]);
 
-        create_orders_from_transaction($transaction->fresh());
+        $orders = create_orders_from_transaction($transaction->fresh());
 
         Log::info('Transaction complétée manuellement', [
             'transaction_id' => $transaction->id,
             'user_id' => $transaction->user_id,
             'provider' => $transaction->provider,
+            'admin_id' => $user->id,
+            'orders_created' => count($orders),
             'ip' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);

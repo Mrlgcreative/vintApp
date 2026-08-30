@@ -392,6 +392,17 @@ if (!function_exists('create_orders_from_transaction')) {
             return $orders;
         }
 
+        // --- Idempotence : éviter de recréer les commandes si la transaction
+        // a déjà été traitée (double callback, retry, force-complete + callback).
+        $transactionMarker = 'Transaction #' . $transaction->id;
+        $alreadyCreated = \App\Models\Order::where('buyer_id', $buyerId)
+            ->where('notes', 'like', '%' . $transactionMarker . '%')
+            ->exists();
+
+        if ($alreadyCreated) {
+            return $orders;
+        }
+
         $deliveryAddress = $deliveryAddressId
             ? \App\Models\DeliveryAddress::find($deliveryAddressId)
             : \App\Models\DeliveryAddress::where('user_id', $buyerId)->where('is_default', true)->first();

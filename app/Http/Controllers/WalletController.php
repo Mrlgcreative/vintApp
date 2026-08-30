@@ -458,12 +458,35 @@ class WalletController extends Controller
                 ]);
             }
 
+            // Capturer le statut précédent AVANT la mise à jour, pour garantir l'idempotence
+            $previousStatus = $transaction->status;
+
             // Mettre à jour la transaction
             $transaction->update(['status' => $webhookStatus]);
 
-            // Si le retrait a échoué, rembourser le wallet
+            // Si le retrait a échoué, rembourser le wallet (de façon idempotente)
             if ($webhookStatus === 'failed') {
-                DB::transaction(function () use ($transaction) {
+                // Idempotence : ne rembourser qu'une seule fois.
+                // Ignores tout webhook "failed" rejoué si la transaction est déjà marquée
+                // comme échouée ET qu'un remboursement existe déjà.
+                $refundRef = 'REFUND-' . $transaction->reference;
+                $alreadyRefunded = WalletTransaction::where('reference', $refundRef)
+                    ->where('type', 'credit')
+                    ->exists();
+
+                if ($previousStatus === 'failed' || $alreadyRefunded) {
+                    Log::warning('Withdrawal webhook "failed" ignoré (déjà traité/remboursé)', [
+                        'transaction_id' => $transaction->id,
+                        'previous_status' => $previousStatus,
+                        'already_refunded' => $alreadyRefunded,
+                    ]);
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Webhook déjà traité (idempotent)'
+                    ], 200);
+                }
+
+                DB::transaction(function () use ($transaction, $refundRef) {
                     $wallet = $transaction->wallet;
                     $wallet->increment('balance', $transaction->amount);
                     
@@ -472,7 +495,7 @@ class WalletController extends Controller
                         'amount' => $transaction->amount,
                         'balance_after' => $wallet->fresh()->balance,
                         'description' => 'Remboursement suite à échec de retrait - Ref: ' . $transaction->reference,
-                        'reference' => 'REFUND-' . $transaction->reference,
+                        'reference' => $refundRef,
                         'status' => 'completed',
                     ]);
                 });
