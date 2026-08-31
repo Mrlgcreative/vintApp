@@ -1,84 +1,64 @@
 @extends('app')
 
+@section('title', 'Finaliser votre commande')
+
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {{-- En-tête --}}
     <div class="mb-8">
-        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
-            <i class="fas fa-shopping-cart mr-3 text-blue-600"></i>
-            Finaliser votre commande
-        </h2>
+        <div class="flex items-center gap-4">
+            <x-icon icon="fas fa-shopping-cart" tone="primary" size="md" />
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    Finaliser votre commande
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Complétez vos informations de livraison pour procéder au paiement.
+                </p>
+            </div>
+        </div>
     </div>
 
     @if(empty($cart))
-        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center">
-            <i class="fas fa-info-circle mr-3 text-blue-600"></i>
-            <span class="text-blue-800">Votre panier est vide.</span>
-        </div>
+        <x-alert variant="warning">
+            <i class="fas fa-info-circle mr-2"></i> Votre panier est vide.
+        </x-alert>
     @else
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- Colonne gauche : Formulaire de livraison -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {{-- Colonne gauche : Informations de livraison --}}
         <div class="lg:col-span-7">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div class="bg-blue-600 text-white px-6 py-4">
-                    <h5 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-truck mr-3"></i>Informations de livraison
-                    </h5>
-                </div>
+            <x-card>
+                <x-card-header icon="fas fa-truck" tone="primary" title="Informations de livraison" />
+
                 <div class="p-6">
                     <form id="deliveryForm">
                         @csrf
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <!-- Nom complet -->
-                            <div class="md:col-span-1">
-                                <label for="full_name" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-user mr-2"></i>Nom complet <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                       id="full_name" 
-                                       name="full_name" 
-                                       value="{{ Auth::user()->name ?? '' }}" 
-                                       required>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {{-- Nom complet --}}
+                            <div>
+                                <x-label for="full_name" icon="fas fa-user" iconTone="primary">Nom complet <span class="text-red-500">*</span></x-label>
+                                <x-input type="text" id="full_name" name="full_name" value="{{ Auth::user()->name ?? '' }}" required autocomplete="name" />
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre nom complet.</div>
                             </div>
 
-                            <!-- Téléphone -->
-                            <div class="md:col-span-1">
-                                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-phone mr-2"></i>Téléphone <span class="text-red-500">*</span>
-                                </label>
-                                <input type="tel" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                       id="phone" 
-                                       name="phone" 
-                                       placeholder="+243 800 000 000" 
-                                       required>
+                            {{-- Téléphone --}}
+                            <div>
+                                <x-label for="phone" icon="fas fa-phone" iconTone="primary">Téléphone <span class="text-red-500">*</span></x-label>
+                                <x-input type="tel" id="phone" name="phone" placeholder="+243 800 000 000" required autocomplete="tel" />
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer un numéro de téléphone valide.</div>
                             </div>
 
-                            <!-- Email -->
-                            <div class="md:col-span-1">
-                                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-envelope mr-2"></i>Email <span class="text-red-500">*</span>
-                                </label>
-                                <input type="email" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                       id="email" 
-                                       name="email" 
-                                       value="{{ Auth::user()->email ?? '' }}" 
-                                       required>
+                            {{-- Email --}}
+                            <div>
+                                <x-label for="email" icon="fas fa-envelope" iconTone="primary">Email <span class="text-red-500">*</span></x-label>
+                                <x-input type="email" id="email" name="email" value="{{ Auth::user()->email ?? '' }}" required autocomplete="email" />
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer une adresse email valide.</div>
                             </div>
 
-                            <!-- Ville -->
-                            <div class="md:col-span-1">
-                                <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-city mr-2"></i>Ville <span class="text-red-500">*</span>
-                                </label>
-                                <select class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                        id="city" 
-                                        name="city" 
-                                        required>
+                            {{-- Ville --}}
+                            <div>
+                                <x-label for="city" icon="fas fa-city" iconTone="primary">Ville <span class="text-red-500">*</span></x-label>
+                                <x-select id="city" name="city" required>
                                     <option value="">Sélectionnez une ville</option>
                                     <option value="Kinshasa">Kinshasa</option>
                                     <option value="Lubumbashi">Lubumbashi</option>
@@ -88,190 +68,155 @@
                                     <option value="Kolwezi">Kolwezi</option>
                                     <option value="Kisangani">Kisangani</option>
                                     <option value="Autre">Autre ville</option>
-                                </select>
+                                </x-select>
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez sélectionner une ville.</div>
                             </div>
 
-                            <!-- Commune/Quartier -->
-                            <div class="md:col-span-1">
-                                <label for="commune" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-map-marker-alt mr-2"></i>Commune/Quartier <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                       id="commune" 
-                                       name="commune" 
-                                       placeholder="Ex: Gombe, Lemba, etc." 
-                                       required>
+                            {{-- Commune/Quartier --}}
+                            <div>
+                                <x-label for="commune" icon="fas fa-map-marker-alt" iconTone="primary">Commune/Quartier <span class="text-red-500">*</span></x-label>
+                                <x-input type="text" id="commune" name="commune" placeholder="Ex: Gombe, Lemba, etc." required />
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre commune ou quartier.</div>
                             </div>
 
-                            <!-- Adresse complète -->
-                            <div class="md:col-span-1">
-                                <label for="address" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-home mr-2"></i>Adresse complète <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" 
-                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                       id="address" 
-                                       name="address" 
-                                       placeholder="Avenue, numéro, bâtiment..." 
-                                       required>
+                            {{-- Adresse complète --}}
+                            <div>
+                                <x-label for="address" icon="fas fa-home" iconTone="primary">Adresse complète <span class="text-red-500">*</span></x-label>
+                                <x-input type="text" id="address" name="address" placeholder="Avenue, numéro, bâtiment..." required />
                                 <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Veuillez entrer votre adresse complète.</div>
                             </div>
 
-                            <!-- Position GPS (optionnelle) -->
+                            {{-- Position GPS (optionnelle) --}}
                             <div class="md:col-span-2">
-                                <div class="bg-white dark:bg-gray-800 border border-blue-200 rounded-lg overflow-hidden">
-                                    <div class="bg-blue-50 px-4 py-3 border-b border-blue-200">
-                                        <h6 class="text-sm font-semibold text-blue-800 flex items-center">
-                                            <i class="fas fa-map-marker-alt mr-2"></i>
+                                <div class="bg-vinted-primary-50 dark:bg-vinted-primary-500/5 border border-vinted-primary-200 dark:border-vinted-primary-500/30 rounded-xl overflow-hidden">
+                                    <div class="px-4 py-3 border-b border-vinted-primary-200 dark:border-vinted-primary-500/30 flex items-center gap-2">
+                                        <i class="fas fa-map-marker-alt text-vinted-primary-600"></i>
+                                        <p class="text-sm font-semibold text-vinted-primary-800 dark:text-vinted-primary-300">
                                             Position GPS (Optionnelle - pour un suivi précis)
-                                        </h6>
+                                        </p>
                                     </div>
                                     <div class="p-4">
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
-                                                <label for="latitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                                    <i class="fas fa-crosshairs mr-2"></i>Latitude
-                                                </label>
-                                                <input type="number" 
-                                                       step="0.00000001" 
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                                       id="latitude" 
-                                                       name="latitude" 
-                                                       placeholder="-4.325000">
+                                                <x-label for="latitude" icon="fas fa-crosshairs" iconTone="primary">Latitude</x-label>
+                                                <x-input type="number" step="0.00000001" id="latitude" name="latitude" placeholder="-4.325000" />
                                                 <small class="text-gray-500 dark:text-gray-400 text-xs">Ex: -4.325000 (Kinshasa)</small>
                                             </div>
                                             <div>
-                                                <label for="longitude" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                                    <i class="fas fa-crosshairs mr-2"></i>Longitude
-                                                </label>
-                                                <input type="number" 
-                                                       step="0.00000001" 
-                                                       class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                                       id="longitude" 
-                                                       name="longitude" 
-                                                       placeholder="15.307778">
+                                                <x-label for="longitude" icon="fas fa-crosshairs" iconTone="primary">Longitude</x-label>
+                                                <x-input type="number" step="0.00000001" id="longitude" name="longitude" placeholder="15.307778" />
                                                 <small class="text-gray-500 dark:text-gray-400 text-xs">Ex: 15.307778 (Kinshasa)</small>
                                             </div>
                                         </div>
                                         <div class="mt-4">
-                                            <button type="button" 
-                                                    class="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium" 
+                                            <button type="button"
+                                                    class="inline-flex items-center px-4 py-2 bg-vinted-primary-100 text-vinted-primary-700 border border-vinted-primary-300 rounded-lg hover:bg-vinted-primary-200 transition-colors text-sm font-medium"
                                                     id="getCurrentLocationBtn">
                                                 <i class="fas fa-location-arrow mr-2"></i>
                                                 Utiliser ma position actuelle (GPS)
                                             </button>
                                             <p class="text-gray-500 dark:text-gray-400 text-xs mt-2">
-                                                Cela permettra un suivi de livraison plus précis sur la carte
+                                                Cela permettra un suivi de livraison plus précis sur la carte.
                                             </p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Notes de livraison -->
+                            {{-- Notes de livraison --}}
                             <div class="md:col-span-2">
-                                <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                                    <i class="fas fa-sticky-note mr-2"></i>Instructions de livraison (optionnel)
-                                </label>
-                                <textarea class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors" 
-                                          id="notes" 
-                                          name="notes" 
-                                          rows="3" 
-                                          placeholder="Point de repère, instructions particulières..."></textarea>
+                                <x-label for="notes" icon="fas fa-sticky-note" iconTone="primary">Instructions de livraison (optionnel)</x-label>
+                                <x-textarea id="notes" name="notes" rows="3" placeholder="Point de repère, instructions particulières..."></x-textarea>
                             </div>
                         </div>
 
-                        <button type="submit" 
-                                class="w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg">
-                            <i class="fas fa-check-circle mr-2"></i>Confirmer les informations de livraison
+                        <button type="submit"
+                                class="w-full mt-6 bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
+                            <i class="fas fa-check-circle"></i>
+                            Confirmer les informations de livraison
                         </button>
                     </form>
 
-                    <!-- Zone d'affichage des informations confirmées -->
-                    <div id="deliveryInfoConfirmed" class="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg hidden">
-                        <h6 class="text-green-600 font-semibold mb-4 flex items-center">
-                            <i class="fas fa-check-circle mr-2"></i>Informations de livraison confirmées
+                    {{-- Informations confirmées --}}
+                    <div id="deliveryInfoConfirmed" class="mt-6 p-5 bg-emerald-50 dark:bg-emerald-500/5 border border-emerald-200 dark:border-emerald-500/30 rounded-xl hidden">
+                        <h6 class="text-emerald-700 dark:text-emerald-300 font-semibold mb-4 flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Informations de livraison confirmées
                         </h6>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-user mr-3 w-4"></i>
-                                    <strong>Nom :</strong> 
+                            <div class="space-y-2.5">
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-user mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Nom :</strong>
                                     <span id="confirmed_name" class="ml-2"></span>
                                 </p>
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-phone mr-3 w-4"></i>
-                                    <strong>Téléphone :</strong> 
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-phone mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Téléphone :</strong>
                                     <span id="confirmed_phone" class="ml-2"></span>
                                 </p>
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-envelope mr-3 w-4"></i>
-                                    <strong>Email :</strong> 
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-envelope mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Email :</strong>
                                     <span id="confirmed_email" class="ml-2"></span>
                                 </p>
                             </div>
-                            <div class="space-y-2">
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-city mr-3 w-4"></i>
-                                    <strong>Ville :</strong> 
+                            <div class="space-y-2.5">
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-city mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Ville :</strong>
                                     <span id="confirmed_city" class="ml-2"></span>
                                 </p>
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-map-marker-alt mr-3 w-4"></i>
-                                    <strong>Commune :</strong> 
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-map-marker-alt mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Commune :</strong>
                                     <span id="confirmed_commune" class="ml-2"></span>
                                 </p>
-                                <p class="flex items-center text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-home mr-3 w-4"></i>
-                                    <strong>Adresse :</strong> 
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-home mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>Adresse :</strong>
                                     <span id="confirmed_address" class="ml-2"></span>
                                 </p>
-                                <p class="flex items-center text-gray-700 dark:text-gray-200" id="confirmed_gps_container" style="display: none;">
-                                    <i class="fas fa-crosshairs mr-3 w-4"></i>
-                                    <strong>GPS :</strong> 
-                                    <span id="confirmed_gps" class="ml-2 text-green-600"></span>
+                                <p class="flex items-center text-sm text-gray-700 dark:text-gray-200" id="confirmed_gps_container" style="display: none;">
+                                    <i class="fas fa-crosshairs mr-3 w-4 text-vinted-primary-500"></i>
+                                    <strong>GPS :</strong>
+                                    <span id="confirmed_gps" class="ml-2 text-emerald-600"></span>
                                 </p>
                             </div>
                             <div id="confirmed_notes_container" class="md:col-span-2 hidden">
-                                <p class="flex items-start text-gray-700 dark:text-gray-200">
-                                    <i class="fas fa-sticky-note mr-3 w-4 mt-1"></i>
-                                    <strong>Instructions :</strong> 
+                                <p class="flex items-start text-sm text-gray-700 dark:text-gray-200">
+                                    <i class="fas fa-sticky-note mr-3 w-4 mt-1 text-vinted-primary-500"></i>
+                                    <strong>Instructions :</strong>
                                     <span id="confirmed_notes" class="ml-2"></span>
                                 </p>
                             </div>
                         </div>
-                        <button type="button" 
-                                class="mt-4 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors text-sm" 
+                        <button type="button"
+                                class="mt-4 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-vinted-primary-300 text-vinted-primary-700 rounded-lg hover:bg-vinted-primary-50 transition-colors text-sm"
                                 id="editDeliveryBtn">
                             <i class="fas fa-edit mr-2"></i>Modifier
                         </button>
                     </div>
                 </div>
-            </div>
+            </x-card>
         </div>
 
-        <!-- Colonne droite : Récapitulatif de la commande -->
+        {{-- Colonne droite : Récapitulatif --}}
         <div class="lg:col-span-5">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 sticky top-5">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                    <h5 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                        <i class="fas fa-receipt mr-3"></i>Récapitulatif
-                    </h5>
-                </div>
+            <x-card class="sticky top-5">
+                <x-card-header icon="fas fa-receipt" tone="primary" title="Récapitulatif de la commande" />
+
                 <div class="p-6">
+                    {{-- Articles --}}
                     <div class="space-y-4 mb-6">
                         @foreach($cart as $item)
-                            <div class="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                            <div class="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
                                 <div class="flex-shrink-0">
                                     @if($item['image'])
-                                        <img src="{{ asset('storage/' . $item['image']) }}" 
-                                             alt="{{ $item['name'] }}" 
+                                        <img src="{{ asset('storage/' . $item['image']) }}"
+                                             alt="{{ $item['name'] }}"
                                              class="w-16 h-16 object-cover rounded-lg border border-gray-200 dark:border-gray-700">
                                     @else
-                                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 flex items-center justify-content-center rounded-lg border border-gray-200 dark:border-gray-700">
+                                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700">
                                             <i class="fas fa-image text-gray-400"></i>
                                         </div>
                                     @endif
@@ -289,6 +234,7 @@
                         @endforeach
                     </div>
 
+                    {{-- Totaux --}}
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-gray-700 dark:text-gray-200">Sous-total :</span>
@@ -299,16 +245,15 @@
                                 Frais de livraison :
                                 <span class="text-sm text-gray-500 dark:text-gray-400">({{ $transportFeePercentage }}%)</span>
                             </span>
-                            <span class="font-semibold text-blue-600">+{{ number_format($transportFee, 2) }} {{ $currency }}</span>
+                            <span class="font-semibold text-vinted-primary-600 dark:text-vinted-primary-400">+{{ number_format($transportFee, 2) }} {{ $currency }}</span>
                         </div>
                         <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                             <div class="flex justify-between items-center">
-                                <span class="text-xl font-semibold text-gray-900 dark:text-white">Total :</span>
-                                <span class="text-xl font-bold text-blue-600">{{ number_format($total, 2) }} {{ $currency }}</span>
+                                <span class="text-lg font-semibold text-gray-900 dark:text-white">Total :</span>
+                                <span class="text-xl font-bold text-vinted-primary-600 dark:text-vinted-primary-400">{{ number_format($total, 2) }} {{ $currency }}</span>
                             </div>
-                            
-                            <!-- Avertissement frais opérateur -->
-                            <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
+
+                            <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-200 dark:border-amber-500/30">
                                 <div class="flex items-start">
                                     <i class="fas fa-info-circle text-amber-500 mt-0.5 mr-2 flex-shrink-0"></i>
                                     <p class="text-xs text-amber-700 dark:text-amber-300">
@@ -319,88 +264,92 @@
                         </div>
                     </div>
 
-                    <!-- Bouton de paiement (masqué par défaut) -->
+                    {{-- Bouton de paiement (masqué par défaut) --}}
                     <div id="paymentButtonContainer" class="hidden mt-6">
-                        <!-- Sélecteur de méthode de paiement -->
                         <div class="mb-4">
-                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center">
-                                <i class="fas fa-wallet mr-2"></i>Méthode de paiement
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+                                <i class="fas fa-wallet text-vinted-primary-500"></i>Méthode de paiement
                             </p>
-                            <div class="grid grid-cols-2 gap-3">
-                                <!-- MaishaPay -->
-                                <button type="button" id="method-maishapay" data-method="maishapay"
-                                        class="pay-method-card relative rounded-xl border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 text-left transition-all duration-200">
-                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                @php
+                                    $payMethods = [
+                                        'maishapay' => [
+                                            'id' => 'method-maishapay',
+                                            'icon' => 'fa-bolt',
+                                            'iconBg' => 'bg-emerald-500',
+                                            'name' => 'MaishaPay',
+                                            'desc' => 'Orange, M-Pesa, Airtel, Africell',
+                                            'active' => 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30',
+                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
+                                        ],
+                                        'cinetpay' => [
+                                            'id' => 'method-cinetpay',
+                                            'icon' => 'fa-credit-card',
+                                            'iconBg' => 'bg-blue-500',
+                                            'name' => 'CinetPay',
+                                            'desc' => 'Mobile Money & cartes',
+                                            'active' => 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
+                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
+                                        ],
+                                        'pawapay' => [
+                                            'id' => 'method-pawapay',
+                                            'icon' => 'fa-mobile-alt',
+                                            'iconBg' => 'bg-purple-500',
+                                            'name' => 'PawaPay',
+                                            'desc' => 'Mobile Money panafricain',
+                                            'active' => 'border-purple-500 bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-900/30 dark:to-fuchsia-900/30',
+                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
+                                        ],
+                                    ];
+                                @endphp
+                                @foreach($payMethods as $key => $m)
+                                <button type="button"
+                                        id="{{ $m['id'] }}"
+                                        data-method="{{ $key }}"
+                                        class="pay-method-card relative rounded-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 p-4 text-left transition-all duration-200">
+                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
                                     </span>
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                                            <i class="fas fa-bolt text-white"></i>
+                                        <div class="w-10 h-10 {{ $m['iconBg'] }} rounded-xl flex items-center justify-center">
+                                            <i class="fas {{ $m['icon'] }} text-white"></i>
                                         </div>
                                         <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">MaishaPay</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange, M-Pesa, Airtel, Africell</p>
+                                            <p class="font-bold text-gray-900 dark:text-white">{{ $m['name'] }}</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $m['desc'] }}</p>
                                         </div>
                                     </div>
                                 </button>
-                                <!-- CinetPay -->
-                                <button type="button" id="method-cinetpay" data-method="cinetpay"
-                                        class="pay-method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
-                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                                            <i class="fas fa-credit-card text-white"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">CinetPay</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Mobile Money & cartes</p>
-                                        </div>
-                                    </div>
-                                </button>
-                                <!-- PawaPay -->
-                                <button type="button" id="method-pawapay" data-method="pawapay"
-                                        class="pay-method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
-                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-purple-500 rounded-xl flex items-center justify-center">
-                                            <i class="fas fa-mobile-alt text-white"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">PawaPay</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Mobile Money panafricain</p>
-                                        </div>
-                                    </div>
-                                </button>
+                                @endforeach
                             </div>
                         </div>
 
-                        <!-- Zone info méthode sélectionnée -->
-                        <div id="payMethodInfo" class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                        <div id="payMethodInfo" class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl p-4 mb-4">
                             <div class="flex items-start">
-                                <i class="fas fa-bolt text-green-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
+                                <i class="fas fa-bolt text-emerald-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
                                 <div>
-                                    <h3 class="font-semibold text-green-900 text-sm mb-1" id="payMethodInfoTitle">Paiement sécurisé via MaishaPay</h3>
-                                    <p class="text-green-800 text-sm" id="payMethodInfoText">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
+                                    <h3 class="font-semibold text-emerald-900 dark:text-emerald-300 text-sm mb-1" id="payMethodInfoTitle">Paiement sécurisé via MaishaPay</h3>
+                                    <p class="text-emerald-800 dark:text-emerald-400 text-sm" id="payMethodInfoText">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Formulaire MaishaPay -->
+                        {{-- Formulaire MaishaPay --}}
                         <form action="{{ route('payments.maishapay.checkout') }}" method="POST" id="maishapayForm" class="payment-gateway-form">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
                             <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
                             <input type="hidden" name="total_amount" value="{{ $total }}">
                             <input type="hidden" name="currency" value="{{ $currency }}">
-                            
-                            <button type="submit" 
-                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
-                                <i class="fas fa-bolt mr-2"></i>
+
+                            <button type="submit"
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
+                                <i class="fas fa-bolt"></i>
                                 Payer {{ number_format($total, 2) }} {{ $currency }} avec MaishaPay
                             </button>
                         </form>
 
-                        <!-- Formulaire CinetPay -->
+                        {{-- Formulaire CinetPay --}}
                         <form action="{{ route('payments.checkout.initiate') }}" method="POST" id="cinetpayForm" class="payment-gateway-form hidden">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
@@ -408,14 +357,14 @@
                             <input type="hidden" name="total_amount" value="{{ $total }}">
                             <input type="hidden" name="currency" value="{{ $currency }}">
 
-                            <button type="submit" 
-                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
-                                <i class="fas fa-credit-card mr-2"></i>
+                            <button type="submit"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
+                                <i class="fas fa-credit-card"></i>
                                 Payer {{ number_format($total, 2) }} {{ $currency }} avec CinetPay
                             </button>
                         </form>
 
-                        <!-- Formulaire PawaPay -->
+                        {{-- Formulaire PawaPay --}}
                         <form action="{{ route('payments.pawapay.checkout') }}" method="POST" id="pawapayForm" class="payment-gateway-form hidden">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
@@ -423,36 +372,35 @@
                             <input type="hidden" name="total_amount" value="{{ $total }}">
                             <input type="hidden" name="currency" value="{{ $currency }}">
 
-                            <button type="submit" 
-                                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg flex items-center justify-center">
-                                <i class="fas fa-mobile-alt mr-2"></i>
+                            <button type="submit"
+                                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
+                                <i class="fas fa-mobile-alt"></i>
                                 Payer {{ number_format($total, 2) }} {{ $currency }} avec PawaPay
                             </button>
                         </form>
                     </div>
 
-                        <!-- Moyens de paiement acceptés -->
-                        <div class="mt-4 text-center">
-                            <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Paiements 100% sécurisés</p>
-                            <div class="flex justify-center items-center space-x-2 flex-wrap gap-2">
-                                <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">🔒 SSL</div>
-                                <div class="bg-white dark:bg-gray-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-gray-200 dark:border-gray-700">✅ Vérifié</div>
-                                <div class="bg-green-100 dark:bg-green-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-green-200 dark:border-green-700 text-green-700 dark:text-green-300">⚡ MaishaPay</div>
-                                <div class="bg-blue-100 dark:bg-blue-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300">💳 CinetPay</div>
-                                <div class="bg-purple-100 dark:bg-purple-900 rounded px-2 py-1 shadow-sm text-xs font-medium border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300">📱 PawaPay</div>
-                            </div>
+                    {{-- Badges de sécurité --}}
+                    <div class="mt-4 text-center">
+                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Paiements 100% sécurisés</p>
+                        <div class="flex justify-center items-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-lock text-vinted-primary-500"></i> SSL</span>
+                            <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-check-circle text-emerald-500"></i> Vérifié</span>
+                            <span class="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900 rounded-full px-3 py-1.5 text-xs font-medium border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"><i class="fas fa-bolt"></i> MaishaPay</span>
+                            <span class="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900 rounded-full px-3 py-1.5 text-xs font-medium border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300"><i class="fas fa-credit-card"></i> CinetPay</span>
+                            <span class="inline-flex items-center gap-1 bg-purple-50 dark:bg-purple-900 rounded-full px-3 py-1.5 text-xs font-medium border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300"><i class="fas fa-mobile-alt"></i> PawaPay</span>
                         </div>
+                    </div>
 
-                        <!-- Message d'instruction (affiché par défaut) -->
-                        <div id="deliveryInstructionMessage" class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                            <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle mr-3 text-yellow-600"></i>
-                                <span class="text-yellow-800 text-sm">Veuillez d'abord remplir vos informations de livraison ci-contre.</span>
-                            </div>
+                    {{-- Message d'instruction --}}
+                    <div id="deliveryInstructionMessage" class="mt-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 rounded-xl p-4">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-exclamation-triangle text-amber-600"></i>
+                            <span class="text-amber-800 dark:text-amber-300 text-sm">Veuillez d'abord remplir vos informations de livraison ci-contre.</span>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
         </div>
     </div>
     @endif
@@ -468,10 +416,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const editDeliveryBtn = document.getElementById('editDeliveryBtn');
     let savedAddressId = null;
 
-    // Charger l'adresse par défaut au chargement de la page
     loadDefaultAddress();
 
-    // Gestion du bouton de géolocalisation
     const getCurrentLocationBtn = document.getElementById('getCurrentLocationBtn');
     if (getCurrentLocationBtn) {
         getCurrentLocationBtn.addEventListener('click', function() {
@@ -480,25 +426,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 this.disabled = true;
                 this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Récupération de la position...';
                 this.className = 'inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg cursor-not-allowed text-sm font-medium';
-                
+
                 navigator.geolocation.getCurrentPosition(
                     function(position) {
                         document.getElementById('latitude').value = position.coords.latitude.toFixed(8);
                         document.getElementById('longitude').value = position.coords.longitude.toFixed(8);
-                        
+
                         getCurrentLocationBtn.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Position obtenue !';
                         getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-green-100 text-green-700 border border-green-300 rounded-lg text-sm font-medium';
-                        
+
                         setTimeout(() => {
                             getCurrentLocationBtn.innerHTML = originalText;
-                            getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium';
+                            getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-vinted-primary-100 text-vinted-primary-700 border border-vinted-primary-300 rounded-lg hover:bg-vinted-primary-200 transition-colors text-sm font-medium';
                             getCurrentLocationBtn.disabled = false;
                         }, 2000);
                     },
                     function(error) {
                         console.error('Erreur de géolocalisation:', error);
                         let errorMsg = 'Impossible d\'obtenir votre position.';
-                        
+
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
                                 errorMsg = 'Permission refusée. Autorisez l\'accès à votre localisation.';
@@ -510,10 +456,10 @@ document.addEventListener('DOMContentLoaded', function() {
                                 errorMsg = 'Délai d\'attente dépassé. Réessayez.';
                                 break;
                         }
-                        
+
                         showToast(errorMsg, 'error');
                         getCurrentLocationBtn.innerHTML = originalText;
-                        getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 border border-blue-300 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium';
+                        getCurrentLocationBtn.className = 'inline-flex items-center px-4 py-2 bg-vinted-primary-100 text-vinted-primary-700 border border-vinted-primary-300 rounded-lg hover:bg-vinted-primary-200 transition-colors text-sm font-medium';
                         getCurrentLocationBtn.disabled = false;
                     },
                     {
@@ -528,7 +474,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Fonction pour charger l'adresse par défaut
     function loadDefaultAddress() {
         fetch('/delivery-address/default', {
             method: 'GET',
@@ -542,8 +487,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success && data.data) {
                 const address = data.data;
                 savedAddressId = address.id;
-                
-                // Pré-remplir le formulaire
+
                 document.getElementById('full_name').value = address.full_name;
                 document.getElementById('phone').value = address.phone;
                 document.getElementById('email').value = address.email;
@@ -551,8 +495,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('commune').value = address.commune;
                 document.getElementById('address').value = address.address;
                 document.getElementById('notes').value = address.notes || '';
-                
-                // Charger les coordonnées GPS si disponibles
+
                 if (address.latitude) {
                     document.getElementById('latitude').value = address.latitude;
                 }
@@ -560,14 +503,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('longitude').value = address.longitude;
                 }
 
-                // Afficher les informations confirmées
                 showConfirmedInfo(address);
             }
         })
         .catch(error => console.error('Erreur lors du chargement de l\'adresse:', error));
     }
 
-    // Fonction pour afficher les informations confirmées
     function showConfirmedInfo(data) {
         document.getElementById('confirmed_name').textContent = data.full_name;
         document.getElementById('confirmed_phone').textContent = data.phone;
@@ -575,15 +516,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('confirmed_city').textContent = data.city;
         document.getElementById('confirmed_commune').textContent = data.commune;
         document.getElementById('confirmed_address').textContent = data.address;
-        
-        // Afficher les coordonnées GPS si disponibles
+
         if (data.latitude && data.longitude) {
             document.getElementById('confirmed_gps').textContent = `Lat: ${parseFloat(data.latitude).toFixed(6)}, Lng: ${parseFloat(data.longitude).toFixed(6)}`;
             document.getElementById('confirmed_gps_container').style.display = 'flex';
         } else {
             document.getElementById('confirmed_gps_container').style.display = 'none';
         }
-        
+
         if (data.notes) {
             document.getElementById('confirmed_notes').textContent = data.notes;
             document.getElementById('confirmed_notes_container').classList.remove('hidden');
@@ -591,27 +531,22 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('confirmed_notes_container').classList.add('hidden');
         }
 
-        // Masquer le formulaire et afficher les infos confirmées
         deliveryForm.classList.add('hidden');
         deliveryInfoConfirmed.classList.remove('hidden');
 
-        // Afficher le bouton de paiement
         paymentButtonContainer.classList.remove('hidden');
         deliveryInstructionMessage.classList.add('hidden');
     }
 
-    // Gestion de la soumission du formulaire
     deliveryForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        // Validation du formulaire
         if (!deliveryForm.checkValidity()) {
             e.stopPropagation();
             deliveryForm.classList.add('was-validated');
             return;
         }
 
-        // Récupérer les données du formulaire
         const formData = {
             full_name: document.getElementById('full_name').value,
             phone: document.getElementById('phone').value,
@@ -625,18 +560,15 @@ document.addEventListener('DOMContentLoaded', function() {
             is_default: true
         };
 
-        // Afficher un loader
         const submitBtn = deliveryForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Enregistrement...';
         submitBtn.className = 'w-full mt-6 bg-gray-400 text-white py-3 px-6 rounded-lg cursor-not-allowed font-medium text-lg';
 
-        // Déterminer si c'est une création ou une mise à jour
         const url = savedAddressId ? `/delivery-address/${savedAddressId}` : '/delivery-address';
         const method = savedAddressId ? 'PUT' : 'POST';
 
-        // Envoyer les données au serveur
         fetch(url, {
             method: method,
             headers: {
@@ -650,14 +582,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 savedAddressId = data.data.id;
-                
-                // Afficher les informations confirmées
+
                 showConfirmedInfo(data.data);
 
-                // Afficher un message de succès
                 showToast('Adresse de livraison enregistrée avec succès', 'success');
 
-                // Scroll vers le récapitulatif sur mobile
                 if (window.innerWidth < 1024) {
                     document.getElementById('paymentButtonContainer').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
@@ -672,26 +601,23 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
-            submitBtn.className = 'w-full mt-6 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg';
+            submitBtn.className = 'w-full mt-6 bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white py-3 px-6 rounded-lg transition-colors font-medium text-lg';
         });
     });
 
-    // Bouton pour modifier les informations
     editDeliveryBtn.addEventListener('click', function() {
         deliveryForm.classList.remove('hidden');
         deliveryInfoConfirmed.classList.add('hidden');
         paymentButtonContainer.classList.add('hidden');
         deliveryInstructionMessage.classList.remove('hidden');
-        
-        // Scroll vers le formulaire
+
         deliveryForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
 
-    // Fonction pour afficher un toast
     function showToast(message, type = 'success') {
-        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        const bgColor = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
         const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
-        
+
         const toast = document.createElement('div');
         toast.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-4 rounded-lg shadow-lg z-50 min-w-80 flex items-center`;
         toast.innerHTML = `
@@ -699,23 +625,22 @@ document.addEventListener('DOMContentLoaded', function() {
             <span>${message}</span>
         `;
         document.body.appendChild(toast);
-        
+
         setTimeout(() => {
             toast.remove();
         }, 3000);
     }
 
-    // Sélection de la méthode de paiement (MaishaPay / CinetPay)
     const payMethodMeta = {
         maishapay: {
-            active: 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30',
-            badge: 'border-green-500 bg-green-500',
+            active: 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30',
+            badge: 'border-emerald-500 bg-emerald-500',
             title: 'Paiement sécurisé via MaishaPay',
             text: 'Tous les opérateurs Mobile Money RDC sont acceptés.',
             icon: 'fa-bolt',
-            iconClass: 'text-green-600',
+            iconClass: 'text-emerald-600',
             form: 'maishapayForm',
-            btn: 'bg-green-600 hover:bg-green-700',
+            btn: 'bg-emerald-600 hover:bg-emerald-700',
             label: 'MaishaPay'
         },
         cinetpay: {
@@ -757,12 +682,10 @@ document.addEventListener('DOMContentLoaded', function() {
             badge.innerHTML = isActive ? payCheckSvg : '';
         });
 
-        // Basculer les formulaires
         document.querySelectorAll('.payment-gateway-form').forEach(function(form) {
             form.classList.toggle('hidden', form.id !== meta.form);
         });
 
-        // Mettre à jour la zone d'info
         const infoIcon = document.querySelector('#payMethodInfo i');
         infoIcon.className = 'fas ' + meta.icon + ' ' + meta.iconClass + ' mt-0.5 mr-3 flex-shrink-0 text-xl';
         document.getElementById('payMethodInfoTitle').textContent = meta.title;
@@ -775,7 +698,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Gestion du formulaire de paiement (MaishaPay ou CinetPay)
     document.querySelectorAll('.payment-gateway-form').forEach(function(gatewayForm) {
         gatewayForm.addEventListener('submit', function(e) {
             if (savedAddressId) {
@@ -798,4 +720,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
-@endsection 
+@endsection
