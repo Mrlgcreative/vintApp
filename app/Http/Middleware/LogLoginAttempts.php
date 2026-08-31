@@ -38,11 +38,11 @@ class LogLoginAttempts
 
     public function handle(Request $request, Closure $next): Response
     {
-        $route = $request->route();
-        $routeName = $route?->getName();
-
-        // Journaliser uniquement les tentatives de connexion/inscription/mot de passe
-        if ($request->isMethod('post') && $this->isLoginRoute($routeName)) {
+        // Journaliser uniquement les tentatives de connexion/inscription/mot de passe.
+        // La détection combine le nom de route ET le chemin : les routes de l'API
+        // (ex: /api/login, /api/register) n'ont souvent pas de nom de route,
+        // il faut donc aussi se baser sur le path.
+        if ($request->isMethod('post') && $this->isLoginRequest($request)) {
             return $this->handleLoginRequest($request, $next);
         }
 
@@ -50,11 +50,56 @@ class LogLoginAttempts
     }
 
     /**
-     * Détermine si la route est une tentative de connexion.
+     * Détermine si la requête est une tentative de connexion (par nom et/ou path).
      */
-    protected function isLoginRoute(?string $routeName): bool
+    protected function isLoginRequest(Request $request): bool
     {
-        if (!$routeName) {
+        $route = $request->route();
+        $routeName = (string) ($route?->getName() ?? '');
+
+        // 1. Par nom de route
+        if ($this->matchesRouteName($routeName)) {
+            return true;
+        }
+
+        // 2. Par chemin (les routes sans nom, notamment l'API)
+        $path = '/' . ltrim($request->path(), '/');
+
+        foreach (self::LOGIN_PATHS as $suffix) {
+            if ($path === $suffix || str_ends_with($path, $suffix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Suites de chemins identifiant une tentative de login/register/password.
+     */
+    protected const LOGIN_PATHS = [
+        '/login',
+        '/register',
+        '/logout',
+        '/forgot-password',
+        '/reset-password',
+        '/email/verification-notification',
+        '/verify-code',
+        '/verify-code/resend',
+        '/password/email',
+        '/password/forgot',
+        '/password/reset',
+        '/two-factor/verify',
+        '/two-factor/enable',
+        '/two-factor/confirm',
+    ];
+
+    /**
+     * Vérifie le nom de route contre les routes de connexion connues.
+     */
+    protected function matchesRouteName(string $routeName): bool
+    {
+        if ($routeName === '') {
             return false;
         }
 
@@ -101,7 +146,7 @@ class LogLoginAttempts
             'email' => $email,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'route' => (string) $request->route()?->getName(),
+            'route' => (string) ($request->route()?->getName() ?? ('/' . ltrim($request->path(), '/'))),
             'guard' => $request->is('api/*') ? 'sanctum' : 'web',
             'success' => $success,
             'status_code' => $status,
