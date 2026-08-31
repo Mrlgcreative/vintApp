@@ -103,6 +103,67 @@
             </div>
         </div>
 
+        <!-- Tentatives de connexion / Activité suspecte -->
+        <div id="security-panel" class="mt-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 px-4 py-3">
+                <p class="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
+                    <i class="fas fa-user-lock text-slate-400" aria-hidden="true"></i>
+                    Tentatives de connexion
+                    <span id="security-count" class="rounded-full px-2 py-0.5 text-xs font-semibold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300"></span>
+                </p>
+                <span class="text-xs text-slate-400 dark:text-slate-500">50 dernières tentatives (web + API)</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="border-b border-slate-200 dark:border-slate-700 text-xs uppercase text-slate-400 dark:text-slate-500">
+                        <tr>
+                            <th class="px-4 py-2 font-semibold">Statut</th>
+                            <th class="px-4 py-2 font-semibold">Email</th>
+                            <th class="px-4 py-2 font-semibold">IP</th>
+                            <th class="px-4 py-2 font-semibold">Code</th>
+                            <th class="px-4 py-2 font-semibold">Route</th>
+                            <th class="px-4 py-2 font-semibold">UA</th>
+                            <th class="px-4 py-2 font-semibold">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="security-attempts-body" class="divide-y divide-slate-100 dark:divide-slate-700/60">
+                        @forelse($securityAttempts ?? [] as $attempt)
+                            <tr>
+                                <td class="px-4 py-2">
+                                    @if($attempt->success)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                                            <i class="fas fa-circle-check" aria-hidden="true"></i> Succès
+                                        </span>
+                                    @elseif($attempt->status_code === 429)
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/40 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-300">
+                                            <i class="fas fa-ban" aria-hidden="true"></i> Rate-limit
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+                                            <i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Échec
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2 text-slate-700 dark:text-slate-300 font-mono text-xs">{{ $attempt->email ?? '—' }}</td>
+                                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 font-mono text-xs">{{ $attempt->ip_address }}</td>
+                                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">{{ $attempt->status_code ?? '—' }}</td>
+                                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">{{ $attempt->route ?? '—' }}</td>
+                                <td class="px-4 py-2 text-slate-400 dark:text-slate-500 text-xs max-w-[160px] truncate" title="{{ $attempt->user_agent ?? '' }}">{{ $attempt->user_agent ?? '—' }}</td>
+                                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">{{ $attempt->created_at?->format('d/m H:i:s') }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-4 py-4 text-sm text-slate-400 dark:text-slate-500">
+                                    Aucune tentative enregistrée pour le moment.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- Primary Stats (shadcn stat cards) -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
 
@@ -366,7 +427,12 @@ async function refreshStats() {
 }
 
 function updateDashboard(data) {
-    const { stats, health, timestamp, alerts } = data;
+    const { stats, health, timestamp, alerts, security_attempts } = data;
+
+    // Attempts (tentatives de connexion)
+    if (Array.isArray(security_attempts)) {
+        renderSecurityAttempts(security_attempts);
+    }
 
     // Timestamp
     document.getElementById('last-update').textContent = new Date(timestamp).toLocaleString('fr-FR');
@@ -679,6 +745,61 @@ function renderAlerts(alerts) {
 
     count.textContent = listData.length;
     count.classList.remove('hidden');
+}
+
+/* ==================== Tentatives de connexion ==================== */
+function renderSecurityAttempts(attempts) {
+    const tbody = document.getElementById('security-attempts-body');
+    const countEl = document.getElementById('security-count');
+    const listData = attempts || [];
+
+    if (!tbody) return;
+
+    countEl.textContent = listData.length + ' tentative(s)';
+
+    if (!listData.length) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="px-4 py-4 text-sm text-slate-400 dark:text-slate-500">
+                    Aucune tentative enregistrée pour le moment.
+                </td>
+            </tr>`;
+        return;
+    }
+
+    const badge = (attempt) => {
+        if (attempt.success) {
+            return `<span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300"><i class="fas fa-circle-check" aria-hidden="true"></i> Succès</span>`;
+        }
+        if (attempt.status_code === 429) {
+            return `<span class="inline-flex items-center gap-1 rounded-full bg-red-100 dark:bg-red-900/40 px-2 py-0.5 text-xs font-medium text-red-700 dark:text-red-300"><i class="fas fa-ban" aria-hidden="true"></i> Rate-limit</span>`;
+        }
+        return `<span class="inline-flex items-center gap-1 rounded-full bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i> Échec</span>`;
+    };
+
+    tbody.innerHTML = listData.map(a => {
+        const ua = a.user_agent || '—';
+        const email = a.email || '—';
+        const date = a.created_at ? new Date(a.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '—';
+        return `
+            <tr>
+                <td class="px-4 py-2">${badge(a)}</td>
+                <td class="px-4 py-2 text-slate-700 dark:text-slate-300 font-mono text-xs">${escapeHtml(email)}</td>
+                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 font-mono text-xs">${escapeHtml(a.ip_address || '')}</td>
+                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">${a.status_code ?? '—'}</td>
+                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">${escapeHtml(a.route || '')}</td>
+                <td class="px-4 py-2 text-slate-400 dark:text-slate-500 text-xs max-w-[160px] truncate" title="${escapeHtml(ua)}">${escapeHtml(ua)}</td>
+                <td class="px-4 py-2 text-slate-500 dark:text-slate-400 text-xs">${date}</td>
+            </tr>`;
+    }).join('');
+}
+
+function escapeHtml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
 }
 
 /* ==================== Connexion temps réel (Pusher) ==================== */

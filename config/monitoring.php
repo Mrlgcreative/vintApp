@@ -40,6 +40,18 @@ return [
         'window_minutes' => (int) env('MONITORING_IP_WINDOW', 60),
     ],
 
+    // Détection de force brute sur les tentatives de connexion.
+    'brute_force' => [
+        // Nombre de tentatives échouées depuis une même IP (fenêtre) pour alerter.
+        'max_failures_per_ip' => (int) env('MONITORING_BRUTE_FORCE_IP', 10),
+
+        // Nombre de tentatives échouées pour un même email (fenêtre) pour alerter.
+        'max_failures_per_email' => (int) env('MONITORING_BRUTE_FORCE_EMAIL', 5),
+
+        // Fenêtre (minutes) de détection.
+        'window_minutes' => (int) env('MONITORING_BRUTE_FORCE_WINDOW', 180),
+    ],
+
     'orders' => [
         // Nombre de commandes échouées/annulées dans la fenêtre pour alerter.
         'max_cancelled' => (int) env('MONITORING_CANCELLED_ORDERS', 5),

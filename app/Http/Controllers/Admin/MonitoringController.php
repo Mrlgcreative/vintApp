@@ -33,6 +33,11 @@ class MonitoringController extends Controller
             'health' => $metrics['health'],
             'timestamp' => $metrics['timestamp'],
             'alerts' => $alerts,
+            'securityAttempts' => \App\Models\SecurityLoginAttempt::recent(50),
+            'suspiciousIps' => \App\Models\SecurityLoginAttempt::suspiciousIps(
+                (int) config('monitoring.brute_force.max_failures_per_ip'),
+                (int) config('monitoring.brute_force.window_minutes')
+            ),
             'pusher' => [
                 'enabled' => config('broadcasting.default') === 'pusher',
                 'key' => config('broadcasting.connections.pusher.key'),
@@ -52,7 +57,14 @@ class MonitoringController extends Controller
 
         $this->monitoring->captureWithPusher($metrics, $alerts);
 
-        return response()->json(array_merge($metrics, ['alerts' => $alerts]));
+        return response()->json(array_merge($metrics, [
+            'alerts' => $alerts,
+            'security_attempts' => \App\Models\SecurityLoginAttempt::recent(50),
+            'suspicious_ips' => \App\Models\SecurityLoginAttempt::suspiciousIps(
+                (int) config('monitoring.brute_force.max_failures_per_ip'),
+                (int) config('monitoring.brute_force.window_minutes')
+            ),
+        ]));
     }
 
     /**

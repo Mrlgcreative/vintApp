@@ -90,6 +90,7 @@ class SecurityMonitoringService
             'accounts' => fn() => $this->detectAccountAnomalies(),
             'errors'   => fn() => $this->detectErrorAnomalies(),
             'health'   => fn() => $this->detectHealthAnomalies($health),
+            'brute_force' => fn() => $this->detectBruteForceAnomalies(),
         ] as $name => $detector) {
             try {
                 $anomalies = array_merge($anomalies, $detector());
@@ -246,6 +247,64 @@ class SecurityMonitoringService
                     $cfg['window_minutes']
                 ),
                 ['ip' => $group->ip_address, 'accounts' => $group->accounts, 'user_ids' => $group->user_ids]
+            );
+        }
+
+        return $anomalies;
+    }
+
+    /**
+     * Tentatives de connexion anormales (force brute) sur la fenêtre configurée.
+     *
+     * S'appuie sur la table security_login_attempts (remplie par le middleware
+     * security.log.logins). Alerte si une seule IP ou un seul email cumule
+     * un nombre élevé d'échecs dans la fenêtre.
+     */
+    protected function detectBruteForceAnomalies(): array
+    {
+        $anomalies = [];
+        $cfg = config('monitoring.brute_force');
+
+        // IP avec beaucoup d'échecs
+        $suspiciousIps = \App\Models\SecurityLoginAttempt::suspiciousIps(
+            (int) $cfg['max_failures_per_ip'],
+            (int) $cfg['window_minutes']
+        );
+
+        foreach ($suspiciousIps as $row) {
+            $anomalies[] = $this->make(
+                'brute_force_ip',
+                'force brute',
+                'critical',
+                sprintf(
+                    "Force brute détectée : %d tentatives de connexion échouées depuis l'IP %s en %d min.",
+                    $row->attempts,
+                    $row->ip_address,
+                    (int) $cfg['window_minutes']
+                ),
+                ['ip' => $row->ip_address, 'attempts' => $row->attempts, 'window_minutes' => (int) $cfg['window_minutes']]
+            );
+        }
+
+        // Emails ciblés par beaucoup d'échecs
+        $suspiciousEmails = \App\Models\SecurityLoginAttempt::suspiciousEmails(
+            (int) $cfg['max_failures_per_email'],
+            (int) $cfg['window_minutes']
+        );
+
+        foreach ($suspiciousEmails as $row) {
+            $anomalies[] = $this->make(
+                'brute_force_email',
+                'force brute',
+                'critical',
+                sprintf(
+                    "Force brute ciblée : %d tentatives de connexion échouées pour le compte %s (%s) en %d min.",
+                    $row->attempts,
+                    $row->email,
+                    $row->ip_address,
+                    (int) $cfg['window_minutes']
+                ),
+                ['email' => $row->email, 'ip' => $row->ip_address, 'attempts' => $row->attempts, 'window_minutes' => (int) $cfg['window_minutes']]
             );
         }
 

@@ -71,6 +71,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
             'throttle.login' => \App\Http\Middleware\ThrottleLogin::class, // 🔐 Rate limit login
             'security.log' => \App\Http\Middleware\SecurityLogging::class, // 🔐 Security logging
+            'security.log.logins' => \App\Http\Middleware\LogLoginAttempts::class, // 🛡️ Journalise les tentatives de connexion en base
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class, // ✅ Notre middleware personnalisé
             'role' => \App\Http\Middleware\CheckRole::class,
             'admin' => \App\Http\Middleware\AdminMiddleware::class,

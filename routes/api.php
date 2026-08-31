@@ -115,9 +115,9 @@ Route::prefix('v1/pawapay/callback')->middleware('throttle:100,1')->group(functi
 // ==================== Authentification API (Sanctum) ====================
 // Throttle ciblé par email+IP (rate limiter 'auth' : 5/min) pour éviter
 // l'épuisement du quota par IP partagée (proxy/edge Hostinger).
-Route::middleware('throttle:auth.register')->post('/register', [AuthController::class, 'register']);
-Route::middleware('throttle:auth.login')->post('/login', [AuthController::class, 'login']);
-Route::middleware('throttle:auth.login')->post('/auth/firebase/login', [FirebaseAuthController::class, 'login']);
+Route::middleware(['throttle:auth.register', 'security.log.logins'])->post('/register', [AuthController::class, 'register']);
+Route::middleware(['throttle:auth.login', 'security.log.logins'])->post('/login', [AuthController::class, 'login']);
+Route::middleware(['throttle:auth.login', 'security.log.logins'])->post('/auth/firebase/login', [FirebaseAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
@@ -135,9 +135,9 @@ Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function () {
 
 // ==================== Réinitialisation de mot de passe (public) ====================
 // Throttle ciblé par email+IP (rate limiter 'auth.password' : 5/min)
-Route::middleware('throttle:auth.password')->post('/password/email', [AuthController::class, 'forgotPassword']);
-Route::middleware('throttle:auth.password')->post('/password/forgot', [AuthController::class, 'forgotPassword']);
-Route::middleware('throttle:auth.password')->post('/password/reset', [AuthController::class, 'resetPassword']);
+Route::middleware(['throttle:auth.password', 'security.log.logins'])->post('/password/email', [AuthController::class, 'forgotPassword']);
+Route::middleware(['throttle:auth.password', 'security.log.logins'])->post('/password/forgot', [AuthController::class, 'forgotPassword']);
+Route::middleware(['throttle:auth.password', 'security.log.logins'])->post('/password/reset', [AuthController::class, 'resetPassword']);
 
 // ==================== Routes protégées ====================
 Route::middleware(['auth:sanctum,web'])->group(function () {
