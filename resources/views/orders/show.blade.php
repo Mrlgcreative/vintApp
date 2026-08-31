@@ -372,6 +372,32 @@
 
             <!-- Sidebar -->
             <div class="xl:col-span-1 space-y-6">
+                <!-- QR code de livraison -->
+                <div class="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
+                    <div class="border-b border-zinc-200 px-5 py-3.5 dark:border-zinc-800">
+                        <h3 class="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-white">
+                            <i class="fas fa-qrcode text-vinted-primary-500"></i>
+                            QR code de livraison
+                        </h3>
+                    </div>
+                    <div class="flex flex-col items-center p-5 text-center">
+                        <div class="rounded-lg border border-zinc-200 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-100">
+                            {!! app(\SimpleSoftwareIO\QrCode\Generator::class)->size(172)->color(124, 58, 237)->margin(1)->generate($order->scan_url) !!}
+                        </div>
+                        <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+                            Scannez ce code à la livraison
+                        </p>
+                        <span class="mt-2 inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                            {{ $order->confirmed_by_buyer_at ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300' }}">
+                            @if($order->confirmed_by_buyer_at)
+                                <i class="fas fa-check-circle mr-1"></i> Réception confirmée
+                            @else
+                                <i class="fas fa-clock mr-1"></i> En attente de confirmation
+                            @endif
+                        </span>
+                    </div>
+                </div>
+
                 <!-- Actions rapides -->
                 <div class="overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm">
                     <div class="border-b border-zinc-200 px-5 py-3.5 dark:border-zinc-800">
