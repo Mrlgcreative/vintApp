@@ -1777,7 +1777,7 @@ class AdminController extends Controller
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
-        $users = User::where('status', 'active')->orderBy('name')->get();
+        $users = User::orderBy('name')->get();
 
         return view('admin.items.create', compact('categories', 'brands', 'users'));
     }
@@ -1803,6 +1803,17 @@ class AdminController extends Controller
         ]);
 
         $data = $request->all();
+
+        // Normaliser les spécifications (format lignes [key][value] -> map plate)
+        if (isset($data['specifications']) && is_array($data['specifications'])) {
+            $specs = [];
+            foreach ($data['specifications'] as $row) {
+                if (is_array($row) && isset($row['key']) && $row['key'] !== '') {
+                    $specs[$row['key']] = $row['value'] ?? '';
+                }
+            }
+            $data['specifications'] = $specs;
+        }
 
         // Gérer les images
         if ($request->hasFile('images')) {
@@ -1837,7 +1848,7 @@ class AdminController extends Controller
     {
         $categories = Category::where('is_active', true)->orderBy('name')->get();
         $brands = Brand::where('is_active', true)->orderBy('name')->get();
-        $users = User::where('status', 'active')->orderBy('name')->get();
+        $users = User::orderBy('name')->get();
 
         return view('admin.items.edit', compact('item', 'categories', 'brands', 'users'));
     }
@@ -1864,15 +1875,27 @@ class AdminController extends Controller
 
         $data = $request->all();
 
-        // Gérer les nouvelles images
+        // Normaliser les spécifications (format lignes [key][value] -> map plate)
+        if (isset($data['specifications']) && is_array($data['specifications'])) {
+            $specs = [];
+            foreach ($data['specifications'] as $row) {
+                if (is_array($row) && isset($row['key']) && $row['key'] !== '') {
+                    $specs[$row['key']] = $row['value'] ?? '';
+                }
+            }
+            $data['specifications'] = $specs;
+        }
+
+        // Images conservées + nouvelles images
+        $images = $request->input('keep_images', []) ?? [];
+        if (!is_array($images)) $images = [];
         if ($request->hasFile('images')) {
-            $images = $item->images ?? [];
             foreach ($request->file('images') as $image) {
                 $imagePath = $image->store('items/images', 'public');
                 $images[] = $imagePath;
             }
-            $data['images'] = $images;
         }
+        $data['images'] = $images;
 
         $item->update($data);
 
