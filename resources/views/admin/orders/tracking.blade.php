@@ -654,56 +654,76 @@ function updateDistanceDisplay(distance) {
 }
 
 // Obtenir la position actuelle avec GPS
+// Tente d'abord en haute précision, puis retombe en basse précision (plus fiable / plus rapide).
 function getCurrentLocation(event) {
-    if ("geolocation" in navigator) {
-        const btn = event.target.closest('button');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Récupération de la position...';
-        btn.disabled = true;
-        
-        console.log('Demande de géolocalisation...');
-        
-        navigator.geolocation.getCurrentPosition(
-            function(position) {
-                console.log('Position obtenue:', position.coords);
-                document.getElementById('modal_latitude').value = position.coords.latitude.toFixed(8);
-                document.getElementById('modal_longitude').value = position.coords.longitude.toFixed(8);
-                calculateModalDistance();
-                btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Position obtenue !';
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }, 2000);
-            },
-            function(error) {
-                console.error('Erreur de géolocalisation:', error);
-                let errorMsg = 'Impossible d\'obtenir votre position.';
-                
-                switch(error.code) {
-                    case error.PERMISSION_DENIED:
-                        errorMsg = 'Permission refusée. Veuillez autoriser l\'accès à votre localisation dans les paramètres du navigateur.';
-                        break;
-                    case error.POSITION_UNAVAILABLE:
-                        errorMsg = 'Position non disponible. Vérifiez votre connexion GPS.';
-                        break;
-                    case error.TIMEOUT:
-                        errorMsg = 'Délai d\'attente dépassé. Réessayez.';
-                        break;
-                }
-                
-                alert(errorMsg);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
-            }
-        );
-    } else {
+    if (!("geolocation" in navigator)) {
         alert('La géolocalisation n\'est pas supportée par votre navigateur');
+        return;
     }
+
+    const btn = event.target.closest('button');
+    const originalText = btn.innerHTML;
+    let highAccuracy = true;
+
+    const resetBtn = () => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    };
+
+    const onSuccess = (position) => {
+        console.log('Position obtenue:', position.coords);
+        document.getElementById('modal_latitude').value = position.coords.latitude.toFixed(8);
+        document.getElementById('modal_longitude').value = position.coords.longitude.toFixed(8);
+        calculateModalDistance();
+        btn.innerHTML = '<i class="fas fa-check-circle mr-2"></i> Position obtenue !';
+        setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 2000);
+    };
+
+    const onError = (error) => {
+        console.error('Erreur de géolocalisation (code ' + error.code + '):', error.message);
+
+        // En cas de timeout / indisponibilité, retenter une fois en basse précision (plus fiable)
+        if (highAccuracy && (error.code === 1 || error.code === 2 || error.code === 3)) {
+            highAccuracy = false;
+            console.log('Nouvelle tentative en basse précision...');
+            navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+                enableHighAccuracy: false,
+                timeout: 20000,
+                maximumAge: 0
+            });
+            return;
+        }
+
+        const PERMISSION_DENIED = 1;
+        const POSITION_UNAVAILABLE = 2;
+        const TIMEOUT = 3;
+
+        let errorMsg = 'Impossible d\'obtenir votre position.';
+        switch (error.code) {
+            case PERMISSION_DENIED:
+                errorMsg = 'Permission refusée. Veuillez autoriser l\'accès à votre localisation dans les paramètres du navigateur.';
+                break;
+            case POSITION_UNAVAILABLE:
+                errorMsg = 'Position non disponible. Vérifiez votre connexion GPS ou réseau.';
+                break;
+            case TIMEOUT:
+                errorMsg = 'Délai d\'attente dépassé pour la localisation. Vérifiez votre connexion et réessayez.';
+                break;
+        }
+
+        alert(errorMsg);
+        resetBtn();
+    };
+
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Récupération de la position...';
+    btn.disabled = true;
+
+    console.log('Demande de géolocalisation (haute précision)...');
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+    });
 }
 
 // Calculer la distance dans le modal en temps réel
