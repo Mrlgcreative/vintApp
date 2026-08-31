@@ -438,36 +438,38 @@
         <div class="flex min-h-screen w-full flex-col transition-all duration-300" id="main-content">
 
             <!-- Topbar -->
-            <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/85 backdrop-blur-lg dark:border-slate-700 dark:bg-slate-800/85">
-                <div class="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
-                    <div class="flex min-w-0 items-center gap-3">
-                        <button class="flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500/40 dark:text-slate-300 dark:hover:bg-slate-700"
-                                id="sidebar-toggle" aria-label="Replier/ouvrir la sidebar">
-                            <i class="fas fa-bars"></i>
-                        </button>
-                        <span class="hidden h-5 w-px bg-slate-200 sm:block dark:bg-slate-700" aria-hidden="true"></span>
-                        <div class="min-w-0">
-                            <h1 class="truncate text-base font-bold text-slate-900 dark:text-white sm:text-lg">@yield('page-title')</h1>
-                            <p class="hidden truncate text-xs text-slate-400 sm:block">@yield('page-subtitle', 'Gestion de votre plateforme')</p>
-                        </div>
+            <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/85 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/85">
+                <div class="flex h-16 items-center gap-2 px-4 sm:gap-3 sm:px-6">
+                    <!-- Toggle sidebar -->
+                    <button class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:text-slate-400 dark:hover:bg-slate-800"
+                            id="sidebar-toggle" aria-label="Replier/ouvrir la sidebar">
+                        <i class="fas fa-bars text-sm"></i>
+                    </button>
+
+                    <span class="hidden h-6 w-px bg-slate-200 sm:block dark:bg-slate-700" aria-hidden="true"></span>
+
+                    <!-- Titre de page -->
+                    <div class="min-w-0 flex-1">
+                        <h1 class="truncate text-[15px] font-semibold tracking-tight text-slate-900 dark:text-white">@yield('page-title')</h1>
+                        <p class="hidden truncate text-xs text-slate-500 sm:block dark:text-slate-400">@yield('page-subtitle', 'Gestion de votre plateforme')</p>
                     </div>
 
-                    <div class="flex items-center gap-1.5 sm:gap-2">
+                    <div class="ml-auto flex items-center gap-1.5 sm:gap-2">
                         <!-- Notifications -->
                         <div class="relative">
-                            <button class="relative flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+                            <button class="relative flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:text-slate-400 dark:hover:bg-slate-800"
                                     type="button" id="notificationsDropdown">
-                                <i class="fas fa-bell text-base"></i>
-                                <span class="notification-dot absolute right-1.5 top-1.5 hidden h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white" id="notification-badge">0</span>
+                                <i class="fas fa-bell text-sm"></i>
+                                <span class="notification-dot absolute right-1.5 top-1.5 hidden h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-900" id="notification-badge">0</span>
                             </button>
 
-                            <div class="absolute right-0 top-full mt-2 hidden w-80 origin-top-right animate-pop rounded-2xl bg-white shadow-xl ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700 sm:w-96" id="notifications-dropdown">
-                                <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+                            <div class="absolute right-0 top-full mt-2 hidden w-80 origin-top-right animate-pop rounded-2xl bg-white p-0 shadow-xl ring-1 ring-slate-200 dark:bg-slate-800 dark:ring-slate-700 sm:w-96" id="notifications-dropdown">
+                                <div class="flex items-center justify-between rounded-t-2xl border-b border-slate-100 px-5 py-4 dark:border-slate-700">
                                     <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Notifications</h3>
                                     <span class="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-600 dark:bg-primary-900/30 dark:text-primary-300" id="notification-count-label">0</span>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto" id="notifications-container"></div>
-                                <div class="border-t border-slate-100 p-2 dark:border-slate-700">
+                                <div class="rounded-b-2xl border-t border-slate-100 p-2 dark:border-slate-700">
                                     <a href="{{ route('admin.notifications') }}"
                                        class="block rounded-xl px-4 py-2.5 text-center text-sm font-medium text-primary-600 transition-colors hover:bg-primary-50 dark:text-primary-300 dark:hover:bg-primary-900/20">
                                         Voir toutes les notifications
@@ -476,15 +478,22 @@
                             </div>
                         </div>
 
-                        <!-- Theme Toggle -->
-                        <button id="theme-toggle" class="flex h-10 w-10 items-center justify-center rounded-xl text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700" type="button" aria-label="Changer le thème">
-                            <i class="fas fa-moon hidden text-base" id="theme-icon-sun"></i>
-                            <i class="fas fa-sun text-base" id="theme-icon-moon"></i>
-                        </button>
+                        <!-- Theme Toggle (shadcn switch : light/dark) -->
+                        <label class="flex h-9 shrink-0 cursor-pointer items-center gap-2 rounded-lg px-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                               for="theme-switch" title="Changer le thème">
+                            <i id="theme-icon-sun" class="fas fa-sun text-xs text-slate-400 dark:hidden" aria-hidden="true"></i>
+                            <i id="theme-icon-moon" class="fas fa-moon hidden text-xs text-slate-400 dark:block" aria-hidden="true"></i>
+                            <input type="checkbox" id="theme-switch" class="sr-only peer" aria-label="Changer le thème">
+                            <span class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 border-transparent bg-slate-300 transition-colors duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500/40 dark:bg-primary-600">
+                                <span class="pointer-events-none block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 dark:translate-x-4"></span>
+                            </span>
+                        </label>
+
+                        <span class="hidden h-6 w-px bg-slate-200 sm:block dark:bg-slate-700" aria-hidden="true"></span>
 
                         <!-- Profil -->
                         <div class="relative">
-                            <button class="flex items-center gap-2 rounded-xl p-1.5 pr-3 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+                            <button class="flex items-center gap-2 rounded-lg py-1 pl-1 pr-2 transition-colors hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/40 dark:hover:bg-slate-800"
                                     type="button" id="userDropdown">
                                 @if(auth()->user()->avatar)
                                     @php
@@ -591,21 +600,19 @@
     <script>
         (function() {
             const html = document.documentElement;
-            const sun = document.getElementById('theme-icon-sun');
-            const moon = document.getElementById('theme-icon-moon');
             const stored = localStorage.getItem('theme');
-
-            const isDark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            const isDark = stored === 'dark'
+                || ((stored === 'auto' || !stored) && window.matchMedia('(prefers-color-scheme: dark)').matches);
             html.classList.toggle('dark', isDark);
-            if (sun) sun.classList.toggle('hidden', !isDark);
-            if (moon) moon.classList.toggle('hidden', isDark);
 
-            document.getElementById('theme-toggle')?.addEventListener('click', function() {
-                const dark = html.classList.toggle('dark');
-                localStorage.setItem('theme', dark ? 'dark' : 'light');
-                if (sun) sun.classList.toggle('hidden', !dark);
-                if (moon) moon.classList.toggle('hidden', dark);
-            });
+            const themeSwitch = document.getElementById('theme-switch');
+            if (themeSwitch) {
+                themeSwitch.checked = isDark;
+                themeSwitch.addEventListener('change', function() {
+                    const dark = html.classList.toggle('dark');
+                    localStorage.setItem('theme', dark ? 'dark' : 'light');
+                });
+            }
         })();
     </script>
 

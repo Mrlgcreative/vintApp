@@ -39,7 +39,7 @@ class TrackUserSession
     {
         $token = $user->currentAccessToken();
 
-        if ($token) {
+        if ($token && isset($token->id)) {
             return 'sanctum-' . $token->id;
         }
 

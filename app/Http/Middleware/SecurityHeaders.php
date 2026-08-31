@@ -129,11 +129,11 @@ class SecurityHeaders
         
         $response->headers->set('Content-Security-Policy', $csp);
 
-        // Permissions Policy - VERSION PERMISSIVE
+        // Permissions Policy - Le QR scanner de commande nécessite la caméra (top-level uniquement)
         $permissions = implode(', ', [
             'geolocation=(self)',
             'microphone=()',
-            'camera=()',
+            'camera=(self)',
             'payment=(self)',
             'usb=()',
         ]);

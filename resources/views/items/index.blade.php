@@ -207,6 +207,7 @@
                     <div class="group bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                         {{-- Image --}}
                         <a href="{{ route('items.show', $item) }}" class="block relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-gray-700">
+                            <x-skeleton class="absolute inset-0 h-full w-full" />
                             @if($item->images && count($item->images) > 0)
                                 <img data-src="{{ Storage::url($item->images[0]) }}"
                                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23f3f4f6' width='400' height='300'/%3E%3C/svg%3E"

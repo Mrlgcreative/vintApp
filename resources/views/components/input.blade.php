@@ -1,0 +1,10 @@
+@props(['type' => 'text', 'class' => ''])
+
+@php
+    $base = 'w-full px-3.5 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors';
+@endphp
+
+<input
+    type="{{ $type }}"
+    {{ $attributes->merge(['class' => "$base $class"]) }}
+>

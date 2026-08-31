@@ -109,9 +109,9 @@
                         <form id="newsletterForm" class="flex gap-2">
                             @csrf
                             <input type="email" id="newsletterEmail" 
-                                   class="flex-1 px-3 py-2 bg-gray-700 dark:bg-gray-800 text-white rounded-md border border-gray-600 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                                   class="flex-1 px-3 py-2 bg-gray-700 dark:bg-gray-800 text-white rounded-md border border-gray-600 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-vinted-primary-500 focus:border-transparent" 
                                    placeholder="Votre email" required>
-                            <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors">
+                            <button type="submit" class="px-4 py-2 bg-vinted-primary-600 text-white rounded-md hover:bg-vinted-primary-700 transition-colors">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </form>

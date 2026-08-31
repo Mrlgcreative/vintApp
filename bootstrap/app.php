@@ -31,7 +31,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrimStrings::class,
             \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
             \App\Http\Middleware\SecurityHeaders::class, // ✅ Headers de sécurité sur toutes les requêtes
-            \App\Http\Middleware\AddCameraPermissions::class, // ✅ Permissions pour la caméra
         ]);
 
         // Web Middleware Group

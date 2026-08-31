@@ -11,7 +11,9 @@
 <article class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border-2 {{ $isBoosted ? 'border-gray-300 dark:border-gray-600 ring-2 ring-gray-100 dark:ring-gray-700 shadow-lg shadow-gray-500/10 dark:shadow-black/30' : 'border-gray-100 dark:border-gray-700 hover:border-gray-300' }} transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
     
     <!-- Image Container -->
-    <div class="aspect-[3/4] relative overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+    <div class="aspect-[3/4] relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <x-skeleton class="absolute inset-0 h-full w-full" />
+
         @if($firstImage && Storage::disk('public')->exists($firstImage))
             <img src="{{ asset('storage/' . $firstImage) }}" 
                  alt="{{ $item->name }}" 

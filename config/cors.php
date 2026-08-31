@@ -31,8 +31,7 @@ return [
         ],
 
     'allowed_origins_patterns' => [
-        'localhost:\d+',
-        '127\.0\.0\.1:\d+',
+        '#^https?://(localhost|127\.0\.0\.1)(:\d+)?$#',
     ],
 
     'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'X-CSRF-TOKEN', 'X-XSRF-TOKEN'],

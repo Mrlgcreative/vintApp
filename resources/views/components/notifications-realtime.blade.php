@@ -7,7 +7,8 @@
 @auth
 <script>
 // Configuration Pusher/Echo pour les notifications temps réel
-@if(config('broadcasting.default') === 'pusher')
+// Seulement en environnement de production : en local, le temps réel est désactivé proprement.
+@if(app()->environment('production') && config('broadcasting.default') === 'pusher' && config('broadcasting.connections.pusher.key'))
 if (typeof window.Echo !== 'undefined' && window.Echo) {
     window.Echo.private('user.{{ Auth::id() }}')
         .notification((notification) => {
@@ -16,8 +17,6 @@ if (typeof window.Echo !== 'undefined' && window.Echo) {
         .listen('.notification.created', (notification) => {
             handleNotification(notification);
         });
-} else {
-    console.warn('Echo non disponible - notifications temps reel desactivees');
 }
 @endif
 

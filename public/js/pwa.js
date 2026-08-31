@@ -40,7 +40,7 @@ class PWAManager {
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            this.showInstallButton();
+            this.autoPrompt();
         });
 
         // App installée
@@ -194,6 +194,35 @@ class PWAManager {
         // Marquer comme ignorée pour cette session ET enregistrer le timestamp
         sessionStorage.setItem('pwa-update-dismissed', 'true');
         localStorage.setItem('pwa-update-last-shown', Date.now().toString());
+    }
+
+    /**
+     * Afficher automatiquement le prompt d'installation dès qu'il est disponible
+     */
+    async autoPrompt() {
+        if (!this.deferredPrompt) {
+            return;
+        }
+
+        // Si l'utilisateur a déjà rejeté récemment, garder le bouton silencieux
+        const lastDismissed = localStorage.getItem('pwa-install-dismissed');
+        if (lastDismissed && (Date.now() - parseInt(lastDismissed)) < (24 * 60 * 60 * 1000)) {
+            return;
+        }
+
+        try {
+            this.deferredPrompt.prompt();
+            const { outcome } = await this.deferredPrompt.userChoice;
+            this.deferredPrompt = null;
+            if (outcome === 'dismissed') {
+                this.dismissInstallButton();
+            } else {
+                this.hideInstallButton();
+            }
+        } catch {
+            // Prompt non disponible à ce moment : fallback vers le bouton flottant
+            this.showInstallButton();
+        }
     }
 
     /**

@@ -222,15 +222,15 @@ class AffiliateDashboard {
 
         // Mettre à jour la navigation - retirer les styles actifs
         document.querySelectorAll('[data-section]').forEach(link => {
-            link.classList.remove('bg-blue-600', 'text-white');
-            link.classList.add('text-gray-700', 'hover:bg-gray-100');
+            link.classList.remove('bg-vinted-primary-600', 'text-white');
+            link.classList.add('text-gray-700', 'dark:text-gray-200', 'hover:bg-gray-100', 'dark:hover:bg-gray-700/50');
         });
         
         // Ajouter les styles actifs au lien sélectionné
         const activeLink = document.querySelector(`[data-section="${sectionName}"]`);
         if (activeLink) {
-            activeLink.classList.remove('text-gray-700', 'hover:bg-gray-100');
-            activeLink.classList.add('bg-blue-600', 'text-white');
+            activeLink.classList.remove('text-gray-700', 'dark:text-gray-200', 'hover:bg-gray-100', 'dark:hover:bg-gray-700/50');
+            activeLink.classList.add('bg-vinted-primary-600', 'text-white');
         }
 
         this.currentSection = sectionName;
@@ -322,11 +322,10 @@ async loadDashboard() {
 
     showOfflineMode() {
         document.getElementById('statsCards').innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Mode hors ligne</strong><br>
-                    Impossible de charger les données. Vérifiez votre connexion ou contactez le support.
+            <div class="sm:col-span-2 lg:col-span-4">
+                <div class="rounded-xl border-l-4 border-amber-300 bg-amber-50 dark:bg-amber-900/20 p-5 text-sm text-amber-800 dark:text-amber-200">
+                    <p class="font-semibold"><i class="fas fa-triangle-exclamation mr-2"></i>Mode hors ligne</p>
+                    <p class="mt-1">Impossible de charger les données. Vérifiez votre connexion ou contactez le support.</p>
                 </div>
             </div>
         `;
@@ -340,37 +339,40 @@ async loadDashboard() {
         const redemptions = stats.redemptions || {};
         
         const statsHtml = `
-            <div class="col-md-3 mb-3">
-                <div class="card stats-card">
-                    <div class="card-body">
-                        <div class="stats-number">${this.formatNumber(points.available_points || 0)}</div>
-                        <div>Points Disponibles</div>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5 flex items-start gap-4">
+                <span class="w-11 h-11 flex-shrink-0 rounded-xl bg-vinted-primary-100 text-vinted-primary-700 dark:bg-vinted-primary-500/20 dark:text-vinted-primary-300 flex items-center justify-center">
+                    <i class="fas fa-coins"></i>
+                </span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums leading-tight">${this.formatNumber(points.available_points || 0)}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Points Disponibles</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-success text-white">
-                    <div class="card-body text-center">
-                        <div class="stats-number">${referrals.completed || 0}</div>
-                        <div>Parrainages Complétés</div>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5 flex items-start gap-4">
+                <span class="w-11 h-11 flex-shrink-0 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 flex items-center justify-center">
+                    <i class="fas fa-user-check"></i>
+                </span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums leading-tight">${referrals.completed || 0}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Parrainages Complétés</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-info text-white">
-                    <div class="card-body text-center">
-                        <div class="stats-number">${points.level || 1}</div>
-                        <div>Niveau Actuel</div>
-                        <small>${points.level_name || 'Bronze'}</small>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5 flex items-start gap-4">
+                <span class="w-11 h-11 flex-shrink-0 rounded-xl bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 flex items-center justify-center">
+                    <i class="fas fa-signal"></i>
+                </span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums leading-tight">${points.level || 1}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Niveau Actuel · ${points.level_name || 'Bronze'}</p>
                 </div>
             </div>
-            <div class="col-md-3 mb-3">
-                <div class="card bg-warning text-dark">
-                    <div class="card-body text-center">
-                        <div class="stats-number">${this.formatCurrency(redemptions.total_redeemed_value || 0)}</div>
-                        <div>Total Racheté</div>
-                    </div>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700/50 shadow-sm p-5 flex items-start gap-4">
+                <span class="w-11 h-11 flex-shrink-0 rounded-xl bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 flex items-center justify-center">
+                    <i class="fas fa-sack-dollar"></i>
+                </span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums leading-tight">${this.formatCurrency(redemptions.total_redeemed_value || 0)}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Total Racheté</p>
                 </div>
             </div>
         `;
@@ -387,51 +389,52 @@ async loadDashboard() {
     renderRecentTransactions(transactions) {
         if (!transactions.length) {
             document.getElementById('recentTransactions').innerHTML = 
-                '<p class="text-muted">Aucune transaction récente</p>';
+                '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8"><i class="fas fa-inbox mr-2"></i>Aucune transaction récente</p>';
             return;
         }
 
-        const transactionsHtml = transactions.map(t => `
-            <div class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <i class="${t.icon} me-2 ${t.color_class}"></i>
-                    <div>
-                        <div class="fw-bold">${t.type}</div>
-                        <small class="text-muted">${t.description}</small>
+        const transactionsHtml = transactions.map(t => {
+            const positive = String(t.amount || '').startsWith('+');
+            return `
+                <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-9 h-9 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center">
+                            <i class="${t.icon} text-sm"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${t.type}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${t.description || ''}</p>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-sm font-bold tabular-nums ${positive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}">${t.amount}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${t.date}</p>
                     </div>
                 </div>
-                <div class="text-end">
-                    <div class="${t.color_class} fw-bold">${t.amount}</div>
-                    <small class="text-muted">${t.date}</small>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
-        document.getElementById('recentTransactions').innerHTML = transactionsHtml;
+        document.getElementById('recentTransactions').innerHTML = `<div class="space-y-1.5">${transactionsHtml}</div>`;
     }
 
     renderLevelProgress(points) {
-        const progress = points.level_progress_percentage || 0;
+        const progress = Math.max(0, Math.min(100, points.level_progress_percentage || 0));
         const nextLevelPoints = points.points_to_next_level;
         
         let progressHtml = `
-            <div class="mb-3">
-                <h4 class="badge-level">${points.level_name}</h4>
-                <div class="h5">Niveau ${points.level}</div>
+            <div class="mb-4">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-vinted-primary-100 text-vinted-primary-700 dark:bg-vinted-primary-500/20 dark:text-vinted-primary-300">
+                    ${points.level_name || 'Bronze'}
+                </span>
+                <p class="text-lg font-bold text-gray-900 dark:text-white mt-2">Niveau ${points.level}</p>
             </div>
-            <div class="progress mb-2" style="height: 10px;">
-                <div class="progress-bar bg-success" role="progressbar" style="width: ${progress}%"></div>
+            <div class="h-2.5 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-3">
+                <div class="h-full rounded-full bg-vinted-primary-600 transition-all duration-500" style="width: ${progress}%"></div>
             </div>
-            <small class="text-muted">
+            <small class="text-sm text-gray-500 dark:text-gray-400">
+                ${nextLevelPoints ? `${this.formatNumber(nextLevelPoints)} points pour le niveau ${points.level + 1}` : '<i class="fas fa-crown text-amber-500 mr-1.5"></i>Niveau maximum atteint !'}
+            </small>
         `;
-
-        if (nextLevelPoints) {
-            progressHtml += `${this.formatNumber(nextLevelPoints)} points pour le niveau ${points.level + 1}`;
-        } else {
-            progressHtml += 'Niveau maximum atteint !';
-        }
-
-        progressHtml += '</small>';
 
         document.getElementById('levelProgress').innerHTML = progressHtml;
     }
@@ -461,19 +464,19 @@ async loadDashboard() {
             const finalAmount = baseAmount - fees;
 
             document.getElementById('conversionPreview').innerHTML = `
-                <div class="alert alert-info">
-                    <strong>Aperçu de conversion:</strong><br>
-                    Points: ${this.formatNumber(pointsValue)}<br>
-                    Taux: 1 point = ${rate} ${currency}<br>
-                    Montant de base: ${this.formatCurrency(baseAmount, currency)}<br>
-                    Frais (5%): ${this.formatCurrency(fees, currency)}<br>
-                    <strong>Montant final: ${this.formatCurrency(finalAmount, currency)}</strong>
+                <div class="rounded-xl border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20 p-4 text-sm text-blue-900 dark:text-blue-200 space-y-1">
+                    <p class="font-semibold"><i class="fas fa-circle-info mr-1.5"></i>Aperçu de conversion</p>
+                    <p>Points: ${this.formatNumber(pointsValue)}</p>
+                    <p>Taux: 1 point = ${rate} ${currency}</p>
+                    <p>Montant de base: ${this.formatCurrency(baseAmount, currency)}</p>
+                    <p>Frais (5%): ${this.formatCurrency(fees, currency)}</p>
+                    <p class="font-bold pt-1 border-t border-blue-200 dark:border-blue-800">Montant final: ${this.formatCurrency(finalAmount, currency)}</p>
                 </div>
             `;
         } catch (error) {
             console.error('Erreur preview conversion:', error);
             document.getElementById('conversionPreview').innerHTML = `
-                <div class="alert alert-warning">
+                <div class="rounded-xl border-l-4 border-l-amber-500 bg-amber-50 dark:bg-amber-900/20 p-4 text-sm text-amber-800 dark:text-amber-200">
                     Taux de conversion non disponible. Veuillez contacter le support.
                 </div>
             `;
@@ -491,11 +494,11 @@ async loadDashboard() {
         const discountPercentage = Math.min(points / 100, 50);
         
         document.getElementById('discountPreview').innerHTML = `
-            <div class="alert alert-info">
-                <strong>Aperçu du code:</strong><br>
-                Points utilisés: ${this.formatNumber(points)}<br>
-                <strong>Réduction: ${discountPercentage}%</strong><br>
-                <small>Maximum 50% de réduction</small>
+            <div class="rounded-xl border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20 p-4 text-sm text-blue-900 dark:text-blue-200 space-y-1">
+                <p class="font-semibold"><i class="fas fa-circle-info mr-1.5"></i>Aperçu du code</p>
+                <p>Points utilisés: ${this.formatNumber(points)}</p>
+                <p class="font-bold">Réduction: ${discountPercentage}%</p>
+                <p class="text-xs opacity-80">Maximum 50% de réduction</p>
             </div>
         `;
     }
@@ -592,8 +595,7 @@ async loadDashboard() {
 
             if (data.success) {
                 this.showAlert(
-                    `Code de réduction généré: <strong>${data.data.discount_code}</strong><br>` +
-                    `Réduction: ${data.data.discount_percentage}%`, 
+                    `Code de réduction généré : ${data.data.discount_code} (Réduction : ${data.data.discount_percentage}%)`, 
                     'success'
                 );
                 document.getElementById('generateDiscountForm').reset();
@@ -805,7 +807,7 @@ async loadDashboard() {
             });
 
             if (data.success) {
-                this.showAlert(`Code créé avec succès: <strong>${data.data.code}</strong>`, 'success');
+                this.showAlert(`Code créé avec succès : ${data.data.code}`, 'success');
                 
                 // Réinitialiser le formulaire
                 document.getElementById('createCodeForm').reset();
@@ -887,32 +889,75 @@ async loadDashboard() {
     renderPointsHistory(transactions) {
         if (!transactions.length) {
             document.getElementById('pointsHistory').innerHTML = 
-                '<p class="text-muted">Aucune transaction trouvée</p>';
+                '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8"><i class="fas fa-inbox mr-2"></i>Aucune transaction trouvée</p>';
             return;
         }
 
-        const historyHtml = transactions.map(t => `
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div class="d-flex align-items-center">
-                        <i class="${t.icon} me-2 ${t.color_class}"></i>
-                        <div>
-                            <div class="fw-bold">${t.type_description}</div>
-                            <div class="text-muted">${t.description}</div>
-                            <small class="text-muted">${t.date}</small>
+        const TYPE_LABELS = {
+            'earn_referral': 'Gain par parrainage',
+            'earn_signup_bonus': "Bonus d'inscription",
+            'earn_purchase': 'Gain par achat',
+            'earn_sale': 'Gain par vente',
+            'earn_review': 'Gain par avis',
+            'earn_daily_login': 'Connexion quotidienne',
+            'earn_social_share': 'Partage sur réseaux sociaux',
+            'earn_profile_complete': 'Profil complété',
+            'earn_bonus': 'Bonus',
+            'redeem_cash': 'Conversion en argent',
+            'redeem_discount': 'Utilisation pour réduction',
+            'expire': 'Points expirés',
+            'refund': 'Remboursement',
+            'adjustment': 'Ajustement'
+        };
+        const ICONS = {
+            'earn_referral': 'fas fa-users',
+            'earn_signup_bonus': 'fas fa-gift',
+            'earn_purchase': 'fas fa-cart-shopping',
+            'earn_sale': 'fas fa-dollar-sign',
+            'earn_review': 'fas fa-star',
+            'earn_daily_login': 'fas fa-calendar-check',
+            'earn_social_share': 'fas fa-share-alt',
+            'earn_profile_complete': 'fas fa-user-check',
+            'earn_bonus': 'fas fa-trophy',
+            'redeem_cash': 'fas fa-money-bill-wave',
+            'redeem_discount': 'fas fa-percent',
+            'expire': 'fas fa-clock',
+            'refund': 'fas fa-rotate-left',
+            'adjustment': 'fas fa-gear'
+        };
+
+        const historyHtml = transactions.map(t => {
+            const rawAmount = parseFloat(t.amount);
+            const positive = !isNaN(rawAmount) ? rawAmount > 0 : String(t.amount || '').startsWith('+');
+            const typeLabel = t.type_description || TYPE_LABELS[t.type] || t.type || 'Transaction';
+            const amountLabel = t.formatted_amount || ((positive ? '+' : '') + this.formatNumber(Math.abs(rawAmount || 0))) + ' pts';
+            const icon = t.icon || ICONS[t.type] || 'fas fa-circle';
+            const dateLabel = t.date || t.created_at || '';
+            const balanceLabel = t.balance_after != null
+                ? `Solde: ${this.formatNumber(Math.abs(parseFloat(t.balance_after))) || t.balance_after} pts`
+                : '';
+
+            return `
+                <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span class="w-9 h-9 flex-shrink-0 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 flex items-center justify-center">
+                            <i class="${icon} text-sm"></i>
+                        </span>
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${typeLabel}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${t.description || ''}</p>
+                            ${dateLabel ? `<p class="text-xs text-gray-400 dark:text-gray-500">${dateLabel}</p>` : ''}
                         </div>
                     </div>
-                    <div class="text-end">
-                        <div class="${t.color_class} fw-bold">${t.formatted_amount}</div>
-                        <small class="text-muted">Solde: ${t.balance_after}</small>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-sm font-bold tabular-nums ${positive ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}">${amountLabel}</p>
+                        ${balanceLabel ? `<p class="text-xs text-gray-500 dark:text-gray-400">${balanceLabel}</p>` : ''}
                     </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
-        document.getElementById('pointsHistory').innerHTML = `
-            <div class="list-group">${historyHtml}</div>
-        `;
+        document.getElementById('pointsHistory').innerHTML = `<div class="space-y-1.5">${historyHtml}</div>`;
     }
 
     async loadReferrals() {
@@ -931,29 +976,32 @@ async loadDashboard() {
     renderReferrals(referrals) {
         if (!referrals.length) {
             document.getElementById('referralsList').innerHTML = 
-                '<p class="text-muted">Aucun parrainage pour le moment</p>';
+                '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8"><i class="fas fa-user-plus mr-2"></i>Aucun parrainage pour le moment</p>';
             return;
         }
 
         const referralsHtml = referrals.map(r => `
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1">${r.referred_name}</h6>
-                        <p class="mb-1">Code utilisé: <code>${r.code_used}</code></p>
-                        <small class="text-muted">Date: ${r.created_at}</small>
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-9 h-9 flex-shrink-0 rounded-full bg-vinted-primary-100 text-vinted-primary-700 dark:bg-vinted-primary-500/20 dark:text-vinted-primary-300 flex items-center justify-center text-sm font-bold">
+                        ${(r.referred_name || '?').charAt(0).toUpperCase()}
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${r.referred_name || '-'}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            Code utilisé: <code class="font-mono text-xs text-vinted-primary-700 dark:text-vinted-primary-300 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 px-1.5 py-0.5 rounded">${r.code_used || '-'}</code>
+                        </p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">${r.created_at || ''}</p>
                     </div>
-                    <div class="text-end">
-                        <span class="badge bg-${this.getStatusColor(r.status)}">${r.status}</span>
-                        ${r.points_earned > 0 ? `<div class="badge-points mt-1">+${r.points_earned} pts</div>` : ''}
-                    </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${this.getStatusColor(r.status)}">${r.status || '-'}</span>
+                    ${r.points_earned > 0 ? `<p class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-1"><i class="fas fa-plus-circle"></i>${this.formatNumber(r.points_earned)} pts</p>` : ''}
                 </div>
             </div>
         `).join('');
 
-        document.getElementById('referralsList').innerHTML = `
-            <div class="list-group">${referralsHtml}</div>
-        `;
+        document.getElementById('referralsList').innerHTML = `<div class="space-y-1.5">${referralsHtml}</div>`;
     }
 
     async loadReferralCodes() {
@@ -984,8 +1032,8 @@ async loadDashboard() {
                         <i class="fas fa-qr-code fa-3x text-gray-400 mb-3"></i>
                         <h5 class="text-gray-600">Aucun code de parrainage</h5>
                         <p class="text-gray-500">Créez votre premier code de parrainage pour commencer à inviter vos amis !</p>
-                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors" onclick="window.affiliateDashboard.openModal('createCodeModal')">
-                            <i class="fas fa-plus mr-2"></i> Créer mon premier code
+                        <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold text-white bg-vinted-primary-600 hover:bg-vinted-primary-700 transition-colors" onclick="window.affiliateDashboard.openModal('createCodeModal')">
+                            <i class="fas fa-plus"></i> Créer mon premier code
                         </button>
                     </div>
             `;
@@ -996,17 +1044,17 @@ async loadDashboard() {
             // Déterminer le statut basé sur is_active et expires_at
             let status = 'inactive';
             let statusLabel = 'Inactif';
-            let statusColor = 'bg-gray-400';
+            let statusColor = 'bg-gray-100 text-gray-600 dark:bg-gray-500/20 dark:text-gray-300';
             
             if (c.is_active) {
                 if (c.expires_at && new Date(c.expires_at) < new Date()) {
                     status = 'expired';
                     statusLabel = 'Expiré';
-                    statusColor = 'bg-red-500';
+                    statusColor = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300';
                 } else {
                     status = 'active';
                     statusLabel = 'Actif';
-                    statusColor = 'bg-green-500';
+                    statusColor = 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300';
                 }
             }
             
@@ -1016,7 +1064,7 @@ async loadDashboard() {
                         <div class="flex-1">
                             <h5 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">${c.title || 'Code sans titre'}</h5>
                             <div class="flex gap-2 mb-2">
-                                <span class="px-3 py-1 ${statusColor} text-white rounded-full text-xs font-semibold">
+                                <span class="px-3 py-1 ${statusColor} rounded-full text-xs font-semibold">
                                     ${statusLabel}
                                 </span>
                             </div>
@@ -1117,34 +1165,35 @@ async loadDashboard() {
     renderRedemptions(redemptions) {
         if (!redemptions.length) {
             document.getElementById('redemptionsList').innerHTML = 
-                '<p class="text-muted">Aucun rachat pour le moment</p>';
+                '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8"><i class="fas fa-inbox mr-2"></i>Aucun rachat pour le moment</p>';
             return;
         }
 
-        const redemptionsHtml = redemptions.map(r => `
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h6 class="mb-1">${r.type} - ${r.redemption_id}</h6>
-                        <p class="mb-1">${r.description}</p>
-                        <small class="text-muted">Créé le: ${r.created_at}</small>
-                        ${r.processed_at ? `<br><small class="text-muted">Traité le: ${r.processed_at}</small>` : ''}
-                    </div>
-                    <div class="text-end">
-                        <div class="badge bg-${this.getStatusColor(r.status)}">${r.status}</div>
-                        <div class="mt-1">
-                            <strong>${r.points_used}</strong>
-                            ${r.cash_amount ? `<br><small>${r.cash_amount}</small>` : ''}
-                        </div>
-                        ${r.redemption_code ? `<br><code>${r.redemption_code}</code>` : ''}
+        const redemptionsHtml = redemptions.map(r => {
+            const isCash = String(r.type || '').toLowerCase().includes('cash') || String(r.type || '').toLowerCase().includes('argent');
+            return `
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-9 h-9 flex-shrink-0 rounded-lg ${isCash ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-300' : 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'} flex items-center justify-center">
+                        <i class="fas ${isCash ? 'fa-money-bill-wave' : 'fa-percent'} text-sm"></i>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${r.type} - ${r.redemption_id}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${r.description || ''}</p>
+                        <p class="text-xs text-gray-400 dark:text-gray-500">Créé le: ${r.created_at}${r.processed_at ? ` · Traité le: ${r.processed_at}` : ''}</p>
+                        ${r.redemption_code ? `<code class="font-mono text-xs text-vinted-primary-700 dark:text-vinted-primary-300 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 px-1.5 py-0.5 rounded block mt-0.5 w-fit">${r.redemption_code}</code>` : ''}
                     </div>
                 </div>
+                <div class="text-right flex-shrink-0">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${this.getStatusColor(r.status)}">${r.status}</span>
+                    <p class="text-sm font-bold text-gray-900 dark:text-white mt-1 tabular-nums">${r.points_used}</p>
+                    ${r.cash_amount ? `<p class="text-xs font-semibold text-emerald-600 dark:text-emerald-400">${r.cash_amount}</p>` : ''}
+                </div>
             </div>
-        `).join('');
-
-        document.getElementById('redemptionsList').innerHTML = `
-            <div class="list-group">${redemptionsHtml}</div>
         `;
+        }).join('');
+
+        document.getElementById('redemptionsList').innerHTML = `<div class="space-y-1.5">${redemptionsHtml}</div>`;
     }
 
     async loadLeaderboard() {
@@ -1163,45 +1212,35 @@ async loadDashboard() {
     renderLeaderboard(leaderboard) {
         if (!leaderboard.length) {
             document.getElementById('leaderboardList').innerHTML = 
-                '<p class="text-muted">Aucune donnée de classement</p>';
+                '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-8"><i class="fas fa-trophy mr-2"></i>Aucune donnée de classement</p>';
             return;
         }
 
         const leaderboardHtml = leaderboard.map((user, index) => `
-            <div class="list-group-item">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                        <div class="me-3">
-                            <span class="badge ${index < 3 ? 'bg-warning text-dark' : 'bg-secondary'} fs-6">
-                                #${user.rank}
-                            </span>
-                        </div>
-                        <div class="me-3">
-                            ${user.avatar ? 
-                                `<img src="${user.avatar}" class="rounded-circle" width="40" height="40" alt="Avatar">` :
-                                `<div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width:40px;height:40px;">
-                                    ${user.user_name.charAt(0).toUpperCase()}
-                                </div>`
-                            }
-                        </div>
-                        <div>
-                            <h6 class="mb-0">${user.user_name}</h6>
-                            <small class="text-muted">
-                                ${user.level_name} (Niveau ${user.level})
-                            </small>
-                        </div>
+            <div class="flex items-center justify-between gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors">
+                <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-7 h-7 flex-shrink-0 rounded-full text-xs font-bold flex items-center justify-center ${index < 3 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}">
+                        #${user.rank}
+                    </span>
+                    <span class="w-9 h-9 flex-shrink-0 rounded-full overflow-hidden bg-vinted-primary-100 flex items-center justify-center">
+                        ${user.avatar ? 
+                            `<img src="${user.avatar}" class="w-full h-full object-cover" alt="Avatar">` :
+                            `<span class="w-full h-full flex items-center justify-center text-sm font-bold text-vinted-primary-700">${(user.user_name || '?').charAt(0).toUpperCase()}</span>`
+                        }
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${user.user_name}</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">${user.level_name} (Niveau ${user.level})</p>
                     </div>
-                    <div class="text-end">
-                        <div class="fw-bold">${this.formatNumber(user.total_points)} pts</div>
-                        <small class="text-muted">${user.referrals_count} parrainages</small>
-                    </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                    <p class="text-sm font-bold text-gray-900 dark:text-white tabular-nums">${this.formatNumber(user.total_points)} pts</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">${user.referrals_count} parrainages</p>
                 </div>
             </div>
         `).join('');
 
-        document.getElementById('leaderboardList').innerHTML = `
-            <div class="list-group">${leaderboardHtml}</div>
-        `;
+        document.getElementById('leaderboardList').innerHTML = `<div class="space-y-1.5">${leaderboardHtml}</div>`;
     }
 
     showShareModal() {
@@ -1247,21 +1286,33 @@ async loadDashboard() {
 
     getStatusColor(status) {
         const colors = {
-            'pending': 'warning',
-            'En attente': 'warning',
-            'active': 'info',
-            'Actif': 'info',
-            'completed': 'success',
-            'Complété': 'success',
-            'cancelled': 'danger',
-            'Annulé': 'danger',
-            'failed': 'danger',
-            'Échoué': 'danger'
+            'pending': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+            'En attente': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+            'processing': 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300',
+            'En cours': 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300',
+            'active': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+            'Actif': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+            'completed': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+            'Complété': 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+            'cancelled': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+            'Annulé': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+            'failed': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+            'Échoué': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+            'expired': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+            'Expiré': 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
         };
-        return colors[status] || 'secondary';
+        return colors[status] || 'bg-gray-100 text-gray-700 dark:bg-gray-700/60 dark:text-gray-300';
     }
 
     showAlert(message, type = 'info') {
+        // Utiliser le toast global shadcn (<x-toast />) s'il est disponible
+        if (typeof window.showToast === 'function') {
+            const map = { 'error': 'error', 'success': 'success', 'warning': 'warning', 'info': 'info' };
+            window.showToast(message, map[type] || 'info');
+            return;
+        }
+
+        // Fallback legacy (si le composant toast n'est pas chargé)
         const alertClass = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
                           type === 'success' ? 'bg-green-100 border-green-500 text-green-700' :
                           type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
@@ -1296,9 +1347,9 @@ async loadDashboard() {
         const element = document.getElementById(elementId);
         if (element) {
             element.innerHTML = `
-                <div class="text-center p-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Chargement...</span>
+                <div class="flex items-center justify-center p-8">
+                    <div class="w-8 h-8 border-2 border-vinted-primary-600 border-t-transparent rounded-full animate-spin" role="status" aria-label="Chargement...">
+                        <span class="sr-only">Chargement...</span>
                     </div>
                 </div>
             `;
@@ -1352,7 +1403,12 @@ window.copyToClipboard = function copyToClipboard(text) {
     }
     
     navigator.clipboard.writeText(textToCopy).then(() => {
-        // Créer une notification temporaire avec Tailwind
+        // Notifier via le toast global shadcn
+        if (typeof window.showToast === 'function') {
+            window.showToast('Copié dans le presse-papiers !', 'success');
+            return;
+        }
+        // Fallback legacy
         const notification = document.createElement('div');
         notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-[9999] animate-fade-in';
         notification.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Copié dans le presse-papiers !';

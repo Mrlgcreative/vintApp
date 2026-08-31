@@ -3,12 +3,12 @@
 @section('title', 'Conversation avec ' . $otherUser->name)
 
 @section('content')
-<div class="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden z-50 pb-16 md:pb-0 [&_footer]:!hidden [&_.breadcrumb]:!hidden [&_main]:pt-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_1px,rgba(0,0,0,0.02)_1px,rgba(0,0,0,0.02)_10px)]">
-    {{-- En-tete style WhatsApp --}}
-    <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg">
-        <div class="flex items-center px-3 sm:px-4 py-2.5 sm:py-3 gap-2 sm:gap-3">
-            <a href="{{ route('messages.index') }}" class="text-white hover:bg-white/10 p-1.5 sm:p-2 rounded-full transition-all duration-200">
-                <svg class="w-5 h-5 sm:w-[22px] sm:h-[22px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="fixed inset-0 bg-gray-50 dark:bg-gray-950 flex flex-col overflow-hidden z-50 [&_footer]:!hidden [&_.breadcrumb]:!hidden [&_main]:pt-0">
+    {{-- En-tete --}}
+    <div class="border-b border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900">
+        <div class="flex items-center px-3 sm:px-4 py-2.5 sm:py-3 gap-2 sm:gap-1.5">
+            <a href="{{ route('messages.index') }}" class="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" aria-label="Retour">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
             </a>
@@ -17,50 +17,50 @@
                     @if($otherUser->avatar_url)
                         <img src="{{ $otherUser->avatar_url }}"
                              alt="{{ $otherUser->name }}"
-                             class="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover">
+                             class="h-9 w-9 sm:h-10 sm:w-10 rounded-full object-cover">
                     @else
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary-700 flex items-center justify-center text-white font-semibold text-sm sm:text-base">
+                        <span class="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-vinted-primary-100 text-sm font-semibold text-vinted-primary-700 dark:bg-vinted-primary-500/20 dark:text-vinted-primary-300">
                             {{ strtoupper(substr($otherUser->name, 0, 1)) }}
-                        </div>
+                        </span>
                     @endif
-                    <div class="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-400 border-2 border-primary-600 rounded-full ring-2 ring-green-400/30"></div>
+                    <span class="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-vinted-success-500 dark:border-gray-900"></span>
                 </div>
                 <div class="flex-1 min-w-0">
-                    <h6 class="font-semibold text-white text-sm sm:text-base truncate">{{ $otherUser->name }}</h6>
-                    <p class="text-[11px] sm:text-xs text-white/70 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full inline-block flex-shrink-0"></span>
+                    <h6 class="truncate text-sm font-medium text-gray-900 dark:text-white sm:text-base">{{ $otherUser->name }}</h6>
+                    <p class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                        <span class="inline-block h-1.5 w-1.5 flex-shrink-0 rounded-full bg-vinted-success-500"></span>
                         <span class="truncate">En ligne</span>
                     </p>
                 </div>
             </div>
-            <div class="flex items-center gap-0.5 sm:gap-1">
-                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200 hidden sm:flex" title="Appel">
+            <div class="flex items-center gap-0.5 sm:gap-0.5">
+                <button class="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white hidden sm:flex" title="Appel">
                     <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                     </svg>
                 </button>
-                <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200 hidden sm:flex" title="Video">
+                <button class="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white hidden sm:flex" title="Video">
                     <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
                 </button>
                 <div class="relative">
-                    <button class="text-white/80 hover:text-white hover:bg-white/10 p-2 sm:p-2.5 rounded-full transition-all duration-200" onclick="toggleDropdown()" title="Plus">
+                    <button class="flex h-9 w-9 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" onclick="toggleDropdown()" title="Plus">
                         <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                         </svg>
                     </button>
-                    <div id="dropdown" class="absolute right-0 mt-2 w-44 sm:w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 py-1.5 hidden z-10">
-                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
-                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <div id="dropdown" class="absolute right-0 mt-2 hidden z-10 w-44 sm:w-48 rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                             Rechercher
                         </a>
-                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-sm">
-                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700">
+                            <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                             Blocker
                         </a>
                         <hr class="my-1.5 border-gray-100 dark:border-gray-700">
-                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors text-sm">
+                        <a href="#" class="flex items-center gap-3 px-3 sm:px-4 py-2 sm:py-2.5 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             Supprimer
                         </a>
@@ -72,19 +72,19 @@
 
     {{-- Badge produit concerne --}}
     @if($item)
-        <div class="bg-secondary dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-2 sm:py-3">
+        <div class="border-b border-gray-200 bg-white px-3 dark:border-gray-700/50 dark:bg-gray-900 sm:px-4 py-2 sm:py-3">
             <div class="flex items-center gap-2 sm:gap-3">
                 @if($item->images && count($item->images) > 0)
                     <img src="{{ Storage::url($item->images[0]) }}"
                          alt="{{ $item->name }}"
-                         class="w-10 h-10 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl object-cover shadow-sm ring-1 ring-black/5 flex-shrink-0">
+                         class="h-10 w-10 flex-shrink-0 rounded-lg object-cover shadow-sm ring-1 ring-black/5 sm:h-14 sm:w-14 sm:rounded-xl">
                 @endif
                 <div class="flex-1 min-w-0">
-                    <span class="font-semibold text-gray-900 dark:text-white block truncate text-sm sm:text-base">{{ $item->name }}</span>
-                    <span class="text-primary-600 dark:text-primary-400 font-bold text-base sm:text-lg">{{ $item->formatted_price }}</span>
+                    <span class="block truncate text-sm font-medium text-gray-900 dark:text-white sm:text-base">{{ $item->name }}</span>
+                    <span class="text-base font-semibold text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-lg">{{ $item->formatted_price }}</span>
                 </div>
                 <a href="{{ route('items.show', $item) }}"
-                   class="text-primary-500 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 p-2 sm:p-2.5 rounded-full hover:bg-primary-50 dark:hover:bg-primary-800/30 transition-colors flex-shrink-0">
+                   class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
                     <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
                     </svg>
@@ -94,35 +94,35 @@
 
         {{-- Panel de reduction pour le vendeur --}}
         @if($item->user_id === Auth::id())
-            <div class="bg-white dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700" id="discountPanel">
-                <div class="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors" onclick="toggleDiscountPanel()">
+            <div class="border-b border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900" id="discountPanel">
+                <div class="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50" onclick="toggleDiscountPanel()">
                     <div class="flex items-center gap-2 sm:gap-3 text-gray-700 dark:text-gray-300 min-w-0">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
-                            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-vinted-primary-100 dark:bg-vinted-primary-500/20 sm:h-8 sm:w-8">
+                            <svg class="w-3.5 h-3.5 text-vinted-primary-600 dark:text-vinted-primary-300 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
                         </div>
-                        <span class="font-semibold text-sm sm:text-base truncate">Proposer une reduction</span>
+                        <span class="truncate text-sm font-medium sm:text-base">Proposer une reduction</span>
                     </div>
-                    <button class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 flex-shrink-0" id="discountToggleBtn">
+                    <button class="flex-shrink-0 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300" id="discountToggleBtn">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200" id="discountToggleIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
                 </div>
 
-                <div class="px-3 sm:px-4 pb-4 hidden" id="discountContent">
-                    <div class="border-t border-gray-200 dark:border-gray-700 pt-3 sm:pt-4 space-y-3 sm:space-y-4">
-                        <div class="bg-white dark:bg-gray-800/80 backdrop-blur rounded-lg sm:rounded-xl p-3 sm:p-3.5 border border-gray-200 dark:border-gray-700 flex items-center justify-between shadow-sm">
+                <div class="hidden px-3 sm:px-4 pb-4" id="discountContent">
+                    <div class="space-y-3 border-t border-gray-200 pt-3 dark:border-gray-700 sm:space-y-4 sm:pt-4">
+                        <div class="flex items-center justify-between rounded-md border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/50 sm:rounded-lg sm:p-3.5">
                             <div class="flex items-center gap-2 sm:gap-2.5">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center">
-                                    <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="flex h-7 w-7 items-center justify-center rounded-md bg-vinted-primary-100 dark:bg-vinted-primary-500/20 sm:h-8 sm:w-8">
+                                    <svg class="w-3.5 h-3.5 text-vinted-primary-600 dark:text-vinted-primary-300 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                                     </svg>
                                 </div>
-                                <span class="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-300">Prix actuel :</span>
+                                <span class="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Prix actuel :</span>
                             </div>
-                            <span class="text-primary-600 dark:text-primary-400 font-bold text-lg sm:text-xl tracking-tight">{{ $item->formatted_price }}</span>
+                            <span class="text-lg font-semibold tracking-tight text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-xl">{{ $item->formatted_price }}</span>
                         </div>
 
                         <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5">
@@ -130,32 +130,33 @@
                                 $rates = [5, 10, 15, 20, 25, 30];
                             @endphp
                             @foreach($rates as $rate)
-                                <div class="rate-option bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3.5 text-center cursor-pointer hover:border-primary-400 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 group"
-                                     data-rate="{{ $rate }}">
-                                    <div class="text-sm sm:text-lg font-bold text-gray-900 dark:text-white mb-0.5 sm:mb-1.5">{{ $rate }}%</div>
-                                    <div class="text-primary-600 dark:text-primary-400 font-semibold text-[10px] sm:text-sm leading-tight sm:leading-normal">
+                                <button type="button"
+                                        class="rate-option rounded-lg border border-gray-200 bg-white p-2 text-center transition-colors hover:border-vinted-primary-300 dark:border-gray-700 dark:bg-gray-800 sm:rounded-xl sm:p-3.5"
+                                        data-rate="{{ $rate }}">
+                                    <div class="mb-0.5 text-sm font-semibold text-gray-900 dark:text-white sm:mb-1.5 sm:text-lg">{{ $rate }}%</div>
+                                    <div class="text-xs font-medium leading-tight text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-sm">
                                         {{ $item->currency_symbol }}{{ number_format($item->price * (1 - $rate/100), 2) }}
                                     </div>
-                                    <div class="text-[9px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5 sm:mt-1 flex items-center justify-center gap-0.5 sm:gap-1">
-                                        <span class="inline-flex items-center gap-0.5 text-red-400">
+                                    <div class="mt-0.5 flex items-center justify-center gap-0.5 text-red-400 text-[9px] sm:mt-1 sm:gap-1 sm:text-xs">
+                                        <span class="inline-flex items-center gap-0.5">
                                             <svg class="w-2 h-2 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
                                             </svg>
                                             {{ $item->currency_symbol }}{{ number_format($item->price * $rate/100, 2) }}
                                         </span>
                                     </div>
-                                </div>
+                                </button>
                             @endforeach
                         </div>
 
-                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg sm:rounded-xl p-2.5 sm:p-3 border border-gray-200 dark:border-gray-700">
+                        <div class="rounded-md border border-gray-200 bg-gray-50 p-2.5 dark:border-gray-700 dark:bg-gray-800/50 sm:rounded-lg sm:p-3">
                             <div class="flex items-start gap-2 sm:gap-2.5">
-                                <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                                    <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-vinted-primary-100 dark:bg-vinted-primary-500/20 sm:h-7 sm:w-7">
+                                    <svg class="w-3 h-3 text-vinted-primary-600 dark:text-vinted-primary-300 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <p class="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+                                <p class="text-[10px] leading-relaxed text-gray-500 dark:text-gray-400 sm:text-xs">
                                     La reduction sera appliquee automatiquement sur le prix affiche. L'acheteur recevra une notification de votre offre.
                                 </p>
                             </div>
@@ -167,12 +168,12 @@
                             <input type="hidden" name="buyer_id" value="{{ $otherUser->id }}">
                             <input type="hidden" name="discount_percentage" id="discountPercentage" value="">
                             <button type="button" id="applyDiscountBtn"
-                                    class="w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                                    class="w-full rounded-md py-2.5 text-sm font-semibold text-gray-400 transition-colors dark:text-gray-500 bg-gray-200 dark:bg-gray-700 cursor-not-allowed sm:py-3"
                                     disabled
                                     onclick="submitDiscount()">
                                 Appliquer la reduction
                             </button>
-                            <div id="discountResult" class="hidden mt-2 text-center text-sm font-medium"></div>
+                            <div id="discountResult" class="mt-2 hidden text-center text-sm font-medium"></div>
                         </form>
                     </div>
                 </div>
@@ -181,53 +182,53 @@
     @endif
 
     {{-- Zone des messages --}}
-    <div class="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-4 pb-24 md:pb-4 bg-gray-50 dark:bg-gray-900/50" id="messagesContainer">
-        <div class="max-w-4xl mx-auto space-y-1">
+    <div class="flex-1 overflow-y-auto bg-gray-50 px-2 py-3 dark:bg-gray-950 sm:px-4 sm:py-4 pb-24 md:pb-4" id="messagesContainer">
+        <div class="mx-auto max-w-4xl">
             @if($messages->count() > 0)
                 @foreach($messages as $message)
                     <div class="mb-1.5 flex {{ $message->sender_id === Auth::id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-[75%] sm:max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative {{ $message->sender_id === Auth::id() ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800' }} rounded-2xl {{ $message->sender_id === Auth::id() ? 'rounded-br-sm' : 'rounded-bl-sm' }} px-3 sm:px-3.5 py-2 sm:py-2.5 shadow-sm hover:shadow-md transition-shadow animate-fade-in">
+                        <div class="relative min-w-0 max-w-[75%] {{ $message->sender_id === Auth::id() ? 'bg-vinted-primary-100/70 dark:bg-vinted-primary-500/20' : 'bg-white dark:bg-gray-800' }} rounded-xl {{ $message->sender_id === Auth::id() ? 'rounded-br-sm' : 'rounded-bl-sm' }} px-3 py-2 shadow-sm dark:shadow-none sm:max-w-xs sm:px-3.5 sm:py-2.5 lg:max-w-md xl:max-w-lg animate-fade-in">
                             @if($message->subject)
-                                <div class="bg-black/5 dark:bg-white/5 rounded-lg px-2.5 py-1.5 mb-2 text-xs font-semibold flex items-center gap-1.5 text-gray-700 dark:text-gray-300">
-                                    <i class="fas fa-tag text-primary-500"></i>
+                                <div class="mb-2 flex items-center gap-1.5 rounded-md bg-black/5 px-2.5 py-1.5 text-xs font-semibold text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                                    <i class="fas fa-tag text-vinted-primary-500"></i>
                                     {{ $message->subject }}
                                 </div>
                             @endif
-                            
+
                             @if($message->content)
-                                <div class="text-sm leading-relaxed text-gray-900 dark:text-white mb-1">
+                                <div class="mb-1 text-sm leading-relaxed text-gray-900 dark:text-white">
                                     {!! nl2br(e($message->content)) !!}
                                 </div>
                             @endif
-                            
+
                             @if($message->type === 'audio' && $message->attachment)
                                 <div class="my-1 voice-msg" data-src="{{ Storage::url($message->attachment) }}" data-duration="{{ $message->duration ?? 0 }}">
                                     <div class="flex items-center gap-2 min-w-48">
-                                        <button type="button" class="voice-play-btn w-9 h-9 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center flex-shrink-0 transition-all active:scale-95 shadow-sm">
+                                        <button type="button" class="voice-play-btn flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-vinted-primary-600 text-white shadow-sm transition-all hover:bg-vinted-primary-700 active:scale-95">
                                             <i class="fas fa-play text-xs ml-0.5"></i>
                                         </button>
                                         <div class="flex-1 min-w-0">
-                                            <div class="voice-progress h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
-                                                <div class="voice-progress-fill h-full bg-primary-600 rounded-full" style="width: 0%"></div>
+                                            <div class="voice-progress h-1 overflow-hidden rounded-full bg-black/10 dark:bg-white/10">
+                                                <div class="voice-progress-fill h-full rounded-full bg-vinted-primary-600" style="width: 0%"></div>
                                             </div>
                                         </div>
-                                        <span class="voice-time text-xs text-gray-500 dark:text-gray-400 tabular-nums flex-shrink-0">{{ gmdate('i:s', intval($message->duration ?? 0)) }}</span>
-                                        <i class="fas fa-microphone text-primary-600 dark:text-primary-400 text-xs flex-shrink-0 opacity-60"></i>
+                                        <span class="voice-time flex-shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">{{ gmdate('i:s', intval($message->duration ?? 0)) }}</span>
+                                        <i class="fas fa-microphone flex-shrink-0 text-xs text-vinted-primary-600 opacity-60 dark:text-vinted-primary-400"></i>
                                     </div>
                                 </div>
                             @elseif($message->attachment)
                                 <div class="my-2">
                                     @if(Str::startsWith($message->attachment, 'items/') || in_array(pathinfo($message->attachment, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                        <img src="{{ Storage::url($message->attachment) }}" 
-                                             alt="Image jointe" 
-                                             class="max-w-48 max-h-48 rounded-xl cursor-pointer hover:scale-[1.02] transition-transform shadow-sm"
+                                        <img src="{{ Storage::url($message->attachment) }}"
+                                             alt="Image jointe"
+                                             class="max-w-48 max-h-48 cursor-pointer rounded-xl shadow-sm transition-transform hover:scale-[1.02]"
                                              onclick="showImageModal('{{ Storage::url($message->attachment) }}')">
                                     @else
-                                        <a href="{{ Storage::url($message->attachment) }}" 
-                                           target="_blank" 
-                                           class="flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-3 text-primary-600 dark:text-primary-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
-                                            <div class="w-9 h-9 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
-                                                <i class="fas fa-file text-primary-600 dark:text-primary-400"></i>
+                                        <a href="{{ Storage::url($message->attachment) }}"
+                                           target="_blank"
+                                           class="flex items-center gap-2 rounded-lg bg-black/5 p-3 text-vinted-primary-600 transition-colors hover:bg-black/10 dark:bg-white/5 dark:text-vinted-primary-400 dark:hover:bg-white/10">
+                                            <div class="flex h-9 w-9 items-center justify-center rounded-md bg-vinted-primary-100 dark:bg-vinted-primary-500/20">
+                                                <i class="fas fa-file text-vinted-primary-600 dark:text-vinted-primary-400"></i>
                                             </div>
                                             <span class="text-sm font-medium">Fichier joint</span>
                                             <i class="fas fa-download ml-auto text-xs opacity-50"></i>
@@ -235,8 +236,8 @@
                                     @endif
                                 </div>
                             @endif
-                            
-                            <div class="flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400 mt-1">
+
+                            <div class="mt-1 flex items-center justify-end gap-1 text-xs text-gray-500 dark:text-gray-400">
                                 {{ $message->created_at->format('H:i') }}
                                 @if($message->sender_id === Auth::id())
                                     <span class="ml-1">
@@ -252,19 +253,19 @@
                     </div>
                 @endforeach
             @else
-                <div class="text-center py-20 text-gray-500 dark:text-gray-400">
-                    <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-5">
+                <div class="py-20 text-center text-gray-500 dark:text-gray-400">
+                    <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                         <i class="fas fa-comments text-3xl text-gray-300 dark:text-gray-600"></i>
                     </div>
                     <p class="text-lg font-medium text-gray-700 dark:text-gray-300">Démarrez la conversation</p>
-                    <p class="text-sm mt-1 text-gray-400">Envoyez un message à {{ $otherUser->name }}</p>
+                    <p class="mt-1 text-sm text-gray-400">Envoyez un message à {{ $otherUser->name }}</p>
                 </div>
             @endif
         </div>
     </div>
 
     <!-- Zone de saisie -->
-    <div class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 p-3 pb-20 md:pb-3 fixed md:relative bottom-0 left-0 right-0 z-40">
+    <div class="fixed bottom-0 left-0 right-0 z-40 border-t border-gray-200 bg-white/80 p-3 backdrop-blur-lg dark:border-gray-700/50 dark:bg-gray-900/80 md:relative md:pb-3">
         <form id="messageForm" method="POST" action="{{ route('messages.store') }}" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="recipient_id" value="{{ $otherUser->id }}">
@@ -272,14 +273,14 @@
             <input type="hidden" name="duration" id="messageDuration" value="">
 
             <!-- Mode normal (texte/pièces jointes) -->
-            <div id="normalInput" class="flex items-end gap-2 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-3 py-2 border border-gray-200/50 dark:border-gray-600/50 transition-all">
-                <button type="button" class="text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onclick="document.getElementById('attachmentInput').click()">
+            <div id="normalInput" class="flex items-end gap-1.5 rounded-lg border border-gray-200 bg-white px-2 py-1.5 transition-all dark:border-gray-700 dark:bg-gray-800">
+                <button type="button" class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-vinted-primary-600 dark:hover:bg-gray-700 dark:hover:text-vinted-primary-400" onclick="document.getElementById('attachmentInput').click()">
                     <i class="fas fa-paperclip text-lg"></i>
                 </button>
 
-                <div class="flex-1 min-w-0 relative">
+                <div class="relative min-w-0 flex-1">
                     <textarea name="content"
-                              class="w-full border-0 outline-none bg-transparent resize-none text-gray-900 dark:text-white placeholder-gray-500 max-h-24 min-h-5 py-2"
+                              class="min-h-5 max-h-24 w-full resize-none border-0 bg-transparent py-2 text-gray-900 outline-none placeholder-gray-500 dark:text-white"
                               placeholder="Tapez un message..."
                               rows="1"
                               id="messageContent"></textarea>
@@ -291,33 +292,33 @@
                            accept="image/*,.pdf,.doc,.docx">
                 </div>
 
-                <button type="submit" id="sendBtn" class="bg-primary-600 text-white p-2.5 rounded-xl hover:bg-primary-700 hover:scale-105 active:scale-95 transition-all min-w-10 h-10 flex items-center justify-center shadow-sm flex-shrink-0">
+                <button type="submit" id="sendBtn" class="flex h-10 min-w-10 flex-shrink-0 items-center justify-center rounded-md bg-vinted-primary-600 text-white shadow-sm transition-colors hover:bg-vinted-primary-700">
                     <i class="fas fa-paper-plane text-sm"></i>
                 </button>
             </div>
 
             <!-- Mode enregistrement vocal -->
-            <div id="recordingInput" class="hidden items-center gap-3 bg-gray-100 dark:bg-gray-700/50 rounded-2xl px-4 py-2 border border-gray-200/50 dark:border-gray-600/50 transition-all">
-                <button type="button" id="cancelRecordBtn" class="text-gray-500 hover:text-red-500 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0" title="Annuler">
+            <div id="recordingInput" class="hidden items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 transition-all dark:border-gray-700 dark:bg-gray-800">
+                <button type="button" id="cancelRecordBtn" class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-red-500 dark:hover:bg-gray-700" title="Annuler">
                     <i class="fas fa-arrow-left text-lg"></i>
                 </button>
-                <div class="flex items-center gap-2 flex-1 min-w-0">
-                    <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse flex-shrink-0" id="recordDot"></span>
-                    <span id="recordingTimer" class="text-sm font-medium text-gray-900 dark:text-white tabular-nums">0:00</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">Appuyez pour arrêter</span>
+                <div class="flex min-w-0 flex-1 items-center gap-2">
+                    <span class="h-2.5 w-2.5 flex-shrink-0 animate-pulse rounded-full bg-red-500" id="recordDot"></span>
+                    <span id="recordingTimer" class="text-sm font-medium tabular-nums text-gray-900 dark:text-white">0:00</span>
+                    <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">Appuyez pour arrêter</span>
                 </div>
-                <button type="button" id="stopRecordBtn" class="bg-red-500 text-white p-2.5 rounded-full hover:bg-red-600 active:scale-95 transition-all w-10 h-10 flex items-center justify-center shadow-sm flex-shrink-0" title="Arrêter">
+                <button type="button" id="stopRecordBtn" class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600" title="Arrêter">
                     <i class="fas fa-stop text-sm"></i>
                 </button>
             </div>
 
             <div id="attachmentPreview" class="mt-2 hidden">
-                <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800/50 rounded-xl p-3 flex items-center gap-3 text-primary-700 dark:text-primary-300">
-                    <div class="w-8 h-8 bg-primary-100 dark:bg-primary-800/40 rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-3 rounded-md border border-vinted-primary-200 bg-vinted-primary-50 p-2.5 text-vinted-primary-700 dark:border-vinted-primary-500/30 dark:bg-vinted-primary-500/10 dark:text-vinted-primary-300">
+                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-vinted-primary-100 dark:bg-vinted-primary-500/20">
                         <i class="fas fa-paperclip text-sm"></i>
                     </div>
-                    <span id="attachmentName" class="text-sm flex-1 truncate font-medium"></span>
-                    <button type="button" onclick="removeAttachment()" class="text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900/30 p-1.5 rounded-full transition-colors">
+                    <span id="attachmentName" class="flex-1 truncate text-sm font-medium"></span>
+                    <button type="button" onclick="removeAttachment()" class="rounded-full p-1.5 text-red-500 transition-colors hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-900/30">
                         <i class="fas fa-times text-xs"></i>
                     </button>
                 </div>
@@ -327,12 +328,12 @@
 </div>
 
 <!-- Modal pour l'affichage des images -->
-<div class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity" id="imageModal" onclick="closeImageModal()">
-    <div class="relative max-w-4xl max-h-full p-4">
-        <button onclick="closeImageModal()" class="absolute -top-2 -right-2 text-white hover:text-gray-300 bg-black/60 hover:bg-black/80 rounded-full w-10 h-10 flex items-center justify-center z-10 transition-colors shadow-lg">
+<div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity" id="imageModal" onclick="closeImageModal()">
+    <div class="relative max-h-full max-w-4xl p-4">
+        <button onclick="closeImageModal()" class="absolute -top-2 -right-2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white shadow-lg transition-colors hover:bg-black/80">
             <i class="fas fa-times text-lg"></i>
         </button>
-        <img id="modalImage" src="" alt="Image" class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl">
+        <img id="modalImage" src="" alt="Image" class="max-h-[85vh] w-full rounded-xl object-contain shadow-2xl">
     </div>
 </div>
 
@@ -349,10 +350,20 @@
     animation: fade-in 0.25s ease-out;
 }
 
-#messagesContainer::-webkit-scrollbar { width: 5px; }
+#messagesContainer::-webkit-scrollbar { width: 5px; height: 5px; }
 #messagesContainer::-webkit-scrollbar-track { background: transparent; }
 #messagesContainer::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
 #messagesContainer::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+.rate-option-selected {
+    border-color: var(--color-primary-400, #c7d2fe) !important;
+    background-color: var(--color-primary-50, #eef2ff) !important;
+    box-shadow: inset 0 0 0 1px var(--color-primary-200, #c7d2fe);
+}
+
+.dark .rate-option-selected {
+    background-color: rgba(129, 140, 248, 0.15) !important;
+}
 
 @media (prefers-color-scheme: dark) {
     #messagesContainer::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
@@ -418,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContainer.className = `mb-2 flex ${isAuthor ? 'justify-end' : 'justify-start'}`;
         
         const messageBubble = document.createElement('div');
-        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-primary-500/10 dark:bg-primary-500/20' : 'bg-white dark:bg-gray-800'} rounded-2xl ${isAuthor ? 'rounded-br-sm' : 'rounded-bl-sm'} px-3.5 py-2.5 shadow-sm animate-fade-in`;
+        messageBubble.className = `max-w-xs lg:max-w-md xl:max-w-lg min-w-0 relative ${isAuthor ? 'bg-vinted-primary-100/70 dark:bg-vinted-primary-500/20' : 'bg-white dark:bg-gray-800'} rounded-xl px-3.5 py-2.5 shadow-sm animate-fade-in`;
         
         // Contenu du message
         if (message.content && message.type !== 'audio') {
@@ -442,16 +453,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 wrapper.dataset.src = message.attachment;
                 wrapper.dataset.duration = dur;
                 wrapper.innerHTML = `
-                    <button type="button" class="voice-play-btn w-9 h-9 rounded-full bg-primary-600 hover:bg-primary-700 text-white flex items-center justify-center flex-shrink-0 transition-all active:scale-95 shadow-sm">
+                    <button type="button" class="voice-play-btn w-9 h-9 rounded-full bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white flex items-center justify-center flex-shrink-0 transition-all active:scale-95 shadow-sm">
                         <i class="fas fa-play text-xs ml-0.5"></i>
                     </button>
                     <div class="flex-1 min-w-0">
                         <div class="voice-progress h-1 bg-gray-300 dark:bg-gray-600 rounded-full overflow-hidden">
-                            <div class="voice-progress-fill h-full bg-primary-600 rounded-full" style="width: 0%"></div>
+                            <div class="voice-progress-fill h-full bg-vinted-primary-600 rounded-full" style="width: 0%"></div>
                         </div>
                     </div>
                     <span class="voice-time text-xs text-gray-500 dark:text-gray-400 tabular-nums flex-shrink-0">${mins}:${secs.toString().padStart(2, '0')}</span>
-                    <i class="fas fa-microphone text-primary-600 dark:text-primary-400 text-xs flex-shrink-0 opacity-60"></i>
+                    <i class="fas fa-microphone text-vinted-primary-600 dark:text-vinted-primary-400 text-xs flex-shrink-0 opacity-60"></i>
                 `;
                 attachmentDiv.appendChild(wrapper);
             } else if (message.attachment.match(/\.(jpg|jpeg|png|gif)$/i)) {
@@ -463,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 const link = document.createElement('a');
                 link.href = message.attachment;
-                link.className = 'flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-3 text-primary-600 dark:text-primary-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
+                link.className = 'flex items-center gap-2 bg-black/5 dark:bg-white/5 rounded-xl p-3 text-vinted-primary-600 dark:text-vinted-primary-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
                 link.innerHTML = `<i class="fas fa-paperclip"></i><span class="text-sm">Fichier joint</span>`;
                 attachmentDiv.appendChild(link);
             }
@@ -648,7 +659,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // On ajoute un bouton mic dans normalInput
     const normalMicBtn = document.createElement('button');
     normalMicBtn.type = 'button';
-    normalMicBtn.className = 'text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0';
+    normalMicBtn.className = 'text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0';
     normalMicBtn.title = 'Message vocal';
     normalMicBtn.innerHTML = '<i class="fas fa-microphone text-lg"></i>';
     normalMicBtn.addEventListener('click', startRecording);
@@ -871,30 +882,15 @@ let selectedPrice = null;
 document.querySelectorAll('.rate-option').forEach(option => {
     option.addEventListener('click', function() {
         document.querySelectorAll('.rate-option').forEach(r => {
-            r.classList.remove(
-                'border-primary-400', 'bg-gradient-to-br', 'from-primary-600',
-                'to-primary-800', 'shadow-lg', 'scale-[1.04]', 'text-white',
-                '!border-primary-400'
-            );
-            r.querySelector('.text-primary-600')?.classList.remove('text-primary-100');
-            r.querySelectorAll('.text-gray-400, .text-red-400').forEach(el => {
-                el.classList.remove('text-white/70');
-            });
+            r.classList.remove('rate-option-selected');
         });
-        this.classList.add(
-            'border-primary-400', 'bg-gradient-to-br', 'from-primary-600',
-            'to-primary-800', 'shadow-lg', 'scale-[1.04]', 'text-white'
-        );
-        this.querySelector('.text-primary-600')?.classList.add('text-primary-100');
-        this.querySelectorAll('.text-gray-400, .text-red-400').forEach(el => {
-            el.classList.add('text-white/70');
-        });
+        this.classList.add('rate-option-selected');
         selectedRate = this.dataset.rate;
-        selectedPrice = this.querySelector('.text-primary-600')?.textContent?.trim() || null;
+        selectedPrice = this.querySelector('.leading-tight')?.textContent?.trim() || null;
 
         const btn = document.getElementById('applyDiscountBtn');
         btn.disabled = false;
-        btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+        btn.className = 'w-full py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base transition-colors bg-vinted-primary-600 text-white hover:bg-vinted-primary-700';
     });
 });
 
@@ -906,7 +902,7 @@ function submitDiscount() {
 
     btn.disabled = true;
     btn.innerHTML = '<svg class="animate-spin h-5 w-5 mx-auto" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>';
-    btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 bg-primary-600 text-white';
+    btn.className = 'w-full py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base transition-colors bg-vinted-primary-600 text-white';
 
     document.getElementById('discountPercentage').value = selectedRate;
 
@@ -921,14 +917,14 @@ function submitDiscount() {
             result.className = 'mt-2 text-center text-sm font-medium text-emerald-600 dark:text-emerald-400';
             result.textContent = '✓ ' + data.message;
             btn.innerHTML = 'Appliquee';
-            btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-emerald-500 text-white cursor-default';
+            btn.className = 'w-full py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base bg-emerald-500 text-white cursor-default';
             document.querySelectorAll('.rate-option').forEach(r => r.style.pointerEvents = 'none');
         } else {
             result.className = 'mt-2 text-center text-sm font-medium text-red-500';
             result.textContent = '✗ ' + (data.error || 'Erreur');
             btn.disabled = false;
             btn.innerHTML = 'Appliquer la reduction';
-            btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+            btn.className = 'w-full py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white transition-colors';
         }
         result.classList.remove('hidden');
     })
@@ -938,7 +934,7 @@ function submitDiscount() {
         result.classList.remove('hidden');
         btn.disabled = false;
         btn.innerHTML = 'Appliquer la reduction';
-        btn.className = 'w-full py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base bg-primary-600 hover:bg-primary-700 active:scale-[0.98] text-white shadow-sm';
+        btn.className = 'w-full py-2.5 sm:py-3 rounded-md font-semibold text-sm sm:text-base bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white transition-colors';
     });
 }
 
