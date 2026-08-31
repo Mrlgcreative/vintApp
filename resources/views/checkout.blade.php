@@ -277,7 +277,7 @@
                                                     'icon' => 'fa-bolt',
                                                     'iconBg' => 'bg-emerald-500',
                                                     'name' => 'Payer via Mobile Money',
-                                                    'desc' => 'Orange, M-Pesa, Airtel, Africell',
+                                                    'desc' => 'Orange, M-Pesa, Airtel',
                                                 ],
                                             ];
                                         @endphp

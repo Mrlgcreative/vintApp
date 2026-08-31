@@ -47,7 +47,6 @@
                                     ['op'=>'VODACOM','img'=>'mpesa.jpeg','name'=>'M-Pesa','color'=>'text-emerald-600 dark:text-emerald-400','hover'=>'hover:border-emerald-500'],
                                     ['op'=>'ORANGE','img'=>'orange.jpeg','name'=>'Orange Money','color'=>'text-orange-600 dark:text-orange-400','hover'=>'hover:border-orange-500'],
                                     ['op'=>'AIRTEL','img'=>'airtel.jpeg','name'=>'Airtel Money','color'=>'text-red-600 dark:text-red-400','hover'=>'hover:border-red-500'],
-                                    ['op'=>'AFRICELL','img'=>'africell.jpeg','name'=>'Africell Money','color'=>'text-blue-600 dark:text-blue-400','hover'=>'hover:border-blue-500'],
                                 ];
                             @endphp
                             @foreach($operators as $op)
@@ -289,8 +288,6 @@ const operators = {
     '97': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
     '98': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
     '99': { name: 'Airtel Money', code: 'AIRTEL', logo: '{{ asset("images/operators/airtel.jpeg") }}' },
-    '90': { name: 'Africell Money', code: 'AFRICELL', logo: '{{ asset("images/operators/africell.jpeg") }}' },
-    '91': { name: 'Africell Money', code: 'AFRICELL', logo: '{{ asset("images/operators/africell.jpeg") }}' },
 };
 
 function formatPhoneInput(value) {
