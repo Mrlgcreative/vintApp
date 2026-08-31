@@ -1,6 +1,6 @@
 @extends('app')
 
-@section('title', 'Paiement MaishaPay')
+@section('title', 'Paiement Mobile Money')
 
 @section('content')
 @php

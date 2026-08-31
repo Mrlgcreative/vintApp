@@ -276,7 +276,7 @@
                                                 'maishapay' => [
                                                     'icon' => 'fa-bolt',
                                                     'iconBg' => 'bg-emerald-500',
-                                                    'name' => 'MaishaPay',
+                                                    'name' => 'Payer via Mobile Money',
                                                     'desc' => 'Orange, M-Pesa, Airtel, Africell',
                                                 ],
                                             ];
@@ -306,13 +306,13 @@
                             <div class="flex items-start">
                                 <i class="fas fa-bolt text-emerald-600 mt-0.5 mr-3 flex-shrink-0 text-xl"></i>
                                 <div>
-                                    <h3 class="font-semibold text-emerald-900 dark:text-emerald-300 text-sm mb-1" id="payMethodInfoTitle">Paiement sécurisé via MaishaPay</h3>
+                                    <h3 class="font-semibold text-emerald-900 dark:text-emerald-300 text-sm mb-1" id="payMethodInfoTitle">Paiement sécurisé via Mobile Money</h3>
                                     <p class="text-emerald-800 dark:text-emerald-400 text-sm" id="payMethodInfoText">Tous les opérateurs Mobile Money RDC sont acceptés.</p>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Formulaire MaishaPay --}}
+                        {{-- Formulaire mobile money --}}
                         <form action="{{ route('payments.maishapay.checkout') }}" method="POST" id="maishapayForm" class="payment-gateway-form">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
@@ -323,7 +323,7 @@
                             <button type="submit"
                                     class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
                                 <i class="fas fa-bolt"></i>
-                                Payer {{ number_format($total, 2) }} {{ $currency }} avec MaishaPay
+                                Payer {{ number_format($total, 2) }} {{ $currency }} via Mobile Money
                             </button>
                         </form>
 
@@ -335,7 +335,7 @@
                         <div class="flex justify-center items-center gap-2 flex-wrap">
                             <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-lock text-vinted-primary-500"></i> SSL</span>
                             <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-check-circle text-emerald-500"></i> Vérifié</span>
-                            <span class="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900 rounded-full px-3 py-1.5 text-xs font-medium border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"><i class="fas fa-bolt"></i> MaishaPay</span>
+                            <span class="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900 rounded-full px-3 py-1.5 text-xs font-medium border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"><i class="fas fa-bolt"></i> Mobile Money</span>
                         </div>
                     </div>
 
@@ -582,13 +582,13 @@ document.addEventListener('DOMContentLoaded', function() {
         maishapay: {
             active: 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30',
             badge: 'border-emerald-500 bg-emerald-500',
-            title: 'Paiement sécurisé via MaishaPay',
+            title: 'Paiement sécurisé via Mobile Money',
             text: 'Tous les opérateurs Mobile Money RDC sont acceptés.',
             icon: 'fa-bolt',
             iconClass: 'text-emerald-600',
             form: 'maishapayForm',
             btn: 'bg-emerald-600 hover:bg-emerald-700',
-            label: 'MaishaPay'
+            label: 'Mobile Money'
         }
     };
     const payCheckSvg = `<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>`;
