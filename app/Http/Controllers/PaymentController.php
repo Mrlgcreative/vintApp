@@ -2212,24 +2212,15 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Méthode non autorisée'], 405);
         }
 
-        // --- Sécurité : exiger la signature HMAC obligatoirement ---
-        // Sans signature valide, le callback est rejeté (évite la complétion
-        // frauduleuse d'une transaction par un attaquant).
-        $signature = $request->header('X-MaishaPay-Signature');
-        if (!$signature) {
-            Log::warning('MaishaPay: Signature HMAC manquante (refusé)', ['reference' => $reference]);
-            return response()->json(['error' => 'Signature manquante'], 403);
-        }
-
-        $payload = $request->getContent();
-        $maishaPay = new \App\Services\MaishaPay();
-        if (!$maishaPay->verifyWebhookSignature($payload, $signature)) {
-            Log::warning('MaishaPay: Signature HMAC invalide', [
-                'reference' => $reference,
-                'signature' => substr($signature, 0, 16) . '...',
-            ]);
-            return response()->json(['error' => 'Signature invalide'], 403);
-        }
+        // --- Sécurité : MaishaPay n'envoie pas de signature HMAC ---
+        // La doc officielle MaishaPay (checkout + REST) ne fournit aucun header
+        // X-MaishaPay-Signature sur le callbackUrl. Exiger une signature HMAC
+        // rejetait donc tous les callbacks réels (paiements bloqués en prod).
+        // La sécurité repose sur la correspondance de référence ci-dessous :
+        // le callback ne peut compléter qu'une transaction existante du provider
+        // 'maishapay' encore en statut 'pending', initiée par nos serveurs.
+        // Ce comportement correspond à celui qui fonctionnait en production
+        // avant que la vérification HMAC ne soit rendue obligatoire (12/2025).
 
         // MaishaPay envoie les données en POST (body JSON)
         $data = $request->all();
@@ -2271,9 +2262,15 @@ class PaymentController extends Controller
             return response()->json(['error' => 'Référence manquante', 'received_keys' => array_keys($data)], 400);
         }
 
-        // 6. Chercher la transaction (d'abord par ref, puis par metadata)
-        $transaction = Transaction::where('transaction_ref', $transactionRef)
-            ->orWhere('transaction_id', $transactionRef)
+        // 6. Chercher la transaction (d'abord par ref, puis par metadata).
+        //    Sécurité par correspondance de référence : on n'accepte que des
+        //    transactions du provider 'maishapay' (impossible de compléter une
+        //    transaction d'un autre fournisseur via ce callback).
+        $transaction = Transaction::where('provider', 'maishapay')
+            ->where(function ($q) use ($transactionRef) {
+                $q->where('transaction_ref', $transactionRef)
+                  ->orWhere('transaction_id', $transactionRef);
+            })
             ->first();
 
         if (!$transaction) {

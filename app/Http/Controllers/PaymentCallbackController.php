@@ -170,19 +170,11 @@ class PaymentCallbackController extends Controller
                 return hash_equals($expectedSecret, $providedSecret);
 
             case 'maishapay':
-                $signature = $request->header('X-MaishaPay-Signature');
-                if (!$signature) {
-                    // Signature obligatoire : rejeter si absente (plus de mode local)
-                    Log::warning("MaishaPay: signature absente, callback refusé", [
-                        'ip' => $request->ip(),
-                    ]);
-                    return false;
-                }
-                $maishaPay = new \App\Services\MaishaPay();
-                if (!$maishaPay->verifyWebhookSignature($request->getContent(), $signature)) {
-                    Log::warning("MaishaPay: signature invalide, callback refusé", ['ip' => $clientIp]);
-                    return false;
-                }
+                // MaishaPay n'envoie pas de signature HMAC sur son callbackUrl
+                // (confirmé par la doc officielle). Exiger X-MaishaPay-Signature
+                // faisait rejeter tous les callbacks réels (paiements bloqués).
+                // La sécurité repose sur la correspondance de référence faite
+                // lors du traitement (transaction provider=maishapay + statut).
                 return true;
         }
 
