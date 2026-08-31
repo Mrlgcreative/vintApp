@@ -270,58 +270,36 @@
                             <p class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
                                 <i class="fas fa-wallet text-vinted-primary-500"></i>Méthode de paiement
                             </p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                @php
-                                    $payMethods = [
-                                        'maishapay' => [
-                                            'id' => 'method-maishapay',
-                                            'icon' => 'fa-bolt',
-                                            'iconBg' => 'bg-emerald-500',
-                                            'name' => 'MaishaPay',
-                                            'desc' => 'Orange, M-Pesa, Airtel, Africell',
-                                            'active' => 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30',
-                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
-                                        ],
-                                        'cinetpay' => [
-                                            'id' => 'method-cinetpay',
-                                            'icon' => 'fa-credit-card',
-                                            'iconBg' => 'bg-blue-500',
-                                            'name' => 'CinetPay',
-                                            'desc' => 'Mobile Money & cartes',
-                                            'active' => 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
-                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
-                                        ],
-                                        'pawapay' => [
-                                            'id' => 'method-pawapay',
-                                            'icon' => 'fa-mobile-alt',
-                                            'iconBg' => 'bg-purple-500',
-                                            'name' => 'PawaPay',
-                                            'desc' => 'Mobile Money panafricain',
-                                            'active' => 'border-purple-500 bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-900/30 dark:to-fuchsia-900/30',
-                                            'border' => 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800',
-                                        ],
-                                    ];
-                                @endphp
-                                @foreach($payMethods as $key => $m)
-                                <button type="button"
-                                        id="{{ $m['id'] }}"
-                                        data-method="{{ $key }}"
-                                        class="pay-method-card relative rounded-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 p-4 text-left transition-all duration-200">
-                                    <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
-                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
-                                    </span>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 {{ $m['iconBg'] }} rounded-xl flex items-center justify-center">
-                                            <i class="fas {{ $m['icon'] }} text-white"></i>
-                                        </div>
-                                        <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">{{ $m['name'] }}</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $m['desc'] }}</p>
-                                        </div>
+                                    <div class="grid grid-cols-1 gap-3">
+                                        @php
+                                            $payMethods = [
+                                                'maishapay' => [
+                                                    'icon' => 'fa-bolt',
+                                                    'iconBg' => 'bg-emerald-500',
+                                                    'name' => 'MaishaPay',
+                                                    'desc' => 'Orange, M-Pesa, Airtel, Africell',
+                                                ],
+                                            ];
+                                        @endphp
+                                        @foreach($payMethods as $key => $m)
+                                        <button type="button"
+                                                data-method="{{ $key }}"
+                                                class="pay-method-card relative rounded-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 p-4 text-left transition-all duration-200">
+                                            <span class="pay-method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-emerald-500 bg-emerald-500 flex items-center justify-center">
+                                                <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
+                                            </span>
+                                            <div class="flex items-center space-x-3">
+                                                <div class="w-10 h-10 {{ $m['iconBg'] }} rounded-xl flex items-center justify-center">
+                                                    <i class="fas {{ $m['icon'] }} text-white"></i>
+                                                </div>
+                                                <div>
+                                                    <p class="font-bold text-gray-900 dark:text-white">{{ $m['name'] }}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ $m['desc'] }}</p>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        @endforeach
                                     </div>
-                                </button>
-                                @endforeach
-                            </div>
                         </div>
 
                         <div id="payMethodInfo" class="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/30 rounded-xl p-4 mb-4">
@@ -349,35 +327,6 @@
                             </button>
                         </form>
 
-                        {{-- Formulaire CinetPay --}}
-                        <form action="{{ route('payments.checkout.initiate') }}" method="POST" id="cinetpayForm" class="payment-gateway-form hidden">
-                            @csrf
-                            <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
-                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
-                            <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $currency }}">
-
-                            <button type="submit"
-                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
-                                <i class="fas fa-credit-card"></i>
-                                Payer {{ number_format($total, 2) }} {{ $currency }} avec CinetPay
-                            </button>
-                        </form>
-
-                        {{-- Formulaire PawaPay --}}
-                        <form action="{{ route('payments.pawapay.checkout') }}" method="POST" id="pawapayForm" class="payment-gateway-form hidden">
-                            @csrf
-                            <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
-                            <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
-                            <input type="hidden" name="total_amount" value="{{ $total }}">
-                            <input type="hidden" name="currency" value="{{ $currency }}">
-
-                            <button type="submit"
-                                    class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
-                                <i class="fas fa-mobile-alt"></i>
-                                Payer {{ number_format($total, 2) }} {{ $currency }} avec PawaPay
-                            </button>
-                        </form>
                     </div>
 
                     {{-- Badges de sécurité --}}
@@ -387,8 +336,6 @@
                             <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-lock text-vinted-primary-500"></i> SSL</span>
                             <span class="inline-flex items-center gap-1 bg-white dark:bg-gray-900 rounded-full px-3 py-1.5 text-xs font-medium border border-gray-200 dark:border-gray-700"><i class="fas fa-check-circle text-emerald-500"></i> Vérifié</span>
                             <span class="inline-flex items-center gap-1 bg-emerald-50 dark:bg-emerald-900 rounded-full px-3 py-1.5 text-xs font-medium border border-emerald-200 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"><i class="fas fa-bolt"></i> MaishaPay</span>
-                            <span class="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900 rounded-full px-3 py-1.5 text-xs font-medium border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300"><i class="fas fa-credit-card"></i> CinetPay</span>
-                            <span class="inline-flex items-center gap-1 bg-purple-50 dark:bg-purple-900 rounded-full px-3 py-1.5 text-xs font-medium border border-purple-200 dark:border-purple-700 text-purple-700 dark:text-purple-300"><i class="fas fa-mobile-alt"></i> PawaPay</span>
                         </div>
                     </div>
 
@@ -642,28 +589,6 @@ document.addEventListener('DOMContentLoaded', function() {
             form: 'maishapayForm',
             btn: 'bg-emerald-600 hover:bg-emerald-700',
             label: 'MaishaPay'
-        },
-        cinetpay: {
-            active: 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
-            badge: 'border-blue-500 bg-blue-500',
-            title: 'Paiement sécurisé via CinetPay',
-            text: 'Mobile Money, cartes bancaires et autres moyens de paiement.',
-            icon: 'fa-credit-card',
-            iconClass: 'text-blue-600',
-            form: 'cinetpayForm',
-            btn: 'bg-blue-600 hover:bg-blue-700',
-            label: 'CinetPay'
-        },
-        pawapay: {
-            active: 'border-purple-500 bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-900/30 dark:to-fuchsia-900/30',
-            badge: 'border-purple-500 bg-purple-500',
-            title: 'Paiement sécurisé via PawaPay',
-            text: 'Mobile Money via PawaPay (Vodacom, Airtel, Orange, Africell).',
-            icon: 'fa-mobile-alt',
-            iconClass: 'text-purple-600',
-            form: 'pawapayForm',
-            btn: 'bg-purple-600 hover:bg-purple-700',
-            label: 'PawaPay'
         }
     };
     const payCheckSvg = `<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>`;
