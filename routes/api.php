@@ -113,9 +113,11 @@ Route::prefix('v1/pawapay/callback')->middleware('throttle:100,1')->group(functi
 });
 
 // ==================== Authentification API (Sanctum) ====================
-Route::middleware('throttle:5,1')->post('/register', [AuthController::class, 'register']);
-Route::middleware('throttle:5,1')->post('/login', [AuthController::class, 'login']);
-Route::middleware('throttle:5,1')->post('/auth/firebase/login', [FirebaseAuthController::class, 'login']);
+// Throttle ciblé par email+IP (rate limiter 'auth' : 5/min) pour éviter
+// l'épuisement du quota par IP partagée (proxy/edge Hostinger).
+Route::middleware('throttle:auth.register')->post('/register', [AuthController::class, 'register']);
+Route::middleware('throttle:auth.login')->post('/login', [AuthController::class, 'login']);
+Route::middleware('throttle:auth.login')->post('/auth/firebase/login', [FirebaseAuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
@@ -132,9 +134,10 @@ Route::middleware(['auth:sanctum', 'throttle:10,1'])->group(function () {
 });
 
 // ==================== Réinitialisation de mot de passe (public) ====================
-Route::middleware('throttle:5,1')->post('/password/email', [AuthController::class, 'forgotPassword']);
-Route::middleware('throttle:5,1')->post('/password/forgot', [AuthController::class, 'forgotPassword']);
-Route::middleware('throttle:5,1')->post('/password/reset', [AuthController::class, 'resetPassword']);
+// Throttle ciblé par email+IP (rate limiter 'auth.password' : 5/min)
+Route::middleware('throttle:auth.password')->post('/password/email', [AuthController::class, 'forgotPassword']);
+Route::middleware('throttle:auth.password')->post('/password/forgot', [AuthController::class, 'forgotPassword']);
+Route::middleware('throttle:auth.password')->post('/password/reset', [AuthController::class, 'resetPassword']);
 
 // ==================== Routes protégées ====================
 Route::middleware(['auth:sanctum,web'])->group(function () {
@@ -167,7 +170,8 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
     // ---- API V1 : Authenticity ----
     Route::prefix('v1/authenticity')->group(function () {
         Route::get('/dashboard', [ApiAuthenticityController::class, 'dashboard']);
-        Route::post('/{check}/confirm-payment', [ApiAuthenticityController::class, 'confirmPayment']);
+        Route::post('/{check}/confirm-payment', [ApiAuthenticityController::class, 'confirmPayment'])
+            ->middleware('throttle:10,1'); // Max 10 confirmations de paiement/min
         Route::middleware('throttle:20,1')->group(function () {
             Route::put('/{check}/update-status', [ApiAuthenticityController::class, 'updateStatus'])->middleware('expert');
         });
@@ -198,7 +202,8 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::post('/', [ApiOrderController::class, 'store']);
         Route::get('/sales', [ApiOrderController::class, 'mySales']);
         Route::get('/{id}', [ApiOrderController::class, 'show']);
-        Route::post('/{id}/confirm-payment', [ApiOrderController::class, 'confirmPayment']);
+        Route::post('/{id}/confirm-payment', [ApiOrderController::class, 'confirmPayment'])
+            ->middleware('throttle:10,1'); // Max 10 confirmations de paiement/min
         Route::post('/{id}/mark-shipped', [ApiOrderController::class, 'markAsShipped']);
         Route::post('/{id}/mark-delivered', [ApiOrderController::class, 'markAsDelivered']);
         Route::post('/{id}/confirm-delivery', [ApiOrderController::class, 'confirmDelivery']);
@@ -257,12 +262,16 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
     Route::prefix('v1/wallet')->group(function () {
         Route::get('/', [ApiWalletController::class, 'index']);
         Route::get('/transactions', [ApiWalletController::class, 'transactions']);
-        Route::post('/add-funds', [ApiWalletController::class, 'addFunds']);
-        Route::post('/withdraw', [ApiWalletController::class, 'withdraw']);
-        Route::post('/convert', [ApiWalletController::class, 'convert']);
+        Route::post('/add-funds', [ApiWalletController::class, 'addFunds'])
+            ->middleware('throttle:10,1'); // Max 10 dépôts/min (protection fraude)
+        Route::post('/withdraw', [ApiWalletController::class, 'withdraw'])
+            ->middleware('throttle:5,1'); // Max 5 retraits/min
+        Route::post('/convert', [ApiWalletController::class, 'convert'])
+            ->middleware('throttle:20,1'); // Max 20 conversions/min
 
         // MaishaPay Payout routes
-        Route::post('/withdraw/maishapay', [ApiWalletController::class, 'withdrawMaishaPay']);
+        Route::post('/withdraw/maishapay', [ApiWalletController::class, 'withdrawMaishaPay'])
+            ->middleware('throttle:5,1'); // Max 5 retraits/min
         Route::get('/withdraw/maishapay/status/{transactionId}', [ApiWalletController::class, 'withdrawMaishaPayStatus']);
         Route::get('/withdraw/operators', [ApiWalletController::class, 'getPayoutOperators']);
     });
@@ -378,12 +387,15 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
     Route::get('/', [ApiPaymentController::class, 'index']);
     Route::get('/stats', [ApiPaymentController::class, 'stats']);
     Route::get('/{transactionId}', [ApiPaymentController::class, 'show']);
-    Route::post('/initiate', [ApiPaymentController::class, 'initiate']);
-    Route::post('/refund/{orderId}', [ApiPaymentController::class, 'requestRefund']);
+    Route::post('/initiate', [ApiPaymentController::class, 'initiate'])
+        ->middleware('throttle:10,1'); // Max 10 initiations/min (protection fraude/abuse)
+    Route::post('/refund/{orderId}', [ApiPaymentController::class, 'requestRefund'])
+        ->middleware('throttle:5,1'); // Max 5 demandes de remboursement/min
     Route::get('/refund/{refundId}/status', [ApiPaymentController::class, 'refundStatus']);
 
     // MaishaPay routes
     Route::post('/maishapay', [ApiPaymentController::class, 'initiateMaishaPayment'])
+        ->middleware('throttle:10,1') // Max 10 initiations/min
         ->name('api.v1.payments.maishapay.initiate');
     Route::get('/maishapay/status/{transactionId}', [ApiPaymentController::class, 'checkMaishaStatus'])
         ->name('api.v1.payments.maishapay.status');

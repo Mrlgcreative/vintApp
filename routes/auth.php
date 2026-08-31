@@ -17,14 +17,14 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('register', [RegisterController::class, 'register'])
-        ->middleware('throttle:3,10'); // Max 3 inscriptions toutes les 10 minutes
+        ->middleware('throttle:auth.register'); // email+IP : max 5/min
 
     // Routes de connexion
     Route::get('login', [LoginController::class, 'showLoginForm'])
         ->name('login');
 
     Route::post('login', [LoginController::class, 'login'])
-        ->middleware('throttle:5,1'); // Max 5 tentatives par minute (protection brute force)
+        ->middleware('throttle:auth.login'); // email+IP : max 5/min (protection brute force)
 
     // Routes Google OAuth
     Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])
@@ -45,12 +45,14 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:auth.password')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->middleware('throttle:auth.password')
         ->name('password.store');
 });
 

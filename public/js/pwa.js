@@ -40,7 +40,13 @@ class PWAManager {
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            this.autoPrompt();
+
+            // Ne pas appeler prompt() directement ici : il nécessite un geste utilisateur.
+            // À la place, afficher un bouton qui déclenchera le prompt lors d'un clic.
+            if (document.getElementById('pwa-install-button')) {
+                return;
+            }
+            this.showInstallButton();
         });
 
         // App installée
@@ -197,38 +203,14 @@ class PWAManager {
     }
 
     /**
-     * Afficher automatiquement le prompt d'installation dès qu'il est disponible
+     * Afficher le bouton d'installation
      */
-    async autoPrompt() {
-        if (!this.deferredPrompt) {
-            return;
-        }
-
+    showInstallButton() {
         // Si l'utilisateur a déjà rejeté récemment, garder le bouton silencieux
         const lastDismissed = localStorage.getItem('pwa-install-dismissed');
         if (lastDismissed && (Date.now() - parseInt(lastDismissed)) < (24 * 60 * 60 * 1000)) {
             return;
         }
-
-        try {
-            this.deferredPrompt.prompt();
-            const { outcome } = await this.deferredPrompt.userChoice;
-            this.deferredPrompt = null;
-            if (outcome === 'dismissed') {
-                this.dismissInstallButton();
-            } else {
-                this.hideInstallButton();
-            }
-        } catch {
-            // Prompt non disponible à ce moment : fallback vers le bouton flottant
-            this.showInstallButton();
-        }
-    }
-
-    /**
-     * Afficher le bouton d'installation
-     */
-    showInstallButton() {
         // Éviter les doublons
         if (document.getElementById('pwa-install-button')) {
             return;

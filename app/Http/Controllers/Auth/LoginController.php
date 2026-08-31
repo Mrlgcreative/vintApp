@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
 use App\Traits\AdminRedirection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -29,27 +29,23 @@ class LoginController extends Controller
 
     /**
      * Traiter la tentative de connexion
+     *
+     * Utilise LoginRequest qui gère :
+     *  - la validation,
+     *  - la protection brute force (RateLimiter par email+IP),
+     *  - l'événement Lockout après trop de tentatives.
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        $request->authenticate();
 
-        $credentials = $request->only('email', 'password');
-        $remember = $request->boolean('remember');
+        $request->session()->regenerate();
 
-        if (Auth::attempt($credentials, $remember)) {
-            $request->session()->regenerate();
+        // Récupérer l'utilisateur connecté pour la redirection basée sur le rôle
+        $user = $request->user();
 
-            // Utilisation du trait pour la redirection basée sur le rôle
-            return $this->redirectBasedOnRole(route('dashboard'), 'Connexion réussie');
-        }
-
-        throw ValidationException::withMessages([
-            'email' => __('Les informations de connexion fournies ne correspondent pas à nos enregistrements.'),
-        ]);
+        // Utilisation du trait pour la redirection basée sur le rôle
+        return $this->redirectBasedOnRole(route('dashboard'), 'Connexion réussie');
     }
 
     /**
