@@ -772,6 +772,7 @@ function updateTracking(event) {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest',
             'Accept': 'application/json'
             // Ne pas définir Content-Type, le navigateur le fera automatiquement pour FormData
         },
