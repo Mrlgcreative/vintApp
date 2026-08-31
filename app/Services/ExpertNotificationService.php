@@ -18,27 +18,38 @@ class ExpertNotificationService
         $this->firebase = null;
 
         try {
-            $serviceAccount = config('firebase.service_account');
-            
+            $serviceAccount = config('firebase.credentials');
+
             // Vérifier si Firebase est configuré
             if (empty($serviceAccount)) {
-                Log::warning('Firebase service account not configured');
+                Log::debug('Firebase non configuré - notifications expert désactivées');
                 return;
             }
 
             // Si c'est un chemin de fichier JSON, le charger
-            if (is_string($serviceAccount) && file_exists($serviceAccount)) {
-                $serviceAccount = json_decode(file_get_contents($serviceAccount), true);
+            if (is_string($serviceAccount)) {
+                $path = $serviceAccount;
+                // Résoudre les chemins relatifs (ex: storage/app/firebase/...) depuis la racine du projet
+                if (!str_starts_with($path, DIRECTORY_SEPARATOR)) {
+                    $path = base_path($path);
+                }
+                if (file_exists($path)) {
+                    $decoded = json_decode(file_get_contents($path), true);
+                    if (is_array($decoded)) {
+                        $serviceAccount = $decoded;
+                    }
+                }
             }
 
             if (!is_array($serviceAccount)) {
-                Log::warning('Firebase service account must be array or file path');
+                Log::warning('Firebase service account must be array or valid JSON file path', [
+                    'path' => is_string($serviceAccount) ? $serviceAccount : null,
+                ]);
                 return;
             }
 
             $this->firebase = (new Factory)
-                ->withServiceAccount($serviceAccount)
-                ->create();
+                ->withServiceAccount($serviceAccount);
                 
         } catch (\Exception $e) {
             Log::warning('Firebase initialization failed', [

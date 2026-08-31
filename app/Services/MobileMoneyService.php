@@ -277,22 +277,49 @@ class MobileMoneyService
         }
 
         // En cas d'échec MaishaPay, fallback vers l'API directe
+        $maishaPayError = $result['message'] ?? 'Unknown error';
         Log::warning("MaishaPay payout échoué, fallback vers API directe", [
             'provider' => $provider,
-            'error' => $result['message'] ?? 'Unknown error',
+            'error' => $maishaPayError,
+            'transaction_id' => $transaction->id,
+            'reference' => $transaction->reference,
+            'amount' => $amount,
         ]);
 
-        return match ($provider) {
+        $fallback = match ($provider) {
             'orange_money' => $this->cashOutOrangeMoney($phone, $amount, $currency, $transaction),
             'airtel_money' => $this->cashOutAirtelMoney($phone, $amount, $currency, $transaction),
             'mpesa' => $this->cashOutMPesa($phone, $amount, $currency, $transaction),
             'africell' => $this->cashOutAfricell($phone, $amount, $currency, $transaction),
             default => [
                 'status' => 'failed',
-                'message' => $result['message'] ?? 'Décaissement échoué',
+                'message' => $maishaPayError,
                 'provider_reference' => null,
             ],
         };
+
+        // Tracer le résultat du fallback (succès ou échec)
+        if (($fallback['status'] ?? '') === 'failed') {
+            Log::error("Fallback API directe payout échoué", [
+                'provider' => $provider,
+                'maishapay_error' => $maishaPayError,
+                'fallback_message' => $fallback['message'] ?? 'Unknown error',
+                'transaction_id' => $transaction->id,
+                'reference' => $transaction->reference,
+                'amount' => $amount,
+            ]);
+        } else {
+            Log::info("Fallback API directe payout initié", [
+                'provider' => $provider,
+                'maishapay_error' => $maishaPayError,
+                'fallback_status' => $fallback['status'] ?? 'unknown',
+                'provider_reference' => $fallback['provider_reference'] ?? null,
+                'transaction_id' => $transaction->id,
+                'reference' => $transaction->reference,
+            ]);
+        }
+
+        return $fallback;
     }
 
     /**
