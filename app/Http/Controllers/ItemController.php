@@ -488,6 +488,52 @@ class ItemController extends Controller
     }
 
     /**
+     * Autocomplétion JSON pour la barre de recherche du header
+     */
+    public function suggestions(Request $request)
+    {
+        $query = trim($request->get('q', ''));
+
+        if ($query === '' || mb_strlen($query) < 2) {
+            return response()->json(['success' => true, 'data' => []]);
+        }
+
+        $city = $request->has('city') ? $request->city : session('user_city');
+
+        $items = Item::with(['user'])
+            ->where('status', 'active')
+            ->visible()
+            ->when($city, function ($q) use ($city) {
+                $q->whereHas('user', function ($uq) use ($city) {
+                    $uq->where('location', 'like', "%{$city}%");
+                });
+            })
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('description', 'like', "%{$query}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(6)
+            ->get(['id', 'name', 'price', 'currency', 'images', 'user_id']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'formatted_price' => $item->formatted_price,
+                    'first_image_url' => $item->first_image_url,
+                    'user' => [
+                        'name' => optional($item->user)->name,
+                    ],
+                    'url' => route('items.show', $item),
+                ];
+            })->values(),
+        ], 200, [], JSON_INVALID_UTF8_SUBSTITUTE);
+    }
+
+    /**
      * Toggle favorite status
      */
     public function toggleFavorite(Item $item)

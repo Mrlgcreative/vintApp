@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Alpine.js - masquer les éléments en attente d'initialisation */
+[x-cloak] {
+    display: none !important;
+}
+
 /* Variables CSS dynamiques VintApp - injectées automatiquement */
 :root {
   --color-primary: #8B5CF6;
@@ -149,6 +154,7 @@
   --color-status-verified: #10B981;
   --color-status-unverified: #F59E0B;
 }
+
 
 
 

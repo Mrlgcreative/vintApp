@@ -275,17 +275,101 @@
                     
                     <!-- Barre de recherche et menu utilisateur -->
                     <div class="flex items-center gap-3">
-                        <!-- Barre de recherche -->
-                        <form class="flex items-center" method="GET" action="{{ route('items.search') }}">
-                            <div class="relative group">
-                                <input type="search" 
-                                       name="q" 
-                                       placeholder="Rechercher un article..." 
-                                       value="{{ request('q') }}"
-                                       class="w-72 px-4 py-2 pl-10 text-sm bg-white/10 text-white placeholder-white/50 border border-white/20 rounded-xl focus:outline-none focus:bg-white/20 focus:border-white/40 focus:ring-0 transition-all duration-200">
-                                <svg class="w-4 h-4 absolute left-3 top-2.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                        <!-- Barre de recherche (autocomplétion dynamique) -->
+                        <div class="relative" x-data="searchAutoComplete()" x-on:keydown.escape.window="close(false)">
+                            <form class="flex items-center" method="GET" action="{{ route('items.search') }}" x-on:submit="submitSearch($event)">
+                                <div class="relative group">
+                                    <input type="search" 
+                                           name="q" 
+                                           x-ref="input"
+                                           x-model="query"
+                                           x-on:input="onInput()"
+                                           x-on:focus="open=true"
+                                           x-on:keydown.down.prevent="move(1)"
+                                           x-on:keydown.up.prevent="move(-1)"
+                                           x-on:keydown.enter.prevent="submitSearch($event)"
+                                           x-on:click.away="close(false)"
+                                           placeholder="Rechercher un article..." 
+                                           value="{{ request('q') }}"
+                                           autocomplete="off"
+                                           class="w-72 px-4 py-2 pl-10 pr-9 text-sm bg-white/10 text-white placeholder-white/50 border border-white/20 rounded-xl focus:outline-none focus:bg-white/20 focus:border-white/40 focus:ring-0 transition-all duration-200">
+                                    <svg class="w-4 h-4 absolute left-3 top-2.5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                                    <span class="absolute right-3 top-1/2 -translate-y-1/2">
+                                        <i x-show="loading" x-cloak class="fas fa-spinner fa-spin text-sm text-white/50"></i>
+                                        <button type="button" x-show="query" x-on:click="clear()" class="text-white/50 hover:text-white transition-colors" aria-label="Effacer">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    </span>
+                                </div>
+                            </form>
+
+                            <!-- Suggestions -->
+                            <div x-show="open && (loading || hasResults || error || query.length > 0)" x-cloak
+                                 x-on:click.away="close(false)"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 -translate-y-1"
+                                 x-transition:enter-end="opacity-100 translate-y-0"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100"
+                                 x-transition:leave-end="opacity-0"
+                                 class="absolute right-0 mt-2 w-96 max-w-[85vw] bg-white rounded-xl shadow-xl ring-1 ring-black/5 z-50 overflow-hidden">
+                                <!-- État chargement -->
+                                <div x-show="loading" class="p-4 flex items-center gap-3 text-sm text-gray-500">
+                                    <i class="fas fa-spinner fa-spin text-gray-400"></i>
+                                    Recherche en cours...
+                                </div>
+
+                                <!-- État erreur -->
+                                <div x-show="!loading && error" class="p-4 text-sm text-red-500 flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span x-text="error"></span>
+                                </div>
+
+                                <!-- État vide -->
+                                <div x-show="!loading && !error && query && hasResults === false" class="p-4 text-sm text-gray-500 flex items-center gap-2">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                    Aucun résultat pour <strong class="truncate" x-text="query"></strong>
+                                </div>
+
+                                <!-- Résultats -->
+                                <template x-if="hasResults">
+                                    <div>
+                                        <div class="px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400 border-b border-gray-100">
+                                            Résultats
+                                        </div>
+                                        <ul class="max-h-80 overflow-y-auto py-1">
+                                            <template x-for="(item, i) in results" :key="item.id">
+                                                <li>
+                                                    <a :href="item.url || '/items/search?q=' + encodeURIComponent(query)" x-on:click="close(true)"
+                                                       class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                                                       :class="i === activeIndex ? 'bg-gray-100 hover:bg-gray-100' : ''">
+                                                        <img :src="item.first_image_url || '/images/placeholder.png'" 
+                                                             :alt="item.name"
+                                                             class="w-10 h-10 rounded-lg object-cover flex-shrink-0 bg-gray-100"
+                                                             x-on:error="$el.src='/images/placeholder.png'">
+                                                        <div class="flex-1 min-w-0">
+                                                            <p class="text-sm font-medium text-gray-900 truncate" x-text="item.name"></p>
+                                                            <p class="text-xs text-gray-500 flex items-center gap-1">
+                                                                <i class="fas fa-store text-gray-400"></i>
+                                                                <span class="truncate" x-text="item.user?.name || 'Vendeur'"></span>
+                                                            </p>
+                                                        </div>
+                                                        <span class="text-sm font-semibold text-gray-900 flex-shrink-0" x-text="item.formatted_price"></span>
+                                                    </a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                        <div class="px-4 py-2.5 border-t border-gray-100">
+                                            <a :href="'/items/search?q=' + encodeURIComponent(query)" x-on:click="close(true)"
+                                               class="flex items-center justify-center gap-2 text-sm text-vinted-primary-600 hover:text-vinted-primary-700 font-medium">
+                                                Voir tous les résultats pour <span class="truncate block max-w-[50%]" x-text="query"></span>
+                                                <i class="fas fa-arrow-right text-xs"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
-                        </form>
+                        </div>
                         
                         @auth
                             <!-- Menu utilisateur -->
@@ -563,6 +647,87 @@
 
     <!-- Scripts personnalisés -->
     <script>
+        // Barre de recherche dynamique avec autocomplétion (Alpine)
+        function searchAutoComplete() {
+            return {
+                query: @json(request('q', '')),
+                results: [],
+                loading: false,
+                error: '',
+                open: false,
+                activeIndex: -1,
+                debounceTimer: null,
+
+                get hasResults() {
+                    return this.results.length > 0;
+                },
+
+                onInput() {
+                    clearTimeout(this.debounceTimer);
+                    this.activeIndex = -1;
+                    if (!this.query || this.query.trim().length < 2) {
+                        this.results = [];
+                        this.error = '';
+                        this.open = this.query.length > 0 ? true : false;
+                        return;
+                    }
+                    this.open = true;
+                    this.debounceTimer = setTimeout(() => this.fetchResults(), 300);
+                },
+
+                async fetchResults() {
+                    const q = this.query.trim();
+                    if (q.length < 2) return;
+                    this.loading = true;
+                    this.error = '';
+                    try {
+                        const res = await fetch(`/items/suggestions?q=${encodeURIComponent(q)}`, {
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!res.ok) throw new Error('Erreur ' + res.status);
+                        const data = await res.json();
+                        const items = data?.data || [];
+                        this.results = items.slice(0, 6);
+                    } catch (e) {
+                        console.error('Search autocomplete error:', e);
+                        this.error = 'Impossible de charger les résultats';
+                        this.results = [];
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                move(dir) {
+                    if (!this.results.length) return;
+                    this.activeIndex = (this.activeIndex + dir + this.results.length) % this.results.length;
+                },
+
+                submitSearch(e) {
+                    this.close(false);
+                    if (this.activeIndex >= 0 && this.results[this.activeIndex]?.url) {
+                        e.preventDefault();
+                        window.location.href = this.results[this.activeIndex].url;
+                        return;
+                    }
+                    return true;
+                },
+
+                clear() {
+                    this.query = '';
+                    this.results = [];
+                    this.error = '';
+                    this.open = false;
+                    this.activeIndex = -1;
+                    clearTimeout(this.debounceTimer);
+                },
+
+                close() {
+                    this.open = false;
+                    this.activeIndex = -1;
+                }
+            };
+        }
+
         // Fonction pour afficher les notifications
         function toggleNotifications() {
             if (!window.isAuthenticated) {

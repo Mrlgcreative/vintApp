@@ -187,6 +187,7 @@ Route::get('/test-session-gps', function() {
 // Routes publiques pour les items
 Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
+Route::get('/items/suggestions', [ItemController::class, 'suggestions'])->name('items.suggestions');
 
 // Routes publiques pour le scan QR code des commandes
 Route::get('/order/scan/{token}', [OrderController::class, 'scanOrder'])->name('orders.scan');
