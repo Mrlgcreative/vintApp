@@ -812,6 +812,7 @@
 
     <script src="{{ asset('js/network-adapter.js') }}?v={{ filemtime(public_path('js/network-adapter.js')) }}"></script>
     <script src="{{ asset('js/admin-utils.js') }}"></script>
+    <script src="{{ asset('js/admin-confirm.js') }}"></script>
     <script src="{{ asset('js/content-visibility.js') }}"></script>
     <script src="{{ asset('js/page-skeleton.js') }}"></script>
     <script>
