@@ -103,7 +103,7 @@
                 @if($hasFilters)
                     <x-button-outline :href="route('agent.tickets')">Réinitialiser les filtres</x-button-outline>
                 @else
-                    <x-button-primary :href="route('agent.unassigned')" class="gap-2">
+                    <x-button-primary :href="route('agent.unassigned')" variant="success" class="gap-2">
                         <i class="fas fa-inbox text-xs"></i> Voir les non assignés
                     </x-button-primary>
                 @endif
