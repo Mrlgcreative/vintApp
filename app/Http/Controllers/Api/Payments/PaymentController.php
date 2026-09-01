@@ -313,7 +313,9 @@ class PaymentController extends ApiController
 
             $transaction->update(['status' => 'failed']);
 
-            Log::error('MaishaPay: echec initiation', [
+            $serverMessage = $result['error'] ?? $result['message'] ?? 'Erreur lors du paiement';
+
+            Log::error('MaishaPay: echec initiation (Api)', [
                 'result' => $result,
                 'request' => $request->only(['amount', 'phone', 'currency', 'operator']),
             ]);
@@ -321,7 +323,7 @@ class PaymentController extends ApiController
             return response()->json([
                 'success' => false,
                 'status' => 'failed',
-                'message' => $result['message'] ?? 'Erreur lors du paiement',
+                'message' => $serverMessage,
                 'transaction_id' => $transaction->id,
             ], 400);
 
