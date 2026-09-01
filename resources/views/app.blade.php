@@ -415,6 +415,28 @@
                                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg>
                                         Messages
                                     </a>
+                                    @php $__u = auth()->user(); @endphp
+                                    @if($__u && ($__u->hasRole('admin') || $__u->hasRole('support') || $__u->isExpert()))
+                                        <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                                        <div class="px-4 py-1.5 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">Interface rôles</div>
+                                        @if($__u->hasRole('admin'))
+                                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-vinted-primary-700 dark:text-vinted-primary-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15L15 9.75m-3-7.036A11.959 11.959 0 013.598 6C3.214 8.848 3.823 11.876 4.5 14.5c.594 2.316 1.594 4.012 2.564 5.163C7.698 21.151 10.848 21 12 21s4.31.151 5.936-1.337c.97-1.151 1.97-2.847 2.564-5.163.677-2.624 1.286-5.652.902-8.5A11.959 11.959 0 0112.75 2.714z"/></svg>
+                                                Administration
+                                            </a>
+                                        @elseif($__u->hasRole('support'))
+                                            <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-vinted-primary-700 dark:text-vinted-primary-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                                Espace support
+                                            </a>
+                                        @elseif($__u->isExpert())
+                                            <a href="{{ route('expert.dashboard') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-vinted-primary-700 dark:text-vinted-primary-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15L15 9.75M12 3l7.5 2.625v6.034c0 4.525-2.93 8.146-7.5 9.591-4.57-1.445-7.5-5.066-7.5-9.591V5.625L12 3z"/></svg>
+                                                Espace expert
+                                            </a>
+                                        @endif
+                                        <div class="border-t border-gray-100 dark:border-gray-700 my-1"></div>
+                                    @endif
                                     <a href="{{ route('admin.refunds.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/></svg>
                                         Remboursements
@@ -538,6 +560,8 @@
                 $iconVendor = 'M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z';
                 $iconLogin = 'M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75';
                 $iconRegister = 'M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z';
+                $iconShield = 'M9 12.75L11.25 15L15 9.75M12 3l7.5 2.625v6.034c0 4.525-2.93 8.146-7.5 9.591-4.57-1.445-7.5-5.066-7.5-9.591V5.625L12 3z';
+                $iconShieldFilled = 'M12 3l7.5 2.625v6.034c0 4.525-2.93 8.146-7.5 9.591-4.57-1.445-7.5-5.066-7.5-9.591V5.625L12 3z M9 12.75L11.25 15L15 9.75';
 
                 $mobileNav = [
                     ['url' => url('/'), 'label' => 'Accueil', 'active' => request()->is('/'),
@@ -546,6 +570,15 @@
                 ];
 
                 if (auth()->check()) {
+                    $roleNav = null;
+                    if (auth()->user()->hasRole('admin')) {
+                        $roleNav = ['url' => route('admin.dashboard'), 'label' => 'Admin', 'active' => request()->routeIs('admin.*'), 'icon' => $iconShield, 'iconFilled' => $iconShieldFilled];
+                    } elseif (auth()->user()->hasRole('support')) {
+                        $roleNav = ['url' => route('agent.dashboard'), 'label' => 'Support', 'active' => request()->routeIs('agent.*'), 'icon' => $iconShield, 'iconFilled' => $iconShieldFilled];
+                    } elseif (auth()->user()->isExpert()) {
+                        $roleNav = ['url' => route('expert.dashboard'), 'label' => 'Expert', 'active' => request()->routeIs('expert.*'), 'icon' => $iconShield, 'iconFilled' => $iconShieldFilled];
+                    }
+
                     $mobileNav = array_merge($mobileNav, $isSellerMobile ? [
                         ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
                          'icon' => $iconArticles, 'iconFilled' => $iconArticlesFilled],
@@ -562,9 +595,12 @@
                          'icon' => $iconSell, 'iconFilled' => $iconSell, 'special' => true],
                         ['url' => route('orders.index'), 'label' => 'Commandes', 'active' => request()->routeIs('orders.*'),
                          'icon' => $iconOrders, 'iconFilled' => $iconOrders],
-                        ['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
-                         'icon' => $iconProfile, 'iconFilled' => $iconProfile],
+['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
+                          'icon' => $iconProfile, 'iconFilled' => $iconProfile],
                     ]);
+                    if ($roleNav) {
+                        $mobileNav[] = $roleNav;
+                    }
                 } else {
                     $mobileNav = array_merge($mobileNav, [
                         ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
