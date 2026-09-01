@@ -27,7 +27,7 @@
                 </div>
 
                 <!-- Stats -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
                         <div class="flex items-center gap-4">
                             <div class="w-10 h-10 rounded-lg bg-vinted-primary-100 dark:bg-vinted-primary-500/20 flex items-center justify-center text-vinted-primary-600 dark:text-vinted-primary-400">
@@ -49,17 +49,6 @@
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">{{ $stats['total_sales'] }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Ventes totales</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                <i class="fas fa-wallet text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white tabular-nums">${{ number_format($stats['total_revenue'] ?? 0, 2, '.', ',') }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Revenus totaux</p>
                             </div>
                         </div>
                     </div>
