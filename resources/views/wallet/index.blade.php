@@ -3,26 +3,26 @@
 @section('title', 'Mon Portefeuille')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- En-tête avec gradient vert -->
+<div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- En-tête violet -->
         <div class="mb-8">
-            <div class="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
-                <!-- Motif décoratif -->
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
-                <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
-                <div class="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-bold flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 110-6h.008A2.25 2.25 0 0021 6.008V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v.008c0 1.243 1.007 2.25 2.25 2.25H15a3 3 0 010 6H5.25A2.25 2.25 0 003 16.5v1.245c0 1.243 1.007 2.25 2.25 2.248h13.5A2.25 2.25 0 0021 17.745V12z"/></svg>
-                            </div>
-                            Mon Portefeuille
-                        </h1>
-                        <p class="text-emerald-100 mt-2 text-sm sm:text-base">Gérez vos finances en toute simplicité</p>
+            <div class="relative overflow-hidden rounded-2xl border border-vinted-primary-400 bg-vinted-primary-600 shadow-lg shadow-vinted-primary/30">
+                <div class="absolute -top-10 -right-10 h-56 w-56 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="absolute -bottom-16 -left-6 h-48 w-48 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="relative flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 text-xl text-white">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold tracking-tight text-white sm:text-3xl">Mon Portefeuille</h1>
+                            <p class="mt-1 text-sm text-vinted-primary-100">Gérez vos finances en toute simplicité</p>
+                        </div>
                     </div>
-                    <button class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-white/25 active:scale-95 transition-all duration-200" onclick="refreshBalances()" id="refreshMainBtn">
-                        <svg class="w-4 h-4" id="refreshMainIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182"/></svg>
+                    <button class="inline-flex items-center gap-2 self-start rounded-lg bg-white/15 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition-colors hover:bg-white/25 sm:self-auto" onclick="refreshBalances()" id="refreshMainBtn">
+                        <i class="fas fa-rotate-right" id="refreshMainIcon"></i>
                         Actualiser
                     </button>
                 </div>
@@ -30,24 +30,24 @@
         </div>
 
         <!-- Cartes des soldes -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-8">
             <!-- Wallet USD -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700/50 relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700">
+                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-600"></div>
                 <div class="p-6">
-                    <div class="flex justify-between items-start mb-6">
+                    <div class="mb-6 flex items-start justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                <i class="fas fa-dollar-sign text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-gray-900 dark:text-white text-lg font-semibold">Dollar Américain</h2>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm">USD</p>
+                                <h2 class="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Dollar Américain</h2>
+                                <p class="text-sm text-zinc-500 dark:text-zinc-400">USD</p>
                             </div>
                         </div>
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                            <button @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                                <i class="fas fa-ellipsis-vertical"></i>
                             </button>
                             <div x-show="open" @click.away="open = false"
                                  x-transition:enter="transition ease-out duration-100"
@@ -56,40 +56,40 @@
                                  x-transition:leave="transition ease-in duration-75"
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden">
-                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                 class="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
+                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-plus w-4 text-emerald-500"></i>
                                     Ajouter des fonds
                                 </a>
-                                <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                                <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-minus w-4 text-red-500"></i>
                                     Retirer des fonds
                                 </a>
-                                <div class="border-t border-gray-100 dark:border-gray-700"></div>
-                                <a href="{{ route('wallet.transactions', $usdWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div class="border-t border-zinc-100 dark:border-zinc-700"></div>
+                                <a href="{{ route('wallet.transactions', $usdWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-clock-rotate-left w-4 text-vinted-primary-500"></i>
                                     Voir l'historique
                                 </a>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="text-center py-6">
-                        <p class="text-4xl font-bold text-green-600 dark:text-green-400 mb-1 tabular-nums" id="usd-balance">
+
+                    <div class="py-5 text-center">
+                        <p class="mb-1 text-4xl font-bold tabular-nums text-emerald-600 dark:text-emerald-400" id="usd-balance">
                             ${{ number_format($usdWallet->balance, 2, '.', ',') }}
                         </p>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm">Solde disponible</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Solde disponible</p>
                     </div>
-                    
+
                     <div class="flex gap-3">
-                        <a href="{{ route('wallet.index') }}" 
-                           class="flex-1 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <a href="{{ route('wallet.index') }}"
+                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98]">
+                            <i class="fas fa-plus"></i>
                             Ajouter
                         </a>
-                        <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}" 
-                           class="flex-1 inline-flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 py-3 px-4 rounded-xl font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 active:scale-[0.98]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                        <a href="{{ route('wallet.withdraw-funds', $usdWallet) }}"
+                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 font-medium text-zinc-700 transition-all duration-200 hover:bg-zinc-50 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                            <i class="fas fa-minus text-red-500"></i>
                             Retirer
                         </a>
                     </div>
@@ -97,22 +97,22 @@
             </div>
 
             <!-- Wallet CDF -->
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700/50 relative overflow-hidden">
-                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-500"></div>
+            <div class="relative overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition-shadow dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700">
+                <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-500"></div>
                 <div class="p-6">
-                    <div class="flex justify-between items-start mb-6">
+                    <div class="mb-6 flex items-start justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
-                                <svg class="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                            <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400">
+                                <i class="fas fa-coins text-lg"></i>
                             </div>
                             <div>
-                                <h2 class="text-gray-900 dark:text-white text-lg font-semibold">Franc Congolais</h2>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm">CDF</p>
+                                <h2 class="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white">Franc Congolais</h2>
+                                <p class="text-sm text-zinc-500 dark:text-zinc-400">CDF</p>
                             </div>
                         </div>
                         <div class="relative" x-data="{ open: false }">
-                            <button @click="open = !open" class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                            <button @click="open = !open" class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-zinc-100 text-zinc-500 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700">
+                                <i class="fas fa-ellipsis-vertical"></i>
                             </button>
                             <div x-show="open" @click.away="open = false"
                                  x-transition:enter="transition ease-out duration-100"
@@ -121,40 +121,40 @@
                                  x-transition:leave="transition ease-in duration-75"
                                  x-transition:leave-start="opacity-100 scale-100"
                                  x-transition:leave-end="opacity-0 scale-95"
-                                 class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl ring-1 ring-black/5 dark:ring-white/10 z-50 overflow-hidden">
-                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                                 class="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-800">
+                                <a href="{{ route('wallet.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-plus w-4 text-emerald-500"></i>
                                     Ajouter des fonds
                                 </a>
-                                <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                                <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-minus w-4 text-red-500"></i>
                                     Retirer des fonds
                                 </a>
-                                <div class="border-t border-gray-100 dark:border-gray-700"></div>
-                                <a href="{{ route('wallet.transactions', $cdfWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div class="border-t border-zinc-100 dark:border-zinc-700"></div>
+                                <a href="{{ route('wallet.transactions', $cdfWallet) }}" class="flex items-center gap-3 px-4 py-3 text-sm text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-700/60">
+                                    <i class="fas fa-clock-rotate-left w-4 text-vinted-primary-500"></i>
                                     Voir l'historique
                                 </a>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="text-center py-6">
-                        <p class="text-4xl font-bold text-amber-600 dark:text-amber-400 mb-1 tabular-nums" id="cdf-balance">
+
+                    <div class="py-5 text-center">
+                        <p class="mb-1 text-4xl font-bold tabular-nums text-amber-600 dark:text-amber-400" id="cdf-balance">
                             {{ number_format($cdfWallet->balance, 2, ',', ' ') }} FC
                         </p>
-                        <p class="text-gray-500 dark:text-gray-400 text-sm">Solde disponible</p>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Solde disponible</p>
                     </div>
-                    
+
                     <div class="flex gap-3">
-                        <a href="{{ route('wallet.index') }}" 
-                           class="flex-1 inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white py-3 px-4 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <a href="{{ route('wallet.index') }}"
+                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-amber-500 px-4 py-3 font-medium text-white shadow-sm transition-all duration-200 hover:bg-amber-600 active:scale-[0.98]">
+                            <i class="fas fa-plus"></i>
                             Ajouter
                         </a>
-                        <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}" 
-                           class="flex-1 inline-flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 py-3 px-4 rounded-xl font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200 active:scale-[0.98]">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                        <a href="{{ route('wallet.withdraw-funds', $cdfWallet) }}"
+                           class="inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-zinc-200 px-4 py-3 font-medium text-zinc-700 transition-all duration-200 hover:bg-zinc-50 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">
+                            <i class="fas fa-minus text-red-500"></i>
                             Retirer
                         </a>
                     </div>
@@ -163,277 +163,275 @@
         </div>
 
         <!-- Carte de conversion de devises -->
-        <div class="mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-                <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white">
-                    <h2 class="text-xl font-bold flex items-center gap-2.5 mb-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
-                        Convertir entre devises (USD ⇄ CDF)
-                    </h2>
-                    <p class="text-emerald-100 text-sm">Convertissez facilement vos dollars en francs congolais et vice-versa</p>
+        <div class="mb-8 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="bg-vinted-primary-600 px-6 py-5 text-white">
+                <h2 class="flex items-center gap-2.5 text-xl font-bold tracking-tight">
+                    <i class="fas fa-arrow-right-arrow-left"></i>
+                    Convertir entre devises (USD ⇄ CDF)
+                </h2>
+                <p class="mt-1 text-sm text-vinted-primary-100">Convertissez facilement vos dollars en francs congolais et vice-versa</p>
+            </div>
+            <div class="p-6">
+                <!-- Options de conversion rapide -->
+                <div class="mb-6 flex gap-3">
+                    <button type="button"
+                            class="inline-flex items-center gap-2 rounded-lg bg-vinted-primary-50 px-4 py-2 text-sm font-medium text-vinted-primary-700 transition-colors hover:bg-vinted-primary-100 dark:bg-vinted-primary-500/10 dark:text-vinted-primary-300"
+                            onclick="quickConvert('USD', 'CDF')">
+                        <i class="fas fa-arrow-right-long"></i>
+                        USD → CDF
+                    </button>
+                    <button type="button"
+                            class="inline-flex items-center gap-2 rounded-lg bg-amber-50 px-4 py-2 text-sm font-medium text-amber-700 transition-colors hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-300"
+                            onclick="quickConvert('CDF', 'USD')">
+                        <i class="fas fa-arrow-right-long"></i>
+                        CDF → USD
+                    </button>
                 </div>
-                <div class="p-6">
-                    <!-- Options de conversion rapide -->
-                    <div class="flex gap-3 mb-6">
-                        <button type="button" 
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200 text-sm font-medium" 
-                                onclick="quickConvert('USD', 'CDF')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                            USD → CDF
-                        </button>
-                        <button type="button" 
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200 text-sm font-medium" 
-                                onclick="quickConvert('CDF', 'USD')">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                            CDF → USD
-                        </button>
-                    </div>
 
-                    <form id="conversionForm">
-                        @csrf
-                        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                            <!-- Source -->
-                            <div class="lg:col-span-5">
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">De</label>
-                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary mb-3" 
-                                        id="fromWallet" name="from_wallet_id" required>
-                                    <option value="{{ $usdWallet->id }}" data-currency="USD">
-                                        USD - ${{ number_format($usdWallet->balance, 2) }}
-                                    </option>
-                                    <option value="{{ $cdfWallet->id }}" data-currency="CDF">
-                                        CDF - {{ number_format($cdfWallet->balance, 2) }} FC
-                                    </option>
-                                </select>
-                                <div class="flex">
-                                    <input type="number" 
-                                           class="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-l-lg focus:ring-2 focus:ring-primary focus:border-primary" 
-                                           id="fromAmount" 
-                                           name="amount" 
-                                           placeholder="0.00" 
-                                           step="0.01" 
-                                           min="0.01" 
-                                           required>
-                                    <span class="inline-flex items-center px-4 bg-gray-50 dark:bg-gray-900 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 dark:text-gray-200 font-medium" 
-                                          id="fromCurrency">USD</span>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                    Solde disponible: <span id="fromBalance">${{ number_format($usdWallet->balance, 2) }}</span>
-                                </p>
+                <form id="conversionForm">
+                    @csrf
+                    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+                        <!-- Source -->
+                        <div class="lg:col-span-5">
+                            <label class="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">De</label>
+                            <select class="mb-3 w-full rounded-lg border border-zinc-300 bg-white p-3 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800"
+                                    id="fromWallet" name="from_wallet_id" required>
+                                <option value="{{ $usdWallet->id }}" data-currency="USD">
+                                    USD - ${{ number_format($usdWallet->balance, 2) }}
+                                </option>
+                                <option value="{{ $cdfWallet->id }}" data-currency="CDF">
+                                    CDF - {{ number_format($cdfWallet->balance, 2) }} FC
+                                </option>
+                            </select>
+                            <div class="flex">
+                                <input type="number"
+                                       class="flex-1 rounded-l-lg border border-zinc-300 bg-white p-3 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800"
+                                       id="fromAmount"
+                                       name="amount"
+                                       placeholder="0.00"
+                                       step="0.01"
+                                       min="0.01"
+                                       required>
+                                <span class="inline-flex items-center rounded-r-lg border border-l-0 border-zinc-300 bg-zinc-50 px-4 font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
+                                      id="fromCurrency">USD</span>
                             </div>
-
-                            <!-- Bouton d'échange -->
-                            <div class="lg:col-span-2 flex items-center justify-center">
-                                <button type="button" 
-                                        class="w-12 h-12 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300 transform hover:scale-110 active:scale-95 shadow-sm" 
-                                        id="swapBtn">
-                                    <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
-                                </button>
-                            </div>
-
-                            <!-- Destination -->
-                            <div class="lg:col-span-5">
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Vers</label>
-                                <select class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary mb-3" 
-                                        id="toWallet" name="to_wallet_id" required>
-                                    <option value="{{ $cdfWallet->id }}" data-currency="CDF">
-                                        CDF - {{ number_format($cdfWallet->balance, 2) }} FC
-                                    </option>
-                                    <option value="{{ $usdWallet->id }}" data-currency="USD">
-                                        USD - ${{ number_format($usdWallet->balance, 2) }}
-                                    </option>
-                                </select>
-                                <div class="flex">
-                                    <input type="text" 
-                                           class="flex-1 p-3 border border-gray-300 rounded-l-lg bg-gray-50 dark:bg-gray-900" 
-                                           id="toAmount" 
-                                           placeholder="0.00" 
-                                           readonly>
-                                    <span class="inline-flex items-center px-4 bg-gray-50 dark:bg-gray-900 border border-l-0 border-gray-300 rounded-r-lg text-gray-700 dark:text-gray-200 font-medium" 
-                                          id="toCurrency">CDF</span>
-                                </div>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                    Solde actuel: <span id="toBalance">{{ number_format($cdfWallet->balance, 2) }} FC</span>
-                                </p>
-                            </div>
+                            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                                Solde disponible: <span id="fromBalance">${{ number_format($usdWallet->balance, 2) }}</span>
+                            </p>
                         </div>
 
-                        <!-- Taux de change -->
-                        <div class="mt-6">
-                            <div class="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-4" id="rateAlert">
-                                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"/></svg>
-                                            <span class="text-gray-700 dark:text-gray-200">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
-                                            <span id="rateSource" class="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 px-2 py-0.5 rounded-full text-xs font-medium hidden">
-                                                Temps réel
-                                            </span>
-                                            <span id="rateFallback" class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400 px-2 py-0.5 rounded-full text-xs font-medium hidden">
-                                                Taux de secours
-                                            </span>
-                                        </div>
-                                        <div class="flex flex-wrap gap-4">
-                                            <small class="text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
-                                                <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
-                                            </small>
-                                            <small class="text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
-                                                <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <button type="button" 
-                                                class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-800/30 text-emerald-700 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors duration-200 text-sm" 
-                                                id="refreshRateBtn" onclick="refreshExchangeRate()">
-                                            <svg class="w-3.5 h-3.5" id="refreshIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182M2.985 19.644l3.181-3.182"/></svg>
-                                            Actualiser
-                                        </button>
-                                        <small class="text-gray-500 dark:text-gray-400 hidden lg:block">
-                                            Mis à jour: <span id="lastUpdate">À l'instant</span>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bouton de conversion -->
-                        <div class="mt-6">
-                            <button type="submit" 
-                                    class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-emerald-700 hover:to-teal-700 transform hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 shadow-lg hover:shadow-xl" 
-                                    id="convertBtn">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>
-                                Convertir maintenant
+                        <!-- Bouton d'échange -->
+                        <div class="flex items-center justify-center lg:col-span-2">
+                            <button type="button"
+                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-vinted-primary-600 text-white shadow-sm transition-all duration-300 hover:scale-110 hover:bg-vinted-primary-700 active:scale-95"
+                                    id="swapBtn">
+                                <i class="fas fa-arrows-rotate"></i>
                             </button>
                         </div>
 
-                        <!-- Exemples de conversion -->
-                        <div class="mt-6">
-                            <div class="bg-gray-50 dark:bg-gray-900/50 rounded-xl p-4">
-                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75V18m-7.5-6.75h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V13.5zm0 2.25h.008v.008H8.25v-.008zm0 2.25h.008v.008H8.25V18zm2.498-6.75h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V13.5zm0 2.25h.007v.008h-.007v-.008zm0 2.25h.007v.008h-.007V18zm2.504-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zm0 2.25h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V18zm2.498-6.75h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V13.5zM8.25 6h7.5v2.25h-7.5V6zM12 2.25c-1.892 0-3.758.11-5.593.322C5.307 2.7 4.5 3.65 4.5 4.757V19.5a2.25 2.25 0 002.25 2.25h10.5a2.25 2.25 0 002.25-2.25V4.757c0-1.108-.806-2.057-1.907-2.185A48.507 48.507 0 0012 2.25z"/></svg>
-                                    <strong>Exemples de conversion :</strong>
-                                </p>
-                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">$1 USD =</p>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example1">2,650 FC</p>
+                        <!-- Destination -->
+                        <div class="lg:col-span-5">
+                            <label class="mb-2 block text-sm font-semibold text-zinc-700 dark:text-zinc-200">Vers</label>
+                            <select class="mb-3 w-full rounded-lg border border-zinc-300 bg-white p-3 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800"
+                                    id="toWallet" name="to_wallet_id" required>
+                                <option value="{{ $cdfWallet->id }}" data-currency="CDF">
+                                    CDF - {{ number_format($cdfWallet->balance, 2) }} FC
+                                </option>
+                                <option value="{{ $usdWallet->id }}" data-currency="USD">
+                                    USD - ${{ number_format($usdWallet->balance, 2) }}
+                                </option>
+                            </select>
+                            <div class="flex">
+                                <input type="text"
+                                       class="flex-1 rounded-l-lg border border-zinc-300 bg-zinc-50 p-3 dark:border-zinc-600 dark:bg-zinc-900"
+                                       id="toAmount"
+                                       placeholder="0.00"
+                                       readonly>
+                                <span class="inline-flex items-center rounded-r-lg border border-l-0 border-zinc-300 bg-zinc-50 px-4 font-medium text-zinc-700 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-200"
+                                      id="toCurrency">CDF</span>
+                            </div>
+                            <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+                                Solde actuel: <span id="toBalance">{{ number_format($cdfWallet->balance, 2) }} FC</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Taux de change -->
+                    <div class="mt-6">
+                        <div class="rounded-xl border border-vinted-primary-200 bg-vinted-primary-50 p-4 dark:border-vinted-primary-500/30 dark:bg-vinted-primary-500/5" id="rateAlert">
+                            <div class="flex flex-col items-start justify-between gap-4 lg:flex-row lg:items-center">
+                                <div class="flex-1">
+                                    <div class="mb-2 flex items-center gap-2">
+                                        <i class="fas fa-circle-info text-vinted-primary-600 dark:text-vinted-primary-400"></i>
+                                        <span class="text-zinc-700 dark:text-zinc-200">Taux actuel: <strong id="exchangeRate">Chargement...</strong></span>
+                                        <span id="rateSource" class="hidden rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                            Temps réel
+                                        </span>
+                                        <span id="rateFallback" class="hidden rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/10 dark:text-amber-400">
+                                            Taux de secours
+                                        </span>
                                     </div>
-                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">$10 USD =</p>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example2">26,500 FC</p>
+                                    <div class="flex flex-wrap gap-4">
+                                        <small class="flex items-center gap-1 text-zinc-600 dark:text-zinc-300">
+                                            <i class="fas fa-arrow-right-long text-xs"></i>
+                                            <strong>USD → CDF:</strong> × <span id="rateFwd">-</span>
+                                        </small>
+                                        <small class="flex items-center gap-1 text-zinc-600 dark:text-zinc-300">
+                                            <i class="fas fa-arrow-left-long text-xs"></i>
+                                            <strong>CDF → USD:</strong> ÷ <span id="rateBwd">-</span>
+                                        </small>
                                     </div>
-                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">10,000 FC =</p>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example3">$3.77</p>
-                                    </div>
-                                    <div class="bg-white dark:bg-gray-800 p-3 rounded-lg shadow-sm">
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">50,000 FC =</p>
-                                        <p class="text-sm font-semibold text-gray-900 dark:text-white" id="example4">$18.87</p>
-                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button"
+                                            class="inline-flex items-center gap-2 rounded-lg bg-vinted-primary-100 px-3 py-1.5 text-sm text-vinted-primary-700 transition-colors hover:bg-vinted-primary-200 dark:bg-vinted-primary-500/10 dark:text-vinted-primary-300"
+                                            id="refreshRateBtn" onclick="refreshExchangeRate()">
+                                        <i class="fas fa-rotate-right text-xs" id="refreshIcon"></i>
+                                        Actualiser
+                                    </button>
+                                    <small class="hidden text-zinc-500 dark:text-zinc-400 lg:block">
+                                        Mis à jour: <span id="lastUpdate">À l'instant</span>
+                                    </small>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Messages -->
-                        <div id="conversionMessage" class="mt-6 hidden"></div>
-                    </form>
-                </div>
+                    <!-- Bouton de conversion -->
+                    <div class="mt-6">
+                        <button type="submit"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-vinted-primary-600 px-6 py-4 text-lg font-semibold text-white shadow-md transition-all duration-200 hover:bg-vinted-primary-700 active:scale-[0.99]"
+                                id="convertBtn">
+                            <i class="fas fa-arrow-right-arrow-left"></i>
+                            Convertir maintenant
+                        </button>
+                    </div>
+
+                    <!-- Exemples de conversion -->
+                    <div class="mt-6">
+                        <div class="rounded-xl bg-zinc-50 p-4 dark:bg-zinc-800/50">
+                            <p class="mb-3 flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-300">
+                                <i class="fas fa-calculator text-vinted-primary-500"></i>
+                                <strong>Exemples de conversion :</strong>
+                            </p>
+                            <div class="grid grid-cols-2 gap-4 text-center lg:grid-cols-4">
+                                <div class="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                                    <p class="mb-1 text-xs text-zinc-500 dark:text-zinc-400">$1 USD =</p>
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white" id="example1">2,650 FC</p>
+                                </div>
+                                <div class="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                                    <p class="mb-1 text-xs text-zinc-500 dark:text-zinc-400">$10 USD =</p>
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white" id="example2">26,500 FC</p>
+                                </div>
+                                <div class="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                                    <p class="mb-1 text-xs text-zinc-500 dark:text-zinc-400">10,000 FC =</p>
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white" id="example3">$3.77</p>
+                                </div>
+                                <div class="rounded-lg border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+                                    <p class="mb-1 text-xs text-zinc-500 dark:text-zinc-400">50,000 FC =</p>
+                                    <p class="text-sm font-semibold text-zinc-900 dark:text-white" id="example4">$18.87</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Messages -->
+                    <div id="conversionMessage" class="mt-6 hidden"></div>
+                </form>
             </div>
         </div>
 
         <!-- Transactions récentes -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                    <h2 class="text-xl font-bold flex items-center gap-2.5">
-<div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                </div>
-                        <span class="text-gray-900 dark:text-white">Transactions récentes</span>
+        <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <div class="border-b border-zinc-200 p-6 dark:border-zinc-800">
+                <div class="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                    <h2 class="flex items-center gap-2.5 text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-vinted-primary-50 text-vinted-primary-500 dark:bg-vinted-primary-500/10">
+                            <i class="fas fa-clock-rotate-left"></i>
+                        </div>
+                        Transactions récentes
                     </h2>
                     <div class="flex items-center gap-3">
-                        <small class="text-gray-500 dark:text-gray-400">{{ $recentTransactions->total() }} transaction(s)</small>
-                        <span class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2.5 py-1 rounded-full text-xs font-medium">
+                        <small class="text-zinc-500 dark:text-zinc-400">{{ $recentTransactions->total() }} transaction(s)</small>
+                        <span class="rounded-full bg-zinc-100 px-2.5 py-1 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                             Page {{ $recentTransactions->currentPage() }}/{{ $recentTransactions->lastPage() }}
                         </span>
                     </div>
                 </div>
-                
+
                 <!-- Filtres rapides -->
                 <div class="flex flex-wrap gap-2">
-                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 dark:bg-gray-100 text-white dark:text-gray-800 rounded-lg text-sm font-medium transition-colors duration-200" 
+                    <button class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-800 px-3 py-1.5 text-sm font-medium text-white transition-colors duration-200 dark:bg-zinc-100 dark:text-zinc-800"
                             id="filterAll" onclick="filterTransactions('all')">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                        <i class="fas fa-bars-staggered text-xs"></i>
                         Toutes
                     </button>
-                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg text-sm hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors duration-200" 
+                    <button class="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-1.5 text-sm text-green-700 transition-colors duration-200 hover:bg-green-100 dark:bg-green-500/10 dark:text-green-400"
                             id="filterCredit" onclick="filterTransactions('credit')">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        <i class="fas fa-plus text-xs"></i>
                         Crédits
                     </button>
-                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg text-sm hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-200" 
+                    <button class="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-1.5 text-sm text-red-700 transition-colors duration-200 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-400"
                             id="filterDebit" onclick="filterTransactions('debit')">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                        <i class="fas fa-minus text-xs"></i>
                         Débits
                     </button>
-                            <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200" 
-                                    id="filterUSD" onclick="filterTransactions('USD')">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <button class="inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-3 py-1.5 text-sm text-blue-700 transition-colors duration-200 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400"
+                            id="filterUSD" onclick="filterTransactions('USD')">
+                        <i class="fas fa-dollar-sign text-xs"></i>
                         USD
                     </button>
-                    <button class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg text-sm hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors duration-200" 
+                    <button class="inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-3 py-1.5 text-sm text-amber-700 transition-colors duration-200 hover:bg-amber-100 dark:bg-amber-500/10 dark:text-amber-400"
                             id="filterCDF" onclick="filterTransactions('CDF')">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>
+                        <i class="fas fa-coins text-xs"></i>
                         CDF
                     </button>
                 </div>
             </div>
-            
+
             <div class="p-0">
                 @if($recentTransactions->count() > 0)
                     <!-- Version Desktop/Tablet - Tableau -->
-                    <div class="hidden sm:block overflow-x-auto">
+                    <div class="hidden overflow-x-auto sm:block">
                         <table class="w-full">
-                            <thead class="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 sticky top-0">
+                            <thead class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-800/50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-1/2">Description</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Montant</th>
-                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">Devise</th>
-                                    <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider hidden xl:table-cell">Solde après</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Type</th>
+                                    <th class="w-1/2 px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Description</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Montant</th>
+                                    <th class="hidden px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 lg:table-cell">Devise</th>
+                                    <th class="hidden px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 xl:table-cell">Solde après</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-800">
                                 @foreach($recentTransactions as $transaction)
-                                    <tr class="hover:bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+                                    <tr class="transition-colors duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                            <div class="text-sm font-medium text-zinc-900 dark:text-white">
                                                 {{ $transaction->created_at->format('d/m/Y') }}
                                             </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                                 {{ $transaction->created_at->format('H:i') }}
                                             </div>
                                         </td>
                                         <td class="px-6 py-4">
                                             @php
                                                 $typeConfig = [
-                                                    'credit' => ['class' => 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400', 'svgPath' => 'M12 4.5v15m7.5-7.5h-15'],
-                                                    'debit' => ['class' => 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400', 'svgPath' => 'M19.5 12h-15'],
+                                                    'credit' => ['class' => 'bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-400', 'icon' => 'fas fa-plus'],
+                                                    'debit' => ['class' => 'bg-red-100 dark:bg-red-500/10 text-red-800 dark:text-red-400', 'icon' => 'fas fa-minus'],
                                                 ];
-                                                $config = $typeConfig[$transaction->type] ?? ['class' => 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200', 'svgPath' => 'M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z'];
+                                                $config = $typeConfig[$transaction->type] ?? ['class' => 'bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200', 'icon' => 'fas fa-circle'];
                                             @endphp
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $config['svgPath'] }}"/></svg>
+                                            <span class="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium {{ $config['class'] }}">
+                                                <i class="{{ $config['icon'] }} text-[10px]"></i>
                                                 {{ ucfirst($transaction->type) }}
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900 dark:text-white">{{ $transaction->description }}</div>
+                                            <div class="text-sm text-zinc-900 dark:text-white">{{ $transaction->description }}</div>
                                             @if($transaction->reference)
-                                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">Réf: {{ $transaction->reference }}</div>
+                                                <div class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">Réf: {{ $transaction->reference }}</div>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4 text-right">
@@ -442,13 +440,13 @@
                                                 {{ $transaction->wallet->currency }}
                                             </div>
                                         </td>
-                                        <td class="px-6 py-4 text-center hidden lg:table-cell">
-                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {{ $transaction->wallet->currency === 'USD' ? 'bg-emerald-100 text-emerald-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                        <td class="hidden px-6 py-4 text-center lg:table-cell">
+                                            <span class="inline-flex rounded-full px-2 py-1 text-xs font-medium {{ $transaction->wallet->currency === 'USD' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800' }}">
                                                 {{ $transaction->wallet->currency }}
                                             </span>
                                         </td>
-                                        <td class="px-6 py-4 text-right hidden xl:table-cell">
-                                            <div class="text-sm text-gray-900 dark:text-white">
+                                        <td class="hidden px-6 py-4 text-right xl:table-cell">
+                                            <div class="text-sm text-zinc-900 dark:text-white">
                                                 {{ number_format($transaction->balance_after, 2) }} {{ $transaction->wallet->currency }}
                                             </div>
                                         </td>
@@ -457,53 +455,53 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- Version Mobile - Cards -->
                     <div class="block sm:hidden">
-                        <div class="p-4 space-y-4">
+                        <div class="space-y-4 p-4">
                             @foreach($recentTransactions as $transaction)
                                 @php
                                     $source = '';
-                                    $svgPath = 'M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25v10.5A2.25 2.25 0 004.5 19.5z';
-                                    $badgeClass = 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
-                                    
+                                    $iconClass = 'fas fa-layer-group';
+                                    $badgeClass = 'bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200';
+
                                     if (str_contains(strtolower($transaction->description), 'vente')) {
                                         if (str_contains($transaction->description, 'commission')) {
-                                            $source = '💰 Commission Vente';
-                                            $svgPath = 'M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z';
-                                            $badgeClass = 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400';
+                                            $source = 'Commission Vente';
+                                            $iconClass = 'fas fa-star';
+                                            $badgeClass = 'bg-blue-100 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400';
                                         } else {
-                                            $source = '🛍️ Vente Produit';
-                                            $svgPath = 'M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z';
-                                            $badgeClass = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
+                                            $source = 'Vente Produit';
+                                            $iconClass = 'fas fa-bag-shopping';
+                                            $badgeClass = 'bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-400';
                                         }
                                     } elseif (str_contains(strtolower($transaction->description), 'parrainage')) {
-                                        $source = '🤝 Argent Parrainage';
-                                        $svgPath = 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z';
-                                        $badgeClass = 'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400';
+                                        $source = 'Argent Parrainage';
+                                        $iconClass = 'fas fa-user-group';
+                                        $badgeClass = 'bg-vinted-primary-100 dark:bg-vinted-primary-500/10 text-vinted-primary-800 dark:text-vinted-primary-400';
                                     } elseif (str_contains(strtolower($transaction->description), 'conversion')) {
-                                        $source = '🔄 Conversion de Devise';
-                                        $svgPath = 'M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5';
-                                        $badgeClass = 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400';
+                                        $source = 'Conversion de Devise';
+                                        $iconClass = 'fas fa-arrow-right-arrow-left';
+                                        $badgeClass = 'bg-yellow-100 dark:bg-yellow-500/10 text-yellow-800 dark:text-yellow-400';
                                     } elseif (str_contains(strtolower($transaction->description), 'recharge')) {
-                                        $source = '📱 Recharge Mobile Money';
-                                        $svgPath = 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3';
-                                        $badgeClass = 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400';
+                                        $source = 'Recharge Mobile Money';
+                                        $iconClass = 'fas fa-mobile-screen';
+                                        $badgeClass = 'bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-400';
                                     } else {
-                                        $source = '💳 Transaction Générale';
-                                        $badgeClass = 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
+                                        $source = 'Transaction Générale';
+                                        $badgeClass = 'bg-zinc-100 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200';
                                     }
                                 @endphp
-                                
-                                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200 transaction-card">
-                                    <div class="flex items-start justify-between mb-3">
+
+                                <div class="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900 transaction-card">
+                                    <div class="mb-3 flex items-start justify-between">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl {{ $transaction->type === 'credit' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30' }} flex items-center justify-center flex-shrink-0">
-                                                <svg class="w-5 h-5 {{ $transaction->type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $svgPath }}"/></svg>
+                                            <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg {{ $transaction->type === 'credit' ? 'bg-green-100 dark:bg-green-500/10' : 'bg-red-100 dark:bg-red-500/10' }}">
+                                                <i class="{{ $iconClass }} {{ $transaction->type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}"></i>
                                             </div>
                                             <div>
-                                                <h6 class="font-semibold text-gray-900 dark:text-white text-sm">{{ $source }}</h6>
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium {{ $badgeClass }}">
+                                                <h6 class="text-sm font-semibold text-zinc-900 dark:text-white">{{ $source }}</h6>
+                                                <span class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium {{ $badgeClass }}">
                                                     {{ $transaction->wallet->currency }}
                                                 </span>
                                             </div>
@@ -512,28 +510,28 @@
                                             <div class="text-lg font-bold tabular-nums {{ $transaction->type === 'credit' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                                                 {{ $transaction->type === 'credit' ? '+' : '-' }}{{ number_format($transaction->amount, 2) }}
                                             </div>
-                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                                 {{ $transaction->created_at->format('d/m/Y H:i') }}
                                             </div>
                                         </div>
                                     </div>
                                     <div>
-                                        <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">{{ $transaction->description }}</p>
+                                        <p class="mb-2 text-sm text-zinc-700 dark:text-zinc-300">{{ $transaction->description }}</p>
                                         @if($transaction->reference)
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Réf: {{ $transaction->reference }}</p>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Réf: {{ $transaction->reference }}</p>
                                         @endif
                                     </div>
                                 </div>
                             @endforeach
                         </div>
                     </div>
-                    
+
                     <!-- Pagination -->
                     @if($recentTransactions->hasPages())
-                        <div class="flex flex-col sm:flex-row justify-between items-center p-6 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center mb-4 sm:mb-0">
-                                <small class="text-gray-600 dark:text-gray-300">
-                                    Affichage de {{ $recentTransactions->firstItem() }} à {{ $recentTransactions->lastItem() }} 
+                        <div class="flex flex-col items-center justify-between border-t border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-800 dark:bg-zinc-800/50 sm:flex-row">
+                            <div class="mb-4 flex items-center sm:mb-0">
+                                <small class="text-zinc-600 dark:text-zinc-300">
+                                    Affichage de {{ $recentTransactions->firstItem() }} à {{ $recentTransactions->lastItem() }}
                                     sur {{ $recentTransactions->total() }} transactions
                                 </small>
                             </div>
@@ -544,59 +542,59 @@
                     @endif
                 @else
                     <!-- État vide -->
-                    <div class="text-center py-16 px-4">
+                    <div class="px-4 py-16 text-center">
                         <div class="mb-6">
-                            <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-2xl">
-                                <svg class="w-9 h-9 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
+                            <div class="inline-flex h-20 w-20 items-center justify-center rounded-2xl bg-zinc-100 dark:bg-zinc-800">
+                                <i class="fas fa-file-invoice text-3xl text-zinc-400 dark:text-zinc-500"></i>
                             </div>
                         </div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Aucune transaction</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-8 max-w-md mx-auto">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
-                        
+                        <h3 class="mb-3 text-xl font-semibold text-zinc-900 dark:text-white">Aucune transaction</h3>
+                        <p class="mx-auto mb-8 max-w-md text-zinc-500 dark:text-zinc-400">Vos transactions apparaîtront ici une fois que vous aurez effectué des opérations.</p>
+
                         <!-- Sources d'argent possibles -->
                         <div class="mb-8">
-                            <h4 class="text-lg font-medium text-gray-700 dark:text-gray-200 mb-6">💡 Comment recevoir de l'argent dans votre portefeuille :</h4>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                                <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/10 p-4 rounded-xl border border-green-200 dark:border-green-800/30">
+                            <h4 class="mb-6 text-lg font-medium text-zinc-700 dark:text-zinc-200">💡 Comment recevoir de l'argent dans votre portefeuille :</h4>
+                            <div class="mx-auto grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <div class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 dark:border-emerald-500/30 dark:from-emerald-500/10 dark:to-emerald-500/5">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-green-200/60 dark:bg-green-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/></svg>
+                                        <div class="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-200/60 dark:bg-emerald-500/20">
+                                            <i class="fas fa-bag-shopping text-emerald-600 dark:text-emerald-400"></i>
                                         </div>
-                                        <h5 class="font-semibold text-green-800 dark:text-green-400">Vendre des articles</h5>
-                                        <p class="text-sm text-green-700 dark:text-green-500">Recevez l'argent de vos ventes</p>
+                                        <h5 class="font-semibold text-emerald-800 dark:text-emerald-400">Vendre des articles</h5>
+                                        <p class="text-sm text-emerald-700 dark:text-emerald-500">Recevez l'argent de vos ventes</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/10 p-4 rounded-xl border border-primary-200 dark:border-primary-800/30">
+                                <div class="rounded-xl border border-vinted-primary-200 bg-gradient-to-br from-vinted-primary-50 to-vinted-primary-100 p-4 dark:border-vinted-primary-500/30 dark:from-vinted-primary-500/10 dark:to-vinted-primary-500/5">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-primary-200/60 dark:bg-primary-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                                        <div class="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-vinted-primary-200/60 dark:bg-vinted-primary-500/20">
+                                            <i class="fas fa-star text-vinted-primary-600 dark:text-vinted-primary-400"></i>
                                         </div>
-                                        <h5 class="font-semibold text-primary-800 dark:text-primary-400">Commissions</h5>
-                                        <p class="text-sm text-primary-700 dark:text-primary-500">Gagnez des commissions sur les ventes</p>
+                                        <h5 class="font-semibold text-vinted-primary-800 dark:text-vinted-primary-400">Commissions</h5>
+                                        <p class="text-sm text-vinted-primary-700 dark:text-vinted-primary-500">Gagnez des commissions sur les ventes</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-900/10 p-4 rounded-xl border border-primary-200 dark:border-primary-800/30">
+                                <div class="rounded-xl border border-vinted-primary-200 bg-gradient-to-br from-vinted-primary-50 to-vinted-primary-100 p-4 dark:border-vinted-primary-500/30 dark:from-vinted-primary-500/10 dark:to-vinted-primary-500/5">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-primary-200/60 dark:bg-primary-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+                                        <div class="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-vinted-primary-200/60 dark:bg-vinted-primary-500/20">
+                                            <i class="fas fa-user-group text-vinted-primary-600 dark:text-vinted-primary-400"></i>
                                         </div>
-                                        <h5 class="font-semibold text-primary-800 dark:text-primary-400">Parrainage</h5>
-                                        <p class="text-sm text-primary-700 dark:text-primary-500">Bonus de parrainage d'amis</p>
+                                        <h5 class="font-semibold text-vinted-primary-800 dark:text-vinted-primary-400">Parrainage</h5>
+                                        <p class="text-sm text-vinted-primary-700 dark:text-vinted-primary-500">Bonus de parrainage d'amis</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/10 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800/30">
+                                <div class="rounded-xl border border-yellow-200 bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 dark:border-yellow-500/30 dark:from-yellow-500/10 dark:to-yellow-500/5">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-yellow-200/60 dark:bg-yellow-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M21 11.25v8.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 109.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1114.625 7.5H12m0 0V21m-8.625-9.75h18c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125h-18c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                                        <div class="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-200/60 dark:bg-yellow-500/20">
+                                            <i class="fas fa-gift text-yellow-600 dark:text-yellow-400"></i>
                                         </div>
                                         <h5 class="font-semibold text-yellow-800 dark:text-yellow-400">Bonus</h5>
                                         <p class="text-sm text-yellow-700 dark:text-yellow-500">Récompenses et bonus spéciaux</p>
                                     </div>
                                 </div>
-                                <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
+                                <div class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-4 dark:border-emerald-500/30 dark:from-emerald-500/10 dark:to-emerald-500/5">
                                     <div class="text-center">
-                                        <div class="inline-flex items-center justify-center w-10 h-10 bg-emerald-200/60 dark:bg-emerald-800/30 rounded-xl mb-2">
-                                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"/></svg>
+                                        <div class="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-200/60 dark:bg-emerald-500/20">
+                                            <i class="fas fa-mobile-screen text-emerald-600 dark:text-emerald-400"></i>
                                         </div>
                                         <h5 class="font-semibold text-emerald-800 dark:text-emerald-400">Recharge Mobile</h5>
                                         <p class="text-sm text-emerald-700 dark:text-emerald-500">Ajout de fonds via Mobile Money</p>
@@ -605,16 +603,16 @@
 
                             </div>
                         </div>
-                        
-                        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                            <a href="{{ route('wallet.index') }}" 
-                               class="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+
+                        <div class="flex flex-col justify-center gap-3 sm:flex-row">
+                            <a href="{{ route('wallet.index') }}"
+                               class="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-emerald-700 active:scale-[0.98]">
+                                <i class="fas fa-plus"></i>
                                 Ajouter des fonds USD
                             </a>
-                            <a href="{{ route('wallet.index') }}" 
-                               class="inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 active:scale-[0.98] shadow-sm hover:shadow-md">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                            <a href="{{ route('wallet.index') }}"
+                               class="inline-flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-6 py-3 font-medium text-white transition-all duration-200 hover:bg-amber-600 active:scale-[0.98]">
+                                <i class="fas fa-plus"></i>
                                 Ajouter des fonds CDF
                             </a>
                         </div>
@@ -783,18 +781,16 @@ function updateRateDisplay() {
 // Afficher une notification
 function showNotification(type, message) {
     const alertClass = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
-    const svgIcon = type === 'success' 
-        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-        : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>';
+    const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-triangle-exclamation';
     
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 max-w-sm w-full ${alertClass} border rounded-xl p-4 shadow-lg transform transition-all duration-300`;
     notification.innerHTML = `
         <div class="flex items-center gap-3">
-            ${svgIcon}
+            <i class="${iconClass} flex-shrink-0"></i>
             <span class="text-sm">${message}</span>
             <button onclick="this.parentElement.parentElement.remove()" class="ml-auto p-1 hover:opacity-70 transition-opacity">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <i class="fas fa-xmark"></i>
             </button>
         </div>
     `;
@@ -911,7 +907,7 @@ async function submitConversion(event) {
     }
     
     convertBtn.disabled = true;
-    convertBtn.innerHTML = '<svg class="w-5 h-5 animate-spin inline-block mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Conversion en cours...';
+    convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Conversion en cours...';
     
     try {
         const formData = new FormData(event.target);
@@ -959,14 +955,12 @@ async function submitConversion(event) {
 function showMessage(type, message) {
     const messageDiv = document.getElementById('conversionMessage');
     const alertClass = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
-    const svgIcon = type === 'success' 
-        ? '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-        : '<svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>';
+    const iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-triangle-exclamation';
     
     messageDiv.innerHTML = `
         <div class="border rounded-xl p-4 ${alertClass}">
             <div class="flex items-center gap-2">
-                ${svgIcon}
+                <i class="${iconClass}"></i>
                 <span>${message}</span>
             </div>
         </div>
@@ -980,7 +974,7 @@ function refreshBalances() {
     const refreshBtn = document.getElementById('refreshMainBtn');
     const refreshIcon = document.getElementById('refreshMainIcon');
     
-    const spinner = '<svg class="w-6 h-6 animate-spin mx-auto" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+    const spinner = '<i class="fas fa-spinner fa-spin text-3xl mx-auto"></i>';
     
     usdBalance.innerHTML = spinner;
     cdfBalance.innerHTML = spinner;

@@ -3,54 +3,46 @@
 @section('title', 'Retirer des fonds - ' . $wallet->currency)
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-xl mx-auto">
+<div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-xl">
         <!-- Carte principale -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700/50">
+        <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-red-500 to-red-600 px-6 py-5">
+            <div class="bg-vinted-primary-600 px-6 py-5">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                            </svg>
+                    <div class="flex items-center gap-3">
+                        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-white">
+                            <i class="fas fa-minus"></i>
                         </div>
-                        <h1 class="text-xl font-bold text-white">Retirer des fonds</h1>
+                        <h1 class="text-xl font-bold tracking-tight text-white">Retirer des fonds</h1>
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-3 py-1 bg-white/20 text-white text-sm font-medium rounded-full">
+                    <div class="flex items-center gap-2">
+                        <span class="rounded-full bg-white/15 px-3 py-1 text-sm font-medium text-white">
                             {{ $wallet->currency }}
                         </span>
-                        <span class="px-3 py-1 bg-green-400 text-white text-xs font-medium rounded-full flex items-center space-x-1 animate-pulse" title="Traitement automatique">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                            </svg>
+                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-400 px-3 py-1 text-xs font-medium text-white animate-pulse" title="Traitement automatique">
+                            <i class="fas fa-bolt"></i>
                             <span>Auto</span>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div class="p-6 space-y-6">
+            <div class="space-y-6 p-6">
                 <!-- Messages flash -->
                 @if(session('success'))
-                    <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-start space-x-3">
-                        <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <div class="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                        <i class="fas fa-circle-check mt-0.5 text-emerald-500"></i>
                         <div>
-                            <p class="font-semibold text-green-800 dark:text-green-400">Succès</p>
-                            <p class="text-sm text-green-700 dark:text-green-300">{{ session('success') }}</p>
+                            <p class="font-semibold text-emerald-800 dark:text-emerald-400">Succès</p>
+                            <p class="text-sm text-emerald-700 dark:text-emerald-300">{{ session('success') }}</p>
                         </div>
                     </div>
                 @endif
 
                 @if(session('error'))
-                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 flex items-start space-x-3">
-                        <svg class="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                    <div class="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10">
+                        <i class="fas fa-circle-exclamation mt-0.5 text-red-500"></i>
                         <div>
                             <p class="font-semibold text-red-800 dark:text-red-400">Erreur</p>
                             <p class="text-sm text-red-700 dark:text-red-300">{{ session('error') }}</p>
@@ -59,10 +51,8 @@
                 @endif
 
                 @if(session('warning'))
-                    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 flex items-start space-x-3">
-                        <svg class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
+                    <div class="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
+                        <i class="fas fa-triangle-exclamation mt-0.5 text-amber-500"></i>
                         <div>
                             <p class="font-semibold text-amber-800 dark:text-amber-400">Attention</p>
                             <p class="text-sm text-amber-700 dark:text-amber-300">{{ session('warning') }}</p>
@@ -71,16 +61,14 @@
                 @endif
 
                 <!-- Solde disponible -->
-                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-5">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-14 h-14 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                            </svg>
+                <div class="rounded-xl border border-vinted-primary-200 bg-vinted-primary-50 p-5 dark:border-vinted-primary-500/30 dark:bg-vinted-primary-500/5">
+                    <div class="flex items-center gap-4">
+                        <div class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-vinted-primary-600 text-white">
+                            <i class="fas fa-wallet text-xl"></i>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium">Solde disponible</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">
+                            <p class="text-sm font-medium text-zinc-500 dark:text-zinc-400">Solde disponible</p>
+                            <p class="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
                                 @if($wallet->currency === 'CDF')
                                     {{ number_format($wallet->balance, 2, ',', ' ') }} FC
                                 @else
@@ -93,18 +81,14 @@
 
                 @if($wallet->balance <= 0)
                     <!-- Solde insuffisant -->
-                    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-6 text-center">
-                        <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
+                    <div class="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-500/30 dark:bg-amber-500/10">
+                        <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20">
+                            <i class="fas fa-triangle-exclamation text-2xl text-amber-500"></i>
                         </div>
-                        <h3 class="text-lg font-semibold text-amber-800 dark:text-amber-300 mb-2">Solde insuffisant</h3>
-                        <p class="text-amber-600 dark:text-amber-400 mb-4">Vous n'avez pas de fonds disponibles pour effectuer un retrait.</p>
-                        <a href="{{ route('wallet.index') }}" class="inline-flex items-center px-5 py-2.5 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg transition-colors duration-200">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                            </svg>
+                        <h3 class="mb-2 text-lg font-semibold text-amber-800 dark:text-amber-300">Solde insuffisant</h3>
+                        <p class="mb-4 text-amber-600 dark:text-amber-400">Vous n'avez pas de fonds disponibles pour effectuer un retrait.</p>
+                        <a href="{{ route('wallet.index') }}" class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 font-medium text-white transition-colors duration-200 hover:bg-emerald-700">
+                            <i class="fas fa-plus"></i>
                             Ajouter des fonds
                         </a>
                     </div>
@@ -115,179 +99,149 @@
 
                         <!-- Montant -->
                         <div>
-                            <label for="amount" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
-                                    </svg>
-                                    <span>Montant à retirer</span>
-                                    <span class="text-gray-400 dark:text-gray-500 font-normal text-xs">
-                                        (en {{ $wallet->currency === 'CDF' ? 'Francs Congolais' : 'Dollars US' }})
-                                    </span>
+                            <label for="amount" class="mb-2 flex items-center gap-1 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                <i class="fas fa-money-bill-wave text-zinc-400 dark:text-zinc-500"></i>
+                                <span>Montant à retirer</span>
+                                <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">
+                                    (en {{ $wallet->currency === 'CDF' ? 'Francs Congolais' : 'Dollars US' }})
                                 </span>
                             </label>
                             <div class="relative">
                                 @if($wallet->currency === 'USD')
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 dark:text-gray-400 font-medium">$</span>
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                                        <span class="font-medium text-zinc-500 dark:text-zinc-400">$</span>
                                     </div>
                                 @endif
-                                <input type="number" 
-                                       id="amount" 
-                                       name="amount" 
+                                <input type="number"
+                                       id="amount"
+                                       name="amount"
                                        value="{{ old('amount') }}"
-                                       step="0.01" 
-                                       min="0.01" 
+                                       step="0.01"
+                                       min="0.01"
                                        max="{{ $wallet->balance }}"
                                        placeholder="0.00"
                                        required
-                                       class="w-full {{ $wallet->currency === 'USD' ? 'pl-8' : 'pl-4' }} pr-16 py-3.5 text-lg font-medium border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 @error('amount') border-red-500 ring-2 ring-red-200 @enderror">
+                                       class="w-full rounded-lg border border-zinc-300 bg-white py-3.5 pr-16 text-lg font-medium transition-all duration-200 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800 {{ $wallet->currency === 'USD' ? 'pl-8' : 'pl-4' }} @error('amount') border-red-500 ring-2 ring-red-200 @enderror">
                                 @if($wallet->currency === 'CDF')
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500 dark:text-gray-400 font-medium">FC</span>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4">
+                                        <span class="font-medium text-zinc-500 dark:text-zinc-400">FC</span>
                                     </div>
                                 @endif
                             </div>
                             @error('amount')
                                 <p class="mt-1.5 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
-                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                            <p class="mt-2 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                <i class="fas fa-circle-info"></i>
                                 <span>Maximum : {{ $wallet->currency === 'CDF' ? number_format($wallet->balance, 2, ',', ' ') . ' FC' : '$' . number_format($wallet->balance, 2, '.', ',') }}</span>
                             </p>
                         </div>
 
                         <!-- Numéro de téléphone -->
                         <div>
-                            <label for="phone_number" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                    </svg>
-                                    <span>Numéro Mobile Money</span>
-                                    <span class="text-red-500">*</span>
-                                </span>
+                            <label for="phone_number" class="mb-2 flex items-center gap-1 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                <i class="fas fa-mobile-screen text-zinc-400 dark:text-zinc-500"></i>
+                                <span>Numéro Mobile Money</span>
+                                <span class="text-red-500">*</span>
                             </label>
-                            <input type="tel" 
-                                   id="phone_number" 
-                                   name="phone_number" 
+                            <input type="tel"
+                                   id="phone_number"
+                                   name="phone_number"
                                    value="{{ old('phone_number') }}"
                                    placeholder="Ex: 0812345678 ou +243812345678"
                                    pattern="^(\+?243|0)?[0-9]{9}$"
                                    required
-                                    class="w-full px-4 py-3.5 text-lg border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200 @error('phone_number') border-red-500 ring-2 ring-red-200 @enderror">
+                                    class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3.5 text-lg transition-all duration-200 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800 @error('phone_number') border-red-500 ring-2 ring-red-200 @enderror">
                             @error('phone_number')
                                 <p class="mt-1.5 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                             @enderror
-                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                            <p class="mt-2 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                <i class="fas fa-circle-info"></i>
                                 <span>Numéro de réception (format: 0812345678 ou +243812345678)</span>
                             </p>
                         </div>
 
                         <!-- Méthode de retrait -->
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                                    </svg>
-                                    <span>Méthode de retrait</span>
-                                </span>
+                            <label class="mb-2 flex items-center gap-1 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                <i class="fas fa-credit-card text-zinc-400 dark:text-zinc-500"></i>
+                                <span>Méthode de retrait</span>
                             </label>
                             <div class="grid grid-cols-2 gap-3">
                                 <!-- MaishaPay -->
                                 <button type="button" id="method-maishapay" data-method="maishapay"
-                                        class="method-card relative rounded-xl border-2 border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 p-4 text-left transition-all duration-200">
-                                    <span class="method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-green-500 bg-green-500 flex items-center justify-center">
-                                        <svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/>
-                                        </svg>
+                                        class="method-card relative rounded-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 p-4 text-left transition-all duration-200 dark:from-emerald-500/10 dark:to-teal-500/10">
+                                    <span class="method-badge absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500">
+                                        <svg class="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
                                     </span>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                                            </svg>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white">
+                                            <i class="fas fa-bolt"></i>
                                         </div>
                                         <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">MaishaPay</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange, M-Pesa, Airtel, Africell</p>
+                                            <p class="font-bold text-zinc-900 dark:text-white">MaishaPay</p>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange, M-Pesa, Airtel, Africell</p>
                                         </div>
                                     </div>
                                 </button>
                                 <!-- CinetPay -->
                                 <button type="button" id="method-cinetpay" data-method="cinetpay"
-                                        class="method-card relative rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 text-left transition-all duration-200">
-                                    <span class="method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 border-gray-300 dark:border-gray-500"></span>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                                            </svg>
+                                        class="method-card relative rounded-xl border-2 border-zinc-200 bg-white p-4 text-left transition-all duration-200 dark:border-zinc-600 dark:bg-zinc-800">
+                                    <span class="method-badge absolute right-2 top-2 h-4 w-4 rounded-full border-2 border-zinc-300 dark:border-zinc-500"></span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-vinted-primary-600 text-white">
+                                            <i class="fas fa-bolt"></i>
                                         </div>
                                         <div>
-                                            <p class="font-bold text-gray-900 dark:text-white">CinetPay</p>
-                                            <p class="text-xs text-gray-500 dark:text-gray-400">Orange Money, MTN, M-Pesa…</p>
+                                            <p class="font-bold text-zinc-900 dark:text-white">CinetPay</p>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange Money, MTN, M-Pesa…</p>
                                         </div>
                                     </div>
                                 </button>
                             </div>
                             <input type="hidden" name="payment_method" id="payment_method" value="maishapay">
-                            <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 flex items-center space-x-1">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
+                            <p class="mt-2 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                                <i class="fas fa-circle-info"></i>
                                 <span>MaishaPay détecte automatiquement l'opérateur · CinetPay envoie vers votre compte mobile money</span>
                             </p>
                         </div>
 
                         <!-- Description -->
                         <div>
-                            <label for="description" class="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                                <span class="flex items-center space-x-1">
-                                    <svg class="w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-                                    </svg>
-                                    <span>Description</span>
-                                    <span class="text-gray-400 dark:text-gray-500 font-normal text-xs">(optionnel)</span>
-                                </span>
+                            <label for="description" class="mb-2 flex items-center gap-1 text-sm font-semibold text-zinc-700 dark:text-zinc-200">
+                                <i class="fas fa-note-sticky text-zinc-400 dark:text-zinc-500"></i>
+                                <span>Description</span>
+                                <span class="text-xs font-normal text-zinc-400 dark:text-zinc-500">(optionnel)</span>
                             </label>
-                            <input type="text" 
-                                   id="description" 
-                                   name="description" 
+                            <input type="text"
+                                   id="description"
+                                   name="description"
                                    value="{{ old('description') }}"
                                    maxlength="255"
                                    placeholder="Ex: Retrait pour achat..."
-                                    class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all duration-200">
+                                    class="w-full rounded-lg border border-zinc-300 bg-white px-4 py-3 transition-all duration-200 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500 dark:border-zinc-600 dark:bg-zinc-800">
                         </div>
 
                         <!-- Aperçu du nouveau solde -->
-                        <div id="preview" class="hidden bg-gray-50 dark:bg-gray-900/50 rounded-xl p-5 space-y-3 border border-gray-200 dark:border-gray-700 transform transition-all duration-300">
-                            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-300 flex items-center space-x-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                                </svg>
+                        <div id="preview" class="hidden space-y-3 rounded-xl border border-zinc-200 bg-zinc-50 p-5 transition-all duration-300 dark:border-zinc-700 dark:bg-zinc-800/50">
+                            <h4 class="flex items-center gap-2 text-sm font-semibold text-zinc-600 dark:text-zinc-300">
+                                <i class="fas fa-eye"></i>
                                 <span>Aperçu</span>
                             </h4>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-gray-500 dark:text-gray-400">Solde actuel</span>
-                                <span class="font-semibold text-gray-700 dark:text-gray-200" id="currentBalance">
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-zinc-500 dark:text-zinc-400">Solde actuel</span>
+                                <span class="font-semibold text-zinc-700 dark:text-zinc-200" id="currentBalance">
                                     {{ $wallet->currency === 'CDF' ? number_format($wallet->balance, 2, ',', ' ') . ' FC' : '$' . number_format($wallet->balance, 2, '.', ',') }}
                                 </span>
                             </div>
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-gray-500 dark:text-gray-400">Montant à retirer</span>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-zinc-500 dark:text-zinc-400">Montant à retirer</span>
                                 <span class="font-semibold text-red-600 dark:text-red-400" id="withdrawAmount">-0.00</span>
                             </div>
-                            <div class="border-t border-gray-200 dark:border-gray-700 pt-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="font-semibold text-gray-700 dark:text-gray-200">Nouveau solde</span>
-                                    <span class="text-xl font-bold text-blue-600 dark:text-blue-400" id="newBalance">
+                            <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-zinc-700 dark:text-zinc-200">Nouveau solde</span>
+                                    <span class="text-xl font-bold text-vinted-primary-600 dark:text-vinted-primary-400" id="newBalance">
                                         {{ $wallet->currency === 'CDF' ? number_format($wallet->balance, 2, ',', ' ') . ' FC' : '$' . number_format($wallet->balance, 2, '.', ',') }}
                                     </span>
                                 </div>
@@ -295,50 +249,38 @@
                         </div>
 
                         <!-- Info traitement -->
-                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-4">
-                            <div class="flex space-x-3">
-                                <div class="flex-shrink-0">
-                                    <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                                    </svg>
-                                </div>
+                        <div class="rounded-xl border border-vinted-primary-200 bg-vinted-primary-50 p-4 dark:border-vinted-primary-500/30 dark:bg-vinted-primary-500/5">
+                            <div class="flex gap-3">
+                                <i class="fas fa-bolt mt-0.5 text-vinted-primary-500"></i>
                                 <div>
-                                    <h4 class="text-sm font-semibold text-blue-800 dark:text-blue-200">⚡ Traitement <span id="withdrawInfoMethod">MaishaPay</span></h4>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-1" id="withdrawInfoText">Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur.</p>
+                                    <h4 class="text-sm font-semibold text-vinted-primary-800 dark:text-vinted-primary-200">⚡ Traitement <span id="withdrawInfoMethod">MaishaPay</span></h4>
+                                    <p class="mt-1 text-xs text-vinted-primary-600 dark:text-vinted-primary-300" id="withdrawInfoText">Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur.</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Avertissement -->
-                        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
-                            <div class="flex space-x-3">
-                                <div class="flex-shrink-0">
-                                    <svg class="w-5 h-5 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                    </svg>
-                                </div>
+                        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
+                            <div class="flex gap-3">
+                                <i class="fas fa-triangle-exclamation mt-0.5 text-amber-500"></i>
                                 <div>
                                     <h4 class="text-sm font-semibold text-amber-800 dark:text-amber-200">⚠️ Attention</h4>
-                                    <p class="text-xs text-amber-700 dark:text-amber-300 mt-1"><strong>Wallet débité immédiatement.</strong> Remboursement automatique en cas d'échec du transfert.</p>
+                                    <p class="mt-1 text-xs text-amber-700 dark:text-amber-300"><strong>Wallet débité immédiatement.</strong> Remboursement automatique en cas d'échec du transfert.</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Boutons -->
                         <div class="space-y-3 pt-2">
-                            <button type="submit" 
-                                    id="confirmBtn" 
+                            <button type="submit"
+                                    id="confirmBtn"
                                     disabled
-                                    class="w-full py-4 px-6 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none transition-all duration-300 flex items-center justify-center space-x-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-                                </svg>
+                                    class="flex w-full items-center justify-center gap-2 rounded-lg bg-vinted-primary-600 px-6 py-4 font-semibold text-white shadow-lg transition-all duration-300 hover:bg-vinted-primary-700 disabled:cursor-not-allowed disabled:bg-zinc-300 dark:disabled:bg-zinc-700">
+                                <i class="fas fa-minus"></i>
                                 <span>Confirmer le retrait</span>
                             </button>
-                            <a href="{{ route('wallet.index') }}" class="w-full py-3 px-6 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-gray-700 dark:text-gray-200 font-medium rounded-xl transition-all duration-200 flex items-center justify-center space-x-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                                </svg>
+                            <a href="{{ route('wallet.index') }}" class="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-zinc-200 bg-white px-6 py-3 font-medium text-zinc-700 transition-all duration-200 hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-700/50">
+                                <i class="fas fa-arrow-left"></i>
                                 <span>Retour au portefeuille</span>
                             </a>
                         </div>
@@ -348,82 +290,70 @@
         </div>
 
         <!-- Conseils de sécurité -->
-        <div class="mt-6 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700/50 p-5">
-            <h3 class="text-sm font-bold text-red-600 dark:text-red-400 mb-4 flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
+        <div class="mt-6 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <h3 class="mb-4 flex items-center gap-2 text-sm font-bold text-vinted-primary-600 dark:text-vinted-primary-400">
+                <i class="fas fa-shield-halved"></i>
                 <span>Important à retenir</span>
             </h3>
             <ul class="space-y-3 text-sm">
-                <li class="flex items-start space-x-3">
-                    <span class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+                <li class="flex items-start gap-3">
+                    <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-500/20">
+                        <i class="fas fa-clock text-xs text-blue-600 dark:text-blue-400"></i>
                     </span>
-                    <span class="text-gray-600 dark:text-gray-300"><strong class="text-gray-800 dark:text-gray-100">Délai :</strong> 2 à 10 minutes selon l'opérateur</span>
+                    <span class="text-zinc-600 dark:text-zinc-300"><strong class="text-zinc-800 dark:text-zinc-100">Délai :</strong> 2 à 10 minutes selon l'opérateur</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                    <span class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                        </svg>
+                <li class="flex items-start gap-3">
+                    <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/20">
+                        <i class="fas fa-mobile-screen text-xs text-emerald-600 dark:text-emerald-400"></i>
                     </span>
-                    <span class="text-gray-600 dark:text-gray-300"><strong class="text-gray-800 dark:text-gray-100">Numéro :</strong> Vérifiez qu'il correspond à l'opérateur</span>
+                    <span class="text-zinc-600 dark:text-zinc-300"><strong class="text-zinc-800 dark:text-zinc-100">Numéro :</strong> Vérifiez qu'il correspond à l'opérateur</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                    <span class="w-6 h-6 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
+                <li class="flex items-start gap-3">
+                    <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-500/20">
+                        <i class="fas fa-triangle-exclamation text-xs text-amber-600 dark:text-amber-400"></i>
                     </span>
-                    <span class="text-gray-600 dark:text-gray-300"><strong class="text-gray-800 dark:text-gray-100">Débit :</strong> Fonds bloqués pendant le traitement</span>
+                    <span class="text-zinc-600 dark:text-zinc-300"><strong class="text-zinc-800 dark:text-zinc-100">Débit :</strong> Fonds bloqués pendant le traitement</span>
                 </li>
-                <li class="flex items-start space-x-3">
-                    <span class="w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
+                <li class="flex items-start gap-3">
+                    <span class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-vinted-primary-100 dark:bg-vinted-primary-500/20">
+                        <i class="fas fa-rotate-left text-xs text-vinted-primary-600 dark:text-vinted-primary-400"></i>
                     </span>
-                    <span class="text-gray-600 dark:text-gray-300"><strong class="text-gray-800 dark:text-gray-100">Remboursement :</strong> Automatique en cas d'échec</span>
+                    <span class="text-zinc-600 dark:text-zinc-300"><strong class="text-zinc-800 dark:text-zinc-100">Remboursement :</strong> Automatique en cas d'échec</span>
                 </li>
             </ul>
         </div>
 
         <!-- Opérateurs supportés -->
-        <div class="mt-4 bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-100 dark:border-gray-700/50 p-5">
-            <h3 class="text-sm font-bold text-green-600 dark:text-green-400 mb-4 flex items-center space-x-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                </svg>
+        <div class="mt-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+            <h3 class="mb-4 flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                <i class="fas fa-bolt"></i>
                 <span>Opérateurs supportés</span>
             </h3>
-            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
-                    <div class="text-2xl mb-1">🟠</div>
-                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Orange Money</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">084/085/089</p>
+            <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                <div class="cursor-default rounded-xl border border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 p-3 text-center transition-transform duration-200 hover:scale-105 dark:border-orange-500/30 dark:from-orange-500/10 dark:to-orange-500/5">
+                    <div class="mb-1 text-2xl">🟠</div>
+                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Orange Money</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">084/085/089</p>
                 </div>
-                <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
-                    <div class="text-2xl mb-1">🟢</div>
-                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">M-Pesa</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">081/082/083</p>
+                <div class="cursor-default rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-3 text-center transition-transform duration-200 hover:scale-105 dark:border-emerald-500/30 dark:from-emerald-500/10 dark:to-emerald-500/5">
+                    <div class="mb-1 text-2xl">🟢</div>
+                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">M-Pesa</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">081/082/083</p>
                 </div>
-                <div class="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/30 dark:to-red-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
-                    <div class="text-2xl mb-1">🔴</div>
-                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Airtel Money</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">097/098/099</p>
+                <div class="cursor-default rounded-xl border border-red-200 bg-gradient-to-br from-red-50 to-red-100 p-3 text-center transition-transform duration-200 hover:scale-105 dark:border-red-500/30 dark:from-red-500/10 dark:to-red-500/5">
+                    <div class="mb-1 text-2xl">🔴</div>
+                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Airtel Money</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">097/098/099</p>
                 </div>
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
-                    <div class="text-2xl mb-1">🔵</div>
-                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">Africell</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">090/091/092</p>
+                <div class="cursor-default rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-3 text-center transition-transform duration-200 hover:scale-105 dark:border-blue-500/30 dark:from-blue-500/10 dark:to-blue-500/5">
+                    <div class="mb-1 text-2xl">🔵</div>
+                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Africell</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">090/091/092</p>
                 </div>
-                <div class="bg-gradient-to-br from-cyan-50 to-sky-100 dark:from-cyan-900/30 dark:to-sky-800/30 rounded-xl p-3 text-center hover:scale-105 transition-transform duration-200 cursor-default">
-                    <div class="text-2xl mb-1">⚡</div>
-                    <p class="text-xs font-semibold text-gray-800 dark:text-gray-200">CinetPay</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Orange, MTN, M-Pesa…</p>
+                <div class="cursor-default rounded-xl border border-cyan-200 bg-gradient-to-br from-cyan-50 to-sky-100 p-3 text-center transition-transform duration-200 hover:scale-105 dark:border-cyan-500/30 dark:from-cyan-500/10 dark:to-sky-500/5">
+                    <div class="mb-1 text-2xl">⚡</div>
+                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">CinetPay</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange, MTN, M-Pesa…</p>
                 </div>
             </div>
         </div>
@@ -532,10 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 confirmBtn.disabled = true;
                 confirmBtn.innerHTML = `
-                    <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
                     <span>Traitement en cours...</span>
                 `;
             }
@@ -545,14 +472,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sélection de la méthode de retrait (MaishaPay / CinetPay)
     const methodMeta = {
         maishapay: {
-            active: 'border-green-500 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30',
-            badge: 'border-green-500 bg-green-500',
+            active: 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-500/10 dark:to-teal-500/10',
+            badge: 'border-emerald-500 bg-emerald-500',
             label: 'MaishaPay',
             text: "Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur."
         },
         cinetpay: {
-            active: 'border-blue-500 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30',
-            badge: 'border-blue-500 bg-blue-500',
+            active: 'border-vinted-primary-500 bg-gradient-to-r from-vinted-primary-50 to-indigo-50 dark:from-vinted-primary-500/10 dark:to-indigo-500/10',
+            badge: 'border-vinted-primary-500 bg-vinted-primary-500',
             label: 'CinetPay',
             text: 'Transfert CinetPay. Fonds envoyés vers votre compte mobile money (Orange Money, MTN, M-Pesa).'
         }
@@ -567,10 +494,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.method-card').forEach(function(card) {
             const m = card.dataset.method;
             const isActive = m === method;
-            card.className = base + (isActive ? methodMeta[m].active : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800');
+            card.className = base + (isActive ? methodMeta[m].active : 'border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800');
             const badge = card.querySelector('.method-badge');
             badge.className = 'method-badge absolute top-2 right-2 w-4 h-4 rounded-full border-2 flex items-center justify-center ' +
-                (isActive ? methodMeta[m].badge : 'border-gray-300 dark:border-gray-500');
+                (isActive ? methodMeta[m].badge : 'border-zinc-300 dark:border-zinc-500');
             badge.innerHTML = isActive ? checkSvg : '';
         });
 
