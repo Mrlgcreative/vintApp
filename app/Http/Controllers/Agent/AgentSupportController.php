@@ -115,6 +115,14 @@ class AgentSupportController extends Controller
             $query->where('priority', $request->priority);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                    ->orWhere('reference', 'like', "%{$search}%");
+            });
+        }
+
         $chats = $query->paginate(20)->withQueryString();
 
         return view('agent.unassigned', compact('chats'));

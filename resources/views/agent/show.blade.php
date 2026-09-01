@@ -71,6 +71,16 @@
         {{-- Conversation --}}
         <div class="lg:col-span-2">
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm flex flex-col" style="max-height: 70vh;">
+                {{-- En-tête conversation --}}
+                <div class="px-4 sm:px-5 py-3 border-b border-gray-100 dark:border-gray-700/60 flex items-center gap-3">
+                    <x-icon icon="fas fa-comments" tone="emerald" size="sm" />
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $supportChat->subject }}</p>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }} message(s) dans cette conversation</p>
+                    </div>
+                    <x-badge variant="soft-secondary">{{ ucfirst($supportChat->category) }}</x-badge>
+                </div>
+
                 {{-- Messages --}}
                 <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
                     @foreach($supportChat->messages as $message)
@@ -149,33 +159,32 @@
         {{-- Sidebar infos --}}
         <div class="space-y-4">
             {{-- Infos utilisateur --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4 sm:p-5">
-                <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white mb-3">
-                    <i class="fas fa-user mr-2 text-gray-400"></i>Utilisateur
-                </h3>
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center text-sm font-bold text-gray-600 dark:text-gray-300">
-                        {{ strtoupper(substr($supportChat->user->name ?? '?', 0, 2)) }}
+            <x-card>
+                <x-card-header title="Utilisateur" icon="fas fa-user" tone="gray" />
+                <div class="p-4 sm:p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-sm font-bold text-emerald-600 dark:text-emerald-300 flex-shrink-0">
+                            {{ strtoupper(substr($supportChat->user->name ?? '?', 0, 2)) }}
+                        </div>
+                        <div class="min-w-0">
+                            <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $supportChat->user->name ?? '?' }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $supportChat->user->email ?? '' }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ $supportChat->user->name ?? '?' }}</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ $supportChat->user->email ?? '' }}</p>
+                    @php
+                        $userTickets = \App\Models\SupportChat::where('user_id', $supportChat->user_id)->count();
+                    @endphp
+                    <div class="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-700/40 rounded-md">
+                        <i class="fas fa-ticket-alt text-gray-400"></i>
+                        <span class="text-xs text-gray-600 dark:text-gray-300">{{ $userTickets }} ticket(s) au total</span>
                     </div>
                 </div>
-                @php
-                    $userTickets = \App\Models\SupportChat::where('user_id', $supportChat->user_id)->count();
-                @endphp
-                <p class="text-xs text-gray-500 dark:text-gray-400">
-                    <i class="fas fa-ticket-alt mr-1"></i>{{ $userTickets }} ticket(s) au total
-                </p>
-            </div>
+            </x-card>
 
             {{-- Détails ticket --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4 sm:p-5">
-                <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white mb-3">
-                    <i class="fas fa-info-circle mr-2 text-gray-400"></i>Détails
-                </h3>
-                <div class="space-y-2 text-xs">
+            <x-card>
+                <x-card-header title="Détails" icon="fas fa-info-circle" tone="gray" />
+                <div class="p-4 sm:p-5 space-y-2.5 text-xs">
                     <div class="flex justify-between">
                         <span class="text-gray-500 dark:text-gray-400">Référence</span>
                         <span class="font-mono text-gray-700 dark:text-gray-300">{{ $supportChat->reference }}</span>
@@ -203,23 +212,21 @@
                         </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
 
             {{-- Actions rapides --}}
             @if($supportChat->admin_id === auth()->id() && $supportChat->status !== 'closed')
-                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4 sm:p-5">
-                    <h3 class="text-sm font-semibold tracking-tight text-gray-900 dark:text-white mb-3">
-                        <i class="fas fa-bolt mr-2 text-yellow-500"></i>Actions rapides
-                    </h3>
-                    <div class="space-y-2">
-                        <button onclick="updateStatus('waiting_user')" class="w-full text-left px-3 py-2 text-xs font-medium text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-md transition-colors">
+                <x-card>
+                    <x-card-header title="Actions rapides" icon="fas fa-bolt" tone="amber" />
+                    <div class="p-4 sm:p-5 space-y-2">
+                        <button onclick="updateStatus('waiting_user')" class="w-full text-left px-3 py-2.5 text-xs font-medium text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-md transition-colors">
                             <i class="fas fa-clock mr-2"></i>Mettre en attente utilisateur
                         </button>
-                        <button onclick="updateStatus('closed')" class="w-full text-left px-3 py-2 text-xs font-medium text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-md transition-colors">
+                        <button onclick="updateStatus('closed')" class="w-full text-left px-3 py-2.5 text-xs font-medium text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-md transition-colors">
                             <i class="fas fa-check-circle mr-2"></i>Marquer comme résolu
                         </button>
                     </div>
-                </div>
+                </x-card>
             @endif
         </div>
     </div>

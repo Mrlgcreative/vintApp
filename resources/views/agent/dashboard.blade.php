@@ -3,97 +3,68 @@
 @section('title', 'Tableau de bord')
 
 @section('content')
-<div>
+<div class="space-y-6">
     {{-- Bienvenue --}}
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-                Bonjour, {{ auth()->user()->name }} 👋
+                Bonjour, {{ auth()->user()->name }}
             </h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">Voici un aperçu de votre activité support</p>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Voici un aperçu de votre activité support du jour</p>
         </div>
-        <a href="{{ route('agent.unassigned') }}" class="inline-flex items-center justify-center h-10 rounded-md px-4 text-sm font-medium bg-emerald-600 text-white hover:bg-emerald-700 transition-colors">
-            <i class="fas fa-inbox mr-2"></i>Tickets non assignés
-        </a>
+        <x-button-outline :href="route('agent.unassigned')" tone="success" class="gap-2">
+            <i class="fas fa-inbox text-xs"></i> Tickets non assignés
+            @if($stats['unassigned'] > 0)
+                <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full bg-red-500 text-white">{{ $stats['unassigned'] }}</span>
+            @endif
+        </x-button-outline>
     </div>
 
     {{-- Stats --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-        {{-- Tickets actifs --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Mes tickets actifs</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['active'] }}</h3>
-                    <p class="text-[10px] text-gray-400 mt-0.5">sur {{ $stats['max_chats'] }} max</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                    <i class="fas fa-inbox text-emerald-600 dark:text-emerald-400"></i>
-                </div>
-            </div>
-            @php $pct = $stats['max_chats'] > 0 ? min(100, ($stats['active'] / $stats['max_chats']) * 100) : 0; @endphp
-            <div class="mt-2 w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
-                <div class="{{ $pct >= 90 ? 'bg-red-500' : ($pct >= 70 ? 'bg-yellow-500' : 'bg-emerald-500') }} h-full rounded-full transition-all" style="width: {{ $pct }}%"></div>
-            </div>
-        </div>
-
-        {{-- En attente réponse --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Attendent ma réponse</p>
-                    <h3 class="text-2xl font-bold {{ $stats['waiting_reply'] > 0 ? 'text-orange-600 dark:text-orange-400' : 'text-gray-900 dark:text-white' }}">{{ $stats['waiting_reply'] }}</h3>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
-                    <i class="fas fa-reply text-orange-600 dark:text-orange-400"></i>
-                </div>
-            </div>
-        </div>
-
-        {{-- Résolus aujourd'hui --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Résolus aujourd'hui</p>
-                    <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['closed_today'] }}</h3>
-                    <p class="text-[10px] text-gray-400 mt-0.5">{{ $stats['closed_week'] }} cette semaine</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <i class="fas fa-check-circle text-blue-600 dark:text-blue-400"></i>
-                </div>
-            </div>
-        </div>
-
-        {{-- Non assignés --}}
-        <a href="{{ route('agent.unassigned') }}" class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm p-4 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 transition-all">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Non assignés</p>
-                    <h3 class="text-2xl font-bold {{ $stats['unassigned'] > 0 ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white' }}">{{ $stats['unassigned'] }}</h3>
-                    <p class="text-[10px] text-emerald-600 mt-0.5">Cliquer pour voir →</p>
-                </div>
-                <div class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                    <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400"></i>
-                </div>
-            </div>
-        </a>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <x-stat-card :value="$stats['active']" label="Mes tickets actifs" icon="fas fa-inbox" tone="emerald" :id="'statActive'" />
+        <x-stat-card :value="$stats['waiting_reply']" label="Attendent ma réponse" icon="fas fa-reply" tone="amber" />
+        <x-stat-card :value="$stats['closed_today']" label="Résolus aujourd'hui" icon="fas fa-check-circle" tone="blue" />
+        <x-stat-card :value="$stats['unassigned']" label="Tickets non assignés" icon="fas fa-exclamation-circle" tone="{{ $stats['unassigned'] > 0 ? 'amber' : 'blue' }}" />
     </div>
+
+    {{-- Détails @if agent en charge --}}
+    @php
+        $pct = $stats['max_chats'] > 0 ? min(100, ($stats['active'] / $stats['max_chats']) * 100) : 0;
+        $loadColor = $pct >= 90 ? 'bg-red-500' : ($pct >= 70 ? 'bg-yellow-500' : 'bg-emerald-500');
+        $loadText = $pct >= 90 ? 'text-red-600 dark:text-red-400' : ($pct >= 70 ? 'text-yellow-600 dark:text-yellow-400' : 'text-emerald-600 dark:text-emerald-400');
+    @endphp
+    <x-card class="p-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">Charge de travail</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {{ $stats['active'] }} / {{ $stats['max_chats'] }} tickets actifs · <span class="{{ $loadText }}">{{ round($pct) }}% de la capacité</span>
+                </p>
+            </div>
+            <span class="text-xs font-medium text-gray-500 dark:text-gray-400">{{ round($pct) }}%</span>
+        </div>
+        <div class="mt-3 w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div class="{{ $loadColor }} h-full rounded-full transition-all duration-500" style="width: {{ $pct }}%"></div>
+        </div>
+    </x-card>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Mes tickets récents --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="font-semibold text-gray-900 dark:text-white">
-                    <i class="fas fa-inbox mr-2 text-emerald-500"></i>Tickets récents
-                </h2>
-                <a href="{{ route('agent.tickets') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                    Voir tous →
-                </a>
-            </div>
+        <x-card>
+            <x-card-header title="Tickets récents" icon="fas fa-inbox" tone="emerald">
+                <x-slot name="actions">
+                    <a href="{{ route('agent.tickets') }}" class="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 transition-colors">
+                        Voir tous <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                </x-slot>
+            </x-card-header>
             @if($recentTickets->isEmpty())
-                <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-                    <i class="fas fa-check-circle text-3xl text-gray-300 mb-2"></i>
-                    <p class="text-sm">Aucun ticket actif</p>
+                <div class="p-10 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
+                        <i class="fas fa-check-circle text-gray-400"></i>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Aucun ticket actif</p>
                 </div>
             @else
                 <div class="divide-y divide-gray-100 dark:divide-gray-700">
@@ -108,15 +79,13 @@
                             };
                             $statusLabels = ['open' => 'Ouvert', 'in_progress' => 'En cours', 'waiting_user' => 'Attente', 'closed' => 'Fermé'];
                         @endphp
-                        <a href="{{ route('agent.show', $ticket) }}" class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                            <div class="flex-shrink-0">
-                                <div class="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300">
-                                    {{ strtoupper(substr($ticket->user->name ?? '?', 0, 2)) }}
-                                </div>
+                        <a href="{{ route('agent.show', $ticket) }}" class="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors group">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-300 flex-shrink-0">
+                                {{ strtoupper(substr($ticket->user->name ?? '?', 0, 2)) }}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $ticket->subject }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{{ $ticket->subject }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
                                     {{ $ticket->reference }} · {{ $ticket->user->name ?? 'Utilisateur' }}
                                 </p>
                             </div>
@@ -128,48 +97,52 @@
                     @endforeach
                 </div>
             @endif
-        </div>
+        </x-card>
 
         {{-- Tickets urgents non assignés --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm">
-            <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h2 class="font-semibold text-gray-900 dark:text-white">
-                    <i class="fas fa-fire mr-2 text-red-500"></i>Urgents non assignés
-                </h2>
-                <a href="{{ route('agent.unassigned') }}" class="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                    Voir tous →
-                </a>
-            </div>
+        <x-card>
+            <x-card-header title="Urgents non assignés" icon="fas fa-fire" tone="red">
+                <x-slot name="actions">
+                    <a href="{{ route('agent.unassigned') }}" class="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 transition-colors">
+                        Voir tous <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                </x-slot>
+            </x-card-header>
             @if($urgentUnassigned->isEmpty())
-                <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-                    <i class="fas fa-shield-alt text-3xl text-gray-300 mb-2"></i>
-                    <p class="text-sm">Aucun ticket urgent</p>
+                <div class="p-10 text-center">
+                    <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
+                        <i class="fas fa-shield-halved text-emerald-500"></i>
+                    </div>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Aucun ticket urgent</p>
                 </div>
             @else
                 <div class="divide-y divide-gray-100 dark:divide-gray-700">
                     @foreach($urgentUnassigned as $ticket)
-                        <div class="flex items-center gap-3 px-5 py-3">
+                        @php
+                            $prioVariant = $ticket->priority === 'urgent' ? 'danger' : 'warning';
+                            $prioLabels = ['urgent' => 'Urgent', 'high' => 'Haute'];
+                        @endphp
+                        <div class="flex items-center gap-3 px-5 py-3.5">
+                            <div class="w-10 h-10 rounded-lg {{ $ticket->priority === 'urgent' ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400' }} flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-bolt"></i>
+                            </div>
                             <div class="flex-1 min-w-0">
                                 <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $ticket->subject }}</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
                                     {{ $ticket->reference }} · {{ $ticket->user->name ?? '?' }} · {{ $ticket->created_at->diffForHumans() }}
                                 </p>
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
-                                @php
-                                    $prioVariant = $ticket->priority === 'urgent' ? 'danger' : 'warning';
-                                    $prioLabels = ['urgent' => 'Urgent', 'high' => 'Haute'];
-                                @endphp
                                 <x-badge variant="{{ $prioVariant }}">{{ $prioLabels[$ticket->priority] ?? $ticket->priority }}</x-badge>
-                                <button onclick="claimTicket({{ $ticket->id }})" class="inline-flex items-center h-8 px-3 rounded-md text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white transition-colors">
-                                    <i class="fas fa-hand-paper mr-1"></i>Prendre
+                                <button onclick="claimTicket({{ $ticket->id }})" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors">
+                                    <i class="fas fa-hand-paper"></i> Prendre
                                 </button>
                             </div>
                         </div>
                     @endforeach
                 </div>
             @endif
-        </div>
+        </x-card>
     </div>
 </div>
 @endsection
@@ -187,11 +160,8 @@ function claimTicket(chatId) {
     })
     .then(r => r.json())
     .then(data => {
-        if (data.success) {
-            location.reload();
-        } else {
-            alert(data.message);
-        }
+        if (data.success) location.reload();
+        else alert(data.message);
     })
     .catch(() => alert('Erreur réseau.'));
 }
