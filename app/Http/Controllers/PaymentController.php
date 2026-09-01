@@ -423,6 +423,13 @@ class PaymentController extends Controller
         $provider = $request->query('provider', 'Mobile Money');
         $currency = $request->query('currency', 'USD');
 
+        // Normaliser le message d'erreur (éviter "[object Object]" venant du front)
+        if (is_array($error) || is_object($error)) {
+            $error = 'Une erreur est survenue lors du paiement.';
+        } elseif (is_string($error) && str_contains($error, '[object') ) {
+            $error = 'Une erreur est survenue lors du paiement.';
+        }
+
         if ($transactionId = $request->query('transaction_id')) {
             $transaction = \App\Models\Transaction::find($transactionId);
             if ($transaction) {
