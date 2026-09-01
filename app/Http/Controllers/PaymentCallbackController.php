@@ -705,6 +705,67 @@ class PaymentCallbackController extends Controller
         ]);
     }
 
+    /**
+     * Expire une transaction en attente dont le délai de confirmation (3 min) est dépassé.
+     */
+    public function expireOnTimeout(Request $request, int $transactionId)
+    {
+        try {
+            $transaction = Transaction::find($transactionId);
+
+            if (!$transaction) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Transaction introuvable'
+                ], 404);
+            }
+
+            // Déjà traitée (paiement abouti entre-temps) : ne pas écraser l'état.
+            if (!in_array($transaction->status, ['pending', 'processing'])) {
+                return response()->json([
+                    'status' => 'success',
+                    'already' => true,
+                    'transaction' => [
+                        'id' => $transaction->id,
+                        'status' => $transaction->status,
+                    ],
+                ]);
+            }
+
+            $transaction->update([
+                'status' => 'failed',
+                'description' => 'Délai de confirmation dépassé (3 minutes)',
+            ]);
+
+            Log::info('Transaction expirée (délai de confirmation dépassé)', [
+                'transaction_id' => $transaction->id,
+                'user_id' => $transaction->user_id,
+                'provider' => $transaction->provider,
+                'ip' => $request->ip(),
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Transaction expirée',
+                'transaction' => [
+                    'id' => $transaction->id,
+                    'status' => 'failed',
+                    'amount' => $transaction->amount,
+                    'currency' => $transaction->currency,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'expiration de la transaction', [
+                'transaction_id' => $transactionId,
+                'error' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Erreur lors de l\'expiration de la transaction'
+            ], 500);
+        }
+    }
+
     protected function preventReplayAttack(Request $request, string $provider): bool
     {
         // Créer une signature unique basée sur le contenu du callback

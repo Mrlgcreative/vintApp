@@ -93,6 +93,12 @@ Route::prefix('payment-callbacks')->group(function () {
     Route::get('/status', [ApiPaymentCallbackController::class, 'checkStatus'])
         ->middleware('throttle:30,1')
         ->name('payment.status');
+
+    // Expiration d'une transaction en attente (délai de confirmation dépassé)
+    Route::post('/{transaction}/timeout', [ApiPaymentCallbackController::class, 'expireOnTimeout'])
+        ->middleware('throttle:10,1')
+        ->where('transaction', '[0-9]+')
+        ->name('payment.timeout');
 });
 
 // ==================== Callbacks PawaPay (publics, sans auth) ====================
