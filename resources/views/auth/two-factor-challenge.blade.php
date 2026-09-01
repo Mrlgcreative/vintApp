@@ -3,177 +3,178 @@
 @section('title', 'Authentification à deux facteurs')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-accent-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full">
+<div class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-6 md:p-10 gap-8">
+    <!-- Logo -->
+    <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-center font-medium group">
+        <div class="w-9 h-9 rounded-lg bg-vinted-primary-600 text-white flex items-center justify-center shadow-md shadow-vinted-primary-600/30 group-hover:shadow-lg group-hover:shadow-vinted-primary-600/40 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+        </div>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ $appName ?? config('app.name', 'VintApp') }}
+        </span>
+    </a>
+
+    <div class="w-full max-w-sm flex flex-col gap-6">
         <!-- Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-primary-600 to-accent-600 px-8 py-6 text-center">
-                <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            <div class="flex flex-col items-center gap-2 text-center mb-6">
+                <div class="w-11 h-11 rounded-full bg-vinted-primary-50 dark:bg-vinted-primary-500/10 flex items-center justify-center mb-1">
+                    <svg class="w-5 h-5 text-vinted-primary-600 dark:text-vinted-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h2 class="text-2xl font-bold text-white">Authentification requise</h2>
-                <p class="text-primary-100 mt-2">Entrez votre code de sécurité</p>
+                <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Authentification requise</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Entrez votre code de sécurité</p>
             </div>
 
-            <!-- Body -->
-            <div class="px-8 py-8">
-                <!-- Info User -->
-                <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                    @if($user->avatar_url)
-                        <img src="{{ $user->avatar_url }}" 
-                             alt="{{ $user->name }}" 
-                             class="w-12 h-12 rounded-full object-cover">
-                    @else
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 text-white flex items-center justify-center text-xl font-bold">
-                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                        </div>
-                    @endif
-                    <div>
-                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $user->name }}</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ $user->email }}</p>
+            <!-- Info User -->
+            <div class="flex items-center gap-3 mb-5 rounded-md border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-3">
+                @if($user->avatar_url)
+                    <img src="{{ $user->avatar_url }}"
+                         alt="{{ $user->name }}"
+                         class="w-10 h-10 rounded-full object-cover">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-vinted-primary-600 text-white flex items-center justify-center font-bold">
+                        {{ strtoupper(substr($user->name, 0, 1)) }}
                     </div>
-                </div>
-
-                <!-- Alert Info -->
-                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 rounded-r-lg">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <p class="text-sm text-blue-800 dark:text-blue-200">
-                            Votre compte est protégé par l'authentification à deux facteurs. Ouvrez votre application d'authentification (Google Authenticator, Authy, etc.) et entrez le code à 6 chiffres.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Form -->
-                <form id="verify2FAForm" class="space-y-6">
-                    @csrf
-                    
-                    <div>
-                        <label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Code d'authentification
-                        </label>
-                        <input type="text" 
-                               id="code" 
-                               name="code" 
-                               maxlength="6"
-                               pattern="[0-9]*"
-                               inputmode="numeric"
-                               autocomplete="one-time-code"
-                               placeholder="000000"
-                               class="w-full px-4 py-4 text-center text-2xl tracking-widest font-mono border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all"
-                               required
-                               autofocus>
-                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-                            Entrez le code à 6 chiffres de votre application
-                        </p>
-                    </div>
-
-                    <!-- Error Message -->
-                    <div id="errorMessage" class="hidden p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <p class="text-sm text-red-800 dark:text-red-200" id="errorText"></p>
-                        </div>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" 
-                            id="verifyButton"
-                            class="w-full px-6 py-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>Vérifier le code</span>
-                    </button>
-                </form>
-
-                <!-- Recovery Code Link -->
-                <div class="mt-6 text-center">
-                    <button onclick="showRecoveryInput()" 
-                            class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors">
-                        Utiliser un code de récupération
-                    </button>
-                </div>
-
-                <!-- Recovery Code Form (Hidden by default) -->
-                <div id="recoveryForm" class="hidden mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-300 dark:border-yellow-700 rounded-xl">
-                    <h4 class="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
-                        </svg>
-                        Code de récupération
-                    </h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        Entrez l'un de vos codes de récupération de secours
-                    </p>
-                    <input type="text" 
-                           id="recoveryCode" 
-                           placeholder="xxxxx-xxxxx-xxxxx"
-                           class="w-full px-4 py-3 font-mono border-2 border-yellow-300 dark:border-yellow-700 rounded-xl focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 dark:bg-gray-900 dark:text-white transition-all mb-3">
-                    <div class="flex gap-2">
-                        <button onclick="verifyRecoveryCode()" 
-                                class="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors">
-                            Vérifier
-                        </button>
-                        <button onclick="hideRecoveryInput()" 
-                                class="px-4 py-2 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                            Annuler
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Warning -->
-                <div class="mt-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">
-                                Sécurité de votre compte
-                            </p>
-                            <p class="text-xs text-gray-600 dark:text-gray-400">
-                                Vous devez vérifier votre identité pour accéder à votre compte. Cette étape ne peut pas être ignorée.
-                            </p>
-                        </div>
-                    </div>
+                @endif
+                <div class="min-w-0">
+                    <h3 class="font-medium text-sm text-gray-900 dark:text-white truncate">{{ $user->name }}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $user->email }}</p>
                 </div>
             </div>
 
-            <!-- Footer -->
-            <div class="px-8 py-4 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center justify-between">
-                    <a href="{{ route('logout') }}" 
-                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
-                       class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                        </svg>
-                        Se déconnecter
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
-                        @csrf
-                    </form>
-                    
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                        Protégé par 2FA
+            <!-- Alert Info -->
+            <x-alert variant="info" class="mb-5">
+                <div class="flex items-start gap-3">
+                    <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-sm">
+                        Votre compte est protégé par l'authentification à deux facteurs. Ouvrez votre application d'authentification (Google Authenticator, Authy, etc.) et entrez le code à 6 chiffres.
                     </p>
+                </div>
+            </x-alert>
+
+            <!-- Form -->
+            <form id="verify2FAForm" class="flex flex-col gap-4">
+                @csrf
+
+                <div class="flex flex-col gap-2">
+                    <label for="code" class="text-sm font-medium text-gray-700 dark:text-gray-300">Code d'authentification</label>
+                    <input type="text"
+                           id="code"
+                           name="code"
+                           maxlength="6"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           autocomplete="one-time-code"
+                           placeholder="000000"
+                           class="w-full px-4 py-3 text-center text-2xl tracking-[0.5em] font-mono bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
+                           required
+                           autofocus>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+                        Entrez le code à 6 chiffres de votre application
+                    </p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="hidden rounded-md bg-vinted-danger-50 dark:bg-vinted-danger-500/10 border border-vinted-danger-200 dark:border-vinted-danger-500/30 px-4 py-3">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-5 h-5 text-vinted-danger-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-sm text-vinted-danger-600 dark:text-vinted-danger-300" id="errorText"></p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit"
+                        id="verifyButton"
+                        class="w-full h-10 inline-flex items-center justify-center gap-2 rounded-md bg-vinted-primary-600 text-white text-sm font-medium hover:bg-vinted-primary-700 active:scale-[0.98] transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinted-primary-300 focus-visible:ring-offset-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Vérifier le code</span>
+                </button>
+            </form>
+
+            <!-- Recovery Code Link -->
+            <div class="mt-4 text-center">
+                <button onclick="showRecoveryInput()"
+                        class="text-sm text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 font-medium transition-colors">
+                    Utiliser un code de récupération
+                </button>
+            </div>
+
+            <!-- Recovery Code Form (Hidden by default) -->
+            <div id="recoveryForm" class="hidden mt-5 rounded-md border border-vinted-danger-200 dark:border-vinted-danger-500/30 bg-vinted-danger-50 dark:bg-vinted-danger-500/10 p-4">
+                <h4 class="font-medium text-gray-900 dark:text-white mb-2 flex items-center gap-2 text-sm">
+                    <svg class="w-4 h-4 text-vinted-danger-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                    </svg>
+                    Code de récupération
+                </h4>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    Entrez l'un de vos codes de récupération de secours
+                </p>
+                <input type="text"
+                       id="recoveryCode"
+                       placeholder="xxxxx-xxxxx-xxxxx"
+                       class="w-full px-4 py-2.5 text-sm font-mono bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors mb-3">
+                <div class="flex gap-2">
+                    <button onclick="verifyRecoveryCode()"
+                            class="flex-1 h-10 inline-flex items-center justify-center rounded-md bg-vinted-primary-600 text-white text-sm font-medium hover:bg-vinted-primary-700 active:scale-[0.98] transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinted-primary-300 focus-visible:ring-offset-1">
+                        Vérifier
+                    </button>
+                    <button onclick="hideRecoveryInput()"
+                            class="px-4 h-10 inline-flex items-center justify-center rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        Annuler
+                    </button>
+                </div>
+            </div>
+
+            <!-- Warning -->
+            <div class="mt-5 rounded-md border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 p-4">
+                <div class="flex items-start gap-3">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-medium text-gray-900 dark:text-white mb-1">Sécurité de votre compte</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Vous devez vérifier votre identité pour accéder à votre compte. Cette étape ne peut pas être ignorée.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Logout -->
+        <div class="flex items-center justify-between">
+            <a href="{{ route('logout') }}"
+               onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+               class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                Se déconnecter
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+                @csrf
+            </form>
+
+            <p class="text-xs text-gray-500 dark:text-gray-400">Protégé par 2FA</p>
+        </div>
+
         <!-- Help Link -->
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+        <div class="text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
                 Problème avec votre code ?
-                <a href="#" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                <a href="#" class="text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 font-medium">
                     Contactez le support
                 </a>
             </p>
@@ -183,10 +184,10 @@
 
 <!-- Loading Overlay -->
 <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl">
+    <div class="bg-white dark:bg-gray-900 rounded-xl p-8 shadow-2xl border border-gray-200 dark:border-gray-800">
         <div class="flex flex-col items-center gap-4">
-            <div class="w-16 h-16 border-4 border-primary-200 dark:border-primary-800 border-t-primary-600 dark:border-t-primary-400 rounded-full animate-spin"></div>
-            <p class="text-gray-900 dark:text-white font-medium">Vérification en cours...</p>
+            <div class="w-12 h-12 border-4 border-gray-200 dark:border-gray-700 border-t-vinted-primary-600 rounded-full animate-spin"></div>
+            <p class="text-gray-900 dark:text-white font-medium text-sm">Vérification en cours...</p>
         </div>
     </div>
 </div>

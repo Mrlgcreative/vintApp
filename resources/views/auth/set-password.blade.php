@@ -7,67 +7,61 @@
 <!-- Toast Container -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-<div class="min-h-screen bg-slate-50 dark:bg-gray-900 flex items-center justify-center p-4 relative overflow-hidden">
-    <!-- Halos décoratifs -->
-    <div class="pointer-events-none absolute -top-32 -right-32 w-96 h-96 bg-primary-100 rounded-full blur-3xl"></div>
-    <div class="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 bg-primary-100 rounded-full blur-3xl"></div>
+<div class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-6 md:p-10 gap-8">
+    <!-- Logo -->
+    <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-center font-medium group">
+        <div class="w-9 h-9 rounded-lg bg-vinted-primary-600 text-white flex items-center justify-center shadow-md shadow-vinted-primary-600/30 group-hover:shadow-lg group-hover:shadow-vinted-primary-600/40 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+            </svg>
+        </div>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ $appName ?? config('app.name', 'VintApp') }}
+        </span>
+    </a>
 
-    <div class="w-full max-w-lg">
-        <div class="bg-white dark:bg-gray-800/95 backdrop-blur-sm rounded-3xl border border-gray-100 dark:border-gray-700 shadow-2xl p-8">
+    <div class="w-full max-w-sm flex flex-col gap-6">
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8">
             <!-- Header -->
-            <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg ">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                    </svg>
-                </div>
-
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">Définissez votre mot de passe</h1>
-                <p class="text-gray-600 dark:text-gray-300">
-                    Bonjour <strong class="text-primary">{{ $name }}</strong><br>
+            <div class="flex flex-col gap-2 text-center mb-6">
+                <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">Définissez votre mot de passe</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Bonjour <strong class="text-vinted-primary-600 dark:text-vinted-primary-400">{{ $name }}</strong><br>
                     Votre compte a été approuvé. Créez votre mot de passe pour accéder à VintApp.
                 </p>
             </div>
 
             @if(session('error'))
-                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                    <div class="flex items-center text-red-800 dark:text-red-200">
-                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <x-alert variant="danger" class="mb-5">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                         <span class="text-sm font-medium">{{ session('error') }}</span>
                     </div>
-                </div>
+                </x-alert>
             @endif
 
             @if ($errors->any())
-                <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                    <div class="flex items-center text-red-800 dark:text-red-200 mb-2">
-                        <svg class="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"/>
-                        </svg>
-                        <span class="font-medium text-sm">Erreur</span>
-                    </div>
-                    <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside space-y-0.5">
+                <x-alert variant="danger" class="mb-5">
+                    <ul class="text-sm space-y-0.5">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
                     </ul>
-                </div>
+                </x-alert>
             @endif
 
-            <form action="{{ route('password.setup.store') }}" method="POST" id="passwordForm" class="space-y-5">
+            <form action="{{ route('password.setup.store') }}" method="POST" id="passwordForm" class="flex flex-col gap-4">
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
                 <input type="hidden" name="email" value="{{ $email }}">
 
-                <div>
-                    <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                        Nouveau mot de passe
-                    </label>
+                <div class="flex flex-col gap-2">
+                    <label for="password" class="text-sm font-medium text-gray-700 dark:text-gray-300">Nouveau mot de passe</label>
                     <div class="relative">
                         <input type="password"
-                               class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-300 @error('password') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror pr-12"
+                               class="w-full pl-4 pr-12 py-2.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors @error('password') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror"
                                id="password"
                                name="password"
                                required
@@ -83,19 +77,17 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full mt-2 overflow-hidden" id="passwordStrength"></div>
+                    <div class="h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full mt-1 overflow-hidden" id="passwordStrength"></div>
                     @error('password')
                         <p class="text-red-500 text-xs mt-1.5">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                        Confirmer le mot de passe
-                    </label>
+                <div class="flex flex-col gap-2">
+                    <label for="password_confirmation" class="text-sm font-medium text-gray-700 dark:text-gray-300">Confirmer le mot de passe</label>
                     <div class="relative">
                         <input type="password"
-                               class="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary transition-all duration-300 @error('password_confirmation') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror pr-12"
+                               class="w-full pl-4 pr-12 py-2.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors @error('password_confirmation') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror"
                                id="password_confirmation"
                                name="password_confirmation"
                                required
@@ -115,9 +107,9 @@
                     @enderror
                 </div>
 
-                <div class="bg-gray-50 dark:bg-gray-900 border-l-4 border-primary rounded-r-xl p-4">
-                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-1.5 mb-1">
-                        <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="rounded-md border-l-4 border-vinted-primary-600 bg-gray-50 dark:bg-gray-800/50 p-4">
+                    <p class="text-sm font-medium text-gray-800 dark:text-gray-100 flex items-center gap-1.5 mb-1">
+                        <svg class="w-4 h-4 text-vinted-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         Exigences du mot de passe :
@@ -130,22 +122,20 @@
                 </div>
 
                 <button type="submit" id="submitBtn"
-                        class="w-full bg-primary hover:bg-primary-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg  hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full h-10 inline-flex items-center justify-center gap-2 rounded-md bg-vinted-primary-600 text-white text-sm font-medium hover:bg-vinted-primary-700 active:scale-[0.98] transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinted-primary-300 focus-visible:ring-offset-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
                     <span>Définir mon mot de passe et me connecter</span>
                 </button>
             </form>
 
-            <div class="text-center mt-5">
-                <p class="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                    Connexion sécurisée - Vos données sont protégées
-                </p>
-            </div>
+            <p class="mt-5 text-center text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1.5">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+                Connexion sécurisée - Vos données sont protégées
+            </p>
         </div>
     </div>
 </div>
@@ -219,7 +209,7 @@ document.getElementById('passwordForm').addEventListener('submit', function(e) {
 function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
     if (!container) return;
-    const colors = { success: 'bg-emerald-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-primary' };
+    const colors = { success: 'bg-emerald-600', error: 'bg-red-600', warning: 'bg-amber-600', info: 'bg-vinted-primary-600' };
     const toastId = 'toast-' + Date.now();
     const toast = document.createElement('div');
     toast.id = toastId;

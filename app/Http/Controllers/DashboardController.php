@@ -46,37 +46,12 @@ class DashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        $stats = $this->statsService->getUserStats($user->id);
-        $recentItems = $this->getRecentItems($user);
-        $recentOrders = $this->getRecentOrders($user);
-        $recentMessages = $this->getRecentMessages($user);
-        $notifications = $this->getUnreadNotifications($user);
-        $salesChart = $this->statsService->getSalesChart($user->id);
-        $popularItems = $this->getPopularItems($user);
-        
-        // Ajouter les statistiques de support si les modèles existent
-        if (class_exists(\App\Models\SupportChat::class)) {
-            $supportStats = $this->statsService->getUserSupportStats($user->id);
-            $stats = array_merge($stats, $supportStats);
-        } else {
-            // Valeurs par défaut si les modèles de support n'existent pas
-            $stats = array_merge($stats, [
-                'total_support_chats' => 0,
-                'open_support_chats' => 0,
-                'pending_support_chats' => 0,
-                'unassigned_support_chats' => 0
-            ]);
+        // Rediriger les vendeurs vers leur espace vendeur, les autres vers la page d'accueil
+        if (method_exists($user, 'isSeller') && $user->isSeller()) {
+            return redirect()->route('seller.dashboard');
         }
 
-        return view('dashboard.index', compact(
-            'stats',
-            'recentItems',
-            'recentOrders',
-            'recentMessages',
-            'notifications',
-            'salesChart',
-            'popularItems'
-        ));
+        return redirect()->route('home');
     }
 
     /**

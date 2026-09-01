@@ -7,163 +7,120 @@
 <!-- Toast Container -->
 <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-accent-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="w-full max-w-md">
-        <!-- Card principale -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+<div class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 py-10 px-6 md:p-10 gap-8">
+    <!-- Logo -->
+    <a href="{{ url('/') }}" class="flex items-center gap-2.5 self-center font-medium group">
+        <div class="w-9 h-9 rounded-lg bg-vinted-primary-600 text-white flex items-center justify-center shadow-md shadow-vinted-primary-600/30 group-hover:shadow-lg group-hover:shadow-vinted-primary-600/40 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+            </svg>
+        </div>
+        <span class="text-lg font-semibold text-gray-900 dark:text-white">
+            {{ $appName ?? config('app.name', 'VintApp') }}
+        </span>
+    </a>
+
+    <!-- Card principale -->
+    <div class="w-full max-w-sm flex flex-col gap-6">
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-6 sm:p-8">
             <!-- Header -->
-            <div class="bg-gradient-to-r from-primary-600 to-accent-600 px-8 py-8 text-center">
-                <div class="flex items-center justify-center w-20 h-20 mx-auto mb-4 bg-white/20 backdrop-blur-sm rounded-full">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            <div class="flex flex-col gap-2 text-center mb-6">
+                <h1 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                    Vérification par code
+                </h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Saisissez le code à 6 chiffres envoyé à votre email
+                </p>
+                <div class="mt-1.5 inline-flex items-center justify-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
+                    {{ Auth::user()->email }}
                 </div>
-                <h1 class="text-2xl font-bold text-white">Code de vérification</h1>
-                <p class="text-primary-100 mt-2">Saisissez le code envoyé à votre email</p>
             </div>
 
-            <!-- Contenu -->
-            <div class="px-8 py-8">
-                <!-- Avertissement accès bloqué -->
-                <div class="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 rounded-r-lg">
-                    <div class="flex items-start gap-3">
-                        <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                        <div>
-                            <p class="text-sm font-semibold text-amber-800 dark:text-amber-200">Accès bloqué</p>
-                            <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                                Vous devez vérifier votre email pour accéder à VintApp
-                            </p>
-                        </div>
-                    </div>
+            @if (session('success'))
+                <div class="mb-5 bg-vinted-success-50 dark:bg-vinted-success-500/10 border border-vinted-success-200 dark:border-vinted-success-500/30 rounded-md px-4 py-3 text-sm text-vinted-success-700 dark:text-vinted-success-300">
+                    {{ session('success') }}
                 </div>
+            @endif
 
-                @if (session('success'))
-                    <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 rounded-r-lg">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ session('success') }}</p>
-                        </div>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg">
-                        <div class="flex items-start gap-3">
-                            <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ session('error') }}</p>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Email utilisateur -->
-                <div class="mb-6 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl">
-                    <div class="flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        <span class="font-semibold text-gray-800 dark:text-gray-100">{{ Auth::user()->email }}</span>
-                    </div>
+            @if (session('error'))
+                <div class="mb-5 bg-vinted-danger-50 dark:bg-vinted-danger-500/10 border border-vinted-danger-200 dark:border-vinted-danger-500/30 rounded-md px-4 py-3 text-sm text-vinted-danger-600 dark:text-vinted-danger-300">
+                    {{ session('error') }}
                 </div>
+            @endif
 
-                <!-- Formulaire de saisie du code -->
-                <form method="POST" action="{{ route('verification.code.verify') }}" class="space-y-6">
-                    @csrf
+            @if ($errors->any())
+                <div class="mb-5 bg-vinted-danger-50 dark:bg-vinted-danger-500/10 border border-vinted-danger-200 dark:border-vinted-danger-500/30 rounded-md px-4 py-3 text-sm text-vinted-danger-600 dark:text-vinted-danger-300">
+                    {{ $errors->first('verification_code') }}
+                </div>
+            @endif
 
-                    <div>
-                        <label for="verification_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Code de vérification (6 chiffres)
-                        </label>
+            <!-- Formulaire de saisie du code -->
+            <form method="POST" action="{{ route('verification.code.verify') }}" id="verifyForm">
+                @csrf
+                <input type="hidden" name="verification_code" id="verification_code_hidden">
+
+                <div class="grid grid-cols-6 gap-2 mb-6" id="otpBoxes">
+                    @for($i = 0; $i < 6; $i++)
                         <input
                             type="text"
-                            id="verification_code"
-                            name="verification_code"
-                            maxlength="6"
-                            pattern="[0-9]{6}"
                             inputmode="numeric"
-                            autocomplete="one-time-code"
-                            placeholder="000000"
-                            class="w-full px-4 py-4 text-center text-2xl tracking-widest font-mono border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:border-primary-500 focus:ring-2 focus:ring-primary-200 dark:bg-gray-900 dark:text-white transition-all @error('verification_code') border-red-500 @enderror"
-                            required
-                            oninput="this.value = this.value.replace(/[^0-9]/g, '').substring(0, 6)"
+                            maxlength="1"
+                            pattern="[0-9]"
+                            autocomplete="off"
+                            aria-label="Chiffre {{ $i + 1 }}"
+                            class="otp-input w-full aspect-square text-center text-xl font-semibold font-mono text-gray-900 dark:text-white bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-md focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-shadow shadow-sm"
                         >
-                        @error('verification_code')
-                            <p class="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center gap-1">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="w-full px-6 py-4 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-xl font-semibold transition-all shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Vérifier le code
-                    </button>
-                </form>
-
-                <!-- Actions supplémentaires -->
-                <div class="mt-6 space-y-4">
-                    <!-- Renvoyer le code -->
-                    <form method="POST" action="{{ route('verification.code.resend') }}">
-                        @csrf
-                        <button
-                            type="submit"
-                            class="w-full px-6 py-3 bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500 transition-all flex items-center justify-center gap-2"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            Renvoyer le code
-                        </button>
-                    </form>
-
-                    <!-- Déconnexion -->
-                    <form method="POST" action="{{ route('logout') }}" class="text-center">
-                        @csrf
-                        <button
-                            type="submit"
-                            class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 py-2 inline-flex items-center gap-1.5 transition-colors"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                            Se déconnecter
-                        </button>
-                    </form>
+                    @endfor
                 </div>
 
-                <!-- Informations -->
-                <div class="mt-8 p-4 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-center">
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-1 flex items-center justify-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Le code expire dans 15 minutes
-                    </p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">
-                        Vérifiez vos spams si vous ne recevez pas l'email
-                    </p>
-                </div>
+                <button type="submit" class="w-full h-10 inline-flex items-center justify-center gap-2 rounded-md bg-vinted-primary-600 text-white text-sm font-medium hover:bg-vinted-primary-700 active:scale-[0.98] transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinted-primary-300 focus-visible:ring-offset-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Vérifier le code
+                </button>
+            </form>
+
+            <div class="flex items-center gap-3 my-6">
+                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
+                <span class="text-xs text-gray-500 dark:text-gray-400">Vous n'avez pas reçu de code ?</span>
+                <div class="h-px flex-1 bg-gray-200 dark:bg-gray-800"></div>
             </div>
+
+            <!-- Renvoyer -->
+            <form method="POST" action="{{ route('verification.code.resend') }}">
+                @csrf
+                <button type="submit" class="w-full h-10 inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Renvoyer le code
+                </button>
+            </form>
+
+            <p class="text-center text-xs text-gray-500 dark:text-gray-400 mt-4">
+                Le code expire dans 15 minutes
+            </p>
         </div>
 
-        <!-- Aide supplémentaire -->
-        <div class="mt-6 text-center">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
+        <!-- Actions -->
+        <div class="text-center">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 inline-flex items-center gap-1.5 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    Se déconnecter
+                </button>
+            </form>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-3">
                 Problème avec la vérification ?
-                <a href="mailto:{{ config('mail.from.address') }}" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+                <a href="mailto:{{ config('mail.from.address') }}" class="text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 font-medium">
                     Contactez le support
                 </a>
             </p>
@@ -177,10 +134,10 @@ function showToast(message, type = 'info') {
     const container = document.getElementById('toast-container');
 
     const colors = {
-        success: 'bg-green-500',
-        error: 'bg-red-500',
-        warning: 'bg-amber-500',
-        info: 'bg-blue-500'
+        success: 'bg-vinted-success-600',
+        error: 'bg-vinted-danger-500',
+        warning: 'bg-vinted-warning-500',
+        info: 'bg-vinted-primary-600'
     };
 
     const icons = {
@@ -201,12 +158,10 @@ function showToast(message, type = 'info') {
 
     container.appendChild(toast);
 
-    // Animation d'entrée
     setTimeout(() => {
         toast.classList.remove('translate-x-full');
     }, 100);
 
-    // Auto-remove après 5 secondes
     setTimeout(() => {
         toast.classList.add('translate-x-full');
         setTimeout(() => {
@@ -216,14 +171,74 @@ function showToast(message, type = 'info') {
         }, 300);
     }, 5000);
 }
+</script>
 
-// Auto-focus sur le champ code
-document.addEventListener('DOMContentLoaded', function() {
-    const codeInput = document.getElementById('verification_code');
-    if (codeInput) {
-        codeInput.focus();
+<script>
+// OTP : auto-focus, navigation clavier, copier-coller et soumission automatique
+(function() {
+    const boxes = Array.from(document.querySelectorAll('.otp-input'));
+    const hidden = document.getElementById('verification_code_hidden');
+    const form = document.getElementById('verifyForm');
+
+    if (!boxes.length || !hidden) return;
+
+    function updateHidden() {
+        hidden.value = boxes.map(b => b.value).join('');
     }
-});
+
+    function focusBox(index) {
+        if (boxes[index]) boxes[index].focus();
+    }
+
+    function handleInput(index) {
+        const box = boxes[index];
+        box.value = box.value.replace(/[^0-9]/g, '').substring(0, 1);
+        updateHidden();
+        if (box.value && index < boxes.length - 1) {
+            focusBox(index + 1);
+        }
+        if (hidden.value.length === 6) {
+            form.submit();
+        }
+    }
+
+    function handleKeydown(index, e) {
+        if (e.key === 'Backspace') {
+            if (!boxes[index].value && index > 0) {
+                e.preventDefault();
+                focusBox(index - 1);
+                boxes[index - 1].value = '';
+                updateHidden();
+            }
+        } else if (e.key === 'ArrowLeft' && index > 0) {
+            focusBox(index - 1);
+        } else if (e.key === 'ArrowRight' && index < boxes.length - 1) {
+            focusBox(index + 1);
+        }
+    }
+
+    function handlePaste(e) {
+        e.preventDefault();
+        const digits = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').substring(0, 6);
+        if (!digits) return;
+        boxes.forEach((box, i) => {
+            box.value = digits[i] || '';
+        });
+        updateHidden();
+        focusBox(Math.min(digits.length, boxes.length - 1));
+        if (digits.length === 6) {
+            form.submit();
+        }
+    }
+
+    boxes.forEach((box, index) => {
+        box.addEventListener('input', () => handleInput(index));
+        box.addEventListener('keydown', (e) => handleKeydown(index, e));
+        box.addEventListener('paste', handlePaste);
+    });
+
+    boxes[0].focus();
+})();
 </script>
 
 @endsection
