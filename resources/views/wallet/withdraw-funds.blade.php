@@ -255,17 +255,7 @@
                                 <div>
                                     <h4 class="text-sm font-semibold text-vinted-primary-800 dark:text-vinted-primary-200">⚡ Traitement <span id="withdrawInfoMethod">MaishaPay</span></h4>
                                     <p class="mt-1 text-xs text-vinted-primary-600 dark:text-vinted-primary-300" id="withdrawInfoText">Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min selon l'opérateur.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Avertissement -->
-                        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/30 dark:bg-amber-500/10">
-                            <div class="flex gap-3">
-                                <i class="fas fa-triangle-exclamation mt-0.5 text-amber-500"></i>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-amber-800 dark:text-amber-200">⚠️ Attention</h4>
-                                    <p class="mt-1 text-xs text-amber-700 dark:text-amber-300"><strong>Wallet débité immédiatement.</strong> Remboursement automatique en cas d'échec du transfert.</p>
+                                    <p class="mt-1 text-xs text-amber-600 dark:text-amber-400"><i class="fas fa-triangle-exclamation mr-1"></i>Wallet débité immédiatement · remboursement automatique en cas d'échec.</p>
                                 </div>
                             </div>
                         </div>
