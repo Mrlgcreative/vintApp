@@ -85,6 +85,12 @@ class OfferController extends Controller
         // Invalidation du cache de prix des items.
         Item::clearRunningOffersCache();
 
+        // Notifie les utilisateurs d'une nouvelle promo active.
+        if ($offer->status === 'active') {
+            app(\App\Services\NotificationService::class)->notifyClientsOfNewOffer($offer);
+            app(\App\Http\Controllers\NewsletterController::class)->notifyPromotion($offer);
+        }
+
         return redirect()
             ->route($request->user()->isAdmin() ? 'admin.offers.index' : 'seller.offers.index')
             ->with('success', 'Offre « ' . $offer->title . ' » créée.');

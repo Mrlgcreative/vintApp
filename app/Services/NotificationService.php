@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Notification;
 use App\Models\User;
 use App\Models\Item;
+use App\Models\Offer;
 use App\Events\NewNotification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -275,6 +276,78 @@ class NotificationService
             ]);
         } catch (\Exception $e) {
             Log::error('Erreur broadcast article publié: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Notifie tous les utilisateurs (in-app + push FCM) d'une nouvelle promotion.
+     */
+    public function notifyClientsOfNewOffer(Offer $offer): void
+    {
+        try {
+            $tokens = User::query()
+                ->whereNotNull('fcm_token')
+                ->where('fcm_token', '!=', '')
+                ->pluck('fcm_token')
+                ->unique()
+                ->values()
+                ->all();
+
+            $template = count($tokens) > 0
+                ? "Nouvelle promo : {title} ({discount}) ! Profitez-en avant la fin de la réduction."
+                : '';
+
+            // Persistance in-app pour tous les utilisateurs
+            $users = User::pluck('id');
+            foreach ($users as $userId) {
+                $this->createAndBroadcast([
+                    'user_id' => $userId,
+                    'type' => 'promo',
+                    'title' => 'Nouvelle promotion !',
+                    'message' => $offer->title . ' — profitez de ' . $offer->discountLabel() . ' sur VintApp.',
+                    'data' => [
+                        'offer_id' => (string) $offer->id,
+                        'title' => $offer->title,
+                        'discount' => $offer->discountLabel(),
+                        'url' => '/promotions',
+                    ],
+                    'action_url' => '/promotions',
+                ]);
+            }
+
+            if (empty($tokens)) {
+                Log::info('Broadcast promo : aucun token FCM', ['offer_id' => $offer->id]);
+                return;
+            }
+
+            $message = str_replace(
+                ['{title}', '{discount}'],
+                [$offer->title, $offer->discountLabel()],
+                $template
+            );
+
+            $result = app(FirebasePushService::class)->sendMulticast(
+                $tokens,
+                'Promotion VintApp',
+                $message,
+                [
+                    'type' => 'promo',
+                    'offer_id' => (string) $offer->id,
+                    'offer_title' => $offer->title,
+                    'url' => '/promotions',
+                ],
+                null,
+                false
+            );
+
+            Log::info('Broadcast promo envoyé', [
+                'offer_id' => $offer->id,
+                'users' => $users->count(),
+                'devices' => count($tokens),
+                'success' => $result['success'] ?? 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erreur broadcast promo: ' . $e->getMessage());
         }
     }
 

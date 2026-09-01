@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\NewsletterSubscriber;
+use App\Models\Offer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeNewsletter;
+use App\Mail\PromotionEmail;
 
 class NewsletterController extends Controller
 {
@@ -41,6 +43,35 @@ class NewsletterController extends Controller
                 'message' => 'Une erreur est survenue. Veuillez réessayer.',
             ], 500);
         }
+    }
+
+    /**
+     * Envoyer une annonce de promotion aux abonnés newsletters qui le souhaitent.
+     */
+    public function notifyPromotion(Offer $offer): int
+    {
+        $subscribers = NewsletterSubscriber::receivingPromotions()->get();
+        $sent = 0;
+
+        $subject = 'Nouvelle promo : ' . $offer->title;
+        $content = ucfirst($offer->title)
+            . ' — profitez de ' . $offer->discountLabel()
+            . ($offer->description ? '. ' . $offer->description : '')
+            . (($offer->ends_at && $offer->ends_at->isFuture()) ? ' Valable jusqu\'au ' . $offer->ends_at->format('d/m/Y H:i') . '.' : '')
+            . ' Découvrez toutes les promos ici : ' . route('promotions');
+
+        foreach ($subscribers as $subscriber) {
+            try {
+                Mail::to($subscriber->email)->send(new PromotionEmail($subscriber, $subject, $content));
+                $subscriber->incrementEmailsSent();
+                $sent++;
+            } catch (\Exception $e) {
+                \Log::error('Erreur envoi promo à ' . $subscriber->email . ': ' . $e->getMessage());
+            }
+        }
+
+        \Log::info('Promo diffusée aux abonnés', ['offer_id' => $offer->id, 'sent' => $sent]);
+        return $sent;
     }
 
     /**
