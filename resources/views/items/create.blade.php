@@ -11,7 +11,7 @@
         <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 mt-4">
             <div id="progressBar" class="bg-vinted-primary-600 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
-        <p class="text-xs text-gray-400 mt-1.5" id="progressText">0%</p>
+        <p class="text-xs text-gray-400 dark:text-gray-500 mt-1.5" id="progressText">0%</p>
     </div>
 </div>
 
@@ -88,10 +88,10 @@
                         <input type="file" id="images" name="images[]" multiple accept="image/jpeg,image/png,image/webp" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                         <div class="pointer-events-none">
                             <div class="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mx-auto mb-3">
-                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                                <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
                             </div>
                             <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Glissez vos images ici</p>
-                            <p class="text-xs text-gray-400 mt-1">ou cliquez pour sélectionner &bull; JPG, PNG, WebP</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">ou cliquez pour sélectionner &bull; JPG, PNG, WebP</p>
                         </div>
                     </div>
                     @error('images.*')
@@ -103,7 +103,7 @@
 
                     <!-- Prévisualisation -->
                     <div id="imagePreview" class="grid grid-cols-3 sm:grid-cols-4 gap-3 mt-4 hidden"></div>
-                    <p id="imageCount" class="text-xs text-gray-400 mt-2 hidden">
+                    <p id="imageCount" class="text-xs text-gray-400 dark:text-gray-500 mt-2 hidden">
                         <span id="imageCountNum">0</span> image(s) sélectionnée(s)
                     </p>
                 </div>
@@ -140,9 +140,9 @@
                                 @error('description')
                                     <p class="text-red-500 text-xs">{{ $message }}</p>
                                 @else
-                                    <p class="text-xs text-gray-400">Plus votre description est détaillée, plus vite votre article se vendra</p>
+                                    <p class="text-xs text-gray-400 dark:text-gray-500">Plus votre description est détaillée, plus vite votre article se vendra</p>
                                 @enderror
-                                <span id="charCount" class="text-xs text-gray-400">0</span>
+                                <span id="charCount" class="text-xs text-gray-400 dark:text-gray-500">0</span>
                             </div>
                         </div>
 
@@ -154,7 +154,7 @@
                                     <input type="number" id="price" name="price" value="{{ old('price') }}" step="0.01" min="0" required
                                            class="w-full h-10 pl-3.5 pr-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors @error('price') border-red-400 focus:border-red-500 focus:ring-red-100 @enderror"
                                            placeholder="0.00">
-                                    <span id="currencySymbol" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400 font-medium">$</span>
+                                    <span id="currencySymbol" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-sm text-gray-400 dark:text-gray-500 font-medium">$</span>
                                 </div>
                                 @error('price')
                                     <p class="text-red-500 text-xs">{{ $message }}</p>
@@ -299,14 +299,14 @@
                     </div>
 
                     <div id="specificationsContainer" class="space-y-3">
-                        <div class="flex gap-3 items-center specification-row">
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 specification-row">
                             <input type="text" name="specifications[key][]"
-                                   class="flex-1 h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
+                                   class="flex-1 w-full h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
                                    placeholder="Ex: Matériau">
                             <input type="text" name="specifications[value][]"
-                                   class="flex-1 h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
+                                   class="flex-1 w-full h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
                                    placeholder="Ex: Cuir véritable">
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all remove-specification flex-shrink-0">
+                            <button type="button" class="self-end sm:self-center w-9 h-9 flex items-center justify-center rounded-md text-gray-400 dark:text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all remove-specification flex-shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </button>
                         </div>
@@ -333,8 +333,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </button>
                         <button type="submit" id="submitBtn"
-                                class="hidden sm:inline-flex items-center gap-2 h-10 px-6 rounded-md bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white text-sm font-medium transition-colors invisible">
-                            <i class="fas fa-check text-sm"></i> Publier l'article
+                                class="inline-flex items-center gap-2 h-10 px-4 sm:px-6 rounded-md bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white text-sm font-medium transition-colors invisible">
+                            <i class="fas fa-check text-sm"></i> <span>Publier l'article</span>
                         </button>
                     </div>
                 </div>
@@ -535,13 +535,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Specifications ----
     document.getElementById('addSpecification').addEventListener('click', function() {
         const row = document.createElement('div');
-        row.className = 'flex gap-3 items-center specification-row';
+        row.className = 'flex flex-col sm:flex-row gap-2 sm:gap-3 specification-row';
         row.innerHTML = `
             <input type="text" name="specifications[key][]" placeholder="Nom"
-                   class="flex-1 h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors">
+                   class="flex-1 w-full h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors">
             <input type="text" name="specifications[value][]" placeholder="Valeur"
-                   class="flex-1 h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors">
-            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all remove-specification flex-shrink-0">
+                   class="flex-1 w-full h-10 px-3.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors">
+            <button type="button" class="self-end sm:self-center w-9 h-9 flex items-center justify-center rounded-md text-gray-400 dark:text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all remove-specification flex-shrink-0">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
         `;
