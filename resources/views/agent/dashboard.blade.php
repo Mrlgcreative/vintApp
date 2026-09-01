@@ -12,7 +12,7 @@
             </h1>
             <p class="text-gray-500 dark:text-gray-400 mt-1">Voici un aperçu de votre activité support du jour</p>
         </div>
-        <x-button-outline :href="route('agent.unassigned')" tone="success" class="gap-2">
+        <x-button-outline :href="route('agent.unassigned')" class="gap-2">
             <i class="fas fa-inbox text-xs"></i> Tickets non assignés
             @if($stats['unassigned'] > 0)
                 <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full bg-red-500 text-white">{{ $stats['unassigned'] }}</span>
@@ -22,7 +22,7 @@
 
     {{-- Stats --}}
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <x-stat-card :value="$stats['active']" label="Mes tickets actifs" icon="fas fa-inbox" tone="emerald" :id="'statActive'" />
+        <x-stat-card :value="$stats['active']" label="Mes tickets actifs" icon="fas fa-inbox" tone="slate" :id="'statActive'" />
         <x-stat-card :value="$stats['waiting_reply']" label="Attendent ma réponse" icon="fas fa-reply" tone="amber" />
         <x-stat-card :value="$stats['closed_today']" label="Résolus aujourd'hui" icon="fas fa-check-circle" tone="blue" />
         <x-stat-card :value="$stats['unassigned']" label="Tickets non assignés" icon="fas fa-exclamation-circle" tone="{{ $stats['unassigned'] > 0 ? 'amber' : 'blue' }}" />
@@ -31,8 +31,8 @@
     {{-- Détails @if agent en charge --}}
     @php
         $pct = $stats['max_chats'] > 0 ? min(100, ($stats['active'] / $stats['max_chats']) * 100) : 0;
-        $loadColor = $pct >= 90 ? 'bg-red-500' : ($pct >= 70 ? 'bg-yellow-500' : 'bg-emerald-500');
-        $loadText = $pct >= 90 ? 'text-red-600 dark:text-red-400' : ($pct >= 70 ? 'text-yellow-600 dark:text-yellow-400' : 'text-emerald-600 dark:text-emerald-400');
+        $loadColor = $pct >= 90 ? 'bg-red-500' : ($pct >= 70 ? 'bg-yellow-500' : 'bg-gray-500');
+        $loadText = $pct >= 90 ? 'text-red-600 dark:text-red-400' : ($pct >= 70 ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-600 dark:text-gray-400');
     @endphp
     <x-card class="p-5">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -52,9 +52,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {{-- Mes tickets récents --}}
         <x-card>
-            <x-card-header title="Tickets récents" icon="fas fa-inbox" tone="emerald">
+            <x-card-header title="Tickets récents" icon="fas fa-inbox" tone="slate">
                 <x-slot name="actions">
-                    <a href="{{ route('agent.tickets') }}" class="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 transition-colors">
+                    <a href="{{ route('agent.tickets') }}" class="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
                         Voir tous <i class="fas fa-arrow-right text-xs"></i>
                     </a>
                 </x-slot>
@@ -80,11 +80,11 @@
                             $statusLabels = ['open' => 'Ouvert', 'in_progress' => 'En cours', 'waiting_user' => 'Attente', 'closed' => 'Fermé'];
                         @endphp
                         <a href="{{ route('agent.show', $ticket) }}" class="flex items-center gap-3 px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors group">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-300 flex-shrink-0">
+                            <div class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300 flex-shrink-0">
                                 {{ strtoupper(substr($ticket->user->name ?? '?', 0, 2)) }}
                             </div>
                             <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{{ $ticket->subject }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors">{{ $ticket->subject }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
                                     {{ $ticket->reference }} · {{ $ticket->user->name ?? 'Utilisateur' }}
                                 </p>
@@ -103,15 +103,15 @@
         <x-card>
             <x-card-header title="Urgents non assignés" icon="fas fa-fire" tone="red">
                 <x-slot name="actions">
-                    <a href="{{ route('agent.unassigned') }}" class="inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 transition-colors">
+                    <a href="{{ route('agent.unassigned') }}" class="inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
                         Voir tous <i class="fas fa-arrow-right text-xs"></i>
                     </a>
                 </x-slot>
             </x-card-header>
             @if($urgentUnassigned->isEmpty())
                 <div class="p-10 text-center">
-                    <div class="w-12 h-12 mx-auto rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-3">
-                        <i class="fas fa-shield-halved text-emerald-500"></i>
+                    <div class="w-12 h-12 mx-auto rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-3">
+                        <i class="fas fa-shield-halved text-gray-400"></i>
                     </div>
                     <p class="text-sm text-gray-500 dark:text-gray-400">Aucun ticket urgent</p>
                 </div>
@@ -134,7 +134,7 @@
                             </div>
                             <div class="flex items-center gap-2 flex-shrink-0">
                                 <x-badge variant="{{ $prioVariant }}">{{ $prioLabels[$ticket->priority] ?? $ticket->priority }}</x-badge>
-                                <button onclick="claimTicket({{ $ticket->id }})" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors">
+                                <button onclick="claimTicket({{ $ticket->id }})" class="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-xs font-medium bg-gray-900 hover:bg-gray-700 text-white shadow-sm transition-colors">
                                     <i class="fas fa-hand-paper"></i> Prendre
                                 </button>
                             </div>

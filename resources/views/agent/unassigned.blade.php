@@ -37,16 +37,16 @@
             <div class="relative flex-1 min-w-[160px] max-w-xs">
                 <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher…"
-                       class="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                       class="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-400 focus:border-transparent">
             </div>
-            <select name="priority" class="h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+            <select name="priority" class="h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                 <option value="">Toutes priorités</option>
                 <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>Urgent</option>
                 <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>Haute</option>
                 <option value="normal" {{ request('priority') === 'normal' ? 'selected' : '' }}>Normale</option>
                 <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Basse</option>
             </select>
-            <select name="category" class="h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+            <select name="category" class="h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                 <option value="">Toutes catégories</option>
                 <option value="technical" {{ request('category') === 'technical' ? 'selected' : '' }}>Technique</option>
                 <option value="account" {{ request('category') === 'account' ? 'selected' : '' }}>Compte</option>
@@ -54,7 +54,7 @@
                 <option value="order" {{ request('category') === 'order' ? 'selected' : '' }}>Commande</option>
                 <option value="general" {{ request('category') === 'general' ? 'selected' : '' }}>Général</option>
             </select>
-            <button type="submit" class="inline-flex items-center gap-1.5 h-10 px-4 text-sm rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm transition-colors">
+            <button type="submit" class="inline-flex items-center gap-1.5 h-10 px-4 text-sm rounded-md bg-gray-900 hover:bg-gray-700 text-white font-medium shadow-sm transition-colors">
                 <i class="fas fa-filter text-xs"></i> Filtrer
             </button>
             @if($hasFilters)
@@ -68,8 +68,8 @@
     @if($chats->isEmpty())
         <x-card class="p-10">
             <div class="flex flex-col items-center text-center">
-                <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center mb-4">
-                    <i class="fas fa-check text-2xl text-emerald-500"></i>
+                <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mb-4">
+                    <i class="fas fa-check text-2xl text-gray-400"></i>
                 </div>
                 <h3 class="text-lg font-semibold tracking-tight text-gray-900 dark:text-white mb-1.5">
                     {{ $hasFilters ? 'Aucun résultat' : 'Tout est pris en charge !' }}
@@ -90,7 +90,7 @@
                     $tone = $prioTone[$chat->priority] ?? 'blue';
                     $priorityFriendly = ['urgent' => 'Urgent', 'high' => 'Haute', 'normal' => 'Normale', 'low' => 'Basse'];
                 @endphp
-                <x-card class="p-4 sm:p-5 hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800 transition-all">
+                <x-card class="p-4 sm:p-5 hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 transition-all">
                     <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                         {{-- Icône priorité --}}
                         <x-icon :icon="'fas ' . $icon" :tone="$tone" />
@@ -112,7 +112,7 @@
                             <x-button-outline :href="route('agent.show', $chat)" size="sm" class="gap-1.5">
                                 <i class="fas fa-eye text-xs"></i> Voir
                             </x-button-outline>
-                            <button onclick="claimTicket({{ $chat->id }})" class="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-md text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm transition-colors">
+                            <button onclick="claimTicket({{ $chat->id }})" class="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-md text-xs font-medium bg-gray-900 hover:bg-gray-700 text-white shadow-sm transition-colors">
                                 <i class="fas fa-hand-paper"></i> Prendre en charge
                             </button>
                         </div>

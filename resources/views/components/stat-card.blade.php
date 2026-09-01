@@ -10,6 +10,7 @@
     $chips = [
         'blue' => 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
         'emerald' => 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400',
+        'slate' => 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300',
         'sky' => 'bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400',
         'amber' => 'bg-amber-50 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400',
         'primary' => 'bg-vinted-primary-100 text-vinted-primary-700 dark:bg-vinted-primary-500/20 dark:text-vinted-primary-300',
@@ -17,6 +18,7 @@
     $values = [
         'blue' => 'text-blue-600 dark:text-blue-400',
         'emerald' => 'text-emerald-600 dark:text-emerald-400',
+        'slate' => 'text-gray-700 dark:text-gray-300',
         'sky' => 'text-sky-600 dark:text-sky-400',
         'amber' => 'text-amber-600 dark:text-amber-400',
         'primary' => 'text-vinted-primary-700 dark:text-vinted-primary-300',

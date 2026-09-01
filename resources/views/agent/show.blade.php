@@ -45,14 +45,14 @@
                 <div class="flex items-center gap-2 flex-wrap">
                     {{-- Statut --}}
                     <select id="statusSelect" onchange="updateStatus(this.value)"
-                            class="h-9 px-2.5 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                            class="h-9 px-2.5 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                         <option value="in_progress" {{ $supportChat->status === 'in_progress' ? 'selected' : '' }}>En cours</option>
                         <option value="waiting_user" {{ $supportChat->status === 'waiting_user' ? 'selected' : '' }}>Attente utilisateur</option>
                         <option value="closed" {{ $supportChat->status === 'closed' ? 'selected' : '' }}>Fermé</option>
                     </select>
                     {{-- Priorité --}}
                     <select id="prioritySelect" onchange="updatePriority(this.value)"
-                            class="h-9 px-2.5 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                            class="h-9 px-2.5 text-xs border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                         <option value="low" {{ $supportChat->priority === 'low' ? 'selected' : '' }}>Basse</option>
                         <option value="normal" {{ $supportChat->priority === 'normal' ? 'selected' : '' }}>Normale</option>
                         <option value="high" {{ $supportChat->priority === 'high' ? 'selected' : '' }}>Haute</option>
@@ -60,7 +60,7 @@
                     </select>
                 </div>
             @elseif(!$supportChat->admin_id)
-                <button onclick="claimTicket()" class="inline-flex items-center h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md transition-colors">
+                <button onclick="claimTicket()" class="inline-flex items-center h-9 px-4 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium rounded-md transition-colors">
                     <i class="fas fa-hand-paper mr-2"></i>Prendre en charge
                 </button>
             @endif
@@ -73,7 +73,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm flex flex-col" style="max-height: 70vh;">
                 {{-- En-tête conversation --}}
                 <div class="px-4 sm:px-5 py-3 border-b border-gray-100 dark:border-gray-700/60 flex items-center gap-3">
-                    <x-icon icon="fas fa-comments" tone="emerald" size="sm" />
+                    <x-icon icon="fas fa-comments" tone="slate" size="sm" />
                     <div class="flex-1 min-w-0">
                         <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $supportChat->subject }}</p>
                         <p class="text-[11px] text-gray-500 dark:text-gray-400">{{ $supportChat->messages->count() }} message(s) dans cette conversation</p>
@@ -96,12 +96,12 @@
                                         {{ $message->user->name ?? '?' }} · {{ $message->created_at->format('d/m H:i') }}
                                     </span>
                                     @if($message->is_admin)
-                                        <div class="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-[10px] font-bold text-white">
+                                        <div class="w-6 h-6 rounded-full bg-gray-800 dark:bg-gray-500 flex items-center justify-center text-[10px] font-bold text-white">
                                             {{ strtoupper(substr($message->user->name ?? '?', 0, 2)) }}
                                         </div>
                                     @endif
                                 </div>
-                                <div class="{{ $message->is_admin ? 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800' : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600' }} border rounded-xl px-4 py-3">
+                                <div class="{{ $message->is_admin ? 'bg-gray-200 dark:bg-gray-600 border-gray-300 dark:border-gray-500' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600' }} border rounded-xl px-4 py-3 shadow-sm">
                                     <p class="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap break-words">{{ $message->message }}</p>
 
                                     @if($message->attachments)
@@ -129,14 +129,14 @@
                                 @csrf
                                 <div class="flex flex-col gap-3">
                                     <textarea name="message" rows="3" required placeholder="Votre réponse..."
-                                              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none">{{ old('message') }}</textarea>
+                                              class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400 focus:border-transparent resize-none">{{ old('message') }}</textarea>
                                     <div class="flex items-center justify-between">
                                         <label class="inline-flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 cursor-pointer hover:text-gray-700 dark:hover:text-gray-300">
                                             <i class="fas fa-paperclip"></i>
                                             <span>Joindre des fichiers</span>
                                             <input type="file" name="attachments[]" multiple class="hidden" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.zip">
                                         </label>
-                                        <button type="submit" class="inline-flex items-center h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md transition-colors">
+                                        <button type="submit" class="inline-flex items-center h-9 px-4 bg-gray-900 hover:bg-gray-700 text-white text-sm font-medium rounded-md transition-colors">
                                             <i class="fas fa-paper-plane mr-2"></i>Envoyer
                                         </button>
                                     </div>
@@ -150,7 +150,7 @@
                     @endif
                 @else
                     <div class="border-t border-gray-200 dark:border-gray-700 p-4 text-center text-sm text-gray-500">
-                        <i class="fas fa-check-circle mr-1 text-green-500"></i>Cette conversation est fermée.
+                        <i class="fas fa-check-circle mr-1 text-gray-400"></i>Cette conversation est fermée.
                     </div>
                 @endif
             </div>
@@ -163,7 +163,7 @@
                 <x-card-header title="Utilisateur" icon="fas fa-user" tone="gray" />
                 <div class="p-4 sm:p-5">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-sm font-bold text-emerald-600 dark:text-emerald-300 flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-sm font-bold text-gray-600 dark:text-gray-300 flex-shrink-0">
                             {{ strtoupper(substr($supportChat->user->name ?? '?', 0, 2)) }}
                         </div>
                         <div class="min-w-0">
@@ -222,7 +222,7 @@
                         <button onclick="updateStatus('waiting_user')" class="w-full text-left px-3 py-2.5 text-xs font-medium text-yellow-700 bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-md transition-colors">
                             <i class="fas fa-clock mr-2"></i>Mettre en attente utilisateur
                         </button>
-                        <button onclick="updateStatus('closed')" class="w-full text-left px-3 py-2.5 text-xs font-medium text-green-700 bg-green-50 dark:bg-green-900/20 dark:text-green-400 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-md transition-colors">
+                        <button onclick="updateStatus('closed')" class="w-full text-left px-3 py-2.5 text-xs font-medium text-gray-700 bg-gray-100 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-500 rounded-md transition-colors">
                             <i class="fas fa-check-circle mr-2"></i>Marquer comme résolu
                         </button>
                     </div>

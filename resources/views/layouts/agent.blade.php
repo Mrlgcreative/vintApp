@@ -42,9 +42,9 @@
             {{-- Logo --}}
             <div class="flex items-center justify-between h-16 px-5 border-b border-gray-200 dark:border-gray-700">
                 <a href="{{ route('agent.dashboard') }}" class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-                        <i class="fas fa-headset text-white text-base"></i>
-                    </div>
+<div class="w-9 h-9 bg-gray-900 dark:bg-gray-600 rounded-lg flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+                            <i class="fas fa-headset text-white text-base"></i>
+                        </div>
                     <div>
                         <h1 class="text-base font-bold text-gray-900 dark:text-white leading-tight">Espace Agent</h1>
                         <p class="text-[10px] text-gray-500 dark:text-gray-400 leading-tight">Support {{ $appName ?? 'VintApp' }}</p>
@@ -60,22 +60,22 @@
                 <p class="px-3 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-2">Menu</p>
 
                 <a href="{{ route('agent.dashboard') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.dashboard') ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.dashboard') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-tachometer-alt w-5 text-center"></i>
                     <span>Tableau de bord</span>
                 </a>
 
                 <a href="{{ route('agent.tickets') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.tickets') || request()->routeIs('agent.show') ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.tickets') || request()->routeIs('agent.show') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-inbox w-5 text-center"></i>
                     <span class="flex-1">Mes Tickets</span>
                     @if($myActiveCount > 0)
-                        <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full bg-emerald-500 text-white">{{ $myActiveCount }}</span>
+                        <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-bold rounded-full bg-gray-900 text-white">{{ $myActiveCount }}</span>
                     @endif
                 </a>
 
                 <a href="{{ route('agent.unassigned') }}"
-                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.unassigned') ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                   class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs('agent.unassigned') ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
                     <i class="fas fa-exclamation-circle w-5 text-center"></i>
                     <span class="flex-1">Non assignés</span>
                     @if($unassignedCount > 0)
@@ -88,16 +88,24 @@
             <div class="px-3 py-3 border-t border-gray-200 dark:border-gray-700 space-y-1">
                 @if($currentAgent)
                     <div class="flex items-center gap-2 px-3 py-1.5 mb-1">
-                        <span class="w-2 h-2 rounded-full {{ $currentAgent->is_active ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
-                        <span class="text-xs font-medium {{ $currentAgent->is_active ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400' }}">
+                        <span class="w-2 h-2 rounded-full {{ $currentAgent->is_active ? 'bg-gray-900' : 'bg-gray-400' }}"></span>
+                        <span class="text-xs font-medium {{ $currentAgent->is_active ? 'text-gray-700 dark:text-gray-300' : 'text-gray-500 dark:text-gray-400' }}">
                             {{ $currentAgent->is_active ? 'En ligne' : 'Hors ligne' }}
                         </span>
                         <span class="ml-auto text-[10px] text-gray-400">{{ $currentAgent->activeChatsCount() }}/{{ $currentAgent->max_chats }}</span>
                     </div>
                 @endif
 
+                {{-- Toggle thème --}}
+                <button id="theme-toggle" type="button" title="Changer de thème"
+                        class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-adjust w-5 text-center"></i>
+                    <span>Thème</span>
+                    <span class="ml-auto text-[10px] text-gray-400" id="theme-label">Auto</span>
+                </button>
+
                 <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-2 flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xs font-bold shadow-sm flex-shrink-0">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 dark:bg-gray-600 flex items-center justify-center text-white text-xs font-bold shadow-sm flex-shrink-0">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </div>
                     <div class="flex-1 min-w-0">
@@ -137,8 +145,12 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="flex items-center gap-2 sm:gap-3">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full {{ $currentAgent && $currentAgent->is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }}">
-                            <span class="w-1.5 h-1.5 rounded-full {{ $currentAgent && $currentAgent->is_active ? 'bg-green-500' : 'bg-gray-400' }}"></span>
+                        <button type="button" @click="document.getElementById('theme-toggle').click()" title="Changer de thème"
+                                class="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-adjust"></i>
+                        </button>
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full {{ $currentAgent && $currentAgent->is_active ? 'bg-gray-200 text-gray-700 dark:bg-gray-600 dark:text-gray-200' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $currentAgent && $currentAgent->is_active ? 'bg-gray-700 dark:bg-gray-300' : 'bg-gray-400' }}"></span>
                             {{ $currentAgent && $currentAgent->is_active ? 'En ligne' : 'Hors ligne' }}
                         </span>
                     </div>
@@ -148,10 +160,10 @@
             {{-- Flash messages --}}
             <div class="w-full px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
                 @if(session('success'))
-                    <div class="mt-4 flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-green-800 dark:text-green-300 rounded-lg" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                    <div class="mt-4 flex items-center gap-3 p-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-lg" x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
                         <i class="fas fa-check-circle flex-shrink-0"></i>
                         <span class="flex-1 text-sm">{{ session('success') }}</span>
-                        <button type="button" class="text-green-400 hover:text-green-600" @click="show = false"><i class="fas fa-times"></i></button>
+                        <button type="button" class="text-gray-400 hover:text-gray-600" @click="show = false"><i class="fas fa-times"></i></button>
                     </div>
                 @endif
                 @if(session('error'))
@@ -179,5 +191,33 @@
     </div>
 
     @stack('scripts')
+
+    {{-- Synchro icône + libellé du thème (initial + après toggle) --}}
+    <script>
+    (function () {
+        const labels = { 'light': 'Clair', 'dark': 'Sombre', 'auto': 'Auto' };
+        const icons  = { 'light': 'fas fa-sun', 'dark': 'fas fa-moon', 'auto': 'fas fa-adjust' };
+        function sync() {
+            const theme = localStorage.getItem('theme') || 'auto';
+            const btn = document.getElementById('theme-toggle');
+            if (!btn) return;
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = (icons[theme] || icons.auto) + ' w-5 text-center';
+            const label = document.getElementById('theme-label');
+            if (label) label.textContent = labels[theme] || labels.auto;
+        }
+        const btn = document.getElementById('theme-toggle');
+        if (btn) {
+            btn.addEventListener('click', function () {
+                setTimeout(sync, 350);
+            });
+        }
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', sync);
+        } else {
+            sync();
+        }
+    })();
+    </script>
 </body>
 </html>

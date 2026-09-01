@@ -42,12 +42,12 @@
                 <div class="relative">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400"></i>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Rechercher par sujet ou référence…"
-                           class="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                           class="w-full h-10 pl-9 pr-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-gray-400 focus:border-transparent">
                 </div>
             </div>
             {{-- Statut --}}
             <div>
-                <select name="status" class="w-full h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                <select name="status" class="w-full h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                     <option value="">Tous les statuts</option>
                     <option value="open" {{ request('status') === 'open' ? 'selected' : '' }}>Ouvert</option>
                     <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>En cours</option>
@@ -57,7 +57,7 @@
             </div>
             {{-- Priorité --}}
             <div>
-                <select name="priority" class="w-full h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                <select name="priority" class="w-full h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                     <option value="">Toutes priorités</option>
                     <option value="urgent" {{ request('priority') === 'urgent' ? 'selected' : '' }}>Urgent</option>
                     <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>Haute</option>
@@ -67,7 +67,7 @@
             </div>
             {{-- Catégorie + actions --}}
             <div class="flex gap-2">
-                <select name="category" class="flex-1 h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-emerald-500">
+                <select name="category" class="flex-1 h-10 px-3 text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-400">
                     <option value="">Catégorie</option>
                     <option value="technical" {{ request('category') === 'technical' ? 'selected' : '' }}>Technique</option>
                     <option value="account" {{ request('category') === 'account' ? 'selected' : '' }}>Compte</option>
@@ -75,7 +75,7 @@
                     <option value="order" {{ request('category') === 'order' ? 'selected' : '' }}>Commande</option>
                     <option value="general" {{ request('category') === 'general' ? 'selected' : '' }}>Général</option>
                 </select>
-                <button type="submit" class="inline-flex items-center gap-1.5 h-10 px-4 text-sm rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-medium shadow-sm transition-colors">
+                <button type="submit" class="inline-flex items-center gap-1.5 h-10 px-4 text-sm rounded-md bg-gray-900 hover:bg-gray-700 text-white font-medium shadow-sm transition-colors">
                     <i class="fas fa-search text-xs"></i>
                 </button>
                 @if($hasFilters)
@@ -103,7 +103,7 @@
                 @if($hasFilters)
                     <x-button-outline :href="route('agent.tickets')">Réinitialiser les filtres</x-button-outline>
                 @else
-                    <x-button-primary :href="route('agent.unassigned')" variant="success" class="gap-2">
+                    <x-button-primary :href="route('agent.unassigned')" variant="secondary" class="gap-2">
                         <i class="fas fa-inbox text-xs"></i> Voir les non assignés
                     </x-button-primary>
                 @endif
@@ -114,7 +114,7 @@
         <div class="sm:hidden space-y-3">
             @foreach($chats as $chat)
                 <a href="{{ route('agent.show', $chat) }}"
-                   class="block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm hover:shadow-md hover:border-emerald-200 dark:hover:border-emerald-800 transition-all p-4">
+                   class="block bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700/60 shadow-sm hover:shadow-md hover:border-gray-300 dark:hover:border-gray-600 transition-all p-4">
                     <div class="flex items-start justify-between gap-2 mb-2">
                         <div class="flex-1 min-w-0">
                             <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">{{ $chat->subject }}</p>
@@ -158,7 +158,7 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-xs font-bold text-emerald-600 dark:text-emerald-300">
+                                        <div class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-600 dark:text-gray-300">
                                             {{ strtoupper(substr($chat->user->name ?? '?', 0, 2)) }}
                                         </div>
                                         <span class="text-sm text-gray-700 dark:text-gray-300">{{ $chat->user->name ?? '?' }}</span>
