@@ -54,19 +54,48 @@
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                         <div class="flex items-center gap-4">
-                            <x-icon :icon="'fas fa-dollar-sign'" tone="amber" size="md" />
-                            <div>
-                                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_revenue'], 2) }} $</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Revenu total</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
-                        <div class="flex items-center gap-4">
                             <x-icon :icon="'fas fa-star'" tone="indigo" size="md" />
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['average_rating'], 1) }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $stats['total_reviews'] }} avis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenus par devise -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all relative">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-emerald-500"></div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-50 dark:bg-emerald-900/30">
+                                        <i class="fas fa-dollar-sign text-emerald-600 dark:text-emerald-400 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-4xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">${{ number_format($usdWallet?->balance ?? 0, 2, '.', ',') }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Revenus en dollars (USD)</p>
+                                    </div>
+                                </div>
+                                <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors shrink-0">Wallet →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-all relative">
+                        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-500"></div>
+                        <div class="p-5">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 bg-amber-50 dark:bg-amber-900/30">
+                                        <i class="fas fa-coins text-amber-600 dark:text-amber-400 text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-4xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">{{ number_format($cdfWallet?->balance ?? 0, 2, ',', ' ') }} <span class="text-xl font-semibold">FC</span></p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Revenus en Francs Congolais (CDF)</p>
+                                    </div>
+                                </div>
+                                <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors shrink-0">Wallet →</a>
                             </div>
                         </div>
                     </div>
