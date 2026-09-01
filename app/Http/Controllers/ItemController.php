@@ -48,6 +48,9 @@ class ItemController extends Controller
         // Ville de l'utilisateur (session ou requête)
         $userCity = $request->has('city') ? $request->city : session('user_city');
 
+        // Relâche le filtre ville si aucun vendeur actif de cette ville n'existe
+        $filterCity = $userCity && $this->hasCityItems($userCity) ? $userCity : null;
+
         // Récupérer les articles avec boost prioritaires
         $boostedItemsQuery = Item::with($eagerLoad)
             ->whereHas('activeBoosts')
@@ -67,9 +70,9 @@ class ItemController extends Controller
         
         foreach ($queries as $query) {
             // Filtre par ville
-            if ($userCity) {
-                $query->whereHas('user', function($q) use ($userCity) {
-                    $q->where('location', 'like', "%{$userCity}%");
+            if ($filterCity) {
+                $query->whereHas('user', function($q) use ($filterCity) {
+                    $q->where('location', 'like', "%{$filterCity}%");
                 });
             }
 
@@ -413,6 +416,9 @@ class ItemController extends Controller
         $condition = $request->get('condition');
         $city = $request->has('city') ? $request->city : session('user_city');
 
+        // Relâche le filtre ville si aucun vendeur actif de cette ville n'existe
+        $filterCity = $city && $this->hasCityItems($city) ? $city : null;
+
         // Prioriser les articles boostés dans les résultats de recherche
         $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
             ->whereHas('activeBoosts')
@@ -427,9 +433,9 @@ class ItemController extends Controller
         $queries = [$boostedItems, $regularItems];
         
         foreach ($queries as $items) {
-            if ($city) {
-                $items->whereHas('user', function($q) use ($city) {
-                    $q->where('location', 'like', "%{$city}%");
+            if ($filterCity) {
+                $items->whereHas('user', function($q) use ($filterCity) {
+                    $q->where('location', 'like', "%{$filterCity}%");
                 });
             }
 
@@ -500,12 +506,15 @@ class ItemController extends Controller
 
         $city = $request->has('city') ? $request->city : session('user_city');
 
+        // Relâche le filtre ville si aucun vendeur actif de cette ville n'existe
+        $filterCity = $city && $this->hasCityItems($city) ? $city : null;
+
         $items = Item::with(['user'])
             ->where('status', 'active')
             ->visible()
-            ->when($city, function ($q) use ($city) {
-                $q->whereHas('user', function ($uq) use ($city) {
-                    $uq->where('location', 'like', "%{$city}%");
+            ->when($filterCity, function ($q) use ($filterCity) {
+                $q->whereHas('user', function ($uq) use ($filterCity) {
+                    $uq->where('location', 'like', "%{$filterCity}%");
                 });
             })
             ->where(function ($q) use ($query) {
@@ -840,5 +849,20 @@ class ItemController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Vérifie s'il existe des articles actifs visibles dont le vendeur
+     * est localisé dans la ville donnée. Permet de relâcher le filtre ville
+     * quand aucun vendeur de cette ville n'existe (évite une grille vide).
+     */
+    protected function hasCityItems(string $city): bool
+    {
+        return Item::where('status', 'active')
+            ->visible()
+            ->whereHas('user', function ($q) use ($city) {
+                $q->where('location', 'like', "%{$city}%");
+            })
+            ->exists();
     }
 }

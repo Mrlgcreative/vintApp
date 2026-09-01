@@ -17,7 +17,7 @@
         @if($firstImage && Storage::disk('public')->exists($firstImage))
             <img src="{{ asset('storage/' . $firstImage) }}" 
                  alt="{{ $item->name }}" 
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                  loading="lazy" />
         @else
             <div class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-700/50">
