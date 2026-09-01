@@ -1414,7 +1414,7 @@ class AdminController extends Controller
      */
     public function userEdit(User $user)
     {
-        $user->load(['items', 'orders', 'wallet']);
+        $user->load(['items', 'orders', 'wallets']);
         return view('admin.users.edit', compact('user'));
     }
 
@@ -1600,9 +1600,9 @@ class AdminController extends Controller
             $userData = [
                 'user' => $user->toArray(),
                 'items' => $user->items()->with('category', 'brand')->get()->toArray(),
-                'orders' => $user->orders()->with('items')->get()->toArray(),
-                'wallet' => $user->wallet ? $user->wallet->toArray() : null,
-                'transactions' => $user->wallet ? $user->wallet->transactions()->get()->toArray() : [],
+'orders' => $user->orders()->with('items')->get()->toArray(),
+                    'wallet' => $user->wallets()->first() ? $user->wallets()->first()->toArray() : null,
+                    'transactions' => $user->wallets()->first() ? $user->wallets()->first()->transactions()->get()->toArray() : [],
             ];
 
             $fileName = 'user_data_' . $user->id . '_' . date('Y-m-d_H-i-s') . '.json';
