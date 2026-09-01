@@ -23,35 +23,41 @@
                     @if($items->count() > 0)
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             @foreach($items as $item)
-                                <div class="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                    <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-                                        @if($item->images && count($item->images) > 0)
-                                            <img src="{{ Storage::url($item->images[0]) }}" class="w-full h-full object-cover" alt="">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>
-                                        @endif
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <h6 class="font-semibold text-gray-900 dark:text-white truncate">{{ $item->name }}</h6>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->category->name ?? 'N/A' }} · {{ $item->views }} vues</p>
-                                    </div>
-                                    <div class="text-right flex-shrink-0">
-                                        <p class="font-bold text-gray-900 dark:text-white">{{ $item->formatted_price }}</p>
-                                        <span class="text-xs px-2 py-0.5 rounded-full {{ $item->status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500' }}">{{ $item->status }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <a href="{{ route('boost.index', ['item_id' => $item->id]) }}" class="px-3 py-2 text-sm rounded-lg border border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors" title="Booster">
-                                            <i class="fas fa-rocket"></i>
-                                        </a>
-                                        <a href="{{ route('items.edit', $item) }}" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <button type="button"
-                                                class="px-3 py-2 text-sm rounded-lg border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors delete-item"
-                                                data-item-id="{{ $item->id }}"
-                                                title="Supprimer">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div class="flex items-start gap-3 sm:gap-4">
+                                        <div class="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                                            @if($item->images && count($item->images) > 0)
+                                                <img src="{{ Storage::url($item->images[0]) }}" class="w-full h-full object-cover" alt="">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center text-gray-400"><i class="fas fa-image"></i></div>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div class="min-w-0">
+                                                    <h6 class="font-semibold text-gray-900 dark:text-white truncate">{{ $item->name }}</h6>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ $item->category->name ?? 'N/A' }} · {{ $item->views }} vues</p>
+                                                </div>
+                                                <div class="text-right flex-shrink-0">
+                                                    <p class="font-bold text-gray-900 dark:text-white">{{ $item->formatted_price }}</p>
+                                                    <span class="text-xs px-2 py-0.5 rounded-full {{ $item->status === 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500' }}">{{ $item->status === 'active' ? 'Actif' : ucfirst($item->status) }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2 mt-3">
+                                                <a href="{{ route('boost.index', ['item_id' => $item->id]) }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-yellow-300 dark:border-yellow-700 text-yellow-700 dark:text-yellow-400 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 transition-colors" title="Booster">
+                                                    <i class="fas fa-rocket"></i><span class="hidden sm:inline">Booster</span>
+                                                </a>
+                                                <a href="{{ route('items.edit', $item) }}" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="Modifier">
+                                                    <i class="fas fa-edit"></i><span class="hidden sm:inline">Modifier</span>
+                                                </a>
+                                                <button type="button"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors delete-item ml-auto sm:ml-0"
+                                                        data-item-id="{{ $item->id }}"
+                                                        title="Supprimer">
+                                                    <i class="fas fa-trash"></i><span class="hidden sm:inline">Supprimer</span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -85,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
             const itemId = this.dataset.itemId;
-            const row = this.closest('.flex.items-center.gap-4.p-4');
+            const row = this.closest('div.p-4');
 
             if (confirm('Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.')) {
                 this.disabled = true;
