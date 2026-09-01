@@ -119,7 +119,17 @@
                         <div class="flex items-end justify-between gap-4">
                             <div>
                                 <p class="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Prix</p>
-                                <p class="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{{ $item->formatted_price }}</p>
+                                @if($item->has_offer)
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <p class="text-2xl font-bold tracking-tight text-slate-400 line-through dark:text-slate-500">{{ $item->formatted_price }}</p>
+                                        <span class="px-2.5 py-1 {{ $item->offer->is_flash_sale ? 'bg-red-500' : 'bg-emerald-500' }} text-white text-xs font-bold rounded-full">{{ $item->offer_label }}</span>
+                                    </div>
+                                    <p class="text-3xl font-bold tracking-tight text-emerald-600 sm:text-4xl dark:text-emerald-400">
+                                        {{ $item->currency === 'USD' ? '$' : 'FC' }} {{ number_format((float) $item->sale_price, 2) }}
+                                    </p>
+                                @else
+                                    <p class="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{{ $item->formatted_price }}</p>
+                                @endif
                             </div>
                             @if($item->quantity > 0)
                                 <span class="inline-flex items-center gap-1.5 pb-1 text-sm font-medium text-emerald-600 dark:text-emerald-400">

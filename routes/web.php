@@ -189,6 +189,9 @@ Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 Route::get('/items/search', [ItemController::class, 'search'])->name('items.search');
 Route::get('/items/suggestions', [ItemController::class, 'suggestions'])->name('items.suggestions');
 
+// Promotions publiques
+Route::get('/promotions', [App\Http\Controllers\Marketing\OfferController::class, 'promotions'])->name('promotions');
+
 // Routes publiques pour le scan QR code des commandes
 Route::get('/order/scan/{token}', [OrderController::class, 'scanOrder'])->name('orders.scan');
 Route::post('/order/scan/{token}/confirm', [OrderController::class, 'confirmOrderDelivery'])->name('orders.scan.confirm');
@@ -433,6 +436,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryDestroy'])->name('destroy');
         Route::patch('/{category}/status', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdateStatus'])->name('update-status');
         Route::patch('/{category}/featured', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdateFeatured'])->name('update-featured');
+    });
+
+    // Gestion des offres / promotions (marketing)
+    Route::prefix('offers')->name('offers.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Marketing\OfferController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Marketing\OfferController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Marketing\OfferController::class, 'store'])->name('store');
+        Route::get('/{offer}/edit', [App\Http\Controllers\Marketing\OfferController::class, 'edit'])->name('edit');
+        Route::put('/{offer}', [App\Http\Controllers\Marketing\OfferController::class, 'update'])->name('update');
+        Route::delete('/{offer}', [App\Http\Controllers\Marketing\OfferController::class, 'destroy'])->name('destroy');
+        Route::patch('/{offer}/status', [App\Http\Controllers\Marketing\OfferController::class, 'toggleStatus'])->name('status');
     });
 
     // Gestion des articles/items (CRUD complet)

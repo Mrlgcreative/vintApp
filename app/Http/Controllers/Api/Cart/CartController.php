@@ -96,7 +96,13 @@ class CartController extends ApiController
             }
 
             $finalPrice = $item->price;
+            $offer = null;
             $activeDiscount = null;
+
+            if ($item->has_offer) {
+                $offer = $item->offer;
+                $finalPrice = $offer->discountPriceFor($item);
+            }
 
             $activeDiscount = Discount::where('item_id', $item->id)
                 ->where('user_id', Auth::id())
@@ -105,6 +111,7 @@ class CartController extends ApiController
                 ->first();
 
             if ($activeDiscount) {
+                // La réduction négociée (acheteur) prime sur l'offre de la boutique.
                 $finalPrice = $activeDiscount->final_price;
             }
 
@@ -130,6 +137,14 @@ class CartController extends ApiController
                         'discount_percentage' => $activeDiscount->discount_percentage,
                         'has_discount' => true,
                     ]);
+                } elseif ($offer) {
+                    $cartRow->update([
+                        'price' => $finalPrice,
+                        'original_price' => $item->price,
+                        'discount_id' => $offer->id,
+                        'discount_percentage' => $offer->type === 'percent' ? $offer->value : null,
+                        'has_discount' => true,
+                    ]);
                 }
             } else {
                 $data = [
@@ -147,6 +162,11 @@ class CartController extends ApiController
                     $data['original_price'] = $item->price;
                     $data['discount_id'] = $activeDiscount->id;
                     $data['discount_percentage'] = $activeDiscount->discount_percentage;
+                    $data['has_discount'] = true;
+                } elseif ($offer) {
+                    $data['original_price'] = $item->price;
+                    $data['discount_id'] = $offer->id;
+                    $data['discount_percentage'] = $offer->type === 'percent' ? $offer->value : null;
                     $data['has_discount'] = true;
                 }
 

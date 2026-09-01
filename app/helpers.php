@@ -414,7 +414,11 @@ if (!function_exists('create_orders_from_transaction')) {
                 continue;
             }
 
-            $orderAmount = $item->price * $cartItem['quantity'];
+            $unitPrice = $item->activeOffer()
+                ? (float) $item->activeOffer()->discountPriceFor($item)
+                : (float) $item->price;
+
+            $orderAmount = round($unitPrice * $cartItem['quantity'], 2);
 
             $seller = \App\Models\User::find($item->user_id);
             if (!$seller) {
@@ -441,7 +445,7 @@ if (!function_exists('create_orders_from_transaction')) {
                 'seller_id' => $item->user_id,
                 'item_id' => $item->id,
                 'quantity' => $cartItem['quantity'],
-                'unit_price' => $item->price,
+                'unit_price' => $unitPrice,
                 'total_amount' => $orderAmount,
                 'currency' => $item->currency,
                 'status' => 'confirmed',

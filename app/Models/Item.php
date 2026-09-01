@@ -4,10 +4,21 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class Item extends Model
 {
     use HasFactory;
+
+    /**
+     * Cache des offres courantes (résolues une fois par requête).
+     */
+    protected static ?Collection $runningOffersCache = null;
+
+    public static function clearRunningOffersCache(): void
+    {
+        static::$runningOffersCache = null;
+    }
 
     protected $fillable = [
         'user_id',
@@ -92,6 +103,98 @@ class Item extends Model
     {
         $symbol = $this->currency === 'USD' ? '$' : 'FC';
         return $symbol . ' ' . number_format((float) $this->price, 2);
+    }
+
+    /**
+     * Meilleure offre active (pourcentage le plus élevé préféré) applicable au produit.
+     */
+    public function activeOffer(): ?Offer
+    {
+        return $this->applicableOffers()->first();
+    }
+
+    /**
+     * Collection triée (meilleure d'abord) des offres applicables à ce produit.
+     */
+    public function applicableOffers(): Collection
+    {
+        $offers = $this->runningOffers();
+        $itemId = $this->id;
+        $categoryId = $this->category_id;
+
+        $applicable = $offers->filter(function (Offer $o) use ($itemId, $categoryId) {
+            if ($o->scope === 'global') {
+                return true;
+            }
+            if ($o->scope === 'items') {
+                return $o->items()->where('item_id', $itemId)->exists();
+            }
+            if ($o->scope === 'categories') {
+                return $categoryId && $o->categories()->where('category_id', $categoryId)->exists();
+            }
+            return false;
+        })->sortByDesc(function (Offer $o) {
+            // Meilleure offre = réduction en % ; à valeur égale, la plus récente d'abord.
+            $pct = $o->type === 'percent'
+                ? (float) $o->value
+                : ((float) $o->value / max((float) $this->price, 1)) * 100;
+            return [$pct, $o->created_at ? $o->created_at->timestamp : 0];
+        });
+
+        return $applicable->values();
+    }
+
+    /**
+     * Toutes les offres actuellement valides dans la boutique (mises en cache par requête).
+     */
+    public static function runningOffers(): Collection
+    {
+        if (static::$runningOffersCache === null) {
+            static::$runningOffersCache = Offer::running()->get();
+        }
+        return static::$runningOffersCache;
+    }
+
+    /**
+     * Prix final après réduction (null si aucune offre applicable).
+     */
+    public function salePrice(): ?float
+    {
+        $offer = $this->activeOffer();
+        return $offer ? $offer->discountPriceFor($this) : null;
+    }
+
+    /**
+     * Ce produit a-t-il une offre active ?
+     */
+    public function getHasOfferAttribute(): bool
+    {
+        return $this->activeOffer() !== null;
+    }
+
+    /**
+     * Label de l'offre active (ex : "-20 %").
+     */
+    public function getOfferLabelAttribute(): ?string
+    {
+        $offer = $this->activeOffer();
+        return $offer?->discountLabel();
+    }
+
+    /**
+     * Offre active (objet) pour Blade.
+     */
+    public function getOfferAttribute(): ?Offer
+    {
+        return $this->activeOffer();
+    }
+
+    /**
+     * Prix final après réduction (pour Blade), null si aucune offre.
+     */
+    public function getSalePriceAttribute(): ?float
+    {
+        return $this->salePrice();
     }
 
     /**

@@ -6,6 +6,10 @@
     $isNew = $item->created_at->gt(now()->subDays(7));
     $activeBoost = $item->activeBoosts->first();
     $isBoosted = $activeBoost !== null;
+    $hasOffer = $item->has_offer;
+    $offer = $item->offer;
+    $salePrice = $item->sale_price;
+    $symbol = $item->currency === 'USD' ? '$' : 'FC';
 @endphp
 
 <article class="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border-2 {{ $isBoosted ? 'border-gray-300 dark:border-gray-600 ring-2 ring-gray-100 dark:ring-gray-700 shadow-lg shadow-gray-500/10 dark:shadow-black/30' : 'border-gray-100 dark:border-gray-700 hover:border-gray-300' }} transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
@@ -55,6 +59,12 @@
         
         <!-- Badges -->
         <div class="absolute top-4 left-4 flex flex-col gap-2">
+            @if($hasOffer)
+                <span class="px-3 py-1 {{ $offer->is_flash_sale ? 'bg-red-500' : 'bg-emerald-500' }} text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 3.293a1 1 0 011.414 0l1.5 1.5a1 1 0 010 1.414L8 18.414a1 1 0 01-.707.293H3a1 1 0 01-1-1v-4.293a1 1 0 01.293-.707L17.293 3.293zM12 6l2 2-7 7a1 1 0 01-1.414 0l-1.5-1.5a1 1 0 010-1.414L12 6z"/></svg>
+                    {{ $offer->discountLabel() }}
+                </span>
+            @endif
             @if($isBoosted)
                 <div class="relative">
                     <span class="px-3 py-1 bg-gray-900 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
@@ -71,10 +81,19 @@
         </div>
         
         <!-- Prix -->
-        <div class="absolute top-4 right-4">
-            <span class="px-4 py-2 {{ $isBoosted ? 'bg-gray-800 shadow-lg' : 'bg-gray-900' }} text-white rounded-full text-sm font-bold shadow-lg">
-                {{ $item->formatted_price }}
-            </span>
+        <div class="absolute top-4 right-4 flex flex-col items-end gap-1">
+            @if($hasOffer)
+                <span class="px-2 py-0.5 text-xs text-white/80 line-through bg-gray-950/60 rounded-full">
+                    {{ $symbol }} {{ number_format((float) $item->price, 2) }}
+                </span>
+                <span class="px-4 py-2 {{ $isBoosted ? 'bg-gray-800 shadow-lg' : 'bg-gray-900' }} text-white rounded-full text-sm font-bold shadow-lg">
+                    {{ $symbol }} {{ number_format((float) $salePrice, 2) }}
+                </span>
+            @else
+                <span class="px-4 py-2 {{ $isBoosted ? 'bg-gray-800 shadow-lg' : 'bg-gray-900' }} text-white rounded-full text-sm font-bold shadow-lg">
+                    {{ $item->formatted_price }}
+                </span>
+            @endif
         </div>
     </div>
     

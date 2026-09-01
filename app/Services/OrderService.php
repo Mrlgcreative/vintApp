@@ -39,13 +39,18 @@ class OrderService
         }
 
         return DB::transaction(function () use ($item, $buyer, $data, $quantity) {
+            // Applique l'offre/promo courante au prix unitaire, si le produit en bénéficie.
+            $unitPrice = $item->activeOffer()
+                ? (float) $item->activeOffer()->discountPriceFor($item)
+                : (float) $item->price;
+
             $order = new Order();
             $order->buyer_id = $buyer->id;
             $order->seller_id = $item->user_id;
             $order->item_id = $item->id;
             $order->quantity = $quantity;
-            $order->unit_price = $item->price;
-            $order->total_amount = $item->price * $quantity;
+            $order->unit_price = $unitPrice;
+            $order->total_amount = round($unitPrice * $quantity, 2);
             $order->currency = $item->currency;
             $order->status = 'pending';
             $order->shipping_address = $data['shipping_address'] ?? $data['delivery_address'] ?? null;

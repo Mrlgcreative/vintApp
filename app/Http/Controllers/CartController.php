@@ -93,7 +93,14 @@ class CartController extends Controller
         $quantity = max(1, (int) $request->input('quantity', 1));
 
         $activeDiscount = null;
+        $offer = null;
         $finalPrice = $item->price;
+
+        // Offre (promo) de la boutique applicable au produit
+        if ($item->has_offer) {
+            $offer = $item->offer;
+            $finalPrice = $offer->discountPriceFor($item);
+        }
 
         if (Auth::check()) {
             $activeDiscount = Discount::where('item_id', $itemId)
@@ -103,6 +110,7 @@ class CartController extends Controller
                 ->first();
 
             if ($activeDiscount) {
+                // La réduction négociée (acheteur) prime sur l'offre de la boutique.
                 $finalPrice = $activeDiscount->final_price;
             }
         }
@@ -124,6 +132,14 @@ class CartController extends Controller
                     'discount_percentage' => $activeDiscount->discount_percentage,
                     'has_discount' => true,
                 ]);
+            } elseif ($offer) {
+                $cartRow->update([
+                    'price' => $finalPrice,
+                    'original_price' => $item->price,
+                    'discount_id' => $offer->id,
+                    'discount_percentage' => $offer->type === 'percent' ? $offer->value : null,
+                    'has_discount' => true,
+                ]);
             }
         } else {
             $data = [
@@ -142,6 +158,11 @@ class CartController extends Controller
                 $data['discount_id'] = $activeDiscount->id;
                 $data['discount_percentage'] = $activeDiscount->discount_percentage;
                 $data['has_discount'] = true;
+            } elseif ($offer) {
+                $data['original_price'] = $item->price;
+                $data['discount_id'] = $offer->id;
+                $data['discount_percentage'] = $offer->type === 'percent' ? $offer->value : null;
+                $data['has_discount'] = true;
             }
 
             Cart::create($data);
@@ -149,7 +170,9 @@ class CartController extends Controller
 
         $message = $activeDiscount
             ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
-            : 'Article ajouté au panier.';
+            : ($offer
+                ? 'Article ajouté au panier avec la promo ' . $offer->discountLabel() . ' !'
+                : 'Article ajouté au panier.');
 
         if ($request->ajax() || $request->wantsJson()) {
             $cartCount = Cart::where(function ($q) use ($sessionId, $userId) {

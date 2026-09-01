@@ -674,14 +674,27 @@ class ItemController extends Controller
         if ($cartRow->exists) {
             $cartRow->increment('quantity', 1);
         } else {
-            $cartRow->fill([
+            $finalPrice = $item->has_offer
+                ? (float) $item->activeOffer()->discountPriceFor($item)
+                : (float) $item->price;
+
+            $data = [
                 'user_id' => $userId,
                 'item_name' => $item->name,
-                'price' => $item->price,
+                'price' => $finalPrice,
                 'currency' => $item->currency,
                 'quantity' => 1,
                 'image' => $item->images[0] ?? null,
-            ])->save();
+            ];
+
+            if ($item->has_offer) {
+                $data['original_price'] = $item->price;
+                $data['discount_id'] = $item->offer->id;
+                $data['discount_percentage'] = $item->offer->type === 'percent' ? $item->offer->value : null;
+                $data['has_discount'] = true;
+            }
+
+            $cartRow->fill($data)->save();
         }
 
         return redirect()->route('cart.checkout');
