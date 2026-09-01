@@ -9,10 +9,19 @@
 
         <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">Mes ventes</h1>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">{{ $sales->total() }} vente(s)</p>
+                <div class="mb-8">
+                    <div class="bg-gradient-to-r from-vinted-primary-600 via-vinted-primary-500 to-vinted-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+                        <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
+                        <div class="relative">
+                            <h1 class="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+                                <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart text-base"></i>
+                                </div>
+                                Mes ventes
+                            </h1>
+                            <p class="text-white/80 mt-2 text-sm sm:text-base">{{ $sales->total() }} vente(s)</p>
+                        </div>
                     </div>
                 </div>
 
@@ -20,7 +29,8 @@
                     @if($sales->count() > 0)
                         <div class="divide-y divide-gray-100 dark:divide-gray-700">
                             @foreach($sales as $sale)
-                                <div class="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div class="flex items-center gap-4 flex-wrap sm:flex-nowrap">
                                     <div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                         <i class="fas fa-receipt text-gray-400"></i>
                                     </div>
@@ -29,21 +39,26 @@
                                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate">{{ $sale->item->name ?? 'N/A' }} · {{ $sale->buyer->name ?? 'N/A' }}</p>
                                     </div>
                                     <div class="text-right flex-shrink-0">
-                                        <p class="font-bold text-gray-900 dark:text-white">{{ number_format($sale->total_amount, 2) }} $</p>
-                                        <span class="text-xs px-2 py-0.5 rounded-full font-medium
-                                            @if($sale->status === 'completed') bg-emerald-100 text-emerald-700
-                                            @elseif($sale->status === 'pending') bg-yellow-100 text-yellow-700
-                                            @elseif($sale->status === 'confirmed') bg-cyan-100 text-cyan-700
-                                            @elseif($sale->status === 'shipped') bg-blue-100 text-blue-700
-                                            @elseif($sale->status === 'delivered') bg-blue-100 text-blue-700
-                                            @elseif($sale->status === 'cancelled' || $sale->status === 'refunded') bg-red-100 text-red-700
-                                            @else bg-gray-100 text-gray-500 @endif">
-                                            {{ $sale->status_text }}
+                                        <p class="font-bold text-gray-900 dark:text-white">{{ $sale->formatted_total_amount }}</p>
+                                        @php
+                                            $badgeVariant = match($sale->status) {
+                                                'completed' => 'soft-success',
+                                                'delivered' => 'soft-info',
+                                                'confirmed' => 'soft-info',
+                                                'shipped' => 'soft-info',
+                                                'cancelled', 'refunded' => 'soft-danger',
+                                                'pending' => 'soft-warning',
+                                                default => 'soft-secondary',
+                                            };
+                                        @endphp
+                                        <span class="text-right flex-shrink-0">
+                                            <x-badge :variant="$badgeVariant">{{ $sale->status_text }}</x-badge>
                                         </span>
                                     </div>
                                     <a href="{{ route('orders.show', $sale) }}" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                         <i class="fas fa-eye"></i>
                                     </a>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -52,8 +67,8 @@
                         </div>
                     @else
                         <div class="text-center py-16">
-                            <div class="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-shopping-cart text-gray-400 text-2xl"></i>
+                            <div class="w-16 h-16 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shopping-cart text-vinted-primary-400 dark:text-vinted-primary-300 text-2xl"></i>
                             </div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune vente</h3>
                             <p class="text-gray-500 dark:text-gray-400">Les ventes apparaîtront ici quand des acheteurs commanderont vos articles</p>

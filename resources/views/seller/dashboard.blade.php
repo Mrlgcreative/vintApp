@@ -10,27 +10,33 @@
         <!-- Main content -->
         <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
-                <!-- Header -->
-                <div class="flex items-center justify-between mb-8">
-                    <div>
-                        <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">
-                            Tableau de bord
-                        </h1>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">Bienvenue dans votre espace vendeur</p>
+                <!-- Header / Hero -->
+                <div class="mb-8">
+                    <div class="bg-gradient-to-r from-vinted-primary-600 via-vinted-primary-500 to-vinted-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+                        <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
+                        <div class="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h1 class="text-2xl sm:text-3xl font-bold flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-white/15 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                                        <i class="fas fa-chart-pie text-base"></i>
+                                    </div>
+                                    Tableau de bord
+                                </h1>
+                                <p class="text-white/80 mt-2 text-sm sm:text-base">Bienvenue dans votre espace vendeur</p>
+                            </div>
+                            <a href="{{ route('items.create') }}" class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-xl px-4 py-2.5 text-sm font-medium hover:bg-white/25 active:scale-95 transition-all duration-200">
+                                <i class="fas fa-plus"></i> Publier un article
+                            </a>
+                        </div>
                     </div>
-                    <a href="{{ route('items.create') }}" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold hover:bg-primary-600 transition-colors">
-                        <i class="fas fa-plus"></i>
-                        <span>Publier un article</span>
-                    </a>
                 </div>
 
                 <!-- Stats -->
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-box text-primary text-lg"></i>
-                            </div>
+                            <x-icon :icon="'fas fa-box'" tone="primary" size="md" />
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_items'] }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Articles <span class="hidden sm:inline">· {{ $stats['active_items'] }} actifs</span></p>
@@ -39,9 +45,7 @@
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-shopping-cart text-emerald-600 text-lg"></i>
-                            </div>
+                            <x-icon :icon="'fas fa-shopping-cart'" tone="emerald" size="md" />
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_sales'] }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Ventes totales</p>
@@ -50,9 +54,7 @@
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-dollar-sign text-amber-600 text-lg"></i>
-                            </div>
+                            <x-icon :icon="'fas fa-dollar-sign'" tone="amber" size="md" />
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['total_revenue'], 2) }} $</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">Revenu total</p>
@@ -61,9 +63,7 @@
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg transition-all">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-star text-purple-600 text-lg"></i>
-                            </div>
+                            <x-icon :icon="'fas fa-star'" tone="indigo" size="md" />
                             <div>
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['average_rating'], 1) }}</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $stats['total_reviews'] }} avis</p>
@@ -76,22 +76,22 @@
                     <!-- Articles récents -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                            <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                <i class="fas fa-box text-primary"></i>
+                            <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                                <x-icon :icon="'fas fa-box'" tone="primary" size="sm" />
                                 Mes articles
                             </h3>
-                            <a href="{{ route('seller.items') }}" class="text-sm text-primary hover:text-primary-600 font-medium">Voir tout</a>
+                            <a href="{{ route('seller.items') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
                         </div>
                         <div class="p-4">
                             @if($items->count() > 0)
                                 <div class="space-y-2">
                                     @foreach($items as $item)
-                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl hover:bg-primary-50 dark:hover:bg-primary-900/10 transition-colors">
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl hover:bg-vinted-primary-50 dark:hover:bg-vinted-primary-500/10 transition-colors">
                                             <div class="min-w-0 flex-1">
                                                 <h6 class="font-semibold text-gray-900 dark:text-white text-sm truncate">{{ $item->name }}</h6>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category->name ?? 'N/A' }}</p>
                                             </div>
-                                            <span class="ml-3 px-2.5 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs font-semibold rounded-lg flex-shrink-0">
+                                            <span class="ml-3 px-2.5 py-1 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 text-vinted-primary-700 dark:text-vinted-primary-300 text-xs font-semibold rounded-lg flex-shrink-0">
                                                 {{ $item->formatted_price }}
                                             </span>
                                         </div>
@@ -112,11 +112,11 @@
                     <!-- Ventes récentes -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                            <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                                <i class="fas fa-shopping-cart text-emerald-500"></i>
+                            <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                                <x-icon :icon="'fas fa-shopping-cart'" tone="emerald" size="sm" />
                                 Dernières ventes
                             </h3>
-                            <a href="{{ route('seller.sales') }}" class="text-sm text-primary hover:text-primary-600 font-medium">Voir tout</a>
+                            <a href="{{ route('seller.sales') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
                         </div>
                         <div class="p-4">
                             @if($sales->count() > 0)
@@ -152,11 +152,11 @@
                 <!-- Derniers avis -->
                 <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                        <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="fas fa-star text-yellow-500"></i>
+                        <h3 class="font-bold text-gray-900 dark:text-white flex items-center gap-2.5">
+                            <x-icon :icon="'fas fa-star'" tone="amber" size="sm" />
                             Derniers avis
                         </h3>
-                        <a href="{{ route('seller.reviews') }}" class="text-sm text-primary hover:text-primary-600 font-medium">Voir tout</a>
+                        <a href="{{ route('seller.reviews') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
                     </div>
                     <div class="p-4">
                         @if($reviews->count() > 0)
