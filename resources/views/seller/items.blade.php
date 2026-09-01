@@ -46,6 +46,12 @@
                                         <a href="{{ route('items.edit', $item) }}" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <button type="button"
+                                                class="px-3 py-2 text-sm rounded-lg border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors delete-item"
+                                                data-item-id="{{ $item->id }}"
+                                                title="Supprimer">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             @endforeach
@@ -71,3 +77,78 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-item');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.dataset.itemId;
+            const row = this.closest('.flex.items-center.gap-4.p-4');
+
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.')) {
+                this.disabled = true;
+                const originalContent = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                let notifContainer = document.querySelector('#notif-container');
+                if (!notifContainer) {
+                    notifContainer = document.createElement('div');
+                    notifContainer.id = 'notif-container';
+                    notifContainer.className = 'fixed top-4 right-4 z-[100] space-y-2';
+                    document.body.appendChild(notifContainer);
+                }
+
+                const showNotification = (message, type) => {
+                    const el = document.createElement('div');
+                    el.className = 'px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ' +
+                        (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
+                    el.textContent = message;
+                    notifContainer.appendChild(el);
+                    setTimeout(() => { el.style.opacity = '0'; }, 2500);
+                    setTimeout(() => el.remove(), 2800);
+                };
+
+                fetch(`/items/${itemId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        showNotification(data.message, 'success');
+                        if (row) {
+                            row.style.transition = 'all 0.3s ease';
+                            row.style.opacity = '0';
+                            row.style.transform = 'translateX(-100%)';
+                            setTimeout(() => row.remove(), 300);
+                        }
+                        if (document.querySelectorAll('.delete-item').length === 0) {
+                            setTimeout(() => window.location.reload(), 300);
+                        }
+                    } else {
+                        showNotification(data.message || 'Erreur lors de la suppression', 'error');
+                        this.disabled = false;
+                        this.innerHTML = originalContent;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Une erreur est survenue lors de la suppression', 'error');
+                    this.disabled = false;
+                    this.innerHTML = originalContent;
+                });
+            }
+        });
+    });
+});
+</script>
+@endpush

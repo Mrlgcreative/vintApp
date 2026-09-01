@@ -150,8 +150,10 @@ class Order extends Model
             'pending' => 'bg-warning',
             'confirmed' => 'bg-info',
             'shipped' => 'bg-primary',
-            'delivered' => 'bg-success',
+            'delivered' => 'bg-info',
+            'completed' => 'bg-success',
             'cancelled' => 'bg-danger',
+            'refunded' => 'bg-secondary',
             default => 'bg-secondary'
         };
     }
@@ -166,8 +168,18 @@ class Order extends Model
             'confirmed' => 'Confirmée',
             'shipped' => 'Expédiée',
             'delivered' => 'Livrée',
+            'completed' => 'Complétée',
             'cancelled' => 'Annulée',
+            'refunded' => 'Remboursée',
             default => 'Inconnu'
         };
+    }
+
+    /**
+     * Whether the order is a final, paid-out sale (revenue counting)
+     */
+    public function isCompleted(): bool
+    {
+        return $this->status === 'completed';
     }
 }

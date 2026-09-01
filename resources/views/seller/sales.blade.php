@@ -33,10 +33,12 @@
                                         <span class="text-xs px-2 py-0.5 rounded-full font-medium
                                             @if($sale->status === 'completed') bg-emerald-100 text-emerald-700
                                             @elseif($sale->status === 'pending') bg-yellow-100 text-yellow-700
+                                            @elseif($sale->status === 'confirmed') bg-cyan-100 text-cyan-700
                                             @elseif($sale->status === 'shipped') bg-blue-100 text-blue-700
-                                            @elseif($sale->status === 'cancelled') bg-red-100 text-red-700
+                                            @elseif($sale->status === 'delivered') bg-blue-100 text-blue-700
+                                            @elseif($sale->status === 'cancelled' || $sale->status === 'refunded') bg-red-100 text-red-700
                                             @else bg-gray-100 text-gray-500 @endif">
-                                            {{ ucfirst($sale->status) }}
+                                            {{ $sale->status_text }}
                                         </span>
                                     </div>
                                     <a href="{{ route('orders.show', $sale) }}" class="px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">

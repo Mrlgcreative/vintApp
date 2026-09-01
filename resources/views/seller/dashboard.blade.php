@@ -127,8 +127,12 @@
                                                 <h6 class="font-semibold text-gray-900 dark:text-white text-sm">Commande #{{ $sale->id }}</h6>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ $sale->item->name ?? 'N/A' }}</p>
                                             </div>
-                                            <span class="ml-3 px-2.5 py-1 text-xs font-semibold rounded-lg flex-shrink-0 {{ $sale->status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' }}">
-                                                {{ ucfirst($sale->status) }}
+                                            <span class="ml-3 px-2.5 py-1 text-xs font-semibold rounded-lg flex-shrink-0
+                                                @if($sale->status === 'completed') bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300
+                                                @elseif($sale->status === 'cancelled' || $sale->status === 'refunded') bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300
+                                                @elseif($sale->status === 'delivered') bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300
+                                                @else bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 @endif">
+                                                {{ $sale->status_text }}
                                             </span>
                                         </div>
                                     @endforeach

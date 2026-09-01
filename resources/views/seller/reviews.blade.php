@@ -23,11 +23,11 @@
                                 <div class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                                     <div class="flex items-start gap-4">
                                         <div class="w-10 h-10 rounded-full bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400 flex-shrink-0 font-semibold">
-                                            {{ strtoupper(substr($review->user->name ?? 'A', 0, 2)) }}
+                                            {{ strtoupper(substr($review->reviewer->name ?? 'A', 0, 2)) }}
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <div class="flex items-center gap-2 mb-1">
-                                                <span class="font-semibold text-gray-900 dark:text-white text-sm">{{ $review->user->name ?? 'Anonyme' }}</span>
+                                                <span class="font-semibold text-gray-900 dark:text-white text-sm">{{ $review->reviewer->name ?? 'Anonyme' }}</span>
                                                 <span class="flex items-center gap-0.5 text-yellow-500">
                                                     @for($i = 1; $i <= 5; $i++)
                                                         <i class="fas fa-star {{ $i <= ($review->rating ?? 0) ? 'text-yellow-500' : 'text-gray-200 dark:text-gray-600' }} text-xs"></i>
