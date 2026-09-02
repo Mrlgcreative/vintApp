@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             NotificationSeeder::class,
             AdminUserSeeder::class,
             AddKolweziToAllowedCitiesSeeder::class,
+            AfricaCountriesCitiesSeeder::class,
         ]);
     }
 }
