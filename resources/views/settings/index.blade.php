@@ -289,6 +289,20 @@
                             </div>
                         </div>
                     </a>
+
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                    <a href="{{ route('admin.dashboard') }}" class="group block px-5 py-4 transition-colors hover:bg-slate-50 sm:px-6 dark:hover:bg-slate-700/30">
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-900 text-white transition-transform duration-200 group-hover:scale-110 dark:bg-gray-700 dark:text-gray-100">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-slate-900 dark:text-white">Espace Admin</h4>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">Panneau d'administration</p>
+                            </div>
+                        </div>
+                    </a>
+                    @endif
                 </div>
             </div>
 
