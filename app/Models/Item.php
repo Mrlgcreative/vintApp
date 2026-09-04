@@ -5,19 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class Item extends Model
 {
     use HasFactory;
 
     /**
-     * Cache des offres courantes (résolues une fois par requête).
+     * Clé du cache global des offres courantes (partagé entre les workers).
      */
-    protected static ?Collection $runningOffersCache = null;
+    public const RUNNING_OFFERS_CACHE_KEY = 'item.running_offers.v1';
+
+    /**
+     * Durée de vie du cache en secondes. L'invalidation explicite (à chaque
+     * mutation d'offre) est la source principale de fraîcheur ; ce TTL couvre
+     * uniquement les bascules de dates (début/fin) sans requête d'invalidation.
+     */
+    private const RUNNING_OFFERS_TTL = 60;
 
     public static function clearRunningOffersCache(): void
     {
-        static::$runningOffersCache = null;
+        Cache::forget(self::RUNNING_OFFERS_CACHE_KEY);
     }
 
     protected $fillable = [
@@ -153,14 +161,17 @@ class Item extends Model
     }
 
     /**
-     * Toutes les offres actuellement valides dans la boutique (mises en cache par requête).
+     * Toutes les offres actuellement valides dans la boutique.
+     * Résolues une fois, mises en cache globalement (partagé entre workers)
+     * et invalidées à chaque mutation d'offre via clearRunningOffersCache().
      */
     public static function runningOffers(): Collection
     {
-        if (static::$runningOffersCache === null) {
-            static::$runningOffersCache = Offer::running()->get();
-        }
-        return static::$runningOffersCache;
+        return Cache::remember(
+            self::RUNNING_OFFERS_CACHE_KEY,
+            self::RUNNING_OFFERS_TTL,
+            static fn (): Collection => Offer::running()->get(),
+        );
     }
 
     /**
