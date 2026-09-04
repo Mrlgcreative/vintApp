@@ -106,6 +106,14 @@ class Item extends Model
     }
 
     /**
+     * Expositions numériques contenant ce produit.
+     */
+    public function expositions()
+    {
+        return $this->belongsToMany(Exposition::class, 'exposition_item');
+    }
+
+    /**
      * Meilleure offre active (pourcentage le plus élevé préféré) applicable au produit.
      */
     public function activeOffer(): ?Offer

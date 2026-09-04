@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\ExpositionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
@@ -191,6 +192,10 @@ Route::get('/items/suggestions', [ItemController::class, 'suggestions'])->name('
 
 // Promotions publiques
 Route::get('/promotions', [App\Http\Controllers\Marketing\OfferController::class, 'promotions'])->name('promotions');
+
+// Annuaire des expositions numériques
+Route::get('/expositions', [ExpositionController::class, 'index'])->name('expositions.index');
+Route::get('/expositions/{exposition:slug}', [ExpositionController::class, 'show'])->name('expositions.show');
 
 // Routes publiques pour le scan QR code des commandes
 Route::get('/order/scan/{token}', [OrderController::class, 'scanOrder'])->name('orders.scan');

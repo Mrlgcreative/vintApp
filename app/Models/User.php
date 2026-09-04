@@ -89,6 +89,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Expositions numériques du vendeur
+     */
+    public function expositions()
+    {
+        return $this->hasMany(Exposition::class);
+    }
+
+    /**
      * Relation avec les commandes où l'utilisateur est acheteur
      */
     public function ordersAsBuyer()

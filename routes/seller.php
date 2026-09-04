@@ -22,4 +22,15 @@ Route::middleware(['auth', 'verified', 'seller'])->prefix('seller')->name('selle
         Route::delete('/{offer}', [App\Http\Controllers\Marketing\OfferController::class, 'destroy'])->name('destroy');
         Route::patch('/{offer}/status', [App\Http\Controllers\Marketing\OfferController::class, 'toggleStatus'])->name('status');
     });
+
+    // Expositions numériques du vendeur
+    Route::prefix('expositions')->name('expositions.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Marketing\ExpositionController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Marketing\ExpositionController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Marketing\ExpositionController::class, 'store'])->name('store');
+        Route::get('/{exposition}/edit', [App\Http\Controllers\Marketing\ExpositionController::class, 'edit'])->name('edit');
+        Route::put('/{exposition}', [App\Http\Controllers\Marketing\ExpositionController::class, 'update'])->name('update');
+        Route::delete('/{exposition}', [App\Http\Controllers\Marketing\ExpositionController::class, 'destroy'])->name('destroy');
+        Route::patch('/{exposition}/status', [App\Http\Controllers\Marketing\ExpositionController::class, 'toggleStatus'])->name('status');
+    });
 });

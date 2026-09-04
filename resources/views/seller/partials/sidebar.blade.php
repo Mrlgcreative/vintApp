@@ -23,6 +23,9 @@
             <a href="{{ route('seller.offers.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.offers.*') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}">
                 <i class="fas fa-tags w-5 text-center"></i> Mes offres
             </a>
+            <a href="{{ route('seller.expositions.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.expositions.*') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}">
+                <i class="fas fa-store w-5 text-center"></i> Mes expositions
+            </a>
             <a href="{{ route('seller.wallet') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.wallet') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}">
                 <i class="fas fa-wallet w-5 text-center"></i> Mon wallet
             </a>
@@ -93,6 +96,9 @@
             </a>
             <a href="{{ route('seller.offers.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.offers.*') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}" onclick="closeDrawer()">
                 <i class="fas fa-tags w-5 text-center"></i> Mes offres
+            </a>
+            <a href="{{ route('seller.expositions.index') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.expositions.*') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}" onclick="closeDrawer()">
+                <i class="fas fa-store w-5 text-center"></i> Mes expositions
             </a>
             <a href="{{ route('seller.wallet') }}" class="flex items-center gap-3 px-3.5 py-2.5 rounded-md text-sm font-medium transition-colors {{ request()->routeIs('seller.wallet') ? 'bg-vinted-primary-50 dark:bg-vinted-primary-500/10 text-vinted-primary-700 dark:text-vinted-primary-400' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-gray-200' }}" onclick="closeDrawer()">
                 <i class="fas fa-wallet w-5 text-center"></i> Mon wallet
