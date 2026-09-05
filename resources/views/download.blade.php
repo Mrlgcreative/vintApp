@@ -32,9 +32,9 @@
 
     <div class="relative mx-auto max-w-6xl px-6 py-20 lg:py-28 text-center">
         <!-- Logo V -->
-        <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-gradient-to-br from-vinted-500 to-vinted-primary shadow-2xl shadow-vinted-primary/40 ring-1 ring-white/20">
+        <div class="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-[#8B5CF6] shadow-2xl shadow-vinted-primary/40 ring-1 ring-white/20">
             <svg class="h-14 w-14" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M 128 144 L 202 144 L 256 300 L 310 144 L 384 144 L 300 380 L 212 380 Z" fill="#FFFFFF" />
+                <path d="M 130 108 L 205 108 L 256 270 L 307 108 L 382 108 L 290 380 L 222 380 Z" fill="#FFFFFF" />
             </svg>
         </div>
 
@@ -166,7 +166,7 @@
 <footer class="border-t border-gray-200 bg-white py-8 dark:border-gray-700 dark:bg-gray-800">
     <div class="mx-auto flex max-w-6xl flex-col items-center gap-3 px-6 text-center sm:flex-row sm:justify-between sm:text-left">
         <div class="flex items-center gap-2">
-            <svg class="h-5 w-5 rounded-md bg-gradient-to-br from-vinted-500 to-vinted-primary p-0.5" viewBox="0 0 512 512"><path d="M 128 144 L 202 144 L 256 300 L 310 144 L 384 144 L 300 380 L 212 380 Z" fill="#fff"/></svg>
+            <svg class="h-5 w-5 rounded-md bg-[#8B5CF6]" viewBox="0 0 512 512"><path d="M 130 108 L 205 108 L 256 270 L 307 108 L 382 108 L 290 380 L 222 380 Z" fill="#fff"/></svg>
             <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ config('app.name', 'VintApp') }}</span>
         </div>
         <p class="text-xs text-gray-400 dark:text-gray-500">© {{ date('Y') }} {{ config('app.name', 'VintApp') }} · Tous droits réservés</p>
