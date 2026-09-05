@@ -56,7 +56,7 @@
             </div>
 
             <!-- Grille Produits -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                 @forelse($latestItems as $item)
                     <x-home.product-card :item="$item" />
                 @empty
