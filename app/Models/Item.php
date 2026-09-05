@@ -97,6 +97,30 @@ class Item extends Model
     }
 
     /**
+     * Normalise la colonne « images ».
+     *
+     * Certains enregistrements historiques stockent la valeur doublement encodée
+     * (ex. « "[]" ») : le cast « array » retourne alors une string, ce qui casse
+     * count() dans les vues. On désérialise proprement pour toujours renvoyer un
+     * tableau de chemins d'images (ou un tableau vide).
+     */
+    public function getImagesAttribute(mixed $value): array
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && $value !== '') {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+        }
+
+        return [];
+    }
+
+    /**
      * Accesseur pour la première image URL
      */
     public function getFirstImageUrlAttribute(): ?string

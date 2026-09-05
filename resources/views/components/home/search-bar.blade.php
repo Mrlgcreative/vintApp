@@ -1,4 +1,4 @@
-<section class="relative -mt-14 sm:-mt-20 z-40 container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="relative -mt-14 sm:-mt-20 z-40 sticky top-16 lg:top-28 container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="relative" x-data="searchAutoComplete()">
         <div class="rounded-2xl bg-white dark:bg-gray-900 shadow-2xl shadow-black/20 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
             <form action="{{ route('items.index') }}" method="GET" x-on:submit="submitSearch($event)" class="flex flex-col sm:flex-row items-stretch sm:items-center">
