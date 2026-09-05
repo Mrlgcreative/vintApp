@@ -110,7 +110,7 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+<body class="font-sans antialiased bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200 overflow-x-clip">
     
     <!-- Header avec barre de profil -->
     <header class="bg-gray-900 lg:bg-white dark:bg-gray-800/95 dark:backdrop-blur-md shadow-sm border-b border-gray-800 lg:border-gray-200 dark:border-gray-700/50 sticky top-0 z-50 transition-colors duration-300">

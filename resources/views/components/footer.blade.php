@@ -34,10 +34,10 @@
                     <div class="w-full md:w-auto md:max-w-md">
                         <h6 class="text-sm font-semibold text-gray-900 dark:text-white mb-2">Newsletter</h6>
                         <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Recevez nos dernières offres et nouveautés.</p>
-                        <form id="newsletterForm" class="flex gap-2">
+                        <form id="newsletterForm" class="flex gap-2 w-full">
                             @csrf
                             <input type="email" id="newsletterEmail"
-                                   class="flex-1 h-10 px-3.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
+                                   class="min-w-0 flex-1 h-10 px-3.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-md text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:border-vinted-primary-500 focus:ring-2 focus:ring-vinted-primary-500/30 outline-none transition-colors"
                                    placeholder="Votre email" required>
                             <button type="submit" class="h-10 px-4 bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white rounded-md text-sm font-medium inline-flex items-center gap-2 transition-colors">
                                 <i class="fas fa-paper-plane text-xs"></i>
@@ -50,7 +50,7 @@
             </div>
 
             {{-- 3 colonnes sur mobile --}}
-            <div class="grid grid-cols-3 gap-4 sm:gap-6 mt-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 mt-10">
                 <!-- Navigation -->
                 <div>
                     <h6 class="text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white mb-4 {{ $isAdmin ? '' : '' }}">Navigation</h6>
