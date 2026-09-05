@@ -1,7 +1,7 @@
 <section class="relative -mt-14 sm:-mt-20 z-40 sticky top-16 lg:top-28 container max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="relative" x-data="searchAutoComplete()">
         <div class="rounded-2xl bg-white dark:bg-gray-900 shadow-2xl shadow-black/20 ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
-            <form action="{{ route('items.index') }}" method="GET" x-on:submit="submitSearch($event)" class="flex flex-col sm:flex-row items-stretch sm:items-center">
+            <form action="{{ route('items.index') }}" method="GET" x-on:submit="submitSearch($event)" class="flex items-center">
                 {{-- Champ recherche principal --}}
                 <div class="flex-1 flex items-center gap-2 sm:gap-3 px-4 py-3 sm:px-6 sm:py-4 relative">
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 dark:text-gray-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,30 +27,6 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </span>
-                </div>
-
-                {{-- Séparateur --}}
-                <div class="hidden sm:block w-px self-stretch my-4 bg-gray-200 dark:bg-gray-700"></div>
-
-                {{-- Boutons --}}
-                <div class="flex items-center gap-2 px-4 py-3 sm:px-4 sm:py-4 sm:border-l border-t sm:border-t-0 border-gray-200 dark:border-gray-700">
-                    <button type="button"
-                            onclick="toggleFiltersModal()"
-                            class="h-9 sm:h-11 px-3 sm:px-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-all flex items-center gap-1.5 sm:gap-2 text-sm font-medium">
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-                        </svg>
-                        <span class="hidden sm:inline">Filtres</span>
-                    </button>
-
-                    {{-- Bouton Rechercher --}}
-                    <button type="submit"
-                            class="h-9 sm:h-11 flex-1 sm:flex-none px-4 sm:px-7 inline-flex items-center justify-center gap-2 bg-vinted-primary text-white rounded-xl font-semibold text-sm hover:bg-vinted-primary-700 transition-all shadow-lg shadow-vinted-primary/30 hover:shadow-vinted-primary/40">
-                        <span class="hidden sm:inline">Rechercher</span>
-                        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
-                    </button>
                 </div>
             </form>
         </div>
