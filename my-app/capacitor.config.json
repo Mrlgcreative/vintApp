@@ -7,6 +7,17 @@
     "androidScheme": "https",
     "cleartext": false
   },
+  "experimental": {
+    "ios": {
+      "spm": {
+        "packageOptions": {
+          "@capacitor-firebase/messaging": {
+            "symlink": true
+          }
+        }
+      }
+    }
+  },
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 2000,
