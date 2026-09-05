@@ -269,6 +269,21 @@ window.signInWithGoogle = async function() {
             const tokenResult = await FirebaseAuthentication.getIdToken();
             const idToken = tokenResult.token;
 
+            // Token FCM natif pour les notifications push de l'app mobile
+            let fcmToken = null;
+            try {
+                const messaging = window.Capacitor?.Plugins?.FirebaseMessaging;
+                if (messaging) {
+                    const perm = await messaging.requestPermissions();
+                    if (perm && perm.receive !== 'denied') {
+                        const t = await messaging.getToken();
+                        fcmToken = (t && t.token) || null;
+                    }
+                }
+            } catch (e) {
+                console.warn('[login] Token FCM indisponible:', e);
+            }
+
             const response = await fetch('{{ route("firebase.login") }}', {
                 method: 'POST',
                 headers: {
@@ -284,7 +299,9 @@ window.signInWithGoogle = async function() {
                     provider: 'google',
                     firebase_uid: nativeUser.uid,
                     email_verified: nativeUser.emailVerified,
-                    photo_url: nativeUser.photoUrl
+                    photo_url: nativeUser.photoUrl,
+                    fcmToken: fcmToken,
+                    deviceType: 'mobile'
                 })
             });
 

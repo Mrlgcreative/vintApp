@@ -132,10 +132,12 @@ class AuthService
     /**
      * Enregistrer le token FCM d'un utilisateur.
      */
-    public function saveFcmToken(User $user, string $token): void
+    public function saveFcmToken(User $user, string $token, ?string $deviceType = 'desktop'): void
     {
         // fcm_token n'est pas fillable : assignation directe requise
         $user->fcm_token = $token;
+        $user->device_type = $deviceType ?? 'desktop';
+        $user->fcm_token_updated_at = now();
         $user->save();
     }
 

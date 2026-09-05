@@ -34,6 +34,7 @@ class FirebaseAuthController extends ApiController
         $request->validate([
             'idToken' => 'required|string',
             'fcmToken' => 'nullable|string',
+            'deviceType' => 'nullable|string|in:mobile,tablet,desktop',
         ]);
 
         try {
@@ -55,7 +56,7 @@ class FirebaseAuthController extends ApiController
             $user = $this->authService->findOrCreateFirebaseUser($firebaseUid, $email, $name, $avatar);
 
             if ($request->filled('fcmToken')) {
-                $this->authService->saveFcmToken($user, $request->fcmToken);
+                $this->authService->saveFcmToken($user, $request->fcmToken, $request->input('deviceType', 'desktop'));
             }
 
             // Si la 2FA est active, émettre un pending_token pour le challenge au lieu du token complet

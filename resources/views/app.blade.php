@@ -533,6 +533,9 @@
         @yield('content')
     </main>
 
+    <!-- Notifications push FCM (app mobile native Capacitor uniquement) -->
+    <script src="{{ asset('js/fcm-native.js') }}?v={{ filemtime(public_path('js/fcm-native.js')) }}" defer></script>
+
     <!-- Notifications en temps réel -->
     <x-notifications-realtime />
 
