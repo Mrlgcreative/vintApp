@@ -382,6 +382,12 @@
                         <span>Rapports</span>
                     </a>
 
+                    <a href="{{ route('admin.downloads') }}"
+                       class="{{ request()->routeIs('admin.downloads') ? $linkActive : $linkIdle }}">
+                        <i class="fas fa-download {{ $icon }}"></i>
+                        <span>Téléchargements app</span>
+                    </a>
+
                     <a href="{{ route('admin.monitoring.index') }}"
                        class="{{ request()->routeIs('admin.monitoring.*') ? $linkActive : $linkIdle }}">
                         <i class="fas fa-heart-pulse {{ $icon }}"></i>

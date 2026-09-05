@@ -4339,4 +4339,58 @@ class AdminController extends Controller
             return $this->errorResponse('Erreur récupération statistiques', 500);
         }
     }
+
+    /**
+     * Statistiques des téléchargements de l'application
+     */
+    public function downloads(Request $request)
+    {
+        $days = min(max((int) $request->get('days', 30), 1), 365);
+        $start = \Carbon\Carbon::now()->subDays($days);
+
+        $total = \App\Models\AppDownload::count();
+        $today = \App\Models\AppDownload::whereDate('created_at', today())->count();
+        $thisWeek = \App\Models\AppDownload::where('created_at', '>=', now()->startOfWeek())->count();
+        $thisMonth = \App\Models\AppDownload::where('created_at', '>=', now()->startOfMonth())->count();
+
+        $daily = \App\Models\AppDownload::where('created_at', '>=', $start)
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date');
+
+        $dailySeries = collect();
+        for ($i = $days - 1; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::now()->subDays($i)->format('Y-m-d');
+            $dailySeries->push([
+                'date' => $date,
+                'total' => (int) ($daily[$date] ?? 0),
+            ]);
+        }
+
+        $platforms = \App\Models\AppDownload::selectRaw('platform, COUNT(*) as total')
+            ->groupBy('platform')
+            ->orderByDesc('total')
+            ->get();
+
+        $devices = \App\Models\AppDownload::selectRaw('device_type, COUNT(*) as total')
+            ->groupBy('device_type')
+            ->orderByDesc('total')
+            ->get();
+
+        $os = \App\Models\AppDownload::selectRaw('os, COUNT(*) as total')
+            ->groupBy('os')
+            ->orderByDesc('total')
+            ->limit(8)
+            ->get();
+
+        $recent = \App\Models\AppDownload::latest()->take(15)->get();
+
+        $bestDay = $dailySeries->sortByDesc('total')->first();
+
+        return view('admin.downloads.index', compact(
+            'days', 'total', 'today', 'thisWeek', 'thisMonth',
+            'dailySeries', 'platforms', 'devices', 'os', 'recent', 'bestDay'
+        ));
+    }
 }

@@ -22,6 +22,7 @@ use App\Http\Controllers\PendingWalletController;
 use App\Http\Controllers\ExchangeRateController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\VintPassController;
+use App\Http\Controllers\Api\Webhooks\KPayCallbackController;
 
 // Routes de débogage - uniquement en environnement local
 if (app()->environment('local')) {
@@ -650,6 +651,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/broadcast-fcm', function() {
         return view('admin.broadcast-fcm');
     })->name('broadcast.fcm');
+
+    // 📊 Statistiques des téléchargements de l'application
+    Route::get('/downloads', [App\Http\Controllers\Admin\AdminController::class, 'downloads'])->name('downloads');
 });
 
 // Route publique pour la page de restriction géographique
@@ -757,6 +761,16 @@ Route::prefix('payments')->group(function () {
     Route::post('/pawapay/callback/{type}', [App\Http\Controllers\Api\Webhooks\PawaPayCallbackController::class, 'handleTyped'])
         ->where('type', 'deposit|checkout|payout|refund')
         ->name('payments.pawapay.callback');
+
+    // K-PAY routes
+    Route::post('/kpay/checkout', [PaymentController::class, 'kpayCheckout'])->name('payments.kpay.checkout');
+    Route::post('/kpay/initiate', [PaymentController::class, 'initiateKPayPayment'])->name('payments.kpay.initiate');
+    Route::get('/kpay/status/{transaction}', [PaymentController::class, 'checkKPayStatus'])->name('payments.kpay.status');
+    Route::get('/kpay/check-status/{transaction}', [PaymentController::class, 'checkKPayStatus'])->name('payments.kpay.check-status');
+    Route::get('/kpay/return', [PaymentController::class, 'handleKPayReturn'])->name('payments.kpay.return');
+
+    // K-PAY Webhook (pas d'authentification requise, public)
+    Route::post('/kpay/notify', [KPayCallbackController::class, 'handle'])->name('payments.kpay.notify');
     
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {
