@@ -242,8 +242,87 @@
 </div>
 
 <script>
+const isCapacitorNative = typeof window !== 'undefined' &&
+    (typeof window.Capacitor !== 'undefined' ||
+     /capacitor/i.test(navigator.userAgent || ''));
+
 window.signInWithGoogle = async function() {
     showLoading(true);
+
+    // Dans l'app mobile (Capacitor), le popup Firebase est bloqué par la WebView.
+    // On passe par le plugin natif @capacitor-firebase/authentication qui renvoie
+    // un utilisateur Firebase (avec idToken compatible avec le backend Laravel).
+    if (isCapacitorNative) {
+        try {
+            const { FirebaseAuthentication } = window.Capacitor?.Plugins || {};
+            if (!FirebaseAuthentication) {
+                throw new Error('Plugin FirebaseAuthentication non disponible');
+            }
+
+            const result = await FirebaseAuthentication.signInWithGoogle();
+            const nativeUser = result.user;
+
+            if (!nativeUser) {
+                throw new Error('Aucune information utilisateur reçue');
+            }
+
+            const tokenResult = await FirebaseAuthentication.getIdToken();
+            const idToken = tokenResult.token;
+
+            const response = await fetch('{{ route("firebase.login") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    idToken: idToken,
+                    name: nativeUser.displayName,
+                    email: nativeUser.email,
+                    provider: 'google',
+                    firebase_uid: nativeUser.uid,
+                    email_verified: nativeUser.emailVerified,
+                    photo_url: nativeUser.photoUrl
+                })
+            });
+
+            let data;
+            try {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Le serveur a retourné une réponse invalide. Veuillez réessayer.');
+                }
+                data = await response.json();
+            } catch (parseError) {
+                if (parseError.message.includes('invalide')) {
+                    throw parseError;
+                }
+                throw new Error('Impossible de traiter la réponse du serveur');
+            }
+
+            if (response.ok && data.success) {
+                showLoading(false);
+                showToast('Connexion Google réussie !', 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect || '{{ route("home") }}';
+                }, 800);
+            } else {
+                throw new Error(data.message || 'Erreur lors de la synchronisation avec le serveur');
+            }
+        } catch (error) {
+            showLoading(false);
+            let errorMessage = 'Erreur lors de la connexion Google';
+            if (error && (error.code === 'auth/popup-closed-by-user' || error.code === 'canceled')) {
+                errorMessage = 'Connexion annulée par l\'utilisateur';
+            } else if (error && error.message) {
+                errorMessage = `Erreur Google: ${error.message}`;
+            }
+            showToast(errorMessage, 'error');
+        }
+        return;
+    }
 
     try {
         if (!firebase.apps.length) {

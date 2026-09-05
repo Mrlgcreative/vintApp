@@ -1,0 +1,21 @@
+{
+  "appId": "com.vintapp.app",
+  "appName": "VintApp",
+  "webDir": "dist",
+  "server": {
+    "url": "https://vintapp.imasomo.com",
+    "androidScheme": "https",
+    "cleartext": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#7c3aed"
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["google.com"]
+    }
+  }
+}

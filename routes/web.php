@@ -1235,6 +1235,9 @@ Route::prefix('two-factor')->name('two-factor.')->group(function () {
 });
 
 
+// Page de téléchargement de l'app mobile
+require __DIR__.'/app-download.php';
+
 // Routes des experts
 require __DIR__.'/expert.php';
 require __DIR__.'/seller.php';
