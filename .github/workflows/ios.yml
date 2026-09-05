@@ -1,0 +1,148 @@
+name: iOS Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - sky
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 'my-app/package-lock.json'
+
+      - name: Install Capacitor deps
+        working-directory: my-app
+        run: npm ci
+
+      - name: Build web assets
+        working-directory: my-app
+        run: npm run build
+
+      # Le GoogleService-Info.plist n'est pas versionné (retiré du repo).
+      # Il doit être fourni en secret GitHub (base64 de my-app/ios/App/App/GoogleService-Info.plist).
+      - name: Generate GoogleService-Info.plist from secret
+        env:
+          GOOGLE_PLIST_B64: ${{ secrets.IOS_GOOGLE_SERVICE_PLIST_B64 }}
+        run: |
+          if [ -z "$GOOGLE_PLIST_B64" ]; then
+            echo "::error::[IOS_GOOGLE_SERVICE_PLIST_B64] manquant. Ajoute le base64 du GoogleService-Info.plist dans les secrets du repo."
+            exit 1
+          fi
+          mkdir -p my-app/ios/App/App
+          echo "$GOOGLE_PLIST_B64" | base64 -d > my-app/ios/App/App/GoogleService-Info.plist
+          plutil -lint my-app/ios/App/App/GoogleService-Info.plist
+
+      - name: Sync Capacitor iOS
+        working-directory: my-app
+        run: npx cap sync ios
+
+      # ---------- Signing ----------
+      - name: Import signing certificate
+        env:
+          IOS_CERT_B64: ${{ secrets.IOS_SIGNING_CERT_B64 }}
+          IOS_CERT_PASSWORD: ${{ secrets.IOS_SIGNING_CERT_PASSWORD }}
+        run: |
+          if [ -z "$IOS_CERT_B64" ]; then
+            echo "::error::Secrets IOS_SIGNING_CERT_B64/... manquants. Exporte un certificat de distribution en .p12."
+            exit 1
+          fi
+          echo "$IOS_CERT_B64" | base64 -d > /tmp/cert.p12
+          KEYCHAIN=$RUNNER_TEMP/app-signing.keychain-db
+          security create-keychain -p "" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "" "$KEYCHAIN"
+          security import /tmp/cert.p12 -P "$IOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN" || \
+          security import /tmp/cert.p12 -P "$IOS_CERT_PASSWORD" -k "$KEYCHAIN"
+          security list-keychain -d user -s "$KEYCHAIN" $(security list-keychains -d user | sed 's/[[:space:]]//g')
+
+      - name: Install provisioning profile
+        env:
+          IOS_PROVISIONING_B64: ${{ secrets.IOS_PROVISIONING_B64 }}
+        run: |
+          if [ -z "$IOS_PROVISIONING_B64" ]; then
+            echo "::error::Secret [IOS_PROVISIONING_B64] manquant. Fournis le .mobileprovision (distribution App Store) en base64."
+            exit 1
+          fi
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          echo "$IOS_PROVISIONING_B64" | base64 -d > ~/Library/MobileDevice/Provisioning\ Profiles/VintApp_AppStore.mobileprovision
+          PROFILE_PATH=~/Library/MobileDevice/Provisioning\ Profiles/VintApp_AppStore.mobileprovision
+          PROFILE_NAME=$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -)
+          echo "Profile name: $PROFILE_NAME"
+          echo "PROFILE_NAME=$PROFILE_NAME" >> "$GITHUB_ENV"
+
+      # ---------- Build & Archive ----------
+      - name: Archive iOS app
+        working-directory: my-app/ios/App
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.IOS_TEAM_ID }}
+        run: |
+          if [ -z "$DEVELOPMENT_TEAM" ]; then
+            echo "::error::Secret [IOS_TEAM_ID] manquant (ex. 1AB2CD3EFG)."
+            exit 1
+          fi
+          xcodebuild -project App.xcodeproj \
+            -scheme App \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/VintApp.xcarchive" \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            archive
+        shell: bash
+
+      - name: Export IPA
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.IOS_TEAM_ID }}
+        run: |
+          cat > /tmp/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>$DEVELOPMENT_TEAM</string>
+            <key>compileBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/VintApp.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist /tmp/ExportOptions.plist
+
+      - name: Upload IPAs to App Store Connect (TestFlight)
+        env:
+          ASC_API_KEY_B64: ${{ secrets.ASC_API_KEY_B64 }}
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+        run: |
+          if [ -z "$ASC_API_KEY_B64" ]; then
+            echo "::warning::Secrets App Store Connect API manquants : IPA construit sans upload TestFlight."
+            exit 0
+          fi
+          echo "$ASC_API_KEY_B64" | base64 -d > /tmp/AuthKey_$ASC_API_KEY_ID.p8
+          xcrun altool --upload-app \
+            -f "$RUNNER_TEMP/export/VintApp.ipa" \
+            -t ios \
+            --apiKey "$ASC_API_KEY_ID" \
+            --apiIssuer "$ASC_API_ISSUER_ID"
