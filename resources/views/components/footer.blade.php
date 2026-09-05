@@ -50,7 +50,7 @@
             </div>
 
             {{-- 3 colonnes sur mobile --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6 mt-10">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 md:gap-6 mt-10">
                 <!-- Navigation -->
                 <div>
                     <h6 class="text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white mb-4 {{ $isAdmin ? '' : '' }}">Navigation</h6>
