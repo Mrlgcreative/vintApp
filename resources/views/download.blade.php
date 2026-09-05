@@ -63,7 +63,7 @@
                     <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 16.5l-5-5h3V9h4v4.5h3l-5 5z"/>
                 </svg>
                 <span>Télécharger l'APK</span>
-                <span class="text-sm font-normal text-white/70">(7,9 Mo)</span>
+                <span class="text-sm font-normal text-white/70">(13,3 Mo)</span>
                 <svg class="h-4 w-4 transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 4v9m0 0l-4-4m4 4l4-4"/>
                 </svg>
@@ -148,7 +148,7 @@
             <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-vinted-primary font-bold text-white">2</div>
             <div class="mt-1">
                 <h3 class="font-semibold text-gray-900 dark:text-white">Télécharger l'APK</h3>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Appuie sur le bouton « Télécharger l'APK » ci-dessus et attends la fin du téléchargement (7,9 Mo).</p>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Appuie sur le bouton « Télécharger l'APK » ci-dessus et attends la fin du téléchargement (13,3 Mo).</p>
             </div>
         </div>
 
