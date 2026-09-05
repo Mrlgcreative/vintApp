@@ -11,3 +11,7 @@ android/.gradle/
 android/local.properties
 android/capacitor-cordova-android-plugins/build/
 android/capacitor-cordova-android-plugins/src/main/assets/
+
+# Config Firebase (clés de projet : fournies manuellement à la génération, pas versionnées)
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist
