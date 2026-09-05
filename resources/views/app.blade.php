@@ -546,7 +546,7 @@
 
     <!-- Navigation mobile (bottom) -->
     @if(!request()->routeIs('messages.show'))
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50" role="navigation" aria-label="Navigation mobile">
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50" role="navigation" aria-label="Navigation mobile" x-data="{ moreOpen: false }">
         <!-- Fond avec blur -->
         <div class="absolute inset-0 bg-white/80 dark:bg-gray-900/90 backdrop-blur-xl border-t border-gray-200/60 dark:border-gray-700/50"></div>
         
@@ -568,41 +568,73 @@
                      'iconFilled' => 'M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.432z'],
                 ];
 
+                $iconMore = 'M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z';
+
+                // Liens regroupés dans l'onglet « Plus » (Boutiques, Promotions + onglet contextuel).
+                $moreNavLinks = [
+                    ['url' => route('expositions.index'), 'label' => 'Boutiques', 'active' => request()->routeIs('expositions.*'),
+                     'icon' => 'M13.5 21v-7.5a.75.75 0 017.5 0V21m-19.5 0V9.75m19.5 5V21M3 21h18M3 9.75L10.5 3l3 2.625M8.25 3.75V3A.75.75 0 019 2.25h1.5a.75.75 0 01.75.75v1.5'],
+                    ['url' => route('promotions'), 'label' => 'Promotions', 'active' => request()->routeIs('promotions'),
+                     'icon' => 'M5.25 4.5h13.5a.75.75 0 01.75.75v13.5a.75.75 0 01-1.5 0v-6.914l-4.72 4.72a.75.75 0 01-1.06 0l-5.47-5.47-4.72 4.72a.75.75 0 01-1.06-1.06l5.25-5.25a.75.75 0 011.06 0l5.47 5.47 4.18-4.18V7a.75.75 0 01.75-.75'],
+                ];
+
                 if (auth()->check()) {
-                    $mobileNav = array_merge($mobileNav, $isSellerMobile ? [
+                    $mobileNav = array_merge($mobileNav, [
                         ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
                          'icon' => $iconArticles, 'iconFilled' => $iconArticlesFilled],
                         ['url' => route('items.create'), 'label' => 'Vendre', 'active' => request()->routeIs('items.create'),
                          'icon' => $iconSell, 'iconFilled' => $iconSell, 'special' => true],
-                        ['url' => route('seller.dashboard'), 'label' => 'Vendeur', 'active' => request()->routeIs('seller.*'),
-                         'icon' => $iconVendor, 'iconFilled' => $iconVendor],
+                        ['url' => null, 'label' => 'Plus', 'active' => false, 'menu' => true,
+                         'icon' => $iconMore, 'iconFilled' => $iconMore],
                         ['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
                          'icon' => $iconProfile, 'iconFilled' => $iconProfile],
-                    ] : [
-                        ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
-                         'icon' => $iconArticles, 'iconFilled' => $iconArticlesFilled],
-                        ['url' => route('items.create'), 'label' => 'Vendre', 'active' => request()->routeIs('items.create'),
-                         'icon' => $iconSell, 'iconFilled' => $iconSell, 'special' => true],
-                        ['url' => route('orders.index'), 'label' => 'Commandes', 'active' => request()->routeIs('orders.*'),
-                         'icon' => $iconOrders, 'iconFilled' => $iconOrders],
-['url' => route('settings.index'), 'label' => 'Profil', 'active' => request()->routeIs('settings.*'),
-                          'icon' => $iconProfile, 'iconFilled' => $iconProfile],
                     ]);
+
+                    if ($isSellerMobile) {
+                        $moreNavLinks[] = ['url' => route('seller.dashboard'), 'label' => 'Espace vendeur', 'active' => request()->routeIs('seller.*'),
+                            'icon' => $iconVendor];
+                    } else {
+                        $moreNavLinks[] = ['url' => route('orders.index'), 'label' => 'Commandes', 'active' => request()->routeIs('orders.*'),
+                            'icon' => $iconOrders];
+                    }
                 } else {
                     $mobileNav = array_merge($mobileNav, [
                         ['url' => route('items.index'), 'label' => 'Articles', 'active' => request()->routeIs('items.index'),
                          'icon' => $iconArticles, 'iconFilled' => $iconArticlesFilled],
                         ['url' => route('items.create'), 'label' => 'Vendre', 'active' => request()->routeIs('items.create'),
                          'icon' => $iconSell, 'iconFilled' => $iconSell, 'special' => true],
+                        ['url' => null, 'label' => 'Plus', 'active' => false, 'menu' => true,
+                         'icon' => $iconMore, 'iconFilled' => $iconMore],
                         ['url' => route('login'), 'label' => 'Connexion', 'active' => request()->routeIs('login'),
                          'icon' => $iconLogin, 'iconFilled' => $iconLogin],
-                        ['url' => route('register'), 'label' => "S'inscrire", 'active' => request()->routeIs('register'),
-                         'icon' => $iconRegister, 'iconFilled' => $iconRegister],
                     ]);
+                    $moreNavLinks[] = ['url' => route('register'), 'label' => "S'inscrire", 'active' => request()->routeIs('register'),
+                        'icon' => $iconRegister];
                 }
             @endphp
             
+            @php
+                // L'onglet « Plus » est actif si une de ses entrées est la page courante.
+                foreach ($mobileNav as $i => $item) {
+                    if (!empty($item['menu'])) {
+                        $mobileNav[$i]['active'] = collect($moreNavLinks)->contains(fn ($l) => !empty($l['active']));
+                    }
+                }
+            @endphp
             @foreach($mobileNav as $item)
+                @if(!empty($item['menu']))
+                    <button type="button" x-on:click="moreOpen = !moreOpen" :aria-expanded="moreOpen"
+                            class="group flex flex-col items-center justify-center gap-0.5 relative cursor-pointer" aria-label="{{ $item['label'] }}">
+                        <div class="relative p-1">
+                            <svg :class="moreOpen ? 'text-gray-900 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors'"
+                                 class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">@foreach(explode(' M', $item['iconFilled']) as $i => $path)<path d="{{ $i > 0 ? 'M' : '' }}{{ $path }}"/>@endforeach</svg>
+                        </div>
+                        <span class="text-[10px] font-medium {{ $item['active'] ? 'text-gray-900 dark:text-gray-100 font-semibold' : 'text-gray-500 dark:text-gray-400' }}">{{ $item['label'] }}</span>
+                        @if($item['active'])
+                            <span class="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-gray-900 rounded-full"></span>
+                        @endif
+                    </button>
+                @else
                 <a href="{{ $item['url'] }}" class="group flex flex-col items-center justify-center gap-0.5 relative" aria-label="{{ $item['label'] }}">
                     @if(!empty($item['special']))
                         {{-- Bouton Vendre spécial --}}
@@ -624,8 +656,32 @@
                         @endif
                     @endif
                 </a>
+                @endif
             @endforeach
         </div>
+
+        {{-- Panneau « Plus » --}}
+        @if(!empty($moreNavLinks))
+        <div x-show="moreOpen" @click.away="moreOpen = false" x-cloak
+             x-transition:enter="transition ease-out duration-150"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-100"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-2"
+             class="absolute inset-x-0 bottom-full mb-2 z-50">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/10 mx-3 overflow-hidden">
+                <div class="px-4 py-3 text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-800">Explorer</div>
+                @foreach($moreNavLinks as $menuLink)
+                    <a href="{{ $menuLink['url'] }}" @click="moreOpen = false"
+                       class="flex items-center gap-3 px-4 py-3.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors {{ !empty($menuLink['active']) ? 'bg-gray-50 dark:bg-gray-800 font-semibold' : '' }}">
+                        <svg class="w-5 h-5 {{ !empty($menuLink['active']) ? 'text-gray-900 dark:text-white' : 'text-gray-400' }} flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $menuLink['icon'] }}"/></svg>
+                        {{ $menuLink['label'] }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
     </nav>
     @endif
 
