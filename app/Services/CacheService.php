@@ -99,7 +99,9 @@ class CacheService
     public function getPopularItems(int $limit = 10)
     {
         return Cache::remember("items.popular.{$limit}", self::CACHE_POPULAR_ITEMS, function () use ($limit) {
-            return Item::with(['category', 'brand', 'user:id,name,avatar,avatar_url'])
+            return Item::withAvg('reviews', 'rating')
+                ->withCount(['reviews', 'favoritedBy'])
+                ->with(['category', 'brand', 'user:id,name,avatar,avatar_url'])
                 ->where('status', 'active')
                 ->visible()
                 ->orderByDesc('views')
@@ -114,7 +116,9 @@ class CacheService
     public function getBoostedItems(int $limit = 20)
     {
         return Cache::remember("items.boosted.{$limit}", self::CACHE_ITEMS_LIST, function () use ($limit) {
-            return Item::with(['category', 'brand', 'user:id,name,avatar,avatar_url', 'activeBoosts.boostType'])
+            return Item::withAvg('reviews', 'rating')
+                ->withCount(['reviews', 'favoritedBy'])
+                ->with(['category', 'brand', 'user:id,name,avatar,avatar_url', 'activeBoosts.boostType'])
                 ->whereHas('activeBoosts')
                 ->where('status', 'active')
                 ->visible()
@@ -249,7 +253,9 @@ class CacheService
                 $q->where('status', 'active')->visible();
             }])->where('is_active', true)->orderBy('sort_order')->get();
 
-            $spotlightItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            $spotlightItems = Item::withAvg('reviews', 'rating')
+                ->withCount(['reviews', 'favoritedBy'])
+                ->with(['category', 'brand', 'user', 'activeBoosts.boostType'])
                 ->whereHas('activeBoosts', function ($query) {
                     $query->whereHas('boostType', function ($subQuery) {
                         $subQuery->where('name', 'spotlight');
@@ -261,7 +267,9 @@ class CacheService
                 ->limit(6)
                 ->get();
 
-            $boostedItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            $boostedItems = Item::withAvg('reviews', 'rating')
+                ->withCount(['reviews', 'favoritedBy'])
+                ->with(['category', 'brand', 'user', 'activeBoosts.boostType'])
                 ->whereHas('activeBoosts')
                 ->where('status', 'active')
                 ->visible()
@@ -269,7 +277,9 @@ class CacheService
                 ->limit(8)
                 ->get();
 
-            $regularItems = Item::with(['category', 'brand', 'user', 'activeBoosts.boostType'])
+            $regularItems = Item::withAvg('reviews', 'rating')
+                ->withCount(['reviews', 'favoritedBy'])
+                ->with(['category', 'brand', 'user', 'activeBoosts.boostType'])
                 ->whereDoesntHave('activeBoosts')
                 ->where('status', 'active')
                 ->visible()

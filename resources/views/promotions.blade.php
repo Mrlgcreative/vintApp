@@ -53,11 +53,12 @@
 
             <!-- Produits concernés -->
             @php
+                $baseQuery = \App\Models\Item::withAvg('reviews', 'rating')->withCount(['reviews', 'favoritedBy']);
                 $products = $offer->scope === 'global'
-                    ? \App\Models\Item::where('status', 'active')->latest()->take(8)->get()
+                    ? (clone $baseQuery)->where('status', 'active')->latest()->take(8)->get()
                     : ($offer->scope === 'categories'
-                        ? \App\Models\Item::whereIn('category_id', $offer->categories->pluck('id'))->where('status', 'active')->take(8)->get()
-                        : $offer->items()->where('status', 'active')->take(8)->get());
+                        ? (clone $baseQuery)->whereIn('category_id', $offer->categories->pluck('id'))->where('status', 'active')->take(8)->get()
+                        : $offer->items()->where('status', 'active')->withAvg('reviews', 'rating')->withCount(['reviews', 'favoritedBy'])->take(8)->get());
             @endphp
             @if($products->count() > 0)
                 <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">

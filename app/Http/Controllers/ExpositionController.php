@@ -14,7 +14,9 @@ class ExpositionController extends Controller
     public function index(): View
     {
         $expositions = Exposition::running()
-            ->with(['user', 'items'])
+            ->with(['user', 'items' => function ($q) {
+                $q->withAvg('reviews', 'rating')->withCount(['reviews', 'favoritedBy']);
+            }])
             ->orderByDesc('is_featured')
             ->orderByDesc('created_at')
             ->paginate(9);
@@ -36,6 +38,8 @@ class ExpositionController extends Controller
 
         $items = $exposition->items()
             ->where('status', 'active')
+            ->withAvg('reviews', 'rating')
+            ->withCount(['reviews', 'favoritedBy'])
             ->orderByDesc('exposition_item.id')
             ->get();
 

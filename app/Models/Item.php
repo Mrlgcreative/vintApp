@@ -292,6 +292,43 @@ class Item extends Model
     }
 
     /**
+     * Moyenne des notes (étoiles). Retourne l'agrégat chargé via withAvg si disponible,
+     * sinon recalcule à la volée.
+     */
+    public function getRatingAverageAttribute()
+    {
+        if (array_key_exists('reviews_avg_rating', $this->attributes)) {
+            return $this->attributes['reviews_avg_rating'];
+        }
+
+        return round((float) $this->reviews()->avg('rating'), 1);
+    }
+
+    /**
+     * Nombre d'avis. Utilise l'agrégat chargé via withCount si disponible.
+     */
+    public function getRatingCountAttribute()
+    {
+        if (array_key_exists('reviews_count', $this->attributes)) {
+            return $this->attributes['reviews_count'];
+        }
+
+        return $this->reviews()->count();
+    }
+
+    /**
+     * Nombre de likes (favoris). Utilise l'agrégat chargé via withCount si disponible.
+     */
+    public function getLikesCountAttribute()
+    {
+        if (array_key_exists('favorited_by_count', $this->attributes)) {
+            return $this->attributes['favorited_by_count'];
+        }
+
+        return $this->favoritedBy()->count();
+    }
+
+    /**
      * Relation avec les réductions
      */
     public function discounts()

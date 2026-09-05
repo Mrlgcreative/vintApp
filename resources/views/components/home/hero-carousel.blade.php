@@ -7,7 +7,6 @@
         'large' => '440px',
         'full' => '100%',
     ];
-    $slideDurations = $slides ? $slides->pluck('display_duration')->toArray() : [];
     $totalSlides = $slides ? $slides->count() : 0;
 @endphp
 
@@ -29,7 +28,18 @@
                     <div class="carousel-slide absolute inset-0 flex items-center transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 z-0' }}"
                          data-slide-index="{{ $index }}"
                          data-duration="{{ $slide->display_duration ?? 6 }}">
-                        <div class="container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
+                        <!-- Image du slide en fond -->
+                        @if($slide->image_url)
+                            <div class="absolute inset-0">
+                                <img src="/storage/{{ $slide->image_url }}"
+                                     alt="{{ $slide->title }}"
+                                     class="w-full h-full object-cover" />
+                            </div>
+                            <div class="absolute inset-0 bg-black/60 z-[1]"></div>
+                            <div class="absolute inset-0 z-[2] bg-gradient-to-b from-black/50 via-transparent to-gray-950/95"></div>
+                        @endif
+
+                        <div class="relative z-[5] container max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full">
                             <div class="grid grid-cols-1 lg:grid-cols-12 items-center gap-10 lg:gap-14 {{ ($slide->image_position ?? 'right') === 'left' ? 'lg:[direction:rtl]' : '' }}">
                                 <!-- Texte -->
                                 <div class="lg:col-span-7 space-y-7 {{ $slide->image_url ? '' : 'lg:col-span-12 text-center mx-auto max-w-3xl' }} {{ ($slide->text_position ?? 'left') === 'center' ? 'text-center' : (($slide->text_position ?? 'left') === 'right' ? 'text-right' : 'text-left') }}">
