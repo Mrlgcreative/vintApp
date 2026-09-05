@@ -97,11 +97,11 @@ class ItemController extends Controller
                 $query->where('price', '<=', $request->max_price);
             }
 
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+            if ($request->filled('q') || $request->filled('search')) {
+                $search = $request->filled('q') ? $request->q : $request->search;
+                $query->where(function($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
         }

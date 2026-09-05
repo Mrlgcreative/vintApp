@@ -63,7 +63,7 @@
                         @else
                             <li><a href="{{ route('items.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Articles</a></li>
                             <li><a href="{{ route('promotions') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Promotions</a></li>
-                            <li><a href="{{ route('expositions.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Boutiques</a></li>
+                            <li><a href="{{ route('expositions.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Expos</a></li>
                             <li><a href="{{ route('categories.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Catégories</a></li>
                             <li><a href="{{ route('brands.index') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Marques</a></li>
                             @auth

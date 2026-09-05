@@ -1,5 +1,8 @@
 @extends('app')
 @section('title', 'Articles disponibles')
+@php
+    $searchQuery = request('q') ?? request('search') ?? '';
+@endphp
 @section('content')
 <div class="fixed bottom-4 right-4 z-50">
     <div id="mainToast" class="hidden bg-gray-900 text-white px-6 py-3 rounded-xl shadow-lg flex items-center space-x-2 transform translate-x-full transition-transform duration-300">
@@ -47,7 +50,7 @@
                                    name="search"
                                    class="w-full pl-11 pr-4 sm:pr-28 py-3 sm:py-3.5 bg-gray-50 dark:bg-gray-900 border-2 border-transparent rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:bg-white dark:focus:bg-gray-800 focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                                    placeholder="Rechercher un article..."
-                                   value="{{ request('search') }}"
+                                   value="{{ $searchQuery }}"
                                    autocomplete="off">
                             <button type="submit" class="hidden sm:flex absolute right-1.5 top-1/2 -translate-y-1/2 items-center px-5 py-2 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-lg transition-colors">
                                 <i class="fas fa-search mr-2"></i>
@@ -90,7 +93,7 @@
                                            name="search"
                                            class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-white focus:border-gray-400 focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-700 transition-all"
                                            placeholder="Ex: iPhone, Nike, Vetements..."
-                                           value="{{ request('search') }}">
+                                           value="{{ $searchQuery }}">
                                 </div>
 
                                 <div>
