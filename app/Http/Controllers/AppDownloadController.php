@@ -4,12 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\SvgImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
 
 class AppDownloadController extends Controller
 {
     public function index()
     {
-        return view('download');
+        $qrSvg = $this->generateQrCode(route('download'));
+
+        return view('download', compact('qrSvg'));
+    }
+
+    private function generateQrCode(string $data): string
+    {
+        try {
+            $renderer = new ImageRenderer(
+                new RendererStyle(400, 0),
+                new SvgImageBackEnd()
+            );
+            $writer = new Writer($renderer);
+
+            return $writer->writeString($data);
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     public function apk(Request $request)

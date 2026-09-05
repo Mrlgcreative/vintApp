@@ -17,6 +17,10 @@
 })();
 </script>
 @vite(['resources/css/app.css'])
+<style>
+    .qr-svg-wrap { display: flex; align-items: center; justify-content: center; }
+    .qr-svg-wrap svg { max-width: 100%; height: 100%; width: 100%; }
+</style>
 </head>
 <body class="min-h-screen bg-slate-50 font-sans dark:bg-dark-900">
 
@@ -51,8 +55,8 @@
             Télécharge l'application Android et emporte VintApp partout.
         </p>
 
-        <!-- Bouton téléchargement -->
-        <div class="mt-10 flex flex-col items-center gap-4">
+        <!-- Bouton téléchargement + QR -->
+        <div class="mt-10 flex flex-col items-center gap-6">
             <a href="{{ route('download.apk') }}"
                class="group inline-flex items-center gap-3 rounded-full bg-gradient-to-r from-vinted-500 to-vinted-primary px-8 py-4 text-base font-semibold text-white shadow-xl shadow-vinted-primary/40 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-vinted-primary/50">
                 <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
@@ -64,6 +68,27 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 4v9m0 0l-4-4m4 4l4-4"/>
                 </svg>
             </a>
+
+            @if(!empty($qrSvg))
+            <div class="mx-auto grid max-w-2xl grid-cols-1 items-center gap-6 sm:grid-cols-[auto_1fr] sm:gap-8">
+                <div class="mx-auto rounded-2xl bg-white p-4 shadow-xl shadow-vinted-primary/20 ring-1 ring-white/20">
+                    <div class="h-44 w-44 text-black sm:h-52 sm:w-52 qr-svg-wrap">
+                        {!! $qrSvg !!}
+                    </div>
+                </div>
+                <div class="text-center sm:text-left">
+                    <h2 class="font-display text-lg font-bold text-white">Scanne ce QR code</h2>
+                    <p class="mt-2 text-sm text-white/70">Pointe ton autre appareil vers ce code pour ouvrir la page de téléchargement et installer VintApp en un instant.</p>
+                    <div class="mt-4 flex items-center justify-center gap-2 sm:justify-start">
+                        <svg class="h-4 w-4 text-vinted-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-xs text-white/60">{{ route('download') }}</span>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <p class="text-xs text-white/50">Version 1.0.0 · Compatible Android 7.0 et plus · Gratuit</p>
         </div>
     </div>
