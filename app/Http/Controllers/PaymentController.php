@@ -2064,6 +2064,389 @@ class PaymentController extends Controller
     }
 
     /**
+     * Afficher le formulaire de paiement K-PAY (depuis le checkout).
+     */
+    public function kpayCheckout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'delivery_address_id' => 'required|exists:delivery_addresses,id',
+            'cart_items' => 'required|string',
+            'total_amount' => 'required|numeric|min:1',
+            'currency' => 'sometimes|string|in:CDF,USD',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $cart = json_decode($request->cart_items, true);
+        $total = $request->total_amount;
+        $currency = $request->input('currency', 'CDF');
+        $deliveryAddressId = $request->delivery_address_id;
+
+        // K-PAY RDC opère en CDF (devise dérivée du provider, pas de champ currency).
+        // Si le panier est en USD, convertir le total vers CDF avant l'init.
+        $exchangeRate = null;
+        $totalCdf = (float) $total;
+        if ($currency !== 'CDF') {
+            $exchangeRate = \Illuminate\Support\Facades\Cache::remember('usd_cdf_rate', 3600, function () {
+                try {
+                    $controller = new ExchangeRateController();
+                    $data = $controller->getRate()->getData(true);
+
+                    return (float) ($data['rate'] ?? 2650.00);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Erreur récupération taux K-PAY: ' . $e->getMessage());
+
+                    return 2650.00;
+                }
+            });
+            $totalCdf = round($total * $exchangeRate, 2);
+        }
+
+        // K-PAY plafonne le montant d'un paiement en CDF (voir KPay::MAX_AMOUNT_CDF).
+        // Bloquer avant d'afficher la page de paiement pour éviter une erreur API à l'initiation.
+        if ($totalCdf > \App\Services\KPay::MAX_AMOUNT_CDF) {
+            return back()->withInput()->with('error', sprintf(
+                'Le montant (%s CDF) dépasse la limite maximale autorisée de %s CDF pour un paiement Mobile Money.',
+                number_format($totalCdf, 2),
+                number_format(\App\Services\KPay::MAX_AMOUNT_CDF, 2)
+            ));
+        }
+
+        $deliveryAddress = \App\Models\DeliveryAddress::findOrFail($deliveryAddressId);
+
+        session([
+            'kpay_checkout' => [
+                'cart' => $cart,
+                'total' => $total,
+                'currency' => $currency,
+                'total_cdf' => $totalCdf,
+                'exchange_rate' => $exchangeRate,
+                'delivery_address_id' => $deliveryAddressId,
+                'delivery_address' => $deliveryAddress,
+            ]
+        ]);
+
+        return response()->view('payments.kpay', [
+            'cart' => $cart,
+            'total' => $total,
+            'currency' => $currency,
+            'totalCdf' => $totalCdf,
+            'exchangeRate' => $exchangeRate,
+            'deliveryAddress' => $deliveryAddress,
+            'kpayIsSandbox' => (new \App\Services\KPay())->isSandbox(),
+        ])->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+          ->header('Pragma', 'no-cache');
+    }
+
+    /**
+     * Prédit l'opérateur Mobile Money K-PAY à partir du numéro (auto-sélection).
+     */
+    public function predictKPayProvider(Request $request)
+    {
+        $phone = $request->query('phone', '');
+        Log::info('K-PAY: predict-provider reçu', ['phone' => $phone, 'url' => $request->fullUrl()]);
+
+        if (strlen(trim($phone)) < 9) {
+            return response()->json(['success' => false, 'provider' => null]);
+        }
+
+        try {
+            $kpay = new \App\Services\KPay();
+            $result = $kpay->predictProvider($phone);
+
+            if (!$result['success'] || empty($result['provider'])) {
+                Log::warning('K-PAY: predict-provider échec', ['phone' => $phone, 'result' => $result]);
+
+                return response()->json(['success' => false, 'provider' => null, 'message' => $result['message'] ?? null]);
+            }
+
+            $providerMap = [
+                'VODACOM_MPESA_COD' => 'VODACOM',
+                'AIRTEL_COD' => 'AIRTEL',
+                'ORANGE_COD' => 'ORANGE',
+            ];
+
+            $provider = $providerMap[$result['provider']] ?? null;
+            Log::info('K-PAY: predict-provider ok', ['phone' => $phone, 'provider' => $provider]);
+
+            return response()->json([
+                'success' => true,
+                'provider' => $provider,
+                'kpay_provider' => $result['provider'],
+                'phone_number' => $result['phoneNumber'] ?? null,
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('K-PAY: predict-provider exception', ['error' => $e->getMessage()]);
+
+            return response()->json(['success' => false, 'provider' => null]);
+        }
+    }
+
+    /**
+     * Initier un paiement K-PAY — USSD (opérateur + numéro) ou page hébergée.
+     *
+     * RDC : VODACOM_MPESA_COD | AIRTEL_COD | ORANGE_COD.
+     */
+    public function initiateKPayPayment(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'phone' => 'sometimes|string|min:9|max:13',
+            'currency' => 'sometimes|string|in:CDF,USD',
+            'operator' => 'sometimes|string|in:VODACOM,AIRTEL,ORANGE',
+            'mode' => 'sometimes|string|in:USSD,GATEWAY',
+            'hosted' => 'sometimes|boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        try {
+            $kpay = new \App\Services\KPay();
+
+            if (!$kpay->isConfigured() || !$kpay->isEnabled()) {
+                Log::error('K-PAY: service non configuré ou désactivé');
+
+                return back()->with('error', 'Service de paiement K-PAY non disponible.');
+            }
+
+            $session = session('kpay_checkout', []);
+            $cart = $session['cart'] ?? [];
+            $deliveryAddressId = $session['delivery_address_id'] ?? null;
+            $sourceCurrency = $session['currency'] ?? 'CDF';
+            $amountCdf = (float) ($session['total_cdf'] ?? $request->amount);
+            $exchangeRate = $session['exchange_rate'] ?? null;
+
+            $useGateway = (bool) $request->input('hosted') || $request->input('mode') === 'GATEWAY';
+
+            if (!$useGateway && !$request->input('phone')) {
+                return back()->with('error', 'Le numéro Mobile Money est requis pour le paiement USSD.');
+            }
+
+            // Défense serveur : vérifier le plafond K-PAY même si la page était déjà ouverte.
+            if ($amountCdf > \App\Services\KPay::MAX_AMOUNT_CDF) {
+                Log::warning('K-PAY: montant dépassant le plafond bloqué', ['amount_cdf' => $amountCdf]);
+
+                return redirect()->route('payments.error', [
+                    'error' => sprintf(
+                        'Le montant (%s CDF) dépasse la limite maximale autorisée de %s CDF.',
+                        number_format($amountCdf, 2),
+                        number_format(\App\Services\KPay::MAX_AMOUNT_CDF, 2)
+                    ),
+                    'amount' => $amountCdf,
+                    'provider' => 'Paiement mobile',
+                    'currency' => 'CDF',
+                ]);
+            }
+
+            $externalId = $kpay->generateExternalId();
+
+            $transaction = Transaction::create([
+                'user_id' => Auth::id(),
+                'buyer_id' => Auth::id(),
+                'transaction_id' => $externalId,
+                'transaction_ref' => $externalId,
+                'amount' => $amountCdf,
+                'currency' => 'CDF',
+                'provider' => 'kpay',
+                'status' => 'pending',
+                'type' => Transaction::TYPE_PURCHASE,
+                'payment_method' => 'kpay',
+                'purpose' => 'Paiement VintApp',
+                'phone' => $request->input('phone'),
+                'metadata' => json_encode([
+                    'gateway' => 'kpay',
+                    'operator' => $request->input('operator'),
+                    'mode' => $useGateway ? 'GATEWAY' : 'USSD',
+                    'cart' => $cart,
+                    'cart_items' => $cart,
+                    'delivery_address_id' => $deliveryAddressId,
+                    'source_currency' => $sourceCurrency,
+                    'source_amount' => (float) $request->amount,
+                    'currency' => 'CDF',
+                    'amount_cdf' => $amountCdf,
+                    'exchange_rate' => $exchangeRate,
+                ]),
+            ]);
+
+            if ($useGateway) {
+                // Page hébergée K-PAY : le client choisit son opérateur lui-même
+                $result = $kpay->initiatePayment([
+                    'amount' => $amountCdf,
+                    'externalId' => $externalId,
+                    'returnUrl' => route('payments.kpay.return'),
+                    'cancelUrl' => route('payments.kpay.return', ['status' => 'CANCELLED']),
+                    'description' => 'Paiement VintApp #' . $externalId,
+                ]);
+            } else {
+                // USSD : mapper l'opérateur vers le code K-PAY (RDC)
+                $providers = [
+                    'VODACOM' => 'VODACOM_MPESA_COD',
+                    'AIRTEL' => 'AIRTEL_COD',
+                    'ORANGE' => 'ORANGE_COD',
+                ];
+                $provider = $providers[$request->input('operator')] ?? $kpay->getDefaultProvider();
+
+                $result = $kpay->initiatePayment([
+                    'amount' => $amountCdf,
+                    'provider' => $provider,
+                    'phoneNumber' => $kpay->normalizePhoneNumber($request->input('phone')),
+                    'externalId' => $externalId,
+                    'description' => 'Paiement VintApp #' . $externalId,
+                    'metadata' => [
+                        'transaction_id' => $externalId,
+                        'user_id' => Auth::id(),
+                    ],
+                ]);
+            }
+
+            if ($result['success'] && in_array($result['status'], ['PENDING', 'PROCESSING'], true)) {
+                $transaction->update([
+                    'transaction_ref' => $result['payment_id'] ?? $result['reference'] ?? $externalId,
+                    'status' => 'pending',
+                ]);
+
+                // Page hébergée → redirection directe vers la gateway K-PAY
+                if (($result['mode'] ?? null) === 'GATEWAY' && !empty($result['gateway_url'])) {
+                    return redirect()->away($result['gateway_url']);
+                }
+
+                return redirect()->route('payments.kpay.status', $transaction->id);
+            }
+
+            $transaction->update(['status' => 'failed']);
+
+            Log::error('K-PAY: échec initiation paiement', ['result' => $result]);
+
+            return redirect()->route('payments.error', [
+                'error' => $result['message'] ?? 'Erreur lors du paiement K-PAY',
+                'amount' => $request->amount,
+                'provider' => 'K-PAY',
+                'transaction_id' => $transaction->id,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('K-PAY: exception initiation paiement', ['error' => $e->getMessage()]);
+
+            return redirect()->route('payments.error', [
+                'error' => $e->getMessage(),
+                'amount' => $request->amount,
+                'provider' => 'K-PAY',
+            ]);
+        }
+    }
+
+    /**
+     * Page de statut K-PAY (avec polling AJAX).
+     */
+    public function checkKPayStatus(Request $request, Transaction $transaction)
+    {
+        if ($transaction->provider !== 'kpay') {
+            abort(404);
+        }
+
+        // Endpoint AJAX de polling
+        if ($request->wantsJson()) {
+            $kpay = new \App\Services\KPay();
+            $result = $kpay->checkPaymentStatus($transaction->transaction_ref);
+
+            $current = $result['status'] ?? null;
+            if ($result['success'] && $current && !in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
+                $newStatus = $kpay->mapStatus($current);
+                if ($newStatus !== $transaction->status) {
+                    $transaction->update(['status' => $newStatus]);
+                }
+                if ($newStatus === 'completed') {
+                    clear_cart();
+                    session()->forget('kpay_checkout');
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'status' => $transaction->status,
+                'is_final' => in_array($transaction->status, ['completed', 'failed'], true),
+            ]);
+        }
+
+        return view('payments.kpay-status', compact('transaction'));
+    }
+
+    /**
+     * Retour de la page hébergée K-PAY (redirection signée).
+     *
+     * Vérifie la signature HMAC du retour (status|reference|externalId|ts)
+     * puis confirme le statut final via GET /api/v1/payments/{id} avant de
+     * considérer la commande payée (le webhook reste la source de vérité).
+     */
+    public function handleKPayReturn(Request $request)
+    {
+        $kpay = new \App\Services\KPay();
+
+        $transaction = null;
+        $externalId = $request->query('externalId');
+
+        if (!$kpay->verifyReturnSignature($request->query())) {
+            $transaction = $externalId
+                ? Transaction::where('provider', 'kpay')->where('transaction_ref', $externalId)->first()
+                : null;
+
+            Log::warning('K-PAY: signature retour gateway invalide', ['query' => $request->query()]);
+
+            return $transaction
+                ? redirect()->route('payments.kpay.status', $transaction->id)
+                : redirect()->route('payments.error', ['error' => 'Signature de retour invalide', 'provider' => 'K-PAY']);
+        }
+
+        $status = $request->query('status');
+        $reference = $request->query('reference');
+
+        $transaction = ($externalId
+            ? Transaction::where('provider', 'kpay')->where('transaction_ref', $externalId)->first()
+            : null)
+            ?? Transaction::where('provider', 'kpay')->where('transaction_ref', $reference)->first();
+
+        if (!$transaction) {
+            Log::warning('K-PAY: transaction introuvable au retour gateway', [
+                'externalId' => $externalId,
+                'reference' => $reference,
+            ]);
+
+            return redirect()->route('payments.error', [
+                'error' => 'Transaction K-PAY introuvable',
+                'provider' => 'K-PAY',
+            ]);
+        }
+
+        // Confirmer le statut final côté K-PAY (source secondaire, le webhook
+        // reste l'autorité) avant de finaliser la commande.
+        $finalStatus = $transaction->status;
+        $check = $kpay->checkPaymentStatus($transaction->transaction_ref);
+        if ($check['success'] && isset($check['data']['status'])) {
+            $finalStatus = $kpay->mapStatus($check['data']['status']);
+        } else {
+            $finalStatus = $kpay->mapStatus($status);
+        }
+
+        if ($finalStatus !== $transaction->status) {
+            $transaction->update(['status' => $finalStatus]);
+        }
+
+        if ($finalStatus === 'completed') {
+            clear_cart();
+            session()->forget('kpay_checkout');
+            create_orders_from_transaction($transaction->fresh());
+
+            return redirect()->route('payments.success', $transaction->id);
+        }
+
+        return redirect()->route('payments.kpay.status', $transaction->id);
+    }
+
+    /**
      * Webhook PawaPay (statut final du dépôt)
      * @deprecated Le traitement des callbacks PawaPay est désormais centralisé
      *             dans App\Http\Controllers\Api\Webhooks\PawaPayCallbackController.

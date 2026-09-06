@@ -168,12 +168,26 @@
                                 <span>Méthode de retrait</span>
                             </label>
                             <div class="grid grid-cols-2 gap-3">
-                                <!-- MaishaPay -->
-                                <button type="button" id="method-maishapay" data-method="maishapay"
+                                <!-- K-PAY -->
+                                <button type="button" id="method-kpay" data-method="kpay"
                                         class="method-card relative rounded-xl border-2 border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 p-4 text-left transition-all duration-200 dark:from-emerald-500/10 dark:to-teal-500/10">
                                     <span class="method-badge absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full border-2 border-emerald-500 bg-emerald-500">
                                         <svg class="h-2.5 w-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>
                                     </span>
+                                    <div class="flex items-center gap-3">
+                                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-white">
+                                            <i class="fas fa-bolt"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-zinc-900 dark:text-white">K-PAY</p>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Mobile Money RDC</p>
+                                        </div>
+                                    </div>
+                                </button>
+                                <!-- MaishaPay -->
+                                <button type="button" id="method-maishapay" data-method="maishapay"
+                                        class="method-card relative rounded-xl border-2 border-zinc-200 bg-white p-4 text-left transition-all duration-200 dark:border-zinc-600 dark:bg-zinc-800">
+                                    <span class="method-badge absolute right-2 top-2 h-4 w-4 rounded-full border-2 border-zinc-300 dark:border-zinc-500"></span>
                                     <div class="flex items-center gap-3">
                                         <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-white">
                                             <i class="fas fa-bolt"></i>
@@ -199,10 +213,10 @@
                                     </div>
                                 </button>
                             </div>
-                            <input type="hidden" name="payment_method" id="payment_method" value="maishapay">
+                            <input type="hidden" name="payment_method" id="payment_method" value="kpay">
                             <p class="mt-2 flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
                                 <i class="fas fa-circle-info"></i>
-                                <span>MaishaPay détecte automatiquement l'opérateur · CinetPay envoie vers votre compte mobile money</span>
+                                <span>K-PAY détecte automatiquement l'opérateur · MaishaPay unifié RDC · CinetPay vers votre compte mobile money</span>
                             </p>
                         </div>
 

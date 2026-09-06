@@ -18,11 +18,22 @@ use Exception;
  * - Illicocash
  * 
  * Agrégateurs supportés:
+ * - K-PAY (agrégateur principal payin + payout)
  * - MaishaPay (unifié pour tous les opérateurs RDC)
  * - APIs directes des opérateurs (fallback)
  */
 class MobileMoneyService
 {
+    /**
+     * Instance K-PAY pour les payouts unifiés
+     */
+    protected ?KPay $kPay = null;
+
+    /**
+     * Utiliser K-PAY comme agrégateur principal de décaissement
+     */
+    protected bool $useKPayAggregator = false;
+
     /**
      * Instance MaishaPay pour les payouts unifiés
      */
@@ -80,12 +91,35 @@ class MobileMoneyService
     ];
 
     /**
-     * Constructor - Initialise MaishaPay et CinetPay si configurés
+     * Constructor - Initialise les agrégateurs si configurés
      */
     public function __construct()
     {
+        $this->initializeKPay();
         $this->initializeMaishaPay();
         $this->initializeCinetPay();
+    }
+
+    /**
+     * Initialiser le service K-PAY pour les décaissements
+     */
+    protected function initializeKPay(): void
+    {
+        try {
+            $this->kPay = new KPay();
+            $this->useKPayAggregator = $this->kPay->isConfigured() && $this->kPay->isEnabled();
+
+            if ($this->useKPayAggregator) {
+                Log::info('MobileMoneyService: K-PAY initialisé', [
+                    'enabled' => true,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::warning('MobileMoneyService: Impossible d\'initialiser K-PAY', [
+                'error' => $e->getMessage(),
+            ]);
+            $this->useKPayAggregator = false;
+        }
     }
 
     /**
@@ -141,6 +175,67 @@ class MobileMoneyService
     }
 
     /**
+     * Cash-out via K-PAY (agrégateur principal).
+     * Détecte automatiquement l'opérateur via l'API predict-provider.
+     */
+    private function cashOutKPay(
+        string $phone,
+        float $amount,
+        string $currency,
+        WalletTransaction $transaction
+    ): array {
+        if (!$this->kPay || !$this->useKPayAggregator) {
+            throw new Exception("K-PAY n'est pas configuré");
+        }
+
+        Log::info("Cash-out via K-PAY", [
+            'phone' => substr($phone, 0, 7) . '***',
+            'amount' => $amount,
+            'currency' => $currency,
+        ]);
+
+        // Détecter l'opérateur via l'API predict-provider de K-PAY
+        $prediction = $this->kPay->predictProvider($phone);
+
+        if ($prediction['success'] && !empty($prediction['provider'])) {
+            $provider = $prediction['provider'];
+        } else {
+            // Fallback sur l'opérateur par défaut configuré
+            $provider = $this->kPay->getDefaultProvider();
+            Log::info("K-PAY: predict-provider échoué, fallback default_provider", [
+                'provider' => $provider,
+                'phone_masked' => substr($phone, 0, 7) . '***',
+            ]);
+        }
+
+        $externalId = $this->kPay->generateExternalId();
+
+        $result = $this->kPay->initiateWithdrawal([
+            'amount' => (float) $amount,
+            'provider' => $provider,
+            'phoneNumber' => $phone,
+            'externalId' => $externalId,
+            'description' => "Retrait VintApp - {$transaction->reference}",
+            'metadata' => [
+                'transaction_id' => $transaction->reference,
+                'wallet_transaction_id' => $transaction->id,
+            ],
+        ]);
+
+        if ($result['success']) {
+            return [
+                'status' => 'processing',
+                'message' => $result['message'] ?? 'Retrait en cours via K-PAY',
+                'provider_reference' => $result['withdrawal_id'] ?? $result['reference'] ?? $externalId,
+                'provider_response' => $result['metadata'] ?? $result,
+                'aggregator' => 'kpay',
+            ];
+        }
+
+        throw new Exception("K-PAY transfert échoué: " . ($result['message'] ?? 'Erreur inconnue'));
+    }
+
+    /**
      * Initier un décaissement (cash-out)
      *
      * @param string $provider L'opérateur (orange_money, airtel_money, etc.)
@@ -171,6 +266,11 @@ class MobileMoneyService
                 'use_maishapay' => $this->useMaishaPayAggregator,
                 'use_cinetpay' => $this->useCinetPayAggregator,
             ]);
+
+            // Si K-PAY est spécifié directement, utiliser le payout K-PAY
+            if ($provider === 'kpay') {
+                return $this->cashOutKPay($normalizedPhone, $amount, $currency, $transaction);
+            }
 
             // Si cinetpay est spécifié directement, utiliser l'API de transfert
             if ($provider === 'cinetpay') {
@@ -1259,6 +1359,7 @@ class MobileMoneyService
     {
         try {
             return match ($provider) {
+                'kpay' => $this->verifyKPayWebhook($request),
                 'maishapay' => $this->verifyMaishaPayWebhook($request),
                 'cinetpay' => $this->verifyCinetPayWebhook($request),
                 'orange_money' => $this->verifyOrangeMoneyWebhook($request),
@@ -1283,6 +1384,7 @@ class MobileMoneyService
     public function extractReferenceFromWebhook(string $provider, $request): ?string
     {
         return match ($provider) {
+            'kpay' => $request->input('paymentId') ?? $request->input('reference') ?? $request->input('externalId'),
             'maishapay' => $request->input('reference') ?? $request->input('data.reference') ?? $request->input('metadata.reference'),
             'cinetpay' => $request->input('client_transaction_id') ?? $request->input('transaction_id'),
             'orange_money' => $request->input('reference') ?? $request->input('order_id'),
@@ -1300,6 +1402,7 @@ class MobileMoneyService
     public function extractStatusFromWebhook(string $provider, $request): string
     {
         $status = match ($provider) {
+            'kpay' => $request->input('status'),
             'maishapay' => $request->input('status') ?? $request->input('data.status'),
             'cinetpay' => $request->input('treatment_status') ?? $request->input('status'),
             'orange_money' => $request->input('status') ?? $request->input('payment_status'),
@@ -1325,6 +1428,7 @@ class MobileMoneyService
     public function extractProviderReferenceFromWebhook(string $provider, $request): ?string
     {
         return match ($provider) {
+            'kpay' => $request->input('paymentId') ?? $request->input('reference'),
             'maishapay' => $request->input('transaction_id') ?? $request->input('data.transaction_id'),
             'cinetpay' => $request->input('transaction_id') ?? $request->input('lot'),
             'orange_money' => $request->input('payment_token') ?? $request->input('txnid'),
@@ -1337,6 +1441,22 @@ class MobileMoneyService
     }
 
     // Méthodes de vérification de signature par provider
+
+    private function verifyKPayWebhook($request): bool
+    {
+        if (!$this->kPay) {
+            Log::warning('K-PAY webhook: KPay non initialisé');
+            return false;
+        }
+
+        $valid = $this->kPay->verifyWebhookSignature($request);
+
+        if (!$valid) {
+            Log::warning('K-PAY webhook: signature invalide', ['ip' => $request->ip()]);
+        }
+
+        return $valid;
+    }
 
     private function verifyCinetPayWebhook($request): bool
     {

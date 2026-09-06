@@ -273,11 +273,11 @@
                                     <div class="grid grid-cols-1 gap-3">
                                         @php
                                             $payMethods = [
-                                                'maishapay' => [
-                                                    'icon' => 'fa-bolt',
-                                                    'iconBg' => 'bg-emerald-500',
-                                                    'name' => 'Payer via Mobile Money',
-                                                    'desc' => 'Orange, M-Pesa, Airtel',
+                                                'kpay' => [
+                                                    'icon' => 'fa-credit-card',
+                                                    'iconBg' => 'bg-violet-500',
+                                                    'name' => 'Paiement mobile',
+                                                    'desc' => 'Vodacom, Airtel, Orange',
                                                 ],
                                             ];
                                         @endphp
@@ -312,8 +312,8 @@
                             </div>
                         </div>
 
-                        {{-- Formulaire mobile money --}}
-                        <form action="{{ route('payments.maishapay.checkout') }}" method="POST" id="maishapayForm" class="payment-gateway-form">
+                        {{-- Formulaire de paiement mobile (K-PAY) --}}
+                        <form action="{{ route('payments.kpay.checkout') }}" method="POST" id="kpayForm" class="payment-gateway-form">
                             @csrf
                             <input type="hidden" name="delivery_address_id" class="delivery_address_id_input" value="">
                             <input type="hidden" name="cart_items" value="{{ json_encode($cart) }}">
@@ -321,9 +321,9 @@
                             <input type="hidden" name="currency" value="{{ $currency }}">
 
                             <button type="submit"
-                                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
-                                <i class="fas fa-bolt"></i>
-                                Payer {{ number_format($total, 2) }} {{ $currency }} via Mobile Money
+                                    class="w-full bg-violet-600 hover:bg-violet-700 text-white py-3 px-6 rounded-lg shadow-sm transition-colors font-semibold text-base flex items-center justify-center gap-2">
+                                <i class="fas fa-credit-card"></i>
+                                Payer {{ number_format($total, 2) }} {{ $currency }} via Paiement mobile
                             </button>
                         </form>
 
@@ -579,19 +579,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const payMethodMeta = {
-        maishapay: {
-            active: 'border-emerald-500 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30',
-            badge: 'border-emerald-500 bg-emerald-500',
+        kpay: {
+            active: 'border-violet-500 bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-900/30 dark:to-fuchsia-900/30',
+            badge: 'border-violet-500 bg-violet-500',
             title: 'Paiement sécurisé via Mobile Money',
-            text: 'Tous les opérateurs Mobile Money RDC sont acceptés.',
-            icon: 'fa-bolt',
-            iconClass: 'text-emerald-600',
-            form: 'maishapayForm',
-            btn: 'bg-emerald-600 hover:bg-emerald-700',
-            label: 'Mobile Money'
+            text: 'Vodacom, Airtel, Orange Money.',
+            icon: 'fa-credit-card',
+            iconClass: 'text-violet-600',
+            form: 'kpayForm',
+            btn: 'bg-violet-600 hover:bg-violet-700',
+            label: 'Paiement mobile'
         }
     };
     const payCheckSvg = `<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"/></svg>`;
+
+    selectPayMethod('kpay');
 
     function selectPayMethod(method) {
         const meta = payMethodMeta[method];

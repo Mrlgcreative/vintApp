@@ -168,6 +168,7 @@ class WithdrawalRequest extends Model
             'mpesa' => '🟢 M-Pesa',
             'africell' => '🔵 Africell Money',
             'illicocash' => '💳 Illicocash',
+            'kpay' => '💳 K-PAY',
             default => $this->payment_method,
         };
     }

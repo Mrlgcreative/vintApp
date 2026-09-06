@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\Payments\PaymentController as ApiPaymentController;
 use App\Http\Controllers\Api\Wallet\WalletController as ApiWalletController;
 use App\Http\Controllers\Api\Webhooks\PaymentCallbackController as ApiPaymentCallbackController;
 use App\Http\Controllers\Api\Webhooks\PawaPayCallbackController as ApiPawaPayCallbackController;
+use App\Http\Controllers\Api\Webhooks\KPayCallbackController as ApiKPayCallbackController;
 use App\Http\Controllers\Api\System\SystemController;
 use App\Http\Controllers\Api\Notifications\FcmController;
 use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
@@ -116,6 +117,21 @@ Route::prefix('v1/pawapay/callback')->middleware('throttle:100,1')->group(functi
     Route::post('/{type}', [ApiPawaPayCallbackController::class, 'handleTyped'])
         ->where('type', 'deposit|checkout|payout|refund')
         ->name('pawapay.callback.typed');
+});
+
+// ==================== Callbacks K-PAY (publics, sans auth) ====================
+// À configurer dans le dashboard K-PAY (jusqu'à 4 URLs, sinon générique) :
+//  Deposits    : https://votre-domaine.com/api/v1/kpay/callback/deposit
+//  Withdrawals : https://votre-domaine.com/api/v1/kpay/callback/withdraw
+//  Refunds     : https://votre-domaine.com/api/v1/kpay/callback/refund
+//  Générique   : https://votre-domaine.com/api/v1/kpay/callback
+Route::prefix('v1/kpay/callback')->middleware('throttle:100,1')->group(function () {
+    Route::post('/deposit', [ApiKPayCallbackController::class, 'deposit'])->name('kpay.callback.deposit');
+    Route::post('/withdraw', [ApiKPayCallbackController::class, 'withdraw'])->name('kpay.callback.withdraw');
+    Route::post('/refund', [ApiKPayCallbackController::class, 'refund'])->name('kpay.callback.refund');
+    // Point d'entrée générique : K-PAY n'a besoin que d'une URL, le type est
+    // déduit du champ `event` dans le payload.
+    Route::post('/', [ApiKPayCallbackController::class, 'handle'])->name('kpay.callback.generic');
 });
 
 // ==================== Authentification API (Sanctum) ====================

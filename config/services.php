@@ -241,6 +241,53 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | K-PAY Configuration
+    |--------------------------------------------------------------------------
+    |
+    | K-PAY encaisse en Mobile Money (USSD) ou via page hébergée (GATEWAY),
+    | et reverse vers un compte Mobile Money dans 12 pays africains.
+    | Une seule URL de base, deux clés : kpay_test_* (sandbox) et
+    | kpay_live_* (production).
+    |
+    | Authentification : headers X-API-Key + X-Secret-Key.
+    | Webhooks : HMAC-SHA256 du body brut dans le header X-KPAY-Signature.
+    | Retour gateway : HMAC-SHA256 de "status|reference|externalId|ts".
+    |
+    | Voir https://kpay.site/documentation
+    |
+    */
+    'kpay' => [
+        'enabled' => env('KPAY_ENABLED', false),
+        'environment' => env('KPAY_ENVIRONMENT', 'production'), // production ou sandbox
+        'api_key' => env('KPAY_API_KEY'),
+        'secret_key' => env('KPAY_SECRET_KEY'),
+        'base_url' => env('KPAY_BASE_URL', 'https://admin.kpay.site'),
+
+        // Secret utilisé pour vérifier les webhooks entrants (X-KPAY-Signature)
+        'webhook_secret' => env('KPAY_WEBHOOK_SECRET'),
+        // Secret utilisé pour vérifier le retour de la page hébergée (GATEWAY)
+        'gateway_secret' => env('KPAY_GATEWAY_SECRET', env('KPAY_WEBHOOK_SECRET')),
+
+        // URLs de redirection après un paiement par page hébergée
+        'return_url' => env('KPAY_RETURN_URL'),
+        'cancel_url' => env('KPAY_CANCEL_URL'),
+
+        // URLs de callbacks (webhooks) — à configurer dans le dashboard K-PAY.
+        // Si spécifique n'est pas définie, K-PAY utilise l'URL générique (fallback).
+        'callback_url' => env('KPAY_CALLBACK_URL'), // URL générique — reçoit tous les types
+        'callback_deposit' => env('KPAY_CALLBACK_DEPOSIT'),
+        'callback_withdraw' => env('KPAY_CALLBACK_WITHDRAW'),
+        'callback_refund' => env('KPAY_CALLBACK_REFUND'),
+
+        // Opérateur utilisé par défaut pour le payout USSD (cas où la
+        // détection automatique /predict-provider échoue), ex: VODACOM_MPESA_COD
+        'default_provider' => env('KPAY_DEFAULT_PROVIDER', 'VODACOM_MPESA_COD'),
+
+        'timeout' => env('KPAY_TIMEOUT', 30),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Firebase Firestore (signal temps réel mobile)
     |--------------------------------------------------------------------------
     |

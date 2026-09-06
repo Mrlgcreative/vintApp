@@ -765,6 +765,7 @@ Route::prefix('payments')->group(function () {
     // K-PAY routes
     Route::post('/kpay/checkout', [PaymentController::class, 'kpayCheckout'])->name('payments.kpay.checkout');
     Route::post('/kpay/initiate', [PaymentController::class, 'initiateKPayPayment'])->name('payments.kpay.initiate');
+    Route::get('/kpay/predict-provider', [PaymentController::class, 'predictKPayProvider'])->name('payments.kpay.predict-provider');
     Route::get('/kpay/status/{transaction}', [PaymentController::class, 'checkKPayStatus'])->name('payments.kpay.status');
     Route::get('/kpay/check-status/{transaction}', [PaymentController::class, 'checkKPayStatus'])->name('payments.kpay.check-status');
     Route::get('/kpay/return', [PaymentController::class, 'handleKPayReturn'])->name('payments.kpay.return');
