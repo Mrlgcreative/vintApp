@@ -117,7 +117,7 @@
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div class="rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="flex items-center gap-3 border-b border-slate-100 p-5 dark:border-slate-700">
-                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-500/10 text-primary-600 dark:text-primary-400"><i class="fas fa-mobile-screen text-sm"></i></span>
+                <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400"><i class="fas fa-mobile-screen text-sm"></i></span>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Systèmes d'exploitation</h3>
                     <p class="text-xs text-slate-400">Top des OS utilisateurs</p>
@@ -238,7 +238,7 @@
                                 <div class="flex flex-col items-center gap-2">
                                     <i class="fas fa-cloud-arrow-down text-2xl text-slate-300 dark:text-slate-600"></i>
                                     <p class="text-sm text-slate-400">Aucun téléchargement enregistré pour le moment.</p>
-                                    <p class="text-xs text-slate-400">Les téléchargements depuis la page <a href="{{ route('download') }}" class="font-medium text-primary-600 dark:text-primary-400">/download</a> seront suivis ici.</p>
+                                    <p class="text-xs text-slate-400">Les téléchargements depuis la page <a href="{{ route('download') }}" class="font-medium text-violet-600 dark:text-violet-400">/download</a> seront suivis ici.</p>
                                 </div>
                             </td>
                         </tr>
