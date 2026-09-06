@@ -259,7 +259,10 @@ window.signInWithGoogle = async function() {
                 throw new Error('Plugin FirebaseAuthentication non disponible');
             }
 
-            const result = await FirebaseAuthentication.signInWithGoogle();
+            // useCredentialManager: false → utilise l'API Sign-In Google historique
+            // au lieu de Credential Manager, pour compatibilité avec les appareils
+            // qui ne supportent pas la Credential Manager API (erreur "device doesn't support").
+            const result = await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: false });
             const nativeUser = result.user;
 
             if (!nativeUser) {
