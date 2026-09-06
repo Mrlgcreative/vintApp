@@ -781,9 +781,109 @@ window.registerWithFirebaseEmail = async function() {
 };
 
 // ============ GOOGLE SIGNUP ============
+const isCapacitorNative = typeof window !== 'undefined' &&
+    (typeof window.Capacitor !== 'undefined' ||
+     /capacitor/i.test(navigator.userAgent || ''));
+
 window.signUpWithGoogle = async function() {
     showLoading(true);
-    
+
+    // Dans l'app mobile (Capacitor), le popup Firebase est bloqué par la WebView.
+    // On passe par le plugin natif @capacitor-firebase/authentication qui renvoie
+    // un utilisateur Firebase (avec idToken compatible avec le backend Laravel).
+    if (isCapacitorNative) {
+        try {
+            const { FirebaseAuthentication } = window.Capacitor?.Plugins || {};
+            if (!FirebaseAuthentication) {
+                throw new Error('Plugin FirebaseAuthentication non disponible');
+            }
+
+            // useCredentialManager: false → utilise l'API Sign-In Google historique
+            // au lieu de Credential Manager, pour compatibilité avec les appareils
+            // qui ne supportent pas la Credential Manager API (erreur "device doesn't support").
+            const result = await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: false });
+            const nativeUser = result.user;
+
+            if (!nativeUser) {
+                throw new Error('Aucune information utilisateur reçue');
+            }
+
+            const tokenResult = await FirebaseAuthentication.getIdToken();
+            const idToken = tokenResult.token;
+
+            // Token FCM natif pour les notifications push de l'app mobile
+            let fcmToken = null;
+            try {
+                const messaging = window.Capacitor?.Plugins?.FirebaseMessaging;
+                if (messaging) {
+                    const perm = await messaging.requestPermissions();
+                    if (perm && perm.receive !== 'denied') {
+                        const t = await messaging.getToken();
+                        fcmToken = (t && t.token) || null;
+                    }
+                }
+            } catch (e) {
+                console.warn('[register] Token FCM indisponible:', e);
+            }
+
+            const response = await fetch('{{ route("auth.firebase.login") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    idToken: idToken,
+                    name: nativeUser.displayName || 'Utilisateur Google',
+                    email: nativeUser.email,
+                    provider: 'google',
+                    firebase_uid: nativeUser.uid,
+                    email_verified: nativeUser.emailVerified,
+                    photo_url: nativeUser.photoUrl,
+                    fcmToken: fcmToken,
+                    deviceType: 'mobile',
+                    newsletter: false
+                })
+            });
+
+            let data;
+            try {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Le serveur a retourné une réponse invalide. Veuillez réessayer.');
+                }
+                data = await response.json();
+            } catch (parseError) {
+                if (parseError.message.includes('invalide')) {
+                    throw parseError;
+                }
+                throw new Error('Impossible de traiter la réponse du serveur');
+            }
+
+            if (response.ok && data.success) {
+                showLoading(false);
+                showToast(data.message || 'Inscription Google réussie !', 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect || '{{ route("verification.code") }}';
+                }, 800);
+            } else {
+                throw new Error(data.message || 'Erreur lors de l\'inscription');
+            }
+        } catch (error) {
+            showLoading(false);
+            let errorMessage = 'Erreur lors de l\'inscription Google';
+            if (error && (error.code === 'auth/popup-closed-by-user' || error.code === 'canceled')) {
+                errorMessage = 'Inscription annulée';
+            } else if (error && error.message) {
+                errorMessage = `Erreur Google: ${error.message}`;
+            }
+            showToast(errorMessage, 'error');
+        }
+        return;
+    }
+
     try {
         if (!firebase.apps.length) throw new Error('Firebase non initialisé');
         
