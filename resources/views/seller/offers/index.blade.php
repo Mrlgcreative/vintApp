@@ -60,25 +60,43 @@
                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                     <i class="fas fa-edit"></i><span class="hidden sm:inline">Modifier</span>
                                                 </a>
-                                                <form action="{{ route('seller.offers.status', $offer) }}" method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                                        <i class="fas {{ $offer->status === 'active' ? 'fa-pause' : 'fa-play' }}"></i>
-                                                        <span class="hidden sm:inline">{{ $offer->status === 'active' ? 'Pause' : 'Activer' }}</span>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('seller.offers.destroy', $offer) }}" method="POST" onsubmit="return confirm('Supprimer cette offre ?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-500/40 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 transition-colors">
-                                                        <i class="fas fa-trash"></i><span class="hidden sm:inline">Supprimer</span>
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                        onclick="window.openConfirmModal('confirm-offer-status-{{ $offer->id }}')"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                    <i class="fas {{ $offer->status === 'active' ? 'fa-pause' : 'fa-play' }}"></i>
+                                                    <span class="hidden sm:inline">{{ $offer->status === 'active' ? 'Pause' : 'Activer' }}</span>
+                                                </button>
+                                                <button type="button"
+                                                        onclick="window.openConfirmModal('confirm-offer-delete-{{ $offer->id }}')"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-500/40 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 transition-colors">
+                                                    <i class="fas fa-trash"></i><span class="hidden sm:inline">Supprimer</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <x-confirm-modal
+                                    id="confirm-offer-status-{{ $offer->id }}"
+                                    title="{{ $offer->status === 'active' ? 'Mettre l\'offre en pause ?' : 'Activer cette offre ?' }}"
+                                    :message="$offer->status === 'active' ? 'L\'offre ne sera plus visible par les acheteurs tant qu\'elle est en pause.' : 'L\'offre redeviendra immédiatement visible et applicable sur vos produits.'"
+                                    confirmLabel="Confirmer"
+                                    variant="warning"
+                                    icon="fas {{ $offer->status === 'active' ? 'fa-pause' : 'fa-play' }}"
+                                    :action="route('seller.offers.status', $offer)"
+                                    method="PATCH"
+                                />
+
+                                <x-confirm-modal
+                                    id="confirm-offer-delete-{{ $offer->id }}"
+                                    title="Supprimer cette offre ?"
+                                    message="Cette action est irréversible. La promotion sera définitivement retirée."
+                                    confirmLabel="Supprimer"
+                                    variant="danger"
+                                    icon="fas fa-trash"
+                                    :action="route('seller.offers.destroy', $offer)"
+                                    method="DELETE"
+                                />
                             @endforeach
                         </div>
                         <div class="p-4 border-t border-gray-100 dark:border-gray-700">

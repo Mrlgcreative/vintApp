@@ -93,79 +93,102 @@
         </main>
     </div>
 </div>
+
+<x-confirm-modal
+    id="confirm-delete-item"
+    title="Supprimer cet article ?"
+    message="Cette action est irréversible. L'article sera définitivement supprimé."
+    confirmLabel="Supprimer"
+    variant="danger"
+    icon="fas fa-trash"
+    :confirmId="'confirmDeleteItemBtn'"
+/>
 @endsection
 
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    let pendingItemId = null;
+    let pendingButton = null;
+
     const deleteButtons = document.querySelectorAll('.delete-item');
     deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const itemId = this.dataset.itemId;
-            const row = this.closest('div.p-4');
-
-            if (confirm('Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible.')) {
-                this.disabled = true;
-                const originalContent = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-
-                let notifContainer = document.querySelector('#notif-container');
-                if (!notifContainer) {
-                    notifContainer = document.createElement('div');
-                    notifContainer.id = 'notif-container';
-                    notifContainer.className = 'fixed top-4 right-4 z-[100] space-y-2';
-                    document.body.appendChild(notifContainer);
-                }
-
-                const showNotification = (message, type) => {
-                    const el = document.createElement('div');
-                    el.className = 'px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ' +
-                        (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
-                    el.textContent = message;
-                    notifContainer.appendChild(el);
-                    setTimeout(() => { el.style.opacity = '0'; }, 2500);
-                    setTimeout(() => el.remove(), 2800);
-                };
-
-                fetch(`/items/${itemId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        showNotification(data.message, 'success');
-                        if (row) {
-                            row.style.transition = 'all 0.3s ease';
-                            row.style.opacity = '0';
-                            row.style.transform = 'translateX(-100%)';
-                            setTimeout(() => row.remove(), 300);
-                        }
-                        if (document.querySelectorAll('.delete-item').length === 0) {
-                            setTimeout(() => window.location.reload(), 300);
-                        }
-                    } else {
-                        showNotification(data.message || 'Erreur lors de la suppression', 'error');
-                        this.disabled = false;
-                        this.innerHTML = originalContent;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showNotification('Une erreur est survenue lors de la suppression', 'error');
-                    this.disabled = false;
-                    this.innerHTML = originalContent;
-                });
-            }
+            pendingItemId = this.dataset.itemId;
+            pendingButton = this;
+            window.openConfirmModal('confirm-delete-item');
         });
     });
+
+    const confirmBtn = document.getElementById('confirmDeleteItemBtn');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', function() {
+            if (!pendingItemId) return;
+
+            const itemId = pendingItemId;
+            const row = pendingButton ? pendingButton.closest('div.p-4') : null;
+
+            this.disabled = true;
+            const originalContent = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            let notifContainer = document.querySelector('#notif-container');
+            if (!notifContainer) {
+                notifContainer = document.createElement('div');
+                notifContainer.id = 'notif-container';
+                notifContainer.className = 'fixed top-4 right-4 z-[100] space-y-2';
+                document.body.appendChild(notifContainer);
+            }
+
+            const showNotification = (message, type) => {
+                const el = document.createElement('div');
+                el.className = 'px-4 py-3 rounded-xl shadow-lg text-sm font-medium text-white transition-all duration-300 ' +
+                    (type === 'success' ? 'bg-emerald-500' : 'bg-red-500');
+                el.textContent = message;
+                notifContainer.appendChild(el);
+                setTimeout(() => { el.style.opacity = '0'; }, 2500);
+                setTimeout(() => el.remove(), 2800);
+            };
+
+            fetch(`/items/${itemId}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    window.closeConfirmModal('confirm-delete-item');
+                    showNotification(data.message, 'success');
+                    if (row) {
+                        row.style.transition = 'all 0.3s ease';
+                        row.style.opacity = '0';
+                        row.style.transform = 'translateX(-100%)';
+                        setTimeout(() => row.remove(), 300);
+                    }
+                    if (document.querySelectorAll('.delete-item').length === 0) {
+                        setTimeout(() => window.location.reload(), 300);
+                    }
+                } else {
+                    showNotification(data.message || 'Erreur lors de la suppression', 'error');
+                    this.disabled = false;
+                    this.innerHTML = originalContent;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Une erreur est survenue lors de la suppression', 'error');
+                this.disabled = false;
+                this.innerHTML = originalContent;
+            });
+        });
+    }
 });
 </script>
 @endpush

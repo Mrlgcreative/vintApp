@@ -67,25 +67,43 @@
                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                                     <i class="fas fa-edit"></i><span class="hidden sm:inline">Modifier</span>
                                                 </a>
-                                                <form action="{{ route('seller.expositions.status', $exposition) }}" method="POST">
-                                                    @csrf @method('PATCH')
-                                                    <button type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                                        <i class="fas {{ $exposition->status === 'active' ? 'fa-pause' : 'fa-play' }}"></i>
-                                                        <span class="hidden sm:inline">{{ $exposition->status === 'active' ? 'Pause' : 'Activer' }}</span>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('seller.expositions.destroy', $exposition) }}" method="POST" onsubmit="return confirm('Supprimer cette exposition ?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit"
-                                                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-500/40 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 transition-colors">
-                                                        <i class="fas fa-trash"></i><span class="hidden sm:inline">Supprimer</span>
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                        onclick="window.openConfirmModal('confirm-exposition-status-{{ $exposition->id }}')"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                    <i class="fas {{ $exposition->status === 'active' ? 'fa-pause' : 'fa-play' }}"></i>
+                                                    <span class="hidden sm:inline">{{ $exposition->status === 'active' ? 'Pause' : 'Activer' }}</span>
+                                                </button>
+                                                <button type="button"
+                                                        onclick="window.openConfirmModal('confirm-exposition-delete-{{ $exposition->id }}')"
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-500/40 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 transition-colors">
+                                                    <i class="fas fa-trash"></i><span class="hidden sm:inline">Supprimer</span>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
+                                <x-confirm-modal
+                                    id="confirm-exposition-status-{{ $exposition->id }}"
+                                    title="{{ $exposition->status === 'active' ? 'Mettre en pause ?' : 'Activer cette exposition ?' }}"
+                                    :message="$exposition->status === 'active' ? 'Votre vitrine ne sera plus visible dans l\'annuaire tant qu\'elle est en pause.' : 'Votre vitrine redeviendra visible dans l\'annuaire des boutiques.'"
+                                    confirmLabel="Confirmer"
+                                    variant="warning"
+                                    icon="fas {{ $exposition->status === 'active' ? 'fa-pause' : 'fa-play' }}"
+                                    :action="route('seller.expositions.status', $exposition)"
+                                    method="PATCH"
+                                />
+
+                                <x-confirm-modal
+                                    id="confirm-exposition-delete-{{ $exposition->id }}"
+                                    title="Supprimer cette exposition ?"
+                                    message="Cette action est irréversible. Votre vitrine sera définitivement supprimée."
+                                    confirmLabel="Supprimer"
+                                    variant="danger"
+                                    icon="fas fa-trash"
+                                    :action="route('seller.expositions.destroy', $exposition)"
+                                    method="DELETE"
+                                />
                             @endforeach
                         </div>
                         <div class="p-4 border-t border-gray-100 dark:border-gray-700">
