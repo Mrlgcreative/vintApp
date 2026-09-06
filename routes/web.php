@@ -260,6 +260,7 @@ Route::middleware(['auth'])->group(function () {
         ->middleware(['security.log'])
         ->name('orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/tracking-data', [OrderController::class, 'trackingData'])->name('orders.tracking-data');
     Route::get('/orders/{order}/edit', [OrderController::class, 'edit'])->name('orders.edit');
     Route::put('/orders/{order}', [OrderController::class, 'update'])->name('orders.update');
     Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');

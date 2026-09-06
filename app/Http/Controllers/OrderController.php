@@ -122,9 +122,41 @@ class OrderController extends Controller
             abort(403, 'Vous n\'êtes pas autorisé à voir cette commande.');
         }
 
-        $order->load(['item', 'buyer', 'deliveryAddress']);
+        $order->load(['item', 'buyer', 'deliveryAddress', 'trackings']);
 
-        return view('orders.show', compact('order'));
+        $latestTracking = $order->trackings->first();
+
+        return view('orders.show', compact('order', 'latestTracking'));
+    }
+
+    /**
+     * Données de suivi en direct (JSON) pour le polling de la carte côté client.
+     */
+    public function trackingData(Order $order)
+    {
+        // Vérifier que l'utilisateur peut voir cette commande
+        if ($order->buyer_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
+            abort(403, 'Vous n\'êtes pas autorisé à voir cette commande.');
+        }
+
+        $latestTracking = $order->trackings->first();
+
+        if (!$latestTracking) {
+            return response()->json(['available' => false]);
+        }
+
+        return response()->json([
+            'available' => true,
+            'latitude' => (float) $latestTracking->latitude,
+            'longitude' => (float) $latestTracking->longitude,
+            'address' => $latestTracking->address,
+            'city' => $latestTracking->city,
+            'status' => $latestTracking->status,
+            'status_text' => $latestTracking->status_text,
+            'tracked_at' => $latestTracking->formatted_tracked_at,
+            'estimated_delivery' => $latestTracking->formatted_estimated_delivery,
+            'distance_km' => $latestTracking->distance_to_customer,
+        ]);
     }
 
     /**

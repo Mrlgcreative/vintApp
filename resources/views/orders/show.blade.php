@@ -1,5 +1,17 @@
 @extends('app')
 @section('title', 'Détails de la commande')
+
+@push('styles')
+<!-- Leaflet CSS pour la carte de suivi -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #order-tracking-map { z-index: 0; }
+    #order-tracking-map .leaflet-container { z-index: 0; font-family: inherit; }
+    .tl-dot { box-shadow: 0 0 0 4px rgba(99, 102, 241, .15); }
+    .distance-marker-wrap { display: block; }
+</style>
+@endpush
+
 @section('content')
 <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -247,6 +259,54 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Suivi en direct (carte) -->
+                        @if($order->trackings->isNotEmpty() || in_array($order->status, ['confirmed', 'shipped']))
+                            <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
+                                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-5 py-4 dark:border-zinc-800 sm:px-6">
+                                    <div>
+                                        <h3 class="flex items-center gap-2 text-base font-semibold text-zinc-900 dark:text-white">
+                                            <i class="fas fa-location-dot text-vinted-primary-500"></i>
+                                            Suivi de la livraison en direct
+                                        </h3>
+                                        <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Position du livreur et destination de votre commande</p>
+                                    </div>
+                                    @if($latestTracking && $latestTracking->distance_to_customer)
+                                        <span class="inline-flex items-center gap-1.5 rounded-full bg-vinted-primary-100 px-3 py-1.5 text-xs font-semibold text-vinted-primary-700 dark:bg-vinted-primary-500/10 dark:text-vinted-primary-300">
+                                            <i class="fas fa-route"></i>
+                                            {{ $latestTracking->distance_to_customer }} km restants
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="p-5 sm:p-6">
+                                    <div id="order-tracking-map" class="h-96 w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-800"></div>
+
+                                    @if(!$latestTracking)
+                                        <div class="mt-4 rounded-lg border border-sky-200 bg-sky-50 p-4 dark:border-sky-500/30 dark:bg-sky-500/5">
+                                            <p class="flex items-start gap-2 text-sm text-sky-800 dark:text-sky-300">
+                                                <i class="fas fa-shipping-fast mt-0.5 text-sky-600"></i>
+                                                Votre commande est en cours de préparation. Le positionnement en direct sera disponible dès son expédition.
+                                            </p>
+                                        </div>
+                                    @else
+                                        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                                                <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="fas fa-truck text-blue-500"></i> Statut</p>
+                                                <p class="mt-1 text-sm font-semibold text-zinc-900 dark:text-white" id="order-tracking-status">{{ $latestTracking->status_text }}</p>
+                                            </div>
+                                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                                                <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="far fa-clock text-zinc-400"></i> Dernière mise à jour</p>
+                                                <p class="mt-1 text-sm font-semibold text-zinc-900 dark:text-white" id="order-tracking-updated">{{ $latestTracking->formatted_tracked_at }}</p>
+                                            </div>
+                                            <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                                                <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="fas fa-route text-vinted-primary-500"></i> Distance restante</p>
+                                                <p class="mt-1 text-sm font-semibold text-vinted-primary-600 dark:text-vinted-primary-400" id="order-tracking-distance">{{ $latestTracking->distance_to_customer ? $latestTracking->distance_to_customer . ' km' : '—' }}</p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
 
                         <!-- Notes -->
                         @if($order->notes)
@@ -806,4 +866,156 @@ function confirmDelivery() {
 
 console.log('Page de commande chargée');
 </script>
+
+@push('scripts')
+<!-- Leaflet JS pour la carte de suivi -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+    let map = null;
+    let currentMarker = null;
+    let destinationMarker = null;
+    let routeLine = null;
+    let distanceMarker = null;
+
+    const orderId = {{ $order->id }};
+    const trackingDataUrl = '{{ route('orders.tracking-data', $order) }}';
+
+    function initMap() {
+        @if($latestTracking && $latestTracking->latitude && $latestTracking->longitude)
+            const currentLat = {{ (float) $latestTracking->latitude }};
+            const currentLng = {{ (float) $latestTracking->longitude }};
+            const hasCurrent = true;
+        @else
+            const currentLat = null;
+            const currentLng = null;
+            const hasCurrent = false;
+        @endif
+
+        @if($order->deliveryAddress)
+            const destinationLat = {{ $order->deliveryAddress->effective_latitude }};
+            const destinationLng = {{ $order->deliveryAddress->effective_longitude }};
+        @else
+            const destinationLat = -4.325;
+            const destinationLng = 15.308;
+        @endif
+
+        const centerLat = hasCurrent ? (currentLat + destinationLat) / 2 : destinationLat;
+        const centerLng = hasCurrent ? (currentLng + destinationLng) / 2 : destinationLng;
+
+        map = L.map('order-tracking-map').setView([centerLat, centerLng], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        const destinationIcon = L.divIcon({
+            html: '<i class="fas fa-home text-green-600 text-2xl"></i>',
+            className: 'custom-div-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        destinationMarker = L.marker([destinationLat, destinationLng], { icon: destinationIcon })
+            .addTo(map)
+            .bindPopup('<div class="text-center"><strong>Destination</strong><br>{{ $order->deliveryAddress ? $order->deliveryAddress->full_name : ($order->shipping_address ?? 'Votre adresse') }}</div>');
+
+        if (hasCurrent) {
+            addCurrentMarker(currentLat, currentLng, true);
+        }
+    }
+
+    function addCurrentMarker(lat, lng, fitBounds) {
+        const currentIcon = L.divIcon({
+            html: '<i class="fas fa-truck text-blue-600 text-2xl"></i>',
+            className: 'custom-div-icon',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+        if (currentMarker) {
+            currentMarker.setLatLng([lat, lng]);
+        } else {
+            currentMarker = L.marker([lat, lng], { icon: currentIcon })
+                .addTo(map)
+                .bindPopup('<div class="text-center"><strong>Le livreur</strong><br/>Position actuelle</div>');
+        }
+
+        const dest = destinationMarker.getLatLng();
+        const distance = calculateDistance(lat, lng, dest.lat, dest.lng);
+
+        if (routeLine) {
+            routeLine.setLatLngs([[lat, lng], [dest.lat, dest.lng]]);
+        } else {
+            routeLine = L.polyline([[lat, lng], [dest.lat, dest.lng]], {
+                color: '#6366f1',
+                weight: 3,
+                opacity: 0.7,
+                dashArray: '10, 10'
+            }).addTo(map);
+        }
+
+        if (distanceMarker) {
+            distanceMarker.remove();
+        }
+        const distanceIcon = L.divIcon({
+            html: '<div style="background: white; padding: 8px 12px; border-radius: 9999px; border: 1px solid #6366f1; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-weight: 600; color: #6366f1; font-size: 12px; white-space: nowrap;"><i class="fas fa-route"></i> ' + distance + ' km</div>',
+            className: 'distance-marker-wrap',
+            iconSize: [100, 30],
+            iconAnchor: [50, 15]
+        });
+        distanceMarker = L.marker([(lat + dest.lat) / 2, (lng + dest.lng) / 2], { icon: distanceIcon }).addTo(map);
+
+        if (fitBounds) {
+            map.fitBounds(L.latLngBounds([[lat, lng], [dest.lat, dest.lng]]), { padding: [50, 50] });
+        }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return (R * c).toFixed(2);
+    }
+
+    function startPolling() {
+        setInterval(function() {
+            fetch(trackingDataUrl, {
+                headers: { 'Accept': 'application/json' }
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (!data || !data.available || map === null) return;
+
+                if (data.latitude && data.longitude) {
+                    addCurrentMarker(data.latitude, data.longitude, false);
+                }
+
+                const statusEl = document.getElementById('order-tracking-status');
+                const updatedEl = document.getElementById('order-tracking-updated');
+                const distanceEl = document.getElementById('order-tracking-distance');
+
+                if (statusEl) statusEl.textContent = data.status_text || statusEl.textContent;
+                if (updatedEl) updatedEl.textContent = data.tracked_at || updatedEl.textContent;
+                if (distanceEl) distanceEl.textContent = data.distance_km ? data.distance_km + ' km' : '—';
+            })
+            .catch(function() {});
+        }, 30000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() { initMap(); startPolling(); });
+    } else {
+        initMap();
+        startPolling();
+    }
+})();
+</script>
+@endpush
+
 @endsection
