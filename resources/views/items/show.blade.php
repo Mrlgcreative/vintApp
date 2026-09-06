@@ -692,7 +692,7 @@ if (quantityInput) {
 }
 
 function contactSeller() {
-    window.location.href = `/messages/conversation/{{ $item->user_id }}?item={{ $item->id }}`;
+    window.location.href = `/messages/{{ $item->user_id }}?item_id={{ $item->id }}`;
 }
 
 function submitDiscountRequest() {
