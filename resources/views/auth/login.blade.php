@@ -246,6 +246,30 @@ const isCapacitorNative = typeof window !== 'undefined' &&
     (typeof window.Capacitor !== 'undefined' ||
      /capacitor/i.test(navigator.userAgent || ''));
 
+// Le Credential Manager (Android 14+/API 34+) affiche TOUJOURS le sélecteur de comptes
+// Google. L'ancienne API Sign-In (useCredentialManager: false) réutilise la session déjà
+// autorisée sans proposer le choix du compte. On priorise donc le Credential Manager et
+// on retombe sur l'API historique uniquement si l'appareil ne le supporte pas.
+function androidSupportsCredentialManager() {
+    const match = (navigator.userAgent || '').match(/Android\s+(\d+)/);
+    if (!match) return false;
+    return parseInt(match[1], 10) >= 14;
+}
+
+async function signInWithGoogleCapacitor(FirebaseAuthentication) {
+    const canUseCredentialManager = androidSupportsCredentialManager();
+    try {
+        return await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: canUseCredentialManager });
+    } catch (error) {
+        const message = (error && (error.message || error.code)) || '';
+        const unsupported = /credential manager|getcredential|unsupported|doesn'?t support|not (available|supported)/i.test(message);
+        if (canUseCredentialManager && unsupported) {
+            return await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: false });
+        }
+        throw error;
+    }
+}
+
 window.signInWithGoogle = async function() {
     showLoading(true);
 
@@ -259,10 +283,7 @@ window.signInWithGoogle = async function() {
                 throw new Error('Plugin FirebaseAuthentication non disponible');
             }
 
-            // useCredentialManager: false → utilise l'API Sign-In Google historique
-            // au lieu de Credential Manager, pour compatibilité avec les appareils
-            // qui ne supportent pas la Credential Manager API (erreur "device doesn't support").
-            const result = await FirebaseAuthentication.signInWithGoogle({ useCredentialManager: false });
+            const result = await signInWithGoogleCapacitor(FirebaseAuthentication);
             const nativeUser = result.user;
 
             if (!nativeUser) {
