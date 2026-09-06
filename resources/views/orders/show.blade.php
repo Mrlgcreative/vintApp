@@ -262,6 +262,18 @@
 
                         <!-- Suivi en direct (carte) -->
                         @if($order->trackings->isNotEmpty() || in_array($order->status, ['confirmed', 'shipped']))
+                            @php
+                                // Statuts finaux: la commande prime sur l'état de tracking (qui peut être obsolète)
+                                $orderFinalStatus = [
+                                    'delivered' => 'Livrée',
+                                    'completed' => 'Livrée',
+                                    'cancelled' => 'Annulée',
+                                    'refunded' => 'Remboursée',
+                                ];
+                                $isOrderDelivered = in_array($order->status, ['delivered', 'completed']);
+                                $deliveryStatus = $orderFinalStatus[$order->status] ?? ($latestTracking->status_text ?? 'En attente');
+                                $showDistanceBadge = !isset($orderFinalStatus[$order->status]) && $latestTracking && $latestTracking->distance_to_customer;
+                            @endphp
                             <div class="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
                                 <div class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 px-5 py-4 dark:border-zinc-800 sm:px-6">
                                     <div>
@@ -271,7 +283,7 @@
                                         </h3>
                                         <p class="mt-0.5 text-sm text-zinc-500 dark:text-zinc-400">Position du livreur et destination de votre commande</p>
                                     </div>
-                                    @if($latestTracking && $latestTracking->distance_to_customer)
+                                    @if($showDistanceBadge)
                                         <span class="inline-flex items-center gap-1.5 rounded-full bg-vinted-primary-100 px-3 py-1.5 text-xs font-semibold text-vinted-primary-700 dark:bg-vinted-primary-500/10 dark:text-vinted-primary-300">
                                             <i class="fas fa-route"></i>
                                             {{ $latestTracking->distance_to_customer }} km restants
@@ -292,7 +304,7 @@
                                         <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
                                             <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
                                                 <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="fas fa-truck text-blue-500"></i> Statut</p>
-                                                <p class="mt-1 text-sm font-semibold text-zinc-900 dark:text-white" id="order-tracking-status">{{ $latestTracking->status_text }}</p>
+                                                <p class="mt-1 text-sm font-semibold text-zinc-900 dark:text-white" id="order-tracking-status">{{ $deliveryStatus }}</p>
                                             </div>
                                             <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
                                                 <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="far fa-clock text-zinc-400"></i> Dernière mise à jour</p>
@@ -300,7 +312,7 @@
                                             </div>
                                             <div class="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
                                                 <p class="flex items-center gap-1.5 text-xs font-medium text-zinc-500 dark:text-zinc-400"><i class="fas fa-route text-vinted-primary-500"></i> Distance restante</p>
-                                                <p class="mt-1 text-sm font-semibold text-vinted-primary-600 dark:text-vinted-primary-400" id="order-tracking-distance">{{ $latestTracking->distance_to_customer ? $latestTracking->distance_to_customer . ' km' : '—' }}</p>
+                                                <p class="mt-1 text-sm font-semibold text-vinted-primary-600 dark:text-vinted-primary-400" id="order-tracking-distance">{{ $isOrderDelivered ? 'Livrée' : ($latestTracking->distance_to_customer ? $latestTracking->distance_to_customer . ' km' : '—') }}</p>
                                             </div>
                                         </div>
                                     @endif
@@ -880,6 +892,7 @@ console.log('Page de commande chargée');
 
     const orderId = {{ $order->id }};
     const trackingDataUrl = '{{ route('orders.tracking-data', $order) }}';
+    const orderCompleted = {{ in_array($order->status, ['delivered', 'completed', 'cancelled', 'refunded']) ? 'true' : 'false' }};
 
     function initMap() {
         @if($latestTracking && $latestTracking->latitude && $latestTracking->longitude)
@@ -1000,9 +1013,9 @@ console.log('Page de commande chargée');
                 const updatedEl = document.getElementById('order-tracking-updated');
                 const distanceEl = document.getElementById('order-tracking-distance');
 
-                if (statusEl) statusEl.textContent = data.status_text || statusEl.textContent;
+                if (statusEl) statusEl.textContent = (orderCompleted || !data.status_text) ? statusEl.textContent : data.status_text;
                 if (updatedEl) updatedEl.textContent = data.tracked_at || updatedEl.textContent;
-                if (distanceEl) distanceEl.textContent = data.distance_km ? data.distance_km + ' km' : '—';
+                if (distanceEl) distanceEl.textContent = orderCompleted ? distanceEl.textContent : (data.distance_km ? data.distance_km + ' km' : '—');
             })
             .catch(function() {});
         }, 30000);

@@ -116,6 +116,34 @@ class OrderTrackingLiveTest extends TestCase
         $response->assertDontSee('id="order-tracking-map"', false);
     }
 
+    public function test_completed_order_with_stale_pending_tracking_shows_delivered(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, User::factory()->create(), 'completed');
+
+        OrderTracking::create([
+            'order_id' => $order->id,
+            'status' => 'pending',
+            'latitude' => '-4.320000',
+            'longitude' => '15.295000',
+            'address' => 'Avenue de la Libération',
+            'city' => 'Kinshasa',
+            'tracked_at' => now(),
+        ]);
+
+        $response = $this->actingAs($buyer)->get(route('orders.show', $order));
+
+        $response->assertOk();
+
+        $html = $response->getContent();
+        preg_match('/<p[^>]*id="order-tracking-status"[^>]*>(.*?)<\/p>/s', $html, $statusMatch);
+        preg_match('/<p[^>]*id="order-tracking-distance"[^>]*>(.*?)<\/p>/s', $html, $distanceMatch);
+
+        $this->assertEquals('Livrée', trim(strip_tags($statusMatch[1] ?? '')));
+        $this->assertEquals('Livrée', trim(strip_tags($distanceMatch[1] ?? '')));
+        $this->assertStringNotContainsString('km restants', $html);
+    }
+
     public function test_tracking_data_endpoint_returns_latest_position(): void
     {
         $buyer = User::factory()->create();
