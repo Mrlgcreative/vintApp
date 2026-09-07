@@ -12,6 +12,12 @@ class OrderTracking extends Model
 
     protected $table = 'order_tracking';
 
+    /**
+     * Distance (km) en dessous de laquelle on considère le livreur « proche » du client.
+     * Doit correspondre au seuil utilisé côté client (carte de suivi en direct).
+     */
+    public const PROXIMITY_THRESHOLD_KM = 1.0;
+
     protected $fillable = [
         'order_id',
         'status',

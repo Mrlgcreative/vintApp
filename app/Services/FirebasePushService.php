@@ -238,6 +238,27 @@ class FirebasePushService
     }
 
     /**
+     * Notification push: livreur proche de la destination du client
+     */
+    public function notifyOrderNearBuyer(User $user, $order, float $distanceKm): bool
+    {
+        return $this->sendNotification(
+            $user->fcm_token,
+            '🚚 Votre commande est proche !',
+            "Le livreur est à {$distanceKm} km de vous. Préparez-vous à recevoir votre commande #{$order->order_number}.",
+            [
+                'type' => 'order_near',
+                'order_id' => (string) $order->id,
+                'order_number' => $order->order_number,
+                'distance_km' => (string) round($distanceKm, 2),
+                'url' => url('/orders/' . $order->id),
+            ],
+            null,
+            true
+        );
+    }
+
+    /**
      * Envoyer notification de rejet d'article
      */
     public function sendItemRejectedNotification(string $fcmToken, array $itemData): bool

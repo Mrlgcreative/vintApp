@@ -33,6 +33,7 @@ class Order extends Model
         'delivered_at',
         'confirmed_by_buyer_at',
         'buyer_confirmation_note',
+        'proximity_notified_at',
     ];
 
     protected $casts = [
@@ -43,6 +44,7 @@ class Order extends Model
         'delivered_at' => 'datetime',
         'confirmed_by_buyer_at' => 'datetime',
         'scanned_at' => 'datetime',
+        'proximity_notified_at' => 'datetime',
     ];
 
     protected static function boot()

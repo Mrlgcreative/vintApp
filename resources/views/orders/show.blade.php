@@ -315,6 +315,19 @@
                                                 <p class="mt-1 text-sm font-semibold text-vinted-primary-600 dark:text-vinted-primary-400" id="order-tracking-distance">{{ $isOrderDelivered ? 'Livrée' : ($latestTracking->distance_to_customer ? $latestTracking->distance_to_customer . ' km' : '—') }}</p>
                                             </div>
                                         </div>
+
+                                        <div id="order-tracking-close-banner" class="mt-4 hidden items-start gap-3 rounded-lg border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xl dark:bg-emerald-500/20">
+                                                <i class="fas fa-truck-fast animate-pulse text-emerald-600 dark:text-emerald-300"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Votre commande est proche !</p>
+                                                <p class="mt-0.5 text-sm text-emerald-700 dark:text-emerald-200">Le livreur arrive bientôt, préparez-vous.</p>
+                                            </div>
+                                            <button type="button" onclick="document.getElementById('order-tracking-close-banner').classList.add('hidden')" class="ml-auto -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-emerald-500 transition-colors hover:bg-emerald-100 hover:text-emerald-700 dark:hover:bg-emerald-500/20" aria-label="Fermer">
+                                                <i class="fas fa-xmark"></i>
+                                            </button>
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -370,6 +383,52 @@
                                         <div>
                                             <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Livrée</h4>
                                             <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->delivered_at->format('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </li>
+                                @elseif($order->status === 'delivered')
+                                    <li class="relative mb-6 pl-8">
+                                        <span class="absolute left-0 top-1 h-4 w-4 -translate-x-1/2 rounded-full bg-emerald-500 ring-4 ring-emerald-100 dark:ring-emerald-500/20"></span>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Livrée</h4>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->updated_at->format('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </li>
+                                @endif
+
+                                {{-- Livraison confirmée par l'acheteur (fonds libérés) --}}
+                                @if($order->confirmed_by_buyer_at)
+                                    <li class="relative mb-6 pl-8">
+                                        <span class="absolute left-0 top-1 h-4 w-4 -translate-x-1/2 rounded-full bg-vinted-primary-500 ring-4 ring-vinted-primary-100 dark:ring-vinted-primary-500/20"></span>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Réception confirmée</h4>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->confirmed_by_buyer_at->format('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </li>
+                                @elseif($order->status === 'completed')
+                                    <li class="relative mb-6 pl-8">
+                                        <span class="absolute left-0 top-1 h-4 w-4 -translate-x-1/2 rounded-full bg-vinted-primary-500 ring-4 ring-vinted-primary-100 dark:ring-vinted-primary-500/20"></span>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Complétée</h4>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->updated_at->format('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </li>
+                                @endif
+
+                                {{-- Commandes annulées / remboursées --}}
+                                @if($order->status === 'cancelled')
+                                    <li class="relative mb-6 pl-8">
+                                        <span class="absolute left-0 top-1 h-4 w-4 -translate-x-1/2 rounded-full bg-red-500 ring-4 ring-red-100 dark:ring-red-500/20"></span>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Annulée</h4>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->updated_at->format('d/m/Y H:i') }}</p>
+                                        </div>
+                                    </li>
+                                @elseif($order->status === 'refunded')
+                                    <li class="relative mb-6 pl-8">
+                                        <span class="absolute left-0 top-1 h-4 w-4 -translate-x-1/2 rounded-full bg-zinc-500 ring-4 ring-zinc-100 dark:ring-zinc-500/20"></span>
+                                        <div>
+                                            <h4 class="text-sm font-semibold text-zinc-900 dark:text-white">Remboursée</h4>
+                                            <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ $order->updated_at->format('d/m/Y H:i') }}</p>
                                         </div>
                                     </li>
                                 @endif
@@ -893,6 +952,8 @@ console.log('Page de commande chargée');
     const orderId = {{ $order->id }};
     const trackingDataUrl = '{{ route('orders.tracking-data', $order) }}';
     const orderCompleted = {{ in_array($order->status, ['delivered', 'completed', 'cancelled', 'refunded']) ? 'true' : 'false' }};
+    const CLOSE_DISTANCE_KM = 1.0;
+    let closeNotified = false;
 
     function initMap() {
         @if($latestTracking && $latestTracking->latitude && $latestTracking->longitude)
@@ -936,6 +997,59 @@ console.log('Page de commande chargée');
 
         if (hasCurrent) {
             addCurrentMarker(currentLat, currentLng, true);
+        }
+
+        @if($latestTracking && $latestTracking->distance_to_customer)
+            checkDistance({{ $latestTracking->distance_to_customer }});
+        @endif
+    }
+
+    function playApproachSound() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            const ctx = new AudioCtx();
+            const tone = function(freq, delay, duration) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.0001, ctx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.35, ctx.currentTime + delay + 0.03);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + delay + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + delay);
+                osc.stop(ctx.currentTime + delay + duration);
+            };
+            tone(880, 0, 0.28);
+            tone(1174.66, 0.3, 0.4);
+        } catch (e) {}
+    }
+
+    function notifyClose() {
+        if (closeNotified || orderCompleted) return;
+        closeNotified = true;
+
+        playApproachSound();
+
+        if (navigator.vibrate) {
+            try { navigator.vibrate([200, 100, 200]); } catch (e) {}
+        }
+
+        const banner = document.getElementById('order-tracking-close-banner');
+        if (banner && banner.classList.contains('hidden')) {
+            banner.classList.remove('hidden');
+            banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
+
+    function checkDistance(distanceKm) {
+        if (orderCompleted || closeNotified) return;
+        if (distanceKm === null || distanceKm === undefined) return;
+
+        const d = parseFloat(distanceKm);
+        if (!isNaN(d) && d > 0 && d <= CLOSE_DISTANCE_KM) {
+            notifyClose();
         }
     }
 
@@ -1008,6 +1122,8 @@ console.log('Page de commande chargée');
                 if (data.latitude && data.longitude) {
                     addCurrentMarker(data.latitude, data.longitude, false);
                 }
+
+                checkDistance(data.distance_km);
 
                 const statusEl = document.getElementById('order-tracking-status');
                 const updatedEl = document.getElementById('order-tracking-updated');

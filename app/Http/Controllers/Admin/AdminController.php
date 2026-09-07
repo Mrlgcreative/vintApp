@@ -2905,6 +2905,16 @@ class AdminController extends Controller
 
             DB::commit();
 
+            // Notification push à l'acheteur si le livreur est proche de la destination
+            try {
+                app(\App\Services\OrderProximityService::class)->check($order, $tracking);
+            } catch (\Exception $e) {
+                Log::warning('⚠️ Notification proximité ignorée', [
+                    'error' => $e->getMessage(),
+                    'order_id' => $id,
+                ]);
+            }
+
             Log::info('Tracking de commande mis à jour', [
                 'admin_id' => Auth::id(),
                 'order_id' => $id,

@@ -89,6 +89,9 @@ class OrderTrackingLiveTest extends TestCase
         $response->assertSee('id="order-tracking-map"', false);
         $response->assertSee(route('orders.tracking-data', $order), false);
         $response->assertSee('En transit', false);
+        $response->assertSee('id="order-tracking-close-banner"', false);
+        $response->assertSee('checkDistance', false);
+        $response->assertSee('playApproachSound', false);
     }
 
     public function test_shipped_order_without_tracking_shows_map_and_preparation_notice(): void
@@ -142,6 +145,54 @@ class OrderTrackingLiveTest extends TestCase
         $this->assertEquals('Livrée', trim(strip_tags($statusMatch[1] ?? '')));
         $this->assertEquals('Livrée', trim(strip_tags($distanceMatch[1] ?? '')));
         $this->assertStringNotContainsString('km restants', $html);
+    }
+
+    public function test_completed_order_history_shows_reception_confirmed_when_buyer_confirmed(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, User::factory()->create(), 'shipped');
+        $order->update([
+            'status' => 'completed',
+            'paid_at' => now()->subDays(2),
+            'shipped_at' => now()->subDays(1),
+            'confirmed_by_buyer_at' => now(),
+        ]);
+
+        $response = $this->actingAs($buyer)->get(route('orders.show', $order));
+
+        $response->assertOk();
+        $response->assertSee('Expédiée', false);
+        $response->assertSee('Réception confirmée', false);
+        // Seul le badge de statut affiche "Complétée" : aucune étape timeline du même nom
+        $this->assertSame(1, substr_count($response->getContent(), 'Complétée'));
+    }
+
+    public function test_completed_order_without_buyer_confirmation_shows_completed_step(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, User::factory()->create(), 'shipped');
+        $order->update([
+            'status' => 'completed',
+            'paid_at' => now()->subDays(2),
+            'shipped_at' => now()->subDays(1),
+        ]);
+
+        $response = $this->actingAs($buyer)->get(route('orders.show', $order));
+
+        $response->assertOk();
+        $response->assertSee('Complétée', false);
+    }
+
+    public function test_cancelled_order_history_shows_cancelled_step(): void
+    {
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, User::factory()->create(), 'pending');
+        $order->update(['status' => 'cancelled']);
+
+        $response = $this->actingAs($buyer)->get(route('orders.show', $order));
+
+        $response->assertOk();
+        $response->assertSee('Annulée', false);
     }
 
     public function test_tracking_data_endpoint_returns_latest_position(): void
