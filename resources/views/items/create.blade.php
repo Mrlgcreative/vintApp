@@ -328,7 +328,7 @@
 
                     <div class="flex items-center gap-3">
                         <button type="button" id="nextBtn"
-                                class="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white text-sm font-medium transition-colors sm:hidden">
+                                class="inline-flex items-center gap-2 h-10 px-5 rounded-md bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white text-sm font-medium transition-colors">
                             Suivant
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                         </button>
