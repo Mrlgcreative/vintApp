@@ -28,9 +28,14 @@
                         </div>
                         <div>
                             <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white">{{ $exposition->title }}</h2>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 flex-wrap">
                                 par <span class="font-medium text-gray-700 dark:text-gray-300">{{ $exposition->user?->name ?? 'Vendeur' }}</span>
-                                @if($exposition->ends_at)
+                                @if($exposition->state === 'upcoming')
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                        <i class="fas fa-hourglass-half"></i> À venir
+                                    </span>
+                                    démarre le {{ $exposition->starts_at->format('d/m/Y à H:i') }}
+                                @elseif($exposition->state === 'running' && $exposition->ends_at)
                                     · jusqu'au {{ $exposition->ends_at->format('d/m/Y H:i') }}
                                 @endif
                             </p>

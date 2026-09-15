@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Exposition;
-use App\Models\Item;
 use Illuminate\View\View;
 
 class ExpositionController extends Controller
 {
     /**
-     * Annuaire public des expositions en cours.
+     * Annuaire public des expositions actives (en cours et à venir).
      */
     public function index(): View
     {
-        $expositions = Exposition::running()
+        $expositions = Exposition::publiclyVisible()
             ->with(['user', 'items' => function ($q) {
                 $q->withAvg('reviews', 'rating')->withCount(['reviews', 'favoritedBy']);
             }])
+            ->orderByRaw('(starts_at IS NOT NULL AND starts_at > UTC_TIMESTAMP()) ASC')
             ->orderByDesc('is_featured')
             ->orderByDesc('created_at')
             ->paginate(9);
@@ -29,7 +29,7 @@ class ExpositionController extends Controller
      */
     public function show(Exposition $exposition): View
     {
-        if (!$exposition->isRunning()) {
+        if ($exposition->status !== 'active') {
             abort(404);
         }
 

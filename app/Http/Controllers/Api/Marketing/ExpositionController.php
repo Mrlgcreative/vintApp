@@ -13,17 +13,18 @@ use Illuminate\Validation\ValidationException;
 class ExpositionController extends ApiController
 {
     /**
-     * API publique : liste des expositions en cours.
+     * API publique : liste des expositions actives (en cours et à venir).
      */
     public function index(Request $request): JsonResponse
     {
         try {
-            $expositions = Exposition::running()
+            $expositions = Exposition::publiclyVisible()
                 ->with(['user', 'items' => function ($q) {
                     $q->withAvg('reviews', 'rating')
                         ->withCount(['reviews', 'favoritedBy'])
                         ->where('status', 'active');
                 }])
+                ->orderByRaw('(starts_at IS NOT NULL AND starts_at > UTC_TIMESTAMP()) ASC')
                 ->orderByDesc('is_featured')
                 ->orderByDesc('created_at')
                 ->paginate($request->get('per_page', 15));
@@ -43,7 +44,7 @@ class ExpositionController extends ApiController
             $exposition = Exposition::with(['user'])
                 ->findOrFail($id);
 
-            if (! $exposition->isRunning()) {
+            if ($exposition->status !== 'active') {
                 return $this->notFoundResponse('Exposition non trouvée');
             }
 

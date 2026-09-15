@@ -31,6 +31,10 @@ class Exposition extends Model
         'is_featured' => 'boolean',
     ];
 
+    protected $appends = [
+        'state',
+    ];
+
     /**
      * Vendeur qui expose ses articles.
      */
@@ -53,12 +57,12 @@ class Exposition extends Model
     protected static function booted(): void
     {
         static::creating(function (Exposition $exposition) {
-            if (!$exposition->slug) {
+            if (! $exposition->slug) {
                 $base = Str::slug($exposition->title ?: 'exposition');
                 $slug = $base;
                 $i = 2;
                 while (static::where('slug', $slug)->exists()) {
-                    $slug = $base . '-' . $i;
+                    $slug = $base.'-'.$i;
                     $i++;
                 }
                 $exposition->slug = $slug;
@@ -72,6 +76,15 @@ class Exposition extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
+    }
+
+    /**
+     * Expositions visibles publiquement (toute exposition active,
+     * y compris celles programmées dans le futur).
+     */
+    public function scopePubliclyVisible(Builder $query): Builder
+    {
+        return $query->active();
     }
 
     /**
@@ -102,7 +115,36 @@ class Exposition extends Model
         if ($this->ends_at && $this->ends_at->isPast()) {
             return false;
         }
+
         return true;
+    }
+
+    /**
+     * État de visibilité : running, upcoming, ended ou inactive.
+     */
+    public function visibilityState(): string
+    {
+        if ($this->status !== 'active') {
+            return 'inactive';
+        }
+
+        if ($this->starts_at && $this->starts_at->isFuture()) {
+            return 'upcoming';
+        }
+
+        if ($this->ends_at && $this->ends_at->isPast()) {
+            return 'ended';
+        }
+
+        return 'running';
+    }
+
+    /**
+     * Attribut sérialisé pour l'API.
+     */
+    public function getStateAttribute(): string
+    {
+        return $this->visibilityState();
     }
 
     /**
