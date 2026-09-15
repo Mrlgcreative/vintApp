@@ -28,6 +28,8 @@ use App\Http\Controllers\Api\System\SystemController;
 use App\Http\Controllers\Api\Notifications\FcmController;
 use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
 use App\Http\Controllers\Api\Location\SellerLocationController as ApiSellerLocationController;
+use App\Http\Controllers\Api\Marketing\ExpositionController as ApiExpositionController;
+use App\Http\Controllers\Api\Marketing\OfferController as ApiOfferController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\BotController;
@@ -74,10 +76,22 @@ Route::middleware(['cache.response:60'])->group(function () {
 
     // API publique: Devises supportées
     Route::get('/v1/currencies', [SystemController::class, 'currencies']);
+
+    // API publique: Expositions numériques
+    Route::get('/v1/expositions', [ApiExpositionController::class, 'index']);
+
+    // API publique: Promotions en cours
+    Route::get('/v1/promotions', [ApiOfferController::class, 'promotions']);
 });
 
 // API publique: Page d'accueil (sans middleware de cache pour compatibilité)
 Route::get('/v1/home', [WelcomeController::class, 'apiIndex']);
+
+// API publique: Détail d'une exposition + compteur de vues
+Route::middleware(['throttle:30,1'])->group(function () {
+    Route::get('/v1/expositions/{id}', [ApiExpositionController::class, 'show']);
+    Route::post('/v1/expositions/{id}/views', [ApiExpositionController::class, 'incrementViews']);
+});
 
 // Validation de code de parrainage (public pour l'inscription)
 Route::middleware(['throttle:10,1'])->post('/validate-referral-code', [ApiAffiliateController::class, 'validateReferralCode']);
@@ -303,6 +317,25 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::get('/', [ApiVintPassController::class, 'myPasses']);
         Route::get('/{vintPass}', [ApiVintPassController::class, 'show']);
         Route::post('/request/{item}', [ApiVintPassController::class, 'requestPass']);
+    });
+
+    // ---- API V1 : Expositions (vendeur/admin) ----
+    Route::prefix('v1/seller/expositions')->middleware('throttle:30,1')->group(function () {
+        Route::get('/', [ApiExpositionController::class, 'myExpositions']);
+        Route::post('/', [ApiExpositionController::class, 'store']);
+        Route::put('/{id}', [ApiExpositionController::class, 'update']);
+        Route::patch('/{id}/status', [ApiExpositionController::class, 'toggleStatus']);
+        Route::delete('/{id}', [ApiExpositionController::class, 'destroy']);
+    });
+
+    // ---- API V1 : Offres / promotions (vendeur/admin) ----
+    Route::prefix('v1/seller/offers')->middleware('throttle:30,1')->group(function () {
+        Route::get('/', [ApiOfferController::class, 'myOffers']);
+        Route::get('/{id}', [ApiOfferController::class, 'show']);
+        Route::post('/', [ApiOfferController::class, 'store']);
+        Route::put('/{id}', [ApiOfferController::class, 'update']);
+        Route::patch('/{id}/status', [ApiOfferController::class, 'toggleStatus']);
+        Route::delete('/{id}', [ApiOfferController::class, 'destroy']);
     });
 
     // ==================== Routes API legacy (JSON) ====================
