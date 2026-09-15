@@ -1,50 +1,50 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AffiliateController;
+use App\Http\Controllers\Admin\MonitoringController;
+use App\Http\Controllers\Admin\RefundController as AdminRefundController;
+use App\Http\Controllers\Admin\SupportController as AdminSupportController;
+use App\Http\Controllers\Admin\WaitingUsersController;
+use App\Http\Controllers\Admin\WalletController as AdminWalletController;
+use App\Http\Controllers\Api\Affiliate\AffiliateController as ApiAffiliateController;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Auth\FirebaseAuthController;
 use App\Http\Controllers\Api\Auth\TwoFactorAuthController;
-use App\Http\Controllers\Api\Items\ItemController as ApiItemController;
-use App\Http\Controllers\Api\Catalog\CategoryController as ApiCategoryController;
-use App\Http\Controllers\Api\Catalog\BrandController as ApiBrandController;
-use App\Http\Controllers\Api\Messages\MessageController as ApiMessageController;
-use App\Http\Controllers\Api\Reviews\ReviewController as ApiReviewController;
-use App\Http\Controllers\Api\Users\UserController as ApiUserController;
-use App\Http\Controllers\Api\Notifications\NotificationController as ApiNotificationController;
-use App\Http\Controllers\Api\Users\DataExportController as ApiDataExportController;
-use App\Http\Controllers\Api\Support\SupportController as ApiSupportController;
 use App\Http\Controllers\Api\Authenticity\AuthenticityController as ApiAuthenticityController;
-use App\Http\Controllers\Api\VintPass\VintPassController as ApiVintPassController;
-use App\Http\Controllers\Api\Affiliate\AffiliateController as ApiAffiliateController;
-use App\Http\Controllers\Api\Orders\OrderController as ApiOrderController;
+use App\Http\Controllers\Api\BroadcastAuthController;
 use App\Http\Controllers\Api\Cart\CartController as ApiCartController;
+use App\Http\Controllers\Api\Catalog\BrandController as ApiBrandController;
+use App\Http\Controllers\Api\Catalog\CategoryController as ApiCategoryController;
 use App\Http\Controllers\Api\DeliveryAddress\DeliveryAddressController as ApiDeliveryAddressController;
-use App\Http\Controllers\Api\Payments\PaymentController as ApiPaymentController;
-use App\Http\Controllers\Api\Wallet\WalletController as ApiWalletController;
-use App\Http\Controllers\Api\Webhooks\PaymentCallbackController as ApiPaymentCallbackController;
-use App\Http\Controllers\Api\Webhooks\PawaPayCallbackController as ApiPawaPayCallbackController;
-use App\Http\Controllers\Api\Webhooks\KPayCallbackController as ApiKPayCallbackController;
-use App\Http\Controllers\Api\System\SystemController;
-use App\Http\Controllers\Api\Notifications\FcmController;
-use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
+use App\Http\Controllers\Api\Items\ItemController as ApiItemController;
 use App\Http\Controllers\Api\Location\SellerLocationController as ApiSellerLocationController;
 use App\Http\Controllers\Api\Marketing\ExpositionController as ApiExpositionController;
 use App\Http\Controllers\Api\Marketing\OfferController as ApiOfferController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\BotController;
-use App\Http\Controllers\WalletController;
-use App\Http\Controllers\LocationValidationController;
-use App\Http\Controllers\WelcomeController;
-
+use App\Http\Controllers\Api\Messages\MessageController as ApiMessageController;
+use App\Http\Controllers\Api\NotificationController as LegacyFcmNotificationController;
+use App\Http\Controllers\Api\Notifications\FcmController;
+use App\Http\Controllers\Api\Notifications\NotificationController as ApiNotificationController;
+use App\Http\Controllers\Api\Orders\OrderController as ApiOrderController;
+use App\Http\Controllers\Api\Payments\PaymentController as ApiPaymentController;
+use App\Http\Controllers\Api\Reviews\ReviewController as ApiReviewController;
+use App\Http\Controllers\Api\Support\SupportController as ApiSupportController;
+use App\Http\Controllers\Api\System\SystemController;
+use App\Http\Controllers\Api\Users\DataExportController as ApiDataExportController;
+use App\Http\Controllers\Api\Users\UserController as ApiUserController;
+use App\Http\Controllers\Api\VintPass\VintPassController as ApiVintPassController;
+use App\Http\Controllers\Api\Wallet\WalletController as ApiWalletController;
+use App\Http\Controllers\Api\Webhooks\KPayCallbackController as ApiKPayCallbackController;
+use App\Http\Controllers\Api\Webhooks\PawaPayCallbackController as ApiPawaPayCallbackController;
 // Admin Controllers
-use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\AffiliateController;
-use App\Http\Controllers\Admin\RefundController as AdminRefundController;
-use App\Http\Controllers\Admin\WaitingUsersController;
-use App\Http\Controllers\Admin\WalletController as AdminWalletController;
-use App\Http\Controllers\Admin\SupportController as AdminSupportController;
-use App\Http\Controllers\Admin\MonitoringController;
+use App\Http\Controllers\Api\Webhooks\PaymentCallbackController as ApiPaymentCallbackController;
+use App\Http\Controllers\BotController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocationValidationController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\WalletController;
+use App\Http\Controllers\WelcomeController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -155,7 +155,7 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::middleware('auth:sanctum')->get('/user', [AuthController::class, 'me']);
 
 // ==================== Broadcasting Pusher (realtime mobile) ====================
-Route::middleware('auth:sanctum')->post('/broadcasting/auth', [\App\Http\Controllers\Api\BroadcastAuthController::class, 'auth']);
+Route::middleware('auth:sanctum')->post('/broadcasting/auth', [BroadcastAuthController::class, 'auth']);
 
 // ==================== Authentification à deux facteurs (API) ====================
 Route::middleware(['auth:sanctum', 'ability:2fa:pending', 'throttle:10,1'])->post('/two-factor/verify', [TwoFactorAuthController::class, 'verify']);
@@ -451,6 +451,15 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
         ->name('api.v1.payments.maishapay.initiate');
     Route::get('/maishapay/status/{transactionId}', [ApiPaymentController::class, 'checkMaishaStatus'])
         ->name('api.v1.payments.maishapay.status');
+
+    // K-PAY routes (paiement mobile RDC)
+    Route::post('/kpay', [ApiPaymentController::class, 'initiateKPayPayment'])
+        ->middleware('throttle:10,1') // Max 10 initiations/min
+        ->name('api.v1.payments.kpay.initiate');
+    Route::get('/kpay/status/{transactionId}', [ApiPaymentController::class, 'checkKPayStatus'])
+        ->name('api.v1.payments.kpay.status');
+    Route::post('/kpay/predict-provider', [ApiPaymentController::class, 'predictKPayProvider'])
+        ->name('api.v1.payments.kpay.predict-provider');
 });
 
 // ---- API V1 : Localisation vendeur (public) ----

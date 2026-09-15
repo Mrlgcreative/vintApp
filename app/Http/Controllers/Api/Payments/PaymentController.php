@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Api\Payments;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\ExchangeRateController;
 use App\Models\Order;
 use App\Models\Refund;
 use App\Models\Transaction;
+use App\Services\KPay;
+use App\Services\MaishaPay;
 use App\Services\PaymentService;
 use App\Services\StorageSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class PaymentController extends ApiController
 {
@@ -64,7 +69,7 @@ class PaymentController extends ApiController
             'amount' => 'required|numeric|min:1|max:500000',
             'phone' => 'required|string|min:9|max:15',
             'purpose' => 'required|string',
-            'currency' => 'nullable|in:USD,CDF'
+            'currency' => 'nullable|in:USD,CDF',
         ]);
 
         if ($validator->fails()) {
@@ -76,12 +81,12 @@ class PaymentController extends ApiController
                 'amount' => $request->amount,
                 'phone' => $request->phone,
                 'purpose' => $request->purpose,
-                'buyer_id' => $request->user()->id
+                'buyer_id' => $request->user()->id,
             ];
 
-            $methodName = 'payWith' . str_replace('_', '', ucwords($request->provider, '_'));
+            $methodName = 'payWith'.str_replace('_', '', ucwords($request->provider, '_'));
 
-            if (!method_exists($this->paymentService, $methodName)) {
+            if (! method_exists($this->paymentService, $methodName)) {
                 return $this->errorResponse('Méthode de paiement non supportée', 400);
             }
 
@@ -94,6 +99,7 @@ class PaymentController extends ApiController
             return $this->errorResponse($result['message'] ?? 'Erreur lors du paiement', 400);
         } catch (\Exception $e) {
             Log::error('API Payment initiation error', ['error' => $e->getMessage()]);
+
             return $this->errorResponse('Erreur lors de l\'initiation du paiement', 500);
         }
     }
@@ -108,7 +114,7 @@ class PaymentController extends ApiController
             'refund_type' => 'required|in:partial,full',
             'refund_amount' => 'nullable|numeric|min:0',
             'evidence_photos' => 'nullable|array|max:5',
-            'evidence_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048'
+            'evidence_photos.*' => 'image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -122,7 +128,7 @@ class PaymentController extends ApiController
                 return $this->errorResponse('Non autorisé', 403);
             }
 
-            if (!$this->isRefundEligible($order)) {
+            if (! $this->isRefundEligible($order)) {
                 return $this->errorResponse('Commande non éligible au remboursement', 400);
             }
 
@@ -151,7 +157,7 @@ class PaymentController extends ApiController
                 'refund_type' => $request->refund_type,
                 'status' => 'pending',
                 'evidence_photos' => json_encode($evidencePhotos),
-                'requested_at' => now()
+                'requested_at' => now(),
             ]);
 
             return $this->successResponse(
@@ -161,6 +167,7 @@ class PaymentController extends ApiController
             );
         } catch (\Exception $e) {
             Log::error('API Refund request error', ['error' => $e->getMessage()]);
+
             return $this->errorResponse('Erreur lors de la demande de remboursement', 500);
         }
     }
@@ -231,10 +238,11 @@ class PaymentController extends ApiController
         }
 
         try {
-            $maishaPay = new \App\Services\MaishaPay();
+            $maishaPay = new MaishaPay;
 
-            if (!$maishaPay->isConfigured()) {
+            if (! $maishaPay->isConfigured()) {
                 Log::error('MaishaPay non configuré');
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Service de paiement non disponible',
@@ -242,7 +250,7 @@ class PaymentController extends ApiController
             }
 
             $user = $request->user();
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Utilisateur non authentifié',
@@ -251,7 +259,7 @@ class PaymentController extends ApiController
             $buyerId = $user->id;
 
             // Générer un ID de transaction unique
-            $transactionId = 'MP-' . strtoupper(\Illuminate\Support\Str::random(12)) . '-' . time();
+            $transactionId = 'MP-'.strtoupper(Str::random(12)).'-'.time();
 
             // Stocker le panier dans les métadonnées pour le callback
             $cartData = get_cart_array();
@@ -291,7 +299,7 @@ class PaymentController extends ApiController
                 $maishapayRef = $result['status_reference'] ?? $result['maishapay_id'] ?? $result['transaction_id'];
                 $transaction->update([
                     'transaction_ref' => $maishapayRef,
-                    'description' => 'Ref: ' . $result['transaction_id'],
+                    'description' => 'Ref: '.$result['transaction_id'],
                     'metadata' => json_encode(array_merge(
                         json_decode($transaction->metadata ?? '{}', true),
                         [
@@ -329,6 +337,7 @@ class PaymentController extends ApiController
 
         } catch (\Exception $e) {
             Log::error('MaishaPay Exception', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Erreur interne du service de paiement',
@@ -343,7 +352,7 @@ class PaymentController extends ApiController
     {
         $transaction = Transaction::find($transactionId);
 
-        if (!$transaction) {
+        if (! $transaction) {
             return response()->json([
                 'success' => false,
                 'message' => 'Transaction introuvable',
@@ -361,7 +370,7 @@ class PaymentController extends ApiController
 
         // Sinon vérifier auprès de MaishaPay
         if ($transaction->transaction_ref) {
-            $maishaPay = new \App\Services\MaishaPay();
+            $maishaPay = new MaishaPay;
             $result = $maishaPay->checkStatus($transaction->transaction_ref);
 
             if ($result['success'] && isset($result['status'])) {
@@ -397,19 +406,269 @@ class PaymentController extends ApiController
     }
 
     /**
+     * API: Initier un paiement K-PAY (USSD ou page hébergée) — paiement mobile.
+     */
+    public function initiateKPayPayment(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'amount' => 'required|numeric|min:0.01',
+            'phone' => 'sometimes|string|min:9|max:13',
+            'currency' => 'sometimes|string|in:CDF,USD',
+            'operator' => 'sometimes|string|in:VODACOM,AIRTEL,ORANGE',
+            'mode' => 'sometimes|string|in:USSD,GATEWAY',
+            'hosted' => 'sometimes|boolean',
+            'purpose' => 'sometimes|string|max:255',
+            'delivery_address_id' => 'sometimes|nullable|integer|exists:delivery_addresses,id',
+            'cart_items' => 'sometimes|array',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        $kpay = new KPay;
+
+        if (! $kpay->isConfigured() || ! $kpay->isEnabled()) {
+            return $this->errorResponse('Service de paiement K-PAY non disponible', 503);
+        }
+
+        try {
+            $currency = $request->input('currency', 'CDF');
+            $amount = (float) $request->amount;
+            $exchangeRate = null;
+
+            // K-PAY RDC opère en CDF. Si le montant est en USD, convertir avant l'init.
+            if ($currency !== 'CDF') {
+                $exchangeRate = Cache::remember('usd_cdf_rate', 3600, function () {
+                    try {
+                        $data = (new ExchangeRateController)->getRate()->getData(true);
+
+                        return (float) ($data['rate'] ?? 2650.00);
+                    } catch (\Exception $e) {
+                        Log::error('Erreur récupération taux K-PAY (API): '.$e->getMessage());
+
+                        return 2650.00;
+                    }
+                });
+
+                $amountCdf = round($amount * $exchangeRate, 2);
+            } else {
+                $amountCdf = $amount;
+            }
+
+            if ($amountCdf > KPay::MAX_AMOUNT_CDF) {
+                return $this->errorResponse(sprintf(
+                    'Le montant (%s CDF) dépasse la limite maximale autorisée de %s CDF pour un paiement Mobile Money.',
+                    number_format($amountCdf, 2),
+                    number_format(KPay::MAX_AMOUNT_CDF, 2)
+                ), 422);
+            }
+
+            $useGateway = (bool) $request->input('hosted') || $request->input('mode') === 'GATEWAY';
+
+            if (! $useGateway && ! $request->input('phone')) {
+                return $this->errorResponse('Le numéro Mobile Money est requis pour le paiement USSD.', 422);
+            }
+
+            $cartItems = $request->input('cart_items');
+            if (! is_array($cartItems)) {
+                $cartItems = get_cart_array();
+            }
+
+            $externalId = $kpay->generateExternalId();
+
+            $transaction = Transaction::create([
+                'user_id' => $request->user()->id,
+                'buyer_id' => $request->user()->id,
+                'transaction_id' => $externalId,
+                'transaction_ref' => $externalId,
+                'amount' => $amountCdf,
+                'currency' => 'CDF',
+                'provider' => 'kpay',
+                'status' => 'pending',
+                'type' => Transaction::TYPE_PURCHASE,
+                'payment_method' => 'kpay',
+                'purpose' => $request->input('purpose', 'Paiement VintApp'),
+                'phone' => $request->input('phone'),
+                'metadata' => json_encode([
+                    'gateway' => 'kpay',
+                    'operator' => $request->input('operator'),
+                    'mode' => $useGateway ? 'GATEWAY' : 'USSD',
+                    'cart' => $cartItems,
+                    'cart_items' => $cartItems,
+                    'delivery_address_id' => $request->input('delivery_address_id'),
+                    'source_currency' => $currency,
+                    'source_amount' => $amount,
+                    'currency' => 'CDF',
+                    'amount_cdf' => $amountCdf,
+                    'exchange_rate' => $exchangeRate,
+                ]),
+            ]);
+
+            if ($useGateway) {
+                // Page hébergée : le client choisit son opérateur lui-même.
+                $result = $kpay->initiatePayment([
+                    'amount' => $amountCdf,
+                    'externalId' => $externalId,
+                    'returnUrl' => config('services.kpay.return_url'),
+                    'cancelUrl' => config('services.kpay.cancel_url'),
+                    'description' => 'Paiement VintApp #'.$externalId,
+                ]);
+            } else {
+                // USSD : mapper l'opérateur vers le code K-PAY (RDC).
+                $providers = [
+                    'VODACOM' => 'VODACOM_MPESA_COD',
+                    'AIRTEL' => 'AIRTEL_COD',
+                    'ORANGE' => 'ORANGE_COD',
+                ];
+                $provider = $providers[$request->input('operator')] ?? $kpay->getDefaultProvider();
+
+                $result = $kpay->initiatePayment([
+                    'amount' => $amountCdf,
+                    'provider' => $provider,
+                    'phoneNumber' => $kpay->normalizePhoneNumber($request->input('phone')),
+                    'externalId' => $externalId,
+                    'description' => 'Paiement VintApp #'.$externalId,
+                    'metadata' => [
+                        'transaction_id' => $externalId,
+                        'user_id' => $request->user()->id,
+                    ],
+                ]);
+            }
+
+            if ($result['success'] && in_array($result['status'], ['PENDING', 'PROCESSING'], true)) {
+                $transaction->update([
+                    'transaction_ref' => $result['payment_id'] ?? $result['reference'] ?? $externalId,
+                    'status' => 'pending',
+                ]);
+
+                return $this->successResponse([
+                    'status' => 'pending',
+                    'transaction_id' => $transaction->id,
+                    'reference' => $transaction->transaction_ref,
+                    'mode' => $result['mode'] ?? ($useGateway ? 'GATEWAY' : 'USSD'),
+                    'gateway_url' => $result['gateway_url'] ?? null,
+                    'amount' => $amountCdf,
+                    'currency' => 'CDF',
+                ], $result['message'] ?? 'Paiement initié avec succès');
+            }
+
+            $transaction->update(['status' => 'failed']);
+
+            Log::error('K-PAY: échec initiation paiement (API)', ['result' => $result]);
+
+            return $this->errorResponse($result['message'] ?? 'Erreur lors du paiement K-PAY', 400);
+        } catch (\Exception $e) {
+            Log::error('K-PAY: exception initiation paiement (API)', ['error' => $e->getMessage()]);
+
+            return $this->errorResponse('Erreur lors de l\'initiation du paiement', 500);
+        }
+    }
+
+    /**
+     * API: Statut d'un paiement K-PAY (polling).
+     */
+    public function checkKPayStatus(Request $request, $transactionId): JsonResponse
+    {
+        try {
+            $transaction = Transaction::where('id', $transactionId)
+                ->where('provider', 'kpay')
+                ->where('user_id', $request->user()->id)
+                ->firstOrFail();
+
+            // Déjà final : pas d'appel réseau inutile.
+            if (in_array($transaction->status, ['completed', 'failed', 'cancelled'], true)) {
+                return $this->successResponse([
+                    'status' => $transaction->status,
+                    'transaction_id' => $transaction->id,
+                    'is_final' => true,
+                ], 'Statut du paiement K-PAY');
+            }
+
+            $kpay = new KPay;
+            $result = $kpay->checkPaymentStatus($transaction->transaction_ref);
+
+            $current = $result['status'] ?? null;
+            if ($result['success'] && $current && ! in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
+                $newStatus = $kpay->mapStatus($current);
+                $previousStatus = $transaction->status;
+
+                if ($newStatus !== $previousStatus) {
+                    $transaction->update(['status' => $newStatus]);
+                }
+
+                if ($newStatus === 'completed' && $previousStatus !== 'completed') {
+                    create_orders_from_transaction($transaction->fresh());
+                    clear_cart();
+                }
+            }
+
+            return $this->successResponse([
+                'status' => $transaction->fresh()->status,
+                'transaction_id' => $transaction->id,
+                'is_final' => in_array($transaction->fresh()->status, ['completed', 'failed', 'cancelled'], true),
+            ], 'Statut du paiement K-PAY');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Transaction K-PAY introuvable', 404);
+        }
+    }
+
+    /**
+     * API: Prédire l'opérateur Mobile Money K-PAY depuis un numéro.
+     */
+    public function predictKPayProvider(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'phone' => 'required|string|min:9|max:15',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
+        }
+
+        try {
+            $kpay = new KPay;
+            $result = $kpay->predictProvider($request->phone);
+
+            if (! $result['success'] || empty($result['provider'])) {
+                return $this->errorResponse($result['message'] ?? 'Opérateur non détecté', 400);
+            }
+
+            $providerMap = [
+                'VODACOM_MPESA_COD' => 'VODACOM',
+                'AIRTEL_COD' => 'AIRTEL',
+                'ORANGE_COD' => 'ORANGE',
+            ];
+
+            return $this->successResponse([
+                'provider' => $providerMap[$result['provider']] ?? null,
+                'kpay_provider' => $result['provider'],
+                'phone_number' => $result['phoneNumber'] ?? null,
+                'country' => $result['country'] ?? null,
+            ], 'Opérateur détecté');
+        } catch (\Exception $e) {
+            Log::error('K-PAY: predict-provider (API)', ['error' => $e->getMessage()]);
+
+            return $this->errorResponse('Erreur lors de la détection de l\'opérateur', 500);
+        }
+    }
+
+    /**
      * Vérifier si une commande est éligible au remboursement
      */
     private function isRefundEligible($order)
     {
         // La commande doit être confirmée par l'acheteur (réception confirmée)
-        if (!$order->confirmed_by_buyer_at) {
+        if (! $order->confirmed_by_buyer_at) {
             Log::info('Refund not eligible: no buyer confirmation', ['order' => $order->order_number]);
+
             return false;
         }
 
         // Vérifier qu'il n'y a pas déjà une demande de remboursement
         if ($order->refunds()->exists()) {
             Log::info('Refund not eligible: refund already exists', ['order' => $order->order_number]);
+
             return false;
         }
 
@@ -418,8 +677,9 @@ class PaymentController extends ApiController
         if ($daysSinceConfirmation > 30) {
             Log::info('Refund not eligible: too old', [
                 'order' => $order->order_number,
-                'days_since_confirmation' => $daysSinceConfirmation
+                'days_since_confirmation' => $daysSinceConfirmation,
             ]);
+
             return false;
         }
 

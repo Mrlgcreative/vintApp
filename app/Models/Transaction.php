@@ -55,27 +55,40 @@ class Transaction extends Model
      * Les constantes pour les différents statuts de transaction.
      */
     const STATUS_PENDING = 'pending';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_FAILED = 'failed';
+
     const STATUS_REFUNDED = 'refunded';
 
     /**
      * Les constantes pour les différents types de transaction.
      */
     const TYPE_DEPOSIT = 'deposit';
+
     const TYPE_WITHDRAW = 'withdraw';
+
     const TYPE_TRANSFER = 'transfer';
+
     const TYPE_PURCHASE = 'purchase';
 
     /**
      * Les constantes pour les différentes méthodes de paiement.
      */
     const METHOD_WALLET = 'wallet';
+
     const METHOD_AIRTEL = 'airtel_money';
+
     const METHOD_ORANGE = 'orange_money';
+
     const METHOD_MPESA = 'mpesa';
+
     const METHOD_AFRIMONEY = 'afrimoney';
+
     const METHOD_BANK = 'bank';
+
+    const METHOD_KPAY = 'kpay';
 
     /**
      * Récupère l'utilisateur associé à la transaction.
@@ -218,11 +231,12 @@ class Transaction extends Model
      */
     public function updateStatus(string $status): bool
     {
-        if (!in_array($status, [self::STATUS_PENDING, self::STATUS_COMPLETED, self::STATUS_FAILED, self::STATUS_REFUNDED])) {
+        if (! in_array($status, [self::STATUS_PENDING, self::STATUS_COMPLETED, self::STATUS_FAILED, self::STATUS_REFUNDED])) {
             return false;
         }
 
         $this->status = $status;
+
         return $this->save();
     }
 
@@ -231,7 +245,7 @@ class Transaction extends Model
      */
     public function getFormattedAmountAttribute(): string
     {
-        return number_format($this->amount, 2) . ' ' . $this->currency;
+        return number_format($this->amount, 2).' '.$this->currency;
     }
 
     /**
@@ -245,6 +259,7 @@ class Transaction extends Model
             self::METHOD_ORANGE => 'fas fa-mobile-alt text-warning',
             self::METHOD_MPESA => 'fas fa-mobile-alt text-success',
             self::METHOD_AFRIMONEY => 'fas fa-mobile-alt text-primary',
+            self::METHOD_KPAY => 'fas fa-mobile-alt text-success',
             self::METHOD_BANK => 'fas fa-university',
             default => 'fas fa-money-bill-wave',
         };
@@ -253,10 +268,10 @@ class Transaction extends Model
     protected static function booted(): void
     {
         static::saving(function (self $transaction) {
-            if ($transaction->isDirty('status') && $transaction->status === self::STATUS_COMPLETED && !$transaction->receipt_number) {
-                $transaction->receipt_number = 'REC-' . now()->format('Ymd') . '-' . strtoupper(Str::random(8));
+            if ($transaction->isDirty('status') && $transaction->status === self::STATUS_COMPLETED && ! $transaction->receipt_number) {
+                $transaction->receipt_number = 'REC-'.now()->format('Ymd').'-'.strtoupper(Str::random(8));
                 $transaction->receipt_signature = hash_hmac('sha256',
-                    $transaction->id . $transaction->receipt_number . $transaction->amount . $transaction->currency,
+                    $transaction->id.$transaction->receipt_number.$transaction->amount.$transaction->currency,
                     config('app.key')
                 );
                 $transaction->receipt_generated_at = now();
