@@ -76,21 +76,18 @@ Route::middleware(['cache.response:60'])->group(function () {
 
     // API publique: Devises supportées
     Route::get('/v1/currencies', [SystemController::class, 'currencies']);
-
-    // API publique: Expositions numériques
-    Route::get('/v1/expositions', [ApiExpositionController::class, 'index']);
-
-    // API publique: Promotions en cours
-    Route::get('/v1/promotions', [ApiOfferController::class, 'promotions']);
 });
 
 // API publique: Page d'accueil (sans middleware de cache pour compatibilité)
 Route::get('/v1/home', [WelcomeController::class, 'apiIndex']);
 
-// API publique: Détail d'une exposition + compteur de vues
+// API publique: Expositions numériques + promotions (sans cache response
+// pour une visibilité immédiate des nouvelles expositions/promotions)
 Route::middleware(['throttle:30,1'])->group(function () {
+    Route::get('/v1/expositions', [ApiExpositionController::class, 'index']);
     Route::get('/v1/expositions/{id}', [ApiExpositionController::class, 'show']);
     Route::post('/v1/expositions/{id}/views', [ApiExpositionController::class, 'incrementViews']);
+    Route::get('/v1/promotions', [ApiOfferController::class, 'promotions']);
 });
 
 // Validation de code de parrainage (public pour l'inscription)
