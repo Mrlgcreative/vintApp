@@ -8,11 +8,17 @@ use App\Models\Order;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Review;
-use App\Models\Wallet;
-use App\Models\Transaction;
+use App\Models\WalletTransaction;
+use App\Services\WalletService;
 
 class SellerController extends Controller
 {
+    private WalletService $walletService;
+
+    public function __construct(WalletService $walletService)
+    {
+        $this->walletService = $walletService;
+    }
     public function dashboard()
     {
         $user = auth()->user();
@@ -51,19 +57,16 @@ class SellerController extends Controller
     public function wallet()
     {
         $user = auth()->user();
-        $usdWallet = $user->usdWallet();
-        $cdfWallet = $user->cdfWallet();
 
-        if (!$usdWallet) {
-            $usdWallet = $user->wallets()->create(['currency' => 'USD', 'balance' => 0]);
-        }
-        if (!$cdfWallet) {
-            $cdfWallet = $user->wallets()->create(['currency' => 'CDF', 'balance' => 0]);
-        }
+        $usdWallet = $this->walletService->getOrCreateUserWallet($user, 'USD');
+        $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
 
-        $recentTransactions = Transaction::whereIn('wallet_id', [$usdWallet->id, $cdfWallet->id])
-            ->latest()->paginate(15);
-        return view('seller.wallet', compact('usdWallet', 'cdfWallet', 'recentTransactions'));
+        $recentTransactions = WalletTransaction::whereIn('wallet_id', [$usdWallet->id, $cdfWallet->id])
+            ->with('wallet')
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('wallet.index', compact('usdWallet', 'cdfWallet', 'recentTransactions'));
     }
 
     public function categories()
