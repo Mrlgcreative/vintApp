@@ -456,6 +456,9 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
     Route::post('/kpay', [ApiPaymentController::class, 'initiateKPayPayment'])
         ->middleware('throttle:10,1') // Max 10 initiations/min
         ->name('api.v1.payments.kpay.initiate');
+    Route::post('/kpay/initiate', [ApiPaymentController::class, 'initiateKPayPayment'])
+        ->middleware('throttle:10,1') // Alias utilisé par l'app mobile (mobile/api/payment/paymentRequest.ts)
+        ->name('api.v1.payments.kpay.initiate-alias');
     Route::get('/kpay/status/{transactionId}', [ApiPaymentController::class, 'checkKPayStatus'])
         ->name('api.v1.payments.kpay.status');
     Route::post('/kpay/predict-provider', [ApiPaymentController::class, 'predictKPayProvider'])
