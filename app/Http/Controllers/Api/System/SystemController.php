@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\System;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class SystemController extends Controller
 {
@@ -36,5 +37,24 @@ class SystemController extends Controller
                 ],
             ]
         ], 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function fees(): JsonResponse
+    {
+        $commissionPercentage = (float) (DB::table('settings')
+            ->where('key', 'platform_commission_percentage')
+            ->value('value') ?? 10);
+
+        $transportFeePercentage = (float) (DB::table('settings')
+            ->where('key', 'transport_fee_percentage')
+            ->value('value') ?? 5);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'commission_percentage' => $commissionPercentage,
+                'transport_fee_percentage' => $transportFeePercentage,
+            ],
+        ]);
     }
 }

@@ -53,6 +53,10 @@ class CartController extends ApiController
                 ->where('key', 'transport_fee_percentage')
                 ->value('value') ?? 5);
 
+            $commissionPercentage = (float) (DB::table('settings')
+                ->where('key', 'platform_commission_percentage')
+                ->value('value') ?? 10);
+
             $transportFee = round(($subtotal * $transportFeePercentage) / 100, 2);
             $total = round($subtotal + $transportFee, 2);
 
@@ -64,6 +68,7 @@ class CartController extends ApiController
                 'subtotal' => $subtotal,
                 'transport_fee_percentage' => $transportFeePercentage,
                 'transport_fee' => $transportFee,
+                'commission_percentage' => $commissionPercentage,
                 'total' => $total,
                 'currency' => $currency,
             ], 'Résumé du panier');

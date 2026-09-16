@@ -76,6 +76,9 @@ Route::middleware(['cache.response:60'])->group(function () {
 
     // API publique: Devises supportées
     Route::get('/v1/currencies', [SystemController::class, 'currencies']);
+
+    // API publique: Taxes et commissions (commission plateforme + frais transport)
+    Route::get('/v1/system/fees', [SystemController::class, 'fees']);
 });
 
 // API publique: Page d'accueil (sans middleware de cache pour compatibilité)
