@@ -337,6 +337,17 @@
     </div>
 </div>
 
+<!-- Loading overlay -->
+<div id="withdrawLoading" class="fixed inset-0 z-50 hidden items-center justify-center bg-zinc-950/40 backdrop-blur-sm">
+    <div class="flex flex-col items-center gap-4 rounded-xl border border-zinc-200 bg-white px-10 py-8 shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+        <div class="h-9 w-9 animate-spin rounded-full border-2 border-zinc-200 border-t-zinc-900 dark:border-zinc-700 dark:border-t-zinc-100"></div>
+        <div class="text-center">
+            <p class="text-sm font-medium text-zinc-900 dark:text-white">Traitement en cours...</p>
+            <p class="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">Votre retrait est en cours d'envoi</p>
+        </div>
+    </div>
+</div>
+
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -441,8 +452,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 confirmBtn.disabled = true;
                 confirmBtn.innerHTML = `
                     <i class="fas fa-spinner fa-spin mr-2"></i>
-                    <span>Traitement en cours...</span>
+                    <span>Envoi en cours...</span>
                 `;
+
+                const loading = document.getElementById('withdrawLoading');
+                if (loading) {
+                    loading.classList.remove('hidden');
+                    loading.classList.add('flex');
+                }
             }
         });
     }
