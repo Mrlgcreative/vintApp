@@ -96,7 +96,7 @@
                         <div class="col-6">
                             <div class="border rounded p-2 text-center">
                                 <small class="text-muted d-block">Prix unitaire</small>
-                                <strong>{{ number_format($order->price, 2) }} {{ $order->currency }}</strong>
+                                <strong>{{ number_format($order->unit_price, 2) }} {{ $order->currency }}</strong>
                             </div>
                         </div>
                         <div class="col-6">

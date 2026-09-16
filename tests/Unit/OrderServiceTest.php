@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\PointTransaction;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
@@ -29,7 +30,7 @@ class OrderServiceTest extends TestCase
 
     private function makeSellerItem(User $seller, int $quantity = 2, float $price = 50, string $status = 'active'): Item
     {
-        $category = Category::create(['name' => 'Cat', 'slug' => 'cat-' . uniqid()]);
+        $category = Category::create(['name' => 'Cat', 'slug' => 'cat-'.uniqid()]);
 
         return Item::create([
             'user_id' => $seller->id,
@@ -53,7 +54,7 @@ class OrderServiceTest extends TestCase
             'amount' => $amount,
             'currency' => 'USD',
             'status' => 'completed',
-            'transaction_id' => 'PAY-' . uniqid(),
+            'transaction_id' => 'PAY-'.uniqid(),
         ]);
 
         $order->update(['payment_status' => 'paid']);
@@ -213,10 +214,55 @@ class OrderServiceTest extends TestCase
         // L'escrow est crédité du montant total lors de la confirmation du paiement
         $this->assertSame('confirmed', $order->fresh()->status);
         $this->assertSame(100.0, (float) $pending->fresh()->balance);
-        $this->assertSame(1, Transaction::where('purpose', 'like', 'Escrow - Commande #' . $order->id . '%')->count());
+        $this->assertSame(1, Transaction::where('purpose', 'like', 'Escrow - Commande #'.$order->id.'%')->count());
 
         // On ne peut pas re-confirmer (status n'est plus 'pending')
         $this->expectException(DomainException::class);
         $this->service->confirmPayment($order);
+    }
+
+    /** @test */
+    public function it_awards_points_to_buyer_and_seller_when_order_is_completed()
+    {
+        // user id 1 : utilisé par distributeFunds pour les transactions entreprise
+        User::factory()->create(['id' => 1]);
+
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create();
+        $item = $this->makeSellerItem($seller, 2, 100);
+
+        $order = $this->service->create([
+            'item_id' => $item->id,
+            'quantity' => 1,
+            'shipping_address' => 'Adresse',
+        ], $buyer);
+
+        Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'pending', 'balance' => 0, 'status' => 'active']);
+        Wallet::create(['user_id' => $seller->id, 'currency' => 'USD', 'type' => 'main', 'balance' => 0, 'status' => 'active']);
+
+        DB::table('settings')->updateOrInsert(
+            ['key' => 'platform_commission_percentage'],
+            ['value' => 10, 'type' => 'integer', 'category' => 'platform', 'label' => 'plateforme']
+        );
+
+        $this->markOrderPaid($order, $buyer, $seller, 100.0);
+        $this->service->confirmPayment($order);
+        $this->service->markShipped($order);
+        $this->service->markDelivered($order);
+
+        $this->assertSame(0, PointTransaction::count());
+
+        $this->service->confirmDelivery($order);
+
+        $this->assertSame('completed', $order->fresh()->status);
+
+        // Le listener AwardOrderPoints doit avoir crédité des points
+        $buyerPoints = $buyer->getOrCreatePoints()->fresh();
+        $sellerPoints = $seller->getOrCreatePoints()->fresh();
+
+        $this->assertGreaterThan(0, (float) $buyerPoints->available_points, 'L\'acheteur doit gagner des points à la complétion');
+        $this->assertGreaterThan(0, (float) $sellerPoints->available_points, 'Le vendeur doit gagner des points à la complétion');
+        $this->assertGreaterThan(0, PointTransaction::where('user_id', $buyer->id)->count());
+        $this->assertGreaterThan(0, PointTransaction::where('user_id', $seller->id)->count());
     }
 }

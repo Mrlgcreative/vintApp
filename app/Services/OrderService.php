@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\OrderCompleted;
 use App\Models\Distribution;
 use App\Models\Item;
 use App\Models\Order;
@@ -235,7 +236,9 @@ class OrderService
             throw new DomainException('Vous avez déjà confirmé la réception de cette commande.');
         }
 
-        return DB::transaction(function () use ($order, $note) {
+        $isNewConfirmation = false;
+
+        $result = DB::transaction(function () use ($order, $note, &$isNewConfirmation) {
             // Verrouillage pessimiste de la commande : deux confirmations
             // simultanées se sérialisent, empêchant tout double débit.
             $locked = Order::whereKey($order->id)->lockForUpdate()->first();
@@ -261,8 +264,25 @@ class OrderService
             $order->status = 'completed';
             $order->save();
 
+            $isNewConfirmation = true;
+
             return $distribution;
         });
+
+        // Dispatch hors transaction (la transaction est déjà commit)
+        // pour que les listeners puissent lire les données sans deadlock.
+        if ($isNewConfirmation) {
+            try {
+                event(new OrderCompleted($order));
+            } catch (\Exception $e) {
+                Log::warning('Échec dispatch OrderCompleted', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return $result;
     }
 
     /**

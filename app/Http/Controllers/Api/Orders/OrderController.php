@@ -270,6 +270,42 @@ class OrderController extends ApiController
     }
 
     /**
+     * API: Données de suivi en direct (JSON) pour le polling de la carte côté client.
+     */
+    public function trackingData(Request $request, $id): JsonResponse
+    {
+        $order = Order::with(['buyer', 'deliveryAddress', 'trackings'])->findOrFail($id);
+
+        $userId = $request->user()?->id ?? Auth::id();
+
+        if ($order->buyer_id !== $userId && $order->item->user_id !== $userId) {
+            return $this->errorResponse('Non autorisé', 403);
+        }
+
+        $latestTracking = $order->trackings->first();
+
+        if (!$latestTracking) {
+            return $this->successResponse(['available' => false], 'Suivi indisponible');
+        }
+
+        return $this->successResponse([
+            'available' => true,
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'order_status' => $order->status,
+            'latitude' => (float) $latestTracking->latitude,
+            'longitude' => (float) $latestTracking->longitude,
+            'address' => $latestTracking->address,
+            'city' => $latestTracking->city,
+            'status' => $latestTracking->status,
+            'status_text' => $latestTracking->status_text,
+            'tracked_at' => $latestTracking->formatted_tracked_at,
+            'estimated_delivery' => $latestTracking->formatted_estimated_delivery,
+            'distance_km' => $latestTracking->distance_to_customer,
+        ], 'Suivi récupéré avec succès');
+    }
+
+    /**
      * API: Annuler une commande (acheteur, uniquement en attente de paiement)
      */
     public function destroy(Request $request, $id): JsonResponse

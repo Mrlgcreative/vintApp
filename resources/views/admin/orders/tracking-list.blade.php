@@ -19,10 +19,6 @@
 
 @section('content')
 <div class="grid grid-cols-1 gap-6">
-    @php
-        $trackedOrders = \App\Models\Order::whereHas('trackings')->with(['buyer', 'seller', 'latestTracking'])->latest()->get();
-    @endphp
-
     @if($trackedOrders->isEmpty())
         <div class="rounded-xl border border-slate-200 bg-white p-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <div class="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700">

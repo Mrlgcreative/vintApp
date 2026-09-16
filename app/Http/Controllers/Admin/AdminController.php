@@ -2762,19 +2762,12 @@ class AdminController extends Controller
      */
     public function trackingList()
     {
-        // Récupérer la première commande avec tracking
-        $firstTrackedOrder = Order::whereHas('trackings')
+        $trackedOrders = Order::whereHas('trackings')
             ->with(['buyer', 'seller', 'latestTracking'])
             ->latest()
-            ->first();
-        
-        // Si une commande existe, rediriger vers sa page de tracking
-        if ($firstTrackedOrder) {
-            return redirect()->route('admin.orders.tracking', $firstTrackedOrder->id);
-        }
-        
-        // Sinon, afficher la liste
-        return view('admin.orders.tracking-list');
+            ->get();
+
+        return view('admin.orders.tracking-list', compact('trackedOrders'));
     }
 
     /**
@@ -2858,6 +2851,22 @@ class AdminController extends Controller
             DB::beginTransaction();
 
             $order = Order::with('deliveryAddress')->findOrFail($id);
+
+            // Garde : ne pas mettre à jour le tracking d'une commande annulée/remboursée
+            if (in_array($order->status, ['cancelled', 'refunded'])) {
+                DB::rollBack();
+                $message = 'Impossible de mettre à jour le tracking : la commande est ' . strtolower($order->status_text) . '.';
+
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => $message,
+                    ], 400);
+                }
+
+                return redirect()->route('admin.orders.tracking', $id)
+                    ->with('error', $message);
+            }
 
             // Récupérer les infos du client depuis delivery_address ou shipping_address
             $customerAddress = $request->customer_address;

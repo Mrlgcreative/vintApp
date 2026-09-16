@@ -234,6 +234,7 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::get('/', [ApiOrderController::class, 'index']);
         Route::post('/', [ApiOrderController::class, 'store']);
         Route::get('/sales', [ApiOrderController::class, 'mySales']);
+        Route::get('/{id}/tracking-data', [ApiOrderController::class, 'trackingData']);
         Route::get('/{id}', [ApiOrderController::class, 'show']);
         Route::post('/{id}/confirm-payment', [ApiOrderController::class, 'confirmPayment'])
             ->middleware('throttle:10,1'); // Max 10 confirmations de paiement/min
