@@ -79,6 +79,9 @@ Route::middleware(['cache.response:60'])->group(function () {
 
     // API publique: Taxes et commissions (commission plateforme + frais transport)
     Route::get('/v1/system/fees', [SystemController::class, 'fees']);
+
+    // API publique: Catalogue RGPD (droits, catégories de données, liens légaux)
+    Route::get('/v1/privacy', [SystemController::class, 'privacy']);
 });
 
 // API publique: Page d'accueil (sans middleware de cache pour compatibilité)
