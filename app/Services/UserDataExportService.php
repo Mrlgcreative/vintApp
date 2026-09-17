@@ -151,15 +151,18 @@ class UserDataExportService
      */
     private function favorites(User $user): array
     {
-        return $user->favorites()->with('item:id,title,slug,price,currency')->get()->map(fn ($f) => [
-            'ajouté_le' => $this->date($f->created_at),
-            'produit' => $f->item ? [
-                'id' => $f->item->id,
-                'titre' => $f->item->title,
-                'slug' => $f->item->slug,
-                'prix' => $f->item->price,
-                'devise' => $f->item->currency,
-            ] : ['id' => $f->item_id],
+        return $user->favorites()->with('category:id,name,slug')->get()->map(fn ($item) => [
+            'ajouté_le' => $this->date($item->pivot?->created_at ?? $item->created_at),
+            'produit' => [
+                'id' => $item->id,
+                'nom' => $item->name,
+                'prix' => $item->price,
+                'devise' => $item->currency,
+                'categorie' => $item->category ? [
+                    'nom' => $item->category->name,
+                    'slug' => $item->category->slug,
+                ] : null,
+            ],
         ])->toArray();
     }
 
@@ -168,7 +171,7 @@ class UserDataExportService
      */
     private function purchasedOrders(User $user): array
     {
-        return $user->ordersAsBuyer()->with('item:id,title,slug,price,currency')->get()->map(function ($order) {
+        return $user->ordersAsBuyer()->with('item:id,name,price,currency')->get()->map(function ($order) {
             return [
                 'id' => $order->id,
                 'reference' => $order->reference ?? null,
@@ -179,7 +182,7 @@ class UserDataExportService
                 'devise' => $order->currency ?? null,
                 'produit' => $order->item ? [
                     'id' => $order->item->id,
-                    'titre' => $order->item->title,
+                    'nom' => $order->item->name,
                     'prix' => $order->item->price,
                     'devise' => $order->item->currency,
                 ] : ['id' => $order->item_id],
