@@ -277,6 +277,12 @@
                                 <div class="flex items-center gap-1.5 min-w-0">
                                     <i class="fas fa-user-circle text-gray-300 dark:text-gray-600 text-sm flex-shrink-0"></i>
                                     <span class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">{{ $item->user->name }}</span>
+                                    @if($item->user->city)
+                                        <span class="flex items-center gap-0.5 text-[10px] md:text-xs text-gray-400 dark:text-gray-500 flex-shrink-0">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            {{ $item->user->city }}
+                                        </span>
+                                    @endif
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0 text-[10px] md:text-xs text-gray-400 dark:text-gray-500">
                                     <span class="flex items-center gap-0.5">

@@ -183,15 +183,31 @@
                                     </div>
 
                                     <div>
-                                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Localisation
+                                        <label for="city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Ville
                                         </label>
                                         <input type="text" 
-                                               id="location" 
-                                               name="location" 
-                                               value="{{ old('location', $user->location) }}" 
-                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('location') border-red-500 @enderror">
-                                        @error('location')
+                                               id="city" 
+                                               name="city" 
+                                               value="{{ old('city', $user->city) }}" 
+                                               placeholder="Ex: Kinshasa"
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('city') border-red-500 @enderror">
+                                        @error('city')
+                                            <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label for="commune" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Commune
+                                        </label>
+                                        <input type="text" 
+                                               id="commune" 
+                                               name="commune" 
+                                               value="{{ old('commune', $user->commune) }}" 
+                                               placeholder="Ex: Gombe"
+                                               class="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-4 focus:ring-primary-100 focus:border-primary dark:bg-gray-800 dark:text-white transition-all duration-200 @error('commune') border-red-500 @enderror">
+                                        @error('commune')
                                             <p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                                         @enderror
                                     </div>

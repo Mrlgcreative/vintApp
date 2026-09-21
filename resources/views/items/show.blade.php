@@ -256,6 +256,11 @@
                                 @if($totalReviews > 0)
                                     <span class="ml-1.5">· {{ $totalReviews }} avis</span>
                                 @endif
+                                @if($item->user->city)
+                                    <span class="ml-1.5 flex items-center">
+                                        <i class="fas fa-map-marker-alt mr-1 text-xs"></i>{{ $item->user->city }}
+                                    </span>
+                                @endif
                             </div>
                         </div>
                         <a href="{{ route('messages.index') }}" class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 transition-colors hover:border-primary-500 hover:text-primary-600 dark:border-slate-600 dark:text-slate-400">

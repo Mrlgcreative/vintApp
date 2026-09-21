@@ -41,7 +41,7 @@ class ItemController extends Controller
         $eagerLoad = [
             'category:id,name,slug',
             'brand:id,name,country',
-            'user:id,name,avatar,avatar_url',
+            'user:id,name,avatar,avatar_url,city,commune',
             'activeBoosts.boostType:id,name,icon,visual_config'
         ];
 
@@ -72,7 +72,8 @@ class ItemController extends Controller
             // Filtre par ville
             if ($filterCity) {
                 $query->whereHas('user', function($q) use ($filterCity) {
-                    $q->where('location', 'like', "%{$filterCity}%");
+                    $q->where('city', $filterCity)
+                        ->orWhere('location', 'like', "%{$filterCity}%");
                 });
             }
 
@@ -246,7 +247,7 @@ class ItemController extends Controller
         $item->load([
             'category:id,name,slug',
             'brand:id,name,country',
-            'user:id,name,avatar,avatar_url,email',
+            'user:id,name,avatar,avatar_url,email,city,commune',
             'activeBoosts.boostType:id,name,icon,visual_config',
             'authenticityCheck'
         ]);
@@ -874,7 +875,8 @@ class ItemController extends Controller
         return Item::where('status', 'active')
             ->visible()
             ->whereHas('user', function ($q) use ($city) {
-                $q->where('location', 'like', "%{$city}%");
+                $q->where('city', $city)
+                    ->orWhere('location', 'like', "%{$city}%");
             })
             ->exists();
     }
