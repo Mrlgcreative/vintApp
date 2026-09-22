@@ -129,12 +129,20 @@
                                                 <span class="font-bold text-blue-600">{{ $item->formatted_price }}</span>
                                             </td>
                                             <td class="py-4 px-2">
-                                                <select class="px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
-                                                        data-item-id="{{ $item->id }}">
-                                                    <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
-                                                    <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
-                                                    <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
-                                                </select>
+                                                @if($item->verification_status === 'rejected')
+                                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                                                          title="{{ $item->rejection_reason ?? 'Article rejeté par la modération' }}">
+                                                        <i class="fas fa-ban text-xs"></i>
+                                                        Rejeté
+                                                    </span>
+                                                @else
+                                                    <select class="px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
+                                                            data-item-id="{{ $item->id }}">
+                                                        <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
+                                                        <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
+                                                        <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
+                                                    </select>
+                                                @endif
                                             </td>
                                             <td class="py-4 px-2">
                                                 <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-lg text-sm font-medium">{{ $item->views }}</span>
@@ -221,12 +229,20 @@
                                             
                                             <!-- Statut -->
                                             <div class="mb-3">
-                                                <select class="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
-                                                        data-item-id="{{ $item->id }}">
-                                                    <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
-                                                    <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
-                                                    <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
-                                                </select>
+                                                @if($item->verification_status === 'rejected')
+                                                    <div class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                                                         title="{{ $item->rejection_reason ?? 'Article rejeté par la modération' }}">
+                                                        <i class="fas fa-ban text-xs"></i>
+                                                        Rejeté — modifiez pour re-soumettre
+                                                    </div>
+                                                @else
+                                                    <select class="w-full px-3 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-600 focus:ring-4 focus:ring-blue-600/20 outline-none transition-all duration-300 text-sm status-select" 
+                                                            data-item-id="{{ $item->id }}">
+                                                        <option value="active" {{ $item->status == 'active' ? 'selected' : '' }}>Actif</option>
+                                                        <option value="inactive" {{ $item->status == 'inactive' ? 'selected' : '' }}>Inactif</option>
+                                                        <option value="sold" {{ $item->status == 'sold' ? 'selected' : '' }}>Vendu</option>
+                                                    </select>
+                                                @endif
                                             </div>
                                             
                                             <!-- Actions -->

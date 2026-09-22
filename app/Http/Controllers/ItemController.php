@@ -604,6 +604,14 @@ class ItemController extends Controller
             'status' => 'required|in:active,inactive,sold'
         ]);
 
+        // Un article rejeté ne peut pas être réactivé manuellement (modération)
+        if ($item->verification_status === 'rejected') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Cet article a été rejeté. Modifiez-le pour le re-soumettre à la vérification.'
+            ], 422);
+        }
+
         $item->status = $request->status;
         $item->save();
 

@@ -66,6 +66,14 @@ class ItemService
 
         if ($request->hasFile('images')) {
             $this->applyVerification($item);
+        } elseif ($item->verification_status === 'rejected') {
+            // Re-soumission : un article rejeté repasse en file d'attente de vérification
+            // dès qu'il est modifié (sans nouvelle image, il est simplement re-soumis à l'admin).
+            $item->verification_status = 'pending';
+            $item->status = 'pending_verification';
+            $item->rejection_reason = null;
+            $item->verified_at = null;
+            $item->verified_by = null;
         }
 
         $item->save();
