@@ -50,3 +50,14 @@ __pycache__/
 .venv/
 venv/
 scripts/logs/
+
+# Forge / déploiement
+/.forge/
+/.forgeignore
+
+# Lockfile Bun (dépôt basé sur npm/yarn)
+bun.lock
+
+# Google Services / Firebase - NE JAMAIS COMMITER
+google-services*.json
+GoogleService-Info.plist
