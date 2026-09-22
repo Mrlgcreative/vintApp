@@ -194,6 +194,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Expo Push Configuration
+    |--------------------------------------------------------------------------
+    | Jeton d'accès Expo (https://expo.dev/account/settings/access-tokens).
+    | Obligatoire uniquement si "Enhanced Push Security" est activée sur votre
+    | compte, sinon les envois répondent avec UNAUTHORIZED.
+    */
+    'expo' => [
+        'access_token' => env('EXPO_ACCESS_TOKEN'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | MaishaPay Configuration
     |--------------------------------------------------------------------------
     */

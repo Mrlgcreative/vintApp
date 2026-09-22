@@ -31,10 +31,16 @@ trait SendsExpoPush
                 'data' => $data,
             ];
 
-            $response = Http::withHeaders([
+            $headers = [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-            ])
+            ];
+            $accessToken = config('services.expo.access_token');
+            if ($accessToken) {
+                $headers['Authorization'] = 'Bearer ' . $accessToken;
+            }
+
+            $response = Http::withHeaders($headers)
                 ->timeout(15)
                 ->post('https://exp.host/--/api/v2/push/send', $payload);
 
