@@ -51,6 +51,7 @@ class UserController extends ApiController
                 'email' => ['sometimes', 'required', 'email', Rule::unique('users')->ignore($user->id)],
                 'phone' => 'nullable|string|max:20',
                 'city' => 'nullable|string|max:255',
+                'commune' => 'nullable|string|max:255',
                 'bio' => 'nullable|string|max:1000',
                 'location' => 'nullable|string|max:255',
                 'fcm_token' => 'nullable|string|max:500',
@@ -62,7 +63,7 @@ class UserController extends ApiController
             }
 
             $user->update($request->only([
-                'name', 'email', 'phone', 'city', 'bio', 'location',
+                'name', 'email', 'phone', 'city', 'commune', 'bio', 'location',
             ]));
 
             // Token de notification push (expo-notifications) : affectation
