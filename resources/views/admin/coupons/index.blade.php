@@ -84,12 +84,19 @@
                    class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
         </div>
         <div>
-            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Valide du</label>
-            <input type="datetime-local" name="starts_at" value="{{ old('starts_at') }}"
-                   class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Valide du <span class="text-slate-400">(vide = immédiat)</span></label>
+            <div class="flex gap-2">
+                <input type="datetime-local" name="starts_at" id="coupon-starts" value="{{ old('starts_at') }}"
+                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+                <button type="button" onclick="setStartToday()"
+                        class="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        title="Commence aujourd'hui à 00:00">
+                    Aujourd'hui
+                </button>
+            </div>
         </div>
         <div>
-            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Valide jusqu'au</label>
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Valide jusqu'au <span class="text-slate-400">(vide = illimité)</span></label>
             <input type="datetime-local" name="ends_at" value="{{ old('ends_at') }}"
                    class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
         </div>
@@ -216,6 +223,14 @@ function generateCode() {
     const input = document.getElementById('coupon-code');
     input.value = code;
     input.focus();
+}
+
+function setStartToday() {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const pad = (n) => String(n).padStart(2, '0');
+    const value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T00:00`;
+    document.getElementById('coupon-starts').value = value;
 }
 </script>
 @endpush
