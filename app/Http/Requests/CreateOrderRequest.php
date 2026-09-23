@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateOrderRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class CreateOrderRequest extends FormRequest
             'delivery_city' => ['required', 'string', 'max:100'],
             'delivery_phone' => ['required', 'string', 'regex:/^[+]?[0-9]{8,15}$/'],
             'delivery_notes' => ['nullable', 'string', 'max:1000'],
-            'coupon_code' => ['nullable', 'string', 'max:50', 'exists:coupons,code,status,active,deleted_at,NULL'],
+            'coupon_code' => ['nullable', 'string', 'max:50', Rule::exists('coupons', 'code')->where('status', 'active')->whereNull('deleted_at')],
         ];
     }
 
