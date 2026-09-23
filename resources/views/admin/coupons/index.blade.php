@@ -36,10 +36,17 @@
     <form method="POST" action="{{ route('admin.coupons.store') }}" class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
         @csrf
         <div>
-            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Code *</label>
-            <input type="text" name="code" required value="{{ old('code') }}"
-                   placeholder="PROMO10" maxlength="50"
-                   class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+            <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Code <span class="text-slate-400">(vide = auto)</span></label>
+            <div class="flex gap-2">
+                <input type="text" name="code" id="coupon-code" value="{{ old('code') }}"
+                       placeholder="Auto-généré (ex : VINT4K7PQZ)" maxlength="50"
+                       class="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white">
+                <button type="button" onclick="generateCode()"
+                        class="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        title="Générer un code aléatoire">
+                    <i class="fas fa-dice"></i>
+                </button>
+            </div>
         </div>
         <div>
             <label class="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Libellé</label>
@@ -197,3 +204,18 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function generateCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = 'VINT';
+    for (let i = 0; i < 6; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    const input = document.getElementById('coupon-code');
+    input.value = code;
+    input.focus();
+}
+</script>
+@endpush

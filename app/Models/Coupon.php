@@ -19,6 +19,18 @@ class Coupon extends Model
     const STATUS_ACTIVE = 'active';
     const STATUS_INACTIVE = 'inactive';
 
+    /**
+     * Génère un code promo unique et actif.
+     */
+    public static function generateUniqueCode(string $prefix = 'VINT'): string
+    {
+        do {
+            $code = $prefix . strtoupper(\Illuminate\Support\Str::random(6));
+        } while (static::withTrashed()->where('code', $code)->exists());
+
+        return $code;
+    }
+
     protected $fillable = [
         'code',
         'title',

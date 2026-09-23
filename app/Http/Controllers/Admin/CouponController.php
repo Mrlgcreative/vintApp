@@ -32,7 +32,7 @@ class CouponController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => ['required', 'string', 'max:50', 'regex:/^[A-Za-z0-9_-]+$/', 'unique:coupons,code'],
+            'code' => ['nullable', 'string', 'max:50', 'regex:/^[A-Za-z0-9_-]+$/', 'unique:coupons,code'],
             'title' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'in:percent,fixed'],
             'value' => ['required', 'numeric', 'min:0.01'],
@@ -42,6 +42,11 @@ class CouponController extends Controller
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'max_redemptions' => ['nullable', 'integer', 'min:1'],
         ]);
+
+        // Code auto-généré si absent (ex: VINT-XXXXXX)
+        if (blank($validated['code'] ?? null)) {
+            $validated['code'] = Coupon::generateUniqueCode();
+        }
 
         if ($validated['type'] === 'percent' && $validated['value'] > 100) {
             return back()
