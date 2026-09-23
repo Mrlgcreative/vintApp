@@ -456,6 +456,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::patch('/{offer}/status', [App\Http\Controllers\Marketing\OfferController::class, 'toggleStatus'])->name('status');
     });
 
+    // Gestion des codes promo (coupons)
+    Route::prefix('coupons')->name('coupons.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\CouponController::class, 'index'])->name('index');
+        Route::post('/', [App\Http\Controllers\Admin\CouponController::class, 'store'])->name('store');
+        Route::patch('/{coupon}/status', [App\Http\Controllers\Admin\CouponController::class, 'toggleStatus'])->name('status');
+        Route::delete('/{coupon}', [App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('destroy');
+    });
+
     // Gestion des articles/items (CRUD complet)
     Route::prefix('items')->name('items.')->group(function () {
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'items'])->name('index');

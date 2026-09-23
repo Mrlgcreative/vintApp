@@ -36,6 +36,54 @@ class OfferController extends ApiController
     }
 
     /**
+     * API publique : validation d'un code promo.
+     */
+    public function validateCoupon(Request $request): JsonResponse
+    {
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'code' => ['required', 'string', 'max:50'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Code promo requis',
+            ], 422);
+        }
+
+        try {
+            $coupon = \App\Models\Coupon::where('code', $request->code)
+                ->running()
+                ->first();
+
+            if (!$coupon || !$coupon->isValid()) {
+                return response()->json([
+                    'valid' => false,
+                    'message' => 'Code promo invalide ou expiré',
+                ]);
+            }
+
+            return response()->json([
+                'valid' => true,
+                'data' => [
+                    'code' => $coupon->code,
+                    'type' => $coupon->type,
+                    'value' => (float) $coupon->value,
+                    'currency' => $coupon->currency,
+                    'min_amount' => $coupon->min_amount !== null ? (float) $coupon->min_amount : null,
+                    'discount_label' => $coupon->discount_label,
+                    'ends_at' => $coupon->ends_at?->toIso8601String(),
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'valid' => false,
+                'message' => 'Erreur de validation',
+            ], 500);
+        }
+    }
+
+    /**
      * API vendeur/admin : détail d'une promo (les siennes).
      */
     public function show(Request $request, $id): JsonResponse

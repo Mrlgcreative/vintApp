@@ -618,13 +618,11 @@ class AffiliateController extends Controller
             $code = $request->referral_code;
             $referralCode = ReferralCode::where('code', $code)
                                       ->active()
-                                      ->with('user')
                                       ->first();
 
             if ($referralCode) {
                 return response()->json([
                     'valid' => true,
-                    'referrer_name' => $referralCode->user->name,
                     'message' => 'Code valide'
                 ]);
             }

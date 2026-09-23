@@ -99,6 +99,9 @@ Route::middleware(['throttle:30,1'])->group(function () {
 // Validation de code de parrainage (public pour l'inscription)
 Route::middleware(['throttle:10,1'])->post('/validate-referral-code', [ApiAffiliateController::class, 'validateReferralCode']);
 
+// Validation de code promo (public, ex: à l'inscription ou au panier)
+Route::middleware(['throttle:10,1'])->post('/v1/coupons/validate', [ApiOfferController::class, 'validateCoupon']);
+
 // ==================== Callbacks de paiement (publics) ====================
 Route::prefix('payment-callbacks')->group(function () {
     // Callback universel pour chaque opérateur

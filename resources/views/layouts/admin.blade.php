@@ -344,6 +344,12 @@
                         <span>Offres / Promos</span>
                     </a>
 
+                    <a href="{{ route('admin.coupons.index') }}"
+                       class="{{ request()->routeIs('admin.coupons.*') ? $linkActive : $linkIdle }}">
+                        <i class="fas fa-ticket {{ $icon }}"></i>
+                        <span>Codes promo</span>
+                    </a>
+
                     <a href="{{ route('admin.boost-types.index') }}"
                        class="{{ request()->routeIs('admin.boost-types.*') ? $linkActive : $linkIdle }}">
                         <i class="fas fa-bolt-lightning {{ $icon }}"></i>
