@@ -5,7 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0c1016" media="(prefers-color-scheme: dark)">
-<title>{{ config('app.name', 'VintApp') }}</title>
+<title>{{ config('app.name', 'VintApp') }} - Marketplace d'articles d'occasion en RDC</title>
+<meta name="description" content="VintApp - La marketplace de confiance pour acheter et vendre des articles d'occasion de qualité (vêtements, électronique, mobile money).">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:site_name" content="VintApp">
+<meta property="og:title" content="VintApp - Marketplace d'articles d'occasion en RDC">
+<meta property="og:description" content="Achetez et vendez des articles d'occasion de qualité en toute confiance : vêtements, électronique, mode. Paiement mobile money sécurisé.">
+<meta property="og:image" content="{{ asset('images/icons/icon-512x512.png') }}">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "VintApp",
+  "url": "{{ url('/') }}",
+  "description": "Marketplace de confiance pour acheter et vendre des articles d'occasion en RDC.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "{{ url('/items/search') }}?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 <link rel="preconnect" href="{{ route('home') }}">
 <script>
 (function () {
@@ -45,6 +69,15 @@
 </div>
 
 <p class="animate-splash-hint fixed bottom-6 left-0 right-0 text-center text-xs font-medium tracking-[0.05em] text-gray-400 opacity-0 motion-reduce:animate-none motion-reduce:opacity-100 sm:bottom-8 dark:text-gray-500">Appuyez pour continuer</p>
+
+<noscript>
+    <div style="max-width:640px;margin:0 auto;padding:2rem;text-align:center;font-family:sans-serif">
+        <h1>VintApp - Marketplace d'articles d'occasion en RDC</h1>
+        <p>Achetez et vendez des articles d'occasion de qualité : vêtements, électronique, mode. Paiement mobile money sécurisé.</p>
+        <p><a href="{{ route('home') }}">Accéder à la boutique VintApp</a></p>
+        <p><a href="{{ route('items') }}">Voir les articles</a> · <a href="{{ route('categories') }}">Catégories</a> · <a href="{{ route('help') }}">Aide</a></p>
+    </div>
+</noscript>
 
 <script>
 (function() {

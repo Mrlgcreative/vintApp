@@ -26,7 +26,16 @@
     <link rel="apple-touch-icon" sizes="384x384" href="{{ asset('images/icons/icon-384x384.png') }}">
     <link rel="apple-touch-icon" sizes="512x512" href="{{ asset('images/icons/icon-512x512.png') }}">
 
-    <title>@yield('title', '{{ $appName ?? "Vintapp" }}')</title>
+    <title>@yield('title', 'VintApp - La marketplace de confiance pour acheter et vendre d\'occasion')</title>
+    <link rel="canonical" href="{{ url()->current() }}">
+    <meta name="robots" content="index,follow">
+    <meta property="og:site_name" content="VintApp">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="@yield('title', 'VintApp - La marketplace de confiance pour acheter et vendre d\'occasion')">
+    <meta property="og:description" content="@yield('meta_description', 'Vintapp - La marketplace de confiance pour acheter et vendre des articles d\'occasion de qualité')">
+    <meta property="og:image" content="{{ asset('images/icons/icon-512x512.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="{{ asset($appFavicon ?? '/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/icons/icon-512x512.png') }}">
 
