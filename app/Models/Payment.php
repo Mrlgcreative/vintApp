@@ -78,7 +78,7 @@ class Payment extends Model
         return $query->where('status', 'failed');
     }
 
-    // CinetPay Helper Methods
+    // Helper Methods (statuts de paiement)
     public function isCompleted(): bool
     {
         return $this->status === 'completed' && $this->cpm_result === '00';
@@ -96,7 +96,7 @@ class Payment extends Model
         ]);
     }
 
-    public function markAsFailed(string $errorMessage = null): void
+    public function markAsFailed(?string $errorMessage = null): void
     {
         $this->update([
             'status' => 'failed',

@@ -160,7 +160,7 @@
                             <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
                         </div>
                         <h3 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">Paiements sécurisés</h3>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Tous les paiements sont traités de manière sécurisée via nos partenaires certifiés (CinetPay, Stripe).</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Tous les paiements sont traités de manière sécurisée via nos partenaires certifiés (K-PAY, AfribaPay, PawaPay).</p>
                     </div>
                     <div class="p-5 rounded-xl border border-gray-100 dark:border-gray-700/50 bg-white dark:bg-gray-800/80">
                         <div class="w-10 h-10 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-3 border border-purple-100 dark:border-purple-800/30">

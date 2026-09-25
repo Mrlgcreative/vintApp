@@ -696,26 +696,6 @@ Route::middleware('auth')->prefix('support')->name('support.')->group(function (
 
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
-    // CinetPay Integration Routes
-    Route::middleware(['auth'])->group(function () {
-        // Initier un paiement depuis le checkout (panier)
-        Route::post('/checkout/initiate', [PaymentController::class, 'initiateCheckoutPayment'])->name('payments.checkout.initiate');
-        
-        // Initier un paiement pour une commande
-        Route::post('/orders/{order}/pay', [PaymentController::class, 'initiateOrderPayment'])->name('payments.order.initiate');
-        
-        // Initier un rechargement de wallet
-        Route::post('/wallet/topup', [PaymentController::class, 'initiateWalletTopup'])->name('payments.wallet.topup');
-    });
-    
-    // CinetPay Webhooks (pas d'authentification requise)
-    Route::post('/cinetpay/notify', [PaymentController::class, 'handleNotification'])->name('payments.cinetpay.notify');
-    
-    // CinetPay Return URL (authentification requise)
-    Route::middleware(['auth'])->group(function () {
-        Route::get('/cinetpay/return', [PaymentController::class, 'handleReturn'])->name('payments.cinetpay.return');
-    });
-
     // ========================================================================
     // AfribaPay Integration Routes
     // ========================================================================

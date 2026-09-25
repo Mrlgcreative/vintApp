@@ -139,26 +139,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | CinetPay Payment Gateway Configuration
-    |--------------------------------------------------------------------------
-    |
-    | CinetPay is a payment gateway for African markets
-    | Supporting multiple payment methods including Mobile Money and Cards
-    |
-    */
-    'cinetpay' => [
-        'site_id' => env('CINETPAY_SITE_ID'),
-        'api_key' => env('CINETPAY_API_KEY'),
-        'platform' => env('CINETPAY_PLATFORM', 'TEST'), // TEST or PROD
-        'version' => env('CINETPAY_VERSION', 'V2'), // V1 or V2
-        // API de transfert (payout) : mot de passe API défini dans le back-office
-        // (https://cinetpay.com/marchand/integration/)
-        'api_password' => env('CINETPAY_API_PASSWORD'),
-        'transfer_enabled' => env('CINETPAY_TRANSFER_ENABLED', false),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | AfribaPay Payment Gateway Configuration
     |--------------------------------------------------------------------------
     |

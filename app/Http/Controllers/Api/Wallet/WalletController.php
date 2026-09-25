@@ -148,7 +148,7 @@ class WalletController extends ApiController
                 'wallet_id' => 'required|exists:wallets,id',
                 'amount' => 'required|numeric|min:0.01',
                 'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
-                'payment_method' => 'required|string|in:kpay,cinetpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
+                'payment_method' => 'required|string|in:kpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
             ]);
 
             if ($validator->fails()) {

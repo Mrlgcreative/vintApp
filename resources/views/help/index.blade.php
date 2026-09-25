@@ -689,10 +689,6 @@
                         </div>
                         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 text-center hover:border-primary-300 transition-colors">
                             <div class="w-10 h-10 bg-primary-400 text-primary-700 rounded-lg flex items-center justify-center mx-auto mb-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg></div>
-                            <h6 class="font-semibold text-gray-900 dark:text-white text-xs">CinetPay</h6>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 text-center hover:border-primary-300 transition-colors">
-                            <div class="w-10 h-10 bg-primary-400 text-primary-700 rounded-lg flex items-center justify-center mx-auto mb-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div>
                             <h6 class="font-semibold text-gray-900 dark:text-white text-xs">Africell</h6>
                         </div>
                         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-4 text-center hover:border-primary-300 transition-colors">
@@ -982,14 +978,13 @@ document.addEventListener('DOMContentLoaded', function() {
         'livraison': { title: 'Livraison locale', section: 'selling', content: 'Remise en main propre, point de rencontre, retrait avec frais de transport' },
         'retrait-fonds': { title: 'Retrait des fonds', section: 'selling', content: 'Retirez votre argent vers M-Pesa, Orange Money, Airtel Money ou Africell' },
         'acheter': { title: 'Comment acheter en securite ?', section: 'buying', content: 'Recherchez, discutez avec le vendeur et payez en securite' },
-        'paiement': { title: 'Methodes de paiement acceptees', section: 'payments', content: 'M-Pesa, Orange Money, Airtel Money, CinetPay, Africell, AfribaPay, Illicocash, cartes bancaires' },
+        'paiement': { title: 'Methodes de paiement acceptees', section: 'payments', content: 'M-Pesa, Orange Money, Airtel Money, Africell, AfribaPay, Illicocash, cartes bancaires' },
         'wallet-paiement': { title: 'Systeme de Wallet', section: 'payments', content: 'Wallet principal, wallet en attente, conversion de devises' },
         'retrait-wallet': { title: 'Retrait d argent', section: 'payments', content: 'Retirez vos fonds vers M-Pesa, Orange Money, Airtel Money' },
         'mpesa': { title: 'M-Pesa', section: 'payments', content: 'Paiement et retrait via M-Pesa' },
         'orange-money': { title: 'Orange Money', section: 'payments', content: 'Paiement et retrait via Orange Money' },
         'airtel-money': { title: 'Airtel Money', section: 'payments', content: 'Paiement et retrait via Airtel Money' },
         'africell': { title: 'Africell', section: 'payments', content: 'Paiement via Africell' },
-        'cinetpay': { title: 'CinetPay', section: 'payments', content: 'Passerelle de paiement CinetPay' },
         'afribapay': { title: 'AfribaPay', section: 'payments', content: 'Paiement mobile AfribaPay' },
         'illicocash': { title: 'Illicocash', section: 'payments', content: 'Paiement mobile via Illicocash' },
         'vintpass': { title: 'VintPass', section: 'selling', content: 'Certificat numerique d authenticite avec QR code' },

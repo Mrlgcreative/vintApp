@@ -93,8 +93,8 @@ class WalletController extends Controller
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01|max:' . $wallet->balance,
             'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
-            // Ajout de kpay et cinetpay comme méthodes de décaissement
-            'payment_method' => 'required|string|in:kpay,cinetpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
+            // K-PAY comme méthode de décaissement
+            'payment_method' => 'required|string|in:kpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
             // Si payment_method == agent, on attend l'id de l'agent ou son numéro
             'agent_id' => 'nullable|integer',
             'agent_phone' => ['nullable', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15', 'required_if:payment_method,agent'],
@@ -122,15 +122,6 @@ class WalletController extends Controller
                     // Décaissement via K-PAY (détection automatique de l'opérateur)
                     $cashOutResponse = $this->mobileMoneyService->cashOut(
                         'kpay',
-                        $validated['phone_number'],
-                        $validated['amount'],
-                        $wallet->currency,
-                        $transaction
-                    );
-                } elseif ($validated['payment_method'] === 'cinetpay') {
-                    // Décaissement via l'API de transfert CinetPay
-                    $cashOutResponse = $this->mobileMoneyService->cashOut(
-                        'cinetpay',
                         $validated['phone_number'],
                         $validated['amount'],
                         $wallet->currency,
@@ -344,8 +335,8 @@ class WalletController extends Controller
         ]);
 
         try {
-            // Valider le provider (inclut kpay et cinetpay comme agrégateurs)
-            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'cinetpay', 'kpay'];
+            // Valider le provider (inclut kpay comme agrégateur)
+            $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'kpay'];
             if (!in_array($provider, $validProviders)) {
                 Log::warning('Invalid provider in webhook', ['provider' => $provider]);
                 return response()->json(['status' => 'error', 'message' => 'Provider invalide'], 400);

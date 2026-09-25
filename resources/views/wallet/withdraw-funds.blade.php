@@ -162,23 +162,9 @@
                                         </div>
                                     </div>
                                 </button>
-                                <!-- CinetPay -->
-                                <button type="button" id="method-cinetpay" data-method="cinetpay"
-                                        class="method-card relative rounded-lg border-2 border-zinc-200 bg-white p-4 text-left transition-all duration-200 dark:border-zinc-700 dark:bg-zinc-800">
-                                    <span class="method-badge absolute right-2 top-2 h-4 w-4 rounded-full border-2 border-zinc-200 dark:border-zinc-600"></span>
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-md bg-zinc-100 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300">
-                                            <i class="fas fa-bolt text-sm"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-zinc-900 dark:text-white">CinetPay</p>
-                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange Money, MTN, M-Pesa…</p>
-                                        </div>
-                                    </div>
-                                </button>
                             </div>
                             <input type="hidden" name="payment_method" id="payment_method" value="kpay">
-                            <p class="text-xs text-zinc-400">K-PAY détecte automatiquement l'opérateur · CinetPay vers votre compte mobile money</p>
+                            <p class="text-xs text-zinc-400">K-PAY détecte automatiquement l'opérateur</p>
                         </div>
 
                         <!-- Description -->
@@ -313,11 +299,6 @@
                     <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">Africell</p>
                     <p class="text-xs text-zinc-500 dark:text-zinc-400">090/091/092</p>
                 </div>
-                <div class="col-span-2 rounded-lg border border-zinc-200 p-3 text-center dark:border-zinc-700 sm:col-span-1">
-                    <div class="mb-1.5 flex items-center justify-center text-xl"><i class="fas fa-bolt text-zinc-400"></i></div>
-                    <p class="text-xs font-semibold text-zinc-800 dark:text-zinc-200">CinetPay</p>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange, MTN…</p>
-                </div>
             </div>
         </div>
     </div>
@@ -422,7 +403,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const phone = phoneInput.value.trim();
             const amount = parseFloat(amountInput.value);
             const paymentMethod = document.getElementById('payment_method').value;
-            const methodLabel = { kpay: 'K-PAY', cinetpay: 'CINETPAY' }[paymentMethod] || paymentMethod.toUpperCase();
+            const methodLabel = { kpay: 'K-PAY' }[paymentMethod] || paymentMethod.toUpperCase();
 
             const confirmMessage = `RETRAIT VIA ${methodLabel}\n\n` +
                 `Montant : ${currency === 'CDF' ? amount.toLocaleString('fr-FR') + ' FC' : '$' + amount.toLocaleString('en-US')}\n` +
@@ -456,12 +437,6 @@ document.addEventListener('DOMContentLoaded', function() {
             badge: 'border-zinc-900 bg-zinc-900',
             label: 'K-PAY',
             text: 'Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min.'
-        },
-        cinetpay: {
-            active: 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800',
-            badge: 'border-zinc-900 bg-zinc-900',
-            label: 'CinetPay',
-            text: 'Transfert CinetPay. Fonds envoyés vers votre compte mobile money (Orange Money, MTN, M-Pesa).'
         }
     };
     const base = 'method-card relative rounded-lg border-2 p-4 text-left transition-all duration-200 ';

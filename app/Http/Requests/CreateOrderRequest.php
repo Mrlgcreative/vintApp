@@ -23,7 +23,7 @@ class CreateOrderRequest extends FormRequest
         return [
             'item_id' => ['required', 'integer', 'exists:items,id'],
             'quantity' => ['required', 'integer', 'min:1', 'max:100'],
-            'payment_method' => ['required', 'string', 'in:cinetpay,mobile_money,card,wallet,cash_on_delivery'],
+            'payment_method' => ['required', 'string', 'in:mobile_money,card,wallet,cash_on_delivery'],
             'delivery_address' => ['required', 'string', 'min:10', 'max:500'],
             'delivery_city' => ['required', 'string', 'max:100'],
             'delivery_phone' => ['required', 'string', 'regex:/^[+]?[0-9]{8,15}$/'],

@@ -13,7 +13,6 @@
         'africell' => 'Africell Money',
         'pawapay' => 'PawaPay',
         'afribapay' => 'AFRIBAPAY',
-        'cinetpay' => 'CinetPay',
         'kpay' => 'K-PAY',
         default => ucfirst(str_replace('_', ' ', $transaction->provider ?? '')),
     };
