@@ -312,10 +312,6 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
         Route::post('/convert', [ApiWalletController::class, 'convert'])
             ->middleware('throttle:20,1'); // Max 20 conversions/min
 
-        // MaishaPay Payout routes
-        Route::post('/withdraw/maishapay', [ApiWalletController::class, 'withdrawMaishaPay'])
-            ->middleware('throttle:5,1'); // Max 5 retraits/min
-        Route::get('/withdraw/maishapay/status/{transactionId}', [ApiWalletController::class, 'withdrawMaishaPayStatus']);
         Route::get('/withdraw/operators', [ApiWalletController::class, 'getPayoutOperators']);
     });
 
@@ -478,11 +474,6 @@ Route::prefix('v1/payments')->middleware(['auth:sanctum,web'])->group(function (
 // ---- API V1 : Localisation vendeur (public) ----
 Route::get('/v1/seller-location/{userId}', [ApiSellerLocationController::class, 'show']);
 Route::get('/v1/sellers/nearby', [ApiSellerLocationController::class, 'nearby']);
-
-// MaishaPay payout webhook (public - no auth)
-Route::post('v1/wallet/withdrawals/maishapay/callback', [WalletController::class, 'handleWithdrawalWebhook'])
-    ->defaults('provider', 'maishapay')
-    ->withoutMiddleware(['auth:sanctum', 'web']);
 
 // ==================== Admin Routes ====================
 Route::prefix('v1/admin')->middleware(['auth:sanctum,web', 'admin'])->group(function () {

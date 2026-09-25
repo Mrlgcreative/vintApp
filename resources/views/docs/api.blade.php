@@ -725,8 +725,6 @@
                         ['GET', '/api/v1/wallet/transactions', 'Historique des transactions'],
                         ['POST', '/api/v1/wallet/add-funds', 'Recharger le portefeuille'],
                         ['POST', '/api/v1/wallet/withdraw', 'Retirer des fonds'],
-                        ['POST', '/api/v1/wallet/withdraw/maishapay', 'Retrait via MaishaPay'],
-                        ['GET', '/api/v1/wallet/withdraw/maishapay/status/{id}', 'Statut retrait MaishaPay'],
                         ['GET', '/api/v1/wallet/withdraw/operators', 'Opérateurs de payout'],
                         ['POST', '/api/v1/wallet/convert', 'Convertir entre devises'],
                     ] as $ep)
@@ -1100,7 +1098,6 @@
                         ['POST', '/api/payment-callbacks/{provider}', 'Callback universel (mpesa, orange_money, ...)'],
                         ['GET', '/api/payment-callbacks/status', 'Vérifier statut (?transaction_id=TX-123)'],
                         ['POST', '/payments/maishapay/callback/{reference?}', 'Webhook MaishaPay (GET ou POST)'],
-                        ['POST', '/api/v1/wallet/withdrawals/maishapay/callback', 'Webhook retrait MaishaPay'],
                     ] as $ep)
                     <div class="endpoint-card rounded-xl px-5 py-3.5 flex items-center gap-3">
                         <span class="method-{{ strtolower($ep[0]) }} text-[11px] font-bold px-2.5 py-1 rounded-md whitespace-nowrap">{{ $ep[0] }}</span>

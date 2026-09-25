@@ -19,7 +19,6 @@ use Exception;
  * 
  * Agrégateurs supportés:
  * - K-PAY (agrégateur principal payin + payout)
- * - MaishaPay (unifié pour tous les opérateurs RDC)
  * - APIs directes des opérateurs (fallback)
  */
 class MobileMoneyService
@@ -35,11 +34,6 @@ class MobileMoneyService
     protected bool $useKPayAggregator = false;
 
     /**
-     * Instance MaishaPay pour les payouts unifiés
-     */
-    protected ?MaishaPay $maishaPay = null;
-
-    /**
      * Instance CinetPay pour les payouts via API de transfert
      */
     protected ?CinetPay $cinetPay = null;
@@ -48,11 +42,6 @@ class MobileMoneyService
      * Utiliser CinetPay comme agrégateur de décaissement
      */
     protected bool $useCinetPayAggregator = false;
-
-    /**
-     * Utiliser MaishaPay comme agrégateur par défaut
-     */
-    protected bool $useMaishaPayAggregator = true;
 
     /**
      * Configuration des APIs des opérateurs
@@ -96,7 +85,6 @@ class MobileMoneyService
     public function __construct()
     {
         $this->initializeKPay();
-        $this->initializeMaishaPay();
         $this->initializeCinetPay();
     }
 
@@ -147,30 +135,6 @@ class MobileMoneyService
                 'error' => $e->getMessage(),
             ]);
             $this->useCinetPayAggregator = false;
-        }
-    }
-
-    /**
-     * Initialiser le service MaishaPay
-     */
-    protected function initializeMaishaPay(): void
-    {
-        try {
-            if (config('services.maishapay.enabled', false)) {
-                $this->maishaPay = new MaishaPay();
-                $this->useMaishaPayAggregator = $this->maishaPay->isConfigured();
-                
-                Log::info('MobileMoneyService: MaishaPay initialisé', [
-                    'enabled' => $this->useMaishaPayAggregator,
-                ]);
-            } else {
-                $this->useMaishaPayAggregator = false;
-            }
-        } catch (Exception $e) {
-            Log::warning('MobileMoneyService: Impossible d\'initialiser MaishaPay', [
-                'error' => $e->getMessage(),
-            ]);
-            $this->useMaishaPayAggregator = false;
         }
     }
 
@@ -263,7 +227,6 @@ class MobileMoneyService
                 'amount' => $amount,
                 'currency' => $currency,
                 'transaction_id' => $transaction->id,
-                'use_maishapay' => $this->useMaishaPayAggregator,
                 'use_cinetpay' => $this->useCinetPayAggregator,
             ]);
 
@@ -277,32 +240,19 @@ class MobileMoneyService
                 return $this->cashOutCinetPay($normalizedPhone, $amount, $currency, $transaction);
             }
 
-            // Si maishapay est spécifié directement, utiliser l'API B2C MaishaPay
-            if ($provider === 'maishapay') {
-                if (!$this->maishaPay) {
-                    throw new Exception("MaishaPay n'est pas configuré");
-                }
-                // MaishaPay détecte automatiquement l'opérateur via le numéro
-                $detectedOperator = $this->maishaPay->detectOperator($normalizedPhone);
-                $result = $this->cashOutViaMaishaPay($detectedOperator ?? 'VODACOM', $normalizedPhone, $amount, $currency, $transaction);
-            } elseif ($this->useMaishaPayAggregator && $this->maishaPay && $this->maishaPay->isOperatorSupported($provider)) {
-                // Utiliser MaishaPay comme agrégateur pour les autres providers
-                $result = $this->cashOutViaMaishaPay($provider, $normalizedPhone, $amount, $currency, $transaction);
-            } else {
-                // Validation du provider pour API directe
-                if (!isset($this->providers[$provider])) {
-                    throw new Exception("Opérateur mobile money invalide : {$provider}");
-                }
-                // Fallback vers les APIs directes des opérateurs
-                $result = match ($provider) {
-                    'orange_money' => $this->cashOutOrangeMoney($normalizedPhone, $amount, $currency, $transaction),
-                    'airtel_money' => $this->cashOutAirtelMoney($normalizedPhone, $amount, $currency, $transaction),
-                    'mpesa' => $this->cashOutMPesa($normalizedPhone, $amount, $currency, $transaction),
-                    'africell' => $this->cashOutAfricell($normalizedPhone, $amount, $currency, $transaction),
-                    'illicocash' => $this->cashOutIllicocash($normalizedPhone, $amount, $currency, $transaction),
-                    default => throw new Exception("Provider non implémenté : {$provider}"),
-                };
+            // Validation du provider pour API directe
+            if (!isset($this->providers[$provider])) {
+                throw new Exception("Opérateur mobile money invalide : {$provider}");
             }
+            // Fallback vers les APIs directes des opérateurs
+            $result = match ($provider) {
+                'orange_money' => $this->cashOutOrangeMoney($normalizedPhone, $amount, $currency, $transaction),
+                'airtel_money' => $this->cashOutAirtelMoney($normalizedPhone, $amount, $currency, $transaction),
+                'mpesa' => $this->cashOutMPesa($normalizedPhone, $amount, $currency, $transaction),
+                'africell' => $this->cashOutAfricell($normalizedPhone, $amount, $currency, $transaction),
+                'illicocash' => $this->cashOutIllicocash($normalizedPhone, $amount, $currency, $transaction),
+                default => throw new Exception("Provider non implémenté : {$provider}"),
+            };
 
             // Log du résultat
             Log::info("Cash-out résultat", [
@@ -329,97 +279,6 @@ class MobileMoneyService
                 'provider_reference' => null,
             ];
         }
-    }
-
-    /**
-     * Cash-out via l'agrégateur MaishaPay (unifié pour tous les opérateurs)
-     */
-    private function cashOutViaMaishaPay(
-        string $provider,
-        string $phone,
-        float $amount,
-        string $currency,
-        WalletTransaction $transaction
-    ): array {
-        Log::info("Cash-out via MaishaPay", [
-            'provider' => $provider,
-            'phone' => substr($phone, 0, 7) . '***',
-            'amount' => $amount,
-        ]);
-
-        $operator = $this->maishaPay->mapOperator($provider);
-        
-        if (!$operator) {
-            throw new Exception("Opérateur {$provider} non supporté par MaishaPay");
-        }
-
-        $result = $this->maishaPay->initiatePayout([
-            'phone' => $phone,
-            'amount' => $amount,
-            'currency' => $currency,
-            'operator' => $operator,
-            'reference' => $transaction->reference,
-            'description' => "Retrait VintApp - {$transaction->reference}",
-            'user_id' => $transaction->user_id,
-            'transaction_id' => $transaction->id,
-            'purpose' => 'withdrawal',
-            'callback_url' => route('withdrawals.webhook.provider', ['provider' => 'maishapay']),
-        ]);
-
-        if ($result['success']) {
-            return [
-                'status' => 'processing',
-                'message' => $result['message'] ?? 'Retrait en cours via MaishaPay',
-                'provider_reference' => $result['provider_reference'] ?? $result['transaction_id'],
-                'provider_response' => $result['data'] ?? [],
-                'aggregator' => 'maishapay',
-            ];
-        }
-
-        // En cas d'échec MaishaPay, fallback vers l'API directe
-        $maishaPayError = $result['message'] ?? 'Unknown error';
-        Log::warning("MaishaPay payout échoué, fallback vers API directe", [
-            'provider' => $provider,
-            'error' => $maishaPayError,
-            'transaction_id' => $transaction->id,
-            'reference' => $transaction->reference,
-            'amount' => $amount,
-        ]);
-
-        $fallback = match ($provider) {
-            'orange_money' => $this->cashOutOrangeMoney($phone, $amount, $currency, $transaction),
-            'airtel_money' => $this->cashOutAirtelMoney($phone, $amount, $currency, $transaction),
-            'mpesa' => $this->cashOutMPesa($phone, $amount, $currency, $transaction),
-            'africell' => $this->cashOutAfricell($phone, $amount, $currency, $transaction),
-            default => [
-                'status' => 'failed',
-                'message' => $maishaPayError,
-                'provider_reference' => null,
-            ],
-        };
-
-        // Tracer le résultat du fallback (succès ou échec)
-        if (($fallback['status'] ?? '') === 'failed') {
-            Log::error("Fallback API directe payout échoué", [
-                'provider' => $provider,
-                'maishapay_error' => $maishaPayError,
-                'fallback_message' => $fallback['message'] ?? 'Unknown error',
-                'transaction_id' => $transaction->id,
-                'reference' => $transaction->reference,
-                'amount' => $amount,
-            ]);
-        } else {
-            Log::info("Fallback API directe payout initié", [
-                'provider' => $provider,
-                'maishapay_error' => $maishaPayError,
-                'fallback_status' => $fallback['status'] ?? 'unknown',
-                'provider_reference' => $fallback['provider_reference'] ?? null,
-                'transaction_id' => $transaction->id,
-                'reference' => $transaction->reference,
-            ]);
-        }
-
-        return $fallback;
     }
 
     /**
@@ -1360,7 +1219,6 @@ class MobileMoneyService
         try {
             return match ($provider) {
                 'kpay' => $this->verifyKPayWebhook($request),
-                'maishapay' => $this->verifyMaishaPayWebhook($request),
                 'cinetpay' => $this->verifyCinetPayWebhook($request),
                 'orange_money' => $this->verifyOrangeMoneyWebhook($request),
                 'airtel_money' => $this->verifyAirtelMoneyWebhook($request),
@@ -1385,7 +1243,6 @@ class MobileMoneyService
     {
         return match ($provider) {
             'kpay' => $request->input('paymentId') ?? $request->input('reference') ?? $request->input('externalId'),
-            'maishapay' => $request->input('reference') ?? $request->input('data.reference') ?? $request->input('metadata.reference'),
             'cinetpay' => $request->input('client_transaction_id') ?? $request->input('transaction_id'),
             'orange_money' => $request->input('reference') ?? $request->input('order_id'),
             'airtel_money' => $request->input('transaction.id') ?? $request->input('reference'),
@@ -1403,7 +1260,6 @@ class MobileMoneyService
     {
         $status = match ($provider) {
             'kpay' => $request->input('status'),
-            'maishapay' => $request->input('status') ?? $request->input('data.status'),
             'cinetpay' => $request->input('treatment_status') ?? $request->input('status'),
             'orange_money' => $request->input('status') ?? $request->input('payment_status'),
             'airtel_money' => $request->input('status.success') ? 'completed' : 'failed',
@@ -1429,7 +1285,6 @@ class MobileMoneyService
     {
         return match ($provider) {
             'kpay' => $request->input('paymentId') ?? $request->input('reference'),
-            'maishapay' => $request->input('transaction_id') ?? $request->input('data.transaction_id'),
             'cinetpay' => $request->input('transaction_id') ?? $request->input('lot'),
             'orange_money' => $request->input('payment_token') ?? $request->input('txnid'),
             'airtel_money' => $request->input('data.transaction.id') ?? $request->input('transaction_id'),
@@ -1497,28 +1352,6 @@ class MobileMoneyService
 
         return ($ipLong !== false && $subnetLong !== false)
             && ($ipLong & $maskLong) === ($subnetLong & $maskLong);
-    }
-
-    private function verifyMaishaPayWebhook($request): bool
-    {
-        $signature = $request->header('X-MaishaPay-Signature');
-
-        if (!$signature) {
-            // Signature obligatoire : plus d'acceptation en mode sandbox
-            Log::warning('MaishaPay webhook: signature manquante, refusé');
-            return false;
-        }
-
-        $secret = config('services.maishapay.secret_key', '');
-        if (empty($secret) || $secret === 'DEMO_SECRET') {
-            Log::warning('MaishaPay webhook: secret non configuré, refusé');
-            return false;
-        }
-
-        $payload = $request->getContent();
-        $expectedSignature = hash_hmac('sha256', $payload, $secret);
-
-        return hash_equals($expectedSignature, $signature);
     }
 
     private function verifyOrangeMoneyWebhook($request): bool

@@ -162,20 +162,6 @@
                                         </div>
                                     </div>
                                 </button>
-                                <!-- MaishaPay -->
-                                <button type="button" id="method-maishapay" data-method="maishapay"
-                                        class="method-card relative rounded-lg border-2 border-zinc-200 bg-white p-4 text-left transition-all duration-200 dark:border-zinc-700 dark:bg-zinc-800">
-                                    <span class="method-badge absolute right-2 top-2 h-4 w-4 rounded-full border-2 border-zinc-200 dark:border-zinc-600"></span>
-                                    <div class="flex items-center gap-3">
-                                        <div class="flex h-9 w-9 items-center justify-center rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
-                                            <i class="fas fa-bolt text-sm"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-semibold text-zinc-900 dark:text-white">MaishaPay</p>
-                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Orange, M-Pesa, Airtel, Africell</p>
-                                        </div>
-                                    </div>
-                                </button>
                                 <!-- CinetPay -->
                                 <button type="button" id="method-cinetpay" data-method="cinetpay"
                                         class="method-card relative rounded-lg border-2 border-zinc-200 bg-white p-4 text-left transition-all duration-200 dark:border-zinc-700 dark:bg-zinc-800">
@@ -192,7 +178,7 @@
                                 </button>
                             </div>
                             <input type="hidden" name="payment_method" id="payment_method" value="kpay">
-                            <p class="text-xs text-zinc-400">K-PAY détecte automatiquement l'opérateur · MaishaPay unifié RDC · CinetPay vers votre compte mobile money</p>
+                            <p class="text-xs text-zinc-400">K-PAY détecte automatiquement l'opérateur · CinetPay vers votre compte mobile money</p>
                         </div>
 
                         <!-- Description -->
@@ -436,7 +422,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const phone = phoneInput.value.trim();
             const amount = parseFloat(amountInput.value);
             const paymentMethod = document.getElementById('payment_method').value;
-            const methodLabel = { kpay: 'K-PAY', maishapay: 'MAISHAPAY', cinetpay: 'CINETPAY' }[paymentMethod] || 'MAISHAPAY';
+            const methodLabel = { kpay: 'K-PAY', cinetpay: 'CINETPAY' }[paymentMethod] || paymentMethod.toUpperCase();
 
             const confirmMessage = `RETRAIT VIA ${methodLabel}\n\n` +
                 `Montant : ${currency === 'CDF' ? amount.toLocaleString('fr-FR') + ' FC' : '$' + amount.toLocaleString('en-US')}\n` +
@@ -470,12 +456,6 @@ document.addEventListener('DOMContentLoaded', function() {
             badge: 'border-zinc-900 bg-zinc-900',
             label: 'K-PAY',
             text: 'Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min.'
-        },
-        maishapay: {
-            active: 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800',
-            badge: 'border-zinc-900 bg-zinc-900',
-            label: 'MaishaPay',
-            text: "Retrait automatique. Fonds envoyés vers votre mobile en 2-10 min."
         },
         cinetpay: {
             active: 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800',
