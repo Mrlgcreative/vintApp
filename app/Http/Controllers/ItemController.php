@@ -524,7 +524,7 @@ class ItemController extends Controller
             })
             ->orderBy('created_at', 'desc')
             ->limit(6)
-            ->get(['id', 'name', 'price', 'currency', 'images', 'user_id']);
+            ->get(['id', 'public_id', 'name', 'price', 'currency', 'images', 'user_id']);
 
         return response()->json([
             'success' => true,

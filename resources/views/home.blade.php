@@ -374,7 +374,6 @@ function initBackToTop() {
 // ============ INITIALIZATION ============
 document.addEventListener('DOMContentLoaded', () => {
     initCarousel();
-    initCategoriesNavigation();
     initScrollAnimations();
     initBackToTop();
     
