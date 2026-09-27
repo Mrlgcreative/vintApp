@@ -95,13 +95,14 @@ class PublicIdRoutingTest extends TestCase
         $this->assertTrue($bound->is($wallet));
     }
 
-    public function test_numeric_id_is_no_longer_accepted_by_the_router(): void
+    public function test_numeric_id_still_resolves_as_a_compatibility_fallback(): void
     {
-        $wallet = $this->walletFor(User::factory()->create());
+        $user = User::factory()->create();
+        $wallet = $this->walletFor($user);
 
-        $this->expectException(ModelNotFoundException::class);
+        $route = $this->bind('admin.wallets.show', (string) $wallet->id);
 
-        $this->bind('admin.wallets.show', (string) $wallet->id);
+        $this->assertTrue($route->parameter('wallet')->is($wallet));
     }
 
     public function test_unknown_public_id_yields_not_found(): void

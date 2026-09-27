@@ -39,7 +39,7 @@ return new class extends Migration
             }
 
             Schema::table($table, function (Blueprint $blueprint) {
-                $blueprint->char('public_id', 26)->nullable()->after('id');
+                $blueprint->char('public_id', 26)->nullable();
             });
 
             $this->backfill($table);

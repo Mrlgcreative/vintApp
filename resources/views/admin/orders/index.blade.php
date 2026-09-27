@@ -255,18 +255,18 @@
                             </td>
                             <td class="whitespace-nowrap px-4 py-3 align-middle text-sm font-medium">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="viewOrder({{ $order->id }})" 
+                                    <button onclick="viewOrder('{{ $order->public_id }}')" 
                                             class="inline-flex items-center rounded-lg bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 transition-colors hover:bg-sky-100 dark:bg-sky-900/30 dark:text-sky-300 dark:hover:bg-sky-900/50"
                                             title="Voir détails">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     @if($order->status === 'pending')
-                                        <button onclick="confirmOrder({{ $order->id }})" 
+                                        <button onclick="confirmOrder('{{ $order->public_id }}')" 
                                                 class="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                                                 title="Confirmer">
                                             <i class="fas fa-check"></i>
                                         </button>
-                                        <button onclick="cancelOrder({{ $order->id }})" 
+                                        <button onclick="cancelOrder('{{ $order->public_id }}')" 
                                                 class="inline-flex items-center rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
                                                 title="Annuler">
                                             <i class="fas fa-times"></i>
@@ -360,18 +360,18 @@
                                 </div>
                             </div>
                             <div class="flex flex-shrink-0 items-center gap-2">
-                                <button onclick="viewOrder({{ $order->id }})"
+                                <button onclick="viewOrder('{{ $order->public_id }}')"
                                         class="inline-flex items-center rounded-lg bg-sky-50 px-2.5 py-1.5 text-xs font-medium text-sky-700 transition-colors hover:bg-sky-100 dark:bg-sky-900/30 dark:text-sky-300 dark:hover:bg-sky-900/50"
                                         title="Voir détails">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 @if($order->status === 'pending')
-                                    <button onclick="confirmOrder({{ $order->id }})"
+                                    <button onclick="confirmOrder('{{ $order->public_id }}')"
                                             class="inline-flex items-center rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/50"
                                             title="Confirmer">
                                         <i class="fas fa-check"></i>
                                     </button>
-                                    <button onclick="cancelOrder({{ $order->id }})"
+                                    <button onclick="cancelOrder('{{ $order->public_id }}')"
                                             class="inline-flex items-center rounded-lg bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-100 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
                                             title="Annuler">
                                         <i class="fas fa-times"></i>

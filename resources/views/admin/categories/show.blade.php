@@ -423,7 +423,7 @@ function closeDeleteModal() {
 }
 
 function toggleStatus() {
-    fetch(`/admin/categories/{{ $category->id }}/toggle-status`, {
+    fetch(`/admin/categories/{{ $category->public_id }}/toggle-status`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -441,7 +441,7 @@ function toggleStatus() {
 }
 
 function toggleFeatured() {
-    fetch(`/admin/categories/{{ $category->id }}/toggle-featured`, {
+    fetch(`/admin/categories/{{ $category->public_id }}/toggle-featured`, {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

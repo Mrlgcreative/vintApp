@@ -410,7 +410,7 @@ document.addEventListener('keydown', function(event) {
 });
 
 function toggleStatus() {
-    fetch(`/admin/brands/{{ $brand->id }}/status`, {
+    fetch(`/admin/brands/{{ $brand->public_id }}/status`, {
         method: 'PATCH',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
@@ -433,7 +433,7 @@ function toggleStatus() {
 }
 
 function toggleFeatured() {
-    fetch(`/admin/brands/{{ $brand->id }}/status`, {
+    fetch(`/admin/brands/{{ $brand->public_id }}/status`, {
         method: 'PATCH',
         headers: {
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

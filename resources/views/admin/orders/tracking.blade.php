@@ -739,7 +739,7 @@ function updateTracking(event) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Enregistrement...';
     submitBtn.disabled = true;
 
-    fetch('{{ route("admin.orders.tracking.update", $order->id) }}', {
+    fetch('{{ route("admin.orders.tracking.update", $order->public_id) }}', {
         method: 'POST',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',

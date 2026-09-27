@@ -252,14 +252,14 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <button onclick="toggleCityStatus({{ $city->id }})" 
+                                    <button onclick="toggleCityStatus('{{ $city->public_id }}')" 
                                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $city->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 hover:bg-green-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 hover:bg-slate-200' }}">
                                         <i class="fas fa-circle text-xs mr-1"></i>
                                         {{ $city->is_active ? 'Active' : 'Inactive' }}
                                     </button>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button onclick="deleteCity({{ $city->id }}, '{{ $city->name }}')" 
+                                    <button onclick="deleteCity('{{ $city->public_id }}', '{{ $city->name }}')" 
                                             class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                         <i class="fas fa-trash"></i>
                                     </button>
@@ -310,14 +310,14 @@
                                     {{ $region->country }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <button onclick="toggleRegionStatus({{ $region->id }})" 
+                                    <button onclick="toggleRegionStatus('{{ $region->public_id }}')" 
                                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors {{ $region->is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200' }}">
                                         <i class="fas fa-circle text-xs mr-1"></i>
                                         {{ $region->is_active ? 'Active' : 'Inactive' }}
                                     </button>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button onclick="deleteRegion({{ $region->id }}, '{{ $region->name }}')" 
+                                    <button onclick="deleteRegion('{{ $region->public_id }}', '{{ $region->name }}')" 
                                             class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                         <i class="fas fa-trash"></i>
                                     </button>

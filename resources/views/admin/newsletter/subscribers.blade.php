@@ -187,12 +187,12 @@
                                 <td class="whitespace-nowrap px-4 py-3.5">
                                     <div class="flex justify-end gap-1">
                                         <button class="toggle-subscriber inline-flex items-center justify-center w-8 h-8 rounded-lg text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
-                                                data-id="{{ $subscriber->id }}"
+                                                data-id="{{ $subscriber->public_id }}"
                                                 title="{{ $subscriber->is_active ? 'Désactiver' : 'Activer' }}">
                                             <i class="fas fa-{{ $subscriber->is_active ? 'toggle-on' : 'toggle-off' }}"></i>
                                         </button>
                                         <button class="delete-subscriber inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                                data-id="{{ $subscriber->id }}"
+                                                data-id="{{ $subscriber->public_id }}"
                                                 title="Supprimer">
                                             <i class="fas fa-trash"></i>
                                         </button>
