@@ -29,6 +29,7 @@ class CheckGPSCityAccess
         'reset-password',
         'reset-password/*',
         'city-restricted',
+        'restriction-city',
         'api/validate-location',
         'location/validate',
         'location/unauthorized',

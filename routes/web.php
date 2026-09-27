@@ -670,6 +670,11 @@ Route::get('/city-restricted', function() {
     return view('errors.city_restricted');
 })->name('city.restricted');
 
+// Page de restriction géographique (version courte)
+Route::get('/restriction-city', function() {
+    return view('errors.restriction_city');
+})->name('city.restriction');
+
 // ==================== Routes Agent Support ====================
 Route::middleware(['auth', 'role:support,admin'])->prefix('agent')->name('agent.')->group(function () {
     Route::get('/', [App\Http\Controllers\Agent\AgentSupportController::class, 'dashboard'])->name('dashboard');
