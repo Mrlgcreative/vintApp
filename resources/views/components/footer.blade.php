@@ -86,6 +86,7 @@
                             <li><a href="{{ route('help.index') }}#contact" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Contact</a></li>
                             <li><a href="{{ route('terms') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">CGU</a></li>
                             <li><a href="{{ route('privacy') }}" class="text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Confidentialité</a></li>
+                            <li><button type="button" data-cookie-settings class="text-left text-gray-600 dark:text-gray-400 hover:text-vinted-primary-600 dark:hover:text-vinted-primary-400 transition-colors">Gérer les cookies</button></li>
                         @endif
                     </ul>
                 </div>

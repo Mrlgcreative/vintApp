@@ -1188,6 +1188,7 @@
     </script>
     @endauth
 
-    
+    <x-cookie-banner />
+
 </body>
 </html>
