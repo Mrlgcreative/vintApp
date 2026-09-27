@@ -18,7 +18,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json">
 {
+@verbatim
   "@context": "https://schema.org",
+@endverbatim
   "@type": "WebSite",
   "name": "VintApp",
   "url": "{{ url('/') }}",
