@@ -782,19 +782,49 @@ class AdminController extends Controller
 
     /**
      * Rapport de revenus
+     *
+     * La plateforme est bilingue USD / CDF : la devise est portée par chaque
+     * transaction. Additionner les deux produirait un total sans unité, d'où
+     * la ventilation `by_currency` que consomme la vue.
+     *
+     * `total` et `average` sont conservés tels quels pour ne pas casser les
+     * consommateurs de l'API : ils ne sont interprétables que si `currencies`
+     * ne contient qu'une devise. `single_currency` l'expose explicitement.
      */
     private function getRevenueReport($startDate)
     {
+        $rows = Transaction::where('created_at', '>=', $startDate)
+            ->where('status', 'completed')
+            ->selectRaw('currency, COUNT(*) as aggregate_count, SUM(amount) as aggregate_total, AVG(amount) as aggregate_average')
+            ->groupBy('currency')
+            ->get();
+
+        $byCurrency = [];
+
+        foreach ($rows as $row) {
+            // Colonne enum avec default USD : la valeur ne devrait jamais être
+            // nulle, mais une transaction antérieure à la migration le peut.
+            $currency = $row->currency ?: 'USD';
+
+            $byCurrency[$currency] = [
+                'symbol' => currency_symbol($currency),
+                'total' => (float) $row->aggregate_total,
+                'count' => (int) $row->aggregate_count,
+                'average' => (float) ($row->aggregate_average ?? 0),
+            ];
+        }
+
+        $count = array_sum(array_column($byCurrency, 'count'));
+
         return [
-            'total' => Transaction::where('created_at', '>=', $startDate)
-                ->where('status', 'completed')
-                ->sum('amount'),
-            'count' => Transaction::where('created_at', '>=', $startDate)
-                ->where('status', 'completed')
-                ->count(),
-            'average' => Transaction::where('created_at', '>=', $startDate)
-                ->where('status', 'completed')
-                ->avg('amount') ?? 0
+            'by_currency' => $byCurrency,
+            'currencies' => array_keys($byCurrency),
+            'single_currency' => count($byCurrency) <= 1,
+            'total' => array_sum(array_column($byCurrency, 'total')),
+            'count' => $count,
+            'average' => $count > 0
+                ? array_sum(array_column($byCurrency, 'total')) / $count
+                : 0,
         ];
     }
 

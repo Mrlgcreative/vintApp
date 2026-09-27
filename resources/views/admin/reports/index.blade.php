@@ -5,6 +5,14 @@
 @section('page-subtitle', 'Analyses de la plateforme selon la période')
 
 @section('content')
+@php
+    // La devise est portée par chaque transaction (colonne `currency`), la
+    // plateforme étant bilingue USD / CDF. Le rapport ventile donc les revenus
+    // par devise : additionner les deux donnerait un total sans unité.
+    $revenueByCurrency = $reports['revenue']['by_currency'];
+    $revenueIsSplit = ! $reports['revenue']['single_currency'];
+@endphp
+
 <!-- Filtres de période -->
 <div class="mb-6 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
     <form method="GET" action="{{ route('admin.reports') }}" class="flex flex-wrap items-end gap-4">
@@ -26,14 +34,22 @@
 <!-- Rapport Revenus -->
 <div class="mb-8">
     <h3 class="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-900 sm:text-base dark:text-white">
-        <i class="fas fa-dollar-sign text-emerald-600"></i>
+        <i class="fas fa-coins text-emerald-600"></i>
         Revenus
     </h3>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
         <!-- Total des revenus -->
         <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <p class="text-sm text-slate-500 dark:text-slate-400">Total des revenus</p>
-            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">${{ number_format($reports['revenue']['total'], 2) }}</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">
+                @forelse ($revenueByCurrency as $revenue)
+                    <span class="{{ $loop->first ? '' : 'mt-1 block text-xl' }}">{{ $revenue['symbol'] }} {{ number_format($revenue['total'], 2) }}</span>
+                @empty
+                    {{-- Aucune transaction sur la période : la devise est inconnue,
+                         on retombe sur le défaut de la colonne enum. --}}
+                    {{ currency_symbol('USD') }} {{ number_format(0, 2) }}
+                @endforelse
+            </p>
             <div class="absolute right-4 top-4">
                 <span class="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400">
                     <i class="fas fa-chart-line text-[10px]"></i>
@@ -45,7 +61,12 @@
                     <i class="fas fa-chart-line text-xs text-emerald-500"></i>
                     Revenus encaissés
                 </div>
-                <div class="text-xs text-slate-400">Sur {{ $period }} jours</div>
+                <div class="text-xs text-slate-400">
+                    Sur {{ $period }} jours
+                    @if ($revenueIsSplit)
+                        — ventilé par devise
+                    @endif
+                </div>
             </div>
         </div>
 
@@ -71,7 +92,13 @@
         <!-- Revenu moyen -->
         <div class="relative rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800">
             <p class="text-sm text-slate-500 dark:text-slate-400">Revenu moyen</p>
-            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">${{ number_format($reports['revenue']['average'], 2) }}</p>
+            <p class="mt-1 text-2xl font-semibold tabular-nums tracking-tight text-slate-900 dark:text-white">
+                @forelse ($revenueByCurrency as $revenue)
+                    <span class="{{ $loop->first ? '' : 'mt-1 block text-xl' }}">{{ $revenue['symbol'] }} {{ number_format($revenue['average'], 2) }}</span>
+                @empty
+                    {{ currency_symbol('USD') }} {{ number_format(0, 2) }}
+                @endforelse
+            </p>
             <div class="absolute right-4 top-4">
                 <span class="inline-flex items-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-400">
                     <i class="fas fa-calculator text-[10px]"></i>
@@ -83,7 +110,13 @@
                     <i class="fas fa-calculator text-xs text-violet-500"></i>
                     Par transaction
                 </div>
-                <div class="text-xs text-slate-400">Revenu moyen estimé</div>
+                <div class="text-xs text-slate-400">
+                    @if ($reports['revenue']['count'] > 0)
+                        Par transaction sur {{ number_format($reports['revenue']['count']) }}
+                    @else
+                        Aucune transaction sur la période
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -320,7 +353,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
-                        <span class="font-semibold text-slate-900 dark:text-white">${{ number_format($item->price, 2) }}</span>
+                        <span class="font-semibold text-slate-900 dark:text-white">{{ $item->formatted_price }}</span>
                     </td>
                 </tr>
                 @endforeach

@@ -152,6 +152,23 @@ if (!function_exists('min_withdrawal_amount')) {
     }
 }
 
+if (!function_exists('currency_symbol')) {
+    /**
+     * Symbole d'une devise de la plateforme
+     *
+     * La devise est portée par l'enregistrement (colonne `currency`), pas par
+     * un réglage global : la plateforme est bilingue USD / CDF (FC). Toute valeur
+     * inconnue ou nulle retombe sur USD, qui est le défaut des colonnes enum.
+     *
+     * @param string|null $currency
+     * @return string
+     */
+    function currency_symbol(?string $currency): string
+    {
+        return $currency === 'CDF' ? 'FC' : '$';
+    }
+}
+
 if (!function_exists('is_maintenance_mode')) {
     /**
      * Vérifie si l'application est en mode maintenance
