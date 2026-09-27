@@ -146,7 +146,7 @@
                     </div>
 
                     <!-- Quantité + CTA panier -->
-                    <form method="POST" action="{{ route('cart.add', $item->id) }}" id="addToCartForm" class="mb-6">
+                    <form method="POST" action="{{ route('cart.add', $item) }}" id="addToCartForm" class="mb-6">
                         @csrf
                         <div class="mb-6">
                             <p class="mb-2.5 text-sm font-medium text-slate-700 dark:text-slate-300">Quantité</p>

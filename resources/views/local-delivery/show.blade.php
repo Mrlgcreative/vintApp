@@ -37,7 +37,7 @@
             </div>
             
             <div class="mt-4 text-sm text-gray-600 dark:text-gray-300">
-                <p>Commande: <a href="{{ route('orders.show', $localDelivery->order->id) }}" 
+                <p>Commande: <a href="{{ route('orders.show', $localDelivery->order) }}" 
                     class="text-blue-600 hover:text-blue-800">#{{ $localDelivery->order->order_number }}</a></p>
                 <p>Type de livraison: {{ $localDelivery->delivery_type_text }}</p>
                 <p>Distance: {{ $localDelivery->distance_km }} km</p>

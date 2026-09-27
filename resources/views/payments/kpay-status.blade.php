@@ -34,7 +34,7 @@
                 </div>
                 <h5 class="font-semibold text-green-700 dark:text-green-300 text-lg">Paiement confirmé !</h5>
                 <p class="text-sm text-gray-500 mt-1">Votre paiement de {{ number_format($transaction->amount, 2) }} {{ $transaction->currency }} a été accepté.</p>
-                <a href="{{ route('payments.receipt', $transaction->id) }}"
+                <a href="{{ route('payments.receipt', $transaction->public_id) }}"
                    class="mt-5 inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors">
                     <i class="fas fa-receipt mr-2"></i>Voir le reçu
                 </a>

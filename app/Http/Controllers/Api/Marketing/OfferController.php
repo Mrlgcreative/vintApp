@@ -90,7 +90,8 @@ class OfferController extends ApiController
     {
         try {
             $offer = Offer::with(['categories', 'items', 'creator'])
-                ->findOrFail($id);
+                ->where('public_id', $id)
+                ->firstOrFail();
 
             if (! $this->canManage()) {
                 return $this->forbiddenResponse();
@@ -193,7 +194,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::findOrFail($id);
+            $offer = Offer::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');
@@ -245,7 +246,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::findOrFail($id);
+            $offer = Offer::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');
@@ -274,7 +275,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::findOrFail($id);
+            $offer = Offer::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');

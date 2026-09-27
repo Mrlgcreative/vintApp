@@ -606,7 +606,7 @@ class OrderController extends Controller
      */
     public function apiShow($id)
     {
-        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->findOrFail($id);
+        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->where('public_id', $id)->firstOrFail();
         
         if ($order->buyer_id !== Auth::id() && $order->item->user_id !== Auth::id()) {
             return $this->errorResponse('Non autorisé', 403);
@@ -636,7 +636,7 @@ class OrderController extends Controller
     public function apiConfirmPayment($id)
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
             $response = $this->confirmPayment($order);
             if ($response->getStatusCode() >= 400) {
                 return $response;
@@ -653,7 +653,7 @@ class OrderController extends Controller
     public function apiMarkAsShipped($id)
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
             $response = $this->markAsShipped($order);
             if ($response->getStatusCode() >= 400) {
                 return $response;
@@ -670,7 +670,7 @@ class OrderController extends Controller
     public function apiMarkAsDelivered($id)
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
             $response = $this->markAsDelivered($order);
             if ($response->getStatusCode() >= 400) {
                 return $response;
@@ -687,7 +687,7 @@ class OrderController extends Controller
     public function apiConfirmDelivery(Request $request, $id)
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
             $response = $this->confirmDelivery($request, $order);
             if ($response->getStatusCode() >= 400) {
                 return $response;

@@ -23,11 +23,11 @@
     </a>
 
     <div class="flex flex-wrap gap-2">
-        <a href="{{ route('admin.orders.tracking', $order->id) }}"
+        <a href="{{ route('admin.orders.tracking', $order) }}"
             class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-700 print:hidden">
             <i class="fas fa-map-marked-alt"></i> Traçage GPS
         </a>
-        <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank"
+        <a href="{{ route('admin.orders.invoice', $order) }}" target="_blank"
             class="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-sky-700 print:hidden">
             <i class="fas fa-file-invoice"></i> Facture
         </a>

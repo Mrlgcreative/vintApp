@@ -769,7 +769,7 @@ Route::prefix('payments')->group(function () {
     
     // Page de suivi du paiement en temps réel
     Route::get('/status/{transaction}', function ($transactionId) {
-        $transaction = \App\Models\Transaction::findOrFail($transactionId);
+        $transaction = \App\Models\Transaction::where('public_id', $transactionId)->firstOrFail();
         if ($transaction->status === 'completed') {
             clear_cart();
             session()->forget('maishapay_checkout');

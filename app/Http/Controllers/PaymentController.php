@@ -341,8 +341,8 @@ class PaymentController extends Controller
     // Simulation de paiement mobile (pour tests)
     public function paymentSuccess($transaction_id)
     {
-        // Chercher par ID numérique ou par transaction_id
-        $transaction = \App\Models\Transaction::where('id', $transaction_id)
+        // Référence publique de la transaction ou référence renvoyée par le prestataire
+        $transaction = \App\Models\Transaction::where('public_id', $transaction_id)
             ->orWhere('transaction_id', $transaction_id)
             ->first();
         
@@ -385,7 +385,7 @@ class PaymentController extends Controller
 
     public function receipt($transactionId)
     {
-        $transaction = \App\Models\Transaction::where('id', $transactionId)
+        $transaction = \App\Models\Transaction::where('public_id', $transactionId)
             ->orWhere('transaction_id', $transactionId)
             ->firstOrFail();
 
@@ -403,7 +403,7 @@ class PaymentController extends Controller
 
     public function downloadReceipt($transactionId)
     {
-        $transaction = \App\Models\Transaction::where('id', $transactionId)
+        $transaction = \App\Models\Transaction::where('public_id', $transactionId)
             ->orWhere('transaction_id', $transactionId)
             ->firstOrFail();
 
@@ -1080,7 +1080,7 @@ class PaymentController extends Controller
             }
 
             // Sinon, rediriger vers la page de statut
-            return redirect()->route('payments.afribapay.status', ['payment' => $payment->id]);
+            return redirect()->route('payments.afribapay.status', ['payment' => $payment]);
 
         } catch (\Exception $e) {
             Log::error('AfribaPay payment initiation failed: ' . $e->getMessage(), [
@@ -1131,7 +1131,7 @@ class PaymentController extends Controller
                     ->with('success', 'Paiement effectué avec succès !');
             }
 
-            return redirect()->route('payments.afribapay.status', ['payment' => $payment->id]);
+            return redirect()->route('payments.afribapay.status', ['payment' => $payment]);
 
         } catch (\Exception $e) {
             Log::error('AfribaPay OTP verification failed: ' . $e->getMessage(), [
@@ -1640,7 +1640,7 @@ class PaymentController extends Controller
                     'status' => 'pending',
                 ]);
 
-                return redirect()->route('payments.pawapay.status', $transaction->id);
+                return redirect()->route('payments.pawapay.status', $transaction);
             }
 
             $transaction->update(['status' => 'failed']);
@@ -1952,7 +1952,7 @@ class PaymentController extends Controller
                     return redirect()->away($result['gateway_url']);
                 }
 
-                return redirect()->route('payments.kpay.status', $transaction->id);
+                return redirect()->route('payments.kpay.status', $transaction);
             }
 
             $transaction->update(['status' => 'failed']);
@@ -2035,7 +2035,7 @@ class PaymentController extends Controller
             Log::warning('K-PAY: signature retour gateway invalide', ['query' => $request->query()]);
 
             return $transaction
-                ? redirect()->route('payments.kpay.status', $transaction->id)
+                ? redirect()->route('payments.kpay.status', $transaction)
                 : redirect()->route('payments.error', ['error' => 'Signature de retour invalide', 'provider' => 'K-PAY']);
         }
 
@@ -2081,7 +2081,7 @@ class PaymentController extends Controller
             return redirect()->route('payments.success', $transaction->id);
         }
 
-        return redirect()->route('payments.kpay.status', $transaction->id);
+        return redirect()->route('payments.kpay.status', $transaction);
     }
 
     /**

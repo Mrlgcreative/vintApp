@@ -87,7 +87,8 @@ class BrandController extends ApiController
             $brand = Brand::withCount(['items' => function ($q) {
                 $q->where('status', 'active');
             }])
-                ->findOrFail($id);
+                ->where('public_id', $id)
+                ->firstOrFail();
 
             return $this->successResponse($brand, 'Marque récupérée avec succès');
         } catch (\Exception $e) {
@@ -101,7 +102,7 @@ class BrandController extends ApiController
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $brand = Brand::findOrFail($id);
+            $brand = Brand::where('public_id', $id)->firstOrFail();
 
             $validated = $request->validate([
                 'name' => 'required|string|max:100|unique:brands,name,' . $brand->id,
@@ -153,7 +154,7 @@ class BrandController extends ApiController
     public function destroy($id): JsonResponse
     {
         try {
-            $brand = Brand::findOrFail($id);
+            $brand = Brand::where('public_id', $id)->firstOrFail();
 
             // Vérifier s'il y a des articles avec cette marque
             $itemsCount = Item::where('brand_id', $brand->id)->count();
@@ -183,7 +184,7 @@ class BrandController extends ApiController
     public function items(Request $request, $id): JsonResponse
     {
         try {
-            $brand = Brand::findOrFail($id);
+            $brand = Brand::where('public_id', $id)->firstOrFail();
 
             $query = Item::with(['category', 'brand', 'user'])
                 ->where('brand_id', $brand->id)

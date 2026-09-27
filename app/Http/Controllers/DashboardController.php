@@ -161,7 +161,7 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $notification = Notification::where('id', $id)
+        $notification = Notification::where('public_id', $id)
             ->where('user_id', $user->id)
             ->first();
 

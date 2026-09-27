@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Cache;
 
 class Setting extends Model
 {
+    use HasPublicId;
+
     protected $fillable = [
         'key',
         'value',

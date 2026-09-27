@@ -112,7 +112,7 @@ class OrderController extends ApiController
      */
     public function show(Request $request, $id): JsonResponse
     {
-        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->findOrFail($id);
+        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->where('public_id', $id)->firstOrFail();
 
         $userId = $request->user()?->id ?? Auth::id();
 
@@ -146,7 +146,7 @@ class OrderController extends ApiController
     public function confirmPayment(Request $request, $id): JsonResponse
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
 
             $userId = $request->user()?->id ?? Auth::id();
 
@@ -179,7 +179,7 @@ class OrderController extends ApiController
     public function markAsShipped(Request $request, $id): JsonResponse
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
 
             $userId = $request->user()?->id ?? Auth::id();
 
@@ -212,7 +212,7 @@ class OrderController extends ApiController
     public function markAsDelivered(Request $request, $id): JsonResponse
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
 
             $userId = $request->user()?->id ?? Auth::id();
 
@@ -245,7 +245,7 @@ class OrderController extends ApiController
     public function confirmDelivery(Request $request, $id): JsonResponse
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
 
             // En API Sanctum, Auth::id() (garde par défaut 'web') peut être
             // null : on privilégie $request->user()->id.
@@ -262,7 +262,7 @@ class OrderController extends ApiController
             return $this->errorResponse($e->getMessage(), 400);
         } catch (\Exception $e) {
             Log::error('Erreur lors de la confirmation de livraison API: ' . $e->getMessage(), [
-                'order_id' => $id,
+                'order_id' => $order->id ?? $id,
                 'trace' => $e->getTraceAsString(),
             ]);
             return $this->errorResponse('Une erreur est survenue lors de la confirmation de livraison.', 500);
@@ -274,7 +274,7 @@ class OrderController extends ApiController
      */
     public function trackingData(Request $request, $id): JsonResponse
     {
-        $order = Order::with(['buyer', 'deliveryAddress', 'trackings'])->findOrFail($id);
+        $order = Order::with(['buyer', 'deliveryAddress', 'trackings'])->where('public_id', $id)->firstOrFail();
 
         $userId = $request->user()?->id ?? Auth::id();
 
@@ -311,7 +311,7 @@ class OrderController extends ApiController
     public function destroy(Request $request, $id): JsonResponse
     {
         try {
-            $order = Order::findOrFail($id);
+            $order = Order::where('public_id', $id)->firstOrFail();
 
             // En API Sanctum, Auth::id() (garde par défaut 'web') peut être
             // null : on privilégie $request->user()->id.

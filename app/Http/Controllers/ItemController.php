@@ -671,7 +671,7 @@ class ItemController extends Controller
      */
     public function buy(Request $request, $id)
     {
-        $item = Item::findOrFail($id);
+        $item = Item::where('public_id', $id)->firstOrFail();
         $sessionId = $request->session()->getId();
         $userId = Auth::id();
 
@@ -776,7 +776,8 @@ class ItemController extends Controller
     public function apiShow($id)
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
-            ->findOrFail($id);
+            ->where('public_id', $id)
+            ->firstOrFail();
 
         $isOwner = Auth::check() && $item->user_id === Auth::id();
 
@@ -818,7 +819,7 @@ class ItemController extends Controller
     public function apiUpdate(UpdateItemRequest $request, $id)
     {
         try {
-            $item = Item::findOrFail($id);
+            $item = Item::where('public_id', $id)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return response()->json([
@@ -849,7 +850,7 @@ class ItemController extends Controller
     public function apiDestroy($id)
     {
         try {
-            $item = Item::findOrFail($id);
+            $item = Item::where('public_id', $id)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return response()->json([

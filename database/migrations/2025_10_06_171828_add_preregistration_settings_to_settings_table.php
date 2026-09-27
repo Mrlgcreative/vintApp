@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Setting;
 
 return new class extends Migration
 {
@@ -121,7 +121,7 @@ return new class extends Migration
         ];
 
         foreach ($settings as $setting) {
-            Setting::updateOrCreate(
+            DB::table('settings')->updateOrInsert(
                 ['key' => $setting['key']],
                 $setting
             );
@@ -134,6 +134,6 @@ return new class extends Migration
     public function down(): void
     {
         // Supprimer tous les paramètres de pré-inscription
-        Setting::where('category', 'preregistration')->delete();
+        DB::table('settings')->where('category', 'preregistration')->delete();
     }
 };

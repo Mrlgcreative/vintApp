@@ -75,7 +75,7 @@ class ContactController extends Controller
         );
 
         // Rediriger vers la conversation avec le vendeur
-        return redirect()->route('messages.show', $seller->id)
+        return redirect()->route('messages.show', $seller)
             ->with('success', 'Votre demande de réduction a été envoyée avec succès !')
             ->with('item_id', $item->id);
     }

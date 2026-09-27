@@ -349,7 +349,7 @@ public function uploadAvatar(Request $request)
         }
 
         $user = $request->user();
-        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+        $deliveryAddress = $user->deliveryAddresses()->where('public_id', $id)->firstOrFail();
 
         $deliveryAddress->update([
             'full_name' => $request->full_name,
@@ -382,7 +382,7 @@ public function uploadAvatar(Request $request)
     public function setDefaultDeliveryAddress(Request $request, $id)
     {
         $user = $request->user();
-        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+        $deliveryAddress = $user->deliveryAddresses()->where('public_id', $id)->firstOrFail();
 
         $deliveryAddress->setAsDefault();
 
@@ -399,11 +399,11 @@ public function uploadAvatar(Request $request)
     public function deleteDeliveryAddress(Request $request, $id)
     {
         $user = $request->user();
-        $deliveryAddress = $user->deliveryAddresses()->findOrFail($id);
+        $deliveryAddress = $user->deliveryAddresses()->where('public_id', $id)->firstOrFail();
 
         // Si c'est l'adresse par défaut, définir une autre comme par défaut
         if ($deliveryAddress->is_default) {
-            $newDefault = $user->deliveryAddresses()->where('id', '!=', $id)->first();
+            $newDefault = $user->deliveryAddresses()->where('id', '!=', $deliveryAddress->id)->first();
             if ($newDefault) {
                 $newDefault->update(['is_default' => true]);
             }

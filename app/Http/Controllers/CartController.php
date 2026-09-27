@@ -89,7 +89,7 @@ class CartController extends Controller
 
     public function add(Request $request, $itemId)
     {
-        $item = Item::findOrFail($itemId);
+        $item = Item::where('public_id', $itemId)->firstOrFail();
         $quantity = max(1, (int) $request->input('quantity', 1));
 
         $activeDiscount = null;
@@ -103,7 +103,7 @@ class CartController extends Controller
         }
 
         if (Auth::check()) {
-            $activeDiscount = Discount::where('item_id', $itemId)
+            $activeDiscount = Discount::where('item_id', $item->id)
                 ->where('user_id', Auth::id())
                 ->where('status', 'approved')
                 ->where('expires_at', '>', now())
@@ -119,7 +119,7 @@ class CartController extends Controller
         $userId = Auth::id();
 
         $cartRow = Cart::where('session_id', $sessionId)
-            ->where('item_id', $itemId)
+            ->where('item_id', $item->id)
             ->first();
 
         if ($cartRow) {
@@ -194,6 +194,7 @@ class CartController extends Controller
 
     public function update(Request $request, $itemId)
     {
+        $item = Item::where('public_id', $itemId)->firstOrFail();
         $sessionId = $this->getSessionId($request);
         $userId = Auth::id();
 
@@ -202,7 +203,7 @@ class CartController extends Controller
             if ($userId) {
                 $q->orWhere('user_id', $userId);
             }
-        })->where('item_id', $itemId)->first();
+        })->where('item_id', $item->id)->first();
 
         if ($cartRow) {
             $cartRow->update([
@@ -215,6 +216,7 @@ class CartController extends Controller
 
     public function remove(Request $request, $itemId)
     {
+        $item = Item::where('public_id', $itemId)->firstOrFail();
         $sessionId = $this->getSessionId($request);
         $userId = Auth::id();
 
@@ -223,7 +225,7 @@ class CartController extends Controller
             if ($userId) {
                 $q->orWhere('user_id', $userId);
             }
-        })->where('item_id', $itemId)->delete();
+        })->where('item_id', $item->id)->delete();
 
         return redirect()->route('cart.index');
     }

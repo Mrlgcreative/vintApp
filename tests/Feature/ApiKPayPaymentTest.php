@@ -190,7 +190,7 @@ class ApiKPayPaymentTest extends TestCase
 
         $this->actingAsBuyer($buyer);
 
-        $this->getJson(route('api.v1.payments.kpay.status', $transaction->id))
+        $this->getJson(route('api.v1.payments.kpay.status', $transaction))
             ->assertOk()
             ->assertJsonPath('data.status', 'completed')
             ->assertJsonPath('data.is_final', true);

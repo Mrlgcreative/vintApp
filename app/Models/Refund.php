@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Refund extends Model
 {
+    use HasPublicId;
+
     use HasFactory;
 
     protected $fillable = [
@@ -70,19 +73,19 @@ class Refund extends Model
      */
     public function getFormattedRefundAmountAttribute()
     {
-        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+        $symbol = currency_symbol($this->currency);
         return $symbol . ' ' . number_format((float)$this->refund_amount, 2);
     }
 
     public function getFormattedOriginalAmountAttribute()
     {
-        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+        $symbol = currency_symbol($this->currency);
         return $symbol . ' ' . number_format((float)$this->original_amount, 2);
     }
 
     public function getFormattedCounterOfferAttribute()
     {
-        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+        $symbol = currency_symbol($this->currency);
         return $symbol . ' ' . number_format((float)$this->counter_offer_amount, 2);
     }
 

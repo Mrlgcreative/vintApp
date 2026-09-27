@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LocalDelivery extends Model
 {
+    use HasPublicId;
+
     protected $fillable = [
         'order_id', 'seller_id', 'buyer_id',
         'delivery_type', 'status',

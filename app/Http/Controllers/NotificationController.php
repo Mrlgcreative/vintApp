@@ -39,7 +39,8 @@ class NotificationController extends Controller
         $user = $request->user();
 
         $notification = $user->notifications()
-            ->findOrFail($id);
+            ->where('public_id', $id)
+            ->firstOrFail();
 
         $notification->markAsRead();
 
@@ -105,7 +106,7 @@ class NotificationController extends Controller
     public function apiMarkAsRead(Request $request, $notificationId)
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -123,7 +124,7 @@ class NotificationController extends Controller
     public function apiMarkAsUnread(Request $request, $notificationId)
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -159,7 +160,7 @@ class NotificationController extends Controller
     public function apiDestroy(Request $request, $notificationId)
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 

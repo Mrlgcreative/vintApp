@@ -68,10 +68,10 @@
                         Tableau de bord
                     </a>
                     @if($isCompleted && $transaction->receipt_number)
-                    <a href="{{ route('payments.receipt', $transaction->id) }}" class="block w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                    <a href="{{ route('payments.receipt', $transaction->public_id) }}" class="block w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                         Voir le reçu
                     </a>
-                    <a href="{{ route('payments.receipt.download', $transaction->id) }}" class="block w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">
+                    <a href="{{ route('payments.receipt.download', $transaction->public_id) }}" class="block w-full py-2.5 text-sm font-medium text-white bg-green-600 rounded-xl hover:bg-green-700 transition-colors">
                         <i class="fas fa-download mr-2"></i>Télécharger le reçu (PDF)
                     </a>
                     @endif
@@ -81,7 +81,7 @@
 
         @if($isPending)
         <div class="mt-4 text-center">
-            <a href="{{ route('payments.status', $transaction->id) }}" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
+            <a href="{{ route('payments.status', $transaction->public_id) }}" class="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium">
                 Voir le statut en temps réel
             </a>
         </div>

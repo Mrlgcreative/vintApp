@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 
 class AllowedCity extends Model
 {
+    use HasPublicId;
+
     /**
      * Rayon maximal (km) entre la position GPS et le point de référence d'une ville autorisée.
      */

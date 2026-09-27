@@ -117,7 +117,7 @@ class SupportController extends ApiController
     public function show(Request $request, $chatId): JsonResponse
     {
         try {
-            $chat = SupportChat::where('id', $chatId)
+            $chat = SupportChat::where('public_id', $chatId)
                 ->where('user_id', $request->user()->id)
                 ->with(['admin', 'messages.user'])
                 ->firstOrFail();
@@ -150,7 +150,7 @@ class SupportController extends ApiController
         }
 
         try {
-            $chat = SupportChat::where('id', $chatId)
+            $chat = SupportChat::where('public_id', $chatId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -181,7 +181,7 @@ class SupportController extends ApiController
     public function close(Request $request, $chatId): JsonResponse
     {
         try {
-            $chat = SupportChat::where('id', $chatId)
+            $chat = SupportChat::where('public_id', $chatId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 

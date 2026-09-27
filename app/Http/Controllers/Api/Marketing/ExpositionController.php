@@ -42,7 +42,8 @@ class ExpositionController extends ApiController
     {
         try {
             $exposition = Exposition::with(['user'])
-                ->findOrFail($id);
+                ->where('public_id', $id)
+                ->firstOrFail();
 
             if ($exposition->status !== 'active') {
                 return $this->notFoundResponse('Exposition non trouvée');
@@ -71,7 +72,7 @@ class ExpositionController extends ApiController
     public function incrementViews($id): JsonResponse
     {
         try {
-            $exposition = Exposition::findOrFail($id);
+            $exposition = Exposition::where('public_id', $id)->firstOrFail();
             $exposition->increment('views');
 
             return $this->successResponse(['views' => $exposition->fresh()->views], 'Compteur de vues mis à jour');
@@ -145,7 +146,7 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::findOrFail($id);
+            $exposition = Exposition::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');
@@ -189,7 +190,7 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::findOrFail($id);
+            $exposition = Exposition::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');
@@ -221,7 +222,7 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::findOrFail($id);
+            $exposition = Exposition::where('public_id', $id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');

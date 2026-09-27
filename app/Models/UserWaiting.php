@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 
 class UserWaiting extends Model
 {
+    use HasPublicId;
+
     use SoftDeletes;
 
     protected $table = 'users_waiting';

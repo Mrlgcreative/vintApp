@@ -57,8 +57,9 @@ class MessageController extends Controller
     {
         $currentUser = Auth::user();
         
-        // Le paramètre peut être soit l'ID d'un utilisateur, soit directement l'instance User
-        $conversationId = is_object($user) ? $user->id : $user;
+        // Le paramètre peut être soit le public_id d'un utilisateur, soit l'instance User
+        $otherUser = is_object($user) ? $user : User::where('public_id', $user)->firstOrFail();
+        $conversationId = $otherUser->id;
         
         // Vérifier que l'utilisateur fait partie de la conversation
         $messages = Message::where(function($query) use ($currentUser, $conversationId) {
@@ -73,9 +74,6 @@ class MessageController extends Controller
         $messages->where('receiver_id', $currentUser->id)->each(function($message) {
             $message->update(['read_at' => now(), 'is_read' => true]);
         });
-        
-        // Récupérer les informations de l'autre utilisateur
-        $otherUser = is_object($user) ? $user : User::find($conversationId);
         
         // Si c'est une requête AJAX/JSON, retourner JSON
         if ($request->expectsJson()) {

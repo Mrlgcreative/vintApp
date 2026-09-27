@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SupportAgent extends Model
 {
+    use HasPublicId;
+
     protected $fillable = [
         'user_id',
         'is_active',

@@ -196,17 +196,18 @@ class CartController extends ApiController
 
         try {
             $sessionId = $this->cartSessionKey($request);
+            $item = Item::where('public_id', $itemId)->firstOrFail();
 
             $cartRow = Cart::where('session_id', $sessionId)
-                ->where('item_id', $itemId)
+                ->where('item_id', $item->id)
                 ->first();
 
             if (!$cartRow) {
                 return $this->errorResponse('Article introuvable dans le panier.', 404);
             }
 
-            $item = $cartRow->item;
-            if ($item && (int) $request->quantity > $item->quantity) {
+            $cartItem = $cartRow->item;
+            if ($cartItem && (int) $request->quantity > $cartItem->quantity) {
                 return $this->errorResponse('La quantité demandée dépasse le stock disponible.', 400);
             }
 
@@ -226,9 +227,10 @@ class CartController extends ApiController
     {
         try {
             $sessionId = $this->cartSessionKey(request());
+            $item = Item::where('public_id', $itemId)->firstOrFail();
 
             Cart::where('session_id', $sessionId)
-                ->where('item_id', $itemId)
+                ->where('item_id', $item->id)
                 ->delete();
 
             return $this->successResponse($this->getCartArray(request()), 'Article retiré du panier');

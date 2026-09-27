@@ -374,7 +374,7 @@ class AdminController extends Controller
             'item', 
             'item.category', 
             'item.brand'
-        ])->findOrFail($id);
+        ])->where('public_id', $id)->firstOrFail();
         
         return view('admin.orders.show', compact('order'));
     }
@@ -2687,7 +2687,7 @@ class AdminController extends Controller
     public function deleteNewsletterSubscriber($id)
     {
         try {
-            $subscriber = \App\Models\NewsletterSubscriber::findOrFail($id);
+            $subscriber = \App\Models\NewsletterSubscriber::where('public_id', $id)->firstOrFail();
             $subscriber->delete();
 
             return response()->json([
@@ -2709,7 +2709,7 @@ class AdminController extends Controller
     public function toggleNewsletterSubscriber($id)
     {
         try {
-            $subscriber = \App\Models\NewsletterSubscriber::findOrFail($id);
+            $subscriber = \App\Models\NewsletterSubscriber::where('public_id', $id)->firstOrFail();
             
             if ($subscriber->is_active) {
                 $subscriber->unsubscribe();
@@ -2812,7 +2812,7 @@ class AdminController extends Controller
             'item.category',
             'item.brand',
             'deliveryAddress'
-        ])->findOrFail($id);
+        ])->where('public_id', $id)->firstOrFail();
         
         // Récupérer l'historique de tracking
         $trackingHistory = \App\Models\OrderTracking::getHistoryForOrder($id);
@@ -2880,7 +2880,7 @@ class AdminController extends Controller
         try {
             DB::beginTransaction();
 
-            $order = Order::with('deliveryAddress')->findOrFail($id);
+            $order = Order::with('deliveryAddress')->where('public_id', $id)->firstOrFail();
 
             // Garde : ne pas mettre à jour le tracking d'une commande annulée/remboursée
             if (in_array($order->status, ['cancelled', 'refunded'])) {
@@ -3001,7 +3001,7 @@ class AdminController extends Controller
             'item',
             'item.category',
             'item.brand'
-        ])->findOrFail($id);
+        ])->where('public_id', $id)->firstOrFail();
         
         // Récupérer le tracking actuel
         $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
@@ -3033,7 +3033,7 @@ class AdminController extends Controller
             'item',
             'item.category',
             'item.brand'
-        ])->findOrFail($id);
+        ])->where('public_id', $id)->firstOrFail();
         
         $currentTracking = \App\Models\OrderTracking::getLatestForOrder($id);
         
@@ -3921,7 +3921,7 @@ class AdminController extends Controller
     public function apiApproveWallet($walletId)
     {
         try {
-            $wallet = Wallet::findOrFail($walletId);
+            $wallet = Wallet::where('public_id', $walletId)->firstOrFail();
             
             $this->walletService->approveWallet($wallet, Auth::id());
             
@@ -3945,7 +3945,7 @@ class AdminController extends Controller
         }
 
         try {
-            $wallet = Wallet::findOrFail($walletId);
+            $wallet = Wallet::where('public_id', $walletId)->firstOrFail();
             
             $this->walletService->rejectWallet($wallet, Auth::id(), $request->reason);
             
@@ -4075,7 +4075,7 @@ class AdminController extends Controller
         }
 
         try {
-            $user = User::findOrFail($userId);
+            $user = User::where('public_id', $userId)->firstOrFail();
             
             DB::beginTransaction();
             
@@ -4117,7 +4117,8 @@ class AdminController extends Controller
     {
         try {
             $user = User::with(['roles', 'wallets', 'transactions', 'ordersAsBuyer', 'ordersAsSeller'])
-                ->findOrFail($userId);
+                ->where('public_id', $userId)
+                ->firstOrFail();
             
             $stats = $user->getStats();
             
@@ -4144,7 +4145,7 @@ class AdminController extends Controller
         }
 
         try {
-            $item = Item::findOrFail($itemId);
+            $item = Item::where('public_id', $itemId)->firstOrFail();
             $item->update(['status' => $request->status]);
             
             return $this->successResponse($item, 'Statut article mis à jour');

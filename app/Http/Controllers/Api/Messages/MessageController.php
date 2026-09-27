@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Messages;
 
 use App\Events\MessageSent;
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Item;
 use App\Models\Message;
 use App\Models\User;
 use App\Services\DiscountService;
@@ -126,23 +127,23 @@ class MessageController extends ApiController
             $currentUser = $request->user();
 
             // Vérifier que l'utilisateur cible existe
-            $otherUser = User::find($userId);
+            $otherUser = User::where('public_id', $userId)->first();
             if (!$otherUser) {
                 return $this->errorResponse('Utilisateur introuvable', 404);
             }
 
-            $messages = Message::where(function($query) use ($currentUser, $userId) {
+            $messages = Message::where(function($query) use ($currentUser) {
                 $query->where('sender_id', $currentUser->id)
-                      ->where('receiver_id', $userId);
-            })->orWhere(function($query) use ($currentUser, $userId) {
-                $query->where('sender_id', $userId)
+                      ->where('receiver_id', $otherUser->id);
+            })->orWhere(function($query) use ($currentUser) {
+                $query->where('sender_id', $otherUser->id)
                       ->where('receiver_id', $currentUser->id);
             })->with(['sender', 'receiver'])
             ->orderBy('created_at', 'asc')
             ->get();
 
             // Marquer les messages comme lus
-            Message::where('sender_id', $userId)
+            Message::where('sender_id', $otherUser->id)
                    ->where('receiver_id', $currentUser->id)
                    ->where('is_read', false)
                    ->update(['read_at' => now(), 'is_read' => true]);
@@ -240,7 +241,7 @@ class MessageController extends ApiController
     public function markAsRead(Request $request, $messageId): JsonResponse
     {
         try {
-            $message = Message::findOrFail($messageId);
+            $message = Message::where('public_id', $messageId)->firstOrFail();
 
             if ($message->receiver_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -310,7 +311,9 @@ class MessageController extends ApiController
     public function getAvailableDiscounts(Request $request, $itemId): JsonResponse
     {
         try {
-            $discounts = $this->discountService->getAvailableDiscounts((int) $itemId, (int) $request->user()->id);
+            $item = Item::where('public_id', $itemId)->firstOrFail();
+
+            $discounts = $this->discountService->getAvailableDiscounts((int) $item->id, (int) $request->user()->id);
 
             return $this->successResponse($discounts, 'Réductions récupérées avec succès');
         } catch (\Exception $e) {

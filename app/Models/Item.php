@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Item extends Model
 {
+    use HasPublicId;
+
     use HasFactory;
 
     /**
@@ -133,7 +136,7 @@ class Item extends Model
      */
     public function getFormattedPriceAttribute()
     {
-        $symbol = $this->currency === 'USD' ? '$' : 'FC';
+        $symbol = currency_symbol($this->currency);
         return $symbol . ' ' . number_format((float) $this->price, 2);
     }
 
@@ -245,7 +248,7 @@ class Item extends Model
      */
     public function getCurrencySymbolAttribute()
     {
-        return $this->currency === 'USD' ? '$' : 'FC';
+        return currency_symbol($this->currency);
     }
 
     public function user()

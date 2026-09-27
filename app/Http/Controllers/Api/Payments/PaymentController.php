@@ -49,7 +49,10 @@ class PaymentController extends ApiController
     public function show(Request $request, $transactionId): JsonResponse
     {
         try {
-            $payment = Transaction::where('transaction_id', $transactionId)
+            $payment = Transaction::where(function ($query) use ($transactionId) {
+                $query->where('public_id', $transactionId)
+                      ->orWhere('transaction_id', $transactionId);
+            })
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -122,7 +125,7 @@ class PaymentController extends ApiController
         }
 
         try {
-            $order = Order::findOrFail($orderId);
+            $order = Order::where('public_id', $orderId)->firstOrFail();
 
             if ($order->buyer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -178,7 +181,7 @@ class PaymentController extends ApiController
     public function refundStatus(Request $request, $refundId): JsonResponse
     {
         try {
-            $refund = Refund::where('id', $refundId)
+            $refund = Refund::where('public_id', $refundId)
                 ->where('buyer_id', $request->user()->id)
                 ->with(['order'])
                 ->firstOrFail();
@@ -350,7 +353,10 @@ class PaymentController extends ApiController
      */
     public function checkMaishaStatus(Request $request, $transactionId): JsonResponse
     {
-        $transaction = Transaction::find($transactionId);
+        $transaction = Transaction::where(function ($query) use ($transactionId) {
+            $query->where('public_id', $transactionId)
+                  ->orWhere('transaction_id', $transactionId);
+        })->first();
 
         if (! $transaction) {
             return response()->json([
@@ -571,7 +577,10 @@ class PaymentController extends ApiController
     public function checkKPayStatus(Request $request, $transactionId): JsonResponse
     {
         try {
-            $transaction = Transaction::where('id', $transactionId)
+            $transaction = Transaction::where(function ($query) use ($transactionId) {
+                $query->where('public_id', $transactionId)
+                      ->orWhere('transaction_id', $transactionId);
+            })
                 ->where('provider', 'kpay')
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();

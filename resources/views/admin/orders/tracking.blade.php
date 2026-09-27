@@ -22,7 +22,7 @@
 
 @section('page-actions')
 <div class="flex flex-wrap items-center gap-2">
-    <a href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank"
+    <a href="{{ route('admin.orders.invoice', $order) }}" target="_blank"
        class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
         <i class="fas fa-file-invoice"></i>
         <span class="hidden sm:inline">Voir la facture</span>

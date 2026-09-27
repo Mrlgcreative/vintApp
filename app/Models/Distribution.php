@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+
+use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Model;
 
 class Distribution extends Model
 {
+    use HasPublicId;
+
     /**
      * Parts distribuées d'une vente confirmée, pour l'audit.
      *

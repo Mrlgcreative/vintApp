@@ -50,7 +50,7 @@ class ApiItemsTest extends TestCase
         $user = User::factory()->create();
         $item = $this->item($user, $this->category());
 
-        $this->getJson('/api/v1/items/' . $item->id)
+        $this->getJson('/api/v1/items/' . $item->public_id)
             ->assertOk()
             ->assertJsonPath('data.id', $item->id);
     }
@@ -62,7 +62,7 @@ class ApiItemsTest extends TestCase
         $item = $this->item(User::factory()->create(), $this->category());
         Sanctum::actingAs($user);
 
-        $this->postJson('/api/items/' . $item->id . '/favorite')
+        $this->postJson('/api/items/' . $item->public_id . '/favorite')
             ->assertOk()
             ->assertJson(['success' => true, 'is_favorite' => true]);
 
@@ -71,7 +71,7 @@ class ApiItemsTest extends TestCase
             'item_id' => $item->id,
         ]);
 
-        $this->postJson('/api/items/' . $item->id . '/favorite')
+        $this->postJson('/api/items/' . $item->public_id . '/favorite')
             ->assertOk()
             ->assertJson(['success' => true, 'is_favorite' => false]);
     }

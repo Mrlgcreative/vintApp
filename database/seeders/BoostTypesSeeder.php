@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BoostTypesSeeder extends Seeder
 {
@@ -102,6 +103,7 @@ class BoostTypesSeeder extends Seeder
 
         foreach ($boostTypes as $boostType) {
             DB::table('boost_types')->insert(array_merge($boostType, [
+                'public_id' => (string) Str::ulid(),
                 'created_at' => now(),
                 'updated_at' => now()
             ]));

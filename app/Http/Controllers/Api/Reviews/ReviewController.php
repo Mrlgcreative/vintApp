@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Reviews;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Item;
 use App\Models\Order;
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -33,12 +35,14 @@ class ReviewController extends ApiController
     public function itemReviews(Request $request, $itemId): JsonResponse
     {
         try {
-            $reviews = Review::where('item_id', $itemId)
+            $item = Item::where('public_id', $itemId)->firstOrFail();
+
+            $reviews = Review::where('item_id', $item->id)
                 ->with(['reviewer', 'seller'])
                 ->latest()
                 ->paginate($request->per_page ?? 10);
 
-            $averageRating = Review::where('item_id', $itemId)->avg('rating');
+            $averageRating = Review::where('item_id', $item->id)->avg('rating');
 
             return $this->successResponse([
                 'reviews' => $reviews->items(),
@@ -62,12 +66,14 @@ class ReviewController extends ApiController
     public function sellerReviews(Request $request, $sellerId): JsonResponse
     {
         try {
-            $reviews = Review::where('seller_id', $sellerId)
+            $seller = User::where('public_id', $sellerId)->firstOrFail();
+
+            $reviews = Review::where('seller_id', $seller->id)
                 ->with(['reviewer', 'item'])
                 ->latest()
                 ->paginate($request->per_page ?? 10);
 
-            $averageRating = Review::where('seller_id', $sellerId)->avg('rating');
+            $averageRating = Review::where('seller_id', $seller->id)->avg('rating');
 
             return $this->successResponse([
                 'reviews' => $reviews->items(),
@@ -137,7 +143,7 @@ class ReviewController extends ApiController
     public function update(Request $request, $reviewId): JsonResponse
     {
         try {
-            $review = Review::findOrFail($reviewId);
+            $review = Review::where('public_id', $reviewId)->firstOrFail();
 
             if ($review->reviewer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -169,7 +175,7 @@ class ReviewController extends ApiController
     public function destroy(Request $request, $reviewId): JsonResponse
     {
         try {
-            $review = Review::findOrFail($reviewId);
+            $review = Review::where('public_id', $reviewId)->firstOrFail();
 
             if ($review->reviewer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);

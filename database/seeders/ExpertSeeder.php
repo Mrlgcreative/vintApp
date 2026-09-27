@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\ExpertProfile;
 
@@ -21,6 +22,7 @@ class ExpertSeeder extends Seeder
         if (!$expertRole) {
             // Créer le rôle expert s'il n'existe pas
             $expertRoleId = DB::table('roles')->insertGetId([
+                'public_id' => (string) Str::ulid(),
                 'name' => 'Expert',
                 'slug' => 'expert',
                 'description' => 'Expert en vérification d\'authenticité',

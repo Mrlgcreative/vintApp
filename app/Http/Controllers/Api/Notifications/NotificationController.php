@@ -66,7 +66,7 @@ class NotificationController extends ApiController
     public function markAsRead(Request $request, $notificationId): JsonResponse
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -84,7 +84,7 @@ class NotificationController extends ApiController
     public function markAsUnread(Request $request, $notificationId): JsonResponse
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 
@@ -120,7 +120,7 @@ class NotificationController extends ApiController
     public function destroy(Request $request, $notificationId): JsonResponse
     {
         try {
-            $notification = Notification::where('id', $notificationId)
+            $notification = Notification::where('public_id', $notificationId)
                 ->where('user_id', $request->user()->id)
                 ->firstOrFail();
 

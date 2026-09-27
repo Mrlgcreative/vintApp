@@ -98,7 +98,7 @@ class SellerLocationController extends ApiController
     public function show($userId): JsonResponse
     {
         try {
-            $user = User::findOrFail($userId);
+            $user = User::where('public_id', $userId)->firstOrFail();
 
             return $this->successResponse([
                 'user_id'  => $user->id,
