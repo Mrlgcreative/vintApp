@@ -129,8 +129,10 @@ Route::get('/', function() {
         return app(WelcomeController::class)->index();
     }
     
-    // Utilisateurs non connectés → page splash
-    return view('splash');
+    // Utilisateurs non connectés → page d'accueil
+    // La splash est désactivée : elle appelle route('items') et route('help'),
+    // routes nommées absentes, ce qui renvoyait une 500 sur /.
+    return redirect()->route('home');
 });
 
 // Routes Newsletter publiques
