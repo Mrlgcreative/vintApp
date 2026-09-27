@@ -1,229 +1,187 @@
 @extends('app')
 
-@section('title', 'Mes vérifications d\'authenticité')
+@section('title', 'Mes certifications')
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-6xl mx-auto">
-        <!-- En-tête -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Vérifications d'authenticité</h1>
-            <p class="text-gray-600 dark:text-gray-300">Gérez toutes vos demandes de vérification et badges d'authenticité</p>
+
+        <div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Mes certifications</h1>
+                <p class="text-gray-600 dark:text-gray-300">Suivez vos demandes et vos badges d'authenticité.</p>
+            </div>
+            <x-button-primary :href="route('items.index')">
+                <i class="fas fa-plus mr-2"></i>Voir mes produits
+            </x-button-primary>
         </div>
 
-        <!-- Statistiques -->
-        <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
-                <div class="flex items-center">
-                    <div class="p-2 bg-blue-100 rounded-lg">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Total demandes</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['total_requests'] }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
-                <div class="flex items-center">
-                    <div class="p-2 bg-green-100 rounded-lg">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Produits vérifiés</p>
-                        <p class="text-2xl font-bold text-green-600">{{ $stats['verified_items'] }}</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border">
-                <div class="flex items-center">
-                    <div class="p-2 bg-yellow-100 rounded-lg">
-                        <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <p class="text-sm text-gray-600 dark:text-gray-300">En cours</p>
-                        <p class="text-2xl font-bold text-yellow-600">{{ $stats['pending_verifications'] }}</p>
-                    </div>
-                </div>
-            </div>
+        <div class="grid sm:grid-cols-3 gap-4 mb-8">
+            <x-stat-card :value="$stats['total_requests']" label="Demandes envoyées" icon="fas fa-clipboard-list" tone="slate" />
+            <x-stat-card :value="$stats['verified_items']" label="Produits vérifiés" icon="fas fa-badge-check" tone="emerald" />
+            <x-stat-card :value="$stats['pending_verifications']" label="En cours de traitement" icon="fas fa-clock" tone="sky" />
         </div>
 
-        <!-- Filtres et actions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-4 mb-6">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <select class="border rounded-lg px-3 py-2 text-sm">
-                        <option>Tous les statuts</option>
-                        <option>En attente</option>
-                        <option>Approuvé</option>
-                        <option>Rejeté</option>
-                        <option>Examen expert</option>
-                    </select>
-                    
-                    <select class="border rounded-lg px-3 py-2 text-sm">
-                        <option>Toutes les dates</option>
-                        <option>Cette semaine</option>
-                        <option>Ce mois</option>
-                        <option>3 derniers mois</option>
-                    </select>
-                </div>
-                
-                <a href="{{ route('items.index') }}" 
-                   class="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700">
-                    + Nouveau produit
-                </a>
+        <x-card class="mb-6">
+            <div class="flex flex-wrap items-center gap-2 p-4">
+                @php
+                    $tabs = [
+                        '' => 'Toutes',
+                        'in_progress' => 'En cours',
+                        'approved' => 'Approuvées',
+                        'rejected' => 'Rejetées',
+                    ];
+                @endphp
+                @foreach($tabs as $key => $label)
+                    <a href="{{ route('authenticity.dashboard', $key ? ['status' => $key] : []) }}"
+                       class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                              {{ $status === $key
+                                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
+                                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700' }}">
+                        {{ $label }}
+                    </a>
+                @endforeach
             </div>
-        </div>
+        </x-card>
 
-        <!-- Liste des vérifications -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border">
+        <x-card>
             @if($checks->count() > 0)
-                <div class="divide-y divide-gray-200">
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700/50">
                     @foreach($checks as $check)
-                        <div class="p-6">
-                            <div class="flex items-start justify-between">
-                                <div class="flex items-start space-x-4">
+                        @php
+                            $progress = 20;
+                            if ($check->payment_completed) $progress = 40;
+                            if ($check->ai_completed_at) $progress = 60;
+                            if ($check->expert_assigned_at) $progress = 80;
+                            if ($check->final_decision_at) $progress = 100;
+
+                            $barClass = $check->isApproved() ? 'bg-emerald-600' : ($check->isRejected() ? 'bg-red-600' : 'bg-blue-600');
+                        @endphp
+
+                        <li class="p-5">
+                            @if(!$check->item)
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-box-open text-gray-400"></i>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="font-medium text-gray-900 dark:text-white">Produit supprimé</p>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Demande #{{ $check->id }} · {{ $check->created_at->format('d/m/Y') }}</p>
+                                        </div>
+                                    </div>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $check->getStatusBadgeClass() }}">
+                                        {{ $check->getStatusLabel() }}
+                                    </span>
+                                </div>
+                            @else
+                            <div class="flex flex-wrap items-start justify-between gap-4">
+                                <div class="flex items-start gap-4 min-w-0">
                                     @if(count($check->item->images) > 0)
-                                        <img src="{{ asset('storage/' . $check->item->images[0]) }}" 
-                                             alt="{{ $check->item->name }}" 
-                                             class="w-16 h-16 object-cover rounded-lg">
+                                        <img src="{{ Storage::url($check->item->images[0]) }}" alt="{{ $check->item->name }}" loading="lazy"
+                                             class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
                                     @else
-                                        <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                                            <span class="text-gray-400 text-xs">No image</span>
+                                        <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                                            <i class="fas fa-image text-gray-400"></i>
                                         </div>
                                     @endif
-                                    
-                                    <div>
-                                        <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{{ $check->item->name }}</h3>
-                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                                            {{ $check->item->brand->name ?? 'Marque non spécifiée' }} • 
-                                            {{ $check->item->category->name ?? 'Catégorie' }}
+
+                                    <div class="min-w-0">
+                                        <p class="font-semibold text-gray-900 dark:text-white truncate">{{ $check->item->name }}</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 truncate mb-1">
+                                            {{ $check->item->brand->name ?? 'Marque non spécifiée' }} · {{ $check->item->category->name ?? 'Sans catégorie' }}
                                         </p>
-                                        <p class="text-lg font-bold text-indigo-600 mb-2">{{ $check->item->formatted_price }}</p>
-                                        
+                                        <p class="font-semibold text-gray-900 dark:text-white mb-2">{{ $check->item->formatted_price }}</p>
+
                                         @if($check->item->isVerified())
-                                            <div class="mb-2">
-                                                {!! $check->item->getAuthenticityBadgeHtml() !!}
-                                            </div>
+                                            <div class="mb-2">{!! $check->item->getAuthenticityBadgeHtml() !!}</div>
                                         @endif
-                                        
-                                        <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+
+                                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
                                             <span>Demande #{{ $check->id }}</span>
                                             <span>{{ $check->created_at->format('d/m/Y') }}</span>
                                             @if($check->expert)
-                                                <span>Expert: {{ $check->expert->name }}</span>
+                                                <span>Expert : {{ $check->expert->name }}</span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
-                                
-                                <div class="text-right space-y-2">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $check->getStatusBadgeClass() }}">
+
+                                <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $check->getStatusBadgeClass() }}">
                                         {{ $check->getStatusLabel() }}
                                     </span>
-                                    
-                                    <div class="space-y-1">
+
+                                    <div class="flex items-center gap-2">
                                         @if(!$check->payment_completed)
-                                            <a href="{{ route('authenticity.payment', $check) }}" 
-                                               class="block w-full text-center bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">
-                                                Finaliser paiement
-                                            </a>
+                                            <x-button-primary size="sm" variant="success" :href="route('authenticity.payment', $check)">
+                                                Payer
+                                            </x-button-primary>
                                         @endif
-                                        
-                                        <a href="{{ route('authenticity.status', $check->item) }}" 
-                                           class="block w-full text-center bg-gray-100 dark:bg-gray-800 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:bg-gray-700">
-                                            Voir détails
-                                        </a>
-                                        
-                                        <a href="{{ route('items.show', $check->item) }}" 
-                                           class="block w-full text-center text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                            Voir produit
-                                        </a>
+                                        <x-button-outline size="sm" :href="route('authenticity.status', $check->item)">Détails</x-button-outline>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Progression rapide -->
-                            <div class="mt-4 flex items-center space-x-2">
-                                <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                    @php
-                                        $progress = 20; // Base
-                                        if ($check->payment_completed) $progress = 40;
-                                        if ($check->ai_completed_at) $progress = 60;
-                                        if ($check->expert_assigned_at) $progress = 80;
-                                        if ($check->final_decision_at) $progress = 100;
-                                    @endphp
-                                    <div class="h-2 rounded-full {{ $check->isApproved() ? 'bg-green-500' : ($check->isRejected() ? 'bg-red-500' : 'bg-blue-500') }}" 
-                                         style="width: {{ $progress }}%"></div>
+
+                            <div class="flex items-center gap-3 mt-4">
+                                <div class="flex-1 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                    <div class="h-full rounded-full transition-all {{ $barClass }}" style="width: {{ $progress }}%"></div>
                                 </div>
-                                <span class="text-sm text-gray-500 dark:text-gray-400">{{ $progress }}%</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 w-9 text-right">{{ $progress }} %</span>
                             </div>
-                            
+
                             @if($check->expert_notes)
-                                <div class="mt-3 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
-                                    <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-1">Notes de l'expert :</h5>
+                                <div class="mt-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700/50 p-3">
+                                    <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Notes de l'expert</p>
                                     <p class="text-sm text-gray-700 dark:text-gray-200">{{ Str::limit($check->expert_notes, 150) }}</p>
                                 </div>
                             @endif
-                        </div>
+                            </div>
+                            @endif
+                        </li>
                     @endforeach
-                </div>
-                
-                <!-- Pagination -->
+                </ul>
+
                 @if($checks->hasPages())
-                    <div class="px-6 py-4 border-t">
+                    <div class="px-5 py-4 border-t border-gray-200 dark:border-gray-700/50">
                         {{ $checks->links() }}
                     </div>
                 @endif
-                
             @else
-                <!-- État vide -->
-                <div class="text-center py-12">
-                    <div class="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
+                <div class="text-center py-14 px-6">
+                    <div class="w-14 h-14 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-alt text-gray-400"></i>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucune vérification</h3>
-                    <p class="text-gray-600 dark:text-gray-300 mb-6">Vous n'avez pas encore demandé de vérification d'authenticité pour vos produits.</p>
-                    <a href="{{ route('items.index') }}" 
-                       class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
-                        Voir mes produits
-                    </a>
+                    <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-1">Aucune certification demandée</h2>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-sm mx-auto">
+                        Ouvrez l'un de vos produits pour lancer une demande de certification.
+                    </p>
+                    <x-button-primary :href="route('items.index')">Voir mes produits</x-button-primary>
                 </div>
             @endif
-        </div>
+        </x-card>
 
-        <!-- Information sur le processus -->
-        <div class="mt-8 bg-blue-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-blue-900 mb-3">💡 Comment fonctionne la vérification ?</h3>
-            <div class="grid md:grid-cols-2 gap-4 text-sm text-blue-800">
-                <div>
-                    <h4 class="font-medium mb-1">1. Soumission</h4>
-                    <p>Fournissez photos HD, certificats et informations sur votre produit</p>
-                </div>
-                <div>
-                    <h4 class="font-medium mb-1">2. Analyse IA</h4>
-                    <p>Notre intelligence artificielle examine les détails d'authenticité</p>
-                </div>
-                <div>
-                    <h4 class="font-medium mb-1">3. Expertise humaine</h4>
-                    <p>Si nécessaire, un expert spécialisé examine votre produit</p>
-                </div>
-                <div>
-                    <h4 class="font-medium mb-1">4. Badge & Protection</h4>
-                    <p>Badge visible + protection anti-fraude renforcée</p>
-                </div>
-            </div>
-        </div>
+        <x-card class="p-5 mt-6">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Comment ça marche ?</h2>
+            <ol class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach([
+                    ['fa-camera', 'Soumission', 'Photos nettes, certificat et reçu éventuel.'],
+                    ['fa-robot', 'Analyse IA', 'Les images et le numéro de série sont analysés.'],
+                    ['fa-user-check', 'Expertise', 'Un expert tranche si nécessaire.'],
+                    ['fa-badge-check', 'Badge', 'Le produit est marqué VintApp vérifié.'],
+                ] as $index => [$icon, $title, $description])
+                    <li class="flex items-start gap-3">
+                        <span class="w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold flex items-center justify-center flex-shrink-0">{{ $index + 1 }}</span>
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                <i class="fas {{ $icon }} text-gray-400 text-xs"></i>{{ $title }}
+                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $description }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ol>
+        </x-card>
     </div>
 </div>
 @endsection

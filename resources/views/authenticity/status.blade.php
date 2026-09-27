@@ -5,312 +5,304 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-4xl mx-auto">
-        <!-- En-tête avec statut -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
-            <div class="flex items-start justify-between">
-                <div class="flex items-start space-x-4">
+
+        <a href="{{ route('authenticity.dashboard') }}" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6">
+            <i class="fas fa-arrow-left text-xs"></i>
+            Mes vérifications
+        </a>
+
+        <x-card class="p-5 mb-6">
+            <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="flex items-start gap-4 min-w-0">
                     @if(count($item->images) > 0)
-                        <img src="{{ asset('storage/' . $item->images[0]) }}" 
-                             alt="{{ $item->name }}" 
-                             class="w-20 h-20 object-cover rounded-lg">
+                        <img src="{{ Storage::url($item->images[0]) }}" alt="{{ $item->name }}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
                     @else
-                        <div class="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                            <span class="text-gray-400 text-xs">Pas d'image</span>
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-image text-gray-400"></i>
                         </div>
                     @endif
-                    
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">{{ $item->name }}</h1>
-                        <p class="text-gray-600 dark:text-gray-300 mb-2">{{ $item->brand->name ?? 'Marque non spécifiée' }} • {{ $item->category->name ?? 'Catégorie' }}</p>
-                        <p class="text-lg font-semibold text-indigo-600">{{ $item->formatted_price }}</p>
-                        
+
+                    <div class="min-w-0">
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-1">{{ $item->name }}</h1>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                            {{ $item->brand->name ?? 'Marque non spécifiée' }} · {{ $item->category->name ?? 'Sans catégorie' }}
+                        </p>
+                        <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $item->formatted_price }}</p>
                         @if($item->isVerified())
-                            <div class="mt-2">
-                                {!! $item->getAuthenticityBadgeHtml() !!}
-                            </div>
+                            <div class="mt-2">{!! $item->getAuthenticityBadgeHtml() !!}</div>
                         @endif
                     </div>
                 </div>
-                
-                <div class="text-right">
+
+                <div class="text-right flex-shrink-0">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {{ $check->getStatusBadgeClass() }}">
                         {{ $check->getStatusLabel() }}
                     </span>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Demande #{{ $check->id }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Demande #{{ $check->id }}</p>
                 </div>
             </div>
-        </div>
+        </x-card>
 
-        <!-- Statut principal -->
         @if($check->isApproved())
-            <!-- Statut Approuvé -->
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 p-6 mb-6">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+            <x-card class="p-5 mb-6 border-emerald-200 dark:border-emerald-500/30">
+                <div class="flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-check text-emerald-600 dark:text-emerald-400"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-green-900">🎉 Produit authentifié avec succès!</h2>
-                        <p class="text-green-700 mt-1">Votre produit a été vérifié et est maintenant affiché avec le badge d'authenticité VintApp.</p>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Produit authentifié</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Votre produit est vérifié et porte désormais le badge VintApp sur sa fiche publique.
+                        </p>
                         @if($check->final_decision_at)
-                            <p class="text-sm text-green-600 mt-2">Vérifié le {{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                Décision du {{ $check->final_decision_at->format('d/m/Y à H:i') }}
+                            </p>
                         @endif
                     </div>
                 </div>
-            </div>
-            
+            </x-card>
+
         @elseif($check->isRejected())
-            <!-- Statut Rejeté -->
-            <div class="bg-gradient-to-r from-red-50 to-rose-50 rounded-lg border border-red-200 p-6 mb-6">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
+            <x-card class="p-5 mb-6 border-red-200 dark:border-red-500/30">
+                <div class="flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-times text-red-600 dark:text-red-400"></i>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold text-red-900">Vérification non concluante</h2>
-                        <p class="text-red-700 mt-1">Nous n'avons pas pu certifier l'authenticité de ce produit avec notre processus strict.</p>
+                    <div class="min-w-0">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Authenticité non confirmée</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            Les éléments fournis n'ont pas permis de certifier ce produit. Vous pouvez corriger les informations et soumettre à nouveau.
+                        </p>
                         @if($check->final_decision_at)
-                            <p class="text-sm text-red-600 mt-2">Décision prise le {{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                Décision du {{ $check->final_decision_at->format('d/m/Y à H:i') }}
+                            </p>
                         @endif
                     </div>
                 </div>
-                
-                @if($check->expert_notes)
-                    <div class="mt-4 bg-white dark:bg-gray-800 rounded-lg p-4">
-                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Notes de l'expert :</h4>
-                        <p class="text-gray-700 dark:text-gray-200 text-sm">{{ $check->expert_notes }}</p>
-                    </div>
-                @endif
-            </div>
-            
+            </x-card>
+
         @else
-            <!-- Statut En cours -->
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6 mb-6">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+            <x-card class="p-5 mb-6 border-blue-200 dark:border-blue-500/30">
+                <div class="flex items-start gap-4">
+                    <div class="w-11 h-11 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-spinner fa-spin text-blue-600 dark:text-blue-400"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-blue-900">Vérification en cours...</h2>
-                        @if($check->status === 'pending')
-                            <p class="text-blue-700 mt-1">Votre demande est en attente de traitement.</p>
-                        @elseif($check->status === 'expert_review')
-                            <p class="text-blue-700 mt-1">Un expert examine actuellement votre produit.</p>
-                            @if($check->expert)
-                                <p class="text-sm text-blue-600 mt-2">Expert assigné : {{ $check->expert->name }}</p>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-1">Vérification en cours</h2>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                            @if($check->status === 'pending')
+                                Votre demande est enregistrée et attend le démarrage du traitement.
+                            @elseif($check->status === 'expert_review')
+                                Un expert examine actuellement votre produit.
+                            @else
+                                L'analyse de vos photos est en cours.
                             @endif
+                        </p>
+                        @if($check->status === 'expert_review' && $check->expert)
+                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">
+                                Expert assigné : <span class="font-medium text-gray-900 dark:text-white">{{ $check->expert->name }}</span>
+                            </p>
                         @endif
                     </div>
                 </div>
-            </div>
+            </x-card>
         @endif
 
-        <!-- Progression -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Progression de la vérification</h3>
-            
-            <div class="relative">
-                <!-- Ligne de progression -->
-                <div class="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-700"></div>
-                
-                <!-- Étapes -->
-                <div class="space-y-6">
-                    <!-- Soumission -->
-                    <div class="relative flex items-start">
-                        <div class="relative z-10 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                            </svg>
-                        </div>
-                        <div class="ml-4">
-                            <h4 class="font-medium text-gray-900 dark:text-white">Demande soumise</h4>
-                            <p class="text-sm text-gray-600 dark:text-gray-300">{{ $check->submitted_at ? $check->submitted_at->format('d/m/Y à H:i') : 'En attente' }}</p>
-                            @if($check->payment_completed)
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 mt-1">
-                                    Paiement confirmé
-                                </span>
-                            @endif
-                        </div>
-                    </div>
+        @if($check->expert_notes)
+            <x-card class="p-5 mb-6">
+                <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-2">Notes de l'expert</p>
+                <p class="text-sm text-gray-700 dark:text-gray-200">{{ $check->expert_notes }}</p>
+            </x-card>
+        @endif
 
-                    <!-- Analyse IA -->
-                    <div class="relative flex items-start">
-                        @if($check->ai_completed_at)
-                            <div class="relative z-10 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                        @elseif($check->payment_completed)
-                            <div class="relative z-10 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                            </div>
-                        @else
-                            <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                                </svg>
-                            </div>
-                        @endif
-                        <div class="ml-4">
-                            <h4 class="font-medium text-gray-900 dark:text-white">Analyse par IA</h4>
-                            @if($check->ai_completed_at)
-                                <p class="text-sm text-gray-600 dark:text-gray-300">Terminée le {{ $check->ai_completed_at->format('d/m/Y à H:i') }}</p>
-                                @if($check->ai_confidence_score)
-                                    <p class="text-sm text-blue-600">Score de confiance: {{ $check->ai_confidence_score }}%</p>
-                                @endif
-                            @elseif($check->payment_completed)
-                                <p class="text-sm text-blue-600">En cours d'analyse...</p>
-                            @else
-                                <p class="text-sm text-gray-400">En attente du paiement</p>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Examen expert (si nécessaire) -->
-                    @if($check->needsExpertReview() || $check->expert_completed_at)
-                        <div class="relative flex items-start">
-                            @if($check->expert_completed_at)
-                                <div class="relative z-10 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                </div>
-                            @elseif($check->expert_assigned_at)
-                                <div class="relative z-10 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-blue-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                </div>
-                            @else
-                                <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                            <div class="ml-4">
-                                <h4 class="font-medium text-gray-900 dark:text-white">Examen par expert</h4>
-                                @if($check->expert_completed_at)
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Terminé le {{ $check->expert_completed_at->format('d/m/Y à H:i') }}</p>
-                                    @if($check->expert)
-                                        <p class="text-sm text-primary-600">Expert: {{ $check->expert->name }}</p>
-                                    @endif
-                                @elseif($check->expert_assigned_at)
-                                    <p class="text-sm text-blue-600">En cours d'examen par un expert</p>
-                                    @if($check->expert)
-                                        <p class="text-sm text-gray-600 dark:text-gray-300">Expert assigné: {{ $check->expert->name }}</p>
-                                    @endif
-                                @else
-                                    <p class="text-sm text-gray-400">En attente d'assignation</p>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-
-                    <!-- Décision finale -->
-                    <div class="relative flex items-start">
-                        @if($check->final_decision_at)
-                            @if($check->isApproved())
-                                <div class="relative z-10 w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                    </svg>
-                                </div>
-                            @else
-                                <div class="relative z-10 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                    </svg>
-                                </div>
-                            @endif
-                        @else
-                            <div class="relative z-10 w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                                </svg>
-                            </div>
-                        @endif
-                        <div class="ml-4">
-                            <h4 class="font-medium text-gray-900 dark:text-white">Décision finale</h4>
-                            @if($check->final_decision_at)
-                                <p class="text-sm text-gray-600 dark:text-gray-300">{{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
-                                @if($check->isApproved())
-                                    <p class="text-sm text-green-600">✓ Produit authentifié</p>
-                                @else
-                                    <p class="text-sm text-red-600">✗ Authenticité non confirmée</p>
-                                @endif
-                            @else
-                                <p class="text-sm text-gray-400">En attente</p>
-                            @endif
-                        </div>
-                    </div>
-                </div>
+        <x-card class="p-5 mb-6">
+            <div class="flex items-center justify-between gap-3 mb-6">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-white">Progression</h2>
+                @if(!$check->final_decision_at)
+                    <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                        <i class="fas fa-rotate text-[10px]"></i>
+                        Mise à jour automatique
+                    </span>
+                @endif
             </div>
-        </div>
 
-        <!-- Images soumises -->
+            @php
+                $submittedState = $check->submitted_at ? 'done' : 'todo';
+                $aiState = $check->ai_completed_at ? 'done' : (($check->payment_completed || $check->status !== 'pending') ? 'current' : 'todo');
+                $expertShown = $check->needsExpertReview() || $check->expert_assigned_at || $check->expert_completed_at;
+                $expertState = $check->expert_completed_at ? 'done' : ($check->expert_assigned_at ? 'current' : 'todo');
+                $decisionState = $check->final_decision_at ? ($check->isApproved() ? 'done' : 'failed') : 'todo';
+            @endphp
+
+            <ol class="relative">
+                <span class="absolute left-[15px] top-4 bottom-4 w-px bg-gray-200 dark:bg-gray-700" aria-hidden="true"></span>
+
+                <li class="relative flex gap-4 pb-6">
+                    <span class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                 {{ $submittedState === 'done' ? 'bg-emerald-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-400' }}">
+                        <i class="fas fa-check text-[10px]"></i>
+                    </span>
+                    <div class="pt-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Demande soumise</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            {{ $check->submitted_at ? $check->submitted_at->format('d/m/Y à H:i') : 'En attente' }}
+                        </p>
+                        @if($check->payment_completed)
+                            <span class="inline-flex items-center gap-1 mt-1.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                                <i class="fas fa-credit-card text-[10px]"></i>
+                                Paiement confirmé — {{ number_format((float) $check->verification_fee, 2) }} $
+                            </span>
+                        @endif
+                    </div>
+                </li>
+
+                <li class="relative flex gap-4 pb-6">
+                    <span class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                 @if($aiState === 'done') bg-emerald-600 text-white
+                                 @elseif($aiState === 'current') bg-blue-600 text-white
+                                 @else bg-gray-200 dark:bg-gray-700 text-gray-400 @endif">
+                        <i class="fas @if($aiState === 'done') fa-check @elseif($aiState === 'current') fa-spinner fa-spin @else fa-clock @endif text-[10px]"></i>
+                    </span>
+                    <div class="pt-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Analyse par IA</p>
+                        @if($check->ai_completed_at)
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Terminée le {{ $check->ai_completed_at->format('d/m/Y à H:i') }}</p>
+                            @if($check->ai_confidence_score !== null)
+                                <div class="flex items-center gap-2 mt-2">
+                                    <div class="w-24 h-1.5 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                                        <div class="h-full bg-emerald-600" style="width: {{ min(100, max(0, (int) $check->ai_confidence_score)) }}%"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ $check->ai_confidence_score }} % de confiance</span>
+                                </div>
+                            @endif
+                        @elseif($aiState === 'current')
+                            <p class="text-sm text-gray-500 dark:text-gray-400">En cours d'analyse</p>
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400">En attente du paiement</p>
+                        @endif
+                    </div>
+                </li>
+
+                @if($expertShown)
+                    <li class="relative flex gap-4 pb-6">
+                        <span class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                     @if($expertState === 'done') bg-emerald-600 text-white
+                                     @elseif($expertState === 'current') bg-blue-600 text-white
+                                     @else bg-gray-200 dark:bg-gray-700 text-gray-400 @endif">
+                            <i class="fas @if($expertState === 'done') fa-check @elseif($expertState === 'current') fa-spinner fa-spin @else fa-user @endif text-[10px]"></i>
+                        </span>
+                        <div class="pt-1 min-w-0">
+                            <p class="font-medium text-gray-900 dark:text-white">Examen par un expert</p>
+                            @if($check->expert_completed_at)
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Terminé le {{ $check->expert_completed_at->format('d/m/Y à H:i') }}</p>
+                            @elseif($check->expert_assigned_at)
+                                <p class="text-sm text-gray-500 dark:text-gray-400">En cours d'examen</p>
+                            @else
+                                <p class="text-sm text-gray-500 dark:text-gray-400">En attente d'assignation</p>
+                            @endif
+                            @if($check->expert)
+                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Expert : {{ $check->expert->name }}</p>
+                            @endif
+                        </div>
+                    </li>
+                @endif
+
+                <li class="relative flex gap-4">
+                    <span class="relative z-10 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0
+                                 @if($decisionState === 'done') bg-emerald-600 text-white
+                                 @elseif($decisionState === 'failed') bg-red-600 text-white
+                                 @else bg-gray-200 dark:bg-gray-700 text-gray-400 @endif">
+                        <i class="fas @if($decisionState === 'done') fa-shield-alt @elseif($decisionState === 'failed') fa-times @else fa-clock @endif text-[10px]"></i>
+                    </span>
+                    <div class="pt-1 min-w-0">
+                        <p class="font-medium text-gray-900 dark:text-white">Décision finale</p>
+                        @if($check->final_decision_at)
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $check->final_decision_at->format('d/m/Y à H:i') }}</p>
+                            <p class="text-sm font-medium mt-1 {{ $check->isApproved() ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
+                                {{ $check->isApproved() ? 'Produit authentifié' : 'Authenticité non confirmée' }}
+                            </p>
+                        @else
+                            <p class="text-sm text-gray-500 dark:text-gray-400">En attente</p>
+                        @endif
+                    </div>
+                </li>
+            </ol>
+        </x-card>
+
         @if($check->verificationImages->count() > 0)
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Images soumises pour vérification</h3>
+            <x-card class="p-5 mb-6">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Pièces analysées</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     @foreach($check->verificationImages as $image)
-                        <div class="relative group">
-                            <img src="{{ $image->getImageUrl() }}" 
-                                 alt="{{ $image->getTypeLabel() }}"
-                                 class="w-full h-32 object-cover rounded-lg border cursor-pointer hover:opacity-75 transition-opacity">
-                            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-2 rounded-b-lg">
-                                {{ $image->getTypeLabel() }}
-                                @if($image->image_quality_score)
-                                    <span class="float-right">{{ $image->image_quality_score }}%</span>
+                        @php $isPdf = str_ends_with(strtolower($image->image_path), '.pdf'); @endphp
+                        <figure>
+                            @if($isPdf)
+                                <a href="{{ $image->getImageUrl() }}" target="_blank" rel="noopener"
+                                   class="flex w-full h-32 rounded-lg border border-gray-200 dark:border-gray-700/50 bg-gray-50 dark:bg-gray-900/50 flex-col items-center justify-center gap-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                                    <i class="fas fa-file-pdf text-2xl"></i>
+                                    <span class="text-xs">Ouvrir le PDF</span>
+                                </a>
+                            @else
+                                <a href="{{ $image->getImageUrl() }}" target="_blank" rel="noopener">
+                                    <img src="{{ $image->getImageUrl() }}" alt="{{ $image->getTypeLabel() }}" loading="lazy"
+                                         class="w-full h-32 object-cover rounded-lg border border-gray-200 dark:border-gray-700/50">
+                                </a>
+                            @endif
+                            <figcaption class="mt-1.5 flex items-center justify-between gap-2 text-xs">
+                                <span class="text-gray-600 dark:text-gray-400 truncate">{{ $image->getTypeLabel() }}</span>
+                                @if($image->image_quality_score !== null)
+                                    <span class="text-gray-500 dark:text-gray-400 flex-shrink-0">{{ $image->image_quality_score }} %</span>
                                 @endif
-                            </div>
-                        </div>
+                            </figcaption>
+                        </figure>
                     @endforeach
                 </div>
-            </div>
+            </x-card>
         @endif
 
-        <!-- Actions -->
-        <div class="flex items-center justify-between">
-            <a href="{{ route('items.show', $item) }}" 
-               class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 font-medium">
-                ← Retour au produit
+        <div class="flex flex-wrap items-center justify-between gap-3">
+            <a href="{{ route('items.show', $item) }}" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <i class="fas fa-arrow-left text-xs"></i>
+                Retour au produit
             </a>
-            
-            <div class="space-x-3">
+
+            <div class="flex items-center gap-3">
                 @if(!$check->payment_completed)
-                    <a href="{{ route('authenticity.payment', $check) }}" 
-                       class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700">
-                        Finaliser le paiement
-                    </a>
+                    <x-button-primary :href="route('authenticity.payment', $check)">
+                        <i class="fas fa-credit-card mr-2"></i>Finaliser le paiement
+                    </x-button-primary>
                 @endif
-                
-                <a href="{{ route('authenticity.dashboard') }}" 
-                   class="bg-gray-100 dark:bg-gray-800 text-gray-700 px-6 py-2 rounded-lg font-semibold hover:bg-gray-200 dark:bg-gray-700">
-                    Mes vérifications
-                </a>
+                <x-button-outline :href="route('authenticity.dashboard')">Mes vérifications</x-button-outline>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-// Auto-refresh pour les vérifications en cours
+@push('scripts')
 @if(!$check->final_decision_at)
-    setInterval(function() {
-        location.reload();
-    }, 30000); // Refresh toutes les 30 secondes
-@endif
+<script>
+(function () {
+    const KEY = 'authenticity-scroll-{{ $check->id }}';
+
+    window.addEventListener('beforeunload', function () {
+        sessionStorage.setItem(KEY, String(window.scrollY));
+    });
+
+    const saved = sessionStorage.getItem(KEY);
+    if (saved) {
+        sessionStorage.removeItem(KEY);
+        window.scrollTo(0, Number(saved));
+    }
+
+    setInterval(function () {
+        if (document.visibilityState === 'visible') {
+            window.location.reload();
+        }
+    }, 60000);
+})();
 </script>
+@endif
+@endpush
 @endsection

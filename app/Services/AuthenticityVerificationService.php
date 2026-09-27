@@ -65,6 +65,16 @@ class AuthenticityVerificationService
     /**
      * Calculer les frais de vérification
      */
+    /**
+     * Frais de vérification pour un article donné.
+     * Exposé publiquement pour que le formulaire affiche le montant réel
+     * avant la soumission, au lieu d'un tarif figé.
+     */
+    public function verificationFeeFor(Item $item): float
+    {
+        return $this->calculateVerificationFee($item);
+    }
+
     protected function calculateVerificationFee(Item $item): float
     {
         // Frais de base en USD
@@ -96,12 +106,29 @@ class AuthenticityVerificationService
             $type = $imageData['type'];
 
             // Générer un nom de fichier unique avec extension validée côté serveur
-            $allowedMimes = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+            $allowedMimes = [
+                'image/jpeg' => 'jpg',
+                'image/png' => 'png',
+                'image/webp' => 'webp',
+                'application/pdf' => 'pdf',
+            ];
             $mime = $file->getMimeType();
             $ext = $allowedMimes[$mime] ?? null;
             if (!$ext) {
                 throw new \InvalidArgumentException("Type de fichier non autorisé: {$mime}");
             }
+
+            // Les photos du produit doivent rester des images ; les justificatifs
+            // (certificat, reçu) peuvent être fournis en PDF.
+            $isDocument = in_array($type, [
+                VerificationImage::TYPE_CERTIFICATE,
+                VerificationImage::TYPE_RECEIPT,
+            ], true);
+
+            if ($ext === 'pdf' && !$isDocument) {
+                throw new \InvalidArgumentException("Les photos du produit doivent être au format image: {$mime}");
+            }
+
             $filename = 'verification_' . $check->id . '_' . $type . '_' . time() . '.' . $ext;
             
             // Sauvegarder le fichier
@@ -112,7 +139,7 @@ class AuthenticityVerificationService
                 'authenticity_check_id' => $check->id,
                 'image_path' => $path,
                 'image_type' => $type,
-                'image_quality_score' => $this->assessImageQuality($file),
+                'image_quality_score' => $ext === 'pdf' ? null : $this->assessImageQuality($file),
             ]);
         }
     }

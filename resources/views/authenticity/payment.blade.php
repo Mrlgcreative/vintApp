@@ -5,192 +5,153 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto">
-        <!-- En-tête -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
-                </svg>
+
+        <a href="{{ route('authenticity.status', $check->item) }}" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6">
+            <i class="fas fa-arrow-left text-xs"></i>
+            Retour au suivi
+        </a>
+
+        <div class="flex items-start gap-4 mb-8">
+            <div class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-credit-card text-gray-600 dark:text-gray-300"></i>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Finaliser le paiement</h1>
-            <p class="text-gray-600 dark:text-gray-300">Confirmez votre paiement pour lancer la vérification d'authenticité</p>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Finaliser le paiement</h1>
+                <p class="text-gray-600 dark:text-gray-300">Le règlement des frais lance immédiatement l'analyse de votre produit.</p>
+            </div>
         </div>
 
-        <!-- Résumé de la commande -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 mb-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Résumé de la vérification</h2>
-            
-            <div class="flex items-center space-x-4 mb-4">
+        @if(session('error'))
+            <x-alert variant="danger" class="mb-6">{{ session('error') }}</x-alert>
+        @endif
+
+        <x-card class="p-5 mb-6">
+            <div class="flex items-center gap-4">
                 @if(count($check->item->images) > 0)
-                    <img src="{{ asset('storage/' . $check->item->images[0]) }}" 
-                         alt="{{ $check->item->name }}" 
-                         class="w-16 h-16 object-cover rounded-lg">
+                    <img src="{{ Storage::url($check->item->images[0]) }}" alt="{{ $check->item->name }}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0">
                 @else
-                    <div class="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                        <span class="text-gray-400 text-xs">Pas d'image</span>
+                    <div class="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-image text-gray-400"></i>
                     </div>
                 @endif
-                
-                <div class="flex-1">
-                    <h3 class="font-medium text-gray-900 dark:text-white">{{ $check->item->name }}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">{{ $check->item->brand->name ?? 'Marque non spécifiée' }}</p>
-                    <p class="text-sm text-gray-600 dark:text-gray-300">Catégorie: {{ $check->item->category->name ?? 'Non spécifiée' }}</p>
+
+                <div class="min-w-0 flex-1">
+                    <p class="font-semibold text-gray-900 dark:text-white truncate">{{ $check->item->name }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
+                        {{ $check->item->brand->name ?? 'Marque non spécifiée' }} · {{ $check->item->category->name ?? 'Sans catégorie' }}
+                    </p>
                 </div>
-                
-                <div class="text-right">
-                    <p class="text-lg font-bold text-gray-900 dark:text-white">{{ $check->item->formatted_price }}</p>
-                </div>
+
+                <p class="font-semibold text-gray-900 dark:text-white flex-shrink-0">{{ $check->item->formatted_price }}</p>
             </div>
 
-            <div class="border-t pt-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-gray-600 dark:text-gray-300">Frais de vérification d'authenticité</span>
-                    <span class="text-xl font-bold text-blue-600">${{ number_format($check->verification_fee, 2) }}</span>
-                </div>
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700/50 flex items-center justify-between">
+                <span class="text-sm text-gray-600 dark:text-gray-300">Frais de certification</span>
+                <span class="text-lg font-bold text-gray-900 dark:text-white">${{ number_format($check->verification_fee, 2) }}</span>
             </div>
-        </div>
+        </x-card>
 
-        <!-- Ce qui est inclus -->
-        <div class="bg-blue-50 rounded-lg p-6 mb-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">✓ Ce qui est inclus</h3>
-            <div class="space-y-3">
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Analyse par Intelligence Artificielle</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Vérification automatique en quelques minutes</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Expertise humaine si nécessaire</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Vérification par un expert certifié de la catégorie</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Badge d'authenticité permanent</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Visible sur votre annonce pour rassurer les acheteurs</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <p class="font-medium text-gray-900 dark:text-white">Protection anti-fraude renforcée</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-300">Réduction des litiges et remboursements frauduleux</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-card class="p-5 mb-6">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Inclus dans la certification</h2>
+            <ul class="space-y-3.5">
+                @foreach([
+                    ['fa-robot', 'Analyse par intelligence artificielle', 'Analyse automatique de vos photos et du numéro de série.'],
+                    ['fa-user-check', 'Expertise humaine si nécessaire', 'Un expert de la catégorie tranche en cas de doute.'],
+                    ['fa-badge-check', 'Badge d\'authenticité permanent', 'Visible sur votre annonce pour rassurer les acheteurs.'],
+                    ['fa-shield-halved', 'Protection anti-fraude renforcée', 'Moins de litiges et de remboursements frauduleux.'],
+                ] as [$icon, $title, $description])
+                    <li class="flex items-start gap-3">
+                        <i class="fas {{ $icon }} text-emerald-600 dark:text-emerald-400 mt-1 text-sm w-4"></i>
+                        <div>
+                            <p class="font-medium text-gray-900 dark:text-white">{{ $title }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $description }}</p>
+                        </div>
+                    </li>
+                @endforeach
+            </ul>
+        </x-card>
 
-        <!-- Processus de paiement -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Méthode de paiement</h3>
-            
-            <!-- Options de paiement (placeholder) -->
-            <div class="space-y-4 mb-6">
-                <div class="border rounded-lg p-4">
-                    <div class="flex items-center space-x-3">
-                        <input type="radio" id="mobile_money" name="payment_method" value="mobile_money" checked
-                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600">
-                        <label for="mobile_money" class="flex-1">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-2xl">📱</span>
-                                <div>
-                                    <p class="font-medium text-gray-900 dark:text-white">Mobile Money</p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Orange Money, Airtel Money</p>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="border rounded-lg p-4 opacity-75">
-                    <div class="flex items-center space-x-3">
-                        <input type="radio" id="card" name="payment_method" value="card" disabled
-                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600">
-                        <label for="card" class="flex-1">
-                            <div class="flex items-center space-x-3">
-                                <span class="text-2xl">💳</span>
-                                <div>
-                                    <p class="font-medium text-gray-900 dark:text-white">Carte bancaire</p>
-                                    <p class="text-sm text-gray-600 dark:text-gray-300">Bientôt disponible</p>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-            </div>
+        <x-card class="p-5">
+            @php
+                $canPay = $wallet && (float) $wallet->balance >= (float) $check->verification_fee;
+            @endphp
 
-            <!-- Informations importantes -->
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-yellow-800">Information importante</h3>
-                        <div class="mt-1 text-sm text-yellow-700">
-                            <p>• Le paiement lance immédiatement le processus de vérification</p>
-                            <p>• Résultat sous 24h en moyenne</p>
-                            <p>• Remboursement uniquement si erreur technique de notre part</p>
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Moyen de paiement</h2>
+
+            <div class="rounded-lg border border-gray-200 dark:border-gray-700/50 p-4 mb-5">
+                <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <i class="fas fa-wallet text-gray-500 dark:text-gray-400"></i>
+                        <div class="min-w-0">
+                            <p class="font-medium text-gray-900 dark:text-white">Solde de votre portefeuille VintApp</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Débit automatique en dollars</p>
                         </div>
                     </div>
+                    @if($wallet)
+                        <p class="font-semibold text-gray-900 dark:text-white flex-shrink-0">{{ number_format((float) $wallet->balance, 2) }} $</p>
+                    @else
+                        <span class="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">Indisponible</span>
+                    @endif
                 </div>
+
+                @if(!$canPay)
+                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700/50">
+                        <x-alert variant="warning">
+                            Solde insuffisant pour couvrir les frais. Rechargez votre portefeuille avant de confirmer.
+                        </x-alert>
+                        <x-button-outline :href="route('wallet.index')" class="mt-3">
+                            <i class="fas fa-plus mr-2"></i>Recharger mon portefeuille
+                        </x-button-outline>
+                    </div>
+                @endif
             </div>
 
-            <!-- Formulaire de confirmation -->
+            <x-alert variant="info" class="mb-6">
+                Le paiement est définitif et déclenche l'analyse. Un remboursement n'est possible qu'en cas de failure technique de notre part.
+            </x-alert>
+
             <form action="{{ route('authenticity.payment.confirm', $check) }}" method="POST">
                 @csrf
-                
-                <div class="flex items-start space-x-3 mb-6">
+
+                <div class="flex items-start gap-3 mb-6">
                     <input type="checkbox" id="payment_terms" required
-                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded mt-1">
-                    <label for="payment_terms" class="text-sm text-gray-700 dark:text-gray-200">
-                        Je confirme avoir lu et accepté les <a href="#" class="text-blue-600 hover:underline">conditions de vérification</a> 
-                        et je comprends que ce paiement lance immédiatement le processus d'analyse. <span class="text-red-500">*</span>
+                           class="mt-0.5 h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500">
+                    <label for="payment_terms" class="text-sm text-gray-700 dark:text-gray-300">
+                        Je confirme avoir lu et accepté les conditions de certification et je comprends que ce paiement lance immédiatement l'analyse.
+                        <span class="text-red-500">*</span>
                     </label>
                 </div>
 
-                <div class="flex items-center justify-between">
-                    <a href="{{ route('authenticity.request', $check->item) }}" 
-                       class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 font-medium">
-                        ← Modifier ma demande
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <a href="{{ route('authenticity.request', $check->item) }}" class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                        <i class="fas fa-arrow-left text-xs"></i>
+                        Modifier ma demande
                     </a>
-                    
-                    <button type="submit" 
-                            class="bg-green-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                        Confirmer le paiement - ${{ number_format($check->verification_fee, 2) }}
-                    </button>
+
+                    <x-button-primary type="submit" variant="success" size="lg"
+                                     :disabled="$canPay ? 'disabled' : null">
+                        <i class="fas fa-lock mr-2"></i>
+                        Payer {{ number_format($check->verification_fee, 2) }} $
+                    </x-button-primary>
                 </div>
             </form>
-        </div>
+        </x-card>
 
-        <!-- Processus après paiement -->
-        <div class="mt-6 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-            <h4 class="font-medium text-gray-900 dark:text-white mb-2">🚀 Après confirmation du paiement :</h4>
-            <ol class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
-                <li>1. Analyse automatique par IA (2-10 minutes)</li>
-                <li>2. Si nécessaire, assignation à un expert (sous 2h)</li>
-                <li>3. Examen expert et décision finale (sous 24h)</li>
-                <li>4. Notification du résultat et attribution du badge</li>
+        <x-card class="p-5 mt-6">
+            <h2 class="text-base font-semibold text-gray-900 dark:text-white mb-4">Et ensuite ?</h2>
+            <ol class="space-y-3">
+                @foreach([
+                    'Analyse automatique de vos photos par l\'IA.',
+                    'Assignation à un expert de la catégorie en cas de doute.',
+                    'Décision finale, puis notification du résultat.',
+                ] as $index => $step)
+                    <li class="flex items-start gap-3">
+                        <span class="w-6 h-6 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold flex items-center justify-center flex-shrink-0">{{ $index + 1 }}</span>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 pt-0.5">{{ $step }}</p>
+                    </li>
+                @endforeach
             </ol>
-        </div>
+        </x-card>
     </div>
 </div>
 @endsection

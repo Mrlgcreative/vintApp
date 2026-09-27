@@ -43,7 +43,9 @@ class AuthenticityController extends Controller
             return redirect()->route('authenticity.status', $item)->with('info', 'Une demande de vérification existe déjà pour ce produit.');
         }
 
-        return view('authenticity.request', compact('item'));
+        $fee = $this->verificationService->verificationFeeFor($item);
+
+        return view('authenticity.request', compact('item', 'fee'));
     }
 
     /**
@@ -59,8 +61,10 @@ class AuthenticityController extends Controller
         // Validation
         $validator = Validator::make($request->all(), [
             'product_images.*' => 'required|image|mimes:jpeg,png,jpg|max:10240', // 10MB max
-            'certificate' => 'nullable|image|mimes:jpeg,png,jpg,pdf|max:5120',
-            'receipt' => 'nullable|image|mimes:jpeg,png,jpg,pdf|max:5120',
+            // Les justificatifs sont acceptés en image ou en PDF : la règle "image"
+            // rejetait les PDF alors que l'interface les propose explicitement.
+            'certificate' => 'nullable|mimes:jpeg,png,jpg,pdf|max:5120',
+            'receipt' => 'nullable|mimes:jpeg,png,jpg,pdf|max:5120',
             'serial_number' => 'nullable|string|max:255',
             'purchase_date' => 'nullable|date',
             'purchase_location' => 'nullable|string|max:255',
@@ -150,7 +154,12 @@ class AuthenticityController extends Controller
                 ->with('info', 'Le paiement a déjà été effectué pour cette vérification.');
         }
 
-        return view('authenticity.payment', compact('check'));
+        $wallet = Auth::user()->wallets()
+            ->where('currency', 'USD')
+            ->where('type', \App\Models\Wallet::TYPE_MAIN)
+            ->first();
+
+        return view('authenticity.payment', compact('check', 'wallet'));
     }
 
     /**
@@ -204,26 +213,51 @@ class AuthenticityController extends Controller
     /**
      * Dashboard pour les vendeurs
      */
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = Auth::user();
-        
-        // Récupérer toutes les vérifications de l'utilisateur
-        $checks = ProductAuthenticityCheck::where('user_id', $user->id)
-            ->with(['item', 'expert'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
 
-        // Statistiques utilisateur
+        // Filtres disponibles sur la liste des vérifications
+        $filters = [
+            'in_progress' => [
+                ProductAuthenticityCheck::STATUS_PENDING,
+                ProductAuthenticityCheck::STATUS_AI_APPROVED,
+                ProductAuthenticityCheck::STATUS_AI_REJECTED,
+                ProductAuthenticityCheck::STATUS_EXPERT_REVIEW,
+            ],
+            'approved' => [
+                ProductAuthenticityCheck::STATUS_AI_APPROVED,
+                ProductAuthenticityCheck::STATUS_EXPERT_APPROVED,
+            ],
+            'rejected' => [
+                ProductAuthenticityCheck::STATUS_AI_REJECTED,
+                ProductAuthenticityCheck::STATUS_EXPERT_REJECTED,
+            ],
+        ];
+
+        $status = (string) $request->query('status', '');
+
+        $query = ProductAuthenticityCheck::where('user_id', $user->id)
+            ->with(['item', 'expert']);
+
+        if (isset($filters[$status])) {
+            $query->whereIn('status', $filters[$status]);
+        }
+
+        $checks = $query->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Statistiques utilisateur (toujours calculées sur l'ensemble des demandes)
         $stats = [
-            'total_requests' => $checks->total(),
+            'total_requests' => ProductAuthenticityCheck::where('user_id', $user->id)->count(),
             'verified_items' => $user->items()->where('authenticity_verified', true)->count(),
             'pending_verifications' => ProductAuthenticityCheck::where('user_id', $user->id)
                 ->whereIn('status', [ProductAuthenticityCheck::STATUS_PENDING, ProductAuthenticityCheck::STATUS_EXPERT_REVIEW])
                 ->count()
         ];
 
-        return view('authenticity.dashboard', compact('checks', 'stats'));
+        return view('authenticity.dashboard', compact('checks', 'stats', 'status'));
     }
 
     /**
