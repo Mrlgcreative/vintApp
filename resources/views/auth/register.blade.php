@@ -502,8 +502,19 @@
             </div>
         </div>
         <div class="p-6">
+            {{-- Les erreurs de formulaire sont affichées champ par champ plus bas (@error).
+                 Ce bloc ne sert qu'aux erreurs globales, notamment le rejet anti-robot. --}}
+            @if ($errors->any())
+                <div class="mb-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-xl px-4 py-3 text-sm text-red-700 dark:text-red-300">
+                    @foreach ($errors->all() as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('register') }}" class="space-y-4">
                 @csrf
+                @include('partials.honeypot')
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Nom complet</label>

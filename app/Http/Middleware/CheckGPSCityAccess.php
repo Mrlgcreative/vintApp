@@ -14,13 +14,20 @@ class CheckGPSCityAccess
 {
     /**
      * Routes exclues de la vérification géographique
+     *
+     * Les motifs sont testés via $request->is() sur le chemin de l'URI, pas
+     * sur le nom de la route : 'password/*' ne matchait donc ni
+     * 'forgot-password' ni 'reset-password', et toute la réinitialisation de
+     * mot de passe était redirigée vers /location/validate.
      */
     protected $excludedRoutes = [
         'admin/*',
         'login',
         'logout',
         'register',
-        'password/*',
+        'forgot-password',
+        'reset-password',
+        'reset-password/*',
         'city-restricted',
         'api/validate-location',
         'location/validate',

@@ -70,6 +70,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'signed' => \Illuminate\Auth\Middleware\ValidateSignature::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
             'throttle.login' => \App\Http\Middleware\ThrottleLogin::class, // 🔐 Rate limit login
+            'bot.trap' => \App\Http\Middleware\ProtectAgainstBots::class, // 🍯 Piège à robots (register, mot de passe oublié)
             'security.log' => \App\Http\Middleware\SecurityLogging::class, // 🔐 Security logging
             'security.log.logins' => \App\Http\Middleware\LogLoginAttempts::class, // 🛡️ Journalise les tentatives de connexion en base
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class, // ✅ Notre middleware personnalisé

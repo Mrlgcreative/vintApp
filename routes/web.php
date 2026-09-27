@@ -959,8 +959,11 @@ Route::prefix('firebase')->name('firebase.')->group(function () {
     Route::post('/login', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'loginWithFirebase'])
         ->middleware(['throttle.login', 'security.log'])
         ->name('login');
+    // Route d'inscription Firebase (rate limiting + logging)
+    // Sans throttle, une inscription = 1 utilisateur + 1 email Brevo : c'était
+    // le seul point d'entrée auth public sans aucune limite de débit.
     Route::post('/register', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'registerWithFirebase'])
-        ->middleware(['security.log'])
+        ->middleware(['throttle:auth.firebase', 'security.log'])
         ->name('register');
     Route::post('/logout', [App\Http\Controllers\Auth\FirebaseAuthController::class, 'logout'])
         ->middleware(['auth', 'security.log'])

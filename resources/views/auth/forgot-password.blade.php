@@ -48,6 +48,7 @@
             <!-- Formulaire -->
             <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-4">
                 @csrf
+                @include('partials.honeypot')
 
                 <!-- Email -->
                 <div class="flex flex-col gap-2">

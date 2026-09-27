@@ -59,5 +59,21 @@ class RouteServiceProvider extends ServiceProvider
                     Str::lower((string) ($request->input('email') ?? '')) . '|' . $request->ip()
                 );
         });
+
+        // Inscription via Firebase (POST /firebase/register).
+        //
+        // Clé par IP seule, et non email+IP comme les autres : l'email est
+        // extrait de l'idToken vérifié par le contrôleur, il n'existe donc pas
+        // dans la requête au moment du middleware. Utiliser $request->input
+        // ('email') ici donnerait une clé vide pour tout le monde, donc un
+        // quota unique et global par IP.
+        //
+        // Budget volontairement généreux (10/h) car ce chemin est emprunté
+        // depuis un navigateur, potentiellement en 4G derrière un CGNAT où
+        // plusieurs inscriptions légitimes partagent la même IP publique.
+        RateLimiter::for('auth.firebase', function (Request $request) {
+            return Limit::perHour(10)
+                ->by($request->ip());
+        });
     }
 }

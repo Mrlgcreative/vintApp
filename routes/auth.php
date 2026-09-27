@@ -17,14 +17,14 @@ Route::middleware('guest')->group(function () {
         ->name('register');
 
     Route::post('register', [RegisterController::class, 'register'])
-        ->middleware(['throttle:auth.register', 'security.log.logins']); // email+IP : max 5/min + journalisation
+        ->middleware(['throttle:auth.register', 'bot.trap:error', 'security.log.logins']); // email+IP : 5/3h + piège à robots + journalisation
 
     // Routes de connexion
     Route::get('login', [LoginController::class, 'showLoginForm'])
         ->name('login');
 
     Route::post('login', [LoginController::class, 'login'])
-        ->middleware(['throttle:auth.login', 'security.log.logins']); // email+IP : max 5/min (protection brute force) + journalisation
+        ->middleware(['throttle:auth.login', 'security.log.logins']); // email+IP : 5/3h (protection brute force) + journalisation
 
     // Routes Google OAuth
     Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])
@@ -45,7 +45,9 @@ Route::middleware('guest')->group(function () {
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware(['throttle:auth.password', 'security.log.logins'])
+        // bot.trap:silent = fausse réussite si robot détecté, pour ne pas
+        // lui apprendre qu'il est filtré tout en coupant l'envoi du mail.
+        ->middleware(['throttle:auth.password', 'bot.trap:silent', 'security.log.logins'])
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])

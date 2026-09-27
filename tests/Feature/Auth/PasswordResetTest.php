@@ -25,7 +25,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', $this->browserPayload(['email' => $user->email]));
 
         Notification::assertSentTo($user, ResetPassword::class);
     }
@@ -36,7 +36,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', $this->browserPayload(['email' => $user->email]));
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
             $response = $this->get('/reset-password/'.$notification->token);
@@ -53,7 +53,7 @@ class PasswordResetTest extends TestCase
 
         $user = User::factory()->create();
 
-        $this->post('/forgot-password', ['email' => $user->email]);
+        $this->post('/forgot-password', $this->browserPayload(['email' => $user->email]));
 
         Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
             $response = $this->post('/reset-password', [
@@ -69,5 +69,17 @@ class PasswordResetTest extends TestCase
 
             return true;
         });
+    }
+
+    /**
+     * Le formulaire de mot de passe oublié est protégé par un piège anti-robot
+     * (voir ProtectAgainstBots) : une soumission doit ressembler à celle d'un
+     * navigateur ayant rendu la page, donc porter un timestamp cohérent.
+     */
+    protected function browserPayload(array $overrides = []): array
+    {
+        return array_merge([
+            config('honeypot.timestamp_field') => time() - 30,
+        ], $overrides);
     }
 }
