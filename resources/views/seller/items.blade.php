@@ -61,6 +61,15 @@
                                                 <x-button-outline size="sm" tone="primary" :href="route('items.edit', $item)" title="Modifier">
                                                     <i class="fas fa-edit"></i><span class="hidden sm:inline">Modifier</span>
                                                 </x-button-outline>
+                                                @if($item->canRequestVerification())
+                                                    <x-button-outline size="sm" tone="success" :href="route('authenticity.request', $item)" title="Demander la certification">
+                                                        <i class="fas fa-shield-alt"></i><span class="hidden sm:inline">Certifier</span>
+                                                    </x-button-outline>
+                                                @elseif($item->authenticityCheck)
+                                                    <x-button-outline size="sm" tone="success" :href="route('authenticity.status', $item)" title="Demande de certification en cours">
+                                                        <i class="fas fa-certificate"></i><span class="hidden sm:inline">Certification</span>
+                                                    </x-button-outline>
+                                                @endif
                                                 <button type="button"
                                                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-red-200 dark:border-red-500/40 bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20 transition-colors delete-item ml-auto sm:ml-0"
                                                         data-item-id="{{ $item->id }}"

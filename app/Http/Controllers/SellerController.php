@@ -44,7 +44,7 @@ class SellerController extends Controller
 
     public function items()
     {
-        $items = auth()->user()->items()->with('category', 'brand')->latest()->paginate(12);
+        $items = auth()->user()->items()->with('category', 'brand', 'authenticityCheck')->latest()->paginate(12);
         return view('seller.items', compact('items'));
     }
 
