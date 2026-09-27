@@ -571,7 +571,7 @@ class ItemController extends Controller
     public function myItems()
     {
         $items = Auth::user()->items()
-            ->with(['category', 'brand'])
+            ->with(['category', 'brand', 'authenticityCheck'])
                     ->orderBy('created_at', 'desc')
             ->paginate(10);
 

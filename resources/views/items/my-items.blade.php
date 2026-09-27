@@ -177,6 +177,19 @@
                                                             <i class="fas fa-{{ $hasActiveBoost ? 'star' : 'pause' }} text-sm"></i>
                                                         </div>
                                                     @endif
+                                                    @if($item->canRequestVerification())
+                                                        <a href="{{ route('authenticity.request', $item) }}" 
+                                                           class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-all duration-300" 
+                                                           title="Demander la certification">
+                                                            <i class="fas fa-shield-alt text-sm"></i>
+                                                        </a>
+                                                    @elseif($item->authenticityCheck)
+                                                        <a href="{{ route('authenticity.status', $item) }}" 
+                                                           class="w-8 h-8 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 rounded-lg flex items-center justify-center transition-all duration-300" 
+                                                           title="Demande de certification en cours">
+                                                            <i class="fas fa-certificate text-sm"></i>
+                                                        </a>
+                                                    @endif
                                                     <button type="button" 
                                                             class="w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg flex items-center justify-center transition-all duration-300 delete-item" 
                                                             data-item-id="{{ $item->id }}"
@@ -265,6 +278,19 @@
                                                        class="flex-1 bg-primary-100 hover:bg-primary-200 text-primary-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
                                                         <i class="fas fa-rocket mr-2"></i>
                                                         Booster
+                                                    </a>
+                                                @endif
+                                                @if($item->canRequestVerification())
+                                                    <a href="{{ route('authenticity.request', $item) }}" 
+                                                       class="flex-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
+                                                        <i class="fas fa-shield-alt mr-2"></i>
+                                                        Certifier
+                                                    </a>
+                                                @elseif($item->authenticityCheck)
+                                                    <a href="{{ route('authenticity.status', $item) }}" 
+                                                       class="flex-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-600 py-2 rounded-lg flex items-center justify-center transition-all duration-300">
+                                                        <i class="fas fa-certificate mr-2"></i>
+                                                        Certification
                                                     </a>
                                                 @endif
                                                 <button type="button" 
