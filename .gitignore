@@ -46,8 +46,11 @@ Thumbs.db
 *.7z
 sql_parts/
 
-# Microservices en construction (développement local uniquement, non versionnés)
-/microservices/
+# Microservices : code versionné, artefacts locaux ignorés
+/microservices/*/vendor/
+/microservices/*/.env
+/microservices/*/node_modules/
+/microservices/*/storage/logs/*.log
 
 # Artéfacts Python
 __pycache__/
