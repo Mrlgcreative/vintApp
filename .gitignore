@@ -20,6 +20,7 @@
 /auth.json
 /node_modules
 /public/hot
+/public/img/
 /public/storage
 /storage/*.key
 /storage/pail
