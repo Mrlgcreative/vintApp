@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\EventPublisher;
 use App\Services\AuthServiceClient;
+use App\Services\KPayGateway;
 use App\Services\LogEventPublisher;
 use App\Services\NullEventPublisher;
 use App\Services\OutboxWriter;
@@ -16,6 +17,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(AuthServiceClient::class, fn () => AuthServiceClient::fromConfig());
+
+        $this->app->singleton(KPayGateway::class, fn () => KPayGateway::fromConfig());
 
         $this->app->singleton(OutboxWriter::class);
 

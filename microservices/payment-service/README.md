@@ -10,6 +10,8 @@ webhooks opérateurs, remboursements.
 ## Périmètre
 
 - Enregistrement d'une intention de paiement.
+- **Initiation de paiement chez K-PAY** (agrégateur Mobile Money), modes USSD
+  et page hébergée (GATEWAY).
 - Réception et vérification des **webhooks** opérateurs (HMAC, clé API, token
   Bearer, champ payload — fail-closed).
 - Déduplication des webhooks rejoués.
@@ -37,11 +39,34 @@ Format de réponse : `{success, message, data, meta}`.
 
 ### Ce qui n'est pas fait
 
-L'API d'un opérateur n'est **pas** appelée : `POST /v1/payments` enregistre
-l'intention, et le statut n'évolue que par webhook. Aucun appel de décaissement,
-de remboursement ou d'initiation n'est effectué. Le service gère donc la
-réception et la consolidation des notifications, pas l'orchestration des
-opérateurs chez eux.
+Seul **K-PAY** est appelé en sortie. Pour tous les autres opérateurs, `POST
+/v1/payments` enregistre l'intention et le statut n'évolue que par webhook.
+Aucun appel de décaissement (payout) ni de remboursement chez l'agrégateur
+n'est effectué : les remboursements sont enregistrés localement. Les événements
+`payout.*` / `refund.*` émis par K-PAY sont acquittés **sans effet** (voir
+`WebhookController`).
+
+### Initier un paiement K-PAY
+
+Un agrégateur se branche avec **deux clés** (`KPAY_API_KEY` + `KPAY_SECRET_KEY`)
+et `KPAY_ENABLED=true`. Rien à coder.
+
+| Champ `POST /v1/payments` | Rôle |
+|---|---|
+| `method` | `kpay` (obligatoire) |
+| `currency` | `CDF` uniquement |
+| `mode` | `USSD` ou `GATEWAY` (défaut : `USSD` si `phone_number`, sinon `GATEWAY`) |
+| `operator` | `VODACOM`, `AIRTEL` ou `ORANGE` (USSD) |
+| `phone_number` | requis en USSD |
+| `return_url` / `cancel_url` | requise(s) en GATEWAY (défaut : config) |
+
+La réponse contient `checkout` : `status`, `mode` et `gateway_url` (à ouvrir
+côté client en mode GATEWAY). La référence opérateur est conservée dans
+`external_reference`, le rattachement des webhooks se fait dessus
+(`paymentId`) ou sur `externalId` ↔ `reference`.
+
+Sans `KPAY_ENABLED` / clés, l'API se contente d'enregistrer l'intention : le
+service reste utilisable sans credentials.
 
 Les événements sont bien publiés (outbox + `events:relay`), mais **aucun
 consommateur n'est branché** dans ce dépôt : `order-service` et
@@ -92,6 +117,14 @@ ORANGE_CALLBACK_KEY=...
 AIRTEL_CALLBACK_TOKEN=...
 AFRICELL_CALLBACK_SECRET=...
 CINETPAY_SHOP_KEY=...
+
+# K-PAY : webhook (entrant) et initiation (sortant)
+KPAY_WEBHOOK_SECRET=...          # vérifie X-KPAY-Signature (HMAC corps brut)
+KPAY_ENABLED=true                # active l'initiation sortante
+KPAY_API_KEY=kpay_live_...       # kpay_test_* en sandbox
+KPAY_SECRET_KEY=...
+KPAY_BASE_URL=https://admin.kpay.site
+KPAY_DEFAULT_PROVIDER=VODACOM_MPESA_COD
 
 EVENT_PUBLISHER=redis-stream     # redis-stream | log | null
 EVENT_REDIS_CONNECTION=events    # connexion sans préfixe
@@ -145,13 +178,16 @@ php artisan events:relay --once           # publie l'événement
 vendor/bin/phpunit
 ```
 
-35 tests, 98 assertions (SQLite `:memory:`). `WebhookSignatureTest` couvre le
+49 tests, 137 assertions (SQLite `:memory:`). `WebhookSignatureTest` couvre le
 fail-closed (secret absent, placeholder, signature invalide, opérateur
 inconnu) ; `WebhookMatchingTest` le rattachement strict, l'isolation entre
 opérateurs et le rejeu ; `IdentityTest` le refus fail-closed et la portée par
 utilisateur ; `EventTransportTest` l'outbox (atomicité avec le statut du
 paiement, absence d'événement orphelin, backoff) ; `RedisStreamEventPublisherTest`
-l'appel `xadd` et la remontée d'erreur.
+l'appel `xadd` et la remontée d'erreur ; `KPayWebhookTest` le parsing réel du
+payload K-PAY, l'acquittement des évènements hors périmètre et le rattachement ;
+`KPayGatewayTest` l'initiation USSD/GATEWAY, l'échec `502` et le repli sans
+credentials.
 
 ## Note d'écart avec le monolithe
 

@@ -79,9 +79,9 @@ return [
 
         'kpay' => [
             'label' => 'KPay',
-            'credential' => 'KPAY_SECRET',
+            'credential' => 'KPAY_WEBHOOK_SECRET',
             'strategy' => 'hmac_body',
-            'header' => 'X-KPay-Signature',
+            'header' => 'X-KPAY-Signature',
             'enabled' => (bool) env('KPAY_ENABLED', true),
         ],
     ],

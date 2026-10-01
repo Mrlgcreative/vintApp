@@ -49,6 +49,19 @@ class WebhookController extends ApiController
             return $this->errorResponse('Payload illisible ou sans référence exploitable.', 400);
         }
 
+        // Un agrégateur peut router tous ses évènements (dépôt, retrait,
+        // remboursement) vers la même URL. Seuls les dépôts concernent ce
+        // service : on acquitte le reste sans effet, mais après vérification
+        // de la signature.
+        if (isset($parsed['event_kind']) && $parsed['event_kind'] !== 'payment') {
+            Log::info("Webhook {$provider} hors périmètre, ignoré", [
+                'event_kind' => $parsed['event_kind'],
+                'ip' => $request->ip(),
+            ]);
+
+            return $this->successResponse([], 'Événement ignoré', [], 200);
+        }
+
         // 3. Persistance du callback brut avant tout effet.
         $callback = PaymentCallback::create([
             'provider' => $provider,

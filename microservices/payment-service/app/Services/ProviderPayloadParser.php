@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 class ProviderPayloadParser
 {
     /**
-     * @return array{transaction_id: ?string, reference: ?string, status: string, amount: ?int, currency: string, phone_number: ?string, message: ?string}|null
+     * @return array{transaction_id: ?string, reference: ?string, status: string, amount: ?int, currency: string, phone_number: ?string, message: ?string, event_kind?: string}|null
      */
     public function parse(Request $request, string $provider): ?array
     {
@@ -27,7 +27,7 @@ class ProviderPayloadParser
             'maishapay' => $this->maishaPay($request),
             'pawapay' => $this->generic($request, $this->pawapayStatus(...)),
             'afribapay' => $this->generic($request, $this->afribaPayStatus(...)),
-            'kpay' => $this->generic($request, $this->kpayStatus(...)),
+            'kpay' => $this->kpay($request),
             default => null,
         };
 
@@ -171,13 +171,49 @@ class ProviderPayloadParser
         ]);
     }
 
+    /**
+     * K-PAY envoie tous ses événements sur la même URL, le type étant porté
+     * par `event` (payment.*, payout.*, refund.*). Seuls les dépôts concernent
+     * ce service ; `event_kind` permet au contrôleur d'ignorer le reste sans
+     * faire d'effet.
+     */
+    private function kpay(Request $request): array
+    {
+        $data = $request->all();
+        $event = (string) ($request->header('X-KPAY-Event') ?? $data['event'] ?? '');
+
+        return [
+            'transaction_id' => $data['paymentId'] ?? $data['id'] ?? null,
+            'reference' => $data['externalId'] ?? $data['reference'] ?? null,
+            'status' => $this->kpayStatus((string) ($data['status'] ?? '')),
+            'amount' => $data['amount'] ?? null,
+            'currency' => (string) ($data['currency'] ?? 'CDF'),
+            'phone_number' => $data['phoneNumber'] ?? $data['phone'] ?? null,
+            'message' => $data['message'] ?? $data['failureReason'] ?? $data['failure_reason'] ?? null,
+            'event_kind' => $this->kpayEventKind($event),
+        ];
+    }
+
     private function kpayStatus(string $value): string
     {
         return $this->matchStatus($value, [
-            'SUCCESS' => 'success',
-            'PENDING' => 'pending',
-            'FAILED' => 'cancelled',
+            'COMPLETED,SUCCESS' => 'success',
+            'PENDING,PROCESSING' => 'pending',
+            'FAILED,REJECTED' => 'failed',
+            'CANCELLED,CANCELED' => 'cancelled',
         ]);
+    }
+
+    /**
+     * @return 'payment'|'payout'|'refund'
+     */
+    private function kpayEventKind(string $event): string
+    {
+        return match (true) {
+            str_starts_with($event, 'payout.') => 'payout',
+            str_starts_with($event, 'refund.') => 'refund',
+            default => 'payment',
+        };
     }
 
     private function generic(Request $request, callable $statusMapper): array
