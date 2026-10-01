@@ -33,6 +33,8 @@ class RedisStreamEventPublisher implements EventPublisher
         ];
 
         try {
+            // La connexion `events` est configurée sans préfixe : le nom du
+            // stream est le nom du contrat, tel que le lit un consommateur.
             Redis::connection($this->connection)->xadd(
                 $message->stream,
                 '*',
@@ -41,7 +43,6 @@ class RedisStreamEventPublisher implements EventPublisher
                 'approximate',
             );
         } catch (\Throwable $e) {
-            // On laisse remonter : l'appelant garde le message en base.
             Log::error('Publication événement impossible', [
                 'event_id' => $message->event_id,
                 'type' => $message->type,

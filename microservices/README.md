@@ -24,8 +24,24 @@ du monolithe soit retiré.
 
 ## Contrats transverses (événements partagés)
 
-Les services communiquent via une file de messages (Redis déjà présent dans le
-monolithe). Événements de référence :
+Les services communiquent via **Redis Streams**. Chaque service écrit d'abord
+l'événement dans une outbox transactionnelle (même transaction que la donnée
+métier), puis un relay le publie : un événement n'est jamais publié sans que la
+donnée source soit committée, et jamais perdu si le bus est indisponible.
+
+Le nom du stream est un contrat : `vintapp.payment`, littéralement. Attention
+au préfixe Redis Laravel qui le transformerait en
+`vintapp_payment_database_vintapp.payment` : le bus doit passer par une
+connexion sans préfixe.
+
+Infrastructure locale :
+
+```bash
+docker compose -f microservices/docker-compose.yml up -d
+docker exec vintapp-redis redis-cli ping
+```
+
+Événements de référence :
 
 - `payment.completed`   → publié par payment-service
 - `payment.failed`      → publié par payment-service

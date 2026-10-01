@@ -20,7 +20,9 @@ return [
 
     'publisher' => env('EVENT_PUBLISHER', 'redis-stream'),
 
-    'redis_connection' => env('EVENT_REDIS_CONNECTION', 'default'),
+    // Connexion Redis sans préfixe, pour que `vintapp.payment` soit le nom
+    // de clé littéral attendu par les consommateurs.
+    'redis_connection' => env('EVENT_REDIS_CONNECTION', 'events'),
 
     'stream_max_length' => (int) env('EVENT_STREAM_MAX_LENGTH', 10000),
 

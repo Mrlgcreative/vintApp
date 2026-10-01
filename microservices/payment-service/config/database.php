@@ -54,5 +54,25 @@ return [
             'port' => env('REDIS_PORT', '6379'),
             'database' => env('REDIS_DB', '0'),
         ],
+
+        /*
+         * Connexion dédiée au bus d'événements, volontairement SANS préfixe.
+         *
+         * Le préfixe Laravel par défaut (app_database_) est utile pour les
+         * clés de cache propres au service, mais pas pour un stream inter-
+         * services : `vintapp.payment` est un nom de contrat, pas une clé
+         * privée. Sans cette connexion, la clé réelle devient
+         * `vintapp_payment_database_vintapp.payment` et un consommateur
+         * (autre langage, autre framework, redis-cli) ne la trouve pas.
+         */
+        'events' => [
+            'url' => env('REDIS_EVENTS_URL', env('REDIS_URL')),
+            'host' => env('REDIS_EVENTS_HOST', env('REDIS_HOST', '127.0.0.1')),
+            'username' => env('REDIS_EVENTS_USERNAME', env('REDIS_USERNAME')),
+            'password' => env('REDIS_EVENTS_PASSWORD', env('REDIS_PASSWORD')),
+            'port' => env('REDIS_EVENTS_PORT', env('REDIS_PORT', '6379')),
+            'database' => env('REDIS_EVENTS_DB', env('REDIS_DB', '0')),
+            'prefix' => '',
+        ],
     ],
 ];

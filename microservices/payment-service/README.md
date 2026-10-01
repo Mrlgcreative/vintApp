@@ -92,11 +92,32 @@ ORANGE_CALLBACK_KEY=...
 AIRTEL_CALLBACK_TOKEN=...
 AFRICELL_CALLBACK_SECRET=...
 CINETPAY_SHOP_KEY=...
+
+EVENT_PUBLISHER=redis-stream     # redis-stream | log | null
+EVENT_REDIS_CONNECTION=events    # connexion sans préfixe
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
 ```
 
 Le mapping opérateur → mode de vérification est dans `config/payments.php`.
+Sans Redis, mettre `EVENT_PUBLISHER=log` : les événements restent dans
+`outbox_messages` et seront publiés au branchement d'un vrai transport.
 
 ## Installation
+
+### 1. Redis (bus d'événements)
+
+```bash
+docker compose -f microservices/docker-compose.yml up -d redis
+docker exec vintapp-redis redis-cli ping   # PONG
+```
+
+Le service utilise une connexion Redis dédiée (`database.redis.events`),
+volontairement **sans préfixe**. Le préfixe Laravel par défaut transformerait
+`vintapp.payment` en `vintapp_payment_database_vintapp.payment`, nom que
+aucun consommateur ne connaît. Le préfixe reste actif pour le cache du service.
+
+### 2. Service
 
 ```bash
 composer install

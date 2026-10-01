@@ -47,12 +47,24 @@ php artisan events:relay --once     # une passe (cron, supervisord, k8s CronJob)
 reprises après échec. Un message en échec est reprogrammé, pas supprimé, et
 `attempts` + `last_error` restent consultables.
 
+### Nom de clé et préfixe Redis
+
+Le stream s'appelle littéralement **`vintapp.payment`** dans Redis. Le service
+utilise pour cela une connexion dédiée (`database.redis.events`) dont le
+préfixe est vide.
+
+Le préfixe Laravel par défaut (`{app}_database_`) s'applique aux clés pour
+éviter les collisions de cache, mais appliqué à un stream inter-services il
+produit `vintapp_payment_database_vintapp.payment` : un consommateur qui lit
+le nom documenté ne trouve rien. Le préfixe est donc conservé pour le cache,
+retiré pour le bus. `tests/Unit/EventStreamContractTest.php` verrouille ce point.
+
 ### Configuration
 
 | Variable | Défaut | Rôle |
 |---|---|---|
-| `EVENT_PUBLISHER` | `log` | `redis-stream`, `log`, `null` |
-| `EVENT_REDIS_CONNECTION` | `default` | connexion Laravel Redis |
+| `EVENT_PUBLISHER` | `redis-stream` | `redis-stream`, `log`, `null` |
+| `EVENT_REDIS_CONNECTION` | `events` | connexion Laravel Redis (sans préfixe) |
 | `EVENT_STREAM_MAX_LENGTH` | `10000` | troncature approximative du stream |
 | `EVENT_OUTBOX_BATCH` | `100` | messages par passe |
 | `EVENT_OUTBOX_BACKOFF` | `30` | secondes avant reprise |
