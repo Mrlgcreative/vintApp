@@ -23,7 +23,10 @@ use Illuminate\Support\Facades\Log;
  */
 class WebhookProcessor
 {
-    public function __construct(private readonly WebhookReplayGuard $replayGuard) {}
+    public function __construct(
+        private readonly WebhookReplayGuard $replayGuard,
+        private readonly OutboxWriter $outbox,
+    ) {}
 
     /**
      * @return array{ok: bool, code: string, callback: ?PaymentCallback, payment: ?Payment}
@@ -129,15 +132,27 @@ class WebhookProcessor
             'error_message' => null,
         ])->save();
 
+        // Écrit dans la transaction métier : le paiement ne peut pas être
+        // completed sans que l'événement à publier existe en base.
+        $this->outbox->record('payment.completed', $payment, [
+            'transaction_ref' => $callback->external_transaction_id,
+        ]);
+
         PaymentCompleted::dispatch($payment);
     }
 
     private function markFailed(Payment $payment, PaymentCallback $callback): void
     {
+        $message = $callback->parsed_data['message'] ?? null;
+
         $payment->forceFill([
             'status' => 'failed',
-            'error_message' => $callback->parsed_data['message'] ?? null,
+            'error_message' => $message,
         ])->save();
+
+        $this->outbox->record('payment.failed', $payment, [
+            'reason' => $message ?? 'Statut opérateur inconnu',
+        ]);
 
         PaymentFailed::dispatch($payment);
     }

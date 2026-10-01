@@ -1,15 +1,66 @@
 # payment-service — Contrat d'événements
 
-> **Statut : contrat cible, non encore branché.** Les événements sont
-> aujourd'hui des events Laravel locaux (`App\Events\PaymentCompleted` /
-> `PaymentFailed`) dispatchés par `WebhookProcessor`, sans file ni transport :
-> aucun listener ne les consomme encore. Les enveloppes `event_id` /
-> `occurred_at` décrites ci-dessous sont le format à adopter lors du
-> raccordement à la file de messages. Même constat côté `auth-service`, qui
-> dispatche `UserRegistered` / `UserAuthenticated` localement.
->
-> En l'état, un `payment.completed` n'atteint donc **pas** `order-service` ni
-> `wallet-service` : ne pas considérer un webhook reçu comme un crédit propagé.
+## Transport : outbox transactionnelle → Redis Streams
+
+```
+webhook opérateur ─► WebhookProcessor
+                     │
+                     └─ transaction unique ─┬─ UPDATE payments (completed)
+                                             └─ INSERT outbox_messages   ← même transaction
+                                                                       │
+                          php artisan events:relay (ou superviseur) ─────┘
+                                             │
+                                             └─ XADD vintapp.payment {payload}
+```
+
+`payment-service` n'écrit **jamais** directement sur le bus. Un `payment.completed`
+est d'abord écrit dans `outbox_messages` dans la même transaction que le
+changement de statut du paiement : les deux réussissent ou les deux sont
+annulés. Un `payment.completed` sans paiement `completed` est donc impossible,
+et inversement.
+
+C'est le point critique : un « publish after commit » classique perd
+l'événement si le worker meurt entre le commit SQL et la publication. Ici la
+ligne en base **est** la preuve de l'événement, et le relay la rejoue.
+
+### Pourquoi Redis Streams plutôt que Pub/Sub
+
+Avec Pub/Sub, un message émis pendant que `order-service` est arrêté est perdu
+sans trace. Un stream conserve les entrées jusqu'à `XACK` du consommateur, ce qui
+compte pour une commande déjà payée dont le crédit n'a pas encore été propagé.
+
+### Ordre dans le relay
+
+`OutboxRelay` publie **puis** marque `published_at`. Si le process meurt entre les
+deux, le message sera republié : les consommateurs doivent donc dédupliquer sur
+`event_id` (règle déjà présente dans `EVENTS.md` racine). L'inverse — marquer
+puis publier — perdrait des événements.
+
+### Commande
+
+```bash
+php artisan events:relay            # boucle jusqu'à vider l'outbox
+php artisan events:relay --once     # une passe (cron, supervisord, k8s CronJob)
+```
+
+`EVENT_OUTBOX_BATCH` borne une passe, `EVENT_OUTBOX_BACKOFF` espace les
+reprises après échec. Un message en échec est reprogrammé, pas supprimé, et
+`attempts` + `last_error` restent consultables.
+
+### Configuration
+
+| Variable | Défaut | Rôle |
+|---|---|---|
+| `EVENT_PUBLISHER` | `log` | `redis-stream`, `log`, `null` |
+| `EVENT_REDIS_CONNECTION` | `default` | connexion Laravel Redis |
+| `EVENT_STREAM_MAX_LENGTH` | `10000` | troncature approximative du stream |
+| `EVENT_OUTBOX_BATCH` | `100` | messages par passe |
+| `EVENT_OUTBOX_BACKOFF` | `30` | secondes avant reprise |
+
+Un `EVENT_PUBLISHER` inconnu lève une exception au démarrage : une faute de
+frappe ne doit pas laisser croire que les événements partent.
+
+## Émis
 
 ## Émis
 
@@ -61,6 +112,20 @@ Consommateurs : **order-service** (annulation / notification).
 
 > Non implémenté : `payment-service` n'écoute pas encore cet événement et
 > n'appelle aucune API de décaissement opérateur.
+
+## Reste à faire côté consommateurs
+
+Aucun consommateur n'est branché dans ce dépôt. Pour lire les événements :
+
+```
+XREADGROUP  GROUP <service> <consumer> STREAMS vintapp.payment >
+XACK       vintapp.payment <group> <id>
+```
+
+`order-service` et `wallet-service` devront créer leur groupe, dédupliquer sur
+`event_id` et acquitter seulement après avoir écrit dans **leur** base. Aucune
+écriture dans la base d'un autre service : le crédit escrow passe par
+`order.paid` / `escrow.credited`.
 
 ## Idempotence
 

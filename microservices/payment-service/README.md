@@ -14,8 +14,8 @@ webhooks opérateurs, remboursements.
   Bearer, champ payload — fail-closed).
 - Déduplication des webhooks rejoués.
 - Remboursements.
-- Émission des événements `payment.completed` / `payment.failed`
-  (dispatch local, transport file à brancher — voir `docs/EVENTS.md`).
+- Émission des événements `payment.completed` / `payment.failed` sur Redis
+  Streams, via outbox transactionnelle (`docs/EVENTS.md`).
 
 ## Hors périmètre
 
@@ -41,8 +41,13 @@ L'API d'un opérateur n'est **pas** appelée : `POST /v1/payments` enregistre
 l'intention, et le statut n'évolue que par webhook. Aucun appel de décaissement,
 de remboursement ou d'initiation n'est effectué. Le service gère donc la
 réception et la consolidation des notifications, pas l'orchestration des
-opérateurs chez eux. Idem pour le transport d'événements et la consommation de
-`withdrawal.requested` : voir `docs/EVENTS.md`.
+opérateurs chez eux.
+
+Les événements sont bien publiés (outbox + `events:relay`), mais **aucun
+consommateur n'est branché** dans ce dépôt : `order-service` et
+`wallet-service` devront lire le stream `vintapp.payment` et acquitter. Tant
+qu'ils ne le font pas, un webhook reçu signifie « paiement enregistré », pas
+« crédit propagé ». `withdrawal.requested` n'est pas non plus consommé.
 
 Opérateurs gérés : `mpesa`, `orange_money`, `airtel_money`, `africell`,
 `cinetpay`, `maishapay`, `pawapay`, `afribapay`, `kpay`.
@@ -70,7 +75,7 @@ Opérateurs gérés : `mpesa`, `orange_money`, `airtel_money`, `africell`,
 ## Frontière de données
 
 Tables possédées : `payments`, `payment_callbacks`, `refunds`,
-`processed_webhook_events`.
+`processed_webhook_events`, `outbox_messages`.
 
 Base **propre** (`vintapp_payments`). `user_id`, `order_id`, `wallet_id`,
 `seller_id` sont des clés métier, jamais des FK vers un autre service.
@@ -99,6 +104,18 @@ cp .env.example .env
 php artisan key:generate
 php artisan migrate
 php artisan serve --port=8102
+
+#Relay des événements (à laisser tourner : cron, supervisord ou CronJob)
+php artisan events:relay
+```
+
+### Test manuel du webhook
+
+```bash
+php artisan demo:payment                 # crée un paiement pending, affiche la référence
+# signature = HMAC-SHA256(corps brut, MPESA_CALLBACK_SECRET)
+php artisan demo:webhook <référence>      # poste un callback M-Pesa signé
+php artisan events:relay --once           # publie l'événement
 ```
 
 ## Tests
@@ -107,11 +124,13 @@ php artisan serve --port=8102
 vendor/bin/phpunit
 ```
 
-22 tests, 46 assertions (SQLite `:memory:`). Les tests
-`WebhookSignatureTest` couvrent le fail-closed (secret absent, placeholder,
-signature invalide, opérateur inconnu) ; `WebhookMatchingTest` couvre le
-rattachement strict, l'isolation entre opérateurs et le rejeu ;
-`IdentityTest` couvre le refus fail-closed et la portée par utilisateur.
+35 tests, 98 assertions (SQLite `:memory:`). `WebhookSignatureTest` couvre le
+fail-closed (secret absent, placeholder, signature invalide, opérateur
+inconnu) ; `WebhookMatchingTest` le rattachement strict, l'isolation entre
+opérateurs et le rejeu ; `IdentityTest` le refus fail-closed et la portée par
+utilisateur ; `EventTransportTest` l'outbox (atomicité avec le statut du
+paiement, absence d'événement orphelin, backoff) ; `RedisStreamEventPublisherTest`
+l'appel `xadd` et la remontée d'erreur.
 
 ## Note d'écart avec le monolithe
 

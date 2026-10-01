@@ -29,5 +29,9 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="AUTH_SERVICE_URL" value="http://127.0.0.1:8101"/>
         <env name="AUTH_SERVICE_SHARED_SECRET" value="test-service-secret"/>
+        <env name="MPESA_CALLBACK_SECRET" value="secret-mpesa-dev"/>
+        <!-- Le transport est explicitement neutralisé : les tests portent sur
+             le contenu de l'outbox, pas sur un Redis. -->
+        <env name="EVENT_PUBLISHER" value="null"/>
     </php>
 </phpunit>
