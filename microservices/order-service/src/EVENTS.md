@@ -8,3 +8,5 @@
 
 ## Consommés
 - `payment.completed` (payment-service) → marquage payé + émet `order.paid`.
+- `item.updated` / `item.deleted` (items-service, stream `vintapp.catalog`) →
+  disponibilité et prix. Le catalogue appartient à items-service.

@@ -24,6 +24,9 @@ Format recommandé du payload :
 |---|---|---|---|
 | `payment.completed` | payment-service | order-service (commande payée), wallet-service (top-up/escrow), authenticity-service (frais vérif) | `payment_id`, `order_id?`, `wallet_id?`, `amount`, `currency`, `provider`, `transaction_ref` |
 | `payment.failed` | payment-service | order-service (annule/notifie), wallet-service | `payment_id`, `order_id?`, `amount`, `reason` |
+| `item.created` | items-service | order-service (disponibilité), caches de recherche | `item_id`, `seller_id`, `category_id`, `brand_id`, `price`, `currency`, `quantity`, `status` |
+| `item.updated` | items-service | order-service (prix/stock), caches | idem + `changed[]` |
+| `item.deleted` | items-service | order-service (retrait), caches | idem |
 | `order.created` | order-service | marketing-service (réservations points) | `order_id`, `buyer_id`, `seller_id`, `amount` |
 | `order.paid` | order-service | wallet-service (crédit escrow vendeur) | `order_id`, `buyer_id`, `seller_id`, `total_amount`, `currency` |
 | `order.delivered` | order-service | wallet-service (déblocage escrow → main) | `order_id`, `seller_id`, `total_amount` |

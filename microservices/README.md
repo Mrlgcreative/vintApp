@@ -16,8 +16,9 @@ du monolithe soit retiré.
 | Service | Domaine | Sources monolithiques à extraire |
 |---|---|---|
 | `payment-service` | Tous paiements & webhooks (CinetPay, M-Pesa, Orange, Airtel, Africell, Illicocash, MaishaPay, PawaPay, AfribaPay) | `PaymentController`, `PaymentCallbackController`, `PaymentService`, SDK `CinetPay/MaishaPay/PawaPay/AfribaPay/MobileMoneyService` |
+| `items-service` | Catalogue : articles, catégories, marques, stock | `Item`, `Category`, `Brand`, `ItemService`, `Api\Items\ItemController`, `Api\Catalog\*` |
 | `wallet-service` | Soldes wallets, transactions, escrow, conversions, retraits | `Wallets`, `WalletTransaction`, `Transactions`, `WithdrawalRequest`, `WalletService`, `Admin\WalletController` |
-| `order-service` | Catalogue, commandes, escrow, livraison, boosts, reviews | `Item`, `Order`, `OrderService`, `OrderController` |
+| `order-service` | Commandes, escrow, livraison, boosts, reviews | `Order`, `OrderService`, `OrderController` |
 | `auth-service` | Auth, rôles/permissions, 2FA, profils users | `User`, `AuthService`, Sanctum/Firebase auth |
 | `marketing-service` | Affiliation, parrainage, points/VintPass, notifications | `AffiliateService`, `VintPassService`, `NotificationService`, `FirebasePushService` |
 | `authenticity-service` | Vérification d'authenticité, profils experts, certifications | `ProductAuthenticityCheck`, `AuthenticityVerificationService`, `VerificationPaymentService` |
@@ -29,10 +30,10 @@ l'événement dans une outbox transactionnelle (même transaction que la donnée
 métier), puis un relay le publie : un événement n'est jamais publié sans que la
 donnée source soit committée, et jamais perdu si le bus est indisponible.
 
-Le nom du stream est un contrat : `vintapp.payment`, littéralement. Attention
-au préfixe Redis Laravel qui le transformerait en
-`vintapp_payment_database_vintapp.payment` : le bus doit passer par une
-connexion sans préfixe.
+Le nom du stream est un contrat : `vintapp.payment`, `vintapp.catalog`…
+littéralement. Attention au préfixe Redis Laravel qui transformerait
+`vintapp.payment` en `vintapp_payment_database_vintapp.payment` : le bus doit
+passer par une connexion sans préfixe.
 
 Infrastructure locale :
 
@@ -45,6 +46,9 @@ docker exec vintapp-redis redis-cli ping
 
 - `payment.completed`   → publié par payment-service
 - `payment.failed`      → publié par payment-service
+- `item.created`        → publié par items-service (stream `vintapp.catalog`)
+- `item.updated`        → publié par items-service
+- `item.deleted`        → publié par items-service
 - `order.created`       → publié par order-service
 - `order.paid`          → publié par order-service (après `payment.completed`)
 - `escrow.credited`     → publié par wallet-service
