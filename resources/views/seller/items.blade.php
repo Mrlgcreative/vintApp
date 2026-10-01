@@ -10,7 +10,7 @@
         <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-8">
-                    <div class="bg-gradient-to-r from-vinted-primary-600 via-vinted-primary-500 to-vinted-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                         <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
                         <div class="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -87,12 +87,12 @@
                         </div>
                     @else
                         <div class="text-center py-16">
-                            <div class="w-16 h-16 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-box text-vinted-primary-400 dark:text-vinted-primary-300 text-2xl"></i>
+                            <div class="w-16 h-16 bg-primary-400 dark:bg-primary-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-box text-primary-600 dark:text-primary-300 text-2xl"></i>
                             </div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucun article</h3>
                             <p class="text-gray-500 dark:text-gray-400 mb-6">Commencez par publier votre premier article</p>
-                            <a href="{{ route('items.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-vinted-primary-600 text-white rounded-xl font-semibold hover:bg-vinted-primary-700 transition-colors shadow-sm">
+                            <a href="{{ route('items.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-sm">
                                 <i class="fas fa-plus"></i> Publier un article
                             </a>
                         </div>

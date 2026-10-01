@@ -10,7 +10,7 @@
         <main class="flex-1 p-6 lg:p-8 pb-20 lg:pb-8">
             <div class="max-w-7xl mx-auto">
                 <div class="mb-8">
-                    <div class="bg-gradient-to-r from-vinted-primary-600 via-vinted-primary-500 to-vinted-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
+                    <div class="bg-gradient-to-r from-primary-600 via-primary-500 to-primary-700 rounded-2xl shadow-xl p-6 sm:p-8 text-white relative overflow-hidden">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4"></div>
                         <div class="absolute bottom-0 left-0 w-40 h-40 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4"></div>
                         <div class="relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -32,7 +32,7 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($brands as $brand)
-                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg hover:border-vinted-primary-200 dark:hover:border-vinted-primary-500/30 transition-all duration-300">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 hover:shadow-lg hover:border-primary-200 dark:hover:border-primary-500/30 transition-all duration-300">
                             <div class="flex items-center gap-3 mb-3">
                                 <x-icon :icon="'fas fa-building'" tone="primary" size="md" />
                                 <div class="min-w-0">
@@ -48,12 +48,12 @@
                         </div>
                     @empty
                         <div class="col-span-full text-center py-16">
-                            <div class="w-16 h-16 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-building text-vinted-primary-400 dark:text-vinted-primary-300 text-2xl"></i>
+                            <div class="w-16 h-16 bg-primary-400 dark:bg-primary-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-building text-primary-600 dark:text-primary-300 text-2xl"></i>
                             </div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Aucune marque</h3>
                             <p class="text-gray-500 dark:text-gray-400 mb-4">Aucune marque disponible pour le moment</p>
-                            <a href="{{ route('brands.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-vinted-primary-600 text-white rounded-xl font-semibold hover:bg-vinted-primary-700 transition-colors shadow-sm">
+                            <a href="{{ route('brands.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 text-white rounded-xl font-semibold hover:bg-primary-700 transition-colors shadow-sm">
                                 <i class="fas fa-plus"></i> Créer la première marque
                             </a>
                         </div>
