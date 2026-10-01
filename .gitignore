@@ -16,6 +16,7 @@
 /.vscode
 /.zed
 *.motion-kit
+/motion-kit/
 /auth.json
 /node_modules
 /public/hot
