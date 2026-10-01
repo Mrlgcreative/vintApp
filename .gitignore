@@ -4,6 +4,8 @@
 .env.example
 .env.backup
 .env.production
+.env.local
+.env.*.local
 .APPLE_OAUTH_QUUICKSTART.md
 .phpactor.json
 .phpunit.result.cache
@@ -13,6 +15,7 @@
 /.phpunit.cache
 /.vscode
 /.zed
+*.motion-kit
 /auth.json
 /node_modules
 /public/hot
