@@ -61,7 +61,15 @@ class CacheResponse
         $duration = $ttl ?? $this->getCacheDuration($request);
 
         // Essayer de récupérer depuis le cache
-        $cachedResponse = Cache::get($cacheKey);
+        // Un cache injoignable (base en lecture seule, disque plein) ne doit jamais casser l'API
+        try {
+            $cachedResponse = Cache::get($cacheKey);
+        } catch (\Throwable $e) {
+            \Log::warning('CacheResponse: lecture du cache impossible, réponse servie sans cache', [
+                'error' => $e->getMessage(),
+            ]);
+            $cachedResponse = null;
+        }
 
         if ($cachedResponse !== null) {
             return response($cachedResponse['content'], $cachedResponse['status'])
@@ -96,11 +104,18 @@ class CacheResponse
                     }
                 }
                 
-                Cache::put($cacheKey, [
-                    'content' => $content,
-                    'status' => $response->getStatusCode(),
-                    'headers' => $this->getCacheableHeaders($response),
-                ], $duration);
+                try {
+                    Cache::put($cacheKey, [
+                        'content' => $content,
+                        'status' => $response->getStatusCode(),
+                        'headers' => $this->getCacheableHeaders($response),
+                    ], $duration);
+                } catch (\Throwable $e) {
+                    // Cache non inscriptible : on sert la réponse sans la mettre en cache
+                    \Log::warning('CacheResponse: écriture du cache impossible', [
+                        'error' => $e->getMessage(),
+                    ]);
+                }
             }
         }
 

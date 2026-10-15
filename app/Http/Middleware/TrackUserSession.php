@@ -21,12 +21,20 @@ class TrackUserSession
         $user = Auth::user() ?: Auth::guard('sanctum')->user();
 
         if ($user) {
-            UserSession::trackSession(
-                $user->id,
-                $this->resolveSessionId($request, $user),
-                $request,
-                $this->resolveDeviceType($request)
-            );
+            // Le suivi de session est accessoire : une erreur d'écriture (base en lecture
+            // seule, disque plein) ne doit pas transformer la requête en 500.
+            try {
+                UserSession::trackSession(
+                    $user->id,
+                    $this->resolveSessionId($request, $user),
+                    $request,
+                    $this->resolveDeviceType($request)
+                );
+            } catch (\Throwable $e) {
+                \Log::warning('TrackUserSession: écriture impossible', [
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
 
         return $next($request);
