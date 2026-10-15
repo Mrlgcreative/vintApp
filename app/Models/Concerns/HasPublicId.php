@@ -20,9 +20,17 @@ trait HasPublicId
         return 'public_id';
     }
 
+    /**
+     * Le public_id est normalement charge avec le modele. Mais une requete qui
+     * restreint ses colonnes (`->select('id', 'name', ...)`) le laisse absent,
+     * et l'URL generee sortait alors vide : `route()` levait
+     * UrlGenerationException et la page repondait 500. On retombe donc sur la
+     * cle primaire, que `resolveRouteBinding` sait deja resoudre (voir plus
+     * bas) : le lien numerique est moins propre mais reste fonctionnel.
+     */
     public function getRouteKey(): string
     {
-        return (string) $this->public_id;
+        return (string) ($this->public_id ?: $this->getKey());
     }
 
     /**

@@ -56,14 +56,14 @@ class ItemController extends Controller
             ->whereHas('activeBoosts')
             ->where('status', 'active')
             ->visible()
-            ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
+            ->select('id', 'public_id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Récupérer les articles réguliers (non-boostés)
         $regularItemsQuery = Item::with(array_diff($eagerLoad, ['activeBoosts.boostType:id,name,icon,visual_config']))
             ->whereDoesntHave('activeBoosts')
             ->where('status', 'active')
             ->visible()
-            ->select('id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
+            ->select('id', 'public_id', 'user_id', 'name', 'description', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition', 'status', 'views', 'created_at');
 
         // Appliquer les filtres à toutes les requêtes
         $queries = [$boostedItemsQuery, $regularItemsQuery];
@@ -282,7 +282,7 @@ class ItemController extends Controller
                     'brand:id,name',
                     'user:id,name'
                 ])
-                ->select('id', 'user_id', 'name', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition')
+                ->select('id', 'public_id', 'user_id', 'name', 'price', 'currency', 'category_id', 'brand_id', 'images', 'condition')
                 ->limit(4)
                 ->get();
         });
