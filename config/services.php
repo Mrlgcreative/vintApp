@@ -291,7 +291,11 @@ return [
         'base_url' => env('XKIRO_BASE_URL', 'https://api.xkiro.com/v1'),
         // Modèle gratuit par défaut. Premium (ex: openai/gpt-5.6-sol) : plan payant requis.
         'model' => env('XKIRO_MODEL', 'mistralai/ministral-14b'),
+        // Modèle vision (vérification IA des articles). Gratuit, dédié image+texte.
+        'vision_model' => env('XKIRO_VISION_MODEL', 'qwen/qwen3-vl-plus:free'),
         'timeout' => env('XKIRO_TIMEOUT', 30),
+        // Délai plus long pour l'analyse d'images (le modèle vision est plus lent).
+        'vision_timeout' => env('XKIRO_VISION_TIMEOUT', 60),
     ],
 
     /*
