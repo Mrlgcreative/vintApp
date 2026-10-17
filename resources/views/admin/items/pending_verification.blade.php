@@ -174,12 +174,75 @@
                             </div>
                         </div>
 
+                        @php($ai = $item->verification_details['ai'] ?? null)
+                        @if($ai)
+                            @php($recoKey = $ai['recommendation'] ?? 'review')
+                            <div class="mt-3 rounded-lg border p-3 text-sm @if(isset($ai['error'])) border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 @elseif($recoKey === 'approve') border-emerald-200 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10 @elseif($recoKey === 'reject') border-red-200 bg-red-50 dark:border-red-500/30 dark:bg-red-500/10 @else border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 @endif">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="inline-flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-200">
+                                        <i class="fas fa-robot text-violet-500"></i> Analyse IA
+                                    </span>
+                                    @if(isset($ai['error']))
+                                        <span class="text-red-700 dark:text-red-300">{{ $ai['error'] }}</span>
+                                    @else
+                                        <span class="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-slate-700 ring-1 ring-inset ring-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-600">
+                                            Score {{ $ai['score'] ?? '?' }}/100
+                                        </span>
+                                        @if($recoKey === 'approve')
+                                            <span class="rounded-full bg-emerald-600 px-2 py-0.5 text-xs font-semibold text-white">Approuver</span>
+                                        @elseif($recoKey === 'reject')
+                                            <span class="rounded-full bg-red-600 px-2 py-0.5 text-xs font-semibold text-white">Rejeter</span>
+                                        @else
+                                            <span class="rounded-full bg-amber-500 px-2 py-0.5 text-xs font-semibold text-white">À examiner</span>
+                                        @endif
+                                        @if(!empty($ai['photos_count']))
+                                            <span class="text-xs text-slate-500 dark:text-slate-400">{{ $ai['photos_count'] }} photo(s) analysée(s)</span>
+                                        @endif
+                                    @endif
+                                </div>
+
+                                @if(empty($ai['error']))
+                                    @if(!empty($ai['summary']))
+                                        <p class="mt-1.5 text-slate-700 dark:text-slate-300">{{ $ai['summary'] }}</p>
+                                    @endif
+
+                                    @if(($ai['real_product_photos'] ?? true) === false || ($ai['photo_matches_description'] ?? true) === false)
+                                        <div class="mt-1.5 flex flex-wrap gap-1.5">
+                                            @if(($ai['real_product_photos'] ?? true) === false)
+                                                <span class="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/20 dark:text-red-300"><i class="fas fa-image"></i> Photos non authentiques</span>
+                                            @endif
+                                            @if(($ai['photo_matches_description'] ?? true) === false)
+                                                <span class="rounded bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-500/20 dark:text-red-300"><i class="fas fa-triangle-exclamation"></i> Photos ≠ description</span>
+                                            @endif
+                                        </div>
+                                    @endif
+
+                                    @if(!empty($ai['issues']))
+                                        <ul class="mt-1.5 list-disc space-y-0.5 pl-5 text-xs text-slate-600 dark:text-slate-300">
+                                            @foreach($ai['issues'] as $issue)
+                                                <li>{{ $issue }}</li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                @endif
+                            </div>
+                        @endif
+
                         {{-- Actions --}}
                         <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
                             <a href="{{ route('admin.items.show', $item) }}" 
                                class="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
                                 <i class="fas fa-eye text-xs"></i> Voir détails
                             </a>
+
+                            <form action="{{ route('admin.items.ai-verify', $item) }}" method="POST" class="inline">
+                                @csrf
+                                <button type="submit"
+                                        class="inline-flex items-center gap-1.5 rounded-lg border border-violet-300 bg-violet-50 px-4 py-2 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100 dark:border-violet-500/40 dark:bg-violet-500/10 dark:text-violet-300 dark:hover:bg-violet-500/20"
+                                        onclick="return confirm('Lancer l\'analyse IA (photos + description) ? Cela peut prendre quelques secondes.')">
+                                    <i class="fas fa-wand-magic-sparkles text-xs"></i> {{ $ai ? 'Relancer l\'IA' : 'Analyser par IA' }}
+                                </button>
+                            </form>
 
                             <form action="{{ route('admin.items.approve', $item) }}" method="POST" class="inline">
                                 @csrf

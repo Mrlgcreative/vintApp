@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Item;
 use App\Models\Category;
 use App\Models\Brand;
+use App\Jobs\VerifyItemWithAi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
@@ -43,6 +44,9 @@ class ItemService
 
         event(new \App\Events\ItemCreated($item));
 
+        // Vérification IA (vision) en arrière-plan, après la réponse au vendeur.
+        VerifyItemWithAi::dispatchAfterResponse($item->id);
+
         return $item;
     }
 
@@ -77,6 +81,11 @@ class ItemService
         }
 
         $item->save();
+
+        // Vérification IA relancée si de nouvelles images ont été ajoutées.
+        if ($request->hasFile('images')) {
+            VerifyItemWithAi::dispatchAfterResponse($item->id);
+        }
 
         return $item;
     }

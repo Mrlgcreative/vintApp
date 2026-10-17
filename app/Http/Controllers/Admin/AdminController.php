@@ -2028,6 +2028,31 @@ class AdminController extends Controller
     }
 
     /**
+     * Lancer (ou relancer) l'analyse IA d'un article soumis : photos + description.
+     */
+    public function itemAiVerify(Request $request, Item $item)
+    {
+        $service = app(\App\Services\ItemAiVerificationService::class);
+
+        try {
+            $verdict = $service->verify($item);
+            $service->store($item, $verdict);
+            $ok = true;
+            $message = "Analyse IA terminée : score {$verdict['score']}/100 (recommandation : {$verdict['recommendation']}).";
+        } catch (\Throwable $e) {
+            $service->storeError($item, $e->getMessage());
+            $ok = false;
+            $message = 'Analyse IA impossible : ' . $e->getMessage();
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => $ok, 'message' => $message]);
+        }
+
+        return back()->with($ok ? 'success' : 'error', $message);
+    }
+
+    /**
      * Invalider les caches liés à un article (homepage, listes publiques, détail)
      */
     protected function clearItemCaches(Item $item)

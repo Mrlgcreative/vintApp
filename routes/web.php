@@ -478,6 +478,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::patch('/{item}/status', [App\Http\Controllers\Admin\AdminController::class, 'itemUpdateStatus'])->name('update-status');
         Route::patch('/{item}/approve', [App\Http\Controllers\Admin\AdminController::class, 'itemApprove'])->name('approve');
         Route::patch('/{item}/reject', [App\Http\Controllers\Admin\AdminController::class, 'itemReject'])->name('reject');
+        Route::post('/{item}/ai-verify', [App\Http\Controllers\Admin\AdminController::class, 'itemAiVerify'])->name('ai-verify');
         Route::post('/{item}/block', [App\Http\Controllers\Admin\AdminController::class, 'itemBlock'])->name('block');
         Route::post('/{item}/unblock', [App\Http\Controllers\Admin\AdminController::class, 'itemUnblock'])->name('unblock');
         Route::post('/{item}/suspend', [App\Http\Controllers\Admin\AdminController::class, 'itemSuspend'])->name('suspend');
