@@ -20,7 +20,13 @@ class AiAssistantService
     /** Nombre de messages d'historique renvoyés au modèle. */
     private const MAX_HISTORY = 10;
 
-    /** Destinations autorisées pour l'action "action" de propose_actions. */
+    /**
+     * Destinations autorisées pour l'action "action" de propose_actions.
+     *
+     * Doit rester synchronisé avec la carte actionUrls du widget
+     * (resources/views/partials/ai-assistant.blade.php) :
+     * toute clé ajoutée ici doit y être ajoutée aussi, sinon le bouton n'apparaît pas.
+     */
     private const ACTIONS = ['edit_profile', 'security', 'support'];
 
     /**

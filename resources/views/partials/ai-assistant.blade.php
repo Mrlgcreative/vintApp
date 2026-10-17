@@ -108,7 +108,7 @@
     const history = [];
     const greeting = "Bonjour ! Je suis l'assistant VintApp. Comment puis-je vous aider ?";
 
-    // Destinations des actions proposées par le modèle (voir AiAssistantService::ACTIONS).
+    // Doit rester synchronisé avec AiAssistantService::ACTIONS : une clé absente ici = bouton invisible.
     const actionUrls = @json([
         'edit_profile' => route('profile.edit'),
         'security' => route('profile.security'),
