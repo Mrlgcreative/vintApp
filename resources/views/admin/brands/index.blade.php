@@ -37,6 +37,10 @@
             </div>
         </div>
     </div>
+    <button type="button" data-bs-toggle="modal" data-bs-target="#importBrandsModal"
+            class="inline-flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+        <i class="fas fa-file-import"></i><span class="hidden sm:inline">Importer</span>
+    </button>
     <a href="{{ route('admin.brands.create') }}"
        class="inline-flex items-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
         <i class="fas fa-plus"></i><span class="hidden sm:inline">Ajouter une marque</span><span class="sm:hidden">Ajouter</span>
@@ -537,6 +541,58 @@
                 </button>
             </form>
         </div>
+    </div>
+</div>
+
+{{-- Modale d'import PDF / JSON --}}
+<div id="importBrandsModal" class="modal-wrapper hidden fixed inset-0 z-50 flex items-center justify-center p-4" aria-hidden="true">
+    <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+    <div class="relative w-full max-w-lg rounded-2xl bg-white dark:bg-slate-800 shadow-2xl ring-1 ring-slate-200 dark:ring-slate-700">
+        <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+            <h3 class="text-lg font-semibold text-slate-800 dark:text-slate-100 flex items-center">
+                <i class="fas fa-file-import mr-2 text-primary-600"></i>Importer des marques
+            </h3>
+            <button type="button" data-bs-dismiss="modal" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <form action="{{ route('admin.brands.import') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="space-y-4 px-6 py-4">
+                <div>
+                    <label for="import_file" class="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">
+                        Fichier <span class="text-red-500">*</span>
+                    </label>
+                    <input type="file" id="import_file" name="file" accept=".pdf,.json" required
+                           class="w-full text-sm text-slate-700 dark:text-slate-200 file:mr-3 file:rounded-lg file:border-0 file:bg-primary-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-primary-700">
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        <strong>PDF</strong> : analysé par l'IA (le document est lu et les marques en sont extraites).<br>
+                        <strong>JSON</strong> : liste de noms ou d'objets (<code>name</code>, <code>description</code>, <code>website</code>, <code>country</code>...).
+                    </p>
+                </div>
+
+                <label class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
+                    <input type="checkbox" name="dry_run" value="1" class="mt-0.5 rounded border-slate-300 text-primary-600 focus:ring-primary-500">
+                    <span>Simulation : aperçu sans rien enregistrer</span>
+                </label>
+
+                <p class="text-xs text-slate-500 dark:text-slate-400">
+                    Une marque existante (même nom) est mise à jour ; les nouvelles sont créées actives.
+                </p>
+            </div>
+
+            <div class="flex flex-col-reverse justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-900/50 sm:flex-row">
+                <button type="button" data-bs-dismiss="modal"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    <i class="fas fa-times"></i>Annuler
+                </button>
+                <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 hover:bg-primary-700 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-colors">
+                    <i class="fas fa-file-import"></i>Importer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

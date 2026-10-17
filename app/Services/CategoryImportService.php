@@ -3,27 +3,30 @@
 namespace App\Services;
 
 use App\Models\Category;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Services\Concerns\ImportsFromPdf;
 use Illuminate\Support\Str;
 use RuntimeException;
-use Smalot\PdfParser\Parser;
 
 /**
  * Import en masse de catégories depuis un fichier JSON ou PDF.
  *
  * - JSON : décodé directement (liste de noms, d'objets, ou hiérarchie via "children").
- * - PDF  : texte extrait par pdftotext, puis structuré par l'IA (xkiro) avant import.
+ * - PDF  : texte extrait en pur PHP, puis structuré par l'IA (xkiro) avant import.
  *
  * Les deux formats convergent vers importRows(), seul endroit qui écrit en base.
  */
 class CategoryImportService
 {
-    /** Nombre maximum de catégories importées en une fois. */
-    private const MAX_ROWS = 500;
+    use ImportsFromPdf;
 
-    /** Longueur maximale du texte PDF envoyé à l'IA. */
-    private const MAX_TEXT_CHARS = 15000;
+    /** Champs texte repris tels quels depuis le fichier. */
+    private const STRING_FIELDS = ['slug', 'description', 'icon', 'color', 'image', 'meta_title', 'meta_description', 'meta_keywords'];
+
+    /** Champs booléens (is_active / is_featured / show_in_menu). */
+    private const BOOL_FIELDS = ['is_active', 'is_featured', 'show_in_menu'];
+
+    /** Champs entiers (sort_order). */
+    private const INT_FIELDS = ['sort_order'];
 
     /**
      * Importe un fichier (détecté d'après son extension).
@@ -50,7 +53,7 @@ class CategoryImportService
             throw new RuntimeException('Fichier JSON invalide.');
         }
 
-        return $this->importRows($this->normalize($decoded), $dryRun);
+        return $this->importRows($this->rows($decoded), $dryRun);
     }
 
     /**
@@ -76,78 +79,21 @@ class CategoryImportService
             throw new RuntimeException('PDF sans texte exploitable (document scanné ?)');
         }
 
-        return $this->importRows($this->normalize($this->structureWithAi($text)), $dryRun);
+        return $this->importRows($this->rows($this->structureWithAi($text, $this->prompt())), $dryRun);
     }
 
     /**
-     * Extrait le texte d'un PDF (librairie pure PHP, aucun binaire système requis).
+     * @return array<int, array<string, mixed>>
      */
-    private function extractPdfText(string $path): string
+    private function rows(mixed $data): array
     {
-        if (! class_exists(Parser::class)) {
-            throw new RuntimeException('Lecture du PDF indisponible : dépendance manquante (lancez « composer install »).');
-        }
-
-        try {
-            return (new Parser())->parseFile($path)->getText();
-        } catch (\Throwable $e) {
-            Log::error('Import catégories: lecture PDF impossible', ['error' => $e->getMessage()]);
-
-            throw new RuntimeException('Lecture du PDF impossible (' . $e->getMessage() . ')');
-        }
+        return $this->normalizeRows($data, self::STRING_FIELDS, self::BOOL_FIELDS, self::INT_FIELDS);
     }
 
-    /**
-     * Envoie le texte du PDF à l'IA et récupère une liste de catégories normalisées.
-     *
-     * @return array<int, mixed>
-     */
-    private function structureWithAi(string $text): array
+    private function prompt(): string
     {
-        $apiKey = config('services.xkiro.api_key');
+        $max = $this->maxRows();
 
-        if (empty($apiKey)) {
-            throw new RuntimeException('Import PDF non configuré (XKIRO_API_KEY manquant).');
-        }
-
-        try {
-            $response = Http::withToken($apiKey)
-                // Réutilise le timeout « lourd » : l'analyse IA d'un document est lente.
-                ->timeout((int) config('services.xkiro.vision_timeout', 60))
-                ->acceptJson()
-                ->retry(2, 200)
-                ->post(rtrim(config('services.xkiro.base_url'), '/') . '/chat/completions', [
-                    'model' => config('services.xkiro.model'),
-                    'max_tokens' => 4000,
-                    'response_format' => ['type' => 'json_object'],
-                    'messages' => [[
-                        'role' => 'user',
-                        'content' => $this->pdfPrompt(mb_substr($text, 0, self::MAX_TEXT_CHARS)),
-                    ]],
-                ]);
-        } catch (\Throwable $e) {
-            Log::error('Import catégories: appel xkiro impossible', ['error' => $e->getMessage()]);
-
-            throw new RuntimeException("Analyse IA indisponible.");
-        }
-
-        if (! $response->successful()) {
-            Log::error('Import catégories: xkiro en échec', ['status' => $response->status(), 'body' => $response->body()]);
-
-            throw new RuntimeException("Analyse IA indisponible.");
-        }
-
-        $data = json_decode($this->cleanJson((string) $response->json('choices.0.message.content')), true);
-
-        if (! is_array($data)) {
-            throw new RuntimeException("Réponse de l'IA illisible.");
-        }
-
-        return (isset($data['categories']) && is_array($data['categories'])) ? $data['categories'] : $data;
-    }
-
-    private function pdfPrompt(string $text): string
-    {
         return <<<TXT
         Voici le texte brut d'un document qui contient des catégories de produits pour la marketplace VintApp.
 
@@ -159,137 +105,8 @@ class CategoryImportService
         - "parent" : nom de la catégorie parente si le document présente une hiérarchie, sinon null.
         - "description" : courte description si présente dans le document, sinon null.
         - N'invente rien qui ne figure pas dans le texte. Ignore les prix, quantités, en-têtes, tableaux de nombres et numéros de page.
-        - Maximum {$this->maxRows()} catégories. Si aucune catégorie n'est identifiable, renvoie {"categories":[]}.
-
-        Texte du document :
-        ---
-        {$text}
-        ---
+        - Maximum {$max} catégories. Si aucune catégorie n'est identifiable, renvoie {"categories":[]}.
         TXT;
-    }
-
-    private function maxRows(): int
-    {
-        return self::MAX_ROWS;
-    }
-
-    private function cleanJson(string $raw): string
-    {
-        $raw = trim($raw);
-
-        if (preg_match('/```(?:json)?\s*(.*?)\s*```/s', $raw, $m)) {
-            return $m[1];
-        }
-
-        $start = strpos($raw, '{');
-        $end = strrpos($raw, '}');
-
-        if ($start !== false && $end !== false && $end > $start) {
-            return substr($raw, $start, $end - $start + 1);
-        }
-
-        return $raw;
-    }
-
-    /**
-     * Aplatit n'importe quelle forme de JSON en lignes {name, parent?, ...}.
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private function normalize(mixed $data): array
-    {
-        // Déballer un éventuel conteneur : {"categories":[...]} / {"data":[...]}.
-        if (is_array($data) && ! array_is_list($data)) {
-            foreach (['categories', 'data', 'items', 'list'] as $key) {
-                if (isset($data[$key]) && is_array($data[$key])) {
-                    $data = $data[$key];
-                    break;
-                }
-            }
-        }
-
-        if (! is_array($data)) {
-            return [];
-        }
-
-        $rows = [];
-        foreach ($data as $entry) {
-            $rows = array_merge($rows, $this->flatten($entry, null));
-        }
-
-        return array_slice($rows, 0, self::MAX_ROWS);
-    }
-
-    /**
-     * Transforme une entrée (chaîne, objet, ou objet avec enfants) en lignes.
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private function flatten(mixed $entry, ?string $parent): array
-    {
-        if (is_string($entry)) {
-            $name = trim($entry);
-
-            return $name !== '' ? [['name' => $name, 'parent' => $parent]] : [];
-        }
-
-        if (! is_array($entry)) {
-            return [];
-        }
-
-        $name = trim((string) ($entry['name'] ?? $entry['nom'] ?? $entry['title'] ?? $entry['label'] ?? ''));
-
-        if ($name === '') {
-            return [];
-        }
-
-        $row = [
-            'name' => $name,
-            'parent' => $this->rowParent($entry) ?? $parent,
-        ];
-
-        foreach (['slug', 'description', 'icon', 'color', 'image', 'meta_title', 'meta_description', 'meta_keywords'] as $field) {
-            $value = $entry[$field] ?? null;
-            if (is_string($value) && trim($value) !== '') {
-                $row[$field] = trim($value);
-            }
-        }
-
-        if (isset($entry['sort_order']) && is_numeric($entry['sort_order'])) {
-            $row['sort_order'] = (int) $entry['sort_order'];
-        }
-
-        foreach (['is_active', 'is_featured', 'show_in_menu'] as $field) {
-            if (array_key_exists($field, $entry)) {
-                $bool = filter_var($entry[$field], FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-                if ($bool !== null) {
-                    $row[$field] = $bool;
-                }
-            }
-        }
-
-        $rows = [$row];
-
-        foreach (['children', 'subcategories', 'sous_categories'] as $key) {
-            if (isset($entry[$key]) && is_array($entry[$key])) {
-                foreach ($entry[$key] as $child) {
-                    $rows = array_merge($rows, $this->flatten($child, $name));
-                }
-            }
-        }
-
-        return $rows;
-    }
-
-    private function rowParent(array $entry): ?string
-    {
-        foreach (['parent', 'parent_name', 'category', 'categorie_parente'] as $key) {
-            if (isset($entry[$key]) && is_string($entry[$key]) && trim($entry[$key]) !== '') {
-                return trim($entry[$key]);
-            }
-        }
-
-        return null;
     }
 
     /**
@@ -300,7 +117,7 @@ class CategoryImportService
      */
     private function importRows(array $rows, bool $dryRun): array
     {
-        $report = ['created' => 0, 'updated' => 0, 'errors' => [], 'dry_run' => $dryRun];
+        $report = $this->emptyReport($dryRun);
 
         if (empty($rows)) {
             $report['errors'][] = 'Aucune catégorie trouvée dans le fichier.';
@@ -327,7 +144,7 @@ class CategoryImportService
 
                 // Champs facultatifs fournis (on ne touche pas à ce qui n'est pas présent).
                 $data = ['parent_id' => $parentId];
-                foreach (['slug', 'description', 'icon', 'color', 'image', 'meta_title', 'meta_description', 'meta_keywords', 'sort_order', 'is_active', 'is_featured', 'show_in_menu'] as $field) {
+                foreach ([...self::STRING_FIELDS, ...self::INT_FIELDS, ...self::BOOL_FIELDS] as $field) {
                     if (array_key_exists($field, $row)) {
                         $data[$field] = $row[$field];
                     }
