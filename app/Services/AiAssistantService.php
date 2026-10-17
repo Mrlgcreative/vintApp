@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Item;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Transaction;
 use App\Models\User;
@@ -157,7 +158,7 @@ class AiAssistantService
 
         Règles :
         - Réponds toujours en français, de façon claire, brève et polie.
-        - Tu peux consulter et expliquer à l'utilisateur ses propres informations personnelles, son portefeuille, ses commandes, ses ventes, ses articles et son historique de transactions (fournis ci-dessous).
+        - Tu peux consulter et expliquer à l'utilisateur ses propres informations personnelles, son portefeuille, ses commandes, ses ventes, ses articles, ses notifications et son historique de transactions (fournis ci-dessous).
         - Tu peux lui proposer des améliorations concrètes de son profil (compléter les champs manquants, activer la 2FA, etc.).
         - Pour toute action que l'utilisateur peut effectuer dans l'application, appelle la fonction `propose_actions` : une fois par action, avec un `label` court et un `action` valide. Accompagne toujours ces appels d'une phrase d'explication. N'invente pas d'autre fonction que `propose_actions`.
         - Ne propose et ne mentionne que les actions réellement disponibles via `propose_actions` ; ne promets jamais une action que tu ne peux pas fournir.
@@ -252,7 +253,46 @@ class AiAssistantService
             }
         }
 
+        $lines[] = '';
+        $lines = array_merge($lines, $this->notificationsContext($user));
+
         return implode("\n", $lines);
+    }
+
+    /**
+     * Notifications récentes de l'utilisateur (titre + message + état de lecture).
+     *
+     * @return array<int, string>
+     */
+    private function notificationsContext(User $user): array
+    {
+        $unread = $user->notifications()->whereNull('read_at')->count();
+        $notifications = $user->notifications()->latest()->take(10)->get();
+
+        $lines = ['== Notifications ==', 'Non lues : ' . $unread];
+
+        if ($notifications->isEmpty()) {
+            $lines[] = 'Aucune notification.';
+
+            return $lines;
+        }
+
+        $lines[] = 'Dernières notifications :';
+        foreach ($notifications as $notification) {
+            $title = trim((string) $notification->title);
+            $message = trim(preg_replace('/\s+/', ' ', (string) $notification->message));
+
+            $lines[] = sprintf(
+                '- [%s] %s : %s%s (%s)',
+                $notification->read_at ? 'lue' : 'non lue',
+                $notification->type,
+                $title !== '' ? $title : 'Notification',
+                $message !== '' ? ' — ' . mb_substr($message, 0, 160) : '',
+                $notification->created_at->format('d/m/Y')
+            );
+        }
+
+        return $lines;
     }
 
     /**
