@@ -427,6 +427,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'brands'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'brandCreate'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'brandStore'])->name('store');
+        Route::post('/import', [App\Http\Controllers\Admin\AdminController::class, 'brandImport'])->name('import');
         Route::get('/{brand}', [App\Http\Controllers\Admin\AdminController::class, 'brandShow'])->name('show');
         Route::get('/{brand}/edit', [App\Http\Controllers\Admin\AdminController::class, 'brandEdit'])->name('edit');
         Route::put('/{brand}', [App\Http\Controllers\Admin\AdminController::class, 'brandUpdate'])->name('update');

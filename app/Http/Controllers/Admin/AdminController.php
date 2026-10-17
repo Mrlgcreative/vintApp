@@ -1017,6 +1017,42 @@ class AdminController extends Controller
     }
 
     /**
+     * Importer des marques depuis un fichier PDF (analysé par l'IA) ou JSON.
+     */
+    public function brandImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:pdf,json|max:5120',
+        ], [], ['file' => 'fichier']);
+
+        $file = $request->file('file');
+        $dryRun = $request->boolean('dry_run');
+
+        try {
+            $report = app(\App\Services\BrandImportService::class)->import(
+                $file->getRealPath(),
+                (string) $file->getClientOriginalExtension(),
+                $dryRun
+            );
+        } catch (\Throwable $e) {
+            Log::error('Import marques échoué', ['error' => $e->getMessage()]);
+
+            return back()->with('error', 'Import impossible : ' . $e->getMessage());
+        }
+
+        $message = ($dryRun ? 'Simulation' : 'Import') . " terminé : {$report['created']} créée(s), {$report['updated']} mise(s) à jour"
+            . ($dryRun ? ' (aucune écriture)' : '') . '.';
+
+        $redirect = back();
+
+        if (! empty($report['errors'])) {
+            $redirect = $redirect->with('warning', \Illuminate\Support\Str::limit(implode(' | ', $report['errors']), 500));
+        }
+
+        return $redirect->with('success', $message);
+    }
+
+    /**
      * Afficher les détails d'une marque
      */
     public function brandShow(Brand $brand)
