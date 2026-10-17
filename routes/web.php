@@ -701,6 +701,11 @@ Route::middleware('auth')->prefix('support')->name('support.')->group(function (
     Route::post('/quick-chat', [App\Http\Controllers\SupportController::class, 'quickChat'])->name('quick-chat');
 });
 
+// Assistant IA VintApp (widget flottant, accessible aux invités comme aux connectés)
+Route::middleware('throttle:20,1')
+    ->post('/assistant/ask', [App\Http\Controllers\BotController::class, 'ask'])
+    ->name('assistant.ask');
+
 // Routes pour les paiements mobile money (Illicocash, Orange Money, Airtel Money, Mpesa, Africell), la simulation et le callback
 Route::prefix('payments')->group(function () {
     // ========================================================================

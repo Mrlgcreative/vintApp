@@ -417,7 +417,7 @@ Route::middleware(['web', 'auth:web'])->group(function () {
 
 // ⚠️ Route de validation GPS déplacée vers routes/web.php (ligne ~207)
 
-Route::post('/bot', [BotController::class, 'ask']);
+Route::middleware('throttle:20,1')->post('/bot', [BotController::class, 'ask']);
 
 // ==================== Notification Routes (API v1) ====================
 Route::prefix('v1/notifications')->middleware(['auth:sanctum'])->group(function () {
