@@ -439,6 +439,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::get('/', [App\Http\Controllers\Admin\AdminController::class, 'categories'])->name('index');
         Route::get('/create', [App\Http\Controllers\Admin\AdminController::class, 'categoryCreate'])->name('create');
         Route::post('/', [App\Http\Controllers\Admin\AdminController::class, 'categoryStore'])->name('store');
+        Route::post('/import', [App\Http\Controllers\Admin\AdminController::class, 'categoryImport'])->name('import');
         Route::get('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryShow'])->name('show');
         Route::get('/{category}/edit', [App\Http\Controllers\Admin\AdminController::class, 'categoryEdit'])->name('edit');
         Route::put('/{category}', [App\Http\Controllers\Admin\AdminController::class, 'categoryUpdate'])->name('update');
