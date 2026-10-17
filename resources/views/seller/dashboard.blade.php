@@ -13,7 +13,7 @@
                 <!-- Header / Hero -->
                 <div class="flex items-center justify-between gap-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-4 sm:p-5">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-vinted-primary-100 dark:bg-vinted-primary-500/20 rounded-lg flex items-center justify-center text-vinted-primary-600 dark:text-vinted-primary-400">
+                        <div class="w-10 h-10 bg-primary-300 dark:bg-primary-500/20 rounded-lg flex items-center justify-center text-primary-600 dark:text-primary-400">
                             <i class="fas fa-chart-pie"></i>
                         </div>
                         <div>
@@ -21,7 +21,7 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400">Bienvenue dans votre espace vendeur</p>
                         </div>
                     </div>
-                    <a href="{{ route('items.create') }}" class="inline-flex items-center gap-2 shrink-0 h-10 px-4 bg-vinted-primary-600 hover:bg-vinted-primary-700 text-white text-sm font-medium rounded-md transition-colors">
+                    <a href="{{ route('items.create') }}" class="inline-flex items-center gap-2 shrink-0 h-10 px-4 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md transition-colors">
                         <i class="fas fa-plus text-xs"></i> Publier un article
                     </a>
                 </div>
@@ -30,7 +30,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-lg bg-vinted-primary-100 dark:bg-vinted-primary-500/20 flex items-center justify-center text-vinted-primary-600 dark:text-vinted-primary-400">
+                            <div class="w-10 h-10 rounded-lg bg-primary-300 dark:bg-primary-500/20 flex items-center justify-center text-primary-600 dark:text-primary-400">
                                 <i class="fas fa-box text-sm"></i>
                             </div>
                             <div>
@@ -79,7 +79,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Revenus en dollars (USD)</p>
                                 </div>
                             </div>
-                            <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors shrink-0">Wallet →</a>
+                            <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors shrink-0">Wallet →</a>
                         </div>
                     </div>
                     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5 relative overflow-hidden">
@@ -94,7 +94,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Revenus en Francs Congolais (CDF)</p>
                                 </div>
                             </div>
-                            <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors shrink-0">Wallet →</a>
+                            <a href="{{ route('seller.wallet') }}" class="text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors shrink-0">Wallet →</a>
                         </div>
                     </div>
                 </div>
@@ -104,21 +104,21 @@
                     <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
                         <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
                             <h3 class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                <i class="fas fa-box text-sm text-vinted-primary-600 dark:text-vinted-primary-400"></i>
+                                <i class="fas fa-box text-sm text-primary-600 dark:text-primary-400"></i>
                                 Mes articles
                             </h3>
-                            <a href="{{ route('seller.items') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
+                            <a href="{{ route('seller.items') }}" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">Voir tout</a>
                         </div>
                         <div class="p-4">
                             @if($items->count() > 0)
                                 <div class="space-y-2">
                                     @foreach($items as $item)
-                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg hover:bg-vinted-primary-50 dark:hover:bg-vinted-primary-500/10 transition-colors">
+                                        <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg hover:bg-primary-400 dark:hover:bg-primary-500/10 transition-colors">
                                             <div class="min-w-0 flex-1">
                                                 <h6 class="font-semibold text-gray-900 dark:text-white text-sm truncate">{{ $item->name }}</h6>
                                                 <p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->category->name ?? 'N/A' }}</p>
                                             </div>
-                                            <span class="ml-3 px-2.5 py-1 bg-vinted-primary-50 dark:bg-vinted-primary-500/15 text-vinted-primary-700 dark:text-vinted-primary-300 text-xs font-semibold rounded-md flex-shrink-0">
+                                            <span class="ml-3 px-2.5 py-1 bg-primary-400 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300 text-xs font-semibold rounded-md flex-shrink-0">
                                                 {{ $item->formatted_price }}
                                             </span>
                                         </div>
@@ -130,7 +130,7 @@
                                         <i class="fas fa-box text-gray-300 dark:text-gray-600"></i>
                                     </div>
                                     <p class="text-sm text-gray-500 dark:text-gray-400">Aucun article pour le moment</p>
-                                    <a href="{{ route('items.create') }}" class="mt-3 inline-flex items-center text-sm text-vinted-primary-600 dark:text-vinted-primary-400 font-medium">Publier un article</a>
+                                    <a href="{{ route('items.create') }}" class="mt-3 inline-flex items-center text-sm text-primary-600 dark:text-primary-400 font-medium">Publier un article</a>
                                 </div>
                             @endif
                         </div>
@@ -143,7 +143,7 @@
                                 <i class="fas fa-shopping-cart text-sm text-emerald-600 dark:text-emerald-400"></i>
                                 Dernières ventes
                             </h3>
-                            <a href="{{ route('seller.sales') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
+                            <a href="{{ route('seller.sales') }}" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">Voir tout</a>
                         </div>
                         <div class="p-4">
                             @if($sales->count() > 0)
@@ -183,7 +183,7 @@
                             <i class="fas fa-star text-sm text-amber-500 dark:text-amber-400"></i>
                             Derniers avis
                         </h3>
-                        <a href="{{ route('seller.reviews') }}" class="text-sm font-medium text-vinted-primary-600 dark:text-vinted-primary-400 hover:text-vinted-primary-700 dark:hover:text-vinted-primary-300 transition-colors">Voir tout</a>
+                        <a href="{{ route('seller.reviews') }}" class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">Voir tout</a>
                     </div>
                     <div class="p-4">
                         @if($reviews->count() > 0)
@@ -192,7 +192,7 @@
                                     <div class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex items-center gap-3 min-w-0 flex-1">
-                                                <div class="w-9 h-9 bg-vinted-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                                                <div class="w-9 h-9 bg-primary-600 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
                                                     {{ strtoupper(substr($review->reviewer->name ?? '?', 0, 1)) }}
                                                 </div>
                                                 <div class="min-w-0">

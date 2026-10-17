@@ -62,3 +62,36 @@ Schedule::command('telescope:prune --hours=168')
 Schedule::command('cache:prune-stale-tags')
     ->hourly()
     ->name('prune-cache');
+
+/**
+ * ⚙️ Traiter la file d'attente
+ * Hébergement mutualisé : pas de worker permanent, on traite puis on s'arrête.
+ * Sans cela les jobs s'accumulent dans `jobs` et les notifications ne partent jamais.
+ */
+Schedule::command('queue:work --stop-when-empty --tries=3 --max-time=50')
+    ->everyMinute()
+    ->withoutOverlapping()
+    ->name('queue-worker');
+
+/**
+ * 🧹 Purger les lignes devenues inutiles (sessions expirées, jobs anciens)
+ * Tous les jours à 4h00.
+ */
+Schedule::call(function () {
+    \Illuminate\Support\Facades\DB::table('sessions')
+        ->where('last_activity', '<', now()->subDay()->timestamp)
+        ->delete();
+
+    \Illuminate\Support\Facades\DB::table('jobs')
+        ->where('created_at', '<', now()->subDays(7))
+        ->delete();
+
+    \Illuminate\Support\Facades\DB::table('failed_jobs')
+        ->where('failed_at', '<', now()->subDays(7))
+        ->delete();
+
+    \Illuminate\Support\Facades\DB::table('job_batches')
+        ->whereNotNull('finished_at')
+        ->where('finished_at', '<', now()->subDays(7))
+        ->delete();
+})->dailyAt('04:00')->name('purge-stale-rows');

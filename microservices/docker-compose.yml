@@ -1,0 +1,42 @@
+# Infrastructure locale des microservices VintApp.
+#
+#   docker compose -f microservices/docker-compose.yml up -d
+#   docker compose -f microservices/docker-compose.yml down
+#
+# Redis sert de bus d'événements (Redis Streams) entre les services.
+#
+# Le volume nommé conserve les streams entre deux redémarrages. Un AOF est
+# activé : un `payment.completed` publié juste avant un redémarrage ne doit
+# pas disparaître, sinon order-service ne verrait jamais un paiement déjà
+# encaissé.
+#
+# Ce Redis LOCAL n'expose pas de mot de passe : `ports: 127.0.0.1` le
+# restreint à la machine. En production, activer `requirepass` / ACL et ne
+# pas publier le port.
+
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: vintapp-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --save
+      - "60"
+      - "1"
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  redis-data:

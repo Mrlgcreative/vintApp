@@ -32,14 +32,16 @@ class OfferController extends Controller
      */
     public function index(Request $request): View
     {
+        $isSellerSpace = $this->isSellerSpace($request);
+
         $query = Offer::with('creator');
-        if (!$request->user()->isAdmin()) {
+        if ($isSellerSpace) {
             $query->where('created_by', $request->user()->id);
         }
 
         $offers = $query->orderByDesc('created_at')->paginate(20);
 
-        $view = $request->user()->isAdmin() ? 'admin.offers.index' : 'seller.offers.index';
+        $view = $isSellerSpace ? 'seller.offers.index' : 'admin.offers.index';
         return view($view, compact('offers'));
     }
 
@@ -49,11 +51,12 @@ class OfferController extends Controller
     public function create(Request $request): View
     {
         $this->authorizeManage();
+        $isSellerSpace = $this->isSellerSpace($request);
         $categories = Category::orderBy('name')->get();
-        $isSeller = !$request->user()->isAdmin();
+        $isSeller = $isSellerSpace;
         $items = $this->allowedItems($request);
 
-        $view = $request->user()->isAdmin() ? 'admin.offers.create' : 'seller.offers.create';
+        $view = $isSellerSpace ? 'seller.offers.create' : 'admin.offers.create';
         return view($view, compact('categories', 'isSeller', 'items'));
     }
 
@@ -64,10 +67,12 @@ class OfferController extends Controller
     {
         $this->authorizeManage();
 
-        $data = $this->validateOffer($request, $request->user()->isAdmin());
+        $isSellerSpace = $this->isSellerSpace($request);
+
+        $data = $this->validateOffer($request, !$isSellerSpace);
 
         // Un vendeur ne peut cibler que ses propres produits.
-        if (!$request->user()->isAdmin()) {
+        if ($isSellerSpace) {
             $data['scope'] = 'items';
             $requestedItems = $data['items'] ?? [];
             $data['items'] = Item::whereIn('id', $requestedItems)
@@ -92,7 +97,7 @@ class OfferController extends Controller
         }
 
         return redirect()
-            ->route($request->user()->isAdmin() ? 'admin.offers.index' : 'seller.offers.index')
+            ->route($isSellerSpace ? 'seller.offers.index' : 'admin.offers.index')
             ->with('success', 'Offre « ' . $offer->title . ' » créée.');
     }
 
@@ -101,12 +106,13 @@ class OfferController extends Controller
      */
     public function edit(Request $request, Offer $offer): View
     {
-        $this->authorizeOwner($request->user(), $offer);
+        $this->authorizeOwner($request->user(), $offer, $this->isSellerSpace($request));
+        $isSellerSpace = $this->isSellerSpace($request);
         $categories = Category::orderBy('name')->get();
-        $isSeller = !$request->user()->isAdmin();
+        $isSeller = $isSellerSpace;
         $items = $this->allowedItems($request);
 
-        $view = $request->user()->isAdmin() ? 'admin.offers.edit' : 'seller.offers.edit';
+        $view = $isSellerSpace ? 'seller.offers.edit' : 'admin.offers.edit';
         return view($view, compact('offer', 'categories', 'isSeller', 'items'));
     }
 
@@ -115,12 +121,13 @@ class OfferController extends Controller
      */
     public function update(Request $request, Offer $offer): RedirectResponse
     {
-        $this->authorizeOwner($request->user(), $offer);
+        $isSellerSpace = $this->isSellerSpace($request);
+        $this->authorizeOwner($request->user(), $offer, $isSellerSpace);
 
-        $data = $this->validateOffer($request, $request->user()->isAdmin());
+        $data = $this->validateOffer($request, !$isSellerSpace);
 
         // Un vendeur ne peut pas changer le périmètre vers global/catégories.
-        if (!$request->user()->isAdmin()) {
+        if ($isSellerSpace) {
             $data['scope'] = 'items';
             $requestedItems = $data['items'] ?? [];
             $data['items'] = Item::whereIn('id', $requestedItems)
@@ -133,7 +140,7 @@ class OfferController extends Controller
         Item::clearRunningOffersCache();
 
         return redirect()
-            ->route($request->user()->isAdmin() ? 'admin.offers.index' : 'seller.offers.index')
+            ->route($isSellerSpace ? 'seller.offers.index' : 'admin.offers.index')
             ->with('success', 'Offre mise à jour.');
     }
 
@@ -142,7 +149,7 @@ class OfferController extends Controller
      */
     public function toggleStatus(Request $request, Offer $offer): RedirectResponse
     {
-        $this->authorizeOwner($request->user(), $offer);
+        $this->authorizeOwner($request->user(), $offer, $this->isSellerSpace($request));
         $offer->status = $offer->status === 'active' ? 'paused' : 'active';
         $offer->save();
         Item::clearRunningOffersCache();
@@ -155,7 +162,7 @@ class OfferController extends Controller
      */
     public function destroy(Request $request, Offer $offer): RedirectResponse
     {
-        $this->authorizeOwner($request->user(), $offer);
+        $this->authorizeOwner($request->user(), $offer, $this->isSellerSpace($request));
         $offer->delete();
         Item::clearRunningOffersCache();
 
@@ -164,6 +171,18 @@ class OfferController extends Controller
 
     // ==================== HELPERS ====================
 
+    /**
+     * L'espace demandé est déduit de la route, pas du rôle.
+     *
+     * Un compte disposant à la fois des rôles admin et vendeur doit rester
+     * dans l'espace vendeur lorsqu'il visite /seller/offers : c'est l'URL qui
+     * détermine la vue, le périmètre des données et les redirections.
+     */
+    protected function isSellerSpace(Request $request): bool
+    {
+        return $request->routeIs('seller.offers.*');
+    }
+
     protected function authorizeManage(): void
     {
         if (!auth()->user() || (!auth()->user()->isAdmin() && !auth()->user()->isSeller())) {
@@ -171,8 +190,13 @@ class OfferController extends Controller
         }
     }
 
-    protected function authorizeOwner($user, Offer $offer): void
+    protected function authorizeOwner($user, Offer $offer, bool $isSellerSpace = false): void
     {
+        // Dans l'espace admin, l'accès reste ouvert à tous les administrateurs.
+        if (!$isSellerSpace && $user->isAdmin()) {
+            return;
+        }
+
         if (!$user->isAdmin() && $offer->created_by !== $user->id) {
             abort(403, 'Vous ne pouvez pas gérer cette offre.');
         }
@@ -211,7 +235,7 @@ class OfferController extends Controller
      */
     protected function allowedItems(Request $request)
     {
-        if ($request->user()->isAdmin()) {
+        if (!$this->isSellerSpace($request) && $request->user()->isAdmin()) {
             return Item::where('status', 'active')->orderBy('name')->limit(500)->get();
         }
         return Item::where('user_id', $request->user()->id)->orderBy('name')->get();

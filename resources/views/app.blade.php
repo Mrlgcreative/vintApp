@@ -1190,5 +1190,7 @@
 
     <x-cookie-banner />
 
+    @include('partials.ai-assistant')
+
 </body>
 </html>

@@ -280,6 +280,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Assistant IA VintApp (xkiro — API compatible OpenAI)
+    |--------------------------------------------------------------------------
+    |
+    | Endpoint /v1/chat/completions avec authentification Bearer.
+    |
+    */
+    'xkiro' => [
+        'api_key' => env('XKIRO_API_KEY'),
+        'base_url' => env('XKIRO_BASE_URL', 'https://api.xkiro.com/v1'),
+        // Modèle gratuit par défaut. Premium (ex: openai/gpt-5.6-sol) : plan payant requis.
+        'model' => env('XKIRO_MODEL', 'mistralai/ministral-14b'),
+        'timeout' => env('XKIRO_TIMEOUT', 30),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Firebase Firestore (signal temps réel mobile)
     |--------------------------------------------------------------------------
     |
