@@ -110,6 +110,32 @@ class CategoryImportServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_extracts_text_from_a_real_pdf_file_and_imports_it()
+    {
+        Http::fake([
+            '*/chat/completions' => Http::response([
+                'choices' => [['message' => ['content' => json_encode([
+                    'categories' => [
+                        ['name' => 'Mobile', 'parent' => null, 'description' => null],
+                    ],
+                ])]]],
+            ]),
+        ]);
+
+        $path = tempnam(sys_get_temp_dir(), 'cats') . '.pdf';
+        file_put_contents($path, \Barryvdh\DomPDF\Facade\Pdf::loadHTML('<h1>Catalogue</h1><p>Mobile</p>')->output());
+
+        try {
+            $report = $this->service()->importPdf($path);
+        } finally {
+            @unlink($path);
+        }
+
+        $this->assertSame(1, $report['created']);
+        $this->assertDatabaseHas('categories', ['slug' => 'mobile']);
+    }
+
+    /** @test */
     public function it_rejects_an_invalid_json_file()
     {
         $this->expectException(RuntimeException::class);

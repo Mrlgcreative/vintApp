@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
-use Symfony\Component\Process\Process;
+use Smalot\PdfParser\Parser;
 
 /**
  * Import en masse de catégories depuis un fichier JSON ou PDF.
@@ -80,25 +80,21 @@ class CategoryImportService
     }
 
     /**
-     * Extrait le texte d'un PDF via pdftotext (poppler-utils).
+     * Extrait le texte d'un PDF (librairie pure PHP, aucun binaire système requis).
      */
     private function extractPdfText(string $path): string
     {
+        if (! class_exists(Parser::class)) {
+            throw new RuntimeException('Lecture du PDF indisponible : dépendance manquante (lancez « composer install »).');
+        }
+
         try {
-            $process = new Process(['pdftotext', '-layout', $path, '-']);
-            $process->setTimeout(60);
-            $process->run();
+            return (new Parser())->parseFile($path)->getText();
         } catch (\Throwable $e) {
-            Log::error('Import catégories: exécution pdftotext impossible', ['error' => $e->getMessage()]);
+            Log::error('Import catégories: lecture PDF impossible', ['error' => $e->getMessage()]);
 
-            throw new RuntimeException("Lecture du PDF indisponible sur ce serveur.");
+            throw new RuntimeException('Lecture du PDF impossible (' . $e->getMessage() . ')');
         }
-
-        if (! $process->isSuccessful()) {
-            throw new RuntimeException('Lecture du PDF impossible : ' . trim($process->getErrorOutput() ?: 'fichier illisible'));
-        }
-
-        return $process->getOutput();
     }
 
     /**

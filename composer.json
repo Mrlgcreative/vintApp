@@ -23,6 +23,7 @@
         "predis/predis": "^3.4",
         "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "smalot/pdfparser": "^2.13",
         "socialiteproviders/apple": "^5.7",
         "spatie/laravel-backup": "*",
         "stevebauman/location": "^7.6",
