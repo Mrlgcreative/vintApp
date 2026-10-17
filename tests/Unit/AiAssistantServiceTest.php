@@ -14,6 +14,21 @@ class AiAssistantServiceTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function every_action_resolves_to_a_url()
+    {
+        $urls = AiAssistantService::actionUrls();
+
+        $this->assertSame(AiAssistantService::actions(), array_keys($urls));
+        $this->assertNotEmpty($urls);
+
+        foreach ($urls as $action => $url) {
+            // route() lève une exception si le nom de route est inconnu : ce test l'attrape.
+            $this->assertIsString($action);
+            $this->assertNotSame('', trim($url));
+        }
+    }
+
+    /** @test */
     public function it_includes_the_current_users_notifications_and_not_other_users()
     {
         $user = User::factory()->create();

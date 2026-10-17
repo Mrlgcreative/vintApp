@@ -20,8 +20,44 @@ class AiAssistantService
     /** Nombre de messages d'historique renvoyés au modèle. */
     private const MAX_HISTORY = 10;
 
-    /** Destinations autorisées pour l'action "action" de propose_actions. */
-    private const ACTIONS = ['edit_profile', 'security', 'support'];
+    /**
+     * Source unique des actions proposables : clé d'action → nom de route.
+     *
+     * Ajouter une action ici suffit : l'enum du modèle, la validation des
+     * réponses et les boutons du widget en découlent automatiquement.
+     */
+    private const ACTION_ROUTES = [
+        'edit_profile' => 'profile.edit',
+        'security' => 'profile.security',
+        'support' => 'support.create',
+    ];
+
+    /**
+     * Clés d'action valides (dérivées de ACTION_ROUTES).
+     *
+     * @return array<int, string>
+     */
+    public static function actions(): array
+    {
+        return array_keys(self::ACTION_ROUTES);
+    }
+
+    /**
+     * Destinations des actions, résolues depuis ACTION_ROUTES.
+     * Consommé par le widget (voir resources/views/partials/ai-assistant.blade.php).
+     *
+     * @return array<string, string>
+     */
+    public static function actionUrls(): array
+    {
+        $urls = [];
+
+        foreach (self::ACTION_ROUTES as $action => $routeName) {
+            $urls[$action] = route($routeName);
+        }
+
+        return $urls;
+    }
 
     /**
      * Envoie une conversation au modèle et renvoie la réponse + les actions proposées.
@@ -111,7 +147,7 @@ class AiAssistantService
                         'action' => [
                             'type' => 'string',
                             'description' => "Destination : edit_profile (modifier/compléter le profil : téléphone, adresse, ville, photo, bio), security (sécurité du compte : 2FA, vérification email), support (contacter le support humain).",
-                            'enum' => self::ACTIONS,
+                            'enum' => self::actions(),
                         ],
                     ],
                     'required' => ['label', 'action'],
@@ -140,7 +176,7 @@ class AiAssistantService
             $label = trim((string) ($args['label'] ?? ''));
             $action = (string) ($args['action'] ?? '');
 
-            if ($label !== '' && in_array($action, self::ACTIONS, true)) {
+            if ($label !== '' && in_array($action, self::actions(), true)) {
                 $actions[] = ['label' => $label, 'action' => $action];
             }
         }
