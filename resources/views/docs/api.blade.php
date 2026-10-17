@@ -1001,12 +1001,27 @@
                     </div>
                     <div class="grid lg:grid-cols-2 gap-4">
                         <pre class="bg-[#0b1020] border border-white/5 rounded-xl p-4 text-sm"><button class="copy-btn text-xs text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-1 rounded-md" onclick="copyCode(this)">Copier</button><code class="text-emerald-300 font-mono">{
-  "question": "Comment vendre un article sur VintApp ?"
+  "message": "Améliore mon profil",
+  "history": [
+    { "role": "user", "content": "Bonjour" },
+    { "role": "assistant", "content": "Bonjour ! Comment puis-je vous aider ?" }
+  ]
 }</code></pre>
                         <pre class="bg-[#0b1020] border border-white/5 rounded-xl p-4 text-sm"><button class="copy-btn text-xs text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 px-2 py-1 rounded-md" onclick="copyCode(this)">Copier</button><code class="text-sky-300 font-mono">{
-  "answer": "Pour vendre un article sur VintApp, suivez ces étapes..."
+  "success": true,
+  "answer": "Voici ce que je vous propose :",
+  "actions": [
+    { "label": "Ajouter un numéro de téléphone", "action": "edit_profile" },
+    { "label": "Activer la double authentification (2FA)", "action": "security" }
+  ]
 }</code></pre>
                     </div>
+                    <p class="text-slate-500 text-sm mt-4">
+                        <code class="font-mono text-violet-300">message</code> (ou <code class="font-mono text-violet-300">question</code>) obligatoire · <code class="font-mono text-violet-300">history</code> optionnel (20 max) ·
+                        <code class="font-mono text-violet-300">Authorization: Bearer &lt;token&gt;</code> optionnel : avec token, l'assistant accède aux données de l'utilisateur.
+                        Valeurs possibles de <code class="font-mono text-violet-300">actions[].action</code> :
+                        <code class="font-mono text-violet-300">edit_profile</code>, <code class="font-mono text-violet-300">security</code>, <code class="font-mono text-violet-300">support</code>.
+                    </p>
                 </div>
             </section>
 

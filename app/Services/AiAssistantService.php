@@ -19,13 +19,17 @@ class AiAssistantService
     /** Nombre de messages d'historique renvoyés au modèle. */
     private const MAX_HISTORY = 10;
 
+    /** Destinations autorisées pour l'action "action" de propose_actions. */
+    private const ACTIONS = ['edit_profile', 'security', 'support'];
+
     /**
-     * Envoie une conversation au modèle et renvoie la réponse texte.
+     * Envoie une conversation au modèle et renvoie la réponse + les actions proposées.
      *
      * @param  array<int, array{role: string, content: string}>  $history
      * @param  User|null  $user  Utilisateur connecté (contexte limité à ses propres données)
+     * @return array{answer: string, actions: array<int, array{label: string, action: string}>}
      */
-    public function ask(string $message, array $history = [], ?User $user = null): string
+    public function ask(string $message, array $history = [], ?User $user = null): array
     {
         $apiKey = config('services.xkiro.api_key');
 
@@ -56,6 +60,8 @@ class AiAssistantService
                     'model' => config('services.xkiro.model'),
                     'messages' => $messages,
                     'max_tokens' => 600,
+                    'tools' => $this->tools(),
+                    'tool_choice' => 'auto',
                 ]);
         } catch (\Throwable $e) {
             // DNS / timeout / TLS ou erreur serveur xkiro après relance.
@@ -73,7 +79,72 @@ class AiAssistantService
             throw new RuntimeException("Le service d'assistance est momentanément indisponible.");
         }
 
-        return (string) ($response->json('choices.0.message.content') ?? '');
+        $modelMessage = $response->json('choices.0.message') ?? [];
+        $answer = trim((string) ($modelMessage['content'] ?? ''));
+        $actions = $this->extractActions($modelMessage['tool_calls'] ?? []);
+
+        if ($answer === '' && $actions !== []) {
+            $answer = 'Voici ce que je vous propose :';
+        }
+
+        return ['answer' => $answer, 'actions' => $actions];
+    }
+
+    /**
+     * Déclaration de la fonction propose_actions(label, action) exposée au modèle.
+     */
+    private function tools(): array
+    {
+        return [[
+            'type' => 'function',
+            'function' => [
+                'name' => 'propose_actions',
+                'description' => "Propose à l'utilisateur une action concrète à effectuer dans l'application. Appelle cette fonction une fois par action ; accompagne toujours les appels d'une phrase d'explication.",
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'label' => [
+                            'type' => 'string',
+                            'description' => "Texte court du bouton, à l'impératif et en français (ex : « Ajouter un numéro de téléphone »).",
+                        ],
+                        'action' => [
+                            'type' => 'string',
+                            'description' => "Destination : edit_profile (modifier/compléter le profil : téléphone, adresse, ville, photo, bio), security (sécurité du compte : 2FA, vérification email), support (contacter le support humain).",
+                            'enum' => self::ACTIONS,
+                        ],
+                    ],
+                    'required' => ['label', 'action'],
+                    'additionalProperties' => false,
+                ],
+            ],
+        ]];
+    }
+
+    /**
+     * Extrait les actions valides des tool_calls renvoyés par le modèle.
+     *
+     * @param  array<int, array<string, mixed>>  $toolCalls
+     * @return array<int, array{label: string, action: string}>
+     */
+    private function extractActions(array $toolCalls): array
+    {
+        $actions = [];
+
+        foreach ($toolCalls as $call) {
+            if (($call['function']['name'] ?? '') !== 'propose_actions') {
+                continue;
+            }
+
+            $args = json_decode((string) ($call['function']['arguments'] ?? ''), true);
+            $label = trim((string) ($args['label'] ?? ''));
+            $action = (string) ($args['action'] ?? '');
+
+            if ($label !== '' && in_array($action, self::ACTIONS, true)) {
+                $actions[] = ['label' => $label, 'action' => $action];
+            }
+        }
+
+        return array_slice($actions, 0, 5);
     }
 
     /**
@@ -88,6 +159,8 @@ class AiAssistantService
         - Réponds toujours en français, de façon claire, brève et polie.
         - Tu peux consulter et expliquer à l'utilisateur ses propres informations personnelles, son portefeuille, ses commandes, ses ventes, ses articles et son historique de transactions (fournis ci-dessous).
         - Tu peux lui proposer des améliorations concrètes de son profil (compléter les champs manquants, activer la 2FA, etc.).
+        - Pour toute action que l'utilisateur peut effectuer dans l'application, appelle la fonction `propose_actions` : une fois par action, avec un `label` court et un `action` valide. Accompagne toujours ces appels d'une phrase d'explication. N'invente pas d'autre fonction que `propose_actions`.
+        - Ne propose et ne mentionne que les actions réellement disponibles via `propose_actions` ; ne promets jamais une action que tu ne peux pas fournir.
         - Base-toi uniquement sur les informations fournies ci-dessous ; n'invente jamais une commande, un montant ou un statut.
         - Si tu ne sais pas, ou si la demande nécessite une action humaine (litige, remboursement), invite l'utilisateur à contacter le support.
         - Ne divulgue jamais d'informations concernant d'autres utilisateurs.
@@ -228,7 +301,7 @@ class AiAssistantService
         }
 
         $lines[] = $missing
-            ? 'Profil à compléter — propose de renseigner : ' . implode(', ', $missing) . '.'
+            ? 'Profil à compléter (propose ces actions via propose_actions) : ' . implode(', ', $missing) . '.'
             : "Profil complet : félicite l'utilisateur, rien à améliorer.";
 
         return $lines;
