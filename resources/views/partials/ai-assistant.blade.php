@@ -108,12 +108,8 @@
     const history = [];
     const greeting = "Bonjour ! Je suis l'assistant VintApp. Comment puis-je vous aider ?";
 
-    // Doit rester synchronisé avec AiAssistantService::ACTIONS : une clé absente ici = bouton invisible.
-    const actionUrls = @json([
-        'edit_profile' => route('profile.edit'),
-        'security' => route('profile.security'),
-        'support' => route('support.create'),
-    ]);
+    // Résolues côté backend (AiAssistantService::ACTION_ROUTES) : rien à synchroniser ici.
+    const actionUrls = @json(\App\Services\AiAssistantService::actionUrls());
 
     function appendMessage(text, kind) {
         const el = document.createElement('div');
