@@ -72,6 +72,24 @@
         color: #f3f4f6;
         border-color: #374151;
     }
+    #aiAssistantMessages .ai-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+    }
+    #aiAssistantMessages .ai-action-btn {
+        display: inline-block;
+        padding: .35rem .75rem;
+        border-radius: 9999px;
+        background: var(--color-primary-600, #7c3aed);
+        color: #fff;
+        font-size: .8rem;
+        text-decoration: none;
+        transition: opacity .15s ease;
+    }
+    #aiAssistantMessages .ai-action-btn:hover {
+        opacity: .85;
+    }
 </style>
 
 <script>
@@ -90,6 +108,13 @@
     const history = [];
     const greeting = "Bonjour ! Je suis l'assistant VintApp. Comment puis-je vous aider ?";
 
+    // Destinations des actions proposées par le modèle (voir AiAssistantService::ACTIONS).
+    const actionUrls = @json([
+        'edit_profile' => route('profile.edit'),
+        'security' => route('profile.security'),
+        'support' => route('support.create'),
+    ]);
+
     function appendMessage(text, kind) {
         const el = document.createElement('div');
         el.className = 'ai-msg ' + (kind === 'user' ? 'ai-msg-user' : 'ai-msg-bot');
@@ -97,6 +122,29 @@
         messages.appendChild(el);
         messages.scrollTop = messages.scrollHeight;
         return el;
+    }
+
+    function appendActions(actions) {
+        if (!actions || !actions.length) return;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'ai-actions';
+
+        actions.forEach(function (action) {
+            const url = actionUrls[action.action];
+            if (!url) return;
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.className = 'ai-action-btn';
+            link.textContent = action.label;
+            wrap.appendChild(link);
+        });
+
+        if (wrap.children.length) {
+            messages.appendChild(wrap);
+            messages.scrollTop = messages.scrollHeight;
+        }
     }
 
     appendMessage(greeting, 'bot');
@@ -154,6 +202,7 @@
                 if (result.ok && result.data.success) {
                     thinking.textContent = result.data.answer;
                     history.push({ role: 'assistant', content: result.data.answer });
+                    appendActions(result.data.actions);
                 } else {
                     thinking.textContent = (result.data.error || 'Une erreur est survenue. Réessayez plus tard.');
                 }

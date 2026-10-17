@@ -51,11 +51,15 @@ class BotController extends Controller
         $user = $request->user() ?? $request->user('sanctum');
 
         try {
-            $answer = $this->assistant->ask($message, $data['history'] ?? [], $user);
+            $result = $this->assistant->ask($message, $data['history'] ?? [], $user);
         } catch (RuntimeException $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()], 503);
         }
 
-        return response()->json(['success' => true, 'answer' => $answer]);
+        return response()->json([
+            'success' => true,
+            'answer' => $result['answer'],
+            'actions' => $result['actions'],
+        ]);
     }
 }
