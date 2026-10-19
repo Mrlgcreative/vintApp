@@ -71,8 +71,12 @@
                             $transportFeeInPriority = ($subtotalInPriority * $transportFeePercentage) / 100;
                             $transportFeeInPriority = round($transportFeeInPriority, 2);
                             
+                            // Calculer les frais d'encaissement dans la devise prioritaire
+                            $encaissementFeePercentage = encaissement_fee_percentage();
+                            $encaissementFeeInPriority = round(($subtotalInPriority * $encaissementFeePercentage) / 100, 2);
+                            
                             // Total final
-                            $totalInPriority = $subtotalInPriority + $transportFeeInPriority;
+                            $totalInPriority = $subtotalInPriority + $transportFeeInPriority + $encaissementFeeInPriority;
                         @endphp
                         
                         <!-- Récapitulatif des montants -->

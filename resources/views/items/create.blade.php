@@ -174,6 +174,16 @@
                             </div>
                         </div>
 
+                        <!-- Information frais d'encaissement -->
+                        <div class="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-lg border border-amber-200 dark:border-amber-500/30">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-amber-500 mt-0.5 mr-2 flex-shrink-0"></i>
+                                <p class="text-xs text-amber-700 dark:text-amber-300">
+                                    <strong>Note :</strong> Les frais d'encaissement de {{ encaissement_fee_percentage() }}% seront ajoutés sur le prix de base de l'article au moment de l'achat par le client.
+                                </p>
+                            </div>
+                        </div>
+
                         <!-- Catégorie + Marque -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="flex flex-col gap-2">

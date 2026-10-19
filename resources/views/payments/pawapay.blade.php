@@ -4,6 +4,8 @@
 
 @section('content')
 @php
+    // Montant réellement débité : le total transmis contient déjà les frais
+    // (livraison + encaissement), on ne le recalcule pas ici.
     $displayTotal = isset($total) ? $total : 0;
     $displayCurrency = isset($currency) ? $currency : (isset($cart) && !empty($cart) ? ($cart[0]['currency'] ?? 'USD') : 'USD');
 @endphp

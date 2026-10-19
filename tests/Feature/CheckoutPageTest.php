@@ -32,6 +32,8 @@ class CheckoutPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('data-method="kpay"', false);
+        $response->assertDontSee("Frais d'encaissement", false); // masqué au client, inclus dans le total
+        $response->assertSee('110.00 USD', false); // 100 + 5% livraison + 5% encaissement
         $response->assertDontSee('data-method="maishapay"', false);
         $response->assertSee('id="kpayForm"', false);
         $response->assertDontSee('id="maishapayForm"', false);

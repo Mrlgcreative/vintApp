@@ -263,7 +263,11 @@ class CartController extends Controller
             ->value('value') ?? 5;
 
         $transportFee = ($subtotal * $transportFeePercentage) / 100;
-        $total = $subtotal + $transportFee;
+
+        $encaissementFeePercentage = encaissement_fee_percentage();
+        $encaissementFee = ($subtotal * $encaissementFeePercentage) / 100;
+
+        $total = $subtotal + $transportFee + $encaissementFee;
 
         $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
 
@@ -272,6 +276,8 @@ class CartController extends Controller
             'subtotal' => $subtotal,
             'transportFee' => $transportFee,
             'transportFeePercentage' => $transportFeePercentage,
+            'encaissementFee' => $encaissementFee,
+            'encaissementFeePercentage' => $encaissementFeePercentage,
             'total' => $total,
             'currency' => $currency,
         ]);
@@ -295,13 +301,19 @@ class CartController extends Controller
             ->value('value') ?? 5;
 
         $transportFee = ($subtotal * $transportFeePercentage) / 100;
-        $total = $subtotal + $transportFee;
+
+        $encaissementFeePercentage = encaissement_fee_percentage();
+        $encaissementFee = ($subtotal * $encaissementFeePercentage) / 100;
+
+        $total = $subtotal + $transportFee + $encaissementFee;
 
         return view('payments', [
             'cart' => $cart,
             'subtotal' => $subtotal,
             'transportFee' => $transportFee,
             'transportFeePercentage' => $transportFeePercentage,
+            'encaissementFee' => $encaissementFee,
+            'encaissementFeePercentage' => $encaissementFeePercentage,
             'total' => $total,
         ]);
     }

@@ -54,6 +54,8 @@ class SystemController extends Controller
             'data' => [
                 'commission_percentage' => $commissionPercentage,
                 'transport_fee_percentage' => $transportFeePercentage,
+                // Le mobile doit ajouter ce taux au montant débité (le web le fait déjà).
+                'encaissement_fee_percentage' => encaissement_fee_percentage(),
             ],
         ]);
     }
