@@ -100,7 +100,9 @@ class ApiCartTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.subtotal', 300)
             ->assertJsonPath('data.transport_fee', 15)
-            ->assertJsonPath('data.total', 315);
+            ->assertJsonPath('data.encaissement_fee_percentage', 5)
+            ->assertJsonPath('data.encaissement_fee', 15)
+            ->assertJsonPath('data.total', 330);
     }
 
     /** @test */

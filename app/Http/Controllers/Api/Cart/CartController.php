@@ -58,7 +58,9 @@ class CartController extends ApiController
                 ->value('value') ?? 10);
 
             $transportFee = round(($subtotal * $transportFeePercentage) / 100, 2);
-            $total = round($subtotal + $transportFee, 2);
+            $encaissementFeePercentage = encaissement_fee_percentage();
+            $encaissementFee = round(($subtotal * $encaissementFeePercentage) / 100, 2);
+            $total = round($subtotal + $transportFee + $encaissementFee, 2);
 
             $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
 
@@ -68,6 +70,8 @@ class CartController extends ApiController
                 'subtotal' => $subtotal,
                 'transport_fee_percentage' => $transportFeePercentage,
                 'transport_fee' => $transportFee,
+                'encaissement_fee_percentage' => $encaissementFeePercentage,
+                'encaissement_fee' => $encaissementFee,
                 'commission_percentage' => $commissionPercentage,
                 'total' => $total,
                 'currency' => $currency,

@@ -140,6 +140,18 @@ if (!function_exists('commission_rate')) {
     }
 }
 
+if (!function_exists('encaissement_fee_percentage')) {
+    /**
+     * Taux de frais d'encaissement (%) ajouté sur le prix de base à l'achat.
+     *
+     * @return float
+     */
+    function encaissement_fee_percentage(): float
+    {
+        return app(SettingService::class)->getFloat('encaissement_fee_percentage', 5.0);
+    }
+}
+
 if (!function_exists('min_withdrawal_amount')) {
     /**
      * Récupère le montant minimum de retrait

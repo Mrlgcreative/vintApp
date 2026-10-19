@@ -201,16 +201,9 @@ class ItemController extends Controller
                 'images_count' => count($item->images ?? []),
             ]);
 
-            // Message personnalisé selon le statut de vérification
-            $message = 'Article créé avec succès et envoyé pour vérification !';
-            
-            if ($item->verification_score >= 75) {
-                $message = "Article créé avec succès ! Score IA: {$item->verification_score}/100. En attente de validation admin.";
-            } elseif ($item->verification_score >= 50) {
-                $message = "Article créé ! Score IA: {$item->verification_score}/100. Notre équipe vérifiera votre article sous peu.";
-            } else {
-                $message = "Article créé. Score IA: {$item->verification_score}/100. Vérification manuelle requise par notre équipe.";
-            }
+            // Le score IA réel est calculé en arrière-plan (VerifyItemWithAi) après la
+            // réponse : on n'annonce donc pas de score heuristique au vendeur.
+            $message = 'Article créé avec succès ! Il est en attente de vérification par notre équipe.';
 
             return redirect()->route('items.show', $item)
                 ->with('success', $message);
