@@ -122,26 +122,95 @@
 
             <!-- Analyse IA -->
             @if($item->verification_details)
+            @php
+                $details = $item->verification_details;
+                $ai = is_array($details['ai'] ?? null) ? $details['ai'] : null;
+                $imageScore = $details['images']['score'] ?? 0;
+                $textScore = $details['text']['score'] ?? 0;
+                $coherenceScore = $details['coherence']['score'] ?? 0;
+                $displayScore = $ai['score'] ?? $item->verification_score;
+                $recommendation = $ai['recommendation'] ?? null;
+            @endphp
             <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800">
-                <div class="flex items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-700">
-                    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-300">
+                <div class="flex flex-wrap items-center gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-700">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-50 text-primary-600 dark:bg-slate-700 dark:text-primary-300">
                         <i class="fas fa-robot text-sm"></i>
                     </div>
-                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Analyse IA</h3>
-                    @if($item->verification_score)
-                        <span class="ml-auto text-2xl font-bold tabular-nums {{ $item->verification_score >= 75 ? 'text-emerald-600' : ($item->verification_score >= 50 ? 'text-amber-600' : 'text-red-600') }}">
-                            {{ number_format($item->verification_score, 0) }}/100
+                    <h3 class="text-sm font-semibold text-slate-900 dark:text-white">Analyse IA (modèle vision)</h3>
+                    @if($displayScore)
+                        <span class="ml-auto text-2xl font-bold tabular-nums {{ $displayScore >= 75 ? 'text-emerald-600' : ($displayScore >= 50 ? 'text-amber-600' : 'text-red-600') }}">
+                            {{ number_format($displayScore, 0) }}/100
                         </span>
                     @endif
+                    <form method="POST" action="{{ route('admin.items.ai-verify', $item) }}" class="{{ $displayScore ? '' : 'ml-auto' }}">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700">
+                            <i class="fas fa-rotate"></i> Relancer l'analyse IA
+                        </button>
+                    </form>
                 </div>
 
                 <div class="space-y-4 p-5 sm:p-6">
-                    @php
-                        $details = $item->verification_details;
-                        $imageScore = $details['images']['score'] ?? 0;
-                        $textScore = $details['text']['score'] ?? 0;
-                        $coherenceScore = $details['coherence']['score'] ?? 0;
-                    @endphp
+                    {{-- Verdict du modèle vision --}}
+                    @if($ai && isset($ai['score']))
+                        <div class="rounded-xl border border-primary-200 bg-primary-50 p-4 dark:border-slate-700 dark:bg-slate-800">
+                            <div class="mb-3 flex flex-wrap items-center gap-2">
+                                <h4 class="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                                    <i class="fas fa-wand-magic-sparkles text-primary-600 dark:text-primary-300"></i>
+                                    Verdict du modèle
+                                </h4>
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $recommendation === 'approve' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : ($recommendation === 'reject' ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300') }}">
+                                    {{ $recommendation === 'approve' ? 'À approuver' : ($recommendation === 'reject' ? 'À rejeter' : 'À examiner') }}
+                                </span>
+                                @if(!empty($ai['model']))
+                                    <span class="text-xs text-slate-700 dark:text-slate-200">
+                                        {{ $ai['model'] }}@if(!empty($ai['analyzed_at'])) · {{ \Illuminate\Support\Carbon::parse($ai['analyzed_at'])->format('d/m/Y H:i') }}@endif
+                                    </span>
+                                @endif
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ ($ai['real_product_photos'] ?? false) ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' }}">
+                                    {{ ($ai['real_product_photos'] ?? false) ? '✓' : '✗' }} Photos montrant le vrai produit
+                                </span>
+                                <span class="rounded-full px-2.5 py-0.5 text-xs font-medium {{ ($ai['photo_matches_description'] ?? false) ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' }}">
+                                    {{ ($ai['photo_matches_description'] ?? false) ? '✓' : '✗' }} Photos correspondant à la description
+                                </span>
+                            </div>
+
+                            @if(!empty($ai['issues']))
+                                <ul class="mt-3 space-y-1">
+                                    @foreach($ai['issues'] as $issue)
+                                        <li class="flex items-start text-sm text-slate-900 dark:text-white">
+                                            <span class="mr-2 text-red-500">⚠️</span>
+                                            <span>{{ $issue }}</span>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @else
+                                <p class="mt-3 text-sm text-emerald-600 dark:text-emerald-400">✓ Aucun problème détecté</p>
+                            @endif
+
+                            @if(!empty($ai['summary']))
+                                <p class="mt-3 text-sm text-slate-900 dark:text-white">{{ $ai['summary'] }}</p>
+                            @endif
+                        </div>
+                    @elseif($ai && !empty($ai['error']))
+                        <div class="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20">
+                            <h4 class="mb-1 flex items-center gap-2 font-semibold text-red-700 dark:text-red-300">
+                                <i class="fas fa-triangle-exclamation"></i> Analyse IA en échec
+                            </h4>
+                            <p class="text-sm text-red-700 dark:text-red-300">{{ $ai['error'] }}</p>
+                        </div>
+                    @else
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Aucune analyse IA disponible pour cet article : utilisez le bouton « Relancer l'analyse IA ».</p>
+                    @endif
+
+                    {{-- Analyse locale (heuristique) : contrôles techniques, indicative --}}
+                    <div class="border-t border-slate-100 pt-4 dark:border-slate-700">
+                        <h4 class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Analyse locale (heuristique, indicative)</h4>
+                        <p class="mb-3 text-xs text-slate-500 dark:text-slate-400">Contrôles techniques automatiques (netteté, résolution, longueur du texte). Ne remplace pas le verdict du modèle.</p>
+                        <div class="space-y-4">
 
                     <!-- Images Analysis -->
                     <div class="rounded-xl border border-sky-200 bg-sky-50 p-4 dark:border-sky-800 dark:bg-sky-900/20">
@@ -225,6 +294,8 @@
                         @else
                             <p class="mt-2 text-sm text-emerald-600 dark:text-emerald-400">✓ Aucun problème détecté</p>
                         @endif
+                    </div>
+                        </div>
                     </div>
 
                     <!-- Admin Rejection Reason -->

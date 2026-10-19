@@ -2,8 +2,11 @@
 
 namespace Tests\Unit;
 
+use App\Models\Category;
 use App\Models\Item;
+use App\Models\User;
 use App\Services\ItemAiVerificationService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -11,6 +14,7 @@ use Tests\TestCase;
 
 class ItemAiVerificationServiceTest extends TestCase
 {
+    use RefreshDatabase;
     /** Crée une vraie image JPEG sur le disque public factice et renvoie son chemin. */
     private function fakeImage(string $path = 'items/test.jpg'): string
     {
@@ -100,6 +104,36 @@ class ItemAiVerificationServiceTest extends TestCase
         $this->assertTrue($verdict['real_product_photos']);         // "true" -> true
         $this->assertFalse($verdict['photo_matches_description']);
         $this->assertSame([], $verdict['issues']);                  // non-tableau -> []
+    }
+
+    /** @test */
+    public function it_records_the_ai_score_and_keeps_it_when_analysis_fails()
+    {
+        $seller = User::factory()->create();
+        $category = Category::create(['name' => 'Cat', 'slug' => 'cat-' . uniqid()]);
+
+        $item = Item::create([
+            'user_id' => $seller->id,
+            'category_id' => $category->id,
+            'name' => 'Sac',
+            'description' => 'Sac en cuir, très bon état.',
+            'price' => 100,
+            'currency' => 'USD',
+            'quantity' => 1,
+            'status' => 'active',
+        ]);
+
+        $service = app(ItemAiVerificationService::class);
+
+        $service->store($item, ['score' => 12, 'recommendation' => 'reject', 'issues' => [], 'summary' => '']);
+        $item->refresh();
+
+        $this->assertEquals(12.0, (float) $item->verification_score);
+        $this->assertSame(12, $item->verification_details['ai']['score']);
+
+        // Un échec d'analyse ne doit pas écraser le score IA déjà connu.
+        $service->storeError($item, 'panne API');
+        $this->assertEquals(12.0, (float) $item->fresh()->verification_score);
     }
 
     /** @test */

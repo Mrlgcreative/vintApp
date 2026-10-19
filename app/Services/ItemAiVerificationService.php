@@ -90,7 +90,10 @@ class ItemAiVerificationService
     }
 
     /**
-     * Enregistre le verdict dans verification_details['ai'].
+     * Enregistre le verdict dans verification_details['ai'] et met à jour le score affiché.
+     *
+     * Le score du modèle vision remplace le score heuristique local : la fiche
+     * article et les listes admin reflètent donc l'analyse IA réelle.
      */
     public function store(Item $item, array $verdict): void
     {
@@ -98,6 +101,11 @@ class ItemAiVerificationService
         $details['ai'] = $verdict;
 
         $item->verification_details = $details;
+
+        if (isset($verdict['score'])) {
+            $item->verification_score = $verdict['score'];
+        }
+
         $item->save();
     }
 
