@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AssistantMessage;
 use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
@@ -62,6 +63,10 @@ class AiAssistantService
     /**
      * Envoie une conversation au modèle et renvoie la réponse + les actions proposées.
      *
+     * `$history` est facultatif : s'il est vide, on recharge la conversation
+     * depuis la base (mémoire de l'assistant). S'il est fourni, le client fait
+     * foi — il contient déjà l'historique, on ne le double pas.
+     *
      * @param  array<int, array{role: string, content: string}>  $history
      * @param  User|null  $user  Utilisateur connecté (contexte limité à ses propres données)
      * @return array{answer: string, actions: array<int, array{label: string, action: string}>}
@@ -72,6 +77,10 @@ class AiAssistantService
 
         if (empty($apiKey)) {
             throw new RuntimeException('Assistant IA non configuré (XKIRO_API_KEY manquant).');
+        }
+
+        if ($history === [] && $user) {
+            $history = $this->rememberedHistory($user);
         }
 
         $messages = [['role' => 'system', 'content' => $this->systemPrompt($user)]];
@@ -127,7 +136,43 @@ class AiAssistantService
             $answer = 'Voici ce que je vous propose :';
         }
 
+        $this->remember($user, $message, $answer);
+
         return ['answer' => $answer, 'actions' => $actions];
+    }
+
+    /**
+     * Derniers messages de l'utilisateur, du plus ancien au plus récent.
+     *
+     * @return array<int, array{role: string, content: string}>
+     */
+    private function rememberedHistory(User $user): array
+    {
+        return AssistantMessage::where('user_id', $user->id)
+            ->latest()
+            ->take(self::MAX_HISTORY)
+            ->get()
+            ->reverse()
+            ->map(fn (AssistantMessage $m) => ['role' => $m->role, 'content' => $m->content])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Enregistre l'échange pour la prochaine visite. Sans utilisateur connecté,
+     * il n'y a personne à qui se souvenir : on n'écrit rien.
+     */
+    private function remember(?User $user, string $message, string $answer): void
+    {
+        if (! $user) {
+            return;
+        }
+
+        AssistantMessage::create(['user_id' => $user->id, 'role' => 'user', 'content' => $message]);
+
+        if ($answer !== '') {
+            AssistantMessage::create(['user_id' => $user->id, 'role' => 'assistant', 'content' => $answer]);
+        }
     }
 
     /**
