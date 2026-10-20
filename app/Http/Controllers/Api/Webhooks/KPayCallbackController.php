@@ -169,8 +169,14 @@ class KPayCallbackController extends Controller
     protected function processDeposit(string $paymentId, string $status, array $payload, PaymentCallback $callback): void
     {
         $transaction = Transaction::where('provider', 'kpay')
-            ->where(fn ($q) => $q->where('transaction_ref', $paymentId)
-                ->orWhere('metadata', 'like', '%' . $payload['externalId'] . '%'))
+            ->where(function ($q) use ($paymentId, $payload) {
+                $q->where('transaction_ref', $paymentId);
+                // Fallback par externalId : absent de certains évènements
+                // (payment.processing/failed), ne pas l'accéder sans garde.
+                if (!empty($payload['externalId'])) {
+                    $q->orWhere('metadata', 'like', '%' . $payload['externalId'] . '%');
+                }
+            })
             ->first();
 
         if (!$transaction) {

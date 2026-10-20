@@ -1994,29 +1994,9 @@ class PaymentController extends Controller
             abort(404);
         }
 
-        // Endpoint AJAX de polling
+        // Endpoint AJAX de polling. Le statut réel vient du webhook, pas d'un
+        // appel K-PAY : on se contente de relire la transaction.
         if ($request->wantsJson()) {
-            $kpay = new \App\Services\KPay();
-            $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
-            // K-PAY accepte id ou reference selon les cas : on tente les deux.
-            $alt = $meta['kpay_reference'] ?? null;
-            if ($alt === $transaction->transaction_ref) {
-                $alt = $meta['kpay_payment_id'] ?? null;
-            }
-            $result = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
-
-            $current = $result['status'] ?? null;
-            if ($result['success'] && $current && !in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
-                $newStatus = $kpay->mapStatus($current);
-                if ($newStatus !== $transaction->status) {
-                    $transaction->update(['status' => $newStatus]);
-                }
-                if ($newStatus === 'completed') {
-                    clear_cart();
-                    session()->forget('kpay_checkout');
-                }
-            }
-
             return response()->json([
                 'success' => true,
                 'status' => $transaction->status,
@@ -2073,20 +2053,9 @@ class PaymentController extends Controller
             ]);
         }
 
-        // Confirmer le statut final côté K-PAY (source secondaire, le webhook
-        // reste l'autorité) avant de finaliser la commande.
-        $finalStatus = $transaction->status;
-        $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
-        $alt = $meta['kpay_reference'] ?? null;
-        if ($alt === $transaction->transaction_ref) {
-            $alt = $meta['kpay_payment_id'] ?? null;
-        }
-        $check = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
-        if ($check['success'] && isset($check['data']['status'])) {
-            $finalStatus = $kpay->mapStatus($check['data']['status']);
-        } else {
-            $finalStatus = $kpay->mapStatus($status);
-        }
+        // Le retour gateway est signé (status|reference|externalId|ts) : c'est
+        // lui la source fiable ici ; le webhook reste l'autorité finale.
+        $finalStatus = $kpay->mapStatus($status);
 
         if ($finalStatus !== $transaction->status) {
             $transaction->update(['status' => $finalStatus]);

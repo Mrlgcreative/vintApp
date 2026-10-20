@@ -15,8 +15,9 @@ use Illuminate\Support\Str;
  * deux clés : kpay_test_* (sandbox) et kpay_live_* (production).
  *
  * Authentification : headers X-API-Key + X-Secret-Key.
- * API asynchrone : l'initiation répond PENDING puis le statut final est reçu
- * via webhook (source de vérité) ou en interrogeant GET /payments/:id.
+ * API asynchrone : l'initiation répond PENDING puis le statut final n'est
+ * reçu que par webhook (« delivered through the callback only »). Aucun
+ * endpoint de consultation de statut n'existe côté K-PAY.
  *
  * Documentation : https://kpay.site/documentation
  */
@@ -185,24 +186,23 @@ class KPay
     }
 
     /**
-     * Vérifie le statut d'un paiement. GET /api/v1/payments/{id}
+     * Statut d'un paiement.
      *
-     * K-PAY accepte l'`id` (UUID) ou la `reference` (KPAY-...) selon les cas.
-     * On tente l'identifiant fourni puis, si K-PAY répond 404, l'alternatif.
-     * Sans ce repli, un identifiant refusé provoque un 404 rejoué toutes les
-     * 3 s par le polling de la page de statut.
-     *
-     * @param  string|null  $fallback  Identifiant alternatif (id ou reference).
+     * K-PAY n'expose AUCUN endpoint de consultation de statut : son API se
+     * limite à init/token/me/balance/withdraw. Doc : « The final status is
+     * delivered through the callback only ». Un ancien GET /api/v1/payments/{id}
+     * renvoyait donc 404 en boucle (le polling de la page de statut rejoue
+     * toutes les 3 s). Le statut réel n'arrive que par webhook, qui met à jour
+     * la transaction ; on ne fait ici aucun appel réseau.
      */
     public function checkPaymentStatus(string $id, ?string $fallback = null): array
     {
-        $result = $this->request('GET', '/api/v1/payments/' . rawurlencode($id));
-
-        if ($fallback && $fallback !== $id && !$result['success'] && ($result['statusCode'] ?? null) === 404) {
-            return $this->request('GET', '/api/v1/payments/' . rawurlencode($fallback));
-        }
-
-        return $result;
+        return [
+            'success' => false,
+            'status' => 'NOT_FOUND',
+            'data' => [],
+            'message' => 'K-PAY ne fournit pas le statut par API ; il arrive par webhook.',
+        ];
     }
 
     /**
