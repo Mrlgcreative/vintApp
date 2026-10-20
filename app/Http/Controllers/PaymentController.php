@@ -1942,8 +1942,16 @@ class PaymentController extends Controller
             }
 
             if ($result['success'] && in_array($result['status'], ['PENDING', 'PROCESSING'], true)) {
+                // transaction_ref = id K-PAY ; on mémorise aussi id/reference pour
+                // pouvoir retenter le statut si K-PAY refuse le premier.
+                $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
+                $meta['kpay_payment_id'] = $result['payment_id'];
+                $meta['kpay_reference'] = $result['reference'];
+                $meta['kpay_provider_reference'] = $result['provider_reference'];
+
                 $transaction->update([
                     'transaction_ref' => $result['payment_id'] ?? $result['reference'] ?? $externalId,
+                    'metadata' => json_encode($meta),
                     'status' => 'pending',
                 ]);
 
@@ -1989,7 +1997,13 @@ class PaymentController extends Controller
         // Endpoint AJAX de polling
         if ($request->wantsJson()) {
             $kpay = new \App\Services\KPay();
-            $result = $kpay->checkPaymentStatus($transaction->transaction_ref);
+            $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
+            // K-PAY accepte id ou reference selon les cas : on tente les deux.
+            $alt = $meta['kpay_reference'] ?? null;
+            if ($alt === $transaction->transaction_ref) {
+                $alt = $meta['kpay_payment_id'] ?? null;
+            }
+            $result = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
 
             $current = $result['status'] ?? null;
             if ($result['success'] && $current && !in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
@@ -2062,7 +2076,12 @@ class PaymentController extends Controller
         // Confirmer le statut final côté K-PAY (source secondaire, le webhook
         // reste l'autorité) avant de finaliser la commande.
         $finalStatus = $transaction->status;
-        $check = $kpay->checkPaymentStatus($transaction->transaction_ref);
+        $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
+        $alt = $meta['kpay_reference'] ?? null;
+        if ($alt === $transaction->transaction_ref) {
+            $alt = $meta['kpay_payment_id'] ?? null;
+        }
+        $check = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
         if ($check['success'] && isset($check['data']['status'])) {
             $finalStatus = $kpay->mapStatus($check['data']['status']);
         } else {
