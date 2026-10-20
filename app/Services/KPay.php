@@ -186,9 +186,22 @@ class KPay
 
     /**
      * Vérifie le statut d'un paiement. GET /api/v1/payments/{id}
+     *
+     * `{id}` doit être le paymentId K-PAY (UUID), pas notre externalId.
+     * Si l'initiation a échoué, transaction_ref est resté sur l'externalId :
+     * inutile d'appeler K-PAY, ça ne peut que répondre 404.
      */
     public function checkPaymentStatus(string $id): array
     {
+        if (str_starts_with($id, 'KPAY-')) {
+            return [
+                'success' => false,
+                'status' => 'not_found',
+                'data' => [],
+                'message' => 'Identifiant K-PAY inconnu (initiation échouée) : statut indisponible.',
+            ];
+        }
+
         return $this->request('GET', '/api/v1/payments/' . rawurlencode($id));
     }
 

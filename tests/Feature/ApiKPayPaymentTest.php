@@ -207,6 +207,39 @@ class ApiKPayPaymentTest extends TestCase
         ]);
     }
 
+    public function test_check_kpay_status_does_not_call_kpay_with_our_external_id(): void
+    {
+        // Initiation échouée : transaction_ref est resté sur l'externalId
+        // (KPAY-...). K-PAY ne connaît pas cet id -> ne pas l'appeler (404 en boucle).
+        Http::fake();
+
+        $buyer = User::factory()->create();
+
+        $transaction = Transaction::create([
+            'user_id' => $buyer->id,
+            'buyer_id' => $buyer->id,
+            'transaction_id' => 'KPAY-EXTERNAL-1',
+            'transaction_ref' => 'KPAY-EXTERNAL-1',
+            'amount' => 100,
+            'currency' => 'USD',
+            'provider' => 'kpay',
+            'status' => 'pending',
+            'type' => Transaction::TYPE_PURCHASE,
+            'payment_method' => 'kpay',
+            'purpose' => 'Commande test',
+            'metadata' => json_encode(['cart' => []]),
+        ]);
+
+        $this->actingAsBuyer($buyer);
+
+        $this->getJson(route('api.v1.payments.kpay.status', $transaction))
+            ->assertOk()
+            ->assertJsonPath('data.is_final', false);
+
+        Http::assertNothingSent();
+        $this->assertSame('pending', $transaction->fresh()->status);
+    }
+
     public function test_predict_provider_requires_phone(): void
     {
         $buyer = User::factory()->create();
