@@ -207,19 +207,58 @@ class ApiKPayPaymentTest extends TestCase
         ]);
     }
 
-    public function test_check_kpay_status_does_not_call_kpay_with_our_external_id(): void
+    public function test_check_payment_status_falls_back_to_reference_on_404(): void
     {
-        // Initiation échouée : transaction_ref est resté sur l'externalId
-        // (KPAY-...). K-PAY ne connaît pas cet id -> ne pas l'appeler (404 en boucle).
-        Http::fake();
+        Http::fake([
+            '*/api/v1/payments/pay_wrong_id' => Http::response([
+                'statusCode' => 404,
+                'code' => 'RESOURCE_NOT_FOUND',
+                'message' => 'Not Found',
+            ], 404),
+            '*/api/v1/payments/KPAY-20260514-ABC123' => Http::response([
+                'status' => 'COMPLETED',
+                'id' => 'pay_wrong_id',
+            ], 200),
+        ]);
+
+        $service = new \App\Services\KPay([
+            'api_key' => 'kpay_live_x',
+            'secret_key' => str_repeat('a', 64),
+            'environment' => 'production',
+            'base_url' => 'https://admin.kpay.site',
+        ]);
+
+        $result = $service->checkPaymentStatus('pay_wrong_id', 'KPAY-20260514-ABC123');
+
+        $this->assertTrue($result['success']);
+        $this->assertSame('COMPLETED', $result['status']);
+
+        Http::assertSent(fn ($request) => str_contains($request->url(), 'KPAY-20260514-ABC123'));
+    }
+
+    public function test_check_kpay_status_uses_reference_fallback_from_metadata(): void
+    {
+        // transaction_ref = id K-PAY (UUID) mais K-PAY refuse cet id et
+        // n'accepte que la reference stockée en metadata.
+        Http::fake([
+            '*/api/v1/payments/54227f2d-ea45-4db2-9f8f-ebfa65002ccf' => Http::response([
+                'statusCode' => 404,
+                'code' => 'RESOURCE_NOT_FOUND',
+                'message' => 'Not Found',
+            ], 404),
+            '*/api/v1/payments/KPAY-MVH80ZV9-DE1620BE1CD5' => Http::response([
+                'status' => 'COMPLETED',
+                'id' => '54227f2d-ea45-4db2-9f8f-ebfa65002ccf',
+            ], 200),
+        ]);
 
         $buyer = User::factory()->create();
 
         $transaction = Transaction::create([
             'user_id' => $buyer->id,
             'buyer_id' => $buyer->id,
-            'transaction_id' => 'KPAY-EXTERNAL-1',
-            'transaction_ref' => 'KPAY-EXTERNAL-1',
+            'transaction_id' => 'KPAY-MVH80ZV9-DE1620BE1CD5',
+            'transaction_ref' => '54227f2d-ea45-4db2-9f8f-ebfa65002ccf',
             'amount' => 100,
             'currency' => 'USD',
             'provider' => 'kpay',
@@ -227,17 +266,20 @@ class ApiKPayPaymentTest extends TestCase
             'type' => Transaction::TYPE_PURCHASE,
             'payment_method' => 'kpay',
             'purpose' => 'Commande test',
-            'metadata' => json_encode(['cart' => []]),
+            'metadata' => json_encode([
+                'cart' => [],
+                'kpay_payment_id' => '54227f2d-ea45-4db2-9f8f-ebfa65002ccf',
+                'kpay_reference' => 'KPAY-MVH80ZV9-DE1620BE1CD5',
+            ]),
         ]);
 
         $this->actingAsBuyer($buyer);
 
         $this->getJson(route('api.v1.payments.kpay.status', $transaction))
             ->assertOk()
-            ->assertJsonPath('data.is_final', false);
+            ->assertJsonPath('data.status', 'completed');
 
-        Http::assertNothingSent();
-        $this->assertSame('pending', $transaction->fresh()->status);
+        $this->assertSame('completed', $transaction->fresh()->status);
     }
 
     public function test_predict_provider_requires_phone(): void

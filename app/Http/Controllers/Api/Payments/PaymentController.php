@@ -595,7 +595,12 @@ class PaymentController extends ApiController
             }
 
             $kpay = new KPay;
-            $result = $kpay->checkPaymentStatus($transaction->transaction_ref);
+            $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
+            $alt = $meta['kpay_reference'] ?? null;
+            if ($alt === $transaction->transaction_ref) {
+                $alt = $meta['kpay_payment_id'] ?? null;
+            }
+            $result = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
 
             $current = $result['status'] ?? null;
             if ($result['success'] && $current && ! in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
