@@ -594,29 +594,8 @@ class PaymentController extends ApiController
                 ], 'Statut du paiement K-PAY');
             }
 
-            $kpay = new KPay;
-            $meta = json_decode($transaction->metadata ?? '{}', true) ?: [];
-            $alt = $meta['kpay_reference'] ?? null;
-            if ($alt === $transaction->transaction_ref) {
-                $alt = $meta['kpay_payment_id'] ?? null;
-            }
-            $result = $kpay->checkPaymentStatus($transaction->transaction_ref, $alt);
-
-            $current = $result['status'] ?? null;
-            if ($result['success'] && $current && ! in_array(strtoupper($current), ['FOUND', 'NOT_FOUND'], true)) {
-                $newStatus = $kpay->mapStatus($current);
-                $previousStatus = $transaction->status;
-
-                if ($newStatus !== $previousStatus) {
-                    $transaction->update(['status' => $newStatus]);
-                }
-
-                if ($newStatus === 'completed' && $previousStatus !== 'completed') {
-                    create_orders_from_transaction($transaction->fresh());
-                    clear_cart();
-                }
-            }
-
+            // K-PAY n'a pas d'endpoint de statut : la transaction n'est mise à
+            // jour que par webhook. On relit simplement son état.
             return $this->successResponse([
                 'status' => $transaction->fresh()->status,
                 'transaction_id' => $transaction->id,
