@@ -82,6 +82,10 @@ Schedule::call(function () {
         ->where('last_activity', '<', now()->subDay()->timestamp)
         ->delete();
 
+    // Conversations de l'assistant IA : données personnelles, purge à 7 jours.
+    \App\Models\AssistantMessage::where('created_at', '<', now()->subDays(\App\Models\AssistantMessage::RETENTION_DAYS))
+        ->delete();
+
     \Illuminate\Support\Facades\DB::table('jobs')
         ->where('created_at', '<', now()->subDays(7))
         ->delete();
