@@ -66,6 +66,31 @@ class AiAssistantServiceTest extends TestCase
     }
 
     /** @test */
+    public function it_strips_markdown_markers_from_the_answer()
+    {
+        $user = User::factory()->create();
+
+        $answer = "### **Solde actuel**\n- **0,00 USD**\n- **500,00 CDF**\n\n"
+            . "### **Remarques** :\n- **En attente** : bloqués en statut *pending*.";
+
+        Http::fake([
+            '*/chat/completions' => Http::response([
+                'choices' => [['message' => ['content' => $answer, 'tool_calls' => []]]],
+            ]),
+        ]);
+
+        $result = app(AiAssistantService::class)->ask('mon solde ?', [], $user);
+
+        // Aucune surface ne rend le Markdown (widget web en textContent,
+        // mobile en toPlainText) : les marqueurs doivent être retirés ici.
+        $this->assertStringNotContainsString('**', $result['answer']);
+        $this->assertStringNotContainsString('###', $result['answer']);
+        $this->assertStringContainsString('Solde actuel', $result['answer']);
+        $this->assertStringContainsString('• 0,00 USD', $result['answer']);
+        $this->assertStringContainsString('statut pending', $result['answer']);
+    }
+
+    /** @test */
     public function it_reports_no_notifications_when_the_user_has_none()
     {
         $user = User::factory()->create();

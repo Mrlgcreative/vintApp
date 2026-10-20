@@ -117,7 +117,10 @@ class AiAssistantService
         }
 
         $modelMessage = $response->json('choices.0.message') ?? [];
-        $answer = trim((string) ($modelMessage['content'] ?? ''));
+        // Le modèle répond en Markdown mais aucune surface ne le rend (le
+        // widget web utilise textContent, le mobile toPlainText) : on retire
+        // les marqueurs ici, pour tous les clients d'un coup.
+        $answer = $this->toPlainText((string) ($modelMessage['content'] ?? ''));
         $actions = $this->extractActions($modelMessage['tool_calls'] ?? []);
 
         if ($answer === '' && $actions !== []) {
@@ -182,6 +185,26 @@ class AiAssistantService
         }
 
         return array_slice($actions, 0, 5);
+    }
+
+    /**
+     * Retire les marqueurs Markdown pour l'affichage en texte brut.
+     *
+     * Miroir de mobile/src/utils/markdown.ts : garder les deux en phase.
+     */
+    private function toPlainText(string $input): string
+    {
+        $text = str_replace(["\r\n", "\r"], "\n", $input);
+        $text = preg_replace('/^#{1,6}\s*/m', '', $text);              // titres
+        $text = preg_replace('/^\s*([-*_]){3,}\s*$/m', '', $text);     // séparateurs
+        $text = preg_replace('/\*\*(.+?)\*\*/s', '$1', $text);         // **gras**
+        $text = preg_replace('/__(.+?)__/s', '$1', $text);             // __gras__
+        $text = preg_replace('/(^|[^*])\*(?!\*)([^*\n]+?)\*(?!\*)/', '$1$2', $text); // *italique*
+        $text = preg_replace('/`([^`]+)`/', '$1', $text);              // `code`
+        $text = preg_replace('/^\s*[-*+]\s+/m', '• ', $text);          // listes
+        $text = preg_replace('/\n{3,}/', "\n\n", $text);
+
+        return trim($text);
     }
 
     /**
