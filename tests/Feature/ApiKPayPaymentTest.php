@@ -183,12 +183,21 @@ class ApiKPayPaymentTest extends TestCase
             ]),
         ]);
 
+        // Payload réel K-PAY (copié d'une production) : pas de champ
+        // `currency`. L'insertion du callback doit quand même réussir.
         $payload = json_encode([
             'event' => 'payment.completed',
             'paymentId' => 'kpay_payment_1',
+            'reference' => 'KPAY-MVH8YSB0-59E5B2C168C9',
             'status' => 'COMPLETED',
-            'amount' => 100,
-            'currency' => 'USD',
+            'amount' => 550,
+            'phoneNumber' => '243890791919',
+            'externalId' => 'KPAY-EOBREMFIML-1792534847',
+            'metadata' => [
+                'user_id' => $buyer->id,
+                'transaction_id' => 'KPAY-EOBREMFIML-1792534847',
+            ],
+            'timestamp' => '2026-10-20T22:20:59.632Z',
         ]);
 
         // Le webhook est la SEULE source du statut final : signature HMAC-SHA256
@@ -201,6 +210,13 @@ class ApiKPayPaymentTest extends TestCase
             'HTTP_X_KPAY_SIGNATURE' => $signature,
             'HTTP_X_KPAY_EVENT' => 'payment.completed',
         ], $payload)->assertOk();
+
+        // Le callback est enregistré malgré l'absence de `currency`.
+        $this->assertDatabaseHas('payment_callbacks', [
+            'provider' => 'kpay',
+            'external_transaction_id' => 'kpay_payment_1',
+            'currency' => null,
+        ]);
 
         $this->assertDatabaseHas('transactions', [
             'id' => $transaction->id,
@@ -220,6 +236,65 @@ class ApiKPayPaymentTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.status', 'completed')
             ->assertJsonPath('data.is_final', true);
+    }
+
+    public function test_kpay_webhook_reconciles_by_external_id_when_ref_differs(): void
+    {
+        config()->set('services.kpay.webhook_secret', 'whsec_test_123');
+
+        $buyer = User::factory()->create();
+        $item = $this->item(User::factory()->create());
+
+        // transaction_ref reste sur notre externalId : le webhook doit
+        // rapprocher par externalId présent dans les metadata.
+        $externalId = 'KPAY-EOBREMFIML-1792534847';
+
+        $transaction = Transaction::create([
+            'user_id' => $buyer->id,
+            'buyer_id' => $buyer->id,
+            'transaction_id' => $externalId,
+            'transaction_ref' => $externalId,
+            'amount' => 550,
+            'currency' => 'USD',
+            'provider' => 'kpay',
+            'status' => 'pending',
+            'type' => Transaction::TYPE_PURCHASE,
+            'payment_method' => 'kpay',
+            'purpose' => 'Commande test',
+            'metadata' => json_encode([
+                'external_id' => $externalId,
+                'cart' => [
+                    $item->id => ['id' => $item->id, 'name' => 'Article', 'price' => 550.0, 'currency' => 'USD', 'quantity' => 1],
+                ],
+            ]),
+        ]);
+
+        $payload = json_encode([
+            'event' => 'payment.completed',
+            'paymentId' => '56ac7bbc-f46f-4ab5-bca1-598fb2d3fa5f',
+            'reference' => 'KPAY-MVH8YSB0-59E5B2C168C9',
+            'status' => 'COMPLETED',
+            'amount' => 550,
+            'phoneNumber' => '243890791919',
+            'externalId' => $externalId,
+        ]);
+
+        $signature = hash_hmac('sha256', $payload, 'whsec_test_123');
+
+        $this->call('POST', '/api/v1/kpay/callback/deposit', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_X_KPAY_SIGNATURE' => $signature,
+            'HTTP_X_KPAY_EVENT' => 'payment.completed',
+        ], $payload)->assertOk();
+
+        $this->assertSame('completed', $transaction->fresh()->status);
+
+        $this->assertDatabaseHas('orders', [
+            'buyer_id' => $buyer->id,
+            'item_id' => $item->id,
+            'status' => 'confirmed',
+        ]);
     }
 
     public function test_kpay_webhook_rejects_bad_signature(): void

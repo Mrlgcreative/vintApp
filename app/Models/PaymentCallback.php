@@ -52,10 +52,26 @@ class PaymentCallback extends Model
      */
     public function markAsProcessed(): void
     {
+        if (!$this->exists) {
+            return;
+        }
+
         $this->update([
             'is_processed' => true,
             'processed_at' => now(),
         ]);
+    }
+
+    /**
+     * Rattacher le callback à la transaction rapprochée.
+     */
+    public function linkTransaction(int $transactionId): void
+    {
+        if (!$this->exists) {
+            return;
+        }
+
+        $this->update(['transaction_id' => $transactionId]);
     }
 
     /**
@@ -79,6 +95,10 @@ class PaymentCallback extends Model
      */
     public function recordError(string $error): void
     {
+        if (!$this->exists) {
+            return;
+        }
+
         $this->update(['processing_error' => $error]);
     }
 

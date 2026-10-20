@@ -116,22 +116,40 @@ class KPayCallbackController extends Controller
             return $this->ack();
         }
 
-        // 3. Enregistrer le callback brut pour audit
-        $callback = PaymentCallback::create([
-            'provider' => 'kpay',
-            'callback_type' => 'kpay_' . $event,
-            'external_transaction_id' => $paymentId,
-            'status' => $status,
-            'amount' => $payload['amount'] ?? 0,
-            'currency' => $payload['currency'] ?? null,
-            'phone_number' => $payload['phoneNumber'] ?? null,
-            'raw_payload' => json_encode($payload),
-            'parsed_data' => $payload,
-            'signature' => $request->header('X-KPAY-Signature'),
-            'ip_address' => $request->ip(),
-            'is_verified' => true,
-            'is_processed' => false,
-        ]);
+        // 3. Enregistrer le callback brut pour audit.
+        // L'audit ne doit JAMAIS faire échouer le traitement du paiement :
+        // sinon une colonne NOT NULL absente du payload K-PAY (déjà arrivé avec
+        // phone_number puis currency) perd l'évènement en silence.
+        try {
+            $callback = PaymentCallback::create([
+                'provider' => 'kpay',
+                'callback_type' => 'kpay_' . $event,
+                'external_transaction_id' => $paymentId,
+                'status' => $status,
+                'amount' => $payload['amount'] ?? 0,
+                'currency' => $payload['currency'] ?? null,
+                'phone_number' => $payload['phoneNumber'] ?? null,
+                'raw_payload' => json_encode($payload),
+                'parsed_data' => $payload,
+                'signature' => $request->header('X-KPAY-Signature'),
+                'ip_address' => $request->ip(),
+                'is_verified' => true,
+                'is_processed' => false,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('K-PAY webhook: enregistrement audit impossible', [
+                'event' => $event,
+                'payment_id' => $paymentId,
+                'error' => $e->getMessage(),
+            ]);
+
+            $callback = new PaymentCallback([
+                'provider' => 'kpay',
+                'callback_type' => 'kpay_' . $event,
+                'external_transaction_id' => $paymentId,
+                'status' => $status,
+            ]);
+        }
 
         // 4. Traiter selon l'évènement
         try {
@@ -188,7 +206,7 @@ class KPayCallbackController extends Controller
             return;
         }
 
-        $callback->update(['transaction_id' => $transaction->id]);
+        $callback->linkTransaction($transaction->id);
 
         // Ne pas re-finaliser une transaction déjà à terme.
         if (in_array($transaction->status, [Transaction::STATUS_COMPLETED, Transaction::STATUS_FAILED], true)) {
@@ -272,7 +290,7 @@ class KPayCallbackController extends Controller
             ->first();
 
         if ($transaction) {
-            $callback->update(['transaction_id' => $transaction->id]);
+            $callback->linkTransaction($transaction->id);
 
             if ($status === 'completed') {
                 $transaction->update(['status' => Transaction::STATUS_REFUNDED]);
