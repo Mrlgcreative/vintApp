@@ -31,6 +31,7 @@ class CartController extends Controller
         foreach ($cartRows as $row) {
             $item = [
                 'id' => $row->item_id,
+                'public_id' => Item::where('id', $row->item_id)->value('public_id'),
                 'name' => $row->item_name,
                 'price' => (float) $row->price,
                 'currency' => $row->currency,

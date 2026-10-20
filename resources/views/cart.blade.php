@@ -120,7 +120,7 @@
                                         </div>
 
                                         {{-- Supprimer --}}
-                                        <form method="POST" action="{{ route('cart.remove', $item['id']) }}" class="cart-remove-form">
+                                        <form method="POST" action="{{ route('cart.remove', $item['public_id']) }}" class="cart-remove-form">
                                             @csrf
                                             <button type="submit" class="w-8 h-8 flex items-center justify-center text-gray-300 hover:text-red-500 dark:text-gray-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors" title="Supprimer">
                                                 <i class="fas fa-trash-alt text-sm"></i>
@@ -142,7 +142,7 @@
                                         </div>
 
                                         {{-- Contrôle quantité --}}
-                                        <form method="POST" action="{{ route('cart.update', $item['id']) }}" class="flex items-center gap-2">
+                                        <form method="POST" action="{{ route('cart.update', $item['public_id']) }}" class="flex items-center gap-2">
                                             @csrf
                                             <div class="flex items-center bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
                                                 <button type="button" onclick="updateQty(this, -1)" class="w-8 h-8 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
