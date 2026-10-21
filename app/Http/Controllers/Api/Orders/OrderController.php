@@ -112,7 +112,7 @@ class OrderController extends ApiController
      */
     public function show(Request $request, $id): JsonResponse
     {
-        $order = Order::with(['item', 'buyer', 'deliveryAddress'])->findByPublicId($id)->first() ?? abort(404, 'Commande introuvable.');
+        $order = Order::with(['item', 'buyer', 'seller', 'deliveryAddress'])->findByPublicId($id)->first() ?? abort(404, 'Commande introuvable.');
 
         $userId = $request->user()?->id ?? Auth::id();
 
