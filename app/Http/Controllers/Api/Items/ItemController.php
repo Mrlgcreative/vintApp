@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\Items;
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Requests\StoreItemRequest;
 use App\Http\Requests\UpdateItemRequest;
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Item;
 use App\Services\ItemService;
 use Illuminate\Http\JsonResponse;
@@ -29,13 +31,13 @@ class ItemController extends ApiController
             ->where('status', 'active')
             ->visible();
 
-        // Filtres
+        // Filtres (l'app mobile envoie les id numériques, le web les public_id)
         if ($request->has('category_id')) {
-            $query->where('category_id', $request->category_id);
+            $query->where('category_id', Category::resolveId($request->category_id));
         }
 
         if ($request->has('brand_id')) {
-            $query->where('brand_id', $request->brand_id);
+            $query->where('brand_id', Brand::resolveId($request->brand_id));
         }
 
         if ($request->has('min_price')) {
@@ -146,7 +148,7 @@ class ItemController extends ApiController
             }
 
             if ($category) {
-                $items->where('category_id', $category);
+                $items->where('category_id', Category::resolveId($category));
             }
 
             if ($minPrice) {

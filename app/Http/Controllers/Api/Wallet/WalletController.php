@@ -77,6 +77,9 @@ class WalletController extends ApiController
      */
     public function addFunds(Request $request): JsonResponse
     {
+        // L'app mobile envoie l'id numérique du wallet, le web son public_id.
+        $request->merge(['wallet_id' => Wallet::resolveId($request->wallet_id)]);
+
         try {
             $validator = Validator::make($request->all(), [
                 'wallet_id' => 'required|exists:wallets,id',
@@ -88,7 +91,11 @@ class WalletController extends ApiController
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $wallet = Wallet::findOrFail($request->wallet_id);
+            $wallet = Wallet::resolveByPublicId($request->wallet_id);
+
+            if (! $wallet) {
+                return $this->errorResponse('Portefeuille introuvable', 404);
+            }
 
             if ($wallet->user_id !== $request->user()->id) {
                 return $this->errorResponse('Accès non autorisé', 403);
@@ -143,6 +150,9 @@ class WalletController extends ApiController
      */
     public function withdraw(Request $request): JsonResponse
     {
+        // L'app mobile envoie l'id numérique du wallet, le web son public_id.
+        $request->merge(['wallet_id' => Wallet::resolveId($request->wallet_id)]);
+
         try {
             $validator = Validator::make($request->all(), [
                 'wallet_id' => 'required|exists:wallets,id',
@@ -155,7 +165,11 @@ class WalletController extends ApiController
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $wallet = Wallet::findOrFail($request->wallet_id);
+            $wallet = Wallet::resolveByPublicId($request->wallet_id);
+
+            if (! $wallet) {
+                return $this->errorResponse('Portefeuille introuvable', 404);
+            }
 
             if ($wallet->user_id !== $request->user()->id) {
                 return $this->errorResponse('Accès non autorisé', 403);
@@ -207,6 +221,12 @@ class WalletController extends ApiController
      */
     public function convert(Request $request): JsonResponse
     {
+        // L'app mobile envoie les id numériques des wallets, le web les public_id.
+        $request->merge([
+            'from_wallet_id' => Wallet::resolveId($request->from_wallet_id),
+            'to_wallet_id' => Wallet::resolveId($request->to_wallet_id),
+        ]);
+
         try {
             $validator = Validator::make($request->all(), [
                 'from_wallet_id' => 'required|exists:wallets,id',
@@ -218,8 +238,12 @@ class WalletController extends ApiController
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $fromWallet = Wallet::findOrFail($request->from_wallet_id);
-            $toWallet = Wallet::findOrFail($request->to_wallet_id);
+            $fromWallet = Wallet::resolveByPublicId($request->from_wallet_id);
+            $toWallet = Wallet::resolveByPublicId($request->to_wallet_id);
+
+            if (! $fromWallet || ! $toWallet) {
+                return $this->errorResponse('Portefeuille introuvable', 404);
+            }
 
             $result = $this->walletService->convertCurrency($fromWallet, $toWallet, (float) $request->amount, $request->user()->id);
 

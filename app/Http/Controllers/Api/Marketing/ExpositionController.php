@@ -42,7 +42,7 @@ class ExpositionController extends ApiController
     {
         try {
             $exposition = Exposition::with(['user'])
-                ->where('public_id', $id)
+                ->findByPublicId($id)
                 ->firstOrFail();
 
             if ($exposition->status !== 'active') {
@@ -72,7 +72,7 @@ class ExpositionController extends ApiController
     public function incrementViews($id): JsonResponse
     {
         try {
-            $exposition = Exposition::where('public_id', $id)->firstOrFail();
+            $exposition = Exposition::findByPublicId($id)->firstOrFail();
             $exposition->increment('views');
 
             return $this->successResponse(['views' => $exposition->fresh()->views], 'Compteur de vues mis à jour');
@@ -113,6 +113,12 @@ class ExpositionController extends ApiController
         }
 
         try {
+            // L'app mobile envoie les id numériques, le web les public_id :
+            // on normalise vers les clés primaires avant de valider.
+            $request->merge([
+                'items' => Item::resolveIds($request->input('items', [])),
+            ]);
+
             $data = $request->validate([
                 'title' => ['required', 'string', 'max:255'],
                 'description' => ['nullable', 'string', 'max:2000'],
@@ -146,11 +152,17 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::where('public_id', $id)->firstOrFail();
+            $exposition = Exposition::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');
             }
+
+            // L'app mobile envoie les id numériques, le web les public_id :
+            // on normalise vers les clés primaires avant de valider.
+            $request->merge([
+                'items' => Item::resolveIds($request->input('items', [])),
+            ]);
 
             $data = $request->validate([
                 'title' => ['required', 'string', 'max:255'],
@@ -190,7 +202,7 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::where('public_id', $id)->firstOrFail();
+            $exposition = Exposition::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');
@@ -222,7 +234,7 @@ class ExpositionController extends ApiController
         }
 
         try {
-            $exposition = Exposition::where('public_id', $id)->firstOrFail();
+            $exposition = Exposition::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $exposition)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette exposition');

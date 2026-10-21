@@ -27,7 +27,7 @@ class AuthenticityController extends ApiController
     public function canVerify($itemId): JsonResponse
     {
         try {
-            $item = Item::findOrFail($itemId);
+            $item = Item::findByPublicId($itemId)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -59,7 +59,7 @@ class AuthenticityController extends ApiController
     public function submit(Request $request, $itemId): JsonResponse
     {
         try {
-            $item = Item::findOrFail($itemId);
+            $item = Item::findByPublicId($itemId)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -143,7 +143,7 @@ class AuthenticityController extends ApiController
     public function confirmPayment($checkId): JsonResponse
     {
         try {
-            $check = ProductAuthenticityCheck::findOrFail($checkId);
+            $check = ProductAuthenticityCheck::findByPublicId($checkId)->firstOrFail();
 
             if ($check->user_id !== Auth::id()) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -180,7 +180,7 @@ class AuthenticityController extends ApiController
     public function status($itemId): JsonResponse
     {
         try {
-            $item = Item::findOrFail($itemId);
+            $item = Item::findByPublicId($itemId)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -270,7 +270,7 @@ class AuthenticityController extends ApiController
     public function updateStatus(Request $request, $checkId): JsonResponse
     {
         try {
-            $check = ProductAuthenticityCheck::findOrFail($checkId);
+            $check = ProductAuthenticityCheck::findByPublicId($checkId)->firstOrFail();
 
             // Défense en profondeur : seuls les experts certifiés peuvent certifier
             if (!Auth::user() || !Auth::user()->isExpert()) {

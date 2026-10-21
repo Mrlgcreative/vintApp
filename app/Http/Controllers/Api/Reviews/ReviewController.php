@@ -35,7 +35,7 @@ class ReviewController extends ApiController
     public function itemReviews(Request $request, $itemId): JsonResponse
     {
         try {
-            $item = Item::where('public_id', $itemId)->firstOrFail();
+            $item = Item::findByPublicId($itemId)->firstOrFail();
 
             $reviews = Review::where('item_id', $item->id)
                 ->with(['reviewer', 'seller'])
@@ -66,7 +66,7 @@ class ReviewController extends ApiController
     public function sellerReviews(Request $request, $sellerId): JsonResponse
     {
         try {
-            $seller = User::where('public_id', $sellerId)->firstOrFail();
+            $seller = User::findByPublicId($sellerId)->firstOrFail();
 
             $reviews = Review::where('seller_id', $seller->id)
                 ->with(['reviewer', 'item'])
@@ -98,7 +98,7 @@ class ReviewController extends ApiController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'order_id' => 'required|exists:orders,id',
+                'order_id' => 'required',
                 'rating' => 'required|integer|min:1|max:5',
                 'comment' => 'nullable|string|max:500',
             ]);
@@ -107,7 +107,12 @@ class ReviewController extends ApiController
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
-            $order = Order::findOrFail($request->order_id);
+            // L'app mobile envoie `order.id` (numérique), le web `order.public_id`.
+            $order = Order::resolveByPublicId($request->order_id);
+
+            if (! $order) {
+                return $this->errorResponse('Commande introuvable', 404);
+            }
 
             if ($order->buyer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -143,7 +148,7 @@ class ReviewController extends ApiController
     public function update(Request $request, $reviewId): JsonResponse
     {
         try {
-            $review = Review::where('public_id', $reviewId)->firstOrFail();
+            $review = Review::findByPublicId($reviewId)->firstOrFail();
 
             if ($review->reviewer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -175,7 +180,7 @@ class ReviewController extends ApiController
     public function destroy(Request $request, $reviewId): JsonResponse
     {
         try {
-            $review = Review::where('public_id', $reviewId)->firstOrFail();
+            $review = Review::findByPublicId($reviewId)->firstOrFail();
 
             if ($review->reviewer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Catalog;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Item;
 use App\Services\StorageSyncService;
 use Illuminate\Http\JsonResponse;
@@ -87,7 +88,7 @@ class BrandController extends ApiController
             $brand = Brand::withCount(['items' => function ($q) {
                 $q->where('status', 'active');
             }])
-                ->where('public_id', $id)
+                ->findByPublicId($id)
                 ->firstOrFail();
 
             return $this->successResponse($brand, 'Marque récupérée avec succès');
@@ -102,7 +103,7 @@ class BrandController extends ApiController
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $brand = Brand::where('public_id', $id)->firstOrFail();
+            $brand = Brand::findByPublicId($id)->firstOrFail();
 
             $validated = $request->validate([
                 'name' => 'required|string|max:100|unique:brands,name,' . $brand->id,
@@ -154,7 +155,7 @@ class BrandController extends ApiController
     public function destroy($id): JsonResponse
     {
         try {
-            $brand = Brand::where('public_id', $id)->firstOrFail();
+            $brand = Brand::findByPublicId($id)->firstOrFail();
 
             // Vérifier s'il y a des articles avec cette marque
             $itemsCount = Item::where('brand_id', $brand->id)->count();
@@ -184,7 +185,7 @@ class BrandController extends ApiController
     public function items(Request $request, $id): JsonResponse
     {
         try {
-            $brand = Brand::where('public_id', $id)->firstOrFail();
+            $brand = Brand::findByPublicId($id)->firstOrFail();
 
             $query = Item::with(['category', 'brand', 'user'])
                 ->where('brand_id', $brand->id)
@@ -192,7 +193,7 @@ class BrandController extends ApiController
 
             // Filtres optionnels
             if ($request->has('category_id')) {
-                $query->where('category_id', $request->category_id);
+                $query->where('category_id', Category::resolveId($request->category_id));
             }
 
             if ($request->has('condition')) {
