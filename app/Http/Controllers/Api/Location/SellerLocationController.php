@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Location;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Models\AllowedCity;
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -98,7 +99,7 @@ class SellerLocationController extends ApiController
     public function show($userId): JsonResponse
     {
         try {
-            $user = User::where('public_id', $userId)->firstOrFail();
+            $user = User::findByPublicId($userId)->firstOrFail();
 
             return $this->successResponse([
                 'user_id'  => $user->id,
@@ -131,6 +132,15 @@ class SellerLocationController extends ApiController
      */
     public function nearby(Request $request): JsonResponse
     {
+        // L'app mobile envoie l'id numérique de la catégorie, le web son public_id.
+        if ($request->filled('category_id')) {
+            $category = Category::resolveByPublicId($request->category_id);
+
+            if ($category) {
+                $request->merge(['category_id' => $category->id]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'latitude'     => 'required|numeric|between:-90,90',
             'longitude'    => 'required|numeric|between:-180,180',

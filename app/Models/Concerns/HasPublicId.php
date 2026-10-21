@@ -79,6 +79,72 @@ trait HasPublicId
         });
     }
 
+    /**
+     * Resout un modele depuis un identifiant public (ULID) ou numerique
+     * (cle primaire), comme le fait le binding implicite.
+     *
+     * Utilise par l'API, ou l'application mobile envoie `model.id` alors que
+     * le web utilise `model.public_id` : les deux doivent aboutir au meme
+     * modele. Retourne null si rien ne correspond.
+     */
+    public static function resolveByPublicId(string|int $value): ?static
+    {
+        return static::query()->findByPublicId($value)->first();
+    }
+
+    /**
+     * Ramène un identifiant mixte (public_id ou cle primaire) vers la cle
+     * primaire.
+     *
+     * La valeur d'origine est conservee si elle ne correspond a aucun modele :
+     * la validation applicative la signalera alors comme invalide.
+     */
+    public static function resolveId(string|int|null $value): string|int|null
+    {
+        if ($value === null || $value === '') {
+            return $value;
+        }
+
+        return static::resolveByPublicId($value)?->getKey() ?? $value;
+    }
+
+    /**
+     * Normalise une liste d'identifiants melanges (public_id ou cle primaire)
+     * vers les cles primaires correspondantes.
+     *
+     * Les valeurs inconnues sont laissees telles quelles : la validation
+     * applicative les signalera alors comme invalides.
+     */
+    public static function resolveIds(array $values): array
+    {
+        $values = array_values(array_filter($values, fn ($value) => $value !== null && $value !== ''));
+
+        if ($values === []) {
+            return [];
+        }
+
+        $query = static::query();
+        $model = $query->getModel();
+
+        $rows = $query->where(function ($q) use ($values, $model) {
+            $q->whereIn($model->getKeyName(), array_values(array_filter($values, 'is_numeric')));
+
+            $publicIds = array_values(array_filter($values, fn ($value) => ! is_numeric($value)));
+
+            if ($publicIds !== []) {
+                $q->orWhereIn($model->getRouteKeyName(), $publicIds);
+            }
+        })->get([$model->getKeyName(), $model->getRouteKeyName()]);
+
+        $map = [];
+        foreach ($rows as $row) {
+            $map[(string) $row->getRouteKey()] = $row->getKey();
+            $map[(string) $row->getKey()] = $row->getKey();
+        }
+
+        return array_map(fn ($value) => $map[(string) $value] ?? $value, $values);
+    }
+
     public function resolveSoftDeletableRouteBinding($value, $field = null)
     {
         $instance = parent::resolveSoftDeletableRouteBinding($value, $field);

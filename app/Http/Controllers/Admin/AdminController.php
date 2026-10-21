@@ -4018,7 +4018,7 @@ class AdminController extends Controller
     public function apiApproveWallet($walletId)
     {
         try {
-            $wallet = Wallet::where('public_id', $walletId)->firstOrFail();
+            $wallet = Wallet::findByPublicId($walletId)->firstOrFail();
             
             $this->walletService->approveWallet($wallet, Auth::id());
             
@@ -4042,7 +4042,7 @@ class AdminController extends Controller
         }
 
         try {
-            $wallet = Wallet::where('public_id', $walletId)->firstOrFail();
+            $wallet = Wallet::findByPublicId($walletId)->firstOrFail();
             
             $this->walletService->rejectWallet($wallet, Auth::id(), $request->reason);
             
@@ -4172,7 +4172,7 @@ class AdminController extends Controller
         }
 
         try {
-            $user = User::where('public_id', $userId)->firstOrFail();
+            $user = User::findByPublicId($userId)->firstOrFail();
             
             DB::beginTransaction();
             
@@ -4214,7 +4214,7 @@ class AdminController extends Controller
     {
         try {
             $user = User::with(['roles', 'wallets', 'transactions', 'ordersAsBuyer', 'ordersAsSeller'])
-                ->where('public_id', $userId)
+                ->findByPublicId($userId)
                 ->firstOrFail();
             
             $stats = $user->getStats();
@@ -4242,7 +4242,7 @@ class AdminController extends Controller
         }
 
         try {
-            $item = Item::where('public_id', $itemId)->firstOrFail();
+            $item = Item::findByPublicId($itemId)->firstOrFail();
             $item->update(['status' => $request->status]);
             
             return $this->successResponse($item, 'Statut article mis à jour');
@@ -4359,6 +4359,11 @@ class AdminController extends Controller
      */
     public function apiBulkApproveWallets(Request $request)
     {
+        // L'app mobile envoie les id numériques, le web les public_id.
+        if (is_array($request->wallet_ids)) {
+            $request->merge(['wallet_ids' => Wallet::resolveIds($request->wallet_ids)]);
+        }
+
         $validator = \Validator::make($request->all(), [
             'wallet_ids' => 'required|array',
             'wallet_ids.*' => 'exists:wallets,id'

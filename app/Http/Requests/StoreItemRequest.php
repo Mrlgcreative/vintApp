@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Brand;
+use App\Models\Category;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreItemRequest extends FormRequest
@@ -74,6 +76,10 @@ class StoreItemRequest extends FormRequest
             'description' => strip_tags($this->description, '<p><br><strong><em><ul><ol><li>'),
             'price' => floatval($this->price),
             'quantity' => intval($this->quantity ?? 1),
+
+            // L'app mobile envoie les id numériques, le web les public_id.
+            'category_id' => Category::resolveId($this->category_id),
+            'brand_id' => Brand::resolveId($this->brand_id),
         ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Payments;
 
 use App\Http\Controllers\Api\ApiController;
 use App\Http\Controllers\ExchangeRateController;
+use App\Models\DeliveryAddress;
 use App\Models\Order;
 use App\Models\Refund;
 use App\Models\Transaction;
@@ -49,12 +50,13 @@ class PaymentController extends ApiController
     public function show(Request $request, $transactionId): JsonResponse
     {
         try {
-            $payment = Transaction::where(function ($query) use ($transactionId) {
-                $query->where('public_id', $transactionId)
-                      ->orWhere('transaction_id', $transactionId);
-            })
+            $payment = $this->findTransaction($transactionId)
                 ->where('user_id', $request->user()->id)
-                ->firstOrFail();
+                ->first();
+
+            if (! $payment) {
+                return $this->errorResponse('Paiement introuvable', 404);
+            }
 
             return $this->successResponse($payment, 'Détails du paiement récupérés');
         } catch (\Exception $e) {
@@ -125,7 +127,7 @@ class PaymentController extends ApiController
         }
 
         try {
-            $order = Order::where('public_id', $orderId)->firstOrFail();
+            $order = Order::findByPublicId($orderId)->firstOrFail();
 
             if ($order->buyer_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -181,7 +183,7 @@ class PaymentController extends ApiController
     public function refundStatus(Request $request, $refundId): JsonResponse
     {
         try {
-            $refund = Refund::where('public_id', $refundId)
+            $refund = Refund::findByPublicId($refundId)
                 ->where('buyer_id', $request->user()->id)
                 ->with(['order'])
                 ->firstOrFail();
@@ -353,10 +355,7 @@ class PaymentController extends ApiController
      */
     public function checkMaishaStatus(Request $request, $transactionId): JsonResponse
     {
-        $transaction = Transaction::where(function ($query) use ($transactionId) {
-            $query->where('public_id', $transactionId)
-                  ->orWhere('transaction_id', $transactionId);
-        })->first();
+        $transaction = $this->findTransaction($transactionId)->first();
 
         if (! $transaction) {
             return response()->json([
@@ -416,6 +415,15 @@ class PaymentController extends ApiController
      */
     public function initiateKPayPayment(Request $request): JsonResponse
     {
+        // L'app mobile envoie l'id numérique de l'adresse, le web son public_id.
+        if ($request->filled('delivery_address_id')) {
+            $address = DeliveryAddress::resolveByPublicId($request->delivery_address_id);
+
+            if ($address) {
+                $request->merge(['delivery_address_id' => $address->id]);
+            }
+        }
+
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:0.01',
             'phone' => 'sometimes|string|min:9|max:13',
@@ -577,13 +585,14 @@ class PaymentController extends ApiController
     public function checkKPayStatus(Request $request, $transactionId): JsonResponse
     {
         try {
-            $transaction = Transaction::where(function ($query) use ($transactionId) {
-                $query->where('public_id', $transactionId)
-                      ->orWhere('transaction_id', $transactionId);
-            })
+            $transaction = $this->findTransaction($transactionId)
                 ->where('provider', 'kpay')
                 ->where('user_id', $request->user()->id)
-                ->firstOrFail();
+                ->first();
+
+            if (! $transaction) {
+                return $this->errorResponse('Transaction K-PAY introuvable', 404);
+            }
 
             // Déjà final : pas d'appel réseau inutile.
             if (in_array($transaction->status, ['completed', 'failed', 'cancelled'], true)) {
@@ -644,6 +653,25 @@ class PaymentController extends ApiController
 
             return $this->errorResponse('Erreur lors de la détection de l\'opérateur', 500);
         }
+    }
+
+    /**
+     * Resout une transaction par public_id, par id numerique ou par reference
+     * externe.
+     *
+     * L'API renvoie `transaction.id` (numerique) au client, qui le reutilise
+     * pour interroger le statut : il doit donc aboutir a la meme transaction.
+     */
+    private function findTransaction(string|int $transactionId)
+    {
+        return Transaction::where(function ($query) use ($transactionId) {
+            $query->where('transaction_id', $transactionId)
+                ->orWhere('public_id', $transactionId);
+
+            if (is_numeric($transactionId)) {
+                $query->orWhere('id', $transactionId);
+            }
+        });
     }
 
     /**

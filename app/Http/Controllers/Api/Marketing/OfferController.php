@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Marketing;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Category;
 use App\Models\Item;
 use App\Models\Offer;
 use App\Services\NotificationService;
@@ -90,7 +91,7 @@ class OfferController extends ApiController
     {
         try {
             $offer = Offer::with(['categories', 'items', 'creator'])
-                ->where('public_id', $id)
+                ->findByPublicId($id)
                 ->firstOrFail();
 
             if (! $this->canManage()) {
@@ -194,7 +195,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::where('public_id', $id)->firstOrFail();
+            $offer = Offer::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');
@@ -246,7 +247,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::where('public_id', $id)->firstOrFail();
+            $offer = Offer::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');
@@ -275,7 +276,7 @@ class OfferController extends ApiController
         }
 
         try {
-            $offer = Offer::where('public_id', $id)->firstOrFail();
+            $offer = Offer::findByPublicId($id)->firstOrFail();
 
             if (! $this->isOwner($request->user(), $offer)) {
                 return $this->forbiddenResponse('Vous ne pouvez pas gérer cette offre');
@@ -305,6 +306,13 @@ class OfferController extends ApiController
 
     protected function validateOffer(Request $request): array
     {
+        // L'app mobile envoie les id numériques, le web les public_id :
+        // on normalise vers les clés primaires avant de valider.
+        $request->merge([
+            'items' => Item::resolveIds($request->input('items', [])),
+            'categories' => Category::resolveIds($request->input('categories', [])),
+        ]);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],

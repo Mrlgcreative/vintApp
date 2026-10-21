@@ -169,17 +169,34 @@ class MessageController extends ApiController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'recipient_id' => 'required|exists:users,id',
+                'recipient_id' => 'required',
                 'content' => 'nullable|string|max:5000',
-                'item_id' => 'nullable|exists:items,id'
+                'item_id' => 'nullable'
             ]);
 
             if ($validator->fails()) {
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
+            // L'app mobile envoie les id numériques, le web les public_id.
+            $recipient = User::resolveByPublicId($request->recipient_id);
+
+            if (! $recipient) {
+                return $this->errorResponse('Destinataire introuvable', 404);
+            }
+
+            $item = null;
+
+            if ($request->filled('item_id')) {
+                $item = Item::resolveByPublicId($request->item_id);
+
+                if (! $item) {
+                    return $this->errorResponse('Article introuvable', 404);
+                }
+            }
+
             $user = $request->user();
-            $recipientId = $request->recipient_id;
+            $recipientId = $recipient->id;
 
             $attachmentPath = null;
             $messageType = 'text';
@@ -218,7 +235,7 @@ class MessageController extends ApiController
                 'attachment' => $attachmentPath,
                 'type' => $messageType,
                 'duration' => $duration,
-                'item_id' => $request->item_id
+                'item_id' => $item?->id
             ]);
 
             try {
@@ -287,8 +304,8 @@ class MessageController extends ApiController
     {
         try {
             $validator = Validator::make($request->all(), [
-                'item_id' => 'required|exists:items,id',
-                'buyer_id' => 'required|exists:users,id',
+                'item_id' => 'required',
+                'buyer_id' => 'required',
                 'discount_percentage' => 'required|numeric|min:1|max:50',
                 'expires_hours' => 'nullable|integer|min:1|max:168'
             ]);
@@ -297,9 +314,17 @@ class MessageController extends ApiController
                 return $this->errorResponse('Erreurs de validation', 422, $validator->errors());
             }
 
+            // L'app mobile envoie les id numériques, le web les public_id.
+            $item = Item::resolveByPublicId($request->item_id);
+            $buyer = User::resolveByPublicId($request->buyer_id);
+
+            if (! $item || ! $buyer) {
+                return $this->errorResponse('Article ou acheteur introuvable', 404);
+            }
+
             $discount = $this->discountService->applyDiscount(
-                (int) $request->item_id,
-                (int) $request->buyer_id,
+                (int) $item->id,
+                (int) $buyer->id,
                 (float) $request->discount_percentage,
                 $request->user(),
                 null,

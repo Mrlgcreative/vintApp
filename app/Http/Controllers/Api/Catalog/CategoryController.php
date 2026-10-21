@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Catalog;
 
 use App\Http\Controllers\Api\ApiController;
+use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Http\JsonResponse;
@@ -40,6 +41,9 @@ class CategoryController extends ApiController
     public function store(Request $request): JsonResponse
     {
         try {
+            // L'app mobile envoie les id numériques, le web les public_id.
+            $request->merge(['parent_id' => Category::resolveId($request->parent_id)]);
+
             $validated = $request->validate([
                 'name' => 'required|string|max:100|unique:categories,name',
                 'description' => 'nullable|string|max:500',
@@ -90,7 +94,7 @@ class CategoryController extends ApiController
                 ->withCount(['items' => function ($q) {
                     $q->where('status', 'active');
                 }])
-                ->where('public_id', $id)
+                ->findByPublicId($id)
                 ->firstOrFail();
 
             return $this->successResponse($category, 'Catégorie récupérée avec succès');
@@ -105,7 +109,10 @@ class CategoryController extends ApiController
     public function update(Request $request, $id): JsonResponse
     {
         try {
-            $category = Category::where('public_id', $id)->firstOrFail();
+            $category = Category::findByPublicId($id)->firstOrFail();
+
+            // L'app mobile envoie les id numériques, le web les public_id.
+            $request->merge(['parent_id' => Category::resolveId($request->parent_id)]);
 
             $validated = $request->validate([
                 'name' => 'required|string|max:100|unique:categories,name,' . $category->id,
@@ -161,7 +168,7 @@ class CategoryController extends ApiController
     public function destroy($id): JsonResponse
     {
         try {
-            $category = Category::where('public_id', $id)->firstOrFail();
+            $category = Category::findByPublicId($id)->firstOrFail();
 
             // Vérifier s'il y a des articles dans cette catégorie
             $itemsCount = Item::where('category_id', $category->id)->count();
@@ -195,7 +202,7 @@ class CategoryController extends ApiController
     public function items(Request $request, $id): JsonResponse
     {
         try {
-            $category = Category::where('public_id', $id)->firstOrFail();
+            $category = Category::findByPublicId($id)->firstOrFail();
 
             $query = Item::with(['category', 'brand', 'user'])
                 ->where('category_id', $category->id)
@@ -203,7 +210,7 @@ class CategoryController extends ApiController
 
             // Filtres optionnels
             if ($request->has('brand_id')) {
-                $query->where('brand_id', $request->brand_id);
+                $query->where('brand_id', Brand::resolveId($request->brand_id));
             }
 
             if ($request->has('condition')) {

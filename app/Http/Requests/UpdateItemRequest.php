@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -19,7 +21,7 @@ class UpdateItemRequest extends FormRequest
         $item = $this->route('item');
 
         if ($item === null && $this->route('id') !== null) {
-            $item = Item::find($this->route('id'));
+            $item = Item::resolveByPublicId($this->route('id'));
         }
 
         return $item !== null && auth()->id() === $item->user_id;
@@ -69,6 +71,15 @@ class UpdateItemRequest extends FormRequest
         }
         if ($this->has('quantity')) {
             $this->merge(['quantity' => intval($this->quantity)]);
+        }
+
+        // L'app mobile envoie les id numériques, le web les public_id.
+        if ($this->has('category_id')) {
+            $this->merge(['category_id' => Category::resolveId($this->category_id)]);
+        }
+
+        if ($this->has('brand_id')) {
+            $this->merge(['brand_id' => Brand::resolveId($this->brand_id)]);
         }
     }
 }

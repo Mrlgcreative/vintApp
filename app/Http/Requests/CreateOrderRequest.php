@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -39,6 +40,7 @@ class CreateOrderRequest extends FormRequest
     {
         return [
             'item_id.exists' => 'Ce produit n\'existe pas',
+            'item_id.integer' => 'Ce produit n\'existe pas',
             'quantity.min' => 'Quantité minimale : 1',
             'quantity.max' => 'Quantité maximale : 100',
             'payment_method.in' => 'Méthode de paiement non supportée',
@@ -58,5 +60,15 @@ class CreateOrderRequest extends FormRequest
             'delivery_phone' => preg_replace('/[^0-9+]/', '', $this->delivery_phone),
             'quantity' => intval($this->quantity ?? 1),
         ]);
+
+        // L'app mobile envoie `item.id` (numérique), le web `item.public_id` :
+        // on ramène toujours l'identifiant numérique.
+        if ($this->filled('item_id')) {
+            $item = Item::resolveByPublicId($this->item_id);
+
+            if ($item) {
+                $this->merge(['item_id' => $item->id]);
+            }
+        }
     }
 }

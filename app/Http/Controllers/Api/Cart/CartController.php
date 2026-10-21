@@ -88,12 +88,18 @@ class CartController extends ApiController
     public function add(Request $request): JsonResponse
     {
         $request->validate([
-            'item_id' => ['required', 'integer', 'exists:items,id'],
+            'item_id' => ['required'],
             'quantity' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
         try {
-            $item = Item::findOrFail($request->item_id);
+            // L'app mobile envoie `item.id` (numérique), le web `item.public_id`.
+            $item = Item::resolveByPublicId($request->item_id);
+
+            if (! $item) {
+                return $this->errorResponse('Article introuvable.', 404);
+            }
+
             $quantity = (int) $request->quantity;
 
             if ($item->user_id === Auth::id()) {
