@@ -78,7 +78,9 @@ class FirebasePushService
                     'color' => '#7c3aed', // Couleur Vinted Violet
                     'sound' => 'default',
                     'click_action' => 'FLUTTER_NOTIFICATION_CLICK',
-                    'channel_id' => 'vintapp_notifications',
+                    // Canal cree par l'app mobile (expo-notifications) : un
+                    // channel_id inconnu fait supprimer la notif par Android 8+.
+                    'channel_id' => 'default',
                 ]
             ]);
 
