@@ -36,7 +36,7 @@ class DeliveryAddressController extends ApiController
     public function show($id): JsonResponse
     {
         try {
-            $address = Auth::user()->deliveryAddresses()->where('public_id', $id)->firstOrFail();
+            $address = Auth::user()->deliveryAddresses()->findByPublicId($id)->firstOrFail();
 
             return $this->successResponse($address, 'Adresse de livraison récupérée');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -100,7 +100,7 @@ class DeliveryAddressController extends ApiController
 
         try {
             $user = $request->user();
-            $address = $user->deliveryAddresses()->where('public_id', $id)->firstOrFail();
+            $address = $user->deliveryAddresses()->findByPublicId($id)->firstOrFail();
 
             $address->update([
                 'full_name' => $request->full_name,
@@ -134,7 +134,7 @@ class DeliveryAddressController extends ApiController
     public function setDefault($id): JsonResponse
     {
         try {
-            $address = Auth::user()->deliveryAddresses()->where('public_id', $id)->firstOrFail();
+            $address = Auth::user()->deliveryAddresses()->findByPublicId($id)->firstOrFail();
 
             $address->setAsDefault();
 
@@ -154,7 +154,7 @@ class DeliveryAddressController extends ApiController
     {
         try {
             $user = Auth::user();
-            $address = $user->deliveryAddresses()->where('public_id', $id)->firstOrFail();
+            $address = $user->deliveryAddresses()->findByPublicId($id)->firstOrFail();
 
             if ($address->is_default) {
                 $newDefault = $user->deliveryAddresses()

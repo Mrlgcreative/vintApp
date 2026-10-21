@@ -200,7 +200,11 @@ class CartController extends ApiController
 
         try {
             $sessionId = $this->cartSessionKey($request);
-            $item = Item::where('public_id', $itemId)->firstOrFail();
+            $item = Item::findByPublicId($itemId)->first();
+
+            if (!$item) {
+                return $this->errorResponse('Article introuvable.', 404);
+            }
 
             $cartRow = Cart::where('session_id', $sessionId)
                 ->where('item_id', $item->id)
@@ -231,7 +235,11 @@ class CartController extends ApiController
     {
         try {
             $sessionId = $this->cartSessionKey(request());
-            $item = Item::where('public_id', $itemId)->firstOrFail();
+            $item = Item::findByPublicId($itemId)->first();
+
+            if (!$item) {
+                return $this->errorResponse('Article introuvable.', 404);
+            }
 
             Cart::where('session_id', $sessionId)
                 ->where('item_id', $item->id)

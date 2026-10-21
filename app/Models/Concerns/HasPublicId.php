@@ -56,6 +56,29 @@ trait HasPublicId
         return $this->where($this->getKeyName(), $value)->first();
     }
 
+    /**
+     * Meme resolution que le binding implicite, pour les controleurs qui
+     * recoivent l'identifiant en parametre brut (`$id`) au lieu d'un modele.
+     *
+     * Sans cela, un `where('public_id', $id)` echoue des que l'identifiant est
+     * numerique — ce que fait encore l'application mobile, qui envoie `order.id`.
+     *
+     * Declare en scope : fonctionne aussi bien en `Modele::findByPublicId($id)`
+     * qu'enchaine apres `with(...)`.
+     */
+    public function scopeFindByPublicId($query, string|int $value)
+    {
+        // OR groupé : sans parenthèses, le OR s'échapperait et se combinerait
+        // avec les `where` ajoutés ensuite par l'appelant.
+        return $query->where(function ($q) use ($value) {
+            $q->where($this->getRouteKeyName(), $value);
+
+            if (is_numeric($value)) {
+                $q->orWhere($this->getKeyName(), $value);
+            }
+        });
+    }
+
     public function resolveSoftDeletableRouteBinding($value, $field = null)
     {
         $instance = parent::resolveSoftDeletableRouteBinding($value, $field);
