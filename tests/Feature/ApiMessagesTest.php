@@ -72,6 +72,59 @@ class ApiMessagesTest extends TestCase
     }
 
     /** @test */
+    public function user_can_open_a_conversation_with_the_numeric_id_sent_by_the_mobile_app()
+    {
+        // L'écran de suivi de commande navigue vers /conversation/{vendeur_id},
+        // avec l'id numérique : sans repli, la conversation restait vide sur un
+        // 404 « Ressource introuvable ».
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $this->message($buyer, $seller, 'Bonjour, où en est ma commande ?');
+        Sanctum::actingAs($buyer);
+
+        $this->getJson('/api/v1/messages/' . $seller->id)
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.other_user.id', $seller->id)
+            ->assertJsonCount(1, 'data.messages');
+
+        // Le public_id doit continuer de fonctionner.
+        $this->getJson('/api/v1/messages/' . $seller->public_id)
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonCount(1, 'data.messages');
+    }
+
+    /** @test */
+    public function conversation_list_exposes_the_contact_public_id()
+    {
+        $user = User::factory()->create();
+        $contact = User::factory()->create();
+        $this->message($contact, $user);
+        Sanctum::actingAs($user);
+
+        $this->getJson('/api/v1/messages')
+            ->assertOk()
+            ->assertJsonPath('data.0.contact.public_id', $contact->public_id)
+            ->assertJsonPath('data.0.contact_public_id', $contact->public_id);
+    }
+
+    /** @test */
+    public function buyer_can_mark_a_message_read_with_the_numeric_id()
+    {
+        $sender = User::factory()->create();
+        $receiver = User::factory()->create();
+        $message = $this->message($sender, $receiver);
+        Sanctum::actingAs($receiver);
+
+        $this->putJson('/api/v1/messages/' . $message->id . '/mark-read')
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertDatabaseHas('messages', ['id' => $message->id, 'is_read' => true]);
+    }
+
+    /** @test */
     public function user_cannot_mark_someone_elses_message_as_read()
     {
         $sender = User::factory()->create();

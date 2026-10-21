@@ -80,8 +80,12 @@ class MessageController extends ApiController
                 $conversations->push([
                     'id' => $contactId,
                     'contact_id' => $contactId,
+                    // Le client doit naviguer avec le public_id : l'id numérique
+                    // n'est plus la clé de routage des conversations.
+                    'contact_public_id' => $contact->public_id,
                     'contact' => [
                         'id' => $contact->id,
+                        'public_id' => $contact->public_id,
                         'name' => $contact->name,
                         'avatar' => $contact->avatar,
                         'avatar_url' => $contact->avatar ? asset('storage/' . $contact->avatar) : null,
@@ -126,16 +130,17 @@ class MessageController extends ApiController
         try {
             $currentUser = $request->user();
 
-            // Vérifier que l'utilisateur cible existe
-            $otherUser = User::where('public_id', $userId)->first();
+            // Vérifier que l'utilisateur cible existe. L'app mobile envoie
+            // l'id numérique (seller_id), pas le public_id.
+            $otherUser = User::findByPublicId($userId)->first();
             if (!$otherUser) {
                 return $this->errorResponse('Utilisateur introuvable', 404);
             }
 
-            $messages = Message::where(function($query) use ($currentUser) {
+            $messages = Message::where(function($query) use ($currentUser, $otherUser) {
                 $query->where('sender_id', $currentUser->id)
                       ->where('receiver_id', $otherUser->id);
-            })->orWhere(function($query) use ($currentUser) {
+            })->orWhere(function($query) use ($currentUser, $otherUser) {
                 $query->where('sender_id', $otherUser->id)
                       ->where('receiver_id', $currentUser->id);
             })->with(['sender', 'receiver'])
@@ -241,7 +246,11 @@ class MessageController extends ApiController
     public function markAsRead(Request $request, $messageId): JsonResponse
     {
         try {
-            $message = Message::where('public_id', $messageId)->firstOrFail();
+            $message = Message::findByPublicId($messageId)->first();
+
+            if (!$message) {
+                return $this->errorResponse('Message introuvable', 404);
+            }
 
             if ($message->receiver_id !== $request->user()->id) {
                 return $this->errorResponse('Non autorisé', 403);
@@ -311,7 +320,11 @@ class MessageController extends ApiController
     public function getAvailableDiscounts(Request $request, $itemId): JsonResponse
     {
         try {
-            $item = Item::where('public_id', $itemId)->firstOrFail();
+            $item = Item::findByPublicId($itemId)->first();
+
+            if (!$item) {
+                return $this->errorResponse('Article introuvable', 404);
+            }
 
             $discounts = $this->discountService->getAvailableDiscounts((int) $item->id, (int) $request->user()->id);
 
