@@ -85,7 +85,7 @@ class ItemController extends ApiController
     public function show($id): JsonResponse
     {
         $item = Item::with(['category', 'brand', 'user', 'reviews'])
-            ->where('public_id', $id)
+            ->findByPublicId($id)
             ->firstOrFail();
 
         $isOwner = Auth::check() && $item->user_id === Auth::id();
@@ -107,7 +107,7 @@ class ItemController extends ApiController
      */
     public function incrementViews($id): JsonResponse
     {
-        $item = Item::where('public_id', $id)->firstOrFail();
+        $item = Item::findByPublicId($id)->firstOrFail();
         $item->incrementQuietly('views');
 
         return response()->json([
@@ -211,7 +211,7 @@ class ItemController extends ApiController
     public function update(UpdateItemRequest $request, $id): JsonResponse
     {
         try {
-            $item = Item::where('public_id', $id)->firstOrFail();
+            $item = Item::findByPublicId($id)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return response()->json([
@@ -242,7 +242,7 @@ class ItemController extends ApiController
     public function destroy($id): JsonResponse
     {
         try {
-            $item = Item::where('public_id', $id)->firstOrFail();
+            $item = Item::findByPublicId($id)->firstOrFail();
 
             if ($item->user_id !== Auth::id()) {
                 return response()->json([

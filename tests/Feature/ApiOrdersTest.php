@@ -57,6 +57,41 @@ class ApiOrdersTest extends TestCase
     }
 
     /** @test */
+    public function buyer_can_open_his_order_with_the_numeric_id_sent_by_the_mobile_app()
+    {
+        // L'app mobile envoie `order.id` (numérique) alors que le binding
+        // implicite résout sur `public_id` (ULID) : sans repli, le tap sur une
+        // notification aboutissait à un 404.
+        $buyer = User::factory()->create();
+        $order = $this->order($buyer, User::factory()->create());
+        Sanctum::actingAs($buyer);
+
+        $this->getJson('/api/v1/orders/' . $order->id)
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id', $order->id);
+
+        // Le public_id doit continuer de fonctionner.
+        $this->getJson('/api/v1/orders/' . $order->public_id)
+            ->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.id', $order->id);
+    }
+
+    /** @test */
+    public function seller_can_open_the_order_with_the_numeric_id()
+    {
+        $buyer = User::factory()->create();
+        $seller = User::factory()->create();
+        $order = $this->order($buyer, $seller);
+        Sanctum::actingAs($seller);
+
+        $this->getJson('/api/v1/orders/' . $order->id)
+            ->assertOk()
+            ->assertJsonPath('success', true);
+    }
+
+    /** @test */
     public function user_cannot_see_someone_elses_order()
     {
         $buyer = User::factory()->create();
