@@ -81,7 +81,7 @@
                 @endif
                 <div class="flex-1 min-w-0">
                     <span class="block truncate text-sm font-medium text-gray-900 dark:text-white sm:text-base">{{ $item->name }}</span>
-                    <span class="text-base font-semibold text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-lg">{{ $item->formatted_price }}</span>
+                    <span class="text-base font-semibold text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-lg">{{ $item->buyer_formatted_price }}</span>
                 </div>
                 <a href="{{ route('items.show', $item) }}"
                    class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
@@ -122,7 +122,7 @@
                                 </div>
                                 <span class="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-sm">Prix actuel :</span>
                             </div>
-                            <span class="text-lg font-semibold tracking-tight text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-xl">{{ $item->formatted_price }}</span>
+                            <span class="text-lg font-semibold tracking-tight text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-xl">{{ $item->buyer_formatted_price }}</span>
                         </div>
 
                         <div class="grid grid-cols-3 gap-1.5 sm:gap-2.5">
@@ -135,14 +135,14 @@
                                         data-rate="{{ $rate }}">
                                     <div class="mb-0.5 text-sm font-semibold text-gray-900 dark:text-white sm:mb-1.5 sm:text-lg">{{ $rate }}%</div>
                                     <div class="text-xs font-medium leading-tight text-vinted-primary-600 dark:text-vinted-primary-400 sm:text-sm">
-                                        {{ $item->currency_symbol }}{{ number_format($item->price * (1 - $rate/100), 2) }}
+                                        {{ $item->currency_symbol }}{{ number_format(buyer_price(round((float) $item->price * (1 - $rate/100), 2)), 2) }}
                                     </div>
                                     <div class="mt-0.5 flex items-center justify-center gap-0.5 text-red-400 text-[9px] sm:mt-1 sm:gap-1 sm:text-xs">
                                         <span class="inline-flex items-center gap-0.5">
                                             <svg class="w-2 h-2 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
                                             </svg>
-                                            {{ $item->currency_symbol }}{{ number_format($item->price * $rate/100, 2) }}
+                                            {{ $item->currency_symbol }}{{ number_format((float) $item->buyer_price - buyer_price(round((float) $item->price * (1 - $rate/100), 2)), 2) }}
                                         </span>
                                     </div>
                                 </button>

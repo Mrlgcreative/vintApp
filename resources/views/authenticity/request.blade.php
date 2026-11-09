@@ -38,7 +38,7 @@
                         {{ $item->brand->name ?? 'Marque non spécifiée' }} · {{ $item->category->name ?? 'Sans catégorie' }}
                     </p>
                 </div>
-                <p class="font-semibold text-gray-900 dark:text-white">{{ $item->formatted_price }}</p>
+                <p class="font-semibold text-gray-900 dark:text-white">{{ $item->buyer_formatted_price }}</p>
             </div>
             <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700/50 flex items-center justify-between">
                 <span class="text-sm text-gray-600 dark:text-gray-300">Frais de certification</span>

@@ -5,21 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\Wallet;
 use App\Models\WalletTransaction;
 use App\Models\WithdrawalRequest;
+use App\Services\MobileMoneyService;
+use App\Services\PaymentService;
+use App\Services\WalletService;
+use App\Traits\ApiResponses;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Services\PaymentService;
-use App\Services\MobileMoneyService;
-use App\Services\WalletService;
-use App\Traits\ApiResponses;
 
 class WalletController extends Controller
 {
     use ApiResponses;
-    
+
     private $paymentService;
+
     private $mobileMoneyService;
+
     private $walletService;
 
     public function __construct(PaymentService $paymentService, MobileMoneyService $mobileMoneyService, WalletService $walletService)
@@ -28,15 +31,14 @@ class WalletController extends Controller
         $this->mobileMoneyService = $mobileMoneyService;
         $this->walletService = $walletService;
     }
-    
+
     /**
      * Affiche les wallets de l'utilisateur.
      */
-    
     public function index()
     {
         $user = Auth::user();
-        
+
         // Créer les wallets s'ils n'existent pas
         $usdWallet = $this->walletService->getOrCreateUserWallet($user, 'USD');
         $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
@@ -91,7 +93,7 @@ class WalletController extends Controller
         }
 
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:0.01|max:' . $wallet->balance,
+            'amount' => 'required|numeric|min:0.01|max:'.$wallet->balance,
             'phone_number' => ['required', 'string', 'regex:/^(\+?243|0)?[0-9]{9}$/', 'min:9', 'max:15'],
             // K-PAY comme méthode de décaissement
             'payment_method' => 'required|string|in:kpay,orange_money,airtel_money,mpesa,africell,illicocash,agent',
@@ -155,36 +157,43 @@ class WalletController extends Controller
                         $wallet->increment('balance', $validated['amount']);
                         $transaction->update([
                             'status' => 'failed',
-                            'balance_after' => $wallet->fresh()->balance
+                            'balance_after' => $wallet->fresh()->balance,
                         ]);
                     });
 
                     return redirect()->route('wallet.index')
-                        ->with('error', 'Le décaissement a échoué : ' . ($cashOutResponse['message'] ?? 'Erreur inconnue'));
+                        ->with('error', 'Le décaissement a échoué : '.($cashOutResponse['message'] ?? 'Erreur inconnue'));
                 }
 
                 Log::info('Cash-out initiated', [
                     'transaction_id' => $transaction->id,
                     'withdrawal_request_id' => $withdrawalRequest->id,
-                    'response' => $cashOutResponse
+                    'response' => $cashOutResponse,
                 ]);
 
+                $feeBreakdown = withdrawal_fee_breakdown((float) $validated['amount']);
+
                 return redirect()->route('wallet.index')
-                    ->with('success', 'Demande de retrait en cours de traitement ! Les fonds seront envoyés vers ' . $validated['phone_number'] . ' sous quelques minutes.');
+                    ->with('success', sprintf(
+                        'Demande de retrait en cours de traitement ! Les fonds seront envoyés vers %s sous quelques minutes. Vous recevrez environ %s après les frais de l\'agrégateur (%s%%). Les frais d\'encaissement ne sont jamais déduits du retrait.',
+                        $validated['phone_number'],
+                        number_format($feeBreakdown['net'], 2, ',', ' ').' '.$wallet->currency,
+                        $feeBreakdown['percentage']
+                    ));
 
             } catch (\Exception $apiError) {
                 Log::error('Cash-out API error', [
                     'error' => $apiError->getMessage(),
-                    'transaction_id' => $transaction->id
+                    'transaction_id' => $transaction->id,
                 ]);
 
                 // Marquer comme échoué mais ne pas rembourser immédiatement
                 // (permettre une réessai manuel par l'admin)
                 $withdrawalRequest->update([
                     'status' => 'failed',
-                    'provider_response' => json_encode(['error' => $apiError->getMessage()])
+                    'provider_response' => json_encode(['error' => $apiError->getMessage()]),
                 ]);
-                
+
                 $transaction->update(['status' => 'failed']);
 
                 return redirect()->route('wallet.index')
@@ -199,12 +208,12 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             Log::error('Withdrawal creation error', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Erreur lors du retrait : ' . $e->getMessage());
+                ->with('error', 'Erreur lors du retrait : '.$e->getMessage());
         }
     }
 
@@ -243,7 +252,7 @@ class WalletController extends Controller
             $paymentData = [
                 'buyer_id' => Auth::id(),
                 'amount' => $validated['amount'],
-                'purpose' => 'Recharge de wallet ' . $wallet->currency,
+                'purpose' => 'Recharge de wallet '.$wallet->currency,
             ];
 
             // Rediriger vers la méthode de paiement appropriée dans PaymentController
@@ -274,10 +283,10 @@ class WalletController extends Controller
                         'type' => 'credit',
                         'amount' => $validated['amount'],
                         'balance_after' => $wallet->balance,
-                        'description' => 'Recharge via ' . ucfirst($validated['payment_method']),
-                        'reference' => $response['provider'] . '-' . time() . '-' . rand(1000, 9999),
+                        'description' => 'Recharge via '.ucfirst($validated['payment_method']),
+                        'reference' => $response['provider'].'-'.time().'-'.rand(1000, 9999),
                         'status' => 'pending',
-                        'provider' => $validated['payment_method']
+                        'provider' => $validated['payment_method'],
                     ]);
                 });
             }
@@ -286,7 +295,7 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erreur lors de l\'initiation du paiement : ' . $e->getMessage()
+                'message' => 'Erreur lors de l\'initiation du paiement : '.$e->getMessage(),
             ], 500);
         }
     }
@@ -313,12 +322,12 @@ class WalletController extends Controller
         } catch (\DomainException $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erreur lors de la conversion : ' . $e->getMessage()
+                'message' => 'Erreur lors de la conversion : '.$e->getMessage(),
             ], 500);
         }
     }
@@ -331,28 +340,31 @@ class WalletController extends Controller
     {
         Log::info('Withdrawal webhook received', [
             'provider' => $provider,
-            'payload' => $request->all()
+            'payload' => $request->all(),
         ]);
 
         try {
             // Valider le provider (inclut kpay comme agrégateur)
             $validProviders = ['orange_money', 'airtel_money', 'mpesa', 'africell', 'illicocash', 'kpay'];
-            if (!in_array($provider, $validProviders)) {
+            if (! in_array($provider, $validProviders)) {
                 Log::warning('Invalid provider in webhook', ['provider' => $provider]);
+
                 return response()->json(['status' => 'error', 'message' => 'Provider invalide'], 400);
             }
 
             // Vérifier la signature/authentification du webhook
-            if (!$this->mobileMoneyService->verifyWebhookSignature($provider, $request)) {
+            if (! $this->mobileMoneyService->verifyWebhookSignature($provider, $request)) {
                 Log::warning('Invalid webhook signature', ['provider' => $provider]);
+
                 return response()->json(['status' => 'error', 'message' => 'Signature invalide'], 401);
             }
 
             // Extraire la référence de transaction
             $reference = $this->mobileMoneyService->extractReferenceFromWebhook($provider, $request);
-            
-            if (!$reference) {
+
+            if (! $reference) {
                 Log::error('No reference found in webhook', ['provider' => $provider, 'payload' => $request->all()]);
+
                 return response()->json(['status' => 'error', 'message' => 'Référence introuvable'], 400);
             }
 
@@ -362,11 +374,12 @@ class WalletController extends Controller
                 ->where('provider', $provider)
                 ->first();
 
-            if (!$transaction) {
+            if (! $transaction) {
                 Log::error('Transaction not found for webhook', [
                     'reference' => $reference,
-                    'provider' => $provider
+                    'provider' => $provider,
                 ]);
+
                 return response()->json(['status' => 'error', 'message' => 'Transaction introuvable'], 404);
             }
 
@@ -377,7 +390,7 @@ class WalletController extends Controller
             Log::info('Webhook status extracted', [
                 'reference' => $reference,
                 'status' => $webhookStatus,
-                'provider_reference' => $providerReference
+                'provider_reference' => $providerReference,
             ]);
 
             // Mettre à jour la demande de retrait
@@ -390,7 +403,7 @@ class WalletController extends Controller
                     'provider_response' => json_encode(array_merge(
                         json_decode($withdrawalRequest->provider_response ?? '{}', true),
                         ['webhook' => $request->all(), 'webhook_received_at' => now()->toDateTimeString()]
-                    ))
+                    )),
                 ]);
             }
 
@@ -405,7 +418,7 @@ class WalletController extends Controller
                 // Idempotence : ne rembourser qu'une seule fois.
                 // Ignores tout webhook "failed" rejoué si la transaction est déjà marquée
                 // comme échouée ET qu'un remboursement existe déjà.
-                $refundRef = 'REFUND-' . $transaction->reference;
+                $refundRef = 'REFUND-'.$transaction->reference;
                 $alreadyRefunded = WalletTransaction::where('reference', $refundRef)
                     ->where('type', 'credit')
                     ->exists();
@@ -416,21 +429,22 @@ class WalletController extends Controller
                         'previous_status' => $previousStatus,
                         'already_refunded' => $alreadyRefunded,
                     ]);
+
                     return response()->json([
                         'status' => 'success',
-                        'message' => 'Webhook déjà traité (idempotent)'
+                        'message' => 'Webhook déjà traité (idempotent)',
                     ], 200);
                 }
 
                 DB::transaction(function () use ($transaction, $refundRef) {
                     $wallet = $transaction->wallet;
                     $wallet->increment('balance', $transaction->amount);
-                    
+
                     $wallet->transactions()->create([
                         'type' => 'credit',
                         'amount' => $transaction->amount,
                         'balance_after' => $wallet->fresh()->balance,
-                        'description' => 'Remboursement suite à échec de retrait - Ref: ' . $transaction->reference,
+                        'description' => 'Remboursement suite à échec de retrait - Ref: '.$transaction->reference,
                         'reference' => $refundRef,
                         'status' => 'completed',
                     ]);
@@ -438,7 +452,7 @@ class WalletController extends Controller
 
                 Log::info('Wallet refunded due to failed withdrawal', [
                     'transaction_id' => $transaction->id,
-                    'amount' => $transaction->amount
+                    'amount' => $transaction->amount,
                 ]);
             }
 
@@ -447,7 +461,7 @@ class WalletController extends Controller
                 Log::info('Withdrawal completed successfully', [
                     'transaction_id' => $transaction->id,
                     'amount' => $transaction->amount,
-                    'phone' => json_decode($transaction->metadata, true)['phone_number'] ?? 'N/A'
+                    'phone' => json_decode($transaction->metadata, true)['phone_number'] ?? 'N/A',
                 ]);
 
                 // Optionnel: Envoyer notification à l'utilisateur
@@ -456,21 +470,44 @@ class WalletController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Webhook traité avec succès'
+                'message' => 'Webhook traité avec succès',
             ], 200);
 
         } catch (\Exception $e) {
             Log::error('Webhook processing error', [
                 'provider' => $provider,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Erreur lors du traitement du webhook'
+                'message' => 'Erreur lors du traitement du webhook',
             ], 500);
         }
+    }
+
+    /**
+     * API légère (web) : détaille les frais de l'agrégateur et le montant net
+     * avant confirmation d'un retrait. Calculé uniquement côté serveur.
+     */
+    public function withdrawPreview(Request $request, Wallet $wallet)
+    {
+        if ($wallet->user_id !== Auth::id()) {
+            abort(403, 'Accès non autorisé');
+        }
+
+        $amount = max(0, (float) $request->query('amount', 0));
+        $breakdown = withdrawal_fee_breakdown($amount);
+
+        return response()->json([
+            'amount' => $amount,
+            'withdrawal_fee_percentage' => $breakdown['percentage'],
+            'withdrawal_fee' => $breakdown['fee'],
+            'net_amount' => $breakdown['net'],
+            'currency' => $wallet->currency,
+            'balance' => (float) $wallet->balance,
+        ]);
     }
 
     /**
@@ -480,7 +517,7 @@ class WalletController extends Controller
     public function retryFailedWithdrawal(WithdrawalRequest $withdrawalRequest)
     {
         // Vérifier les permissions admin (à adapter selon votre système)
-        if (!Auth::user()->is_admin) {
+        if (! Auth::user()->is_admin) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -491,7 +528,7 @@ class WalletController extends Controller
 
         try {
             $transaction = $withdrawalRequest->transaction;
-            
+
             // Mettre à jour le statut en "processing"
             $withdrawalRequest->update(['status' => 'processing']);
             $transaction->update(['status' => 'processing']);
@@ -519,7 +556,7 @@ class WalletController extends Controller
 
             Log::info('Withdrawal retry initiated', [
                 'withdrawal_request_id' => $withdrawalRequest->id,
-                'response' => $cashOutResponse
+                'response' => $cashOutResponse,
             ]);
 
             return redirect()->back()
@@ -528,14 +565,14 @@ class WalletController extends Controller
         } catch (\Exception $e) {
             Log::error('Withdrawal retry error', [
                 'withdrawal_request_id' => $withdrawalRequest->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             $withdrawalRequest->update(['status' => 'failed']);
             $transaction->update(['status' => 'failed']);
 
             return redirect()->back()
-                ->with('error', 'Erreur lors de la réessai : ' . $e->getMessage());
+                ->with('error', 'Erreur lors de la réessai : '.$e->getMessage());
         }
     }
 
@@ -543,8 +580,7 @@ class WalletController extends Controller
      * Transfère la commission de la plateforme depuis le wallet pending vers le wallet entreprise
      * et crédite le montant net au wallet principal du vendeur.
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function transferCommission(Request $request)
     {
@@ -595,14 +631,14 @@ class WalletController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             $usdWallet = $this->walletService->getOrCreateUserWallet($user, 'USD');
             $cdfWallet = $this->walletService->getOrCreateUserWallet($user, 'CDF');
 
             return $this->successResponse([
                 'usd_wallet' => $usdWallet,
                 'cdf_wallet' => $cdfWallet,
-                'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500)
+                'total_usd_equivalent' => $usdWallet->balance + ($cdfWallet->balance / 2500),
             ], 'Wallets récupérés avec succès');
         } catch (\Exception $e) {
             return $this->errorResponse('Erreur lors de la récupération des wallets', 500);
@@ -654,7 +690,7 @@ class WalletController extends Controller
             $paymentData = [
                 'buyer_id' => $request->user()->id,
                 'amount' => $request->amount,
-                'purpose' => 'Recharge de wallet ' . $wallet->currency,
+                'purpose' => 'Recharge de wallet '.$wallet->currency,
             ];
 
             switch ($request->payment_method) {
@@ -682,10 +718,10 @@ class WalletController extends Controller
                     'type' => 'credit',
                     'amount' => $request->amount,
                     'balance_after' => $wallet->balance,
-                    'description' => 'Recharge via ' . ucfirst($request->payment_method),
-                    'reference' => $response['provider'] . '-' . time() . '-' . rand(1000, 9999),
+                    'description' => 'Recharge via '.ucfirst($request->payment_method),
+                    'reference' => $response['provider'].'-'.time().'-'.rand(1000, 9999),
                     'status' => 'pending',
-                    'provider' => $request->payment_method
+                    'provider' => $request->payment_method,
                 ]);
             }
 
@@ -743,13 +779,13 @@ class WalletController extends Controller
                 ], 'Demande de retrait en cours de traitement');
             } catch (\Exception $apiError) {
                 Log::error('Cash-out API error', ['error' => $apiError->getMessage()]);
-                
+
                 $withdrawalRequest->update(['status' => 'failed']);
                 $transaction->update(['status' => 'failed']);
 
                 return $this->successResponse([
                     'withdrawal' => $withdrawalRequest,
-                    'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.'
+                    'message' => 'Demande enregistrée mais envoi échoué. Réessai manuel prévu.',
                 ], 'Retrait en attente', 202);
             }
         } catch (\DomainException $e) {

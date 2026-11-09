@@ -16,7 +16,7 @@ class ApiCartTest extends TestCase
 
     private function item(User $seller, int $quantity = 5, float $price = 100): Item
     {
-        $category = Category::create(['name' => 'Cat', 'slug' => 'cat-' . uniqid()]);
+        $category = Category::create(['name' => 'Cat', 'slug' => 'cat-'.uniqid()]);
 
         return Item::create([
             'user_id' => $seller->id,
@@ -79,7 +79,7 @@ class ApiCartTest extends TestCase
         $item = $this->item(User::factory()->create(), price: 100);
 
         Cart::create([
-            'session_id' => 'api-' . $buyer->id,
+            'session_id' => 'api-'.$buyer->id,
             'user_id' => $buyer->id,
             'item_id' => $item->id,
             'item_name' => $item->name,
@@ -96,13 +96,16 @@ class ApiCartTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonCount(1, 'data');
 
-        $this->getJson('/api/v1/cart/summary')
+        $response = $this->getJson('/api/v1/cart/summary')
             ->assertOk()
-            ->assertJsonPath('data.subtotal', 300)
-            ->assertJsonPath('data.transport_fee', 15)
-            ->assertJsonPath('data.encaissement_fee_percentage', 5)
-            ->assertJsonPath('data.encaissement_fee', 15)
-            ->assertJsonPath('data.total', 330);
+            ->assertJsonPath('data.subtotal', 313.5)
+            ->assertJsonPath('data.transport_fee', 15.68)
+            ->assertJsonPath('data.total', 329.18)
+            ->assertJsonMissingPath('data.encaissement_fee');
+
+        // Les prix acheteur incluent le supplément d'encaissement, calculé côté serveur.
+        $cart = $this->getJson('/api/v1/cart')->json('data');
+        $this->assertEquals(104.5, $cart[0]['buyer_price']);
     }
 
     /** @test */
@@ -112,7 +115,7 @@ class ApiCartTest extends TestCase
         $item = $this->item(User::factory()->create());
 
         Cart::create([
-            'session_id' => 'api-' . $buyer->id,
+            'session_id' => 'api-'.$buyer->id,
             'user_id' => $buyer->id,
             'item_id' => $item->id,
             'item_name' => $item->name,
@@ -124,13 +127,13 @@ class ApiCartTest extends TestCase
 
         Sanctum::actingAs($buyer);
 
-        $this->putJson('/api/v1/cart/' . $item->id, ['quantity' => 4])
+        $this->putJson('/api/v1/cart/'.$item->id, ['quantity' => 4])
             ->assertOk()
             ->assertJsonPath('success', true);
 
         $this->assertDatabaseHas('carts', ['item_id' => $item->id, 'quantity' => 4]);
 
-        $this->deleteJson('/api/v1/cart/' . $item->id)
+        $this->deleteJson('/api/v1/cart/'.$item->id)
             ->assertOk();
 
         $this->assertDatabaseMissing('carts', ['item_id' => $item->id]);
@@ -143,7 +146,7 @@ class ApiCartTest extends TestCase
         $item = $this->item(User::factory()->create());
 
         Cart::create([
-            'session_id' => 'api-' . $buyer->id,
+            'session_id' => 'api-'.$buyer->id,
             'user_id' => $buyer->id,
             'item_id' => $item->id,
             'item_name' => $item->name,

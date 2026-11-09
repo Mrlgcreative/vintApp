@@ -198,6 +198,19 @@
                                 <span class="text-zinc-500 dark:text-zinc-400">Montant à retirer</span>
                                 <span class="font-medium tabular-nums text-red-600 dark:text-red-400" id="withdrawAmount">-0.00</span>
                             </div>
+                            <div class="flex items-center justify-between text-sm">
+                                <span class="text-zinc-500 dark:text-zinc-400">Frais de retrait <span class="text-xs text-zinc-400">(agrégateur · <span id="feePercentage">{{ withdrawal_fee_percentage() }}</span> %)</span></span>
+                                <span class="font-medium tabular-nums text-zinc-700 dark:text-zinc-200" id="withdrawFee">-0.00</span>
+                            </div>
+                            <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Vous recevrez (net)</span>
+                                        <p class="mt-0.5 text-xs text-zinc-400">Frais de l'agrégateur uniquement — jamais les frais d'encaissement.</p>
+                                    </div>
+                                    <span class="text-lg font-semibold tabular-nums text-emerald-600 dark:text-emerald-400" id="netAmount">0.00</span>
+                                </div>
+                            </div>
                             <div class="border-t border-zinc-200 pt-3 dark:border-zinc-700">
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm font-medium text-zinc-700 dark:text-zinc-200">Nouveau solde</span>
@@ -326,6 +339,38 @@ document.addEventListener('DOMContentLoaded', function() {
     const newBalanceSpan = document.getElementById('newBalance');
     const currentBalance = {{ $wallet->balance }};
     const currency = '{{ $wallet->currency }}';
+    const withdrawFeeSpan = document.getElementById('withdrawFee');
+    const netAmountSpan = document.getElementById('netAmount');
+    const feePercentageSpan = document.getElementById('feePercentage');
+    const previewUrl = @json(route('wallet.withdraw-preview', $wallet));
+    let lastBreakdown = null;
+    let previewTimer = null;
+
+    function fmtMoney(v) {
+        if (currency === 'CDF') {
+            return v.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' FC';
+        }
+        return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function refreshFeePreview(amount) {
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`${previewUrl}?amount=${encodeURIComponent(amount)}`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                lastBreakdown = data;
+                if (feePercentageSpan) feePercentageSpan.textContent = data.withdrawal_fee_percentage;
+                if (withdrawFeeSpan) withdrawFeeSpan.textContent = '-' + fmtMoney(data.withdrawal_fee);
+                if (netAmountSpan) netAmountSpan.textContent = fmtMoney(data.net_amount);
+            } catch (e) {
+                console.error('Aperçu retrait impossible:', e);
+            }
+        }, 200);
+    }
 
     function validateForm() {
         const amount = parseFloat(amountInput?.value) || 0;
@@ -367,27 +412,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (amount > 0) {
                 preview.classList.remove('hidden');
 
-                if (currency === 'CDF') {
-                    withdrawAmountSpan.textContent = '-' + amount.toLocaleString('fr-FR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }) + ' FC';
-
-                    newBalanceSpan.textContent = (currentBalance - amount).toLocaleString('fr-FR', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }) + ' FC';
-                } else {
-                    withdrawAmountSpan.textContent = '-$' + amount.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-
-                    newBalanceSpan.textContent = '$' + (currentBalance - amount).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                }
+                withdrawAmountSpan.textContent = '-' + fmtMoney(amount);
+                newBalanceSpan.textContent = fmtMoney(currentBalance - amount);
+                refreshFeePreview(amount);
 
                 newBalanceSpan.classList.remove('text-red-600', 'text-zinc-900');
                 newBalanceSpan.classList.add(amount > currentBalance ? 'text-red-600' : 'text-zinc-900');
@@ -405,8 +432,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const paymentMethod = document.getElementById('payment_method').value;
             const methodLabel = { kpay: 'K-PAY' }[paymentMethod] || paymentMethod.toUpperCase();
 
+            const netLine = lastBreakdown
+                ? `Frais de l'agrégateur : ${fmtMoney(lastBreakdown.withdrawal_fee)} (${lastBreakdown.withdrawal_fee_percentage}%)\nVous recevrez (net) : ${fmtMoney(lastBreakdown.net_amount)}\n\n`
+                : '';
+
             const confirmMessage = `RETRAIT VIA ${methodLabel}\n\n` +
-                `Montant : ${currency === 'CDF' ? amount.toLocaleString('fr-FR') + ' FC' : '$' + amount.toLocaleString('en-US')}\n` +
+                `Montant : ${fmtMoney(amount)}\n` +
+                netLine +
                 `Vers : ${phone}\n\n` +
                 `Transfert automatique en 2-10 minutes.\n` +
                 `Wallet débité immédiatement.\n` +

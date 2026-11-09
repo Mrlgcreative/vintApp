@@ -91,7 +91,7 @@
                                         <p class="text-sm text-gray-500 dark:text-gray-400 truncate mb-1">
                                             {{ $check->item->brand->name ?? 'Marque non spécifiée' }} · {{ $check->item->category->name ?? 'Sans catégorie' }}
                                         </p>
-                                        <p class="font-semibold text-gray-900 dark:text-white mb-2">{{ $check->item->formatted_price }}</p>
+                                        <p class="font-semibold text-gray-900 dark:text-white mb-2">{{ $check->item->buyer_formatted_price }}</p>
 
                                         @if($check->item->isVerified())
                                             <div class="mb-2">{!! $check->item->getAuthenticityBadgeHtml() !!}</div>

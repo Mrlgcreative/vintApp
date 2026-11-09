@@ -440,7 +440,7 @@
                             <!-- Badge prix -->
                             <div class="position-absolute top-0 end-0 m-2">
                                 <span class="badge bg-primary-600 text-white rounded-pill px-3 py-2 shadow-sm fw-bold">
-                                    {{ number_format($item->price) }} {{ $item->currency }}
+                                    {{ number_format($item->buyer_price, 2) }} {{ $item->currency }}
                                 </span>
                             </div>
                         </div>

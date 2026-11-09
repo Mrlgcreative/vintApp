@@ -157,7 +157,7 @@
                                     {{ $item->name }}
                                 </h3>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-lg font-bold text-gray-900 dark:text-white">{{ $item->formatted_price }}</span>
+                                    <span class="text-lg font-bold text-gray-900 dark:text-white">{{ $item->buyer_formatted_price }}</span>
                                     <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>

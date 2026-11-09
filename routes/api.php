@@ -309,6 +309,8 @@ Route::middleware(['auth:sanctum,web'])->group(function () {
             ->middleware('throttle:10,1'); // Max 10 dépôts/min (protection fraude)
         Route::post('/withdraw', [ApiWalletController::class, 'withdraw'])
             ->middleware('throttle:5,1'); // Max 5 retraits/min
+        Route::post('/withdraw/preview', [ApiWalletController::class, 'withdrawPreview'])
+            ->middleware('throttle:30,1'); // Aperçu des frais / montant net
         Route::post('/convert', [ApiWalletController::class, 'convert'])
             ->middleware('throttle:20,1'); // Max 20 conversions/min
 

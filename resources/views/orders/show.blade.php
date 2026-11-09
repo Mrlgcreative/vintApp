@@ -83,7 +83,7 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="rounded-lg border border-vinted-primary-200 bg-vinted-primary-50 p-4 dark:border-vinted-primary-500/30 dark:bg-vinted-primary-500/5">
                                         <p class="mb-1 text-xs font-medium text-vinted-primary-600 dark:text-vinted-primary-400">Prix unitaire</p>
-                                        <p class="text-xl font-bold text-vinted-primary-700 dark:text-vinted-primary-300">{{ $order->formatted_unit_price }}</p>
+                                        <p class="text-xl font-bold text-vinted-primary-700 dark:text-vinted-primary-300">{{ $order->formatted_buyer_unit_price }}</p>
                                     </div>
                                     <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-500/30 dark:bg-emerald-500/5">
                                         <p class="mb-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">Quantité</p>
@@ -245,7 +245,7 @@
                                     <dl class="space-y-3">
                                         <div class="flex items-center justify-between">
                                             <dt class="text-sm text-zinc-600 dark:text-zinc-300">Prix unitaire :</dt>
-                                            <dd class="font-semibold text-zinc-900 dark:text-white">{{ $order->formatted_unit_price }}</dd>
+                                            <dd class="font-semibold text-zinc-900 dark:text-white">{{ $order->formatted_buyer_unit_price }}</dd>
                                         </div>
                                         <div class="flex items-center justify-between">
                                             <dt class="text-sm text-zinc-600 dark:text-zinc-300">Quantité :</dt>
@@ -253,7 +253,7 @@
                                         </div>
                                         <div class="mt-2 flex items-center justify-between rounded-md bg-vinted-primary-50 px-3 py-2.5 dark:bg-vinted-primary-500/5">
                                             <dt class="font-bold text-zinc-900 dark:text-white">Total</dt>
-                                            <dd class="text-lg font-bold text-vinted-primary-600 dark:text-vinted-primary-400">{{ $order->formatted_total_amount }}</dd>
+                                            <dd class="text-lg font-bold text-vinted-primary-600 dark:text-vinted-primary-400">{{ $order->formatted_buyer_total_amount }}</dd>
                                         </div>
                                     </dl>
                                 </div>

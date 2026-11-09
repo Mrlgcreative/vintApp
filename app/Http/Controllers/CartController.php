@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Item;
-use App\Models\Discount;
 use App\Models\Cart;
+use App\Models\Discount;
+use App\Models\Item;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
@@ -85,6 +85,7 @@ class CartController extends Controller
     {
         $this->syncSessionToDb($request);
         $cart = $this->getCartArray($request);
+
         return view('cart', ['cart' => $cart]);
     }
 
@@ -170,9 +171,9 @@ class CartController extends Controller
         }
 
         $message = $activeDiscount
-            ? 'Article ajouté au panier avec réduction de ' . $activeDiscount->discount_percentage . '% !'
+            ? 'Article ajouté au panier avec réduction de '.$activeDiscount->discount_percentage.'% !'
             : ($offer
-                ? 'Article ajouté au panier avec la promo ' . $offer->discountLabel() . ' !'
+                ? 'Article ajouté au panier avec la promo '.$offer->discountLabel().' !'
                 : 'Article ajouté au panier.');
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -255,31 +256,17 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
 
-        $subtotal = collect($cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
+        // Prix affichés à l'acheteur (supplément inclus) ; calculé serveur uniquement.
+        $totals = cart_totals($cart);
 
-        $transportFeePercentage = \DB::table('settings')
-            ->where('key', 'transport_fee_percentage')
-            ->value('value') ?? 5;
-
-        $transportFee = ($subtotal * $transportFeePercentage) / 100;
-
-        $encaissementFeePercentage = encaissement_fee_percentage();
-        $encaissementFee = ($subtotal * $encaissementFeePercentage) / 100;
-
-        $total = $subtotal + $transportFee + $encaissementFee;
-
-        $currency = !empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
+        $currency = ! empty($cart) ? reset($cart)['currency'] ?? 'CDF' : 'CDF';
 
         return view('checkout', [
             'cart' => $cart,
-            'subtotal' => $subtotal,
-            'transportFee' => $transportFee,
-            'transportFeePercentage' => $transportFeePercentage,
-            'encaissementFee' => $encaissementFee,
-            'encaissementFeePercentage' => $encaissementFeePercentage,
-            'total' => $total,
+            'subtotal' => $totals['subtotal'],
+            'transportFee' => $totals['transport_fee'],
+            'transportFeePercentage' => $totals['transport_fee_percentage'],
+            'total' => $totals['total'],
             'currency' => $currency,
         ]);
     }
@@ -293,29 +280,14 @@ class CartController extends Controller
             return redirect()->route('cart.index')->with('error', 'Votre panier est vide.');
         }
 
-        $subtotal = collect($cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
-
-        $transportFeePercentage = \DB::table('settings')
-            ->where('key', 'transport_fee_percentage')
-            ->value('value') ?? 5;
-
-        $transportFee = ($subtotal * $transportFeePercentage) / 100;
-
-        $encaissementFeePercentage = encaissement_fee_percentage();
-        $encaissementFee = ($subtotal * $encaissementFeePercentage) / 100;
-
-        $total = $subtotal + $transportFee + $encaissementFee;
+        $totals = cart_totals($cart);
 
         return view('payments', [
             'cart' => $cart,
-            'subtotal' => $subtotal,
-            'transportFee' => $transportFee,
-            'transportFeePercentage' => $transportFeePercentage,
-            'encaissementFee' => $encaissementFee,
-            'encaissementFeePercentage' => $encaissementFeePercentage,
-            'total' => $total,
+            'subtotal' => $totals['subtotal'],
+            'transportFee' => $totals['transport_fee'],
+            'transportFeePercentage' => $totals['transport_fee_percentage'],
+            'total' => $totals['total'],
         ]);
     }
 }

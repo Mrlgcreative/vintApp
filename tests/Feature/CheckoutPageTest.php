@@ -2,9 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Models\Cart;
 use App\Models\DeliveryAddress;
+use App\Models\Setting;
 use App\Models\User;
+use App\Services\KPay;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class CheckoutPageTest extends TestCase
@@ -14,7 +18,7 @@ class CheckoutPageTest extends TestCase
     public function test_checkout_page_shows_payment_method_selector(): void
     {
         $user = User::factory()->create();
-        \App\Models\Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
+        Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
 
         $response = $this->actingAs($user)->withSession([
             'gps_location_validated' => true,
@@ -32,8 +36,8 @@ class CheckoutPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('data-method="kpay"', false);
-        $response->assertDontSee("Frais d'encaissement", false); // masqué au client, inclus dans le total
-        $response->assertSee('110.00 USD', false); // 100 + 5% livraison + 5% encaissement
+        $response->assertDontSee("Frais d'encaissement", false); // masqué au client, inclus dans le prix affiché
+        $response->assertSee('109.73 USD', false); // 100 + 4,5 % supplément acheteur + 5 % livraison
         $response->assertDontSee('data-method="maishapay"', false);
         $response->assertSee('id="kpayForm"', false);
         $response->assertDontSee('id="maishapayForm"', false);
@@ -43,7 +47,7 @@ class CheckoutPageTest extends TestCase
 
     public function test_kpay_checkout_renders_payment_page(): void
     {
-        \App\Models\Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
+        Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
         $user = User::factory()->create();
         $address = DeliveryAddress::create([
             'user_id' => $user->id,
@@ -60,6 +64,17 @@ class CheckoutPageTest extends TestCase
             1 => ['id' => 1, 'name' => 'Article', 'price' => 5000.0, 'currency' => 'CDF', 'quantity' => 2],
         ];
 
+        // Le checkout lit le panier réel en base (créé par syncSessionToDb côté web).
+        Cart::create([
+            'session_id' => 'test-session',
+            'user_id' => $user->id,
+            'item_id' => 1,
+            'item_name' => 'Article',
+            'price' => 5000.0,
+            'currency' => 'CDF',
+            'quantity' => 2,
+        ]);
+
         $response = $this->actingAs($user)->withSession([
             'gps_location_validated' => true,
         ])->post(route('payments.kpay.checkout'), [
@@ -73,7 +88,7 @@ class CheckoutPageTest extends TestCase
         $response->assertViewIs('payments.kpay');
         $response->assertSee('K-PAY', false);
         $response->assertSee('VODACOM', false);
-        $response->assertSee('10,500.00 CDF', false);
+        $response->assertSee('10,972.50 CDF', false); // 2 × 5 000 + 4,5 % supplément + 5 % livraison (recalculé serveur)
         $response->assertDontSee('Page sécurisée', false);
         $response->assertDontSee('Choisissez l\'opérateur sur la page K-PAY', false);
         $response->assertSessionHas('kpay_checkout');
@@ -81,7 +96,7 @@ class CheckoutPageTest extends TestCase
 
     public function test_kpay_checkout_converts_usd_cart_to_cdf(): void
     {
-        \App\Models\Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
+        Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
         $user = User::factory()->create();
         $address = DeliveryAddress::create([
             'user_id' => $user->id,
@@ -98,6 +113,20 @@ class CheckoutPageTest extends TestCase
             1 => ['id' => 1, 'name' => 'iPhone', 'price' => 5.0, 'currency' => 'USD', 'quantity' => 2],
         ];
 
+        Cart::create([
+            'session_id' => 'test-session',
+            'user_id' => $user->id,
+            'item_id' => 1,
+            'item_name' => 'iPhone',
+            'price' => 5.0,
+            'currency' => 'USD',
+            'quantity' => 2,
+        ]);
+
+        // Total serveur : 2 × 5,23 (supplément 4,5 % inclus) + 5 % livraison = 10,97 USD
+        $buyerUnit = buyer_price(5.0);
+        $expectedUsd = round($buyerUnit * 2 + round(round($buyerUnit * 2, 2) * 0.05, 2), 2);
+
         $response = $this->actingAs($user)->withSession([
             'gps_location_validated' => true,
         ])->post(route('payments.kpay.checkout'), [
@@ -110,12 +139,12 @@ class CheckoutPageTest extends TestCase
         $response->assertOk();
         $response->assertViewIs('payments.kpay');
 
-        $rate = \Illuminate\Support\Facades\Cache::get('usd_cdf_rate');
+        $rate = Cache::get('usd_cdf_rate');
         $this->assertNotNull($rate, 'Le taux usd_cdf_rate doit être en cache');
 
-        $expectedCdf = round(10.0 * (float) $rate, 2);
-        $response->assertSee(number_format($expectedCdf, 2) . ' CDF', false);
-        $response->assertSee('10.00 USD', false);
+        $expectedCdf = round($expectedUsd * (float) $rate, 2);
+        $response->assertSee(number_format($expectedCdf, 2).' CDF', false);
+        $response->assertSee(number_format($expectedUsd, 2).' USD', false);
 
         $session = session('kpay_checkout');
         $this->assertEquals('USD', $session['currency']);
@@ -124,7 +153,7 @@ class CheckoutPageTest extends TestCase
 
     public function test_kpay_checkout_blocks_amount_over_max_limit(): void
     {
-        \App\Models\Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
+        Setting::set('enable_location_restrictions', '0', ['label' => 'Test']);
         $user = User::factory()->create();
         $address = DeliveryAddress::create([
             'user_id' => $user->id,
@@ -137,10 +166,20 @@ class CheckoutPageTest extends TestCase
             'is_default' => true,
         ]);
 
-        $limit = \App\Services\KPay::MAX_AMOUNT_CDF;
+        $limit = KPay::MAX_AMOUNT_CDF;
         $cart = [
             1 => ['id' => 1, 'name' => 'Article', 'price' => $limit + 100.0, 'currency' => 'CDF', 'quantity' => 1],
         ];
+
+        Cart::create([
+            'session_id' => 'test-session',
+            'user_id' => $user->id,
+            'item_id' => 1,
+            'item_name' => 'Article',
+            'price' => $limit + 100.0,
+            'currency' => 'CDF',
+            'quantity' => 1,
+        ]);
 
         $response = $this->actingAs($user)->withSession([
             'gps_location_validated' => true,

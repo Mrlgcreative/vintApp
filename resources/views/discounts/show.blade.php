@@ -38,7 +38,7 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <strong class="text-primary fs-5">{{ $discount->item->formatted_price }}</strong>
+                                    <strong class="text-primary fs-5">{{ $discount->item->buyer_formatted_price }}</strong>
                                 </div>
                                 <div>
                                     <span class="badge {{ $discount->status_class }}">
@@ -116,7 +116,7 @@
                                                 <label class="form-label">Nouveau prix</label>
                                                 <div class="p-2 bg-light rounded">
                                                     <span id="finalPrice" class="fw-bold text-success fs-5">
-                                                        {{ $discount->item->formatted_price }}
+                                                        {{ $discount->item->buyer_formatted_price }}
                                                     </span>
                                                     <small class="text-muted d-block">
                                                         Économie : <span id="savingAmount">0 FCFA</span>

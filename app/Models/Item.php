@@ -2,17 +2,16 @@
 
 namespace App\Models;
 
-
-use App\Models\Concerns\HasPublicId;use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Concerns\HasPublicId;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
 class Item extends Model
 {
-    use HasPublicId;
-
     use HasFactory;
+    use HasPublicId;
 
     /**
      * Clé du cache global des offres courantes (partagé entre les workers).
@@ -89,7 +88,7 @@ class Item extends Model
     /**
      * Attributs à ajouter automatiquement au JSON
      */
-    protected $appends = ['image_urls', 'first_image_url'];
+    protected $appends = ['image_urls', 'first_image_url', 'buyer_price', 'buyer_formatted_price'];
 
     /**
      * Accesseur pour les URLs complètes des images
@@ -124,6 +123,33 @@ class Item extends Model
     }
 
     /**
+     * Prix affiché à l'acheteur : prix vendeur + supplément d'encaissement.
+     * Calculé côté serveur ; le client se contente d'afficher le résultat.
+     */
+    public function getBuyerPriceAttribute(): float
+    {
+        return buyer_price((float) $this->price);
+    }
+
+    /**
+     * Prix acheteur formaté avec devise.
+     */
+    public function getBuyerFormattedPriceAttribute(): string
+    {
+        return currency_symbol($this->currency).' '.number_format($this->buyer_price, 2);
+    }
+
+    /**
+     * Prix final après réduction, vu par l'acheteur (avec supplément), null si aucune offre.
+     */
+    public function getBuyerSalePriceAttribute(): ?float
+    {
+        $sale = $this->salePrice();
+
+        return $sale !== null ? buyer_price($sale) : null;
+    }
+
+    /**
      * Accesseur pour la première image URL
      */
     public function getFirstImageUrlAttribute(): ?string
@@ -137,7 +163,8 @@ class Item extends Model
     public function getFormattedPriceAttribute()
     {
         $symbol = currency_symbol($this->currency);
-        return $symbol . ' ' . number_format((float) $this->price, 2);
+
+        return $symbol.' '.number_format((float) $this->price, 2);
     }
 
     /**
@@ -175,12 +202,14 @@ class Item extends Model
             if ($o->scope === 'categories') {
                 return $categoryId && $o->categories()->where('category_id', $categoryId)->exists();
             }
+
             return false;
         })->sortByDesc(function (Offer $o) {
             // Meilleure offre = réduction en % ; à valeur égale, la plus récente d'abord.
             $pct = $o->type === 'percent'
                 ? (float) $o->value
                 : ((float) $o->value / max((float) $this->price, 1)) * 100;
+
             return [$pct, $o->created_at ? $o->created_at->timestamp : 0];
         });
 
@@ -207,6 +236,7 @@ class Item extends Model
     public function salePrice(): ?float
     {
         $offer = $this->activeOffer();
+
         return $offer ? $offer->discountPriceFor($this) : null;
     }
 
@@ -224,6 +254,7 @@ class Item extends Model
     public function getOfferLabelAttribute(): ?string
     {
         $offer = $this->activeOffer();
+
         return $offer?->discountLabel();
     }
 
@@ -391,13 +422,13 @@ class Item extends Model
         if ($this->authenticity_verified && $this->verification_status === 'approved') {
             return true;
         }
-        
+
         return $this->authenticity_verified && $this->authenticityCheck && $this->authenticityCheck->isApproved();
     }
 
     public function needsVerification(): bool
     {
-        return !$this->authenticityCheck || $this->authenticityCheck->isPending();
+        return ! $this->authenticityCheck || $this->authenticityCheck->isPending();
     }
 
     public function canRequestVerification(): bool
@@ -406,35 +437,35 @@ class Item extends Model
         if ($this->isVerified()) {
             return false;
         }
-        
+
         // Tous les articles peuvent demander une vérification s'ils n'en ont pas déjà une
         // et s'ils ont une catégorie active
-        return !$this->authenticity_requested && 
-               !$this->authenticity_verified &&
-               $this->category && 
+        return ! $this->authenticity_requested &&
+               ! $this->authenticity_verified &&
+               $this->category &&
                $this->category->is_active;
     }
 
     public function getAuthenticityBadgeHtml(): string
     {
-        if (!$this->isVerified()) {
+        if (! $this->isVerified()) {
             return '';
         }
 
-        $badgeText = match($this->authenticity_badge_type) {
+        $badgeText = match ($this->authenticity_badge_type) {
             'vintapp_verified' => 'Vérifié VintApp',
             'expert_certified' => 'Certifié Expert',
             default => 'Authentifié'
         };
 
-        $badgeIcon = match($this->authenticity_badge_type) {
+        $badgeIcon = match ($this->authenticity_badge_type) {
             'vintapp_verified' => '✓',
             'expert_certified' => '🏆',
             default => '✓'
         };
 
         return '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    ' . $badgeIcon . ' ' . $badgeText . '
+                    '.$badgeIcon.' '.$badgeText.'
                 </span>';
     }
 
@@ -462,31 +493,33 @@ class Item extends Model
     public function getBadgesHtml(): string
     {
         $html = '';
-        
+
         // Badge authenticité d'abord
         $html .= $this->getAuthenticityBadgeHtml();
-        
+
         // Ensuite les badges de boost
         $activeBoosts = $this->activeBoosts;
-        
+
         foreach ($activeBoosts as $boost) {
             $boostType = $boost->boostType;
-            if (!$boostType) continue;
-            
+            if (! $boostType) {
+                continue;
+            }
+
             $config = $boostType->visual_config;
             $classes = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-1 ';
             $classes .= $config['badge_color'] ?? 'bg-blue-500 text-white';
-            
+
             if ($config['pulse_animation'] ?? false) {
                 $classes .= ' animate-pulse';
             }
-            
-            $icon = $boostType->icon ? '<i class="' . $boostType->icon . ' mr-1"></i>' : '';
+
+            $icon = $boostType->icon ? '<i class="'.$boostType->icon.' mr-1"></i>' : '';
             $text = $config['badge_text'] ?? strtoupper($boost->boost_type);
-            
-            $html .= '<span class="' . $classes . '">' . $icon . $text . '</span>';
+
+            $html .= '<span class="'.$classes.'">'.$icon.$text.'</span>';
         }
-        
+
         return $html;
     }
 
@@ -494,32 +527,35 @@ class Item extends Model
     {
         $styles = [];
         $activeBoosts = $this->activeBoosts;
-        
+
         foreach ($activeBoosts as $boost) {
             $boostType = $boost->boostType;
-            if (!$boostType) continue;
-            
+            if (! $boostType) {
+                continue;
+            }
+
             $config = $boostType->visual_config;
-            
+
             if ($config['border_color'] ?? false) {
-                $styles[] = 'border: ' . ($config['border_width'] ?? '1px') . ' solid ' . $config['border_color'];
+                $styles[] = 'border: '.($config['border_width'] ?? '1px').' solid '.$config['border_color'];
             }
-            
+
             if ($config['shadow_effect'] ?? false) {
-                $styles[] = 'box-shadow: ' . $config['shadow_effect'];
+                $styles[] = 'box-shadow: '.$config['shadow_effect'];
             }
-            
+
             if ($config['glow_effect'] ?? false) {
                 $styles[] = 'box-shadow: 0 0 10px rgba(59, 130, 246, 0.5)';
             }
         }
-        
+
         return implode('; ', $styles);
     }
 
     public function canBeBoostWith($boostType): bool
     {
         $type = BoostType::where('name', $boostType)->first();
+
         return $type ? $type->canApplyToItem($this->id) : false;
     }
 
@@ -528,12 +564,12 @@ class Item extends Model
      */
     public function getImageUrls(): array
     {
-        if (!$this->images || !is_array($this->images)) {
+        if (! $this->images || ! is_array($this->images)) {
             return [];
         }
 
         return array_map(function ($imagePath) {
-            return asset('storage/' . $imagePath);
+            return asset('storage/'.$imagePath);
         }, $this->images);
     }
 
@@ -543,7 +579,8 @@ class Item extends Model
     public function getFirstImageUrl(): ?string
     {
         $urls = $this->getImageUrls();
-        return !empty($urls) ? $urls[0] : null;
+
+        return ! empty($urls) ? $urls[0] : null;
     }
 
     // Relations de modération
@@ -583,7 +620,7 @@ class Item extends Model
         return $query->where('is_blocked', false)
             ->where(function ($q) {
                 $q->where('is_suspended', false)
-                  ->orWhere('suspended_until', '<', now());
+                    ->orWhere('suspended_until', '<', now());
             });
     }
 
@@ -591,14 +628,19 @@ class Item extends Model
     public function isAvailable(): bool
     {
         return $this->status === 'active'
-            && !$this->is_blocked
-            && !$this->isCurrentlySuspended();
+            && ! $this->is_blocked
+            && ! $this->isCurrentlySuspended();
     }
 
     public function isCurrentlySuspended(): bool
     {
-        if (!$this->is_suspended) return false;
-        if (!$this->suspended_until) return true;
+        if (! $this->is_suspended) {
+            return false;
+        }
+        if (! $this->suspended_until) {
+            return true;
+        }
+
         return now()->lt($this->suspended_until);
     }
 
@@ -610,13 +652,13 @@ class Item extends Model
 
     public function scopeOrderByBoostPriority($query)
     {
-        return $query->leftJoin('product_boosts', function($join) {
+        return $query->leftJoin('product_boosts', function ($join) {
             $join->on('items.id', '=', 'product_boosts.item_id')
-                 ->where('product_boosts.status', '=', 'active')
-                 ->where('product_boosts.starts_at', '<=', now())
-                 ->where('product_boosts.expires_at', '>', now());
+                ->where('product_boosts.status', '=', 'active')
+                ->where('product_boosts.starts_at', '<=', now())
+                ->where('product_boosts.expires_at', '>', now());
         })
-        ->selectRaw('items.*, COALESCE(
+            ->selectRaw('items.*, COALESCE(
             CASE product_boosts.boost_type
                 WHEN "spotlight" THEN 1000
                 WHEN "premium" THEN 500  
@@ -626,7 +668,7 @@ class Item extends Model
                 ELSE 0
             END, 0
         ) as boost_priority')
-        ->orderByDesc('boost_priority')
-        ->groupBy('items.id');
+            ->orderByDesc('boost_priority')
+            ->groupBy('items.id');
     }
 }

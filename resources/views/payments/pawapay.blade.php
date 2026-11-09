@@ -160,7 +160,7 @@
                                                 </div>
                                             </div>
                                             <span class="font-semibold text-gray-900 dark:text-white text-sm flex-shrink-0 ml-3">
-                                                {{ number_format($item['price'] * $item['quantity'], 2) }} {{ $item['currency'] }}
+                                                {{ number_format(buyer_price((float) $item['price']) * $item['quantity'], 2) }} {{ $item['currency'] }}
                                             </span>
                                         </div>
                                     @endforeach

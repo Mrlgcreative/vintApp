@@ -121,14 +121,14 @@
                                 <p class="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">Prix</p>
                                 @if($item->has_offer)
                                     <div class="flex items-center gap-2 mt-1">
-                                        <p class="text-2xl font-bold tracking-tight text-slate-400 line-through dark:text-slate-500">{{ $item->formatted_price }}</p>
+                                        <p class="text-2xl font-bold tracking-tight text-slate-400 line-through dark:text-slate-500">{{ $item->buyer_formatted_price }}</p>
                                         <span class="px-2.5 py-1 {{ $item->offer->is_flash_sale ? 'bg-red-500' : 'bg-emerald-500' }} text-white text-xs font-bold rounded-full">{{ $item->offer_label }}</span>
                                     </div>
                                     <p class="text-3xl font-bold tracking-tight text-emerald-600 sm:text-4xl dark:text-emerald-400">
-                                        {{ $item->currency === 'USD' ? '$' : 'FC' }} {{ number_format((float) $item->sale_price, 2) }}
+                                        {{ $item->currency === 'USD' ? '$' : 'FC' }} {{ number_format((float) $item->buyer_sale_price, 2) }}
                                     </p>
                                 @else
-                                    <p class="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{{ $item->formatted_price }}</p>
+                                    <p class="mt-1 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">{{ $item->buyer_formatted_price }}</p>
                                 @endif
                             </div>
                             @if($item->quantity > 0)
@@ -476,7 +476,7 @@
                             <div class="p-3.5">
                                 <h3 class="mb-1.5 truncate text-sm font-semibold text-slate-900 dark:text-white">{{ Str::limit($similarItem->name, 35) }}</h3>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-base font-bold text-slate-900 dark:text-white">{{ $similarItem->formatted_price }}</span>
+                                    <span class="text-base font-bold text-slate-900 dark:text-white">{{ $similarItem->buyer_formatted_price }}</span>
                                     <span class="text-xs font-semibold text-primary-600 transition-colors group-hover:text-primary-700 dark:text-primary-400">
                                         Voir <i class="fas fa-arrow-right ml-1"></i>
                                     </span>
@@ -528,7 +528,7 @@
                             <h6 class="truncate text-sm font-bold text-slate-900 dark:text-white">{{ $item->name }}</h6>
                             <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{{ Str::limit($item->description, 80) }}</p>
                             <div class="mt-1.5 flex items-center justify-between">
-                                <span class="text-base font-bold text-slate-900 dark:text-white">{{ $item->formatted_price }}</span>
+                                <span class="text-base font-bold text-slate-900 dark:text-white">{{ $item->buyer_formatted_price }}</span>
                                 <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
                                     <i class="fas fa-tag text-xs"></i>
                                     {{ $item->category->name }}

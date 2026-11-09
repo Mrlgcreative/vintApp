@@ -70,8 +70,9 @@
             @php
                 $total = 0;
                 foreach ($cart as $cartItem) {
-                    $total += $cartItem['price'] * $cartItem['quantity'];
+                    $total += buyer_price((float) $cartItem['price']) * $cartItem['quantity'];
                 }
+                $total = round($total, 2);
                 $lastCurrency = end($cart)['currency'] ?? 'CDF';
             @endphp
 
@@ -133,11 +134,11 @@
                                         <div>
                                             @if(isset($item['has_discount']) && $item['has_discount'])
                                                 <div class="text-xs text-gray-400 dark:text-gray-500 line-through mb-0.5">
-                                                    {{ number_format($item['original_price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                    {{ number_format(buyer_price((float) $item['original_price']), 2, ',', ' ') }} {{ $item['currency'] }}
                                                 </div>
                                             @endif
                                             <div class="text-lg font-bold {{ isset($item['has_discount']) && $item['has_discount'] ? 'text-green-600 dark:text-green-400' : 'text-gray-900 dark:text-white' }}">
-                                                {{ number_format($item['price'], 0, ',', ' ') }} {{ $item['currency'] }}
+                                                {{ number_format(buyer_price((float) $item['price']), 2, ',', ' ') }} {{ $item['currency'] }}
                                             </div>
                                         </div>
 
@@ -160,7 +161,7 @@
                                     {{-- Sous-total --}}
                                     @if($item['quantity'] > 1)
                                         <div class="mt-2 text-xs text-gray-400 dark:text-gray-500 text-right">
-                                            Sous-total : <span class="font-semibold text-gray-600 dark:text-gray-300">{{ number_format($item['price'] * $item['quantity'], 0, ',', ' ') }} {{ $item['currency'] }}</span>
+                                            Sous-total : <span class="font-semibold text-gray-600 dark:text-gray-300">{{ number_format(buyer_price((float) $item['price']) * $item['quantity'], 2, ',', ' ') }} {{ $item['currency'] }}</span>
                                         </div>
                                     @endif
                                 </div>
@@ -180,7 +181,7 @@
                         <div class="space-y-3 mb-4">
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500 dark:text-gray-400">Sous-total ({{ count($cart) }} article{{ count($cart) > 1 ? 's' : '' }})</span>
-                                <span class="font-medium text-gray-800 dark:text-gray-200">{{ number_format($total, 0, ',', ' ') }} {{ $lastCurrency }}</span>
+                                <span class="font-medium text-gray-800 dark:text-gray-200">{{ number_format($total, 2, ',', ' ') }} {{ $lastCurrency }}</span>
                             </div>
                             <div class="flex items-center justify-between text-sm">
                                 <span class="text-gray-500 dark:text-gray-400">Livraison</span>
@@ -191,7 +192,7 @@
                         <div class="border-t border-gray-100 dark:border-gray-700 pt-4 mb-5">
                             <div class="flex items-center justify-between">
                                 <span class="font-semibold text-gray-900 dark:text-white">Total</span>
-                                <span class="text-xl font-bold text-primary-600 dark:text-primary-400">{{ number_format($total, 0, ',', ' ') }} {{ $lastCurrency }}</span>
+                                <span class="text-xl font-bold text-primary-600 dark:text-primary-400">{{ number_format($total, 2, ',', ' ') }} {{ $lastCurrency }}</span>
                             </div>
                         </div>
 
