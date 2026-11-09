@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "barryvdh/laravel-dompdf": "^3.1",
         "firebase/php-jwt": "^7.0.2",
         "guzzlehttp/guzzle": "^7.9",
@@ -100,8 +100,8 @@
             "php-http/discovery": true
         },
         "platform": {
-            "php": "8.3.36",
-            "ext-sodium": "8.3.36"
+            "php": "8.5.0",
+            "ext-sodium": "8.5.0"
         }
     },
     "minimum-stability": "stable",
