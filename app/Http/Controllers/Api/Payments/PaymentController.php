@@ -448,7 +448,17 @@ class PaymentController extends ApiController
 
         try {
             $currency = $request->input('currency', 'CDF');
-            $amount = (float) $request->amount;
+            // Le montant à débiter est toujours recalculé côté serveur à partir
+            // du panier réel : le montant envoyé par l'app n'est pas fiable.
+            $serverCart = get_cart_array();
+            if (! empty($serverCart)) {
+                $totals = cart_totals($serverCart);
+                $amount = (float) $totals['total'];
+                $cartItems = $serverCart;
+                $currency = reset($cartItems)['currency'] ?? $currency;
+            } else {
+                return $this->errorResponse('Votre panier est vide.', 422);
+            }
             $exchangeRate = null;
 
             // K-PAY RDC opère en CDF. Si le montant est en USD, convertir avant l'init.
@@ -484,10 +494,8 @@ class PaymentController extends ApiController
                 return $this->errorResponse('Le numéro Mobile Money est requis pour le paiement USSD.', 422);
             }
 
-            $cartItems = $request->input('cart_items');
-            if (! is_array($cartItems)) {
-                $cartItems = get_cart_array();
-            }
+            // Le montant débité et les lignes de panier sont ceux du panier réel
+            // (recalculés plus haut côté serveur).
 
             $externalId = $kpay->generateExternalId();
 

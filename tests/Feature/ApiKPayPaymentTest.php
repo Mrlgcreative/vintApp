@@ -40,13 +40,31 @@ class ApiKPayPaymentTest extends TestCase
         $this->withHeader('Authorization', 'Bearer '.$buyer->createToken('test')->plainTextToken);
     }
 
+    /**
+     * Le montant débité est recalculé côté serveur depuis le panier réel
+     * (le total envoyé par le client est ignoré) : on sème donc un panier.
+     */
+    private function seedCart(User $buyer, float $price, string $currency, int $quantity): void
+    {
+        \App\Models\Cart::create([
+            'session_id' => 'api-'.$buyer->id,
+            'user_id' => $buyer->id,
+            'item_id' => 1,
+            'item_name' => 'Article',
+            'price' => $price,
+            'currency' => $currency,
+            'quantity' => $quantity,
+        ]);
+    }
+
     public function test_initiate_kpay_requires_phone_for_ussd(): void
     {
         $buyer = User::factory()->create();
         $this->actingAsBuyer($buyer);
+        $this->seedCart($buyer, 10000, 'CDF', 1);
 
         $this->postJson(route('api.v1.payments.kpay.initiate'), [
-            'amount' => 15000,
+            'amount' => 99999,
             'currency' => 'CDF',
         ])->assertStatus(422)
             ->assertJson(['success' => false]);
@@ -56,9 +74,11 @@ class ApiKPayPaymentTest extends TestCase
     {
         $buyer = User::factory()->create();
         $this->actingAsBuyer($buyer);
+        // Panier supérieur au plafond K-PAY : \round(x * 1,045) + 5 % livraison > MAX_AMOUNT_CDF.
+        $this->seedCart($buyer, \App\Services\KPay::MAX_AMOUNT_CDF + 100, 'CDF', 1);
 
         $this->postJson(route('api.v1.payments.kpay.initiate'), [
-            'amount' => KPay::MAX_AMOUNT_CDF + 1,
+            'amount' => 1000,
             'currency' => 'CDF',
             'phone' => '0812345678',
             'operator' => 'VODACOM',
@@ -80,9 +100,13 @@ class ApiKPayPaymentTest extends TestCase
 
         $buyer = User::factory()->create();
         $this->actingAsBuyer($buyer);
+        $this->seedCart($buyer, 10000, 'CDF', 1);
+
+        // Total serveur : 1 × 10 450 (supplément 4,5 %) + 5 % livraison = 10 972,50
+        $expected = round(round(10000 * 1.045, 2) * 1.05, 2);
 
         $response = $this->postJson(route('api.v1.payments.kpay.initiate'), [
-            'amount' => 15000,
+            'amount' => 99999,
             'currency' => 'CDF',
             'phone' => '0812345678',
             'operator' => 'VODACOM',
@@ -99,7 +123,7 @@ class ApiKPayPaymentTest extends TestCase
             'provider' => 'kpay',
             'status' => 'pending',
             'transaction_ref' => 'kpay_payment_1',
-            'amount' => 15000,
+            'amount' => $expected,
             'currency' => 'CDF',
         ]);
     }
@@ -119,9 +143,10 @@ class ApiKPayPaymentTest extends TestCase
 
         $buyer = User::factory()->create();
         $this->actingAsBuyer($buyer);
+        $this->seedCart($buyer, 10000, 'CDF', 1);
 
         $response = $this->postJson(route('api.v1.payments.kpay.initiate'), [
-            'amount' => 15000,
+            'amount' => 99999,
             'currency' => 'CDF',
             'mode' => 'GATEWAY',
         ]);
@@ -141,9 +166,10 @@ class ApiKPayPaymentTest extends TestCase
 
         $buyer = User::factory()->create();
         $this->actingAsBuyer($buyer);
+        $this->seedCart($buyer, 10000, 'CDF', 1);
 
         $this->postJson(route('api.v1.payments.kpay.initiate'), [
-            'amount' => 15000,
+            'amount' => 99999,
             'currency' => 'CDF',
             'phone' => '0812345678',
             'operator' => 'VODACOM',
